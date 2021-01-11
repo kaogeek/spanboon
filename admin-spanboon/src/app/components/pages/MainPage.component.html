@@ -1,0 +1,36 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="wrapper">
+    <div class="wrapper-controller-sidebar" [class.hide]="!isShowSidebar" (click)="clickSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+            <path fill="none" d="M0 0h24v24H0V0z" />
+        </svg>
+    </div>
+    <div class="sidebar" [class.sidebar-hide]="!isShowSidebar">
+        <div class="logo">
+            <div class="wrapper-logo">
+                <a [routerLink]="'/main'" class="simple-text logo-mini">
+                    <div class="logo-img">
+                        <svg style="position: absolute;left: -75%;height: 79%;" class="icon-spanboon" data-name="Group 227" height="29.556" id="Group_227" viewBox="0 0 59.073 29.556" width="59.073" xmlns="http://www.w3.org/2000/svg"><g data-name="Group 133" id="Group_133" transform="translate(0 0)"><g data-name="Group 132" id="Group_132"><circle cx="3.282" cy="3.282" data-name="Ellipse 83" fill="#FD545A" id="Ellipse_83" r="3.282" transform="translate(52.509 9.86)"></circle><circle cx="3.282" cy="3.282" data-name="Ellipse 84" fill="#FD545A" id="Ellipse_84" r="3.282" transform="translate(0 9.86)"></circle><circle cx="3.282" cy="3.282" data-name="Ellipse 85" fill="#FD545A" id="Ellipse_85" r="3.282" transform="translate(26.255)"></circle><path d="M1489.264,704.882c-.007-11.48-13.228-20.785-29.536-20.785s-29.53,9.3-29.536,20.785h2.929a3.281,3.281,0,0,1,6.563,0h5.824V694.631a5.47,5.47,0,0,1,10.94,0v10.251H1463V694.631a5.47,5.47,0,1,1,10.939,0v10.251h5.779v-.006a3.282,3.282,0,0,1,6.564,0v.006Z" data-name="Path 192" fill="#FD545A" id="Path_192" transform="translate(-1430.191 -675.326)"></path></g></g></svg>
+                    </div>
+                </a>
+                <a [routerLink]="'/main'" class="simple-text logo-normal">
+                    Spanboon
+                </a>
+            </div>
+            <button mat-raised-button style="width: 100%;" (click)="clickLogout()">Logout</button>
+        </div>
+        <div class="sidebar-wrapper">
+            <admin-menu-item *ngFor="let menu of menuItems" [menu]="menu" [isOpen]="false"></admin-menu-item>
+        </div>
+    </div>
+    <div class="main-panel" [class.main-panel-hide]="!isShowSidebar">
+        <router-outlet></router-outlet>
+    </div>
+</div>

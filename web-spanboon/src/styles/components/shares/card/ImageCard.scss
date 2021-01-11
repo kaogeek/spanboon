@@ -1,0 +1,278 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.image-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    > .wrapper-pin {
+        display: flex;
+        position: absolute;
+        justify-content: flex-end;
+        z-index: 1;
+        top: 15pt;
+        right: 15pt;
+
+        > svg {
+            height: auto;
+            width: 36pt;
+        }
+    }
+
+    > .bg-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    > .file-none {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    > .wrapper-tag {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: calc(100% - 40pt);
+        height: calc(100% - 40pt);
+        position: relative;
+        background-color: $blur;
+        padding: 20pt;
+
+        .wrapper-favorite {
+            display: flex;
+            -webkit-box-pack: end;
+            top: 0;
+            right: 0;
+        }
+
+        > .tag-message {
+            color: $brandcolor;
+            font-family: "Kanit-500";
+            font-size: 34px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        > .tag-username {
+            display: flex;
+            justify-content: center;
+            color: $brandcolor;
+            font-family: "Kanit-500";
+            font-size: 26px;
+        }
+
+        > .tag-social {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+            margin: 20pt 0;
+
+            > .wrapper-social {
+                display: flex;
+                margin: 0 2%;
+                align-items: center;
+                flex-direction: column;
+
+                &:first-child {
+                    margin-left: 0;
+                }
+
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                > .wrapper-icon {
+                    height: 32pt;
+                }
+                > .wrapper-count {
+                    color: $brandcolor;
+                    margin: 5pt;
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                }
+            }
+        }
+
+        > .bottom-social {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 10pt 20pt;
+            background: rgb($black, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: auto;
+
+            > .soc-left {
+                margin-right: 20pt;
+                user-select: none;
+                flex: 1 1 0%;
+
+                > .social-top {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 3pt;
+
+                    > .social-list {
+                        display: flex;
+
+                        &:nth-child(3) {
+                            > .wrapper-icon {
+                                width: 20pt;
+                            }
+
+                            span {
+                                padding: 0 0 0 7pt;
+                            }
+                        }
+
+                        > .wrapper-icon {
+                            width: 14pt;
+                            height: 14pt;
+                        }
+
+                        > span {
+                            color: $white;
+                            font-family: "Kanit-400";
+                            font-size: 14px;
+                            padding: 0 15pt 0 7pt;
+                        }
+                    }
+
+                    > .count-plus {
+                        color: $white;
+                        font-family: "Kanit-400";
+                        font-size: 14px;
+                        display: none;
+                    }
+                }
+            }
+
+            > .butt-more {
+                flex: 0 0 auto;
+                border: 2px solid $color-warm-red;
+                color: $color-warm-red;
+                border-radius: 20px;
+                font-family: "Kanit-500";
+                font-size: 16px;
+                padding: 2px 25px;
+                background: transparent;
+                transform: scale(1, 1);
+
+                &:hover {
+                    background: rgb($white, 0.2);
+                }
+
+                &:active {
+                    transform: scale(0.99, 0.99);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .image-card {
+        > .wrapper-pin {
+            > svg {
+                width: 34pt;
+            }
+        }
+
+        > .wrapper-tag {
+            > .tag-message {
+                font-size: 30px;
+            }
+
+            > .tag-social {
+                > .wrapper-social {
+                    > .wrapper-icon {
+                        height: 28pt;
+                    }
+                }
+            }
+
+            > .bottom-social {
+                > .soc-left {
+                    > .social-top {
+                        > .social-list {
+                            display: none;
+                        }
+
+                        > .count-plus {
+                            display: block;
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .image-card {
+        > .wrapper-pin {
+            > svg {
+                width: 32pt;
+            }
+        }
+
+        > .wrapper-tag {
+            > .tag-message {
+            }
+
+            > .bottom-social {
+                padding: 5pt 10pt;
+
+                > .soc-left {
+                    > .social-top {
+                        margin-bottom: unset;
+                    }
+                }
+
+                > .butt-more {
+                    height: 26pt;
+                    line-height: unset;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 20px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small + 97px) {
+    .image-card {
+        > .wrapper-pin {
+            > svg {
+                width: 30pt;
+            }
+        }
+
+        > .wrapper-tag {
+            > .tag-message {
+                font-size: 28px;
+            }
+        }
+    }
+}

@@ -1,0 +1,222 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="form-admin">
+    <div class="wrapper">
+        <div class="form-header">
+            <ng-container *ngIf="data.id === undefined; else elseTitle">
+                <h5 class="title">สร้าง{{title | titlecase}}</h5>
+            </ng-container>
+            <ng-template #elseTitle>
+                <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+            </ng-template>
+        </div>
+        <div class="form-body">
+            <form>
+                <div class="row" *ngFor="let field of fieldRadios; let frIndex = frIndex">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>{{field.name}}</label><br>
+                            <mat-radio-group [(ngModel)]="field.fieldSelect" [ngModelOptions]="{standalone: true}">
+                                <mat-radio-button *ngFor="let f of field.field" [value]="f.field">{{f.name}}</mat-radio-button>
+                            </mat-radio-group>
+                            <ng-container *ngFor="let subField of field.field; let index = index">
+                                <ng-container *ngIf="subField.field === field.fieldSelect">
+                                    <!-- autocompSelector -->
+                                    <ng-container *ngIf="subField.type === 'autocompSelector'">
+                                        <br><admin-autocomp-selector [facade]="checkAutoCompFacade(subField.field)" [title]="subField.required ? subField.name+' *' : subField.name"
+                                            [data]="data" [field]="subField.field"></admin-autocomp-selector>
+                                    </ng-container>
+                                    <!-- autocomp -->
+                                    <ng-container *ngIf="subField.type === 'autocomp'">
+                                        <br><admin-autocomp [facade]="checkAutoCompFacade(subField.field)" [title]="subField.required ? subField.name+' *' : subField.name"
+                                            [data]="data" [field]="subField.field"></admin-autocomp>
+                                    </ng-container>
+                                    <!-- text -->
+                                    <input id="fr{{frIndex}}f{{index}}" *ngIf="subField.type === 'text'" type="text" class="form-control" placeholder="{{subField.placeholder}}"
+                                        [(ngModel)]="data[subField.field]" [ngModelOptions]="{standalone: true}" [disabled]="subField.disabled">
+                                    <!-- number -->
+                                    <input id="fr{{frIndex}}f{{index}}" *ngIf="subField.type === 'integer' || subField.type === 'float'" type="number" class="form-control"
+                                        placeholder="{{subField.placeholder}}" [(ngModel)]="data[subField.field]" [ngModelOptions]="{standalone: true}"
+                                        [disabled]="subField.disabled">
+                                    <!-- textarea -->
+                                    <textarea id="fr{{frIndex}}f{{index}}" *ngIf="subField.type === 'textarea'" class="form-control" placeholder="{{subField.placeholder}}"
+                                        [(ngModel)]="data[subField.field]" [ngModelOptions]="{standalone: true}" [disabled]="subField.disabled"></textarea>
+                                    <!-- datePicker -->
+                                    <mat-form-field *ngIf="subField.type === 'date'">
+                                        <input matInput [matDatepicker]="dp3" placeholder="{{subField.required ? subField.name+' *' : subField.name}}" [(ngModel)]="data[subField.field]"
+                                            [ngModelOptions]="{standalone: true}" disabled>
+                                        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+                                        <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+                                    </mat-form-field>
+                                    <!-- boolean -->
+                                    <mat-slide-toggle *ngIf="subField.type === 'boolean'" [(ngModel)]="data[subField.field]" [ngModelOptions]="{standalone: true}"
+                                        [disabled]="subField.disabled">{{subField.required
+                                        ? subField.name+' *' : subField.name}}</mat-slide-toggle>
+                                    <!-- color -->
+                                    <color-chrome *ngIf="subField.type === 'color'" [color]="data[subField.field]" (onChange)="handleColorChange($event)"></color-chrome>
+                                    <!-- rich editor -->
+                                    <ckeditor id="fr{{frIndex}}f{{index}}" *ngIf="subField.type === 'contentEditor'" [editor]="Editor" [(ngModel)]="data[subField.field]"
+                                        [ngModelOptions]="{standalone: true}"></ckeditor>
+                                    <ng-container *ngIf="(field.type === 'integer' || field.type === 'float') && data[subField.field] && !subField.required && submitted && subField.field === field.fieldSelect">
+                                        <div *ngIf="data[subField.field] < 0 && subField.type === 'float'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลมากกว่าหรือเท่ากับ 0
+                                        </div>
+                                        <div *ngIf="data[subField.field] < 1 && subField.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลมากกว่า 0
+                                        </div>
+                                        <div *ngIf="!checkIsInteger(data[subField.field]) && subField.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลเป็นจำนวนเต็ม
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="subField.required && submitted && subField.field === field.fieldSelect">
+                                        <ng-container *ngIf="subField.type === 'text' || subField.type === 'textarea' || subField.type === 'contentEditor'">
+                                            <div *ngIf="textTrim(data[subField.field]) === ''" class="alert alert-danger" style="margin-top: 5pt;">
+                                                กรุณาใส่ {{subField.name}}
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="subField.type === 'integer' || subField.type === 'float'">
+                                            <ng-container *ngIf="!data[subField.field]; else elseNumberFieldRadio">
+                                                <div class="alert alert-danger" style="margin-top: 5pt;">
+                                                    กรุณาใส่ {{subField.name}}
+                                                </div>
+                                            </ng-container>
+                                            <ng-template #elseNumberFieldRadio>
+                                                <div *ngIf="data[subField.field] < 0 && subField.type === 'float'" class="alert alert-danger" style="margin-top: 5pt;">
+                                                    กรุณาใส่ข้อมูลมากกว่าหรือเท่ากับ 0
+                                                </div>
+                                                <div *ngIf="data[subField.field] < 1 && subField.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                                    กรุณาใส่ข้อมูลมากกว่า 0
+                                                </div>
+                                                <div *ngIf="!checkIsInteger(data[subField.field]) && subField.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                                    กรุณาใส่ข้อมูลเป็นจำนวนเต็ม
+                                                </div>
+                                            </ng-template>
+                                        </ng-container>
+                                        <div *ngIf="!data[subField.field] && subField.type !== 'integer' && subField.type !== 'float' && 
+                                        subField.type !== 'text' && subField.type !== 'textarea' && subField.type !== 'contentEditor'"
+                                            class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ {{subField.name}}
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngFor="let field of fields; let index = index">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label *ngIf="field.type !== 'date' && field.type !== 'boolean' && 
+                        field.type !== 'autocomp' && field.type !== 'autocompSelector'">{{field.required
+                                ? field.name+' *' : field.name}}</label>
+                            <!-- autocompSelector -->
+                            <ng-container *ngIf="field.type === 'autocompSelector'">
+                                <br><admin-autocomp-selector [facade]="checkAutoCompFacade(field.field)" [title]="field.required ? field.name+' *' : field.name"
+                                    [data]="data" [field]="field.field"></admin-autocomp-selector>
+                            </ng-container>
+                            <!-- autocomp -->
+                            <ng-container *ngIf="field.type === 'autocomp'">
+                                <admin-autocomp [facade]="checkAutoCompFacade(field.field)" [title]="field.required ? field.name+' *' : field.name" [data]="data"
+                                    [field]="field.field"></admin-autocomp>
+                            </ng-container>
+                            <!-- text -->
+                            <input id="f{{index}}" *ngIf="field.type === 'text'" type="text" class="form-control" placeholder="{{field.placeholder}}"
+                                [(ngModel)]="data[field.field]" [ngModelOptions]="{standalone: true}" [disabled]="field.disabled">
+                            <!-- password -->
+                            <ng-container *ngIf="field.type === 'password'">
+                                <input id="f{{index}}" class="form-control" type="password" placeholder="รหัสผ่าน" [(ngModel)]="data[field.field]" [ngModelOptions]="{standalone: true}"
+                                    [disabled]="field.disabled">
+                                <br/>
+                                <input id="f{{index}}matchpassword" class="form-control" type="password" placeholder="ยืนยันรหัสผ่าน" [disabled]="field.disabled">
+                            </ng-container>
+                            <!-- number -->
+                            <input id="f{{index}}" *ngIf="field.type === 'integer' || field.type === 'float'" type="number" class="form-control" placeholder="{{field.placeholder}}"
+                                [(ngModel)]="data[field.field]" [ngModelOptions]="{standalone: true}" [disabled]="field.disabled">
+                            <!-- textarea -->
+                            <textarea id="f{{index}}" *ngIf="field.type === 'textarea'" class="form-control" placeholder="{{field.placeholder}}" [(ngModel)]="data[field.field]"
+                                [ngModelOptions]="{standalone: true}" [disabled]="field.disabled"></textarea>
+                            <!-- datePicker -->
+                            <mat-form-field *ngIf="field.type === 'date'">
+                                <input matInput [matDatepicker]="dp3" placeholder="{{field.required ? field.name+' *' : field.name}}" [(ngModel)]="data[field.field]"
+                                    [ngModelOptions]="{standalone: true}" disabled>
+                                <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+                                <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+                            </mat-form-field>
+                            <!-- boolean -->
+                            <mat-slide-toggle *ngIf="field.type === 'boolean'" [(ngModel)]="data[field.field]" [ngModelOptions]="{standalone: true}"
+                                [disabled]="field.disabled">{{field.required ? field.name+' *' :
+                                field.name}}</mat-slide-toggle>
+                            <!-- color -->
+                            <color-chrome *ngIf="field.type === 'color'" [color]="data[field.field]" (onChange)="handleColorChange($event)"></color-chrome>
+                            <!-- rich editor -->
+                            <ckeditor id="f{{index}}" *ngIf="field.type === 'contentEditor'" [editor]="Editor" [(ngModel)]="data[field.field]" [ngModelOptions]="{standalone: true}"></ckeditor>
+                            <ng-container *ngIf="!field.required && submitted && data[field.field]">
+                                <div *ngIf="data[field.field] < 0 && field.type === 'float'" class="alert alert-danger" style="margin-top: 5pt;">
+                                    กรุณาใส่ข้อมูลมากกว่าหรือเท่ากับ 0
+                                </div>
+                                <div *ngIf="data[field.field] < 1 && field.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                    กรุณาใส่ข้อมูลมากกว่า 0
+                                </div>
+                                <div *ngIf="!checkIsInteger(data[field.field]) && field.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                    กรุณาใส่ข้อมูลเป็นจำนวนเต็ม
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="field.required && submitted">
+                                <ng-container *ngIf="field.type === 'text' || field.type === 'textarea' || field.type === 'contentEditor'">
+                                    <div *ngIf="textTrim(data[field.field]) === ''" class="alert alert-danger" style="margin-top: 5pt;">
+                                        กรุณาใส่ {{field.name}}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="field.type === 'password'">
+                                    <ng-container *ngIf="textTrim(data[field.field]) === ''; else elseReqPass">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ รหัสผ่าน
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseReqPass>
+                                        <div *ngIf="!checkMatchPassword(index)" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ รหัสผ่านกับยืนยันรหัสผ่านให้ตรงกัน
+                                        </div>
+                                    </ng-template>
+
+                                </ng-container>
+                                <ng-container *ngIf="field.type === 'integer' || field.type === 'float'">
+                                    <ng-container *ngIf="!data[field.field]; else elseNumberField">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ {{field.name}}
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseNumberField>
+                                        <div *ngIf="data[field.field] < 0 && field.type === 'float'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลมากกว่าหรือเท่ากับ 0
+                                        </div>
+                                        <div *ngIf="data[field.field] < 1 && field.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลมากกว่า 0
+                                        </div>
+                                        <div *ngIf="!checkIsInteger(data[field.field]) && field.type === 'integer'" class="alert alert-danger" style="margin-top: 5pt;">
+                                            กรุณาใส่ข้อมูลเป็นจำนวนเต็ม
+                                        </div>
+                                    </ng-template>
+                                </ng-container>
+                                <div *ngIf="!data[field.field] && field.type !== 'integer' && field.type !== 'float' && 
+                            field.type !== 'text' && field.type !== 'textarea' && field.type !== 'contentEditor' && field.type !== 'password'"
+                                    class="alert alert-danger" style="margin-top: 5pt;">
+                                    กรุณาใส่ {{field.name}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="wrapper-action">
+            <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+            <button mat-raised-button class="btn-save" type="submit" (click)="clickSave()">บันทึก</button>
+        </div>
+    </div>
+</div>

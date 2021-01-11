@@ -1,0 +1,1602 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.fanpage {
+  min-height: calc(100vh - 55pt);
+  background: $bg-fog-gray2;
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 10px;
+
+    .spanboon-fan-page {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      > .fan-page-background {
+        position: relative;
+
+        > .wrapper-cover-image {
+          width: calc(100% - 4px);
+          height: calc(#{$height-cover-img-fanpage} - 4px);
+          border: 2px dashed $color-warm-red;
+
+          &:hover {
+            @include pointer();
+            background-color: #9ecbec !important;
+            opacity: 0.8;
+          }
+
+          &.hide {
+            display: none;
+          }
+
+          > .text-wrapper {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            font-family: "Kanit-500";
+            font-size: 18px;
+
+            > .wrapper-icon-upload {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+
+              > .icon-upload {
+                width: 60pt;
+                height: 70pt;
+              }
+
+              > .centered {
+                text-align: center;
+                margin: 10pt;
+
+                > .image-upload {
+                  > label {
+                  }
+
+                  #file-input {
+                  }
+                }
+              }
+
+              > .browse {
+                padding: 5pt 10pt;
+                border-radius: 25px;
+                border: 3px solid $color-warm-red;
+                @include pointer();
+              }
+            }
+          }
+        }
+
+        > .image-not-edit {
+          border: $width-border solid $border-color !important;
+          width: calc(100% - 2.4px) !important;
+
+          &:hover {
+            cursor: pointer;
+            background-color: unset !important;
+            opacity: unset !important;
+          }
+
+          > .image-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        > .cover-img {
+          position: relative;
+          width: 100%;
+          height: $height-cover-img-fanpage;
+
+          &.hide {
+            display: none;
+          }
+
+          > .wrapper-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            border-radius: 0;
+            background-position-x: 50%;
+          }
+
+          > .img-phrase {
+            display: flex;
+            width: calc(100% - #{$padding-right-img-phrase});
+            height: 51pt;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #f4dead2f;
+            color: $brandcolor;
+            font-family: "Kanit-500";
+            font-size: 20px;
+            padding-right: $padding-right-img-phrase;
+          }
+        }
+
+        > .set-cover {
+          position: absolute;
+          right: 15pt;
+          bottom: 15pt;
+          display: flex;
+
+          > .btn-edit-cover,
+          > .btn-save-cover,
+          > .btn-cancel-cover {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 30pt;
+            margin: 0 3pt;
+            width: auto;
+            padding: 0 15pt;
+            border-radius: 6px;
+            background: rgba($black, 0.2);
+            color: $white;
+            @include pointer();
+            font-family: "Kanit-400";
+            font-size: 16px;
+            border: 0.7px solid rgb($white, 0.1);
+
+            &:hover {
+              background: rgba($black, 0.4);
+            }
+
+            > .image-upload {
+              > label {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+
+                > svg {
+                  margin: 0 7pt 0 0;
+
+                  g,
+                  path {
+                    fill: $white;
+                  }
+                }
+
+                > .label-edit-cover {
+                }
+              }
+
+              #file-input {
+              }
+            }
+          }
+        }
+
+        #images {
+          display: none;
+          height: $height-cover-img-fanpage;
+          width: 100%;
+          background-size: cover;
+          cursor: move;
+          object-fit: cover;
+          background-position-x: 50%;
+        }
+      }
+
+      .preload-profile {
+        height: $height-cover-img-fanpage;
+      }
+
+      > .wrapper-fan-page {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        position: relative;
+        width: 100%;
+        // height: calc(100% - #{$height-cover-img-fanpage});
+
+        > .wrapper-profile-fan-page {
+          position: sticky;
+          top: 100pt;
+          width: $width-profile-fanpage;
+          margin-bottom: 10pt;
+
+          > .profile-fan-page {
+            position: relative;
+            text-align: center;
+            border: $width-border solid $border-color;
+            background-color: $white;
+            padding: 0 15pt;
+
+            > .img-profile {
+              width: 100pt;
+              height: 100pt;
+              margin: 0 auto;
+              margin-top: -50pt;
+              margin-bottom: 10pt;
+              position: relative;
+              user-select: none;
+
+              > .edit-profile-fan-page {
+                width: 30pt;
+                height: 30pt;
+                position: absolute;
+                right: 0;
+                bottom: 8pt;
+                cursor: pointer;
+                background-color: #e4e6eb;
+                border-radius: 50%;
+                opacity: 0.9;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                > .icon-image {
+                }
+
+                &:hover {
+                  opacity: 1;
+                }
+              }
+
+              > .image-profile-fan-page {
+                width: calc(100% - 8px);
+                height: calc(100% - 8px);
+                border-radius: 50%;
+                border: 4px solid $border-color;
+                object-fit: cover;
+                background-color: $white;
+              }
+            }
+
+            > .fan-page-name {
+              display: flex;
+              width: 100%;
+              color: $color-warm-red;
+              font-family: "Kanit-500";
+              font-size: 20px;
+              margin-bottom: 5pt;
+              align-items: center;
+              justify-content: center;
+
+              > .offical-page {
+                width: 20px;
+                height: 20px;
+                margin-right: 5pt;
+              }
+
+              > .official-name {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+              }
+            }
+
+            > .fan-page-subline {
+              font-family: "Kanit-500";
+              font-size: 18px;
+              margin-bottom: 5pt;
+            }
+
+            > .fan-page-tag {
+              color: $koalaGray;
+              font-family: "Kanit-500";
+              font-size: 16px;
+              justify-content: center;
+              margin-bottom: 15pt;
+            }
+          }
+
+          > .wrapper-btn-action {
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            height: $height-profile-btn-action-fan-page;
+            background-color: $white;
+            border-left: $width-border solid $border-color;
+            border-bottom: $width-border solid $border-color;
+            border-right: $width-border solid $border-color;
+            font-family: "Kanit-500";
+            font-size: 16px;
+
+            > .btn-follow-about {
+              display: flex;
+              align-self: stretch;
+              width: 33.33%;
+              justify-content: center;
+              align-items: center;
+              font-family: "Kanit-500";
+              font-size: 16px;
+
+              &:nth-child(1) {
+                margin: 0 8pt;
+                width: calc(33.33% - 16pt);
+              }
+
+              &:nth-child(2) {
+              }
+
+              &:nth-child(3) {
+              }
+
+              > button-follow {
+                > .button-follow {
+                  &:hover {
+                    background-color: rgba($color-warm-red, 0.1) !important;
+                  }
+
+                  > .mat-ripple-element {
+                    display: none;
+                  }
+                }
+
+                &.active {
+                  > .button-follow {
+                    background-color: $color-warm-red !important;
+                    color: $white !important;
+
+                    &:hover {
+                      background-color: rgba($color-warm-red, 0.95) !important;
+                    }
+                  }
+                }
+              }
+
+              > .count-follow {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+                > .count-follow-top {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+
+                  > .icon-user {
+                    width: $width-icon;
+                    height: $height-icon;
+                    margin: 0 4pt 0 0;
+                  }
+                }
+              }
+            }
+
+            > .btn_fa {
+              @include pointer();
+
+              &:hover {
+                background-color: #e8e3e35c;
+              }
+            }
+          }
+
+          > .wrapper-looking-for {
+            background-color: $white;
+            border: $width-border solid $border-color;
+            border-radius: $border-radius-4px;
+            margin-top: 5pt;
+            font-family: "Kanit-500";
+            font-size: 18px;
+
+            > .wrapper-header {
+              display: flex;
+              justify-content: space-between;
+              padding: 15pt;
+              border-bottom: $width-border solid $border-color;
+
+              > .header-looking-for {
+                font-family: "Kanit-500";
+                font-size: 18px;
+                flex: 1 1 0%;
+                padding-right: 15pt;
+              }
+
+              > .material-icons {
+                font-size: 20px;
+                @include pointer();
+                flex: 0 0 auto;
+              }
+
+              > .label-looking-for {
+                font-family: "Kanit-400";
+                font-size: 18px;
+              }
+
+              > .subline-looking-for {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: $koalaGray;
+              }
+            }
+
+            > .wrapper-body-doing {
+              width: 100%;
+              height: auto;
+              padding: unset;
+              border-bottom: unset;
+              font-family: "Kanit-500";
+              font-size: 16px;
+
+              > .con-text {
+                padding: 10pt 15pt;
+                font-family: "Kanit-500";
+                font-size: 16px;
+              }
+            }
+
+            > .list-looking-for {
+              > .item-looking-for {
+                padding: 10pt 15pt 10pt;
+                margin: 0;
+                font-family: "Kanit-400";
+                font-size: 16px;
+                &:hover {
+                  border-radius: 0;
+                }
+
+                > span {
+                  > .icon-looking-for {
+                  }
+
+                  > .title-looking-for {
+                    > .top {
+                      display: -webkit-box;
+                      -webkit-line-clamp: 1;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
+                      word-break: break-all;
+                    }
+
+                    > .bottom {
+                      display: -webkit-box;
+                      -webkit-line-clamp: 1;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
+                      word-break: break-all;
+                    }
+                  }
+                }
+
+                > .wrapper-option {
+                  > .amount-looking-for {
+                    > .top {
+                    }
+
+                    > .bottom {
+                    }
+                  }
+
+                  > .option {
+                    > svg {
+                      height: 12pt;
+                    }
+                  }
+                }
+              }
+            }
+
+            > .footer-contact-social {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              width: 100%;
+              > .contact-social {
+                flex: 1 1 0%;
+                padding: 5pt;
+                width: 25pt;
+                height: 16pt;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-right: $width-border solid $border-color;
+                cursor: pointer;
+                text-decoration: none; 
+
+                &:last-of-type {
+                  border-right: none;
+                }
+                &:hover {
+                  background-color: $background-hover;
+                }
+                &.active {
+                  > .facebook {
+                    > svg,
+                    g,
+                    path {
+                      fill: #3b5999;
+                    }
+                  }
+                  > .twitter {
+                    > svg,
+                    g,
+                    path {
+                      fill: #03a9f4;
+                    }
+                  }
+                  > .line {
+                    > svg,
+                    g,
+                    path {
+                      fill: #6fc32e;
+                    }
+                  }
+                  > .phone {
+                    > svg,
+                    g,
+                    path {
+                      fill: #5a5a5a;
+                    }
+                  }
+                  > .web {
+                    > svg,
+                    g,
+                    path {
+                      fill: #3b85c7;
+                    }
+                  }
+                }
+              }
+            }
+
+            > .btn-donate {
+              padding: 8pt 15pt;
+              cursor: pointer;
+              text-align: center;
+              @include pointer();
+              min-height: 26pt;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+
+              > .btn-donate-top {
+                font-family: "Kanit-500";
+                font-size: 16px;
+                color: $color-warm-red;
+              }
+
+              > .btn-donate-bottom {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: $koalaGray;
+              }
+            }
+          }
+        }
+
+        > .wrapper-feed-fan-page {
+          flex: 1 1 0%;
+          width: calc(100% - 255pt);
+
+          > .do-tablet {
+            display: none;
+          }
+
+          > .wrapper-feed-menu {
+            height: 52pt;
+            width: calc(100% - 0.7px);
+            border-bottom: $width-border solid $border-color;
+            border-right: $width-border solid $border-color;
+            background: $white;
+
+            > .mat-tab-header {
+              align-items: center;
+
+              > .mat-tab-header-pagination {
+                > .mat-tab-header-pagination-chevron {
+                }
+              }
+
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    height: 52pt;
+
+                    > .mat-tab-link {
+                      height: 100%;
+                      color: $color-black;
+                      @include pointer();
+                      font-family: "Kanit-500";
+                      font-size: 18px;
+                      opacity: 1;
+
+                      &:hover {
+                        color: $color-warm-red;
+                        background: rgba($color-warm-red, 0.1);
+                      }
+                    }
+
+                    > .mat-tab-label-active {
+                      color: $color-warm-red;
+                    }
+                  }
+                }
+              }
+            }
+
+            > .sub-page-ford {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+
+              > .back_ford {
+                margin-left: 10pt;
+                width: 30pt;
+                height: 30pt;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                @include pointer();
+                border-radius: 50%;
+                background: rgb($black, 0.1);
+
+                > img {
+                  width: 60%;
+                  height: 60%;
+                }
+
+                &:hover {
+                  background: rgb($black, 0.15);
+                }
+              }
+            }
+          }
+
+          > .wrapper-feed {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+
+            > .main-feed {
+              position: relative;
+              margin: 0 5pt;
+              max-width: 600px;
+              width: 600px;
+
+              > box-post {
+              }
+
+              > .title-feed {
+                text-align: center;
+                padding: 10pt 0 5pt 0;
+                font-family: "Kanit-500";
+                font-size: 20px;
+              }
+
+              > .card-feed-post {
+                border: $width-border solid $border-color;
+                background-color: $white;
+                margin-bottom: 5pt;
+                border-radius: $border-radius-4px;
+                overflow: hidden;
+                position: relative;
+
+                > .dropdown {
+                  position: absolute;
+                  top: 10px;
+                  right: 10px;
+                  width: 30px;
+                  height: 30px;
+                  line-height: unset;
+                  opacity: 0.7;
+                  background: $white;
+
+                  &:hover {
+                    opacity: 1;
+                  }
+
+                  > .mat-button-wrapper {
+                    > .material-icons {
+                      font-size: 26px;
+                    }
+                  }
+                }
+
+                > .div-image {
+                  > .cover-img {
+                    width: 100%;
+                    height: 250pt;
+                    object-fit: cover;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
+
+                  > .wrapper-loader {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: $bg-fog-gray;
+                    border: 0.7px solid $font-color-none;
+                    margin-bottom: 3pt;
+                  }
+
+                  > .box-sub-image {
+                    display: flex;
+                    margin-top: 3pt;
+
+                    > .sub-list-image {
+                      width: calc(33.52% - 3pt);
+                      height: 100pt;
+                      object-fit: cover;
+                      cursor: pointer;
+
+                      &:nth-child(odd) {
+                        margin: 0 3pt 0 0;
+                      }
+
+                      &:nth-child(3n - 1) {
+                        margin: 0 3pt 0 0;
+                      }
+
+                      &:nth-child(3n) {
+                        margin: 0 0 0 0;
+                      }
+                    }
+
+                    > .fan_sub_list {
+                      position: relative;
+                      width: calc(33.52% - 3pt);
+                      height: 100pt;
+                      cursor: pointer;
+
+                      > .sub-list-image {
+                        width: 100%;
+                        height: 100pt;
+                        object-fit: cover;
+                      }
+
+                      > .image-more {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        left: 0;
+                        top: 0;
+                        font-family: "Kanit-500";
+                        font-size: 18px;
+                        color: $white;
+                        background-color: $black;
+                        opacity: 0.5;
+                      }
+                    }
+                  }
+
+                  .mat-progress-spinner circle,
+                  .mat-spinner circle {
+                    stroke: $brandcolor2 !important;
+                  }
+                }
+
+                > .wrapper-content {
+                  padding: 10pt 20pt 0;
+
+                  > .post-to {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    > .date-time {
+                      font-family: "Kanit-500";
+                      font-size: 12px;
+                      color: $black;
+                      margin-right: 7px;
+                    }
+
+                    > .post-name {
+                      font-family: "Kanit-400";
+                      font-size: 12px;
+                      color: $koalaGray;
+                    }
+                  }
+
+                  > .title {
+                    font-family: "Kanit-500";
+                    font-size: 20px;
+                  }
+
+                  > .content {
+                    white-space: pre-wrap;
+                    color: $color-black;
+                    margin-bottom: 10pt;
+                    font-family: "Sarabun-Light";
+                    font-size: 16px;
+                  }
+
+                  > .content-sub {
+                    white-space: pre-wrap;
+                    display: inline-block;
+                    margin-bottom: 10pt;
+                    cursor: pointer;
+                    color: $color-warm-red;
+                    font-family: "Sarabun-Light";
+                    font-size: 14px;
+
+                    &:hover {
+                      text-decoration: underline;
+                    }
+                  }
+
+                  > .tag_div {
+                    display: flex;
+                    flex-direction: row;
+                    white-space: nowrap;
+
+                    > .h_tag_list {
+                      width: max-content;
+                      font-family: "Kanit-500";
+                      font-size: 16px;
+                      @include pointer();
+                      margin: 0 7pt 7pt 0;
+
+                      &:hover {
+                        text-decoration: underline;
+                      }
+                    }
+                  }
+
+                  > .list-looking-for {
+                    margin-top: 5pt;
+                    border-top: $width-border solid $border-color;
+
+                    > .item-looking-for {
+                      border-bottom: unset !important;
+                      margin: 0;
+                      padding: 10pt 10pt 10pt 5pt;
+                      font-family: "Kanit-500";
+                      font-size: 16px;
+
+                      > span {
+                        > .icon-looking-for {
+                        }
+
+                        > .title-looking-for {
+                          > .top {
+                          }
+
+                          > .bottom {
+                          }
+                        }
+                      }
+
+                      > .amount-looking-for {
+                        text-align: right;
+
+                        > .top {
+                        }
+
+                        > .bottom {
+                        }
+                      }
+                    }
+
+                    > .load-more {
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      background: rgba($bg-fog-gray, 0.8);
+                      padding: 6pt;
+                      @include pointer();
+                      font-family: "Kanit-500";
+                      font-size: 16px;
+                      border-radius: $border-radius-4px;
+                      margin: 5pt 0;
+                      transform: scale(1, 1);
+
+                      &:hover {
+                        background: rgba($bg-fog-gray, 1);
+                      }
+
+                      &:active {
+                        transform: scale(0.99, 0.99);
+                      }
+                    }
+                  }
+
+                  > .group-event {
+                    display: flex;
+                    align-items: center;
+                    color: $color-warm-red;
+                    @include pointer();
+
+                    > .event-tag,
+                    > .objective-doing {
+                      display: flex;
+                      align-items: center;
+                      margin: 0 0 10pt 0;
+                      padding-right: 8pt;
+
+                      > .icon-event {
+                        padding-right: 8pt;
+                      }
+
+                      > span {
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                      }
+                    }
+                  }
+
+                  > .wrapper-footer-post {
+                    display: flex;
+                    height: 50pt;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
+
+                    > .left {
+                      display: flex;
+                      align-items: center;
+                      font-family: "Kanit-500";
+                      font-size: 16px;
+                      color: $koalaGray;
+
+                      > .icon-feed {
+                        width: 10pt;
+                        height: 10pt;
+                        border-radius: 50%;
+                        background-color: $koalaGray;
+                      }
+
+                      > .looking {
+                        background-color: $brandcolor2;
+                      }
+
+                      > .fulfill {
+                        background-color: $green;
+                      }
+
+                      span {
+                        margin-left: 5pt;
+                      }
+                    }
+
+                    > .right {
+                      display: flex;
+                      align-items: center;
+                      color: $brandcolor2;
+                      font-size: 16px;
+                    }
+                  }
+                }
+              }
+
+              > .feed-post-none {
+                display: flex;
+                justify-content: center;
+                height: 501pt;
+                background-color: $brandcolor;
+                font-family: "Kanit-500";
+                font-size: 18px;
+
+                > .lable-timeline {
+                  padding: 50pt;
+                }
+              }
+            }
+
+            > .side-feed {
+              position: sticky;
+              top: 55pt;
+              // width: $width-side-feed-fan-page;
+              margin-bottom: 10pt;
+              flex: 1 1 0%;
+              min-width: 210pt;
+
+              > .wrapper-doing-user-relate {
+                border-radius: $border-radius-4px;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                font-family: "Kanit-500";
+                font-size: 14px;
+                border: $width-border solid $border-color;
+                background-color: $white;
+                margin-top: 5pt;
+
+                > .title {
+                  width: 100%;
+                  padding: 15pt;
+                  border-bottom: $width-border solid $border-color;
+                  font-family: "Kanit-500";
+                  font-size: 18px;
+                }
+
+                > .side-feed-about-page {
+                  border-radius: $border-radius-4px;
+                  background: $white;
+                  border: $width-border solid $border-color;
+
+                  > .label-about {
+                    padding: 15pt;
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    border-bottom: $width-border solid $border-color;
+                  }
+
+                  > .content-about {
+                    padding: 10pt 15pt;
+                    width: calc(100% - 30pt);
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                    border-bottom: $width-border solid $border-color;
+                  }
+
+                  > .content-all {
+                    padding: 8pt 15pt;
+                    text-align: center;
+                    color: $color-warm-red;
+                    @include pointer();
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                  }
+                }
+
+                > .wrapper-body-doing {
+                  width: 100%;
+                  height: auto;
+                  padding: unset !important;
+                  border-bottom: unset !important;
+
+                  > .wrapper-doing {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    width: calc(33.33% - 20pt);
+                    padding: 15pt 10pt;
+                    margin: unset !important;
+                    @include pointer();
+
+                    &:hover {
+                      background-color: $background-hover;
+                    }
+
+                    display-image {
+                      > .image-tag {
+                        margin: unset !important;
+                        margin-bottom: 5pt;
+                        width: 45pt;
+                        height: 45pt;
+                        border-radius: 50%;
+                      }
+                    }
+
+                    > .loading-image {
+                      > .linear-background {
+                      }
+                    }
+
+                    > .i_title {
+                      margin-top: 2pt;
+                      display: -webkit-box;
+                      -webkit-line-clamp: 1;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
+                      word-break: break-all;
+                      width: 100%;
+                    }
+                  }
+                }
+
+                > .content-all {
+                  border-top: $width-border solid $border-color;
+                  width: calc(100% - 30pt);
+                  padding: 8pt 15pt;
+                  text-align: center;
+                  color: $color-warm-red;
+                  @include pointer();
+                  font-family: "Kanit-500";
+                  font-size: 16px;
+                  min-height: 26pt;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                }
+              }
+
+              > .wrapper-recommend {
+                > .recommend-card {
+                  margin-top: 5pt;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.list-dropdown {
+  > .mat-icon {
+  }
+
+  > span {
+    font-family: "Kanit-500";
+    font-size: 14px;
+  }
+}
+
+.none {
+  display: flex;
+  height: 165pt;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: $brandcolor;
+  border-bottom: $width-border solid $border-color;
+  color: $font-color-none;
+  font-family: "Kanit-500";
+  font-size: 16px;
+}
+
+.doing-none {
+  display: flex;
+  height: 165pt;
+  width: 100% !important;
+  justify-content: center;
+  align-items: center;
+  background-color: $brandcolor;
+  border-bottom: $width-border solid $border-color;
+  color: $font-color-none;
+  font-family: "Kanit-500";
+  font-size: 16px;
+}
+
+.pageNotFound {
+  position: absolute;
+  height: calc(100vh - 55pt);
+  justify-content: center;
+  align-items: center;
+  font-family: "Kanit-500";
+  font-size: 20px;
+
+  > #Group_142 {
+    width: 100pt;
+    height: auto;
+    max-width: 70vw;
+  }
+
+  > .text-NotFound {
+    margin-top: 15pt;
+    font-family: "Kanit-500";
+    font-size: 22px;
+  }
+}
+
+.image-file-waste {
+  background-color: $bg-grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#images {
+  display: none;
+  height: $height-cover-img-fanpage;
+  width: 100%;
+  background-size: cover;
+  cursor: move;
+  object-fit: cover;
+}
+
+@media (max-width: $xxlarge) {
+  .fanpage {
+    .container {
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 10pt);
+
+            > .text-wrapper {
+              font-size: 16px;
+
+              > .wrapper-icon-upload {
+                > .icon-upload {
+                  width: 40pt;
+                  height: 40pt;
+                }
+
+                > .centered {
+                  margin: 5pt 0;
+
+                  &.browse {
+                  }
+                }
+              }
+            }
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 10pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 10pt);
+          }
+        }
+
+        > .wrapper-fan-page {
+          > .wrapper-profile-fan-page {
+          }
+
+          > .wrapper-feed-fan-page {
+            > .wrapper-feed-menu {
+              > .mat-tab-header {
+                > .mat-tab-link-container {
+                  > .mat-tab-list {
+                    > .mat-tab-links {
+                      > .mat-tab-link {
+                        font-size: 16px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xlarge) {
+  .fanpage {
+    .container {
+      max-width: 991px;
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 20pt);
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 20pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 20pt);
+          }
+        }
+
+        > .wrapper-fan-page {
+          > .wrapper-profile-fan-page {
+          }
+
+          > .wrapper-feed-fan-page {
+            > .do-tablet {
+              display: block;
+
+              > card-item {
+                > .card-item-looking-for {
+                  // margin-bottom: 5pt;
+
+                  .wrapper-body-doing {
+                    display: none;
+                  }
+
+                  .doing-swipper {
+                    display: block;
+                  }
+                }
+              }
+            }
+
+            > .wrapper-feed-menu {
+              margin-top: 5pt;
+
+              > .mat-tab-header {
+                > .mat-tab-link-container {
+                  > .mat-tab-list {
+                    > .mat-tab-links {
+                      > .mat-tab-link {
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            > .wrapper-feed {
+              > .main-feed {
+                max-width: unset;
+                width: calc(100% - 5pt);
+                margin-right: 0;
+              }
+
+              > .side-feed {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $large) {
+  .fanpage {
+    .container {
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 40pt);
+
+            > .text-wrapper {
+              > .wrapper-icon-upload {
+                > .icon-upload {
+                  // display: none;
+                }
+
+                > .centered {
+                  &.centered-1,
+                  &.centered-2,
+                  &.browse {
+                    display: none;
+                  }
+                }
+              }
+            }
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 40pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 40pt);
+          }
+        }
+
+        > .wrapper-fan-page {
+          justify-content: center;
+
+          > .wrapper-feed-fan-page {
+            max-width: 600px;
+
+            > .wrapper-feed-menu {
+              height: 48pt;
+
+              > .mat-tab-header {
+                > .mat-tab-link-container {
+                  > .mat-tab-list {
+                    > .mat-tab-links {
+                      height: 48pt;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $lmedium) {
+  .fanpage {
+    .container {
+      max-width: 768px;
+      padding: 0;
+
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 60pt);
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 60pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 60pt);
+          }
+        }
+
+        > .wrapper-fan-page {
+          flex-direction: column;
+
+          > .wrapper-profile-fan-page {
+            position: static;
+            width: 100%;
+            margin-bottom: unset;
+
+            > .profile-fan-page {
+              > .img-profile {
+                width: 120pt;
+                height: 120pt;
+                margin-top: -55pt;
+              }
+            }
+
+            > .wrapper-btn-action {
+              > .btn-follow-about {
+                button-follow {
+                  > .button-follow {
+                    width: 90pt !important;
+                  }
+                }
+              }
+            }
+
+            > .wrapper-looking-for {
+              // > .footer-contact-social {
+              //   > .contact-social {
+              //     height: 20pt;
+              //   }
+              // }
+            }
+
+            > card-item {
+              > .card-item-looking-for {
+                > .list-looking-for {
+                  display: none;
+                }
+
+                > .looking-swipper {
+                  display: block;
+                }
+
+                > .btn-donate {
+                  display: none;
+                }
+              }
+            }
+          }
+
+          > .wrapper-feed-fan-page {
+            width: 100%;
+            max-width: unset;
+
+            > .wrapper-feed-menu {
+              height: 40pt;
+
+              > .mat-tab-header {
+                > .mat-tab-link-container {
+                  > .mat-tab-list {
+                    > .mat-tab-links {
+                      height: 40pt;
+                    }
+                  }
+                }
+              }
+            }
+
+            > .wrapper-feed {
+              > .main-feed {
+                margin: 0 5pt;
+                width: calc(100% - 10pt);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .fanpage {
+    .container {
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 80pt);
+          }
+
+          > .set-cover {
+            top: 10pt;
+            left: 10pt;
+            bottom: unset;
+            right: unset;
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 80pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 80pt);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .fanpage {
+    min-height: calc(100vh - 39pt);
+
+    .container {
+      .spanboon-fan-page {
+        > .fan-page-background {
+          > .wrapper-cover-image {
+            height: calc(#{$height-cover-img-fanpage} - 4px - 100pt);
+          }
+
+          #images {
+            height: calc(#{$height-cover-img-fanpage} - 100pt);
+          }
+
+          > .cover-img {
+            height: calc(#{$height-cover-img-fanpage} - 100pt);
+          }
+
+          > .set-cover {
+            > .btn-edit-cover {
+              padding: 0 10pt;
+
+              > .image-upload {
+                > label {
+                  > svg {
+                    margin: 0;
+                  }
+
+                  > .label-edit-cover {
+                    display: none;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        > .wrapper-fan-page {
+          > .wrapper-profile-fan-page {
+            > .wrapper-btn-action {
+              height: auto;
+              padding: 10pt;
+
+              > .btn-follow-about {
+                width: 100% !important;
+
+                &:nth-child(1) {
+                  margin: 0;
+                  width: unset;
+                }
+
+                &.btn_fa {
+                  width: 50% !important;
+                  height: 36pt;
+                  margin-top: 5pt;
+                }
+
+                button-follow {
+                  > .button-follow {
+                    width: 280px !important;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .pageNotFound {
+    height: calc(100vh - 39pt);
+  }
+}

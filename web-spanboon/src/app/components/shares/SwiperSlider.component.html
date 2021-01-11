@@ -1,0 +1,44 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<!-- <div class="newcon-swiper-slider" id="swiper-slider">
+    <ng-container *ngIf="data.length > 0; else elseSlider">
+        <div class="swiper-container" *ngIf="data.length > 0" [swiper]="configSwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" *ngFor="let d of data">
+                    <img src="{{d.coverImage ? d.coverImage : d.coverImageUrl}}" alt="" class="image">
+                    <div class="content">
+                        <div class="content-head">
+                            <div class="content-head-top">
+                                {{d.title}}
+                            </div>
+                            <div class="content-data">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </ng-container>
+    <ng-template #elseSlider>
+        <div class="wrapper-center-none-list-content" [ngStyle]="{'height': getHeightNoneListSlider()}">
+            ไม่พบข้อมูลข่าวสารและกิจกรรม
+        </div>
+    </ng-template>
+</div> -->
+<div class="swiper-container" [swiper]="configSwiper" [(index)]="index">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide">
+        </div>
+    </div>
+    <div class="swiper-scrollbar"></div>
+    <div class="swiper-pagination"></div>
+
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+</div>

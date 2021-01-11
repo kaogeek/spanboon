@@ -1,0 +1,225 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="chat-spanboon">
+    <div class="case-confirmed" *ngIf="isCaseConfirmed && isCaseHasPost"
+        [ngStyle]="{'top': header.offsetHeight + 'px','height': talking.offsetHeight + 'px'}"></div>
+    <div class="header" #header> 
+        <span class="material-icons back-arrow" [class.active]="!isBackArrow" (click)="back.emit()">
+            chevron_left
+        </span>
+        <div>
+            <span class="label-taking"> การพูดคุยกับ:</span>
+            <a href="{{asPage ? linkUser : linkPage}}" target="_blank">
+                <span class="user-name">
+                    {{sender}}
+                </span>
+            </a>
+        </div>
+        <span id="expand" class="material-icons expand" (click)="expand.emit()"> expand_more </span>
+    </div>
+    <div class="talking" id="talking" #talking>
+        <div class="talking-y" *ngFor="let item of data">
+            <ng-container
+                *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
+                <div class="page-message">
+                    <div class="talking-m">
+                        <div class="talking-time">
+                            <span class="material-icons" *ngIf="item.chatMessage.isRead">
+                                done
+                            </span>
+                            <span class="time">{{item.chatMessage.createdDate | dateFormat}}</span>
+                        </div>
+
+                        <ng-container
+                            *ngIf="item.chatMessage.messageType === 'INFO' || item.chatMessage.messageType === 'FULFILLMENT_CASE_CONFIRM'; else elseMessageType">
+                            <ng-container
+                                *ngIf="item.chatMessage.message !== null && item.chatMessage.message !== undefined; else elseChatMessage">
+                                <div class="talking-contact">
+                                    {{item.chatMessage.message}}
+                                </div>
+                            </ng-container>
+                            <ng-template #elseChatMessage>
+                                <ng-container
+                                    *ngIf="((item.chatMessage.filePath !== null && item.chatMessage.filePath !== undefined) && (item.chatMessage.videoURL === null || item.chatMessage.videoURL === undefined)); else elseChatMedia">
+                                    <div class="talking-media">
+                                        <img src="{{apiBaseURL+item.chatMessage.filePath+'/image'}}">
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseChatMedia>
+                                    <div class="talking-media">
+                                        <video width="320" height="240" autoplay>
+                                            <source src="{{apiBaseURL+item.chatMessage.videoURL+'/image'}}">
+                                        </video>
+                                    </div>
+                                </ng-template>
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #elseMessageType>
+                            <chat-fulfill [linkUser]="linkUser" [linkPage]="linkPage" [pageId]="pageId"
+                                [postId]="postId" [sender]="item.senderName" [message]="item.chatMessage.message"
+                                [messageType]="item.chatMessage.messageType" (submit)="submit.emit()">
+                            </chat-fulfill>
+                        </ng-template>
+
+                        <a href="{{asPage ? linkPage : linkUser}}" target="_blank">
+                            <ng-container
+                                *ngIf="item.senderImage !== null && item.senderImage !== undefined && senderImage !== ''; else elseSenderImage">
+                                <img src="{{item.senderImage}}" alt="" class="m-profile">
+                            </ng-container>
+                            <ng-template #elseSenderImage>
+                                <div class="donator"> {{item.senderName | slice: 0:1 }} </div>
+                            </ng-template>
+                        </a>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #elseSenderType>
+                <a href="{{asPage ? linkUser : linkPage}}" target="_blank">
+                    <ng-container
+                        *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseUserSenderImage">
+                        <img src="{{item.senderImage}}" alt="" class="y-profile">
+                    </ng-container>
+                    <ng-template #elseUserSenderImage>
+                        <div class="donator"> {{item.senderName | slice: 0:1}} </div>
+                    </ng-template>
+                </a>
+
+                <ng-container
+                    *ngIf="item.chatMessage.messageType === 'INFO' || item.chatMessage.messageType === 'FULFILLMENT_CASE_CONFIRM'; else elseMessageType">
+                    <ng-container
+                        *ngIf="item.chatMessage.message !== null && item.chatMessage.message !== undefined; else elseChatMessage">
+                        <div class="talking-contact">
+                            {{item.chatMessage.message}}
+                        </div>
+                    </ng-container>
+                    <ng-template #elseChatMessage>
+                        <ng-container
+                            *ngIf="((item.chatMessage.filePath !== null && item.chatMessage.filePath !== undefined) && (item.chatMessage.videoURL === null || item.chatMessage.videoURL === undefined)); else elseChatMedia">
+                            <div class="talking-media">
+                                <img src="{{apiBaseURL+item.chatMessage.filePath+'/image'}}">
+                            </div>
+                        </ng-container>
+                        <ng-template #elseChatMedia>
+                            <div class="talking-media">
+                                <video width="320" height="240" autoplay>
+                                    <source src="{{apiBaseURL+item.chatMessage.videoURL+'/image'}}">
+                                </video>
+                            </div>
+                        </ng-template>
+                    </ng-template>
+                </ng-container>
+                <ng-template #elseMessageType>
+                    <div class="talking-contact">
+                        <chat-fulfill [linkUser]="linkUser" [linkPage]="linkPage" [pageId]="pageId" [postId]="postId"
+                            [sender]="item.senderName" [message]="item.chatMessage.message"
+                            [messageType]="item.chatMessage.messageType">
+                        </chat-fulfill>
+                    </div>
+                </ng-template>
+
+                <div class="talking-time">
+                    <span class="material-icons" *ngIf="item.chatMessage.isRead">
+                        done
+                    </span>
+                    <span class="time">{{item.chatMessage.createdDate | dateFormat}}</span>
+                </div>
+            </ng-template>
+        </div>
+
+        <div class="case-confirm" *ngIf="isCaseConfirmed">
+            <span class="confirm-text">สิ้นสุดการสนทนา</span>
+        </div>
+    </div>
+    <div class="typing" #typing [class.active]="isCaseConfirmed" >
+        <ng-container *ngIf="imageURL !== '' && imageURL !== undefined && imageURL !== null ; else elseImage">
+            <img class="img-profile" src="{{imageURL}}" alt="">
+        </ng-container>
+        <ng-template #elseImage>
+            <div class="donator"> {{sender | slice: 0:1 }} </div>
+        </ng-template>
+
+        <div class="drop-input">
+            <input type="text" #chatMessage (keyup.enter)="onChatSend(chatMessage.value)" class="input-typing"
+                placeholder="พิมพ์ข้อความของคุณที่นี่" autocomplete="off">
+            <div class="option-input">
+                <label for="chat-video">
+                    <svg class="img-video" xmlns="http://www.w3.org/2000/svg" version="1.1"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" x="0" y="0"
+                        viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve">
+                        <g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                                <g>
+                                    <path
+                                        d="M490.24,113.92c-13.888-24.704-28.96-29.248-59.648-30.976C399.936,80.864,322.848,80,256.064,80    c-66.912,0-144.032,0.864-174.656,2.912c-30.624,1.76-45.728,6.272-59.744,31.008C7.36,138.592,0,181.088,0,255.904    C0,255.968,0,256,0,256c0,0.064,0,0.096,0,0.096v0.064c0,74.496,7.36,117.312,21.664,141.728    c14.016,24.704,29.088,29.184,59.712,31.264C112.032,430.944,189.152,432,256.064,432c66.784,0,143.872-1.056,174.56-2.816    c30.688-2.08,45.76-6.56,59.648-31.264C504.704,373.504,512,330.688,512,256.192c0,0,0-0.096,0-0.16c0,0,0-0.064,0-0.096    C512,181.088,504.704,138.592,490.24,113.92z M192,352V160l160,96L192,352z"
+                                        fill="#000000" data-original="#000000" style="" class=""></path>
+                                </g>
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                        </g>
+                    </svg>
+                </label>
+                <input class="chat-media" id="chat-video" type="file" (change)="onFileSelected($event)" accept="video/*"
+                    multiple />
+
+                <label for="chat-image">
+                    <svg class="img-image" xmlns="http://www.w3.org/2000/svg" version="1.1"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" x="0" y="0"
+                        viewBox="0 0 511.98744 511" style="enable-background:new 0 0 512 512" xml:space="preserve">
+                        <g transform="matrix(0.8999999999999999,0,0,0.9,25.59942369461058,48.516015624999966)">
+                            <path xmlns="http://www.w3.org/2000/svg"
+                                d="m133.320312 373.828125c-34.152343 0-64.53125-21.867187-75.5625-54.421875l-.746093-2.453125c-2.601563-8.621094-3.691407-15.871094-3.691407-23.125v-145.453125l-51.753906 172.757812c-6.65625 25.410157 8.511719 51.753907 33.960938 58.773438l329.878906 88.34375c4.117188 1.066406 8.234375 1.578125 12.289062 1.578125 21.246094 0 40.660157-14.101563 46.101563-34.882813l19.21875-61.117187zm0 0"
+                                fill="#000000" data-original="#000000" style="" class=""></path>
+                            <path xmlns="http://www.w3.org/2000/svg"
+                                d="m191.988281 149.828125c23.53125 0 42.664063-19.136719 42.664063-42.667969s-19.132813-42.667968-42.664063-42.667968-42.667969 19.136718-42.667969 42.667968 19.136719 42.667969 42.667969 42.667969zm0 0"
+                                fill="#000000" data-original="#000000" style="" class=""></path>
+                            <path xmlns="http://www.w3.org/2000/svg"
+                                d="m458.652344.492188h-320c-29.394532 0-53.332032 23.9375-53.332032 53.335937v234.664063c0 29.398437 23.9375 53.335937 53.332032 53.335937h320c29.398437 0 53.335937-23.9375 53.335937-53.335937v-234.664063c0-29.398437-23.9375-53.335937-53.335937-53.335937zm-320 42.667968h320c5.890625 0 10.667968 4.777344 10.667968 10.667969v151.445313l-67.390624-78.636719c-7.148438-8.382813-17.496094-12.863281-28.609376-13.117188-11.050781.0625-21.417968 4.96875-28.5 13.460938l-79.234374 95.101562-25.8125-25.75c-14.589844-14.589843-38.335938-14.589843-52.90625 0l-58.878907 58.859375v-201.363281c0-5.890625 4.777344-10.667969 10.664063-10.667969zm0 0"
+                                fill="#000000" data-original="#000000" style="" class=""></path>
+                        </g>
+                    </svg>
+                </label>
+                <input class="chat-media" id="chat-image" type="file" (change)="onFileSelected($event)" accept="image/*"
+                    multiple />
+            </div>
+        </div>
+        <button mat-stroked-button class="send-mess" (click)="onChatSend(chatMessage.value)">
+            <span class="material-icons">
+                send
+            </span>
+        </button>
+    </div>
+</div>

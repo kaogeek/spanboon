@@ -1,0 +1,52 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="wrapper-menu-register">
+    <div class="wrapper-box-detail">
+        <div class="header">
+            <div class="label">
+                สวัสดี,
+            </div>
+            <div class="wrapper-sub-header">
+                ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม สะพานบุญ<br>
+                คุณสามารถเลือกสร้างบัญชีในแบบ <br>
+                ที่คุณต้องการได้
+            </div>
+        </div>
+
+        <div class="login-div">
+            <spanboon-button class="login" [height]="'34pt'" [text]="'สร้างบัญชีผู้ใช้ สะพานบุญ'" [fontSize]="'18px'"
+                [color]="'#F8F7F2'" [bgColor]="'#FD545A'" [link]="'/register'" [param]="{mode: 'normal'}">
+            </spanboon-button>
+
+            <div class="center-line">
+                <span class="border-span"></span>
+                <span class="span-for">สมัครผ่าน</span>
+                <span class="border-span"></span>
+            </div>
+
+            <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'" [fontSize]="'18px'"
+                [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
+                [color]="'#F8F7F2'" (click)="clickLoginFB()" [param]="{mode: 'facebook'}"></button-social>
+
+            <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
+                [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
+                [color]="'#F8F7F2'" [link]="'/clickSystemDevelopment'" [param]="{mode: 'twitter'}">
+            </button-social>
+
+            <button-social class="button-social" [btnName]="'Google'" [height]="'34pt'" [fontSize]="'18px'"
+                [iconSocial]="'../../../../assets/img/google.svg'" [bgColor]="'#F8F7F2'" [imgsize]="'20pt'"
+                [color]="'#000000'" (click)="clickLoginGoogle()" [param]="{mode: 'google'}">
+            </button-social>
+        </div>
+
+        <div class="wrapper-footer-login">
+            โปรดเลือกรูปแบบบัญชีที่คุณต้องการสร้าง
+        </div>
+    </div>
+    <img class="background-menu" src="../../../../assets/img/bg-register.png" alt="">
+</div>

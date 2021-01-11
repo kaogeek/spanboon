@@ -1,0 +1,20 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<ng-container *ngIf="!isLoaded; else elseIsLoading">
+    <div style="height: 100%;" class="body-cover-image loading"></div>
+</ng-container>
+<ng-template #elseIsLoading>
+    <ng-container *ngIf="base64; else elseHasImage">
+        <img [ngClass]="class" src="{{base64}}" (click)="showDialogGallery(base64)">
+    </ng-container>
+    <ng-template #elseHasImage>
+        <div [ngClass]="class" [class.image-file-waste]="!base64" (click)="showDialogGallery(base64)">
+            <img src="../../../../assets/img/photo.png" alt="" style="width: 30%; height: auto;">
+        </div>
+    </ng-template>
+</ng-template>

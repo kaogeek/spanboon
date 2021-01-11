@@ -1,0 +1,941 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.profile-timeline-page {
+  min-height: calc(100vh - 55pt);
+  background: $bg-fog-gray2;
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 10px;
+
+    > .wrapper-profile-page {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+
+      > .menu-left {
+        flex: 1 1 0%;
+        position: sticky;
+        top: 55pt;
+        padding: 10pt 20pt;
+
+        > .setting {
+          display: flex;
+          align-items: center;
+          @include pointer();
+          padding: 6pt 15pt;
+          height: 20pt;
+          border-radius: 8pt;
+          width: 140pt;
+          margin-bottom: 7pt;
+
+          > .icon {
+            width: 16pt;
+            height: 16pt;
+          }
+
+          > .name {
+            margin-left: 10pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+          }
+
+          &:hover {
+            background: rgb($color-warm-red, 0.2);
+            color: $color-warm-red;
+
+            svg,
+            circle,
+            path,
+            g {
+              opacity: 1;
+              fill: $color-warm-red;
+            }
+          }
+        }
+
+        > .icon-btn-post {
+          margin-top: 10pt;
+          width: 140pt;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          @include pointer();
+          height: 32pt;
+          background: $color-warm-red;
+          color: $white;
+          border-radius: 30pt;
+          padding: 0 15pt;
+
+          &:hover {
+            background: rgb($color-warm-red, 0.95);
+          }
+
+          > svg {
+            width: 20pt;
+            height: 20pt;
+          }
+
+          > span {
+            margin-left: 8pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+          }
+        }
+
+        >.menu-rreload-card{
+
+        }
+      }
+
+      > .wrapper-feed-profile {
+        position: relative;
+        margin: 0 5pt;
+        max-width: 600px;
+        width: 600px;
+
+        > .profile-background {
+          position: relative;
+
+          > .wrapper-cover-image {
+            width: calc(100% - 4px);
+            height: 219pt;
+            border: 2px dashed $color-warm-red;
+
+            &:hover {
+              cursor: pointer;
+              background-color: #9ecbec !important;
+              opacity: 0.8;
+            }
+
+            &.hide {
+              display: none;
+            }
+
+            > .text-wrapper {
+              display: flex;
+              height: 100%;
+              justify-content: center;
+              align-items: center;
+              font-family: "Kanit-400";
+              font-size: 18px;
+
+              > .wrapper-icon-upload {
+                > .icon-upload {
+                  width: 50pt;
+                  height: 50pt;
+                  padding: 0 50pt;
+                }
+
+                > .centered {
+                  text-align: center;
+                  margin: 10pt;
+
+                  .browse-file {
+                    padding: 5pt;
+                    border-radius: 25px;
+                    border: 3px solid $color-warm-red;
+                    @include pointer();
+                  }
+                }
+              }
+            }
+          }
+
+          > .image-not-edit {
+            border: $width-border solid $border-color !important;
+            width: calc(100% - 2.4px) !important;
+
+            &:hover {
+              cursor: pointer;
+              background-color: unset !important;
+              opacity: unset !important;
+            }
+
+            > .image-cover {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+
+          > .cover-img {
+            width: 100%;
+            background-size: cover;
+            height: 219pt;
+
+            > .body-cover-image {
+              width: 100%;
+              height: 100%;
+              background-size: cover;
+              background-position-x: 50%;
+
+              &.hide {
+                display: none;
+              }
+            }
+          }
+
+          > .set-cover {
+            position: absolute;
+            right: 15pt;
+            bottom: 15pt;
+            display: flex;
+
+            > .btn-edit-cover,
+            > .btn-save-cover,
+            > .btn-cancel-cover {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 30pt;
+              margin: 0 3pt;
+              width: auto;
+              padding: 0 15pt;
+              border-radius: 6px;
+              background: rgba($black, 0.2);
+              color: $white;
+              @include pointer();
+              font-family: "Kanit-400";
+              font-size: 16px;
+              border: 0.7px solid rgb($white, 0.1);
+
+              &:hover {
+                background: rgba($black, 0.4);
+              }
+
+              > .image-upload {
+                > label {
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+
+                  > svg {
+                    margin: 0 7pt 0 0;
+
+                    g,
+                    path {
+                      fill: $white;
+                    }
+                  }
+
+                  > .label-edit-cover {
+                  }
+                }
+
+                #file-input {
+                }
+              }
+            }
+          }
+
+          #image {
+            display: none;
+            width: 100%;
+            height: 219pt;
+            background-size: cover;
+            cursor: move;
+            background-position-x: 50%;
+          }
+
+          .pre-load {
+            background-color: $bg-fog-gray;
+          }
+        }
+
+        > .wrapper-profile {
+          position: relative;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          border-left: $width-border solid $border-color;
+          border-right: $width-border solid $border-color;
+          background-color: $white;
+
+          > .img-profile {
+            position: absolute;
+            width: 100pt;
+            height: 100pt;
+            user-select: none;
+            margin: -60pt 0 0 10pt;
+            flex: 0 0 auto;
+
+            > .image-profile-fan-page {
+              width: calc(100% - 8px);
+              height: calc(100% - 8px);
+              border-radius: 50%;
+              border: 4px solid $border-color;
+              object-fit: cover;
+              background-color: $white;
+            }
+
+            > .edit-profile {
+              width: 30pt;
+              height: 30pt;
+              position: absolute;
+              right: 0;
+              bottom: 8pt;
+              cursor: pointer;
+              background-color: #e4e6eb;
+              border-radius: 50%;
+              opacity: 0.9;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+
+              > .icon-image {
+              }
+
+              &:hover {
+                opacity: 1;
+              }
+            }
+          }
+
+          > .ur_ed_z {
+            width: 100%;
+            border-bottom: $width-border solid $border-color;
+
+            > .wrapper-btn-edit-profile {
+              width: 97pt;
+              padding: 7pt 10pt 10pt;
+              text-align: center;
+              font-family: "Kanit-500";
+              font-size: 18px;
+              margin: 0 0 0 auto;
+            }
+
+            > .wrapper-page-name {
+              width: calc(100% - 20pt);
+              padding: 0 10pt 20pt 10pt;
+
+              > .fan-page-name {
+                color: $color-warm-red;
+                margin: 0 10pt;
+                font-family: "Kanit-500";
+                font-size: 22px;
+              }
+
+              > .fan-page-tag {
+                color: $koalaGray;
+                margin-left: 10pt;
+                font-family: "Kanit-500";
+                font-size: 16px;
+              }
+            }
+          }
+        }
+
+        // > .wrapper-page-name {
+        //   padding-left: 11pt;
+        //   padding-bottom: 20pt;
+        //   border-left: $width-border solid $border-color;
+        //   border-right: $width-border solid $border-color;
+        //   border-bottom: $width-border solid $border-color;
+        //   background: $white;
+
+        //   > .fan-page-name {
+        //     color: $color-warm-red;
+        //     margin-left: 10pt;
+        //     font-family: "Kanit-500";
+        //     font-size: 20px;
+        //   }
+
+        //   > .fan-page-tag {
+        //     color: $koalaGray;
+        //     margin-left: 10pt;
+        //     font-family: "Kanit-500";
+        //     font-size: 16px;
+        //   }
+        // }
+
+        > .wrapper-feed-menu {
+          border-bottom: $width-border solid $border-color;
+          border-left: $width-border solid $border-color;
+          border-right: $width-border solid $border-color;
+
+          > .wrapper-counter-follow {
+            padding: 15pt 20pt;
+            background-color: $white;
+            font-family: "Kanit-500";
+            font-size: 16px;
+
+            > .follower {
+            }
+
+            > .following {
+              margin-left: 10pt;
+            }
+          }
+
+          > .mat-tab-header {
+            align-items: center;
+            background: $white;
+
+            > .mat-tab-header-pagination {
+              > .mat-tab-header-pagination-chevron {
+              }
+            }
+
+            > .mat-tab-link-container {
+              > .mat-tab-list {
+                > .mat-tab-links {
+                  height: 52pt;
+
+                  > .mat-tab-link {
+                    height: 100%;
+                    color: $color-black;
+                    @include pointer();
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    opacity: 1;
+
+                    &:hover {
+                      color: $color-warm-red;
+                      background: rgba($color-warm-red, 0.1);
+                    }
+                  }
+
+                  > .mat-tab-label-active {
+                    color: $color-warm-red;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        > .card-feed-post {
+          border: 0.7px solid $border-color;
+          background-color: $white;
+          margin: 5pt;
+
+          > .feed-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30pt;
+            align-items: center;
+            margin-top: 25pt;
+
+            > .left {
+              display: flex;
+              align-items: center;
+
+              > .icon-feed {
+                width: 8pt;
+                height: 8pt;
+                border-radius: 50%;
+                background-color: $koalaGray;
+              }
+
+              > .fulfill {
+                background-color: $green;
+              }
+
+              > .message {
+                padding-left: 5pt;
+                font-family: "Kanit-500";
+                font-size: 14px;
+              }
+            }
+
+            > .right {
+              > .wrapper-date {
+                font-family: "Kanit-500";
+                font-size: 12px;
+                color: $koalaGray;
+              }
+            }
+          }
+
+          > .wrapper-content {
+            padding: 5pt 30pt;
+
+            > .content-header {
+              font-family: "Kanit-500";
+              font-size: 20px;
+            }
+
+            > .content-body {
+              white-space: pre-wrap;
+              font-family: "Sarabun-Light";
+              font-size: 16px;
+            }
+
+            > .tag-emergency {
+              display: flex;
+              align-items: center;
+              padding: 10pt 0;
+
+              > .emergencyEvent {
+                padding-left: 5pt;
+                font-family: "Kanit-500";
+                font-size: 16px;
+              }
+            }
+
+            > .content-tag {
+              padding: 10pt 0;
+              font-family: "Kanit-500";
+              font-size: 14px;
+              padding-bottom: 10pt;
+            }
+
+            > .list-looking-for {
+              border-top: $width-border solid $border-color;
+
+              > .item-looking-for {
+                border-bottom: unset !important;
+
+                > .amount-looking-for {
+                  > .bottom {
+                    display: flex;
+                    flex-direction: column;
+                    text-align: right;
+                  }
+                }
+              }
+            }
+
+            > .wrapper-story-profile {
+              display: flex;
+              align-items: center;
+              padding: 10pt 0;
+              border-bottom: $width-border solid $border-color;
+              border-top: $width-border solid $border-color;
+
+              > .for-give {
+                font-family: "Kanit-500";
+                font-size: 14px;
+              }
+
+              > .page-name {
+                padding: 0 5pt;
+                @include text-limit();
+                font-family: "Kanit-500";
+                font-size: 14px;
+              }
+            }
+
+            > .icon-social {
+              display: flex;
+              justify-content: flex-end;
+              padding: 10pt 0;
+            }
+          }
+        }
+
+        > .feed-post-none {
+          display: flex;
+          justify-content: center;
+          height: 501pt;
+          background-color: $brandcolor;
+          font-family: "Kanit-500";
+          font-size: 18px;
+
+          > .lable-timeline {
+            padding: 50pt;
+          }
+        }
+      }
+
+      > .side-follow {
+        transition: 0.3s;
+        position: sticky;
+        top: 60pt;
+        // flex: 1 1 0%;
+        min-width: 210pt;
+        width: 260pt;
+        margin: 5pt 0 10pt 5pt;
+        flex: 0 0 auto;
+
+        > .box-right {
+          border: 0.7px solid $border-color;
+          margin-bottom: 5pt;
+
+          > .lable-follow {
+            padding: 10pt;
+            border-bottom: $width-border solid $border-color;
+            background-color: $white;
+            font-family: "Kanit-500";
+            font-size: 18px;
+          }
+
+          > .wrapper-card {
+            background-color: $white;
+
+            > .card-follow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 3pt 10pt;
+              @include pointer();
+
+              &:hover {
+                background-color: $background-hover;
+              }
+
+              > .follow {
+                display: flex;
+                padding: 5pt 0;
+                align-items: center;
+
+                > .img-user {
+                  width: 40pt;
+                  height: 40pt;
+                  border-radius: 50%;
+                  object-fit: cover;
+                }
+
+                > .list-follow-name {
+                  margin-left: 5pt;
+
+                  > .follow-name {
+                    font-family: "Kanit-500";
+                    font-size: 14px;
+                  }
+
+                  > .follow-name-eng {
+                    font-family: "Kanit-500";
+                    font-size: 14px;
+                    color: $koalaGray;
+                  }
+                }
+              }
+
+              > .wrapper-btn-follow {
+                > .btn-follow {
+                }
+              }
+            }
+
+            > .follow-all {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 8pt 15pt;
+              text-align: center;
+              color: $color-warm-red;
+              min-height: 26pt;
+              border-top: $width-border solid $border-color;
+              @include pointer();
+              font-family: "Kanit-500";
+              font-size: 16px;
+            }
+          }
+
+          > .wrapper-matter {
+            background-color: $white;
+            margin-top: 5pt;
+
+            > .body-matter {
+              padding: 10pt;
+              margin-top: 5pt;
+              border-bottom: $width-border solid $border-color;
+              justify-content: space-between;
+              font-family: "Kanit-500";
+              font-size: 18px;
+            }
+
+            > .item-all {
+              color: $color-warm-red;
+              padding: 10pt;
+              text-align: center;
+              font-family: "Kanit-500";
+              font-size: 16px;
+              @include pointer();
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xxlarge) {
+  .profile-timeline-page {
+    .container {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(219pt - 10pt);
+            }
+          }
+
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    > .mat-tab-link {
+                      font-size: 16px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xlarge) {
+  .profile-timeline-page {
+    .container {
+      max-width: 991px;
+
+      > .wrapper-profile-page {
+        > .menu-left {
+          > .setting {
+            width: 28pt;
+            padding: 5pt;
+            justify-content: center;
+            margin: 0 auto;
+            border-radius: 50%;
+
+            > .icon {
+            }
+
+            > .name {
+              display: none;
+            }
+          }
+
+          > .icon-btn-post {
+            width: 32pt;
+            padding: 5pt;
+
+            > .button-post {
+            }
+
+            > span {
+              display: none;
+            }
+          }
+
+          >.menu-rreload-card{
+            display: none;
+          }
+        }
+
+        > .wrapper-feed-profile {
+          // max-width: unset;
+          // width: 100%;
+
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(219pt - 10pt);
+            }
+          }
+
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    > .mat-tab-link {
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        > .side-follow {
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $large) {
+  .profile-timeline-page {
+    .container {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(280pt - 40pt);
+            }
+          }
+
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    height: 48pt;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        > .menu-left {
+          flex: unset;
+        }
+
+        > .wrapper-feed-profile {
+          margin-right: 0;
+        }
+
+        > .side-follow {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $lmedium) {
+  .profile-timeline-page {
+    .container {
+      max-width: 768px;
+      padding: 0;
+
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          // max-width: unset;
+          width: calc(100% - 5pt);
+
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(319pt - 60pt);
+            }
+          }
+
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    height: 40pt;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        > .wrapper-feed-menu
+          > .mat-tab-header
+          > .mat-tab-link-container
+          > .mat-tab-list
+          > .mat-tab-links
+          > .side-follow {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .profile-timeline-page {
+    .container {
+      > .wrapper-profile-page {
+        > .menu-left {
+          display: none;
+        }
+
+        > .wrapper-feed-profile {
+          // margin: 0 5pt;
+          // width: calc(100% - 10pt);
+          margin: 0;
+          width: 100%;
+
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(300pt - 80pt);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .profile-timeline-page {
+    min-height: calc(100vh - 39pt);
+
+    .container {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #image {
+              height: calc(290pt - 100pt);
+            }
+
+            > .set-cover {
+              top: 10pt;
+              left: 10pt;
+              bottom: unset;
+              right: unset;
+
+              > .btn-edit-cover {
+                padding: 0 10pt;
+
+                > .image-upload {
+                  > label {
+                    > svg {
+                      margin: 0;
+                    }
+                    > .label-edit-cover {
+                      display: none;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          > .wrapper-profile {
+            flex-direction: column;
+            align-items: center;
+
+            > .img-profile {
+              margin: -60pt 0 10pt 0;
+            }
+
+            > .ur_ed_z {
+              display: flex;
+              flex-direction: column-reverse;
+
+              > .wrapper-btn-edit-profile {
+                margin: 0 auto;
+                width: 90%;
+              }
+
+              > .wrapper-page-name {
+                border-bottom: unset;
+                margin-top: 45pt;
+                padding: 0 10pt 5pt 10pt;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

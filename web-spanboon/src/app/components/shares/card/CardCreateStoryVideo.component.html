@@ -1,0 +1,27 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="create-video">
+    <div class="create-video-h">
+        <span>วีดีโอ</span>
+    </div>
+    <div class="create-video-b">
+        <div id="video" class="video">
+            <iframe style="width: 100%;height: 140pt;" id="iframeV"></iframe>
+        </div>
+        <div class="select-video">
+            <section class="example-section">
+                <mat-checkbox class="example-margin" [(ngModel)]="autoPlay">เล่นอัตโนมัติ</mat-checkbox>
+            </section>
+            <input placeholder="link video" [(ngModel)]="linkvideo" (keyup)="getLinkVideo()" id="link-video">
+            <input placeholder="คำอธิบาย" [(ngModel)]="dis" id="link-video">
+        </div>
+    </div>
+    <div class="create-video-f">
+        <div (click)="submits();" class="save-buttom">บันทึก</div>
+    </div>
+</div>

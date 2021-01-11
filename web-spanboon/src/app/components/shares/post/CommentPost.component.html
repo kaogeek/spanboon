@@ -1,0 +1,59 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="comment" *ngFor="let comment of commentdata; let i = index">
+    <div class="comment-body">
+        <div class="comment-img">
+            <ng-container
+                *ngIf="comment.user !== undefined && comment.user !== null && comment.user.imageURL && comment.user.imageURL !== undefined && comment.user.imageURL !== null && comment.user.imageURL !== '' ; else elseImage">
+                <div class="menu-user" (click)="menuProfile();">
+                    <img class="image-profile-comment" src="{{testIimageURL(comment.user.imageURL)}}" alt="">
+                </div>
+            </ng-container>
+            <ng-template #elseImage>
+                <div class="menu-user displayName"
+                    *ngIf="comment.user !== undefined && comment.user !== null && comment.user.displayName && comment.user.displayName !== undefined && comment.user.displayName !== null && comment.user.displayName !== ''">
+                    <div class="donators">
+                        {{comment.user.displayName | slice: 0:1 }}
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+        <div class="comment-input">
+            <div class="comment-i_u">
+                <span class="username">{{comment.user.displayName}}</span>
+                <input *ngIf="comment.isEdit" #textcomment id="textcomment" class="comment-comment comment-edit"
+                    placeholder="แสดงความคิดเห็น..." (keyup.enter)="commentActionSave('EDIT',comment,i)"
+                    [(ngModel)]="commentEdit" type="text">
+                <span *ngIf="!comment.isEdit" class="comment-comment">{{comment.comment}}</span>
+            </div>
+            <div class="status-comment">
+                <!-- <control-action [isAction]="'true'" [like]="comment.likeCount ? comment.likeCount : 0" [isReboon]="false"
+            [isShare]="false" [isComment]="false" [userLike]="comment.isLike" [isBlack]="true"
+            (submit)="commentAction($event,comment,i)">
+        </control-action> -->
+                <ng-container *ngIf="!comment.isEdit; else elseTemplateEdit">
+                    <span [ngClass]="{'like-at': comment.isLike}">{{comment.likeCount ? comment.likeCount : 0}}</span>
+                    <span class="like" [ngClass]="{'like-at': comment.isLike}"
+                        (click)="commentAction('LIKE',comment,i)">ถูกใจ</span>
+                    <span>•</span>
+                    <span (click)="commentAction('EDIT',comment,i)" class="like">แก้ไข</span>
+                    <span>•</span>
+                    <span (click)="commentAction('DELETE',comment,i)" class="like">ลบ</span>
+                    <span>•</span>
+                    <span>{{comment && comment.createdDate | dateFormat}}</span>
+                </ng-container>
+                <ng-template #elseTemplateEdit>
+                    <span (click)="commentAction('CANCEL',comment,i)" class="like">ยกเลิก</span>
+                </ng-template>
+            </div>
+
+            <div class="date-time" [phxPreload]="comment" [preloadClass]="'date-time'">
+            </div>
+        </div>
+    </div>
+</div>

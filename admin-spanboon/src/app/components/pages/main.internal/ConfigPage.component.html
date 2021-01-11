@@ -1,0 +1,87 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <ng-container *ngIf="orinalDataForm.name.trim() === ''; else elseTitle">
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        </ng-container>
+                        <ng-template #elseTitle>
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        </ng-template>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>ชื่อ *</label>
+                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name" [ngModelOptions]="{standalone: true}" [disabled]="orinalDataForm.name.trim() !== '' ? true : false">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.name.trim() === ''">
+                                            กรุณาใส่ ชื่อ
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>ประเภท *</label>
+                                        <mat-radio-group [(ngModel)]="dataForm.type" [ngModelOptions]="{standalone: true}">
+                                            <br/>
+                                            <mat-radio-button [value]="'boolean'">จริงเท็จ</mat-radio-button>
+                                            <mat-radio-button [value]="'string'">ข้อความ</mat-radio-button>
+                                            <mat-radio-button [value]="'number'">ตัวเลข</mat-radio-button>
+                                        </mat-radio-group>
+                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.type.trim() === ''">
+                                            กรุณาใส่ ประเภท
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รายละเอียด</label>
+
+                                        <ng-container *ngIf="dataForm.type === 'boolean'">
+                                            <br/>
+                                            <mat-slide-toggle [(ngModel)]="valueBool" [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="dataForm.type === 'string'">
+                                            <textarea class="form-control" [(ngModel)]="valuetring" [ngModelOptions]="{standalone: true}"></textarea>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="dataForm.type === 'number'">
+                                            <input type="number" class="form-control" [(ngModel)]="valueNum" [ngModelOptions]="{standalone: true}">
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+            <admin-form-component [data]="dataForm" [fields]="fields" [title]="'ตั้งค่า'" (close)="clickCloseDrawer()" (save)="clickSave()"></admin-form-component>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [facade]="configFacade" [title]="'ตั้งค่า'" [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()" (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

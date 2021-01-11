@@ -1,0 +1,774 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.card-feed-post {
+  border: $width-border solid $border-color;
+  background-color: $white;
+  margin: 5pt 0;
+  border-radius: $border-radius-4px;
+  overflow: hidden;
+  position: relative;
+
+  > .header-post {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 10pt 35pt 10pt 15pt;
+
+    > .left {
+      display: flex;
+      align-items: center;
+      font-family: "Kanit-500";
+      font-size: 14px;
+      color: $black;
+      position: relative;
+      margin-right: 15pt;
+      overflow: hidden;
+
+      > .wrapper-profile-page {
+        > .page-img {
+          display: flex;
+          align-items: center;
+
+          > .post-data-profile {
+            height: 45pt;
+            width: 45pt;
+            border-radius: 50%;
+          }
+          > .post-data-name {
+            padding-left: 10pt;
+
+            > .post-data-createdBy {
+              display: flex;
+              align-items: center;
+            }
+          }
+        }
+      }
+
+      .icon-feed {
+        width: 8pt;
+        height: 8pt;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        background-color: $koalaGray;
+      }
+
+      .looking {
+        background-color: $brandcolor2;
+      }
+
+      .fulfill {
+        background-color: $green;
+      }
+
+      span {
+        margin-left: 5pt;
+        flex: 0 0 auto;
+      }
+
+      .post-to {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        > a {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          > .date-time {
+            margin-right: 7px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+
+            > span {
+              cursor: pointer;
+              color: $koalaGray;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        > .post-name {
+          font-family: "Kanit-500";
+          font-size: 14px;
+          color: #a5a5a6;
+        }
+      }
+    }
+
+    > .repost-re {
+      flex: 0 0 auto;
+      font-family: "Kanit-400";
+      font-size: 14px;
+      color: #a5a5a6;
+      display: flex;
+      align-items: center;
+
+      > .img-action {
+        width: 12pt;
+        height: 12pt;
+        margin-right: 3pt;
+      }
+    }
+  }
+  > .fulfill-profile {
+    display: flex;
+    padding: 0 15pt 10pt 15pt;
+    > .fufill-name {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      > .topic-name {
+        font-family: "Kanit-400";
+        font-size: 20px;
+      }
+      >.left {
+        display: flex;
+        padding-top: 10pt;
+        > .profile-left {
+          display: flex;
+          align-items: center;
+          width: 45%;
+          max-width: 50%;
+          > .post-data-profile {
+            height: 45pt;
+            width: 45pt;
+            border-radius: 50%;
+          }
+          > .name-top {
+            padding-left: 10pt;
+            > .fulfill-name {
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-all;
+              width: 100%;
+              font-family: "Kanit-500";
+              font-size: 16px;
+            }
+            > .text {
+              font-family: "Kanit-500";
+              font-size: 14px;
+              color: $bg-color4;
+            }
+          }
+          &:last-child {
+            .text {
+              color: $color-warm-red;
+            }
+          }
+        }
+        > .middle {
+          display: flex;
+          align-items: center;
+          > .icon-fulfill {
+            padding: 0 10pt;
+          }
+        }
+      }
+    }
+  }
+  > .dropdown {
+    position: absolute;
+    top: 7pt;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    line-height: unset;
+    opacity: 0.7;
+    z-index: 10;
+    background: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    > .mat-button-wrapper {
+      > .material-icons {
+        font-size: 26px;
+      }
+    }
+  }
+
+  > .div-image {
+    > .cover-img {
+      width: 100%;
+      height: 250pt;
+      object-fit: cover;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    > .wrapper-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $bg-fog-gray;
+      border: 0.7px solid $font-color-none;
+      margin-bottom: 3pt;
+
+      > .box-sub-image {
+        display: flex;
+        margin-top: 3pt;
+
+        > .sub-list-image {
+          width: calc(33.52% - 3pt);
+          height: 100pt;
+          object-fit: cover;
+          @include pointer();
+
+          &:nth-child(odd) {
+            margin: 0 3pt 0 0;
+          }
+
+          &:nth-child(3n - 1) {
+            margin: 0 3pt 0 0;
+          }
+
+          &:nth-child(3n) {
+            margin: 0 0 0 0;
+          }
+        }
+
+        > .fan_sub_list {
+          position: relative;
+          width: calc(33.52% - 3pt);
+          height: 100pt;
+          cursor: pointer;
+        }
+
+        > .sub-list-image {
+          width: 100%;
+          height: 100pt;
+          object-fit: cover;
+        }
+
+        > .image-more {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          font-family: "Kanit-500";
+          font-size: 18px;
+          color: $white;
+          background-color: $black;
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .mat-progress-spinner circle,
+    .mat-spinner circle {
+      stroke: $brandcolor2 !important;
+    }
+  }
+
+  > .wrapper-content {
+    // padding: 10pt 15pt 0 15pt;
+    word-break: break-word;
+    >.description { 
+      padding: 0 15pt;
+      > .post-to {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+  
+        > a {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+  
+          > .date-time {
+            font-family: "Kanit-500";
+            font-size: 12px;
+            color: $black;
+            margin-right: 7px;
+  
+            > span {
+              cursor: pointer;
+              color: $koalaGray;
+  
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+        > .post-name {
+          font-family: "Kanit-500";
+          font-size: 12px;
+          color: $koalaGray;
+        }
+      }
+      > .title {
+        font-family: "Kanit-400";
+        font-size: 20px;
+        line-height: 26px;
+      } 
+      > .content {
+        white-space: pre-wrap;
+        color: $color-black;
+        font-family: "Sarabun-Light";
+        font-size: 16px;
+        min-height: unset;
+      }
+      > .content-sub {
+        margin-top: 10pt;
+        display: inline-block;
+        cursor: pointer;
+        color: $color-warm-red;
+        font-family: "Kanit-300";
+        font-size: 16px;
+  
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      > .tag_div {
+        width: 100%;
+        display: inline;
+  
+        > .h_tag_list {
+          width: max-content;
+          font-family: "Sarabun-Light";
+          font-size: 16px;
+          @include pointer();
+          display: inline;
+          margin: 0 7pt 7pt 0;
+  
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      > .wrapper-footer-post {
+        display: flex;
+        height: auto;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
+        margin-top: 15px;
+        padding: 3pt 0;
+  
+        > .left {
+          flex: 1 1 0%;
+          margin-right: 15pt;
+        }
+  
+        > .right {
+          display: flex;
+          align-items: center;
+          color: $brandcolor2;
+          flex: 0 0 auto;
+        }
+      }
+      > .comment {
+        display: flex;
+        height: auto;
+        align-items: center;
+        border-top: 0.7px solid rgba(229, 229, 229, 0.7);
+        padding: 10pt 0;
+  
+        > .comment-img {
+          margin-right: 10pt;
+          flex: 0 0 auto;
+        }
+  
+        > .input-comment {
+          flex: 1 1 0%;
+          // width: calc(100% - 50pt);
+          // display: flex;
+          // border: 1px solid #f0f0f0;
+          // border-radius: 25px;
+          // overflow: hidden;
+  
+          > .comment-text {
+            border: 1px solid rgb($black, 0.1);
+            width: calc(100% - 24px - 2px - 10pt);
+            border-radius: 25px;
+            padding: 6pt 12pt;
+            font-family: "Sarabun-Medium";
+            font-size: 16px;
+          }
+        }
+      }
+    }  
+
+    > .list-looking-for {
+      display: flex;
+      margin-top: 5pt;
+      border-top: $width-border solid $border-color;
+      overflow-y: hidden;
+
+      > .item-looking-for {
+        width: 130pt;
+        min-width: 130pt;
+        border-bottom: unset !important;
+        display: flex;
+        flex-direction: column;
+        margin: 5pt;
+        padding: 0 !important;
+        border: solid 1px #f8f8f8;
+
+        > .item-looking-img-for {
+          width: 100%;
+          height: 50%;
+          display: flex;
+          justify-content: center;
+
+          > img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        > .item-looking-data-for {
+          width: 100%;
+          height: 50%;
+
+          > span {
+            align-items: flex-start;
+            margin: 15px 0px;
+            padding: 10px;
+
+            > .icon-looking-for {
+            }
+
+            > .title-looking-for {
+              margin: 0 !important;
+
+              > .top {
+              }
+
+              > .bottom {
+              }
+            }
+          }
+
+          > .needs {
+            display: flex;
+            padding: 10px;
+            flex-direction: column;
+            justify-content: space-between;
+            > .amount-looking-for {
+              text-align: right;
+
+              > .top {
+              }
+
+              > .bottom {
+              }
+            }
+          }
+        }
+      }
+
+      > .load-more {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba($bg-fog-gray, 0.8);
+        padding: 6pt;
+        @include pointer();
+        font-family: "Kanit-500";
+        font-size: 16px;
+        border-radius: $border-radius-4px;
+        margin: 5pt 0;
+        transform: scale(1, 1);
+
+        &:hover {
+        }
+
+        &:active {
+          transform: scale(0.99, 0.99);
+        }
+      }
+    }
+
+    > .list-needs-for {
+      width: 100%;
+      display: flex;
+      height: 170pt;
+
+      > .list-needs {
+        width: 33%;
+        height: 140pt;
+        padding: 10px;
+
+        > .needs {
+          width: 100%;
+          height: 60%;
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          position: relative; 
+          background-color: #fcfcfc;
+          border-radius: 4px 4px 0px 0px;
+        }
+
+        > .needs-data {
+          width: calc(100% - 21px);
+          height: 40%;
+          background-color: $white;
+          border-radius: 0px 0px 4px 4px;
+          border: 1px solid #f2f2f2;
+          border-top: none;
+          padding: 10px;
+
+          > .needs-data-h {
+            width: 100%;
+            height: 25pt;
+
+            > .text-h {
+              font-family: "Kanit-500";
+              font-size: 18px;
+              line-height: 15px;
+              color: #717886;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+            }
+          }
+          > .needs-data-body {
+            width: 100%;
+            display: flex;
+
+            > .unit {
+              width: 60%;
+
+              > .unit-box {
+                display: flex;
+                flex-direction: column;
+
+                > .unit-num {
+                  font-family: "Kanit-500";
+                  font-size: 16px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                }
+
+                > .unit-sub {
+                  font-family: "Kanit-500";
+                  font-size: 14px;
+                  color: #717886;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                }
+              }
+            }
+            > .unit-bt-box {
+              width: 40%;
+            }
+          }
+        }
+      }
+    }
+
+    > .group-event {
+      display: flex;
+      align-items: center;
+      color: $color-warm-red;
+      @include pointer();
+
+      > .event-tag,
+      > .objective-doing {
+        display: flex;
+        align-items: center;
+        padding-right: 8pt;
+
+        > .icon-event {
+          padding-right: 8pt;
+        }
+
+        > span {
+          font-family: "Kanit-500";
+          font-size: 16px;
+        }
+      }
+    }
+
+    > .left {
+      display: flex;
+      align-items: center;
+      font-family: "Kanit-400";
+      font-size: 14px;
+      color: $black;
+
+      > .post-to {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        > a {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          > .date-time {
+            margin-right: 7px;
+
+            > span {
+              cursor: pointer;
+              color: $koalaGray;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        > .post-name {
+        }
+      }
+
+      > .icon-feed {
+        width: 8pt;
+        height: 8pt;
+        border-radius: 50%;
+        background-color: $koalaGray;
+      }
+
+      > .looking {
+        background-color: $brandcolor2;
+      }
+
+      > .fulfill {
+        background-color: $green;
+      }
+
+      span {
+        margin-left: 5pt;
+      }
+    }
+
+    > .right {
+      display: flex;
+      align-items: center;
+      color: $brandcolor2;
+    }  
+  }
+}
+
+.post-comment {
+  display: flex;
+  height: auto;
+  padding: 15px 0px;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.7px solid rgba(229, 229, 229, 0.7);
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.repost-title {
+  font-family: "Kanit-500";
+  font-size: 18px;
+}
+
+.repost-sub-title {
+  font-family: "Kanit-200";
+  font-size: 16px;
+}
+
+.more-comment {
+  width: 100%;
+  height: 30pt;
+  font-family: "Kanit-400";
+  font-size: 16px;
+  cursor: pointer;
+  line-height: unset;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: $medium) {
+  .card-feed-post {
+    > .wrapper-content {
+      >.description { 
+        > .wrapper-footer-post {
+          flex-direction: column;
+  
+          > .left {
+            width: 100%;
+            margin-right: unset;
+  
+            > .group-event {
+              padding-right: unset;
+            }
+          }
+  
+          > .right {
+            width: 100%;
+  
+            > control-action {
+              width: 100%;
+  
+              > .control-action {
+                > .collis {
+                  justify-content: space-around;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .card-feed-post {
+    > .wrapper-content {
+      >.description { 
+        > .wrapper-footer-post {
+          > .right {
+            > control-action {
+              > .control-action {
+                > .collis {
+                  > .wrapper-action {
+                    > .label-count {
+                      display: none;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

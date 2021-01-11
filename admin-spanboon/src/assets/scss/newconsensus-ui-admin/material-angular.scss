@@ -1,0 +1,115 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author: Americaso <treerayuth.o@absolute.co.th>
+ */
+
+@import "newconsensus-ui-admin/mixins";
+@import "newconsensus-ui-admin/variable";
+.mat-drawer-transition .mat-drawer-backdrop {
+    transition-duration: 0.4s;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-property: background-color, visibility;
+}
+
+.mat-progress-bar {
+    position: absolute !important;
+    top: 0px;
+    left: 0;
+}
+
+.mat-form-field {
+    width: 100%;
+}
+
+.mat-option-progress {
+    height: 3pt !important;
+}
+
+.mat-drawer-container {
+    height: 100%;
+    .mat-drawer-content {
+        overflow: hidden;
+        .mat-drawer-inner-container {
+            overflow: hidden;
+        }
+    }
+}
+
+.mat-radio-button {
+    margin-right: 5pt;
+}
+
+.mat-dialog-container {
+    max-width: 540pt;
+}
+
+.mat-sort-header-container {
+    justify-content: center;
+    margin-left: 15pt;
+}
+
+td.mat-cell:first-of-type {
+    padding-left: 24px !important;
+}
+
+td.mat-cell:last-of-type {
+    padding-right: 0 !important;
+}
+
+td.mat-cell {
+    padding-left: 15pt !important;
+    .mat-raised-button {
+        margin-left: 5pt;
+        min-width: 0 !important;
+        padding: 0 5pt !important;
+        box-shadow: unset !important;
+        img {
+            width: 25px;
+            min-width: 25px;
+            max-width: 25px;
+        }
+    }
+    .see-more {
+        color: $blue;
+        cursor: pointer;
+    }
+    .see-less {
+        color: $secondary;
+    }
+}
+
+.wrapper-mat-spinner {
+    display: flex;
+    position: absolute;
+    top: 50pt;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100% - 50pt);
+    z-index: 101;
+    mat-spinner {
+        position: relative;
+    }
+    .wrapper-reload {
+        position: relative;
+        text-align: center;
+        >.label-reload {
+            @include font-size-7-200;
+        }
+        >.btn-reload {
+            @include font-size-9-200;
+            color: blue;
+            cursor: pointer;
+        }
+    }
+    .back-drop {
+        background-color: #f5f5f5;
+        opacity: 0.5;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+}

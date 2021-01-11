@@ -1,0 +1,32 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="wrapper-menu-item">
+    <ng-container *ngIf="menu.subRoutes.length > 0; else elseTemplate">
+        <span class="menu-title" [class.activeRoute]="isActive()" [class.active]="isActive() || isOpen" (click)="openItems()">
+            <div class="wrapper-icon">
+                <span class="now-ui-icons icon" [innerHTML]="menu.icon | safe: 'html'">{{menu.icon}}</span>
+                {{menu.title}}
+            </div>
+            <span class="now-ui-icons icon-arrow arrows-1_minimal-down" [class.up]="isShowItem()"></span>
+        </span>
+        <div class="wrapper-iems" [ngStyle]="{'display': !isShowItem() ? 'none' : 'block'}">
+            <span *ngFor="let route of menu.subRoutes" [routerLink]="route.path" [class.active]="routeLink.isActive || (route.title === 'หน้าแรก' && (router.url === '/main/home_content/pageslide' || router.url === '/main/home_content/pagevideo'))"
+                routerLinkActive #routeLink="routerLinkActive">
+                {{route.title}}
+            </span>
+        </div>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <span class="menu-title" [routerLink]="menu.path" [class.activeRoute]="menu.path === router.url">
+            <div class="wrapper-icon">
+                <span class="now-ui-icons icon" [innerHTML]="menu.icon | safe: 'html'">{{menu.icon}}</span>
+                {{menu.title}}
+            </div>
+        </span>
+    </ng-template>
+</div>

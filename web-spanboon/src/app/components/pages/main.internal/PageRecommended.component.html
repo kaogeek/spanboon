@@ -1,0 +1,165 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="recommended">
+    <div class="container">
+        <div class="body-recommend">
+            <div class="page-recommended-menu">
+                <div class="list-menu" [routerLink]="'/recommended'" routerLinkActive="active">
+                    <div class="list-item">
+                        <!--
+                            <ng-container *ngIf="router.url === '/recommended'; else elseTemplateRouter">
+                                <svg viewBox="0 0 24 24" class="icon-setting">
+                                    <g>
+                                        <path
+                                            d="M20.585 9.468c.66 0 1.2-.538 1.2-1.2 0-.662-.54-1.2-1.2-1.2h-3.22l.31-3.547c.027-.318-.07-.63-.277-.875-.206-.245-.495-.396-.822-.425-.65-.035-1.235.432-1.293 1.093l-.326 3.754H9.9l.308-3.545c.06-.658-.43-1.242-1.097-1.302-.665-.05-1.235.43-1.293 1.092l-.325 3.754h-3.33c-.663 0-1.2.538-1.2 1.2 0 .662.538 1.2 1.2 1.2h3.122l-.44 5.064H3.416c-.662 0-1.2.54-1.2 1.2s.538 1.202 1.2 1.202h3.22l-.31 3.548c-.057.657.432 1.24 1.09 1.3l.106.005c.626 0 1.14-.472 1.195-1.098l.327-3.753H14.1l-.308 3.544c-.06.658.43 1.242 1.09 1.302l.106.005c.617 0 1.142-.482 1.195-1.098l.325-3.753h3.33c.66 0 1.2-.54 1.2-1.2s-.54-1.202-1.2-1.202h-3.122l.44-5.064h3.43zm-5.838 0l-.44 5.063H9.253l.44-5.062h5.055z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </ng-container>
+                            <ng-template #elseTemplateRouter>
+                                <svg viewBox="0 0 24 24" class="icon-setting">
+                                    <g>
+                                        <path
+                                            d="M21 7.337h-3.93l.372-4.272c.036-.412-.27-.775-.682-.812-.417-.03-.776.27-.812.683l-.383 4.4h-6.32l.37-4.27c.037-.413-.27-.776-.68-.813-.42-.03-.777.27-.813.683l-.382 4.4H3.782c-.414 0-.75.337-.75.75s.336.75.75.75H7.61l-.55 6.327H3c-.414 0-.75.336-.75.75s.336.75.75.75h3.93l-.372 4.272c-.036.412.27.775.682.812l.066.003c.385 0 .712-.295.746-.686l.383-4.4h6.32l-.37 4.27c-.036.413.27.776.682.813l.066.003c.385 0 .712-.295.746-.686l.382-4.4h3.957c.413 0 .75-.337.75-.75s-.337-.75-.75-.75H16.39l.55-6.327H21c.414 0 .75-.336.75-.75s-.336-.75-.75-.75zm-6.115 7.826h-6.32l.55-6.326h6.32l-.55 6.326z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </ng-template>
+                        -->
+                        <svg viewBox="0 0 24 24" class="icon-setting">
+                            <g>
+                                <path
+                                    d="M20.585 9.468c.66 0 1.2-.538 1.2-1.2 0-.662-.54-1.2-1.2-1.2h-3.22l.31-3.547c.027-.318-.07-.63-.277-.875-.206-.245-.495-.396-.822-.425-.65-.035-1.235.432-1.293 1.093l-.326 3.754H9.9l.308-3.545c.06-.658-.43-1.242-1.097-1.302-.665-.05-1.235.43-1.293 1.092l-.325 3.754h-3.33c-.663 0-1.2.538-1.2 1.2 0 .662.538 1.2 1.2 1.2h3.122l-.44 5.064H3.416c-.662 0-1.2.54-1.2 1.2s.538 1.202 1.2 1.202h3.22l-.31 3.548c-.057.657.432 1.24 1.09 1.3l.106.005c.626 0 1.14-.472 1.195-1.098l.327-3.753H14.1l-.308 3.544c-.06.658.43 1.242 1.09 1.302l.106.005c.617 0 1.142-.482 1.195-1.098l.325-3.753h3.33c.66 0 1.2-.54 1.2-1.2s-.54-1.202-1.2-1.202h-3.122l.44-5.064h3.43zm-5.838 0l-.44 5.063H9.253l.44-5.062h5.055z">
+                                </path>
+                            </g>
+                        </svg>
+                        <div class="title-setting">
+                            แนะนำ
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="body-recommended">
+                <div class="recommended-left">
+                    <div class="wrapper-body-middle">
+                        <div class="header-top-name">
+                            ความนิยมสำหรับคุณ
+                        </div>
+                        <ng-container *ngIf="isloading; else elseTemplate1">
+                            <loading></loading>
+                        </ng-container>
+                        <ng-template #elseTemplate1>
+                            <div class="wrapper-body-trend" (click)="clickDataSearch(item)" *ngFor="let item of dataTrend">
+                                <div class="trend-title">
+                                    ได้รับความนิยม
+                                </div>
+                                <div class="trend-hashtag">
+                                    {{item.label}}
+                                </div>
+                                <div class="trend-hashtag-count">
+                                    {{item.count}} โพสต์
+                                </div>
+                            </div>
+                            <div class="read-more" *ngIf="dataTrend.length > 20" (click)="clickLoadmore()">
+                                แสดงเพิ่มเติม
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="recommended-right" #recommendedRight>
+                    <div class="div-follow">
+                        <div class="head-follow">
+                            คนที่คุณอาจรู้จัก
+                        </div>
+                        <div class="wrapper-card">
+                            <div class="card-follow">
+                                <div class="follow">
+                                    <img class="img-user"
+                                        src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                        alt="">
+                                    <ng-container *ngIf="isIconPage; else elseTemplate2">
+                                        <div class="list-follow-name">
+                                            <div class="follow-name">
+                                                <svg class="img-icon" id="shield" xmlns="http://www.w3.org/2000/svg"
+                                                    width="43.383" height="47.208" viewBox="0 0 43.383 47.208">
+                                                    <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                                                        <path id="Path_141" data-name="Path 141"
+                                                            d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                                            transform="translate(-36.867)" fill="#28a745" />
+                                                        <path id="Path_142" data-name="Path 142"
+                                                            d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                                            transform="translate(-259.715 -289.198)" fill="#28a745" />
+                                                    </g>
+                                                </svg>
+                                                ธนาธร จึงรุ่งเรืองกิจ
+                                            </div>
+                                            <div class="follow-name-eng"> @Thanathorn J...
+                                            </div>
+                                        </div>
+    
+                                    </ng-container>
+                                    <ng-template #elseTemplate2>
+                                        <div class="list-follow-name">
+                                            <div class="follow-name">
+                                                ธนาธร จึงรุ่งเรืองกิจ
+                                            </div>
+                                            <div class="follow-name-eng"> @Thanathorn J...
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                                <div class="wrapper-btn-follow">
+                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
+                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                </div>
+                            </div>
+                            <div class="card-follow">
+                                <div class="follow">
+                                    <img class="img-user"
+                                        src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                        alt="">
+                                    <div class="list-follow-name">
+                                        <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                        </div>
+                                        <div class="follow-name-eng"> @Thanathorn J...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-btn-follow">
+                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
+                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                </div>
+                            </div>
+                            <div class="card-follow">
+                                <div class="follow">
+                                    <img class="img-user"
+                                        src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                        alt="">
+                                    <div class="list-follow-name">
+                                        <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                        </div>
+                                        <div class="follow-name-eng"> @Thanathorn J...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-btn-follow">
+                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
+                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="follow-all">
+                            ดูทั้งหมด
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div> 

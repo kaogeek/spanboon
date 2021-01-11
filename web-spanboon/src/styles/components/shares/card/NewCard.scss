@@ -1,0 +1,404 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.new-card {
+  width: 100%;
+  height: 100%;
+  background-color: brown;
+
+  > .new-card-body {
+    display: flex;
+    justify-content: space-between;
+    flex: 1 1 0%;
+    // width: calc(100% - 40pt);
+    height: calc(100% - 40pt);
+    padding: 20pt;
+    flex-direction: column;
+
+    > .wrapper-top {
+      height: calc(100% - 125pt);
+
+      > .new-card-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        span {
+          color: $brandcolor;
+        }
+
+        > a {
+          > .wrapper-time {
+            display: flex;
+            color: $brandcolor;
+            align-items: center;
+            font-family: "Kanit-500";
+            font-size: 16px;
+
+            &:hover {
+              text-decoration: underline;
+            }
+
+            > .icon-img {
+              height: $height-time;
+              width: $width-time;
+              margin-right: 5pt;
+            }
+          }
+        }
+      }
+
+      > .new-card-topic {
+        color: $brandcolor;
+        margin: 10pt 0;
+        font-family: "Kanit-500";
+        font-size: 26px;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      > .new-card-content {
+        display: flex;
+        flex-direction: column;
+        font-family: "Sarabun-Light";
+        font-size: 20px;
+        color: rgba($brandcolor, 0.5);
+        min-height: 55pt;
+        white-space: break-spaces;
+
+        > .text-link {
+          display: contents;
+          cursor: pointer;
+          font-family: "Kanit-300";
+          color: $brandcolor;
+          white-space: break-spaces;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    > .wrapper-bottom {
+      > .wrapper-favorite {
+        display: flex;
+        padding: 10pt;
+      }
+
+      > .wrapper-footer-new-card {
+        display: flex;
+        justify-content: space-between;
+        padding: 18pt 0 0 0;
+        border-top: $width-border solid $brandcolor;
+        font-family: "Kanit-500";
+        font-size: 14px;
+
+        > .wrapper-page {
+          display: flex;
+          align-items: center;
+          flex: 1 1 0%;
+
+          > .page-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            color: $color-warm-red;
+            font-family: "Kanit-500";
+            font-size: 18px;
+            overflow: hidden;
+            background-color: $bg-grey;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+          }
+
+          .image-file-waste {
+            background-color: $bg-grey;
+          }
+
+          > .new-card-createdBy {
+            // flex: 1 1 0%;
+            margin: 5pt 10pt;
+            color: $brandcolor;
+            font-family: "Kanit-500";
+            font-size: 18px;
+
+            > .new-card-icon {
+              display: flex;
+              align-items: center;
+
+              > span {
+                flex: 0 0 auto;
+              }
+
+              > .icon-offical {
+                display: flex;
+                width: 20px;
+                height: 20px;
+                padding: 0 5pt 0 0;
+                flex: 0 0 auto;
+              }
+
+              > a {
+                > .new-card-pageName {
+                  color: $brandcolor;
+                  font-family: "Kanit-500";
+                  font-size: 18px;
+                  flex: 1 1 0%;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  cursor: pointer;
+                  word-break: break-all;
+
+                  &:hover {
+                    text-decoration: underline;
+                  }
+                }
+              }
+            }
+
+            > .new-card-icon-user {
+              display: flex;
+              align-items: center;
+              margin-top: 3pt;
+
+              > .new-card-status {
+                width: 15px;
+                height: 15px;
+                padding: 0 5pt 0 0;
+
+                > .user-count {
+                  padding: 0 10pt;
+                }
+              }
+            }
+          }
+        }
+
+        > .btn-fulfill {
+          display: flex;
+          align-items: center;
+
+          > a {
+            > .btn {
+              > .spanboon-button {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xxlarge) {
+  .new-card {
+    > .new-card-body {
+      > .wrapper-top {
+        > .new-card-topic {
+          font-size: 24px;
+        }
+
+        > .new-card-content {
+          font-size: 19px;
+        }
+      }
+
+      > .wrapper-bottom {
+        > .wrapper-footer-new-card {
+          > .btn-fulfill {
+            > a {
+              > .btn {
+                > .spanboon-button {
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xlarge) {
+  .new-card {
+    > .new-card-body {
+      > .wrapper-top {
+        > .new-card-topic {
+          font-size: 22px;
+        }
+
+        > .new-card-content {
+          font-size: 18px;
+        }
+      }
+
+      > .wrapper-bottom {
+        > .wrapper-footer-new-card {
+          > .btn-fulfill {
+            > a {
+              > .btn {
+                > .spanboon-button {
+                  height: 34pt !important;
+                  width: 85pt !important;
+                  font-size: 16px !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $large) {
+  .new-card {
+    > .new-card-body {
+      > .wrapper-top {
+        > .new-card-topic {
+          font-size: 20px;
+        }
+
+        > .new-card-content {
+          font-size: 18px;
+        }
+      }
+
+      > .wrapper-bottom {
+        > .wrapper-footer-new-card {
+          > .wrapper-page {
+            > .page-img {
+              width: 55px;
+              height: 55px;
+            }
+          }
+
+          > .btn-fulfill {
+            > a {
+              > .btn {
+                > .spanboon-button {
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .new-card {
+    > .new-card-body {
+      > .wrapper-top {
+        > .new-card-status {
+          > .wrapper-icon {
+            > span {
+              font-size: 16px;
+            }
+          }
+
+          > a {
+          }
+        }
+
+        > .new-card-topic {
+          font-size: 18px;
+        }
+
+        > .new-card-content {
+          font-size: 16px;
+        }
+      }
+
+      > .wrapper-bottom {
+        > .wrapper-footer-new-card {
+          > .wrapper-page {
+            > .page-img {
+              width: 50px;
+              height: 50px;
+            }
+
+            > .new-card-createdBy{
+              font-size: 16px;
+            }
+          }
+
+          > .btn-fulfill {
+            > a {
+              > .btn {
+                > .spanboon-button {
+                  height: 30pt !important;
+                  width: 74pt !important;
+                  font-size: 14px !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small + 97px) {
+  .new-card {
+    > .new-card-body {
+      padding: 10pt;
+
+      > .wrapper-bottom {
+        > .wrapper-favorite{
+          >.control-action{
+            >.collis{
+              >.wrapper-action{
+                margin-right: 6pt !important;
+  
+                >.img-action{
+                  width: 14pt !important;
+                  height: 14pt !important;
+                }
+              }
+            }
+          }
+        }
+
+        > .wrapper-footer-new-card {
+          > .wrapper-page {
+            > .page-img {
+              width: 40px;
+              height: 40px;
+            }
+            
+            > .new-card-createdBy{
+              margin: 5pt;
+              font-size: 14px;
+            }
+          }
+
+          > .btn-fulfill {
+            > a {
+              > .btn {
+                > .spanboon-button {
+                  height: 29pt !important;
+                  width: 70pt !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

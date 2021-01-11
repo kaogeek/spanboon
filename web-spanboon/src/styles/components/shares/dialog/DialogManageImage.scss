@@ -1,0 +1,233 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.box-image:active {
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    opacity: 0.6;
+}
+
+.cdk-drop-list {
+   
+}
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+    opacity: 0.3;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.dialog-manage-image {
+    width: 500pt;
+    height: auto;
+    background: $white;
+    box-shadow: 0px 3px 9px 0 $bg-fog-gray;
+
+    > .dialog-image-title {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        border-bottom: $width-border solid $border-separator;
+        height: 42pt;
+
+        > .dialog-image-title-left {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10pt;
+            @include font-size-8-100("Anakotmai-Medium");
+            > .title-name {
+            }
+            .image-upload > input {
+                display: none;
+            }
+            // .image-upload svg {
+            //     display: flex;
+            //     align-items: center;
+            //     margin: 0 5pt;
+            //     cursor: pointer;
+            //     @include font-size-9-100("Anakotmai-Medium");
+            // }
+            #file-image {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                @include font-size-9-100("Anakotmai-Medium");
+                > .icon-add-image {
+                    margin: 0 5pt;
+                }
+            }
+        }
+    }
+
+    > .dialog-image-body {
+        position: relative;
+        height: 250pt;
+        padding: 10pt 10pt;
+        overflow-x: hidden;
+
+        > .file-upload {
+            width: 100%;
+            margin-bottom: 5pt;
+
+            > .list-image-drag-drop {
+                display: flex;
+                flex-wrap: wrap;
+                min-width: 600px;
+                max-width: 900px;
+            }
+
+            // > .list-image-drag-drop {
+            //     // width: 300px;
+            //     display: flex;
+            //     flex-direction: row;
+            //     flex-wrap: wrap;
+            //     max-width: 100%;
+            //     min-height: 60px;
+            //     background: white;
+            //     border-radius: 4px;
+            //     overflow: hidden;
+
+            .label-open-img {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                // height: 110pt;
+                height: 99pt;
+                width: calc(33.33% - 22px);
+                margin: 0 10px 10px;
+                cursor: pointer;
+                border: 1px dashed $color-4;
+                background: transparent;
+                opacity: 0.8;
+                color: #e5e3dd;
+                @include font-size-5-100("Anakotmai-Medium");
+
+                &:hover {
+                    opacity: 1;
+                    background: $bg-color1;
+                }
+
+                > .input-img[type="file"] {
+                    display: none;
+                }
+            }
+        }
+        // }
+    }
+
+    > .dialog-image-bottom {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 0 10pt;
+        height: 50pt;
+        border-top: $width-border solid $border-separator;
+
+        > .dialog-image-bottom-left {
+            width: 100%;
+        }
+
+        > .dialog-image-bottom-right {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+
+            > .butt {
+                border-radius: 25px;
+                padding: 2pt 0;
+                @include font-size-10-100("Anakotmai-Medium");
+                cursor: pointer;
+                width: 80pt;
+                height: 22pt;
+                text-align: center;
+                color: $white;
+                opacity: 0.9;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+
+            > .but-cancel {
+                background: $bg-fog-gray;
+                margin: 0 5pt;
+                color: $color-black;
+            }
+
+            > .but-confirmed {
+                background: $color-warm-red;
+            }
+        }
+    }
+}
+
+.wrapper-image-drag-drop {
+    position: relative;
+    display: flex;
+    width: calc(33.33% - 22px);
+    margin: 0 10px 10px;
+    &:hover {
+        .img-hover {
+            display: initial;
+        }
+    }
+    >.box-image {
+        display: flex;
+        position: relative;
+        z-index: 1;
+        width: 140pt;
+        height: 100pt;
+        cursor: move;
+        background: #fff;
+        border-radius: 4px;
+        object-fit: cover;
+        transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
+        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        &:last-child {
+            border: none;
+        }
+    }
+    >.img-hover {
+        display: none;
+        position: absolute;
+        top: 0;
+        cursor: move;
+        width: 140pt;
+        height: 100pt;
+        z-index: 1;
+        opacity: 1;
+        background-color: #00000057;
+
+        > .material-icons {
+            display: flex;
+            justify-content: flex-end;
+            cursor: pointer;
+            color: $white;
+            opacity: 0.4;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+}

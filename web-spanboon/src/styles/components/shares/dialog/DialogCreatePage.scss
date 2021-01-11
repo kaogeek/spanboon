@@ -1,0 +1,1070 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.dialog-create-page {
+    max-width: 90vw;
+    max-height: 80vh;
+    width: 800pt;
+    height: 540pt;
+    display: flex;
+    flex-direction: row;
+
+    > .onClose {
+        padding: 10px;
+        background-color: #d3d3d3;
+        position: absolute;
+        border-radius: 4px;
+        top: 1%;
+        right: 1%;
+        @include pointer();
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > svg {
+            width: 14px;
+        }
+    }
+
+    > .create-left {
+        width: 300pt;
+        height: 100%;
+        background: $color-warm-red;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > .create-teaser {
+            padding: 50pt 25pt;
+            margin-top: -12vh;
+
+            > .header {
+                font-family: "Kanit-500";
+                font-size: 40px;
+                line-height: 44px;
+                color: $white;
+            }
+
+            > .title {
+                margin-top: 20pt;
+                font-family: "Kanit-300";
+                font-size: 18px;
+                color: rgb($white, 0.5);
+            }
+        }
+    }
+
+    > .create-right {
+        flex: 1 1 0%;
+        padding: 20pt 30pt;
+        display: flex;
+        flex-direction: column;
+
+        .mat-stroked-button {
+            font-family: "Kanit-400";
+            font-size: 16px;
+            min-width: 75pt;
+            height: 30pt;
+            padding: 0 20pt;
+        }
+
+        > .right-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 0 0 auto;
+
+            > .create-help {
+                font-family: "Kanit-500";
+                font-size: 16px;
+                @include pointer();
+                color: $color-warm-red;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        > .right-body {
+            width: 100%;
+            margin-top: 40pt;
+            position: relative;
+            flex: 1 1 0%;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+
+            &.active {
+                margin-top: 10pt;
+            }
+
+            > .box-create {
+                flex: 0 0 auto;
+                width: 100%;
+                display: none;
+                flex-direction: column;
+
+                > .box-header {
+                    > .header {
+                        font-family: "Kanit-500";
+                        font-size: 26px;
+                    }
+
+                    > .title {
+                        font-family: "Kanit-300";
+                        font-size: 18px;
+                        color: rgb($black, 0.5);
+                    }
+                }
+
+                > .box-center {
+                    flex: 1 1 0%;
+                    // overflow-y: auto;
+                    margin-top: 20pt;
+
+                    &.box-confirm {
+                        margin-top: unset;
+                    }
+
+                    > .list-items-organization {
+                        display: flex;
+                        background: rgb($bg-fog-gray, 0.1);
+                        border-radius: 7px;
+                        border: 2px solid rgb($black, 0.05);
+                        margin: 5pt 0;
+                        @include pointer();
+
+                        &.active {
+                            border: 2px solid $color-warm-red;
+                        }
+
+                        &:first-child {
+                            margin-top: unset;
+                        }
+
+                        &:last-child {
+                            margin-bottom: unset;
+                        }
+
+                        > .box-center-left {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 7pt 10pt;
+                            flex: 0 0 auto;
+
+                            > .img-type {
+                                width: 40pt;
+                                height: 40pt;
+                                border-radius: 50%;
+                            }
+                        }
+
+                        > .box-center-right {
+                            display: flex;
+                            justify-content: flex-start;
+                            align-items: center;
+                            flex: 1 1 0%;
+
+                            > .type-name {
+                                flex: 1 1 0%;
+                                margin-right: 15pt;
+                                height: 100%;
+                                display: flex;
+                                justify-content: flex-start;
+                                align-items: center;
+                                font-family: "Kanit-500";
+                                font-size: 18px;
+                                color: rgba($black, 0.6);
+
+                                > span {
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    word-break: break-all;
+                                }
+                            }
+
+                            > .type-arrow {
+                                margin-right: 20pt;
+                                height: 100%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                animation: checktrue 2s infinite;
+
+                                @keyframes checktrue {
+                                    0% {
+                                        transform: translateX(0);
+                                    }
+
+                                    50% {
+                                        transform: translateX(10px);
+                                    }
+
+                                    100% {
+                                        transform: translateX(0);
+                                    }
+                                }
+
+                                > .material-icons {
+                                    font-weight: 700;
+                                    color: $color-warm-red;
+                                }
+                            }
+                        }
+                    }
+
+                    > .profile-page {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        background: rgb($bg-fog-gray, 0.1);
+                        border-radius: 7px;
+                        border: 2px solid rgb($black, 0.05);
+                        margin-top: 40pt;
+                        padding: 20pt;
+
+                        > .set-profile-page {
+                            position: relative;
+                            width: 100pt;
+                            height: 100pt;
+                            margin: -60pt 0 10pt 0;
+
+                            > .image-user {
+                                width: calc(100% - 8px);
+                                height: calc(100% - 8px);
+                                object-fit: cover;
+                                border-radius: 50%;
+                                background: $white;
+                                border: 4px solid $border-color;
+                            }
+
+                            > .open-img {
+                                width: 30pt;
+                                height: 30pt;
+                                position: absolute;
+                                right: 0;
+                                bottom: 8pt;
+                                cursor: pointer;
+                                background-color: #e4e6eb;
+                                border-radius: 50%;
+                                opacity: 0.9;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+
+                                &:hover {
+                                    opacity: 1;
+                                }
+
+                                > .icon-image {
+                                }
+                            }
+                        }
+                    }
+
+                    > .detail-page {
+                        display: flex;
+                        flex-wrap: wrap;
+                        background: rgb($bg-fog-gray, 0.1);
+                        border-radius: 7px;
+                        border: 2px solid rgb($black, 0.05);
+                        padding: 20pt;
+                    }
+
+                    .box-input {
+                        margin: 0 0 7pt 0;
+                        width: 240pt;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: stretch;
+
+                        &.input-detail {
+                            width: calc(50% - 5pt);
+
+                            &:nth-child(odd) {
+                                margin-right: 5pt;
+                            }
+
+                            &:nth-child(even) {
+                                margin-left: 5pt;
+                            }
+                        }
+
+                        > .title {
+                            font-family: "Kanit-500";
+                            font-size: 18px;
+                            color: rgba($black, 0.7);
+                            margin: 0 auto 0 0;
+                        }
+
+                        > .drop-input {
+                            margin-top: 3pt;
+                            position: relative;
+                            display: flex;
+                            align-items: center;
+
+                            > .add-page {
+                                position: absolute;
+                                left: 13pt;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                font-family: "Kanit-500";
+                                font-size: 18px;
+                                margin-top: -2pt;
+                            }
+
+                            > .input-page {
+                                width: calc(100% - 26pt - 2px);
+                                height: 25pt;
+                                padding: 2pt 13pt;
+                                border-radius: 7px;
+                                background: $white;
+                                border: 1px solid rgba($black, 0.1);
+                                font-family: "Kanit-300";
+                                font-size: 16px;
+
+                                &.add-to-page {
+                                    width: calc(100% - 39pt - 2px);
+                                    padding: 2pt 13pt 2pt 26pt;
+                                }
+
+                                &.invalid {
+                                    // background-color: #fdd;
+                                    border: 1px solid red;
+                                    animation: 0.1s noteatv;
+                                }
+
+                                &.correct {
+                                    // background-color: #d3f7d3;
+                                    border: 1px solid green;
+                                    animation: 0.1s noteatv;
+                                }
+
+                                // &.incorrect {
+                                //     border: 2px solid red;
+                                // }
+
+                                @keyframes noteatv {
+                                    0% {
+                                        transform: scale(1, 1);
+                                    }
+                                    100% {
+                                        transform: scale(0.99, 0.99);
+                                    }
+                                }
+                            }
+                        }
+
+                        > .label-show-error {
+                            margin-top: 2pt;
+                            color: red;
+                            font-family: "Kanit-300";
+                            font-size: 14px;
+                            margin: 2pt auto 0 0;
+                        }
+                    }
+
+                    > .page-success {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        height: auto;
+
+                        > .top {
+                            text-align: center;
+
+                            > .header {
+                                font-family: "Kanit-500";
+                                font-size: 42px;
+                                color: $black;
+                            }
+
+                            > .title {
+                                font-family: "Kanit-300";
+                                font-size: 18px;
+                                color: rgb($black, 0.5);
+                            }
+                        }
+
+                        > .bottom {
+                            width: calc(100% - 40pt - 2px);
+                            position: relative;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            padding: 70pt 20pt 20pt 20pt;
+                            background: rgb($bg-fog-gray, 0.1);
+                            border-radius: 7px;
+                            border: 1px solid rgb($black, 0.05);
+                            margin-top: 80pt;
+                            text-align: center;
+
+                            > .image-user {
+                                width: 100pt;
+                                height: 100pt;
+                                border-radius: 50%;
+                                border: 5px solid $white;
+                                overflow: hidden;
+                                background: $white;
+                                box-shadow: 0px 5px 8px 0 #00000020;
+                                position: absolute;
+                                top: -55pt;
+                            }
+                            > .not-image {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: $color-warm-red;
+                                font-family: "Kanit-500";
+                                font-size: 24px;
+                                color: $white;
+                            }
+
+                            > .username {
+                                color: $color-warm-red;
+                                font-family: "Kanit-500";
+                                font-size: 24px;
+                            }
+
+                            > .sub-name {
+                                font-family: "Kanit-300";
+                                font-size: 18px;
+                            }
+                        }
+
+                        > .page-confirm {
+                            display: flex;
+                            flex-wrap: wrap;
+
+                            > .head-confirm {
+                                font-family: "Kanit-500";
+                                font-size: 24px;
+                            }
+
+                            > .detail-confirm {
+                                width: 100%;
+
+                                > .agreement {
+                                    .agreement-title {
+                                        font-family: "Kanit-300";
+                                        font-size: 18px;
+                                        color: rgb($black, 0.6);
+                                    }
+
+                                    > .grop-agreement {
+                                        margin-top: 1em;
+
+                                        > .header-agreement {
+                                            font-family: "Kanit-500";
+                                            font-size: 18px;
+                                            color: rgb($black, 0.6);
+
+                                            > .check-true {
+                                                display: flex;
+                                                align-items: flex-start;
+
+                                                > mat-checkbox {
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    margin: 5pt;
+                                                }
+
+                                                > span {
+                                                    @include pointer();
+                                                }
+                                            }
+                                        }
+
+                                        > ul {
+                                            padding-inline-start: 30px;
+                                            margin-bottom: 1.5em;
+
+                                            > li {
+                                                font-family: "Kanit-300";
+                                                font-size: 16px;
+                                                margin-bottom: 1em;
+                                                color: rgb($black, 0.5);
+
+                                                > p {
+                                                    font-family: "Kanit-300";
+                                                    font-size: 18px;
+                                                    color: $color-warm-red;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        > .right-bottom {
+            margin-top: 20pt;
+            display: flex;
+            flex-direction: row;
+            flex: 0 0 auto;
+            // position: relative;
+            // align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+
+            > .bottom-left {
+                flex: 1 1 0%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+
+                > .but-canc,
+                > .but-prev {
+                    color: $black;
+                    background: $white;
+                }
+            }
+
+            > .bottom-center {
+                width: 90px;
+                margin: 0 5pt;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                // position: absolute;
+                // left: 0;
+                // right: 0;
+                // pointer-events: none;
+
+                > .wizar {
+                    margin: 0 auto;
+
+                    > .step {
+                        opacity: 0.5;
+                        width: 10px;
+                        height: 10px;
+                        margin: 0 2pt;
+                        background-color: #bbbbbb;
+                        display: inline-block;
+                        border-radius: 50%;
+
+                        &.active {
+                            opacity: 1;
+                            width: 22px;
+                            border-radius: 25px;
+                        }
+                    }
+                }
+            }
+
+            > .bottom-right {
+                flex: 1 1 0%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+
+                > .but-skip {
+                    color: $black;
+                    background: $bg-grey;
+                }
+
+                > .but-conf {
+                    margin-left: 15pt;
+                    color: $white;
+                    background: $color-warm-red;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .dialog-create-page {
+        height: 530pt;
+
+        > .create-left {
+            width: 280pt;
+
+            > .create-teaser {
+                > .header {
+                    font-size: 34px;
+                }
+            }
+        }
+
+        > .create-right {
+            > .right-body {
+                > .box-create {
+                    > .box-center {
+                        > .page-success {
+                            > .top {
+                                > .header {
+                                    font-size: 40px;
+                                }
+
+                                > .title {
+                                    font-size: 16px;
+                                }
+                            }
+
+                            > .bottom {
+                                width: calc(100% - 20pt - 2px);
+                                padding: 70pt 10pt 25pt 10pt;
+
+                                > .username {
+                                    font-size: 22px;
+                                }
+
+                                > .sub-name {
+                                    font-size: 16px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .dialog-create-page {
+        > .create-left {
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .dialog-create-page {
+        flex-direction: column;
+        height: 80vh;
+
+        > .create-left {
+            width: 100%;
+            height: auto;
+            justify-content: flex-start;
+
+            > .create-teaser {
+                padding: 30pt;
+                margin-top: unset;
+            }
+        }
+
+        > .create-right {
+            padding: 30pt;
+
+            > .right-body {
+                margin-top: 0;
+
+                > .box-center {
+                    > .box-create {
+                        > .page-success {
+                            > .top {
+                                > .header {
+                                    font-size: 38px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .right-bottom {
+            }
+        }
+    }
+}
+
+.input-shake {
+    position: relative;
+    animation: shake 0.1s linear;
+    animation-iteration-count: 3;
+}
+
+.input-shake::-webkit-input-placeholder {
+    color: red;
+}
+
+.input-shake::-ms-input-placeholder {
+    color: red;
+}
+
+.input-shake:-ms-input-placeholder {
+    color: red;
+}
+
+.input-shake::-moz-placeholder {
+    opacity: 1;
+    color: red;
+}
+
+.input-shake:-moz-placeholder {
+    opacity: 1;
+    color: red;
+}
+
+.input-shake::placeholder {
+    color: red;
+}
+
+@media (max-width: $large) {
+    .dialog-create-page {
+        > .create-right {
+            > .right-body {
+                > .box-create {
+                    > .box-center {
+                        > .page-success {
+                            > .top {
+                                > .header {
+                                    font-size: 36px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .right-bottom {
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .dialog-create-page {
+        max-width: 100vw;
+        max-height: 100vh;
+        height: 100vh;
+    }
+}
+
+@media (max-width: $medium) {
+    .dialog-create-page {
+        > .create-left {
+            > .create-teaser {
+                padding: 20pt 30pt;
+
+                > .header {
+                    font-size: 30px;
+                    line-height: 36px;
+                }
+
+                > .title {
+                    display: none;
+                }
+            }
+        }
+
+        > .create-right {
+            padding: 20pt 30pt;
+
+            > .right-body {
+                > .box-create {
+                    > .box-center {
+                        .box-input {
+                            width: 100%;
+
+                            &.input-detail {
+                                width: 100%;
+
+                                &:nth-child(odd) {
+                                    margin-right: unset;
+                                }
+
+                                &:nth-child(even) {
+                                    margin-left: unset;
+                                }
+                            }
+                        }
+
+                        > .detail-page,
+                        > .profile-page {
+                            padding: 10pt;
+                        }
+
+                        > .detail-page {
+                            background: unset;
+                            border: unset;
+                        }
+
+                        > .profile-page {
+                            margin-top: 50pt;
+                        }
+
+                        > .page-success {
+                            > .top {
+                                > .header {
+                                    font-size: 34px;
+                                }
+                            }
+
+                            > .page-confirm {
+                                > .head-confirm {
+                                    font-size: 20px;
+                                }
+
+                                > .detail-confirm {
+                                    > .agreement {
+                                        > .agreement-title {
+                                            font-size: 16px;
+                                        }
+
+                                        > .grop-agreement {
+                                            > .header-agreement {
+                                                font-size: 16px;
+
+                                                > .check-true {
+                                                    > mat-checkbox {
+                                                        margin: 3.5pt;
+                                                    }
+                                                }
+                                            }
+
+                                            > ul {
+                                                > li {
+                                                    font-size: 14px;
+
+                                                    > p {
+                                                        font-size: 16px;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .right-bottom {
+                > .bottom-center {
+                    display: none;
+                }
+
+                > .bottom-right {
+                    width: auto;
+
+                    > .but-conf {
+                        margin-left: 5pt;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .dialog-create-page {
+        > .create-left {
+            > .create-teaser {
+                padding: 15pt;
+
+                > .header {
+                    font-size: 26px;
+                }
+
+                > .title {
+                    font-size: 16px;
+                    margin-top: 10pt;
+                }
+            }
+        }
+
+        > .create-right {
+            padding: 15pt;
+
+            .mat-stroked-button {
+            }
+
+            > .right-top {
+                > .create-help {
+                    &:hover {
+                    }
+                }
+            }
+
+            > .right-body {
+                > .box-create {
+                    > .box-header {
+                        > .header {
+                            font-size: 20px;
+                        }
+
+                        > .title {
+                            font-size: 16px;
+                        }
+                    }
+
+                    > .box-center {
+                        > .list-items-organization {
+                            &.active {
+                            }
+
+                            &:first-child {
+                            }
+
+                            &:last-child {
+                            }
+
+                            > .box-center-left {
+                                > .img-type {
+                                }
+                            }
+
+                            > .box-center-right {
+                                > .type-name {
+                                    > span {
+                                    }
+                                }
+
+                                > .type-arrow {
+                                    > .material-icons {
+                                    }
+                                }
+                            }
+                        }
+
+                        > .profile-page {
+                            > .set-profile-page {
+                                > .image-user {
+                                }
+
+                                > .open-img {
+                                    &:hover {
+                                    }
+
+                                    > .icon-image {
+                                    }
+                                }
+                            }
+                        }
+
+                        > .detail-page {
+                        }
+
+                        .box-input {
+                            &.input-detail {
+                                &:nth-child(odd) {
+                                }
+
+                                &:nth-child(even) {
+                                }
+                            }
+
+                            > .title {
+                                font-size: 16px;
+                            }
+
+                            > .drop-input {
+                                > .add-page {
+                                    left: 8pt;
+                                }
+
+                                > .input-page {
+                                    width: calc(100% - 16pt);
+                                    padding: 2pt 8pt;
+
+                                    &.add-to-page {
+                                        width: calc(100% - 28pt);
+                                        padding: 2pt 8pt 2pt 20pt;
+                                    }
+
+                                    &.invalid {
+                                    }
+                                }
+                            }
+
+                            > .label-show-error {
+                            }
+                        }
+
+                        > .page-success {
+                            > .top {
+                                > .header {
+                                    font-size: 30px;
+                                }
+
+                                > .title {
+                                    font-size: 16px;
+                                }
+                            }
+
+                            > .bottom {
+                                width: calc(100% - 20pt - 2px);
+                                padding: 65pt 10pt 25pt 10pt;
+
+                                > .image-user {
+                                    top: -65pt;
+                                }
+
+                                > .not-image {
+                                }
+
+                                > .username {
+                                }
+
+                                > .sub-name {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .right-bottom {
+                flex-direction: column;
+
+                > .bottom-left {
+                    flex-direction: column;
+
+                    > .but-canc,
+                    > .but-prev {
+                        width: 100%;
+                        margin: 0 0 8pt;
+
+                        // &:first-child {
+                        //     margin-bottom: unset;
+                        // }
+                    }
+                }
+
+                > .bottom-center {
+                    > .wizar {
+                        > .step {
+                            &.active {
+                            }
+                        }
+                    }
+                }
+
+                > .bottom-right {
+                    flex-direction: column;
+
+                    > .but-skip {
+                        width: 100%;
+                        margin: 0 0 8pt;
+                    }
+
+                    > .but-conf {
+                        width: 100%;
+                        margin-left: unset;
+                        // margin: 0 0 8pt;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,126 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.wrapper-menu-register {
+    min-height: calc(100vh - 55pt);
+    position: relative;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: $bg-grey;
+
+    > .wrapper-box-detail {
+        width: 320pt;
+        margin: 50pt 0 50pt 150pt;
+        position: relative;
+        z-index: 1;
+
+        > .header {
+            margin-bottom: 20pt;
+
+            > .label {
+                font-family: "Kanit-500";
+                font-size: 36px;
+            }
+
+            > .wrapper-sub-header {
+                font-family: "Kanit-400";
+                font-size: 16px;
+            }
+        }
+
+        > .login-div {
+            .login {
+                margin-top: 10pt;
+            }
+
+            > .center-line {
+                margin: 30pt 0;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                > .border-span {
+                    border-top: $width-border solid $bg-fog-gray;
+                    flex: 1 1 0;
+                }
+
+                > .span-for {
+                    flex: 0 0 auto;
+                    display: inline-block;
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                    position: relative;
+                    padding: 0 20px;
+                }
+            }
+
+            .button-social {
+                margin-bottom: 10pt;
+            }
+        }
+
+        > .wrapper-footer-login {
+            text-align: center;
+            font-weight: 300;
+            margin-top: 30pt;
+            font-family: "Sarabun-Light";
+            font-size: 16px;
+        }
+    }
+
+    > .background-menu {
+        position: absolute;
+        right: 25pt;
+        height: 100%;
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .wrapper-menu-register {
+        > .background-menu {
+            opacity: .5;
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .wrapper-menu-register {
+        > .wrapper-box-detail {
+            // margin: 50pt auto;
+            margin: 30pt 0 30pt 90pt;
+        }
+
+        // > .background-menu {
+        //     display: none;
+        // }
+    }
+}
+
+@media (max-width: $large) {
+    .wrapper-menu-register {
+        > .wrapper-box-detail {
+            margin: 30pt auto 50pt auto;
+        }
+
+        > .background-menu {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .wrapper-menu-register {
+        min-height: calc(100vh - 39pt);
+
+        > .wrapper-box-detail {
+            width: 80%;
+        }
+    }
+}

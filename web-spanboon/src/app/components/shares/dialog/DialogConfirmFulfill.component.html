@@ -1,0 +1,121 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-confirm-fulfill">
+    <div class="confirm-fulfill-header">
+        <div class="top">
+            <div class="header">
+                <div class="title">{{data.text}}</div>
+                <div class="description">เมื่อยืนยันรายการแล้วจะไม่สามารถแก้ไขรายการได้อีก</div>
+            </div>
+
+            <div class="dialog-image-title-right">
+                <span class="onClose" (click)="onClose()">
+                    <svg version="1.1" width="15px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
+                        style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">
+                        <g>
+                            <path
+                                d="M27.948,20.878L40.291,8.536c1.953-1.953,1.953-5.119,0-7.071c-1.951-1.952-5.119-1.952-7.07,0L20.878,13.809L8.535,1.465
+                    c-1.951-1.952-5.119-1.952-7.07,0c-1.953,1.953-1.953,5.119,0,7.071l12.342,12.342L1.465,33.22c-1.953,1.953-1.953,5.119,0,7.071
+                    C2.44,41.268,3.721,41.755,5,41.755c1.278,0,2.56-0.487,3.535-1.464l12.343-12.342l12.343,12.343
+                    c0.976,0.977,2.256,1.464,3.535,1.464s2.56-0.487,3.535-1.464c1.953-1.953,1.953-5.119,0-7.071L27.948,20.878z" />
+                        </g>
+                    </svg>
+                </span>
+            </div>
+        </div>
+
+        <div class="confirm-fulfill-item">
+            <mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="imageURL">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ng-container *ngIf="element.imageURL; else elseImageURL">
+                            <img src="{{element.imageURL}}" style="width: 25pt;height: 25pt;" />
+                        </ng-container>
+                        <ng-template #elseImageURL>
+                            <img src="../../../../assets/img/pic2.svg" style="width: 25pt;height: 25pt;" />
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef>
+                        รายการ
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <span class="item-name">{{element.name}}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- <ng-container matColumnDef="needsQuantity">
+                    <mat-header-cell *matHeaderCellDef>
+                        ทั้งหมด
+                    </mat-header-cell>
+                    <mat-cell class="cell-number" *matCellDef="let element">
+                        {{element.needsQuantity}}
+                    </mat-cell>
+                </ng-container> -->
+
+                <ng-container matColumnDef="currentQuantity">
+                    <mat-header-cell *matHeaderCellDef>
+                        มองหาอีก
+                    </mat-header-cell>
+                    <mat-cell class="cell-number" *matCellDef="let element">
+                        {{element.currentQuantity}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="fulfillQuantity">
+                    <mat-header-cell *matHeaderCellDef>
+                        เติมเต็ม
+                    </mat-header-cell>
+                    <mat-cell class="cell-number" *matCellDef="let element">
+                        <span class="fulfill-quantity">{{element.fulfillQuantity}}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="remainQuantity">
+                    <mat-header-cell *matHeaderCellDef>
+                        คงเหลือ
+                    </mat-header-cell>
+                    <mat-cell class="cell-number" *matCellDef="let element">
+                        <ng-container *ngIf="element.fulfillQuantity > element.currentQuantity; else elseTemplate">
+                            เกิน {{element.fulfillQuantity - element.currentQuantity}}
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                            {{element.remainQuantity}}
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- <ng-container matColumnDef="unit">
+                    <mat-header-cell *matHeaderCellDef>
+                        หน่วย
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        {{element.unit}}
+                    </mat-cell>
+                </ng-container> -->
+
+                <mat-header-row *matHeaderRowDef="displayedColumns;
+                 sticky: true"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </div>
+    <div class="confirm-fulfill-footer">
+        <spanboon-button class="confirm-fulfill-button" [text]="data.bottomText ? data.bottomText1 : 'ยกเลิก'"
+            [bgColor]="'#F8F7F2'" [width]="'80pt'" [color]="'#212721'" (click)="onClose()"
+            [ngStyle]="{'display': data.btDisplay1}">
+        </spanboon-button>
+        <spanboon-button class="confirm-fulfill-button" [text]="data.bottomText2 ? data.bottomText2 : 'ตกลง'"
+            [bgColor]="'#7AAF67'" [width]="'80pt'" (click)="onConfirm()" [ngStyle]="{'display': data.btDisplay2}">
+        </spanboon-button>
+    </div>
+</div>

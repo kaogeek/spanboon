@@ -1,0 +1,33 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                    </div>
+                    <div class="form-body">
+                        <form>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <admin-form-component [data]="dataForm" [fields]="fields" [title]="'ค่าระบบ'" (close)="clickCloseDrawer()" (save)="clickSave()"></admin-form-component> -->
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [facade]="standardItemReqRequestFacade" [isApprovePage]="'true'" [title]="'สิ่งของขอรับบริจาค'" [fieldTable]="fieldTable" [actions]="actions" (approve)="clickApprove($event)" (unapprove)="clickUnApprove($event)" (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

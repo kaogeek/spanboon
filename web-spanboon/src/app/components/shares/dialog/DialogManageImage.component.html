@@ -1,0 +1,70 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-manage-image">
+    <div class="dialog-image-title">
+        <div class="dialog-image-title-left">
+            <div class="title-name">
+                จัดการรูปภาพ
+            </div> 
+            <div class="image-upload">
+                <label id="file-image" for="file-input">
+                    <svg class="icon-add-image" xmlns="http://www.w3.org/2000/svg" width="20.948" height="20.948"
+                        viewBox="0 0 20.948 20.948">
+                        <path id="plus_4_" data-name="plus (4)"
+                            d="M17.88,3.068A10.474,10.474,0,0,0,3.067,17.88,10.474,10.474,0,0,0,17.88,3.068ZM10.473,19.311a8.837,8.837,0,1,1,8.837-8.837,8.847,8.847,0,0,1-8.837,8.837Zm.818-9.656h3.682v1.637H11.292v3.682H9.655V11.291H5.973V9.655H9.655V5.973h1.637Zm0,0"
+                            transform="translate(0)" fill="#212721" />
+                    </svg>
+                    อัพโหลดรูปภาพ
+                </label>
+                <input id="file-input" type="file" (change)="fileChangeListener($event)" (submit)="clickSubmit()"
+                    multiple accept="image/*" />
+            </div>
+        </div> 
+    </div>
+    <div class="dialog-image-body">
+        <div class="file-upload">
+            <ng-container *ngIf="fileImage;">
+                <div class="list-image-drag-drop" cdkDropListGroup>
+                    <div cdkDropList [cdkDropListEnterPredicate]="dropListEnterPredicate"
+                        (cdkDropListDropped)="dropListDropped()"></div>
+                    <div class="wrapper-image-drag-drop" cdkDropList *ngFor="let url of fileImage; let index = index"
+                        [cdkDropListEnterPredicate]="dropListEnterPredicate"
+                        (cdkDropListDropped)="dropListDropped()">
+                        <div class="wrapper-image-drag-drop" cdkDrag (cdkDragMoved)="dragMoved($event);">
+                            <img  class="box-image"  src="{{url.image || url.galleryBase64}}" alt="" id="inputimage"> 
+                            <span class="img-hover"> 
+                                <i class="material-icons" (click)="deleteImage(index)">
+                                    clear
+                                </i>
+                            </span>
+                        </div> 
+                    </div> 
+                    <label class="label-open-img">
+                        +
+                        <input #fileimg type="file" (change)="fileChangeListener($event)" class="input-img"
+                            accept="image/*" multiple />
+                    </label>
+                </div>
+            </ng-container>
+        </div>
+
+    </div>
+    <div class="dialog-image-bottom">
+        <div class="dialog-image-bottom-left">
+
+        </div>
+        <div class="dialog-image-bottom-right">
+            <div class="butt but-cancel" (click)="onNoClick()">
+                ยกเลิก
+            </div>
+            <div class="butt but-confirmed" (click)="onClickImg()">
+                ตกลง
+            </div>
+        </div>
+    </div>
+</div>

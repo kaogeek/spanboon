@@ -1,0 +1,39 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<ng-container *ngIf="!showLoading; else elsePreload">
+    <div class="collapsible-head">
+        <div class="header" (click)="clickShow()">
+            <div class="head-left">
+                <span class="name-page">{{groupName}}</span>
+                <!-- <span class="content-count">{{count}} เรื่องที่เปิดอยู่</span> -->
+            </div>
+            <div class="head-right">
+                <!-- <span class="count-contact-user">{{countContact}}</span> -->
+                <span class="material-icons status"
+                    [ngStyle]="{'transform':showCase ? 'rotate(-90deg)' : 'rotate(0deg)' , 'color':showCase ? '#FD545A' : '#000'}">
+                    arrow_left
+                </span>
+            </div>
+        </div>
+        <div class="body-collapsible"
+            [ngStyle]="{'visibility':showCase ? 'visible' : 'hidden' , 'height':showCase ? '' : '0px' , 'overflow':showCase ? '' : 'hidden'}">
+            <card-contact *ngFor="let fulfill of data.cases;let index = index" [title]="fulfill.title" [asPage]="asPage"
+                [statusColor]="statusColor" [isCaseSelected]="fulfill.isCaseSelected" [imageURL]="fulfill.userImageURL"
+                [emergencyEvent]="fulfill.emergencyEvent" [objective]="fulfill.objective"
+                [description]="fulfill.description" [name]="fulfill.name" [isRead]="fulfill.isRead"
+                [chatMessage]="fulfill.chatMessage" [chatDate]="fulfill.chatDate | dateFormat"
+                [fulfillRequestCount]="fulfill.fulfillRequestCount" [data]="fulfill"
+                (onClick)="getFulfillmentCase(fulfill)"></card-contact>
+        </div>
+    </div>
+</ng-container>
+<ng-template #elsePreload>
+    <Preload-card *ngFor="let fulfill of data.cases;let index = index" [isShowCard1]="false" [isShowCard2]="false"
+        [isShowCard3]="true">
+    </Preload-card>
+</ng-template>

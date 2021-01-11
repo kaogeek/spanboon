@@ -1,0 +1,42 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="chat-fulfill-wrapper" (click)="openItemFulFIll()">
+    <ng-container
+        *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_EDIT' || messageType === 'FULFILLMENT_REQUEST_DELETE';else elseFulfill">
+        <div class="chat-requester-name">
+            {{sender}}
+        </div>
+        <div class="chat-item-action">
+            <div *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE'">
+                เพิ่มรายการ <span class="item-name">{{fulfillItemName}}</span> {{fulfillItemCurrentQuantity}}
+                {{fulfillItemUnit}}
+            </div>
+
+            <div *ngIf="messageType === 'FULFILLMENT_REQUEST_EDIT'">
+                แก้ไขจำนวน <span class="item-name">{{fulfillItemName}}</span> จาก {{fulfillItemCurrentQuantity +' '+
+                fulfillItemUnit}} เป็น
+                {{fulfillItemNewQuantity + ' ' + fulfillItemUnit}}
+            </div>
+
+            <div *ngIf="messageType === 'FULFILLMENT_REQUEST_DELETE'">
+                ลบรายการ <span class="item-name">{{fulfillItemName}}</span> {{fulfillItemCurrentQuantity}}
+                {{fulfillItemUnit}}
+            </div>
+        </div>
+        <card-chat-fulfill [pageId]="pageId" [postId]="postId" [itemName]="fulfillItemName" [itemUnit]="fulfillItemUnit"
+            [currentQuantity]="fulfillItemCurrentQuantity" [newQuantity]="fulfillItemNewQuantity" [sender]="sender"
+            [message]="message" [messageType]="messageType">
+        </card-chat-fulfill>
+    </ng-container>
+    <ng-template #elseFulfill>
+        <card-chat-fulfill [pageId]="pageId" [postId]="postId" [itemName]="fulfillItemName" [itemUnit]="fulfillItemUnit"
+            [currentQuantity]="fulfillItemCurrentQuantity" [newQuantity]="fulfillItemNewQuantity" [sender]="sender"
+            [message]="message" [messageType]="messageType">
+        </card-chat-fulfill>
+    </ng-template>
+</div>

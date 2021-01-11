@@ -1,0 +1,26 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="newcon-edit-dialog">
+    <div class="edit-h">
+        <span class="edit-head-one">แก้ไข</span>
+        <div class="dialog-image-title-right">
+            <i class="material-icons" style="color: white;" (click)="onClose()">
+                clear
+            </i>
+        </div>
+    </div>
+
+    <div class="edit-input">
+        <ckeditor matInput [editor]="Editor" [ngModel]="(content ? content : '')" (ngModelChange)="content=$event">
+        </ckeditor>
+    </div>
+    <div class="dialog-footer">
+        <div class="butt but-cancel " (click)="onClose() ">ปิด</div>
+        <div class="butt but-submit " appDebounceClick (debounceClick)="onConfirm() ">แก้ไข</div>
+    </div>
+</div>

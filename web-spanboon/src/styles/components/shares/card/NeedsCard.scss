@@ -1,0 +1,213 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.list-needs-for {
+    padding: 5pt 14pt; 
+    &.active {
+        background: white;
+        border-top: 0.7px solid $border-color;
+        border-bottom: 0.7px solid $border-color;
+        margin-top: 15pt;
+        padding: 10pt 14pt;
+    }
+    > .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 14pt;
+        > .left {
+            font-family: "Kanit-500";
+            font-size: 16px;
+            > .count-fufill {
+                padding-left: 10pt;
+                color: $bg-color4;
+            }
+        }
+        > .right {
+            flex: 0 0 auto;
+            > spanboon-button {
+                > .spanboon-button {
+                    width: auto !important;
+                    padding: 0 7pt;
+                    height: 26pt !important;
+                }
+            }
+        }
+    }
+
+    > .swiper-container {
+        // display: flex;
+        // align-items: center;
+        padding: 10pt 1pt 1pt 1pt;
+
+        > .swiper-wrapper {
+            > .swiper-slide {
+                .list-needs {
+                    position: relative;
+                    border: 0.7px solid $border-color;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    margin: 1pt 0;
+
+                    .cl {
+                        width: 20px;
+                        height: 20px;
+                        right: 7px;
+                        top: 7px;
+                        position: absolute;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10;
+                        transition: 0.2s;
+                        @include pointer();
+
+                        &:hover {
+                            fill: $color-warm-red;
+                        }
+
+                        > .icon-clear {
+                            font-weight: 900;
+                        }
+                    }
+
+                    .needs {
+                        display: grid;
+                        justify-content: center;
+                        align-content: center;
+                        position: relative;
+                        background: #f9f9f9;
+                        // background: $bg-fog-gray2;
+                        padding: 15pt 0;
+
+                        > .img-items {
+                            width: 50pt;
+                            height: 50pt;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+                    }
+
+                    .needs-data {
+                        padding: 10pt;
+                        background: white;
+                        .needs-data-h {
+                            .text-h {
+                                font-family: "Kanit-500";
+                                font-size: 18px;
+                                line-height: 15px;
+                                color: #717886;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                padding: 5pt 0;
+                            }
+                        }
+
+                        .needs-data-body {
+                            width: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+
+                            .unit {
+                                flex: 1 1 0%;
+                                margin-right: 10pt;
+
+                                &.active {
+                                    margin-right: unset;
+                                    .unit-box {
+                                        display: flex;
+                                        align-items: baseline;
+                                        justify-content: flex-end;
+                                        margin-right: unset;
+                                        >.unit-num {
+                                            color: $bg-color4;
+                                        }
+                                    }
+                                    .unit-sub {
+                                        padding-left: 5pt;
+                                    }
+                                }
+                                .unit-box {
+                                    .unit-num {
+                                        font-family: "Kanit-500";
+                                        font-size: 16px;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 1;
+                                        -webkit-box-orient: vertical;
+                                    }
+
+                                    .unit-sub {
+                                        font-family: "Kanit-500";
+                                        font-size: 14px;
+                                        color: #717886;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 1;
+                                        -webkit-box-orient: vertical;
+                                    }
+                                }
+                            }
+
+                            .unit-bt-box {
+                                flex: 0 0 auto;
+
+                                > spanboon-button {
+                                    > .spanboon-button {
+                                        width: auto !important;
+                                        padding: 0 7pt;
+                                        height: 26pt !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // > .swiper-button-prev {
+        //     left: 5pt;
+        // }
+
+        // > .swiper-button-next {
+        //     right: 5pt;
+        // }
+
+        // > .swiper-button-prev,
+        // > .swiper-button-next {
+        //     top: unset;
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: center;
+        //     width: 26pt;
+        //     height: 26pt;
+        //     border-radius: 50%;
+        //     background: $color-warm-red;
+        //     border: 0.7px solid rgb($black, 0.2);
+
+        //     &.swiper-button-disabled {
+        //         opacity: 0;
+        //     }
+
+        //     &:hover {
+        //         background: rgb($color-warm-red, 0.9);
+        //     }
+
+        //     > .material-icons {
+        //         user-select: none;
+        //         font-size: 26pt;
+        //         color: $white;
+        //     }
+        // }
+    }
+}

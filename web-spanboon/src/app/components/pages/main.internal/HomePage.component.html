@@ -1,0 +1,390 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="spanboon-home-page">
+    <!-- Header - Start -->
+    <section class="section-header">
+        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyEvents;">
+            <status-bar class="status-header" [topic]="dataMainPage.emergencyEvents.title" [isStausIcon]="'true'"
+                [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
+                [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
+            </status-bar>
+        </ng-container>
+        <div class="swiper-container" [swiper]="config"
+            *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
+            <div class="swiper-wrapper">
+                <ng-container *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
+                    <ng-container *ngIf="index > 0 && index <= 5">
+                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="showLoading"
+                            [data]="dataEmergency" [hashTag]="dataEmergency.title" [name]="dataEmergency.owner"
+                            [isWhite]="true" [countFacebook]="dataEmergency.facebookCount  | shortNumber"
+                            [countTwitter]="dataEmergency.twitterCount  | shortNumber"
+                            [comment]="dataEmergency.commentCount | shortNumber "
+                            [reboon]="dataEmergency.repostCount | shortNumber "
+                            [like]="dataEmergency.likeCount | shortNumber"
+                            [share]="dataEmergency.shareCount | shortNumber"
+                            [countSpanboon]="dataEmergency.postCount  | shortNumber" [marginPerAction]="'10pt'"
+                            [isAction]="'true'" [widthBtnAction]="'36pt'" [showsocial]="true" [isComment]="false"
+                            [isReboon]="false" [isLike]="false" [isShare]="false" [showDefault]="false"
+                            [isShowtext]="false" [isShowtext2]="true" [showSottomSocial]="true"
+                            [linkMore]="'/search?hashtag='+ dataEmergency.title.substring(1)">
+                        </image-card>
+                    </ng-container>
+                </ng-container>
+                <ng-template #elseEmercency>
+
+                </ng-template>
+            </div>
+            <div class="swiper-button-prev">
+                <div class="material-icons">
+                    chevron_left
+                </div>
+            </div>
+            <div class="swiper-button-next">
+                <div class="material-icons">
+                    chevron_right
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Header - End -->
+
+    <!-- Looking - Start -->
+    <section class="section-wrapper-looking-for">
+        <div class="wrapper-card-left" *ngIf="dataMainPage && dataMainPage.lastest">
+            <status-bar-looking class="header-card-left" [topic]="dataMainPage.lastest.title"
+                (submit)="showAlertDialog()" [status]="dataMainPage.lastest.subtitle"
+                [createDate]="dataMainPage.lastest.dateTime | dateFormat " [isStausDate]="'true'"
+                [isStatusIcon]="'true'"></status-bar-looking>
+            <ng-container *ngIf="dataMainPage.lastest.contents; else elseLastest">
+                <new-card class="wrapper-new-card" *ngFor="let dataLastests of dataMainPage.lastest.contents; "
+                    (submit)="actionComment($event,index,'NEWCARD')" [data]="dataLastests" [showLoading]="showLoading"
+                    [topic]="dataLastests.post.title" [content]="dataLastests.post.detail"
+                    [countUserFollow]="dataLastests.followUserCount | shortNumber"
+                    [comment]="dataLastests.commentCount | shortNumber "
+                    [pageName]="dataLastests.owner.uniqueId ? dataLastests.owner.uniqueId : dataLastests.owner.name "
+                    [image]="dataLastests.owner.imageBase64" [isWhite]="true"
+                    [createDate]="dataLastests.post.createdDate | dateFormat" [userLike]="dataLastests.isLike"
+                    [userComment]="dataLastests.isComment" [userReboon]="dataLastests.isReboon"
+                    [reboon]="dataLastests.rePostCount | shortNumber " [like]="dataLastests.likeCount | shortNumber"
+                    [share]="dataLastests.shareCount | shortNumber" [isAction]="'true'" [marginPerAction]="'10pt'"
+                    [widthBtnAction]="'18pt'" [fontSize]="'18px'" [heightBtn]="'36pt'" [widthBtn]="'95pt'"
+                    [isOfficial]="dataLastests.owner.isOfficial ? dataLastests.owner.isOfficial : false">
+                </new-card>
+            </ng-container>
+            <ng-template #elseLastest>
+
+            </ng-template>
+        </div>
+        <ng-container *ngIf="dataMainPage && dataMainPage.looking">
+            <div class="wrapper-card-right">
+                <status-bar-looking class="header-card-right" [topic]="dataMainPage.looking.title"
+                    (submit)="showAlertDialog()" [count]="dataMainPage.looking.contentCount | shortNumber"
+                    [status]="dataMainPage.looking.subtitle" [isStatusIcon]="'true'">
+                </status-bar-looking>
+                <ng-container *ngIf="dataMainPage.looking.contents; else elseLooking">
+                    <div class="card-right-fix">
+                        <div class="wrapper-flip-card"
+                            [class.active-item-2]="dataMainPage && dataMainPage.looking.contents && dataMainPage.looking.contents.length > 2">
+                            <new-cards class="card-new-looking"
+                                *ngFor="let dataLooking of dataMainPage.looking.contents let index = index; "
+                                (submit)="actionComment($event,index,'NEWCARDS')" [data]="dataLooking"
+                                [showLoading]="showLoading" [userLike]="dataLooking.isLike"
+                                [userComment]="dataLooking.isComment" [userReboon]="dataLooking.isReboon"
+                                [isWhite]="true" [comment]="dataLooking.commentCount | shortNumber "
+                                [countUserFollow]="dataLooking.followUserCount | shortNumber"
+                                [topic]="dataLooking.post.title"
+                                [pageName]="dataLooking.owner.name ? dataLooking.owner.name : dataLooking.owner.displayName ? dataLooking.owner.displayName : dataLooking.owner.uniqueId"
+                                [content]="dataLooking.post.detail" [reboon]="dataLooking.rePostCount | shortNumber "
+                                [like]="dataLooking.likeCount | shortNumber"
+                                [share]="dataLooking.shareCount | shortNumber"
+                                [createDate]="dataLooking.dateTime | dateFormat" [widthBtnAction]="'14pt'"
+                                [fontSize]="'14px'" [heightBtn]="'28pt'" [widthBtn]="'70pt'" [marginPerAction]="'6pt'"
+                                [isAction]="'true'" [isStausIcon]="'true'"
+                                [isOfficial]="dataLooking.owner.isOfficial ? dataLooking.owner.isOfficial : false">
+                            </new-cards>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #elseLooking>
+
+                </ng-template>
+            </div>
+        </ng-container>
+    </section>
+    <!-- Looking - End -->
+
+    <!-- Missed - Start -->
+    <section class="section-wrapper-missed" *ngIf="dataMainPage && dataMainPage.viewSection;">
+        <status-bar class="missed-head" [topic]="dataMainPage.viewSection.title"
+            [status]="dataMainPage.viewSection.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'"
+            [bgColor]="'transparent'"></status-bar>
+        <ng-container *ngIf="dataMainPage.viewSection.contents; else elseViewSection">
+            <ng-container *ngIf="dataMainPage.viewSection.isList; else elseTemplateviewSection">
+                <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
+                    <div class="swiper-wrapper">
+                        <post-card class="swiper-slide"
+                            *ngFor="let dataViewSection of dataMainPage.viewSection.contents;let index = index"
+                            [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
+                            [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
+                            [images]="dataViewSection.imageBase64" [isWhite]="true"
+                            [username]="dataViewSection.owner.displayName ? dataViewSection.owner.displayName : dataViewSection.owner.uniqueId"
+                            [pageName]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                            [username]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                            [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
+                            [countUserFollow]="dataViewSection.followUserCount | shortNumber"
+                            [userLike]="dataViewSection.isLike" [userComment]="dataViewSection.isComment"
+                            [userReboon]="dataViewSection.isReboon" [share]="dataViewSection.shareCount | shortNumber"
+                            [comment]="dataViewSection.commentCount | shortNumber "
+                            [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
+                            [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
+                            [textLink]="'อ่านสตอรี่'"
+                            [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false">
+                        </post-card>
+                    </div>
+                    <div class="swiper-button-prev">
+                        <div class="material-icons">
+                            chevron_left
+                        </div>
+                    </div>
+                    <div class="swiper-button-next">
+                        <div class="material-icons">
+                            chevron_right
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #elseTemplateviewSection>
+                <div class="missed-wrap">
+                    <post-card class="card-missed"
+                        *ngFor="let dataViewSection of dataMainPage.viewSection.contents;let index = index"
+                        [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
+                        [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
+                        [images]="dataViewSection.imageBase64" [isWhite]="true"
+                        [username]="dataViewSection.owner.displayName ? dataViewSection.owner.displayName : dataViewSection.owner.uniqueId"
+                        [pageName]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                        [username]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                        [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
+                        [countUserFollow]="dataViewSection.followUserCount | shortNumber"
+                        [userLike]="dataViewSection.isLike" [userComment]="dataViewSection.isComment"
+                        [userReboon]="dataViewSection.isReboon" [share]="dataViewSection.shareCount | shortNumber"
+                        [comment]="dataViewSection.commentCount | shortNumber "
+                        [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
+                        [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
+                        [textLink]="'อ่านสตอรี่'"
+                        [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false">
+                    </post-card>
+                </div>
+            </ng-template>
+        </ng-container>
+        <ng-template #elseViewSection>
+
+        </ng-template>
+    </section>
+    <!-- Missed - End -->
+
+    <!-- Pin Tag - Start -->
+    <section class="section-pin-tag">
+        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyPin;">
+            <ng-container *ngFor="let cardPin of dataMainPage.emergencyPin.contents">
+                <image-card class="card-img-pin-tag" [widthImg]="'100%'" [isPin]="'true'" [isWhite]="true"
+                    [showLoading]="showLoading" [data]="cardPin" [countFacebook]="cardPin.facebookCount | shortNumber"
+                    [countTwitter]="cardPin.twitterCount | shortNumber"
+                    [countSpanboon]="cardPin.postCount | shortNumber" [hashTag]="cardPin.title" [name]="cardPin.owner">
+                </image-card>
+                <div class="wrapper-pin-img">
+                    <div *ngIf="!showLoading" class="wrapper-header">
+                        <div class="label-header">
+                            <div class="label-sub-header" #titleDiv (mousemove)="onMouseEnter($event, titleDiv)">
+                                <div matTooltipShowDelay="{{800}}" matTooltip="{{cardPin.title}}" class="TooltipShow"
+                                    [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
+                                </div>
+                                {{cardPin.title}}
+                            </div>
+                        </div>
+                        <div class="wrapper-img-detail" #descriptionDiv
+                            (mousemove)="onMouseEnter($event, descriptionDiv)">
+                            <div matTooltipShowDelay="{{800}}" matTooltip="{{cardPin.description}}" class="TooltipShow"
+                                [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
+                            </div>
+                            {{cardPin.description | slice:0:280}}
+                            <ng-container *ngIf="cardPin.description.length > 280">
+                                <span>...</span>
+                            </ng-container>
+                            <span class="btn-read-more">{{textLink}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="!showLoading" class="btn-follow">
+                        <spanboon-button (click)="showAlertDialog()" [width]="'90pt'" [height]="'30pt'"
+                            [bgColor]="'#c62634'" [text]="'ติดตาม'">
+                        </spanboon-button>
+                    </div>
+                    <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
+                    </Preload-card>
+                </div>
+            </ng-container>
+        </ng-container>
+    </section>
+    <!-- Pin Tag - End -->
+
+    <ng-container *ngIf="dataMainPage && dataMainPage.sectionModels;">
+        <ng-container *ngFor="let item of dataMainPage.sectionModels; let i = index">
+
+            <!-- MULTIPLE - Start -->
+            <section class="section-wrapper-missed2" *ngIf="item.templateType === 'MULTIPLE'">
+                <status-bar class="missed2-heead" [bgColor]="'transparent'" [topic]="item.title"
+                    [status]="item.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'" [isImage]="'true'"
+                    [images]="item.iconBase64" [dataName]="item"></status-bar>
+                <ng-container *ngIf="item.contents; else elseMutiple">
+                    <ng-container *ngIf="item.isList; else elseTemplateMULTIPLE">
+                        <div class="swiper-container" [swiper]="configSlider2" [(index)]="index">
+                            <div class="swiper-wrapper">
+                                <post-card class="swiper-slide" *ngFor="let cardSide of item.contents;let index = index"
+                                    (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
+                                    [showLoading]="showLoading" [title]="cardSide.title"
+                                    [comment]="cardSide.commentCount | shortNumber "
+                                    [pageName]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                    [username]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                    [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
+                                    [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
+                                    [reboon]="cardSide.rePostCount | shortNumber "
+                                    [countUserFollow]="cardSide.followUserCount | shortNumber "
+                                    [userLike]="cardSide.isLike" [userComment]="cardSide.isComment"
+                                    [userReboon]="cardSide.isReboon" [like]="cardSide.likeCount | shortNumber"
+                                    [share]="cardSide.shareCount | shortNumber"
+                                    [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
+                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'">
+                                </post-card>
+                            </div>
+                            <div class="swiper-button-prev">
+                                <div class="material-icons">
+                                    chevron_left
+                                </div>
+                            </div>
+                            <div class="swiper-button-next">
+                                <div class="material-icons">
+                                    chevron_right
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplateMULTIPLE>
+                        <div class="missed2-wrap">
+                            <post-card class="card-missed2" *ngFor="let cardSide of item.contents;let index = index"
+                                (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
+                                [showLoading]="showLoading" [title]="cardSide.title"
+                                [comment]="cardSide.commentCount | shortNumber "
+                                [pageName]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                [username]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
+                                [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
+                                [reboon]="cardSide.rePostCount | shortNumber "
+                                [countUserFollow]="cardSide.followUserCount | shortNumber " [userLike]="cardSide.isLike"
+                                [userComment]="cardSide.isComment" [userReboon]="cardSide.isReboon"
+                                [like]="cardSide.likeCount | shortNumber" [share]="cardSide.shareCount | shortNumber"
+                                [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
+                                [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'">
+                            </post-card>
+                        </div>
+                    </ng-template>
+
+                </ng-container>
+                <ng-template #elseMutiple>
+
+                </ng-template>
+            </section>
+            <!-- MULTIPLE - End -->
+
+            <!-- ICON - Start -->
+            <section class="section-personal-tag" *ngIf="item.templateType === 'ICON'">
+                <status-bar [topic]="item.title" [status]="item.subtitle" (submit)="showAlertDialog()"
+                    [isSeeAll]="'true'" [bgColor]="'transparent'"></status-bar>
+                <ng-container *ngIf="item.contents; else elseIcon">
+                    <ng-container *ngIf="item.isList; else elseTemplateICON">
+                        <div class="swiper-container" [swiper]="configIcon" [(index)]="index">
+                            <div class="swiper-wrapper">
+                                <icon-tag-card class="swiper-slide" *ngFor="let cardIcon of item.contents;"
+                                    [data]="cardIcon" [isAction]="'true'"
+                                    [comment]="cardIcon.commentCount | shortNumber "
+                                    [reboon]="cardIcon.rePostCount | shortNumber "
+                                    [like]="cardIcon.likeCount | shortNumber"
+                                    [share]="cardIcon.shareCount | shortNumber" [marginPerAction]="'5pt'"
+                                    [isBlack]="'true'" [hashTag]="cardIcon.title" [images]="cardIcon.iconBase64"
+                                    [countUserFollow]="cardIcon.followUserCount | shortNumber"
+                                    [isOfficial]="cardIcon && cardIcon.owner && cardIcon.owner.isOfficial ? cardIcon.owner.isOfficial : false"
+                                    [pageName]="cardIcon.owner.uniqueId ? cardIcon.owner.uniqueId : cardIcon.owner.name">
+                                </icon-tag-card>
+                            </div>
+                            <div class="swiper-button-prev">
+                                <div class="material-icons">
+                                    chevron_left
+                                </div>
+                            </div>
+                            <div class="swiper-button-next">
+                                <div class="material-icons">
+                                    chevron_right
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplateICON>
+                        <div class="tag-wrap">
+                            <icon-tag-card class="card-list" *ngFor="let cardIcon of item.contents;" [data]="cardIcon"
+                                [isAction]="'true'" [comment]="cardIcon.commentCount | shortNumber "
+                                [reboon]="cardIcon.rePostCount | shortNumber " [like]="cardIcon.likeCount | shortNumber"
+                                [share]="cardIcon.shareCount | shortNumber" [marginPerAction]="'5pt'" [isBlack]="'true'"
+                                [hashTag]="cardIcon.title" [images]="cardIcon.iconBase64"
+                                [countUserFollow]="cardIcon.followUserCount | shortNumber"
+                                [isOfficial]="cardIcon && cardIcon.owner && cardIcon.owner.isOfficial ? cardIcon.owner.isOfficial : false"
+                                [pageName]="cardIcon.owner.uniqueId ? cardIcon.owner.uniqueId : cardIcon.owner.name">
+                            </icon-tag-card>
+                        </div>
+                    </ng-template>
+                </ng-container>
+                <ng-template #elseIcon>
+
+                </ng-template>
+            </section>
+            <!-- ICON - End -->
+
+            <!-- TWIN - Start -->
+            <section class="section-footer-twin" *ngIf="item.templateType === 'TWIN'">
+                <ng-container *ngFor="let card of item.contents">
+                    <div class="wrapper-footer-header" [class.full-row]="item.contents.length === 1">
+                        <status-bar class="head-footer-twin" [topic]="card.title" [status]="card.subtitle"
+                            [isSeeAll]="'true'" [isImage]="'true'" (submit)="showAlertDialog()"
+                            [images]="card.iconBase64" [dataName]="card">
+                        </status-bar>
+                        <div class="wrapper-footer-body">
+                            <ng-container *ngFor="let cardTwin of card.contents;let index = index">
+                                <post-card
+                                    *ngIf="(item.contents.length === 1 && index < 4) || (item.contents.length > 1 && index < 2)"
+                                    class="card-post-spanboon" [isAction]="'true'" [showLoading]="showLoading"
+                                    [data]="cardTwin" (submit)="actionComment($event,index,'POSTCARD3')"
+                                    [title]="cardTwin.post.title" [content]="cardTwin.post.detail"
+                                    [images]="cardTwin.post && cardTwin.imageBase64"
+                                    [pageName]="cardTwin.owner.uniqueId ? cardTwin.owner.uniqueId : cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
+                                    [username]="cardTwin.owner.uniqueId ? cardTwin.owner.uniqueId : cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
+                                    [isOfficial]="cardTwin.owner.isOfficial ? cardTwin.owner.isOfficial : false "
+                                    [countUserFollow]="cardTwin.followUserCount | shortNumber "
+                                    [comment]="cardTwin.commentCount | shortNumber "
+                                    [reboon]="cardTwin.rePostCount | shortNumber " [userLike]="cardTwin.isLike"
+                                    [userComment]="cardTwin.isComment" [userReboon]="cardTwin.isReboon" [isWhite]="true"
+                                    [like]="cardTwin.likeCount | shortNumber"
+                                    [share]="cardTwin.shareCount | shortNumber" [data]="cardTwin"
+                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
+                                    [create]="cardTwin.post.createdDate | dateFormat" [textLink]="'อ่านสตอรี่'">
+                                </post-card>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </section>
+            <!-- TWIN - End -->
+        </ng-container>
+    </ng-container>
+</div>

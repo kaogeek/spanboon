@@ -1,0 +1,195 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.new-cards {
+  display: flex;
+  background-color: $bg-color1;
+  width: 100%;
+  height: 100%;
+
+  > .wrapper-body {
+    display: flex;
+    -webkit-box-pack: justify;
+    flex: 1 1 0%;
+    // width: calc(100% - 30pt);
+    padding: 15pt 15pt 0;
+    flex-direction: column;
+
+    > .wrapper-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      span {
+        color: $koalaGray !important;
+        font-family: "Kanit-500";
+        font-size: 14px;
+      }
+
+      > a {
+        > .wrapper-time {
+          color: $koalaGray !important;
+          align-items: center;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          > .icon-img {
+            height: $width-icon;
+            width: $height-icon;
+            margin-right: 5pt;
+          }
+        }
+      }
+    }
+
+    > .new-cards-topic {
+      font-family: "Kanit-500";
+      font-size: 18px;
+      color: $color-black;
+      margin: 10pt 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-all;
+    }
+
+    > .new-cards-content {
+      font-family: "Sarabun-Light";
+      font-size: 16px;
+      color: $color-black;
+      min-height: 55pt;
+      flex: 1 1 0%;
+      word-break: break-word;
+
+      > .read-more {
+        display: contents;
+      }
+
+      > .btn-read-more {
+        position: relative;
+        z-index: 4;
+        color: $color-warm-red;
+        @include pointer();
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    > .wrapper-new-cards-favorite {
+      display: flex;
+      margin: 15pt 0 5pt 0;
+    }
+
+    > .new-cards-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: $width-border solid $bg-fog-gray;
+      font-family: "Kanit-500";
+      font-size: 14px;
+
+      > .new-footer-icon {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        color: $koalaGray;
+        position: relative;
+        flex: 1 1 0%;
+
+        > .wrapper-des-page {
+          display: flex;
+          align-items: center;
+          flex: 0 0 auto;
+          max-width: 70%;
+          word-break: break-all;
+
+          > span {
+            flex: 0 0 auto;
+          }
+
+          > .new-cards-offical {
+            display: flex;
+            width: 20px;
+            height: 20px;
+            margin: 0 5pt 0 0;
+            flex: 0 0 auto;
+          }
+
+          > a {
+            > .new-cards-pageName {
+              color: $green;
+              cursor: pointer;
+              z-index: 5;
+              flex: 1 1 0%;
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              position: relative;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        > .wrapper-des-page-bottom {
+          margin-left: 7pt;
+          flex: 0 0 auto;
+
+          > .new-cards-user {
+            display: flex;
+            align-items: center;
+
+            > .new-cards-status {
+              width: 12px;
+              height: 19px;
+              margin: 0 5pt;
+
+              > .user-count {
+                padding: 0 10pt;
+                color: $koalaGray;
+              }
+            }
+          }
+        }
+      }
+
+      > .btn-fulfill {
+        margin: 10pt 0 10pt 10pt;
+      }
+    }
+  }
+}
+
+@media (max-width: $xlarge) {
+  .new-cards {
+    > .wrapper-body {
+      > .new-cards-topic {
+        font-size: 16px;
+      }
+
+      >.new-cards-content{
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: $small + 97px) {
+  .new-cards {
+    > .wrapper-body {
+      padding: 10pt 10pt 0;
+    }
+  }
+}

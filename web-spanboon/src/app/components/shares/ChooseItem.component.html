@@ -1,0 +1,850 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div #choose class="choose-item" id="control-height" (window:resize)="onResize()">
+    <div class="top" #top>
+        <div class="header">
+            {{statusLabel}}
+        </div>
+        <div class="title">
+            โปรดเลือกของที่คุณต้องการมองหา
+        </div>
+    </div>
+    <div class="tab" #tab>
+        <div class="tablinks" matRipple *ngFor="let link of dataList; let index = index"
+            [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'" id="{{link.id}}"
+            (click)="clickData($event , link.id)">{{link.name}}</div>
+        <!-- <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
+              id="defaultOpen1">มองหา</div> -->
+        <!-- <div class="tablinks listClick" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
+              id="defaultOpen2">รายการ</div>  -->
+
+        <!-- <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
+            (click)="tabSearch($event , 'centerright')" id="defaultOpen2">รายการ</div> -->
+    </div>
+    <div class="center" #bodyList>
+        <ng-container *ngIf="isOpenFolder; else elseIsOpen">
+            <div class="center-left mongha" [class.active]="isActiveCss" id="centerleft">
+                <div class="doing-search">
+                    <div class="doing-search-box">
+                        <label class="material-icons icon-search" for="search-img">search</label>
+                        <input matInput #searchAll id="search-img" class="search-img" type="search"
+                            placeholder="คุณกำลังมองหาอะไรอยู่ ?" (keyup)="keyUpSearchAll(searchAll.value)"
+                            (keyup.enter)="keyUpSearchAll(searchAll.value)" [(ngModel)]="query_conversation">
+                        <span class="material-icons icon-clear" (click)="closeSearch(searchAll.value)"> close
+                        </span>
+                    </div>
+                    <spanboon-button class="search-data" [bgColor]="'#FD545A'" [color]="'#FFFFFF'" [text]="'ค้นหา'"
+                        [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn" [radius]="'6px'"
+                        (click)="keyUpSearchAll(searchAll.value)">
+                    </spanboon-button>
+                </div>
+                <div class="body-list-item">
+                    <div class="search-latest" *ngIf="!isSearchAll">
+                        สิ่งที่มองหาล่าสุด
+                        <div class="list-search-doing">
+                            <ng-container *ngIf="isLoading; else isLoadIng">
+                                <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0">
+                                    <div class="category-img">
+                                        <span class="loading-image">
+                                            <div class="linear-background">
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0">
+                                    <div class="category-img">
+                                        <span class="loading-image">
+                                            <div class="linear-background">
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0">
+                                    <div class="category-img">
+                                        <span class="loading-image">
+                                            <div class="linear-background">
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0">
+                                    <div class="category-img">
+                                        <span class="loading-image">
+                                            <div class="linear-background">
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-template #isLoadIng>
+                                <ng-container *ngIf="resNeeds && resNeeds.length > 0; else elseNotFound1">
+                                    <ng-container *ngFor="let item of resNeeds; let index = index;">
+                                        <ng-container *ngIf="item.type === 'STANDARDITEM_CATEGORY'; else elseSearchAll">
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectFolderData(item , false)">
+
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="item.value.imageURL && item.value.imageURL !== undefined && item.value.imageURL !== '' && item.value.imageURL !== null; else elseBase64">
+                                                        <img class="icon-category"
+                                                            src="{{apiBaseURL+item.value.imageURL+'/image'}}" alt="">
+                                                    </ng-container>
+                                                    <ng-template #elseBase64>
+                                                        <div class="icon-category image-file-waste">
+                                                            <img src="../../../../assets/img/photo.png" alt=""
+                                                                style="width: 40%; height: auto;">
+                                                        </div>
+                                                    </ng-template>
+                                                    <div class="notify-count" *ngIf="countItem(item.value) > 0">
+                                                        <div class="count-item">
+                                                            {{countItem(item.value)}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <svg class="svg-folder" xmlns="http://www.w3.org/2000/svg"
+                                                    width="17.305" height="14.033" viewBox="0 0 17.305 14.033">
+                                                    <g id="folder" transform="translate(0 -48.403)">
+                                                        <g id="Group_1348" data-name="Group 1348"
+                                                            transform="translate(0 48.403)">
+                                                            <g id="Group_1347" data-name="Group 1347"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3227" data-name="Path 3227"
+                                                                    d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                                    transform="translate(0 -48.403)" fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                        <g id="Group_1350" data-name="Group 1350"
+                                                            transform="translate(0.228 52.243)">
+                                                            <g id="Group_1349" data-name="Group 1349"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3228" data-name="Path 3228"
+                                                                    d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                                    transform="translate(-6.746 -162.01)"
+                                                                    fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+
+                                                <div class="icon-folder">
+                                                    <div class="crop-div">
+                                                        <div class="folder-name" appHighlight
+                                                            [content]="item.value.name"
+                                                            [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                            matTooltip="{{item.value.name}}"> {{item.value.name}} </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseSearchAll>
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectedDataItem(item ,index , isFirst)">
+
+                                                <ng-container *ngIf="item.checked">
+                                                    <svg class="icon-correct"
+                                                        [ngStyle]="{ display : item.checked ? 'flex' : 'none'}"
+                                                        height="15pt" viewBox="0 -46 417.81333 417" width="15pt"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"
+                                                            fill="#FD545A" />
+                                                    </svg>
+                                                </ng-container>
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="isLoading || item.value.isLoadingImage ; else elseLoadImg">
+                                                        <span class="loading-image">
+                                                            <div class="linear-background">
+                                                            </div>
+                                                        </span>
+                                                    </ng-container>
+                                                    <ng-template #elseLoadImg>
+                                                        <ng-container
+                                                            *ngIf="item.value.imageURL && item.value.imageURL !== undefined && item.value.imageURL !== null && item.value.imageURL !== ''; else elseBase64">
+                                                            <img class="icon-category"
+                                                                src="{{apiBaseURL+item.value.imageURL+'/image'}}"
+                                                                alt="">
+                                                        </ng-container>
+                                                        <ng-template #elseBase64>
+                                                            <div class="icon-category image-file-waste">
+                                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                                    style="width: 40%; height: auto;">
+                                                            </div>
+                                                        </ng-template>
+                                                    </ng-template>
+                                                </div>
+                                                <span class="name" appHighlight [content]="item.value.name"
+                                                    [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                    matTooltip="{{item.value.name}}"> {{item.value.name}} </span>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
+                                </ng-container>
+                                <ng-template #elseNotFound1>
+                                    <!-- <div class="body-data-category body-empty"
+                                        [class.active]="isListItem || arrListItem.length > 0" (click)="openListItem()">
+                                        <span class="add-item">+</span>
+                                        <span class="label-item">เพิ่มรายการแบบกำหนดเอง</span>
+                                    </div> -->
+                                    <div class="body-data-category empty-data">
+                                        <!-- <span class="add-item">+</span> -->
+                                        <span class="label-item">ไม่พบรายการมองหา</span>
+                                    </div>
+                                </ng-template>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="search-latest folder"
+                        [ngStyle]="{'color': labelHeader === 'ไม่พบรายการที่มองหา' ? '#FD545A' : '#212721'}">
+                        {{labelHeader}}
+                        <div class="list-search-doing">
+                            <ng-container *ngIf="isSearchAll; else elseisSearchAll">
+                                <ng-container *ngIf="resItemCategory && resItemCategory.length > 0; else elseNotFound2">
+                                    <ng-container *ngFor="let item of resItemCategory; let index = index;">
+                                        <ng-container *ngIf="item.type === 'STANDARDITEM_CATEGORY'; else elseSearchAll">
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectFolderData(item , false)">
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="item.value.imageURL && item.value.imageURL !== undefined && item.value.imageURL !== '' && item.value.imageURL !== null; else elseBase64">
+                                                        <img class="icon-category"
+                                                            src="{{apiBaseURL+item.value.imageURL+'/image'}}" alt="">
+                                                    </ng-container>
+                                                    <ng-template #elseBase64>
+                                                        <div class="icon-category image-file-waste">
+                                                            <img src="../../../../assets/img/photo.png" alt=""
+                                                                style="width: 40%; height: auto;">
+                                                        </div>
+                                                    </ng-template>
+                                                    <div class="notify-count" *ngIf="countItem(item.value) > 0">
+                                                        <div class="count-item">
+                                                            {{countItem(item.value)}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <svg class="svg-folder" xmlns="http://www.w3.org/2000/svg"
+                                                    width="17.305" height="14.033" viewBox="0 0 17.305 14.033">
+                                                    <g id="folder" transform="translate(0 -48.403)">
+                                                        <g id="Group_1348" data-name="Group 1348"
+                                                            transform="translate(0 48.403)">
+                                                            <g id="Group_1347" data-name="Group 1347"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3227" data-name="Path 3227"
+                                                                    d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                                    transform="translate(0 -48.403)" fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                        <g id="Group_1350" data-name="Group 1350"
+                                                            transform="translate(0.228 52.243)">
+                                                            <g id="Group_1349" data-name="Group 1349"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3228" data-name="Path 3228"
+                                                                    d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                                    transform="translate(-6.746 -162.01)"
+                                                                    fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                                <div class="icon-folder">
+                                                    <div class="crop-div">
+                                                        <div class="folder-name" appHighlight
+                                                            [content]="item.value.name"
+                                                            [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                            matTooltip="{{item.value.name}}"> {{item.value.name}} </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseSearchAll>
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectedDataItem(item ,index)">
+
+                                                <ng-container *ngIf="item.checked">
+                                                    <svg class="icon-correct"
+                                                        [ngStyle]="{ display : item.checked ? 'flex' : 'none'}"
+                                                        height="15pt" viewBox="0 -46 417.81333 417" width="15pt"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"
+                                                            fill="#FD545A" />
+                                                    </svg>
+                                                </ng-container>
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="isLoading || item.value.isLoadingImage ; else elseLoadImg">
+                                                        <span class="loading-image">
+                                                            <div class="linear-background">
+                                                            </div>
+                                                        </span>
+                                                    </ng-container>
+                                                    <ng-template #elseLoadImg>
+                                                        <ng-container
+                                                            *ngIf="item.value.imageURL && item.value.imageURL !== undefined && item.value.imageURL !== null && item.value.imageURL !== ''; else elseBase64">
+                                                            <img class="icon-category"
+                                                                src="{{apiBaseURL+item.value.imageURL+'/image'}}"
+                                                                alt="">
+                                                        </ng-container>
+                                                        <ng-template #elseBase64>
+                                                            <div class="icon-category image-file-waste">
+                                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                                    style="width: 40%; height: auto;">
+                                                            </div>
+                                                        </ng-template>
+                                                    </ng-template>
+                                                </div>
+                                                <span class="name" appHighlight [content]="item.value.name"
+                                                    [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                    matTooltip="{{item.value.name}}"> {{item.value.name}} </span>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
+                                </ng-container>
+                                <ng-template #elseNotFound2>
+                                    <div class="body-data-category body-empty"
+                                        [class.active]="isListItem || arrListItem.length > 0" (click)="openListItem()">
+                                        <span class="add-item">+</span>
+                                        <span class="label-item">เพิ่มรายการแบบกำหนดเอง</span>
+                                    </div>
+                                </ng-template>
+                            </ng-container>
+                            <ng-template #elseisSearchAll>
+                                <ng-container *ngFor="let item of resStandardItem; let index = index;">
+                                    <ng-container *ngIf="item.value; else elseItem">
+                                        <ng-container *ngIf="item.type === 'STANDARDITEM_CATEGORY'; else elseSearchAll">
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectFolderData(item , false)">
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="isLoading || item.isLoadingImage ; else elseLoadImg">
+                                                        <span class="loading-image">
+                                                            <div class="linear-background">
+                                                            </div>
+                                                        </span>
+                                                    </ng-container>
+                                                    <ng-template #elseLoadImg>
+                                                        <ng-container
+                                                            *ngIf="item.imageURL && item.imageURL !== undefined && item.imageURL !== '' && item.imageURL !== null; else elseBase64">
+                                                            <img class="icon-category"
+                                                                src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                        </ng-container>
+                                                        <ng-template #elseBase64>
+                                                            <div class="icon-category image-file-waste">
+                                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                                    style="width: 40%; height: auto;">
+                                                            </div>
+                                                        </ng-template>
+                                                    </ng-template>
+                                                    <div class="notify-count" *ngIf="countItem(item) > 0">
+                                                        <div class="count-item">
+                                                            {{countItem(item)}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <svg class="svg-folder" xmlns="http://www.w3.org/2000/svg"
+                                                    width="17.305" height="14.033" viewBox="0 0 17.305 14.033">
+                                                    <g id="folder" transform="translate(0 -48.403)">
+                                                        <g id="Group_1348" data-name="Group 1348"
+                                                            transform="translate(0 48.403)">
+                                                            <g id="Group_1347" data-name="Group 1347"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3227" data-name="Path 3227"
+                                                                    d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                                    transform="translate(0 -48.403)" fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                        <g id="Group_1350" data-name="Group 1350"
+                                                            transform="translate(0.228 52.243)">
+                                                            <g id="Group_1349" data-name="Group 1349"
+                                                                transform="translate(0 0)">
+                                                                <path id="Path_3228" data-name="Path 3228"
+                                                                    d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                                    transform="translate(-6.746 -162.01)"
+                                                                    fill="#e65857" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                                <div class="icon-folder">
+                                                    <div class="crop-div">
+                                                        <div class="folder-name" appHighlight
+                                                            [content]="item.value.name"
+                                                            [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                            matTooltip="{{item.value.name}}"> {{item.value.name}} </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseSearchAll>
+                                            <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                                [class.active]="isListItem || arrListItem.length > 0"
+                                                (click)="selectedDataItem(item ,index)">
+                                                <div class="category-img">
+                                                    <ng-container
+                                                        *ngIf="isLoading || item.isLoadingImage ; else elseLoadImg">
+                                                        <span class="loading-image">
+                                                            <div class="linear-background">
+                                                            </div>
+                                                        </span>
+                                                    </ng-container>
+                                                    <ng-template #elseLoadImg>
+                                                        <ng-container
+                                                            *ngIf="item.imageURL && item.imageURL !== null; else elseBase64">
+                                                            <img class="icon-category"
+                                                                src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                        </ng-container>
+                                                        <ng-template #elseBase64>
+                                                            <div class="icon-category image-file-waste">
+                                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                                    style="width: 40%; height: auto;">
+                                                            </div>
+                                                        </ng-template>
+                                                    </ng-template>
+                                                </div>
+                                                <span class="name" appHighlight [content]="item.value.name"
+                                                    [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                    matTooltip="{{item.value.name}}"> {{item.value.name}} </span>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
+                                    <ng-template #elseItem>
+                                        <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
+                                            [class.active]="isListItem || arrListItem.length > 0"
+                                            (click)="selectFolderData(item , false)">
+                                            <div class="category-img">
+                                                <ng-container
+                                                    *ngIf="isLoading || item.isLoadingImage ; else elseLoadImg">
+                                                    <span class="loading-image">
+                                                        <div class="linear-background">
+                                                        </div>
+                                                    </span>
+                                                </ng-container>
+                                                <ng-template #elseLoadImg>
+                                                    <ng-container
+                                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== null && item.imageURL !== undefined; else elseBase64">
+                                                        <img class="icon-category"
+                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                    </ng-container>
+                                                    <ng-template #elseBase64>
+                                                        <div class="icon-category image-file-waste">
+                                                            <img src="../../../../assets/img/photo.png" alt=""
+                                                                style="width: 40%; height: auto;">
+                                                        </div>
+                                                    </ng-template>
+                                                </ng-template>
+                                                <div class="notify-count" *ngIf="countItem(item) > 0">
+                                                    <div class="count-item">
+                                                        {{countItem(item)}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <svg class="svg-folder" xmlns="http://www.w3.org/2000/svg" width="17.305"
+                                                height="14.033" viewBox="0 0 17.305 14.033">
+                                                <g id="folder" transform="translate(0 -48.403)">
+                                                    <g id="Group_1348" data-name="Group 1348"
+                                                        transform="translate(0 48.403)">
+                                                        <g id="Group_1347" data-name="Group 1347"
+                                                            transform="translate(0 0)">
+                                                            <path id="Path_3227" data-name="Path 3227"
+                                                                d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                                transform="translate(0 -48.403)" fill="#e65857" />
+                                                        </g>
+                                                    </g>
+                                                    <g id="Group_1350" data-name="Group 1350"
+                                                        transform="translate(0.228 52.243)">
+                                                        <g id="Group_1349" data-name="Group 1349"
+                                                            transform="translate(0 0)">
+                                                            <path id="Path_3228" data-name="Path 3228"
+                                                                d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                                transform="translate(-6.746 -162.01)" fill="#e65857" />
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <div class="icon-folder">
+                                                <div class="crop-div">
+                                                    <div class="folder-name" appHighlight [content]="item.name"
+                                                        [searchTerm]="query_conversation" [caseSensitive]="false"
+                                                        matTooltip="{{item.name}}"> {{item.name}} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </ng-container>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #elseIsOpen>
+            <div class="center-left mongha" id="centerleft">
+                <!-- <div class="center-left mongha" id="centerleft" [ngStyle]="{'width' : isListItem || arrListItem.length > 0 ? '50%' : '100%' }"> -->
+                <div class="doing-search open-folder">
+                    <!-- <div class="left"> -->
+                    <ng-container *ngIf="pathFolder">
+                        <div class="label-doing">
+                            <div class="active-hover" (click)="folderRoot()">
+                                <span class="folder-sub non-active">ทั้งหมด</span>
+                                <span class="sub">/</span>
+                            </div>
+                            <div class="active-hover" *ngFor="let path of pathFolder; let index = index"
+                                (click)="folderLink(index)">
+                                <span class="folder-sub" [class.non-active]="isIndexFolder === index">{{path.name ||
+                                    path.value.name }}</span>
+                                <span class="sub">{{index === pathFolder.length -1 ? "" : "/" }}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <!-- </div> -->
+                </div>
+                <div class="body-list-item">
+                    <div class="list-search-doing">
+                        <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0" matRipple
+                            [class.folder]="!isOpenFolder" [matRippleCentered]="'centered'" (click)="backCard()">
+                            <svg class="icon-back" xmlns="http://www.w3.org/2000/svg" width="19.441" height="33.049"
+                                viewBox="0 0 19.441 33.049">
+                                <g id="Group_2602" data-name="Group 2602"
+                                    transform="translate(5637.441 3171.049) rotate(180)">
+                                    <path id="chevron"
+                                        d="M19.773,16.524a1.834,1.834,0,0,1-.331,1.069L9.722,32.174a1.93,1.93,0,0,1-1.614.875H2.277A1.95,1.95,0,0,1,.332,31.1a1.834,1.834,0,0,1,.331-1.069l9-13.512-9-13.511A1.834,1.834,0,0,1,.332,1.943,1.95,1.95,0,0,1,2.277,0H8.109A1.93,1.93,0,0,1,9.722.874l9.72,14.581a1.833,1.833,0,0,1,.331,1.069Zm0,0"
+                                        transform="translate(5617.668 3138.001)" fill="#222e3f" />
+                                </g>
+                            </svg>
+                            ย้อนกลับ
+                            <ng-container *ngFor="let item of pathFolder; let index = index">
+                                <ng-container *ngIf="pathFolder.length - 1 === 0 ; else pathFolders">
+                                    <span class="path-name">ไปที่ ทั้งหมด</span>
+                                </ng-container>
+                                <ng-template #pathFolders>
+                                    <span class="path-name" *ngIf="pathFolder.length - 1  === index">ไปที่
+                                        {{item.name}}</span>
+                                </ng-template>
+                            </ng-container>
+                        </div>
+                        <ng-container *ngIf="resItemCategory">
+                            <ng-container *ngFor="let itemCategory of resItemCategory; let index = index;">
+                                <ng-container *ngIf="itemCategory.type === 'STANDARDITEM_CATEGORY'; else elseFolder">
+
+                                    <div class="body-data-category"
+                                        [class.active]="isListItem || arrListItem.length > 0" matRipple
+                                        [matRippleCentered]="'centered'"
+                                        (click)="selectFolderData(itemCategory.value, false , index)">
+                                        <svg class="svg-folder" xmlns="http://www.w3.org/2000/svg" width="17.305"
+                                            height="14.033" viewBox="0 0 17.305 14.033">
+                                            <g id="folder" transform="translate(0 -48.403)">
+                                                <g id="Group_1348" data-name="Group 1348"
+                                                    transform="translate(0 48.403)">
+                                                    <g id="Group_1347" data-name="Group 1347"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3227" data-name="Path 3227"
+                                                            d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                            transform="translate(0 -48.403)" fill="#e65857" />
+                                                    </g>
+                                                </g>
+                                                <g id="Group_1350" data-name="Group 1350"
+                                                    transform="translate(0.228 52.243)">
+                                                    <g id="Group_1349" data-name="Group 1349"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3228" data-name="Path 3228"
+                                                            d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                            transform="translate(-6.746 -162.01)" fill="#e65857" />
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </svg>
+
+                                        <div class="category-img">
+                                            <ng-container
+                                                *ngIf="isLoading || itemCategory.value.isLoadingImage ; else elseLoadImg">
+                                                <span class="loading-image">
+                                                    <div class="linear-background">
+                                                    </div>
+                                                </span>
+                                            </ng-container>
+                                            <ng-template #elseLoadImg>
+                                                <ng-container
+                                                    *ngIf="itemCategory.value.imageURL  && itemCategory.value.imageURL !== undefined && itemCategory.value.imageURL !== null && itemCategory.value.imageURL !== ''; else elseBase64">
+                                                    <img class="img-folder"
+                                                        src="{{apiBaseURL+itemCategory.value.imageURL+'/image'}}"
+                                                        alt="">
+                                                </ng-container>
+                                                <ng-template #elseBase64>
+                                                    <div class="img-folder image-file-waste">
+                                                        <img src="../../../../assets/img/photo.png" alt=""
+                                                            style="width: 40%; height: auto;">
+                                                    </div>
+                                                </ng-template>
+                                            </ng-template>
+
+                                            <div class="icon-folder">
+                                                <div class="notify-count" *ngIf="countItem(itemCategory) > 0">
+                                                    <div class="count-item">
+                                                        {{countItem(itemCategory)}}
+                                                    </div>
+                                                </div>
+
+                                                <div class="crop-div">
+                                                    <div class="folder-name" matTooltip="{{itemCategory.value.name}}">
+                                                        {{itemCategory.value.name}} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseFolder>
+                                    <div class="body-data-category"
+                                        [class.active]="isListItem || arrListItem.length > 0" matRipple
+                                        [matRippleCentered]="'centered'"
+                                        (click)="selectedDataItem(itemCategory ,index)">
+                                        <ng-container *ngIf="itemCategory.checked">
+                                            <svg class="icon-correct"
+                                                [ngStyle]="{ display : itemCategory.checked ? 'flex' : 'none'}"
+                                                height="15pt" viewBox="0 -46 417.81333 417" width="15pt"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"
+                                                    fill="#FD545A" />
+                                            </svg>
+                                        </ng-container>
+
+                                        <ng-container
+                                            *ngIf="itemCategory.value.imageURL && itemCategory.value.imageURL !== undefined && itemCategory.value.imageURL !== null && itemCategory.value.imageURL !== ''; else elseBase64">
+                                            <img class="icon-back img-folder"
+                                                src="{{apiBaseURL+itemCategory.value.imageURL+'/image'}}" alt="">
+                                        </ng-container>
+                                        <ng-template #elseBase64>
+                                            <div class="icon-back image-file-waste">
+                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                    style="width: 40%; height: auto;">
+                                            </div>
+                                        </ng-template>
+                                        <span class="item-name" appHighlight [content]="itemCategory.value.name"
+                                            [searchTerm]="query_conversation" [caseSensitive]="false"
+                                            matTooltip="{{itemCategory.value.name}}">
+                                            {{itemCategory.value.name}}
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </ng-container>
+                        </ng-container>
+                        <div class="body-data-category body-empty" [class.active]="isListItem || arrListItem.length > 0"
+                            (click)="openListItem()">
+                            <div class="add-item">
+                                <span class="material-icons"> add </span>
+                            </div>
+                            <span class="label-item">เพิ่มรายการแบบกำหนดเอง</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="center-right mongha" [class.active]="isListItem" id="centerright">
+            <!-- [ngStyle]="{'display' : isListItem || arrListItem.length > 0 ? 'flex' : 'none' }" -->
+            <!-- <div class="center-right" [ngStyle]="{'display' : isListItem || arrListItem.length > 0 ? 'flex' : 'none' }"> -->
+            <div class="doing-items">
+                <div class="label-doing-left">
+                    รายการสิ่งที่มองหา
+                </div>
+                <div class="doing-count-item">
+                    {{arrListItem.length}} รายการ
+                </div>
+            </div>
+            <div class="body-list-items">
+                <cdk-drop-list [cdkDropListData]="arrListItem" (cdkDropListDropped)="dropToList($event)"
+                    class="list-sorted" id="list1">
+                    <ng-container *ngFor="let listItem of arrListItem; let index = index;">
+                        <ng-container *ngIf="listItem.isAddItem; else elseisAddItem">
+                            <div class="list-sorted-item" cdkDrag>
+                                <!-- <div class="list-sorted-item" cdkDrag [class.msg-error]="msgError"> -->
+                                <div class="body-list"
+                                    [ngStyle]="{'width': 'calc(100% - ' +listItemUnit2.offsetWidth + 'px)'}">
+                                    <div class="list-items">
+                                        <div class="list-img" #listImg2>
+                                            <svg class="icon-move" xmlns="http://www.w3.org/2000/svg" width="53"
+                                                height="82" viewBox="0 0 53 82">
+                                                <g id="Group_1425" data-name="Group 1425"
+                                                    transform="translate(3329 -1090.033)">
+                                                    <rect id="Rectangle_626" data-name="Rectangle 626" width="23"
+                                                        height="23" transform="translate(-3329 1090.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_632" data-name="Rectangle 632" width="23"
+                                                        height="24" transform="translate(-3329 1119.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_634" data-name="Rectangle 634" width="23"
+                                                        height="23" transform="translate(-3329 1149.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_630" data-name="Rectangle 630" width="24"
+                                                        height="23" transform="translate(-3300 1090.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_631" data-name="Rectangle 631" width="24"
+                                                        height="24" transform="translate(-3300 1119.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_633" data-name="Rectangle 633" width="24"
+                                                        height="23" transform="translate(-3300 1149.033)"
+                                                        fill="#bfbfbf" />
+                                                </g>
+                                            </svg>
+                                            <div class="wrapper-category">
+                                                <img class="img-category" src="../../../../assets/img/pic2.svg" alt="">
+                                            </div>
+                                        </div>
+
+                                        <div class="list-data"
+                                            [ngStyle]="{'width': 'calc(100% - ' +listImg2.offsetWidth + 'px)'}">
+                                            <input #itemName class="input-add" type="text"
+                                                id="itemNameCustomize{{index}}" [(ngModel)]="listItem.itemName"
+                                                placeholder="สิ่งที่กำลังมองหาแบบกำหนดเอง"
+                                                (keyup)="keyUpText(itemName.value , index , 'name')" shake
+                                                [shake]="isName">
+                                            <div class="list-category">
+                                                <div class="item-amount">
+                                                    <input #itemQuantity class="item-count"
+                                                        id="itemQuantityCustomize{{index}}" type="number" min="1"
+                                                        [(ngModel)]="listItem.quantity"
+                                                        (keyup)="keyUpText(itemQuantity.value , index , 'qty')">
+                                                </div>
+                                                <div class="item-amount">
+                                                    <input type="text" class="item-unit-customize"
+                                                        id="itemUnit{{index}}" #itemUnit [(ngModel)]="listItem.unit"
+                                                        [shake]="isUnit" placeholder="หน่วย" shake [shake]="isUnit"
+                                                        (keyup)="keyUpText(itemUnit.value , index , 'unit')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="list-item-unit" #listItemUnit2>
+                                    <svg class="icon-trash" (click)="deleteRowItem(index)" matRipple
+                                        [matRippleCentered]="'centered'" xmlns="http://www.w3.org/2000/svg"
+                                        width="78.566" height="96.194" viewBox="0 0 78.566 96.194">
+                                        <g id="trash" transform="translate(0 0)">
+                                            <path id="Path_3396" data-name="Path 3396"
+                                                d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                transform="translate(0 0)" fill="#858585" />
+                                            <path id="Path_3397" data-name="Path 3397"
+                                                d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                transform="translate(-217.889 -134.468)" fill="#858585" />
+                                            <path id="Path_3398" data-name="Path 3398"
+                                                d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                transform="translate(-85.917 -134.471)" fill="#858585" />
+                                            <path id="Path_3399" data-name="Path 3399"
+                                                d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                transform="translate(-157.758 -134.47)" fill="#858585" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseisAddItem>
+                            <div cdkDrag class="list-sorted-item">
+                                <div class="body-list"
+                                    [ngStyle]="{'width': 'calc(100% - ' +listItemUnit.offsetWidth + 'px)'}">
+                                    <div class="list-items">
+                                        <div class="list-img" #listImg>
+                                            <svg class="icon-move" xmlns="http://www.w3.org/2000/svg" width="53"
+                                                height="82" viewBox="0 0 53 82">
+                                                <g id="Group_1425" data-name="Group 1425"
+                                                    transform="translate(3329 -1090.033)">
+                                                    <rect id="Rectangle_626" data-name="Rectangle 626" width="23"
+                                                        height="23" transform="translate(-3329 1090.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_632" data-name="Rectangle 632" width="23"
+                                                        height="24" transform="translate(-3329 1119.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_634" data-name="Rectangle 634" width="23"
+                                                        height="23" transform="translate(-3329 1149.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_630" data-name="Rectangle 630" width="24"
+                                                        height="23" transform="translate(-3300 1090.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_631" data-name="Rectangle 631" width="24"
+                                                        height="24" transform="translate(-3300 1119.033)"
+                                                        fill="#bfbfbf" />
+                                                    <rect id="Rectangle_633" data-name="Rectangle 633" width="24"
+                                                        height="23" transform="translate(-3300 1149.033)"
+                                                        fill="#bfbfbf" />
+                                                </g>
+                                            </svg>
+                                            <div class="wrapper-category">
+                                                <ng-container
+                                                    *ngIf="listItem.imageURL !== '' && listItem.imageURL !== null && listItem.imageURL !== undefined else elseImage">
+                                                    <img class="img-category"
+                                                        src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
+                                                </ng-container>
+                                                <ng-template #elseImage>
+                                                    <img class="img-category" src="../../../../assets/img/pic2.svg"
+                                                        alt="">
+                                                </ng-template>
+
+                                            </div>
+                                        </div>
+                                        <div class="list-data"
+                                            [ngStyle]="{'width': 'calc(100% - ' +listImg.offsetWidth + 'px)'}">
+                                            <span class="list-item-name"
+                                                matTooltip="{{listItem.itemName}}">{{listItem.itemName ||
+                                                listItem.name}}</span>
+                                            <div class="list-category">
+                                                <div class="item-amount">
+                                                    <input #itemQty class="item-count" type="number" min="1"
+                                                        name="itemAmount" [(ngModel)]="listItem.quantity">
+                                                </div>
+                                                <div class="item-amount">
+                                                    <input #itemUnitPrice type="text" placeholder="หน่วย"
+                                                        class="item-unit" id="itemUnitPrice{{index}}"
+                                                        value="{{listItem.unit}}"
+                                                        (keyup)="keyUpText(itemUnitPrice.value , index , 'unit')" shake
+                                                        [shake]="isUnitSelect">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="list-item-unit" #listItemUnit>
+                                    <svg class="icon-trash" matRipple [matRippleCentered]="'centered'"
+                                        (click)="deleteItem(listItem , index)" xmlns="http://www.w3.org/2000/svg"
+                                        width="78.566" height="96.194" viewBox="0 0 78.566 96.194">
+                                        <g id="trash" transform="translate(0 0)">
+                                            <path id="Path_3396" data-name="Path 3396"
+                                                d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                transform="translate(0 0)" fill="#858585" />
+                                            <path id="Path_3397" data-name="Path 3397"
+                                                d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                transform="translate(-217.889 -134.468)" fill="#858585" />
+                                            <path id="Path_3398" data-name="Path 3398"
+                                                d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                transform="translate(-85.917 -134.471)" fill="#858585" />
+                                            <path id="Path_3399" data-name="Path 3399"
+                                                d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                transform="translate(-157.758 -134.47)" fill="#858585" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </cdk-drop-list>
+            </div>
+        </div>
+    </div>
+    <div class="bottom" #bottomConfirm>
+        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [bgColor]="'#F8F7F2'" [width]="'80pt'"
+            [color]="'#212721'" (click)="onClose()">
+        </spanboon-button>
+        <spanboon-button [text]="'ยืนยัน'" [bgColor]="'#FD545A'" [width]="'80pt'" (click)="onConfirm()">
+        </spanboon-button>
+    </div>
+</div>

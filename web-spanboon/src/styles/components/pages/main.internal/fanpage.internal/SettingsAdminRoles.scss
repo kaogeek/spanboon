@@ -1,0 +1,472 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.fanpage-admin-roles {
+    // padding: 20pt 40pt 0 40pt;
+
+    > .header-admin {
+        background: rgba($bg-grey, 0.3);
+        padding: 20pt 40pt;
+
+        > .head {
+            font-family: "Kanit-500";
+            font-size: 22px;
+            color: $black;
+        }
+
+        > .title {
+            font-family: "Kanit-300";
+            font-size: 14px;
+            color: rgba($black, 0.5);
+            margin-top: 5pt;
+        }
+    }
+
+    > .body-admin {
+        > .admin-y1 {
+            padding: 15pt 40pt;
+
+            > .y1-title {
+                font-size: 18px;
+                font-family: "Kanit-400";
+            }
+
+            > .set-your {
+                margin-top: 15pt;
+                // padding-bottom: 15pt;
+                border-bottom: 1px solid $border-color;
+
+                > .set-how-title {
+                    width: inherit;
+                    height: auto;
+                    border: 0.7pt solid #ffc107;
+                    border-radius: 4px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+
+                    > .please-note {
+                        padding: 5pt;
+                        background: #ffc107;
+                        color: $white;
+                        font-size: 16pt;
+                        width: 16pt;
+                        height: 16pt;
+
+                        &::selection {
+                            background: transparent;
+                        }
+                    }
+
+                    > .how-title {
+                        color: #ffc107;
+                        font-size: 14px;
+                        font-family: "Kanit-500";
+                        padding: 5pt 8pt;
+                    }
+                }
+
+                > .set-your-admin {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    margin-top: 5pt;
+
+                    > .form-field {
+                        flex: 1 0 0px;
+
+                        > .search-form {
+                            position: relative;
+                            height: 26pt;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+
+                            > .profile {
+                                height: 22pt;
+                                width: 22pt;
+                                position: absolute;
+                                z-index: 1;
+                                left: 2pt;
+                                border-radius: 50%;
+                            }
+
+                            > .search-input {
+                                height: 100%;
+                                width: 100%;
+                                font-family: "Kanit-400";
+                                font-size: 16px;
+                                border-radius: 4px 0 0 4px;
+                                border: 0.7pt solid $border-color;
+                                padding: 0 30pt 0 10pt;
+                                margin: 0;
+                            }
+
+                            > .search-close {
+                                position: absolute;
+                                z-index: 1;
+                                right: 6pt;
+                                width: 16pt;
+                                height: 16pt;
+                                font-size: 16pt;
+                                padding: 2px;
+                                cursor: pointer;
+                                border-radius: 50%;
+                                font-weight: 900;
+                                background: transparent;
+                                color: rgba($black, 0.4);
+
+                                &:hover {
+                                    color: rgba($black, 1);
+                                }
+                            }
+                        }
+                    }
+
+                    > .select-roles {
+                        > .mat-select {
+                            width: 100pt;
+                            height: 26pt;
+                            border: 0.7pt solid $border-color;
+                            border-left: 0px;
+                            border-radius: 0 4px 4px 0;
+                            min-width: 50pt;
+                            width: auto;
+                            padding: 0 5pt 0 10pt;
+                            background: $bg-fog-gray2;
+
+                            > .mat-select-trigger {
+                                height: 100%;
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: space-between;
+                                align-items: center;
+
+                                > .mat-select-value {
+                                    display: block;
+                                    max-width: unset;
+                                    width: auto;
+                                    overflow: unset;
+                                    text-overflow: unset;
+                                    white-space: unset;
+
+                                    > .mat-select-value-text {
+                                        padding-right: 5pt;
+                                        font-size: 16px;
+                                        font-family: "Kanit-500";
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    > .save-card {
+                        margin-left: 5pt;
+                        width: 70pt;
+                        min-width: 70pt;
+                        height: 26pt;
+                        color: $white;
+                        background: $color-warm-red;
+                        opacity: 0.7;
+                        font-size: 16px;
+                        font-family: "Kanit-500";
+
+                        &.active {
+                            opacity: 1;
+
+                            &:hover {
+                                opacity: 0.9;
+                            }
+                        }
+                    }
+                }
+
+                > .title-power {
+                    font-size: 14px;
+                    font-family: "Kanit-500";
+                    color: rgba($black, 0.5);
+                    margin: 5pt 0 20pt 0;
+                }
+
+                > .true-selected {
+                    margin-bottom: 20pt;
+
+                    > .top-selected {
+                        > .header {
+                            font-family: "Kanit-400";
+                            font-size: 16px;
+                            color: $black;
+                        }
+
+                        > .title {
+                            font-size: 14px;
+                            font-family: "Kanit-500";
+                            color: rgba($black, 0.5);
+                        }
+                    }
+
+                    > .body-selected {
+                        > .card-selected {
+                            width: 100%;
+                            border-bottom: 1px solid $border-color;
+
+                            &:last-child {
+                                border-bottom: none;
+                            }
+
+                            > .selected-con {
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: flex-start;
+                                align-items: center;
+                                padding: 8pt 0;
+
+                                > .image-profile {
+                                    width: 55px;
+                                    height: 55px;
+                                    border-radius: 50%;
+                                    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+                                    color: $white;
+                                    font-family: "Kanot-500";
+                                    font-size: 16px;
+                                }
+                                > .not-image {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: $color-warm-red;
+                                    font-family: "Kanit-500";
+                                    font-family: 16px;
+                                }
+
+                                > .profile {
+                                    padding: 0 15pt 0 7pt;
+                                    flex: 1 0 0px;
+
+                                    > .name {
+                                        font-family: "Kanit-400";
+                                        font-size: 16px;
+                                        color: $black;
+                                    }
+
+                                    > .access {
+                                        font-size: 14px;
+                                        font-family: "Kanit-500";
+                                        color: rgba($black, 0.5);
+                                    }
+                                }
+
+                                > .edit-selected {
+                                    font-size: "16px";
+                                    font-family: "Kanit-500";
+                                    color: $black;
+                                    width: 70pt;
+                                    min-width: 70pt;
+                                    background: $bg-fog-gray2;
+                                }
+                            }
+
+                            > .edit {
+                                background: rgba($bg-fog-gray, 0.4);
+                                padding: 10pt;
+                                border-bottom: 1px solid $border-color;
+                                &.active {
+                                    display: none;
+                                }
+
+                                > .edit-top {
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    flex-wrap: wrap;
+                                    > .edit-mat-select {
+                                        width: 100%;
+                                        display: flex;
+                                        > .card-edit {
+                                            position: relative;
+                                            height: 26pt;
+                                            display: flex;
+                                            flex-direction: row;
+                                            align-items: center;
+                                            width: 100%;
+
+                                            > .profile {
+                                                height: 22pt;
+                                                width: 22pt;
+                                                position: absolute;
+                                                border-radius: 50%;
+                                                z-index: 1;
+                                                left: 2pt;
+                                            }
+                                            > .not-image {
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                background-color: $color-warm-red;
+                                                color: $white;
+                                                font-family: "Kanit-500";
+                                                font-size: 16px;
+                                            }
+
+                                            > span {
+                                                height: 100%;
+                                                width: 100%;
+                                                font-family: "Kanit-400";
+                                                font-size: 16px;
+                                                border-radius: 4px 0 0 4px;
+                                                border: 0.7pt solid #d3d6db;
+                                                padding: 0 10pt 0 30pt;
+                                                display: flex;
+                                                align-items: center;
+                                                background: $white;
+                                            }
+                                        }
+
+                                        > .select-edit {
+                                            > .mat-select {
+                                                width: 100pt;
+                                                height: 26pt;
+                                                border: 0.7pt solid #d3d6db;
+                                                border-left: 0px;
+                                                border-radius: 0 4px 4px 0;
+                                                min-width: 50pt;
+                                                width: calc(100% - 15pt);
+                                                padding: 0 5pt 0 10pt;
+                                                background: $bg-fog-gray2;
+
+                                                > .mat-select-trigger {
+                                                    height: 100%;
+                                                    display: flex;
+                                                    flex-direction: row;
+                                                    justify-content: space-between;
+                                                    align-items: center;
+
+                                                    > .mat-select-value {
+                                                        display: block;
+                                                        max-width: unset;
+                                                        width: auto;
+                                                        overflow: unset;
+                                                        text-overflow: unset;
+                                                        white-space: unset;
+
+                                                        > .mat-select-value-text {
+                                                            padding-right: 5pt;
+                                                            font-family: "Kanit-500";
+                                                            font-size: 14px;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    > .edit-title {
+                                        font-family: "Kanit-400";
+                                        font-size: 14px;
+                                        color: rgba($black, 0.5);
+                                        margin-top: 3pt;
+                                        padding-bottom: 20pt;
+                                        border-bottom: 1px solid $border-color;
+                                    }
+                                }
+
+                                > .edit-bottom {
+                                    margin-top: 10pt;
+                                    display: flex;
+                                    flex-direction: row;
+                                    justify-content: space-between;
+                                    align-items: center;
+
+                                    > .delete-card {
+                                        color: $color-warm-red;
+                                        background: transparent;
+                                        font-size: 16px;
+                                        font-family: "Kanit-500";
+                                        width: 22pt;
+                                        height: 14pt;
+                                        @include pointer();
+                                        &:hover {
+                                            svg , g, path { 
+                                                    fill: $color-warm-red; 
+                                            }
+                                            // > .mat-button-wrapper {
+                                            //     text-decoration: underline;
+                                            // }
+                                        }
+                                    }
+
+                                    > .edit-bottom-right {
+                                        > .cancel-card {
+                                            font-size: 16px;
+                                            font-family: "Kanit-500";
+                                            color: $black;
+                                            width: 70pt;
+                                            min-width: 70pt;
+                                            background: $bg-fog-gray2;
+                                        }
+
+                                        > .save-card {
+                                            margin-left: 5pt;
+                                            width: 70pt;
+                                            min-width: 70pt;
+                                            color: $white;
+                                            background: $color-warm-red;
+                                            opacity: 0.7;
+                                            font-size: 16px;
+                                            font-family: "Kanit-500";
+
+                                            &.active {
+                                                opacity: 1;
+
+                                                &:hover {
+                                                    opacity: 0.9;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.autocom-dropdow {
+    > .mat-option {
+        padding: 5pt !important;
+
+        &:hover {
+            background: rgba($color-warm-red, 0.3);
+
+            &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+                background: rgba($color-warm-red, 0.3);
+            }
+        }
+
+        > .mat-option-text {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+
+            > .option-img {
+                height: 26pt;
+                width: 26pt;
+                border-radius: 50%;
+            }
+
+            > span {
+                margin-left: 6pt;
+            }
+        }
+    }
+}

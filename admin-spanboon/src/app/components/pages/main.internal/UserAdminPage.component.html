@@ -1,0 +1,78 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<mat-drawer-container class="example-container" [hasBackdrop]="true">
+    <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+        <div class="form-admin">
+            <div class="wrapper">
+                <div class="form-header">
+                    <ng-container *ngIf="orinalDataForm.email.trim() === ''; else elseTitle">
+                        <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                    </ng-container>
+                    <ng-template #elseTitle>
+                        <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                    </ng-template>
+                </div>
+                <div class="form-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Email *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="dataForm.email" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.email.trim() === ''">
+                                        กรุณาใส่ Email
+                                    </div>
+                                    <label>Username *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="dataForm.displayName" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.displayName.trim() === ''">
+                                        กรุณาใส่ Username
+                                    </div>
+                                    <label>Password *</label>
+                                    <input type="password" class="form-control" [(ngModel)]="dataForm.password" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.password.trim() === ''">
+                                        กรุณาใส่ Password
+                                    </div>
+                                    <label>firstName *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="dataForm.firstName" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.firstName.trim() === ''">
+                                        กรุณาใส่ FirstName
+                                    </div>
+                                    <label>LastName *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="dataForm.lastName" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.lastName.trim() === ''">
+                                        กรุณาใส่ LastName
+                                    </div>
+                                    <label>CitizenId *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="dataForm.citizenId" [ngModelOptions]="{standalone: true}">
+                                    <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.citizenId.trim() === ''">
+                                        กรุณาใส่ CitizenId
+                                    </div>
+                                    <label>Gender *</label>
+                                    <mat-radio-group [(ngModel)]="dataForm.gender" [ngModelOptions]="{standalone: true}">
+                                        <br/>
+                                        <mat-radio-button [value]="'male'">ชาย</mat-radio-button>
+                                        <mat-radio-button [value]="'female'">หญิง</mat-radio-button>
+                                    </mat-radio-group>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="wrapper-action">
+                    <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                    <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </mat-drawer>
+    <mat-drawer-content>
+        <div class="main-content">
+            <admin-table-component #table [fieldSearch]="fieldSearch" [userAdmin]="'true'" [facade]="pageUserFacade" [title]="'ผู้ดูแล'" (create)="clickCreateForm()" [fieldTable]="fieldTable" [actions]="actions" (ban)="clickBan($event)"></admin-table-component>
+        </div>
+    </mat-drawer-content>
+</mat-drawer-container>

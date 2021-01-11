@@ -1,0 +1,162 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+@import "mixins";
+@import "~rfs/scss";
+@import "variable";
+@import "components/components";
+
+.phx-preload {
+  // background-color: #a1a1a1 !important;
+  // position: relative;
+  animation-duration: 0.8s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #a1a1a1;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background-size: 1000px 104px;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.TooltipShow {
+  width: 1px;
+  z-index: 2;
+  height: 1px;
+  background-color: rgba(0, 0, 255, 0);
+}
+
+.loading {
+  width: 100%;
+  // height: 100vh;
+  height: 338px;
+  background: linear-gradient(270deg, #f1f1f1, #b4b4b4, #f1f1f1);
+  background-size: 200% 100%;
+
+  animation: AnimationLoad 5s ease infinite;
+}
+
+@keyframes AnimationLoad {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+  color: $white;
+  background: $color-warm-red;
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+  background: rgba($color-warm-red, 0.5);
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+  background: $color-warm-red;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  background-color: $color-warm-red;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $color-warm-red;
+}
+
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
+  background: $color-warm-red;
+}
+
+.mat-form-field.mat-focused.mat-primary .mat-select-arrow {
+  color: $color-warm-red;
+}
+
+.mat-form-field.mat-focused .mat-form-field-ripple {
+  background: $black;
+}
+
+.mat-select-arrow {
+  color: $color-warm-red;
+}
+
+.dis {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+// drag-drop
+
+.example-list {
+  width: 500px;
+  max-width: 100%;
+  border: solid 1px #ccc;
+  min-height: 60px;
+  display: block;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-custom-placeholder {
+  background: rgb(151, 43, 43);
+  border: dotted 3px #999;
+  min-height: 60px;
+  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}

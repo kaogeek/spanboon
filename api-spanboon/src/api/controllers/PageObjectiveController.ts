@@ -1,0 +1,423 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
+ */
+
+import 'reflect-metadata';
+import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete } from 'routing-controllers';
+import { ResponseUtil } from '../../utils/ResponseUtil';
+import { PageObjectiveService } from '../services/PageObjectiveService';
+import { PageObjective } from '../models/PageObjective';
+import { CreatePageObjectiveRequest } from './requests/CreatePageObjectiveRequest';
+import { UpdatePageObjectiveRequest } from './requests/UpdatePageObjectiveRequest';
+import { ObjectID } from 'mongodb';
+import { AssetService } from '../services/AssetService';
+import { Asset } from '../models/Asset';
+import { ASSET_SCOPE, ASSET_PATH } from '../../constants/AssetScope';
+import { FileUtil } from '../../utils/FileUtil';
+import { ObjectUtil } from '../../utils/ObjectUtil';
+import { HashTag } from '../models/HashTag';
+import { HashTagService } from '../services/HashTagService';
+import moment from 'moment';
+import { FindHashTagRequest } from './requests/FindHashTagRequest';
+
+@JsonController('/objective')
+export class ObjectiveController {
+    constructor(
+        private pageObjectiveService: PageObjectiveService,
+        private hashTagService: HashTagService,
+        private assetService: AssetService
+    ) { }
+
+    // Find PageObjective API
+    /**
+     * @api {get} /api/objective/:id Find PageObjective API
+     * @apiGroup PageObjective
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully get PageObjective"
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/objective/:id
+     * @apiErrorExample {json} PageObjective error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id')
+    public async findObjective(@Param('id') id: string, @Res() res: any): Promise<any> {
+        let objective: PageObjective;
+
+        try {
+            const objId = new ObjectID(id);
+            objective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
+        } catch (ex) {
+            objective = await this.pageObjectiveService.findOne({ where: { title: id } });
+        }
+
+        if (objective) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', objective);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable got PageObjective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    /**
+     * @api {post} /api/objective Create PageObjective API
+     * @apiGroup PageObjective
+     * @apiParam (Request body) {String} name name
+     * @apiParamExample {json} Input
+     * {
+     *      "name" : "",
+     *      "category" : [
+     *          {
+     *              "name": "",
+     *              "description": ""
+     *          }
+     *      ]
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully create PageObjective",
+     *      "data": "{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/objective
+     * @apiErrorExample {json} Unable create PageObjective
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/')
+    @Authorized('user')
+    public async createObjective(@Body({ validate: true }) objectives: CreatePageObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const pageId = new ObjectID(objectives.pageId);
+        const title = objectives.title;
+        const detail = objectives.detail;
+        const name = objectives.hashTag;
+        const today = moment().toDate();
+        let hashTag;
+
+        const masterHashTag: HashTag = await this.hashTagService.findOne({ name });
+
+        if (masterHashTag !== null && masterHashTag !== undefined) {
+            hashTag = new ObjectID(masterHashTag.id);
+        } else {
+            const newHashTag: HashTag = new HashTag();
+            newHashTag.name = name;
+            newHashTag.lastActiveDate = today;
+            newHashTag.count = 0;
+            newHashTag.iconURL = '';
+
+            const createHashTag = await this.hashTagService.create(newHashTag);
+            hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
+        }
+
+        const data: PageObjective = await this.pageObjectiveService.findOne({ pageId, $or: [{ title }, { hashTag }] });
+
+        if (data !== null && data !== undefined) {
+            if (data.title === title) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
+                return res.status(400).send(errorResponse);
+            }
+
+            if (data.hashTag === hashTag) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', hashTag);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
+        const fileName = userObjId + FileUtil.renameFile();
+        const assets = objectives.asset;
+        let assetCreate;
+
+        if (assets !== null && assets !== undefined) {
+            const asset = new Asset();
+            asset.userId = userObjId;
+            asset.fileName = fileName;
+            asset.scope = ASSET_SCOPE.PUBLIC;
+            asset.data = assets.data;
+            asset.size = assets.size;
+            asset.mimeType = assets.mimeType;
+            asset.expirationDate = null;
+
+            assetCreate = await this.assetService.create(asset);
+        }
+
+        const objective: PageObjective = new PageObjective();
+        objective.pageId = pageId;
+        objective.title = title;
+        objective.detail = detail;
+        objective.hashTag = hashTag;
+        objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+
+        const result: any = await this.pageObjectiveService.create(objective);
+
+        if (result) {
+            const newObjectiveHashTag = new ObjectID(result.hashTag);
+
+            const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
+            result.hashTag = objectiveHashTag.name;
+
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // Search PageObjective
+    /**
+     * @api {post} /api/objective/search Search PageObjective API
+     * @apiGroup PageObjective
+     * @apiParam (Request body) {number} limit limit
+     * @apiParam (Request body) {number} offset offset
+     * @apiParam (Request body) {String} select select
+     * @apiParam (Request body) {String} relation relation
+     * @apiParam (Request body) {String} whereConditions whereConditions
+     * @apiParam (Request body) {boolean} count count (0=false, 1=true)
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Successfully get objective search",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"
+     *  }
+     * @apiSampleRequest /api/objective/search
+     * @apiErrorExample {json} Search PageObjective error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/search')
+    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @Res() res: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+
+        const hashTag = search.hashTag;
+        const filter = search.filter;  
+        const hashTagIdList = [];
+        const hashTagMap = {};
+        let hashTagList: HashTag[];
+
+        if (hashTag !== null && hashTag !== undefined && hashTag !== '') {
+            hashTagList = await this.hashTagService.find({ name: { $regex: '.*' + hashTag + '.*', $options: 'si' } });
+        } else {
+            hashTagList = await this.hashTagService.find();
+        }  
+
+        if (hashTagList !== null && hashTagList !== undefined && hashTagList.length > 0) {
+            for (const masterHashTag of hashTagList) {
+                const id = masterHashTag.id;
+                hashTagMap[id] = masterHashTag;
+                hashTagIdList.push(new ObjectID(id));
+            }
+        }
+
+        let objectiveLists: PageObjective[];
+        let objectiveStmt;
+
+        if (Object.keys(filter.whereConditions).length > 0 && filter.whereConditions !== null && filter.whereConditions !== undefined) { 
+            const pageId = filter.whereConditions.pageId;
+            let pageObjId;
+
+            if (pageId !== null && pageId !== undefined && pageId !== '') {
+                pageObjId = new ObjectID(filter.whereConditions.pageId);
+            }
+
+            if (pageObjId !== null && pageObjId !== undefined) {
+                objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
+            }
+
+            objectiveLists = await this.pageObjectiveService.find(objectiveStmt); 
+        } else { 
+            objectiveLists = await this.pageObjectiveService.search(filter); 
+        }
+
+        if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
+            objectiveLists.map((data) => {
+                const hashTagKey = data.hashTag;
+                const objective = hashTagMap[hashTagKey];
+
+                if (objective) {
+                    const hashTagName = objective.name;
+                    data.hashTag = hashTagName;
+                }
+            });
+
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', objectiveLists);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Search PageObjective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // Update PageObjective API
+    /**
+     * @api {put} /api/objective/:id Update PageObjective API
+     * @apiGroup PageObjective
+     * @apiHeader {String} Authorization
+     * @apiParam (Request body) {String} title name name
+     * @apiParamExample {json} Input
+     * {
+     *      "name" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully updated PageObjective.",
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/objective/:id
+     * @apiErrorExample {json} Update PageObjective error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Put('/:id')
+    @Authorized('user')
+    public async updateObjective(@Param('id') id: string, @Body({ validate: true }) objectives: UpdatePageObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        let title = objectives.title;
+        let detail = objectives.detail;
+        const name = objectives.hashTag;
+        const objId = new ObjectID(id);
+        const userObjId = new ObjectID(req.user.id);
+        const pageId = new ObjectID(objectives.pageId);
+        const newFileName = userObjId + FileUtil.renameFile() + objId;
+        const assetFileName = newFileName;
+        const today = moment().toDate();
+        const updatedDate = today;
+
+        let hashTagObjId;
+        let masterHashTag: HashTag;
+        let hashTag;
+
+        if (name !== null && name !== undefined && name !== '') {
+            hashTagObjId = new ObjectID(hashTagObjId);
+            masterHashTag = await this.hashTagService.findOne({ name });
+        }
+
+        if (masterHashTag !== null && masterHashTag !== undefined) {
+            hashTag = new ObjectID(masterHashTag.id);
+        } else {
+            const newHashTag: HashTag = new HashTag();
+            newHashTag.name = name;
+            newHashTag.lastActiveDate = today;
+            newHashTag.count = 0;
+            newHashTag.iconURL = '';
+
+            const createHashTag = await this.hashTagService.create(newHashTag);
+            hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
+        }
+
+        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId, $or: [{ title }, { hashTag }] } });
+
+        if (objectiveUpdate === null || objectiveUpdate === undefined) {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
+        }
+
+        if (title === null || title === undefined) {
+            title = objectiveUpdate.title;
+        }
+
+        if (detail === null || detail === undefined) {
+            detail = objectiveUpdate.detail;
+        }
+
+        const objectiveIconURL = objectiveUpdate.iconURL;
+        const objectiveAsset = objectives.asset;
+        let assetData;
+        let assetMimeType;
+        let assetSize;
+        let assetResult;
+        let assetId;
+        let newAssetId;
+        let iconURL;
+
+        if (objectiveAsset !== null && objectiveAsset !== undefined) {
+            assetData = objectiveAsset.data;
+            assetMimeType = objectiveAsset.mimeType;
+            assetSize = objectiveAsset.size;
+
+            if (objectiveIconURL !== null && objectiveIconURL !== undefined) {
+                assetId = new ObjectID(objectiveIconURL.split(ASSET_PATH)[1]);
+
+                const assetQuery = { _id: assetId, userId: userObjId };
+                const newAssetValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
+                assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                newAssetId = assetId;
+            } else {
+                const asset = new Asset();
+                asset.userId = userObjId;
+                asset.data = assetData;
+                asset.mimeType = assetMimeType;
+                asset.fileName = assetFileName;
+                asset.size = assetSize;
+                asset.scope = ASSET_SCOPE.PUBLIC;
+                assetResult = await this.assetService.create(asset);
+                newAssetId = assetResult.id;
+            }
+
+            if (assetResult) {
+                iconURL = assetResult ? ASSET_PATH + newAssetId : '';
+            }
+        } else {
+            iconURL = objectiveIconURL;
+        }
+
+        const updateQuery = { _id: objId, pageId };
+        const newValue = { $set: { title, detail, iconURL, hashTag } };
+        const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+
+        if (objectiveSave) {
+            const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId } });
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', objectiveUpdated));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
+        }
+    }
+
+    /**
+     * @api {delete} /api/objective/:id Delete PageObjective API
+     * @apiGroup PageObjective
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Delete PageObjective.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/objective/:id
+     * @apiErrorExample {json} Delete PageObjective Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Delete('/:id')
+    @Authorized('user')
+    public async deleteObjective(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        const objective: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
+
+        if (!objective) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Invalid PageObjective Id', undefined));
+        }
+
+        const query = { _id: objId };
+        const deleteObjective = await this.pageObjectiveService.delete(query);
+
+        if (deleteObjective) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
+        }
+    }
+} 

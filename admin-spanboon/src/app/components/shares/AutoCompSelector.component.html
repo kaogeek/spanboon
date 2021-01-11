@@ -1,0 +1,34 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="wrapper-autocomp-selector">
+        <div class="wrapper-selector">
+            <div class="selected" *ngFor="let selected of data[this.field]">
+                <span>
+                    {{selected.name ? selected.name : selected.title}}
+                </span>
+                <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="changeSelect(selected, true)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+        </div>
+    <div class="wrapper-autocomp">
+        <mat-form-field class="autocomp">
+            <input #inPut type="text" placeholder="{{title}}" matInput>
+            <button mat-button *ngIf="inPut.value !== ''" matSuffix mat-icon-button aria-label="Clear" (click)="clearAutoComp()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <div class="wrapper-checkbox" [class.active]="options.length > 0">
+            <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+            <ng-container *ngIf="!isLoading">
+                <mat-checkbox *ngFor="let option of options" [(ngModel)]="option.selected"
+                    (change)="changeSelect(option)">{{option.name ? option.name : option.title}}</mat-checkbox>
+            </ng-container>
+        </div>
+    </div>
+</div> 

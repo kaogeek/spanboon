@@ -1,0 +1,123 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-contact">
+    <div class="dialog-contact-header">
+        <i class="material-icons" (click)="onClose();">
+            clear
+        </i>
+    </div>
+    <div class="body-create-contact">
+        <div class="upload-image">
+            <div class="upload">
+                <label for="upload-qrcode">
+                    <div class="browse-file"> 
+                        <div class="upload-img">
+                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
+                                style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+                                <style type="text/css">
+                                    .st0 {
+                                        fill: #A1A1A1;
+                                    }
+
+                                    .st1 {
+                                        fill: #EF565C;
+                                    }
+
+                                    .st2 {
+                                        fill: #2950a3;
+                                    }
+                                </style>
+                                <g>
+                                    <path class="st2"
+                                        d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+                                    c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+                                    c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+                                    c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+                                </g>
+                            </svg>
+
+                        </div>
+                    </div>
+                </label>
+                <input #fileInput id="upload-qrcode" type="file" (change)="onFileSelect()" accept="image/*" />
+            </div>
+            <div class="upload">
+
+                <label for="upload-facebook">
+                    <div class="browse-file"> 
+                        <div class="upload-img">
+                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
+                                style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+                                <style type="text/css">
+                                    .st0 {
+                                        fill: #A1A1A1;
+                                    }
+
+                                    .st1 {
+                                        fill: #EF565C;
+                                    }
+
+                                    .st2 {
+                                        fill: #2950a3;
+                                    }
+                                </style>
+                                <g>
+                                    <path class="st2"
+                                        d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+                                    c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+                                    c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+                                    c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+                                </g>
+                            </svg>
+
+                        </div>
+                    </div>
+                </label>
+                <input #fileInput id="upload-facebook" type="file" (change)="onFileSelect()" accept="image/*" />
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="input-text">
+                <img src="../../../../assets/img/web.svg" alt="">
+                <mat-form-field appearance="none">
+                    <input matInput type="text">
+                </mat-form-field>
+            </div>
+            <div class="input-text">
+                <img src="../../../../assets/img/pic2.svg" alt="">
+                <mat-form-field appearance="none">
+                    <input matInput type="text">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-text">
+                <img src="../../../../assets/img/pic2.svg" alt="">
+                <mat-form-field appearance="none">
+                    <input matInput type="text">
+                </mat-form-field>
+            </div>
+            <div class="input-text">
+                <img src="../../../../assets/img/pic2.svg" alt="">
+                <mat-form-field appearance="none">
+                    <input matInput type="text">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div class="footer-confirm">
+        <spanboon-button class="close-dialog" [text]="'ปิด'" [bgColor]="'#F8F7F2'" [width]="'80pt'" [color]="'#212721'"
+            (click)="onClose()">
+        </spanboon-button>
+        <spanboon-button [text]="'ตกลง'" [bgColor]="'#FD545A'" [width]="'97pt'" (click)="onConfirm()">
+        </spanboon-button>
+    </div>
+</div>

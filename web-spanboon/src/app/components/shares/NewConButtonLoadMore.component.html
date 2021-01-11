@@ -1,0 +1,16 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<ng-container *ngIf="isLoadingMore; else elseLoadMore">
+    <mat-spinner class="loading-more"></mat-spinner>
+</ng-container>
+<ng-template #elseLoadMore>
+    <ng-container *ngIf="isShowLoadMore">
+        <div class="spanboon-button-load-more" (click)="onClickLoadMore()">
+            ดูเพิ่มเติม</div>
+    </ng-container>
+</ng-template>

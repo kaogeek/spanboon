@@ -1,0 +1,95 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.footer {
+  display: none;
+  // display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  background-color: $color-warm-red;
+  color: $brandcolor;
+  width: 100%;
+  height: 50pt;
+  > .wrapper-menu {
+    display: flex;
+    > .menu {
+      @include font-size-9-100("Anakotmai-Medium");
+      padding: 0 10pt;
+      cursor: pointer;
+      font-weight: 300;
+      -webkit-user-select: none;
+      /* Safari 3.1+ */
+      -moz-user-select: none;
+      /* Firefox 2+ */
+      -ms-user-select: none;
+      /* IE 10+ */
+      user-select: none;
+      /* Standard syntax */
+      &:first-of-type {
+        padding-left: unset;
+      }
+    }
+  }
+  > .logo-spanboon {
+    @include font-size-7-100("Kanit-500");
+    text-align: right;
+    padding: 0 40pt;
+  }
+}
+spanboon-footer-mobile {
+  .footer-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: $xlarge) {
+  spanboon-footer {
+    .footer {
+    }
+  }
+}
+
+@media (max-width: $large) {
+  spanboon-footer {
+    .footer {
+    }
+  }
+
+  spanboon-footer-mobile {
+    .footer-mobile {
+      display: flex;
+    }
+    .footer-mobile.hidden {
+      transform: translateY(100%); 
+      // -webkit-transform: translateY(100%); //Safari
+      // -moz-transform: translateY(100%); 
+      bottom: -44pt !important;
+    }
+  }
+}
+
+@media (max-width: $lmedium) {
+  spanboon-footer {
+    .footer {
+    }
+  } 
+}
+
+@media (max-width: $medium) {
+  spanboon-footer {
+    .footer {
+    }
+  }
+}
+
+@media (max-width: $small) {
+  spanboon-footer {
+    .footer {
+    }
+  }
+}

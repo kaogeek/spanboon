@@ -1,0 +1,103 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.footer-mobile {
+    display: flex;
+    position: fixed;
+    // position: sticky;
+    // position: absolute;
+    justify-content: center;
+    align-items: center;
+    background-color: $white;
+    color: $brandcolor;
+    width: 100%;
+    height: 40pt;
+    padding: 0;
+    bottom: 0;
+    z-index: 99;
+    box-shadow: 0px 1px 3px 0 rgb($black, 0.5);
+    transition: all 0.8s ease-in-out;
+    -webkit-transition: all 0.8s ease-in-out;
+    -moz-transition: all 0.8s ease-in-out;
+    -ms-transition: all 0.8s ease-in-out;
+
+    > .wrapper-mobile-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Kanit-500";
+        font-size: 12px;
+        width: 100%;
+        height: 100%;
+
+        > .icon {
+            display: flex;
+            height: 100%;
+            width: calc(25% - 20px);
+            padding: 0 10px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0.7;
+            @include pointer();
+            color: rgb($black, 0.5);
+            flex: 1 1 0%;
+
+            &.menu-fulfill {
+                display: none;
+            }
+
+            &.footer-active-link {
+                color: $color-warm-red;
+                opacity: 1;
+
+                > .icon-menu-m {
+                    fill: $color-warm-red;
+
+                    path,
+                    g,
+                    circle {
+                        fill: $color-warm-red;
+                    }
+                }
+            }
+
+            &:hover {
+                background: $bg-grey;
+            }
+
+            > .icon-menu-m {
+                height: 12pt;
+                width: auto;
+                fill: rgb($black, 0.5);
+
+                path,
+                g,
+                circle {
+                    fill: rgb($black, 0.5);
+                }
+            }
+
+            > .label-name {
+                margin-top: 3px;
+                user-select: none;
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .footer-mobile {
+        > .wrapper-mobile-footer {
+            > .icon {
+                &.menu-fulfill {
+                    display: flex;
+                }
+            }
+        }
+    }
+}

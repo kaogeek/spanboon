@@ -1,0 +1,96 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.search-tag {
+    position: relative;
+    width: 100%;
+    > .event-tag {
+        display: flex;
+        padding: 0 10pt;
+        align-items: center;
+        @include font-size-10-100("Anakotmai-Medium");
+        cursor: pointer;
+        -webkit-user-select: none;
+        /* Safari 3.1+ */
+        -moz-user-select: none;
+        /* Firefox 2+ */
+        -ms-user-select: none;
+        /* IE 10+ */
+        user-select: none;
+        /* Standard syntax */
+        svg {
+            padding: 0 5pt;
+        }
+    }
+    > .header-search {
+        display: flex;
+        align-items: center; 
+        > .box-search-tag {
+            position: absolute;
+            background-color: $white;
+            z-index: 1;
+            top: 30px;
+            left: 11px;
+            > .ng-autocomplete {
+                > .autocomplete-container {
+                    width: 100%;
+                    > .input-container {
+                        width: 350px;
+                        input[type="text"] {
+                            background: url(/../../../assets/img/search.svg) no-repeat;
+                            background-size: 12pt;
+                            background-position: 12px 12px;
+                            @include font-size-10-100("Anakotmai-Medium");
+                            padding: 0 40px !important;
+                        }
+                    }
+                    > .suggestions-container {
+                        ul {
+                            > .item {
+                                > .ng-star-inserted {
+                                    a {
+                                        > .wrapper-list-search {
+                                            width: 100%;
+                                            > .list-popular {
+                                                padding: 0 13pt;
+                                                @include font-size-10-100("Anakotmai-Medium");
+                                                > .item-popular {
+                                                    display: flex;
+                                                    justify-content: space-between;
+                                                    > .tag-popular {
+                                                        // padding: 0 135pt 0 0;
+                                                    }
+                                                    > .count-participate {
+                                                        // padding: 0 10pt 0 0;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+.cdk-overlay-pane {
+    // width: 400px !important;
+    // top: 141.828px !important;
+    // left: 0px !important;
+    // max-width: 100% !important;
+    // border-top: $width-border solid $border-separator;
+    > .mat-autocomplete-panel {
+        > .mat-option {
+            // display: contents !important;
+            > .mat-option-text {
+            }
+        }
+    }
+}

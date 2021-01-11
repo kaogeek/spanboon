@@ -1,0 +1,417 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.dialog-settime-post {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 630pt;
+    height: 435pt;
+    display: flex;
+    flex-direction: column;
+
+    &.android{
+        > .settime-bottom{
+            padding-bottom: 20vh;
+            // padding-bottom: 30pt;
+        }
+    }
+
+    > .settime-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: calc(100% - 40pt);
+        padding: 12pt 20pt;
+        border-bottom: 0.7pt solid $border-color;
+
+        > .header-left {
+            display: flex;
+            align-items: center;
+
+            > .icon {
+                width: 18pt;
+                height: 18pt;
+                margin-top: -3pt;
+
+                g,
+                path {
+                    fill: rgb($black, 0.6);
+                }
+            }
+
+            > span {
+                font-family: "Kanit-500";
+                font-size: 22px;
+                margin-left: 7pt;
+                color: rgb($black, 0.6);
+            }
+        }
+
+        > .onClose {
+            @include pointer();
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:hover {
+                > svg {
+                    g,
+                    path {
+                        fill: rgb($black, 0.7);
+                    }
+                }
+            }
+
+            > svg {
+                width: 15px;
+
+                g,
+                path {
+                    fill: rgb($black, 0.5);
+                }
+            }
+        }
+    }
+
+    > .settime-body {
+        flex: 1 1 0%;
+        padding: 10pt 20pt;
+        display: flex;
+
+        > .settime-body-left {
+            width: 50%;
+
+            > .mat-calendar {
+                > mat-calendar-header {
+                    > .mat-calendar-header {
+                        // padding-top: unset;
+
+                        > .mat-calendar-controls {
+                            margin: 0 0 5pt 0;
+
+                            > button {
+                                > .mat-button-wrapper {
+                                    font-family: "Kanit-500";
+                                    font-size: 18px;
+
+                                    > .mat-calendar-arrow {
+                                        margin-top: -4px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                > .mat-calendar-content {
+                    padding-bottom: unset;
+
+                    > mat-month-view {
+                        > .mat-calendar-table {
+                            > .mat-calendar-table-header {
+                                > tr {
+                                    > th {
+                                        font-family: "Kanit-500";
+                                        font-size: 18px;
+                                        color: rgb($black, 0.85);
+                                    }
+
+                                    > .mat-calendar-table-header-divider {
+                                        &::after {
+                                            left: 0;
+                                            right: 0;
+                                        }
+                                    }
+                                }
+                            }
+
+                            > .mat-calendar-body {
+                                > tr {
+                                    > .mat-calendar-body-label {
+                                        display: none;
+                                    }
+
+                                    > .mat-calendar-body-cell {
+                                        > .mat-calendar-body-cell-content {
+                                            color: rgb($black, 0.85);
+                                            font-weight: 500;
+
+                                            &.mat-calendar-body-selected {
+                                                background-color: $color-warm-red;
+                                                color: $white;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        > .settime-body-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 55px;
+
+            > .post-time {
+                > .title {
+                    font-family: "Kanit-500";
+                    font-size: 20px;
+                }
+
+                > ngx-timepicker-field {
+                    > .ngx-timepicker {
+                        border-bottom: unset;
+                        margin: 15pt 0;
+                        height: auto;
+
+                        > ngx-timepicker-time-control {
+                            > .ngx-timepicker-control {
+                                width: 80px;
+                                height: 38px;
+                                border: 1px solid rgb($black, 0.1);
+                                border-radius: 4px;
+                                background: $white;
+
+                                &::after {
+                                    display: none;
+                                }
+
+                                > input {
+                                    font-size: 20px;
+                                    padding: 0;
+                                }
+
+                                > .ngx-timepicker-control__arrows {
+                                    display: none;
+                                }
+                            }
+                        }
+
+                        > .ngx-timepicker__time-colon {
+                            margin: 0 10px;
+                            font-size: 24px;
+                        }
+                    }
+                }
+
+                > .detail {
+                    font-family: "Kanit-400";
+                    font-size: 16px;
+                    color: rgb($black, 0.5);
+
+                    > span {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    > .settime-bottom {
+        border-top: 0.7pt solid $border-color;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10pt 20pt;
+
+        > .close-dialog,
+        > .confirm-dialog {
+            > .spanboon-button {
+                width: 75pt !important;
+                height: 26pt !important;
+            }
+        }
+
+        > .confirm-dialog {
+            margin-left: 10pt;
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .dialog-settime-post {
+        max-width: unset;
+        max-height: unset;
+        width: 100vw;
+        height: 100vh;
+
+        > .settime-header {
+            position: sticky;
+            top: 0;
+            background: $white;
+            z-index: 1;
+
+            > .header-left {
+                > .icon {
+                    width: 16pt;
+                    height: 16pt;
+
+                    g,
+                    path {
+                    }
+                }
+
+                > span {
+                    font-size: 20px;
+                }
+            }
+
+            > .onClose {
+                &:hover {
+                    > svg {
+                        g,
+                        path {
+                        }
+                    }
+                }
+
+                > svg {
+                    g,
+                    path {
+                    }
+                }
+            }
+        }
+
+        > .settime-body {
+            flex-direction: column;
+            align-items: center;
+
+            > .settime-body-left {
+                width: 360px;
+
+                > .mat-calendar {
+                    > mat-calendar-header {
+                        > .mat-calendar-header {
+                            > .mat-calendar-controls {
+                                > button {
+                                    > .mat-button-wrapper {
+                                        > .mat-calendar-arrow {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    > .mat-calendar-content {
+                        > mat-month-view {
+                            > .mat-calendar-table {
+                                > .mat-calendar-table-header {
+                                    > tr {
+                                        > th {
+                                        }
+
+                                        > .mat-calendar-table-header-divider {
+                                            &::after {
+                                            }
+                                        }
+                                    }
+                                }
+
+                                > .mat-calendar-body {
+                                    > tr {
+                                        > .mat-calendar-body-label {
+                                        }
+
+                                        > .mat-calendar-body-cell {
+                                            > .mat-calendar-body-cell-content {
+                                                &.mat-calendar-body-selected {
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .settime-body-right {
+                width: 360px;
+                margin: 20pt 0;
+                align-items: flex-start;
+
+                > .post-time {
+                    > .title {
+                        font-size: 18px;
+                    }
+
+                    > ngx-timepicker-field {
+                        > .ngx-timepicker {
+                            > ngx-timepicker-time-control {
+                                > .ngx-timepicker-control {
+                                    &::after {
+                                    }
+
+                                    > input {
+                                    }
+
+                                    > .ngx-timepicker-control__arrows {
+                                    }
+                                }
+                            }
+
+                            > .ngx-timepicker__time-colon {
+                            }
+                        }
+                    }
+
+                    > .detail {
+                        font-size: 14px;
+
+                        > span {
+                            display: inline;
+                        }
+                    }
+                }
+            }
+        }
+
+        > .settime-bottom {
+            > .close-dialog,
+            > .confirm-dialog {
+                > .spanboon-button {
+                }
+            }
+
+            > .confirm-dialog {
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .dialog-settime-post {
+        > .settime-body {
+            > .settime-body-left {
+                width: 100%;
+            }
+
+            > .settime-body-right {
+                width: 100%;
+
+                > .post-time {
+                    > .detail {
+                        > span {
+                        }
+                    }
+                }
+            }
+        }
+        
+        > .settime-bottom{
+            justify-content: center;
+        }
+    }
+}

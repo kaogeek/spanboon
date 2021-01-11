@@ -1,0 +1,86 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.list-items-fulfill {
+    height: auto;
+    padding: 10pt;
+    position: relative;
+    border: 1pt solid rgba($border-color, 0.7);
+    background: rgb($bg-grey, 0.2);
+    border-radius: 4px;
+    align-self: stretch;
+    align-items: stretch;
+    min-height: 140pt;
+    margin: 2.5pt;
+
+    > .close-list {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        @include pointer();
+        color: rgb($black, 0.5);
+
+        &:hover {
+            color: $black;
+        }
+    }
+    > .image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15pt 0;
+        > .img-list {
+            width: 50pt;
+            height: 50pt;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    }
+
+    > .name-list {
+        font-family: "Kanit-500";
+        font-size: 18px;
+        color: rgb($black, 0.5);
+    }
+
+    > .list-items-bottom {
+        margin-top: 5pt;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        > .bottom-left {
+            > .number {
+                font-family: "Kanit-500";
+                font-size: 18px;
+                color: $black;
+            }
+
+            > .unit {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: rgb($black, 0.5);
+            }
+        }
+
+        > .item-edit {
+            font-family: "Kanit-500";
+            font-size: 14px;
+            line-height: 30px;
+            padding: 0 24px;
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .list-items-fulfill {
+        > .image {
+            > .img-list {
+            }
+        }
+    }
+}

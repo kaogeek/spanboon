@@ -1,0 +1,52 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.button-follow {
+    background-color: $white;
+    @include font-size-10-100("Kanit-500");
+    border-radius: 3pt;
+    color: $white;
+    cursor: pointer; 
+    text-decoration: unset;
+    width: 76pt;
+    height: 26pt;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border : unset;
+    -webkit-user-select: none;
+    /* Safari 3.1+ */
+    -moz-user-select: none;
+    /* Firefox 2+ */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Standard syntax */
+    &:focus {
+        outline: none;
+    }
+    &.radius {
+        border-radius: 25pt;
+    }
+    &.disable {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    &::selection {
+        background: transparent;
+    }
+    
+    >.mat-ripple-element{
+        display: none;
+      }
+}
+
+@media (max-width: $xlarge) {
+    .button-follow {
+        width: 65pt !important;
+    }
+}

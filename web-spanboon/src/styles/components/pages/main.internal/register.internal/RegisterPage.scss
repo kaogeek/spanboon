@@ -1,0 +1,417 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.register-page {
+  min-height: calc(100vh - 55pt);
+  position: relative;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: $bg-grey;
+
+  > .wrapper-body {
+    width: 320pt;
+    margin: 50pt 0 50pt 150pt;
+    position: relative;
+    z-index: 1;
+
+    > .header {
+      color: $brandcolor2;
+      font-family: "Kanit-500";
+      font-size: 24px;
+    }
+
+    > .wrapper-upload {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      flex-wrap: wrap;
+
+      > .user-profile {
+        position: relative;
+        flex: 0 0 auto;
+
+        > .image-user {
+          width: 100pt;
+          height: 100pt;
+          border-radius: 50%;
+          border: 5px solid $white;
+          overflow: hidden;
+          box-shadow: 0px 5px 8px 0 #00000020;
+        }
+
+        > .edit-profile {
+          width: 30pt;
+          height: 30pt;
+          position: absolute;
+          right: 0;
+          bottom: 8pt;
+          cursor: pointer;
+          background-color: #e4e6eb;
+          border-radius: 50%;
+          opacity: 0.9;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          > .icon-image {
+          }
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+
+      > .user {
+        flex: 1 1 0%;
+        margin-left: 20pt;
+
+        > .user-grop {
+          margin-top: 10pt;
+          position: relative;
+
+          > label {
+            position: absolute;
+            top: 0.5pt;
+            left: 9pt;
+            font-family: "Kanit-500";
+            font-size: 24px;
+            user-select: none;
+          }
+
+          > .input-text {
+            height: 25pt;
+            padding: 2pt 13pt;
+            width: calc(100% - 26pt - 4px);
+            background-color: $white;
+            border-radius: 25px;
+            box-shadow: 0px 1px 9px 0 #00000020;
+            border: unset;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            font-family: "Kanit-500";
+            font-size: 16px;
+            border: 2px solid transparent;
+          }
+
+          > .display-name {
+            margin-top: 3px;
+            font-family: "Kanit-500";
+            font-size: 16px;
+            word-break: break-all;
+            padding: 0 13px;
+          }
+
+          .correct {
+            border: 1px solid green;
+            animation: 0.1s noteatv;
+          }
+
+          .incorrect {
+            border: 1px solid red;
+            animation: 0.1s noteatv;
+          }
+        }
+      }
+    }
+
+    > .form-register {
+      margin-top: 15pt;
+      width: 100%;
+
+      .input-text,
+      .input-text-group {
+        height: 25pt;
+        padding: 2pt 13pt;
+        width: calc(100% - 26pt);
+        background-color: $white;
+        border-radius: 25px;
+        box-shadow: 0px 1px 9px 0 #00000020;
+        border: unset;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        font-family: "Kanit-500";
+        font-size: 16px;
+        margin-bottom: 10pt;
+      }
+
+      > .form-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        > .input-text-group {
+          width: calc(49% - 26pt);
+        }
+      }
+
+      > .title-label {
+        font-family: "Kanit-500";
+        font-size: 16px;
+        margin: 10pt 0 8pt 0;
+      }
+
+      > .mat-form-field {
+        width: calc(49% - 5pt);
+        margin-bottom: 10pt;
+
+        > .mat-form-field-wrapper {
+          padding-bottom: 0;
+
+          svg {
+            fill: $black;
+          }
+
+          > .mat-form-field-flex {
+            display: flex;
+            align-items: center;
+
+            > .mat-form-field-infix {
+              width: auto;
+              padding: 0;
+              border-top: 0;
+
+              > .mat-input-element {
+                display: flex;
+                border-radius: 25px;
+                background-color: $white;
+                height: 25pt;
+                color: $color-black;
+                padding: 2pt 10pt 2pt 13pt;
+                font-family: "Kanit-500";
+                font-size: 14px;
+                box-shadow: 0px 1px 9px 0 #00000020;
+                > .mat-form-field-label-wrapper {
+                }
+              }
+            }
+            > .mat-form-field-suffix {
+              > .mat-datepicker-toggle {
+                > .mat-icon-button {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+
+                  > .mat-button-wrapper {
+                    > .mat-datepicker-toggle {
+                    }
+                  }
+                }
+              }
+            }
+          }
+          > .mat-form-field-underline {
+            height: 0px;
+            > .mat-form-field-ripple {
+              background-color: unset;
+              opacity: 0;
+            }
+          }
+        }
+      }
+
+      > mat-radio-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+
+        > mat-radio-button {
+          display: flex;
+          align-items: center;
+          border-radius: 25px;
+          box-shadow: 0px 1px 9px 0 #00000020;
+          background: $white;
+          margin-right: 7pt;
+
+          > .mat-radio-label {
+            padding: 2pt 18pt 2pt 13pt;
+            height: 25pt;
+
+            > .mat-radio-container {
+              width: 16px;
+              height: 16px;
+
+              > .mat-radio-outer-circle {
+                border: 1px solid $brandcolor2;
+                width: 16px;
+                height: 16px;
+              }
+
+              > .mat-radio-inner-circle {
+                background: $brandcolor2;
+                width: 16px;
+                height: 16px;
+              }
+
+              > .mat-radio-ripple {
+                > .mat-ripple-element {
+                  background: transparent;
+                }
+              }
+            }
+
+            > .mat-radio-label-content {
+              color: $color-black;
+              font-family: "Kanit-500";
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      > .wrapper-policy {
+        color: $koalaGray;
+        text-align: left;
+        margin: 15pt;
+        font-family: "Kanit-500";
+        font-size: 14px;
+
+        > .btn-spanboon {
+          color: $brandcolor2;
+          cursor: pointer;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      > .div-btn {
+        margin-top: 30pt;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        > spanboon-button {
+          width: 48%;
+        }
+      }
+    }
+  }
+
+  > .background-register {
+    position: absolute;
+    right: 25pt;
+    height: 100%;
+  }
+}
+
+@media (max-width: $xxlarge) {
+  .register-page {
+    > .background-register {
+      opacity: 0.5;
+      height: 80%;
+    }
+  }
+}
+
+@media (max-width: $xlarge) {
+  .register-page {
+    > .wrapper-body {
+      margin: 30pt 0 30pt 90pt;
+      // margin: 50pt auto;
+
+      // > .header {
+      //   text-align: center;
+      // }
+    }
+
+    // > .background-register {
+    //   display: none;
+    // }
+  }
+}
+
+@media (max-width: $large) {
+  .register-page {
+    > .wrapper-body {
+      margin: 20pt auto 50pt auto;
+
+      > .header {
+        text-align: center;
+      }
+    }
+
+    > .background-register {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .register-page {
+    > .wrapper-body {
+      > .wrapper-upload {
+        flex-direction: column;
+
+        > .user-profile {
+          margin: 0 auto;
+        }
+
+        > .user {
+          width: 100%;
+          margin: 10pt 0 0 0;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .register-page {
+    min-height: calc(100vh - 39pt);
+
+    > .wrapper-body {
+      width: 80%;
+
+      > .wrapper-upload {
+        justify-content: center;
+      }
+
+      > .form-register {
+        > .form-group {
+          > .input-text-group {
+            width: calc(100% - 26pt);
+          }
+        }
+
+        > .mat-form-field {
+          width: calc(100% - 5pt);
+        }
+
+        > mat-radio-group {
+          > mat-radio-button {
+            width: 100% !important;
+            margin-right: 0;
+            margin-bottom: 10pt;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+
+        > .div-btn {
+          flex-direction: column-reverse;
+
+          > spanboon-button {
+            width: 100%;
+
+            &:first-child {
+              margin-top: 8pt;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<ng-container *ngIf="link; else elseTemplate">
+    <a class="butt-social" [routerLink]="link"
+        [ngStyle]="{'background-color': bgColor, 'color': color, 'width': width, 'height' : height , 'font-size' : fontSize}"
+        [ngClass]="class" matRipple [matRippleColor]="rippleColor" [matRippleDisabled]="'true'">
+        <img src="{{iconSocial}}" alt="" class="img-social" [ngStyle]="{'height': imgsize, 'width': imgsize}">
+        <div class="wrapper-butt-social">{{btnName}}</div>
+    </a>
+</ng-container>
+<ng-template #elseTemplate>
+    <div class="butt-social"
+        [ngStyle]="{'background-color': bgColor, 'color': color, 'width': width, 'height' : height , 'font-size' : fontSize}"
+        [ngClass]="class" matRipple [matRippleColor]="rippleColor" [matRippleDisabled]="'true'">
+        <img src="{{iconSocial}}" alt="" class="img-social" [ngStyle]="{'height': imgsize, 'width': imgsize}">
+        <div class="wrapper-butt-social">{{btnName}}</div>
+    </div>
+</ng-template>

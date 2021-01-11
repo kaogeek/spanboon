@@ -1,0 +1,1436 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.fulfill-page {
+    width: 100%;
+    height: calc(100vh - 55pt - 7pt);
+    background: $bg-fog-gray2;
+    padding: 7pt 0 0;
+
+    > .fulfill-body {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        > .fulfill-left {
+            width: 28%;
+            min-width: 350pt;
+            background: $white;
+            border-top-right-radius: 4px;
+            border-top: 1px solid $border-color;
+            border-right: 1px solid $border-color;
+            display: flex;
+            flex-direction: column;
+
+            > .mobile-fulfill-profile {
+                fulfill-menu {
+                    .fulfill-menu {
+                        display: none;
+                    }
+                }
+                > .fulfill-profile {
+                    height: 60pt;
+                    border-bottom: 1px solid $border-color;
+                    flex: 0 0 auto;
+
+                    > .menu-profile {
+                        width: 100%;
+                        height: 100%;
+                        white-space: unset;
+                        text-align: left;
+
+                        > .mat-button-wrapper {
+                            display: flex;
+                            align-items: center;
+
+                            > .box-profile {
+                                display: flex;
+                                align-items: center;
+                                flex: 1 1 0%;
+
+                                > .donator {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    width: 30pt;
+                                    height: 30pt;
+                                    margin: 0 10pt;
+                                    border-radius: 50%;
+                                    box-shadow: 2.5px 0px 0px 0 #ffffff;
+                                    overflow: hidden;
+                                    color: $brandcolor;
+                                    background: $color-warm-red;
+                                    font-family: "Kanit-500";
+                                    font-size: 16px;
+                                }
+
+                                > img {
+                                    width: 40pt;
+                                    height: 40pt;
+                                    border-radius: 50%;
+                                    object-fit: cover;
+                                    margin: 0 10pt;
+                                }
+
+                                > .name-page {
+                                    font-family: "Kanit-500";
+                                    font-size: 18px;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    flex: 1 1 0%;
+                                    word-break: break-all;
+                                    margin-right: 10pt;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            > .fulfill-con {
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                flex: 1 1 0%;
+                overflow: hidden;
+
+                > .fulfill-contact {
+                    flex: 1 1 auto;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+
+                    > .contact-top {
+                        height: auto;
+                        border-bottom: 1px solid $border-color;
+                        flex: 0 0 auto;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 5pt 7pt;
+
+                        > .contact-top-left,
+                        > .contact-top-right {
+                            > .menu-filter {
+                                height: 36pt;
+                                padding: 0 5px 0 15px;
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+
+                                > .mat-button-wrapper {
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+
+                                    > .title {
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        margin-left: 5px;
+                                    }
+
+                                    > .material-icons {
+                                        margin-left: 5px;
+                                    }
+                                }
+                            }
+                        }
+
+                        > .contact-top-left {
+                        }
+
+                        > .contact-top-right {
+                        }
+                    }
+
+                    > .user-contact {
+                        flex: 1 1 0%;
+                        overflow-y: scroll;
+
+                        &::-webkit-scrollbar {
+                            width: 9px;
+                        }
+
+                        &::-webkit-scrollbar-track {
+                            background: $white;
+                        }
+
+                        &::-webkit-scrollbar-thumb {
+                            background: $color-warm-red;
+                        }
+
+                        &::-webkit-scrollbar-thumb:hover {
+                            background: $color-warm-red;
+                        }
+                    }
+                }
+            }
+        }
+
+        > .fulfill-right {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 0%;
+            margin: 0 0 0 7pt;
+            background: $white;
+            border-top-left-radius: 4px;
+            border-top: 1px solid $border-color;
+            border-left: 1px solid $border-color;
+
+            > .head-story {
+                flex: 0 0 auto;
+                padding: 20px 20pt;
+                border-bottom: 1px solid $border-color;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+                > .back {
+                    display: none;
+                }
+
+                > .story-left {
+                    flex: 1 1 0%;
+                    // width: 60%;
+                    margin-right: 15pt;
+
+                    > .story-category {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+
+                        > .status {
+                            font-size: 10pt;
+                            color: $color-warm-red;
+                        }
+
+                        > .lookfor {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            margin-left: 5px;
+                        }
+
+                        > .time {
+                            margin-left: 10pt;
+                            width: 10pt;
+                            height: 10pt;
+                        }
+
+                        > .date {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: rgb($black, 0.5);
+                            margin-left: 5px;
+
+                            a {
+                                color: #a5a5a6;
+
+                                &:hover {
+                                    text-decoration: underline !important;
+                                }
+                            }
+                        }
+                    }
+
+                    > .contact-head {
+                        font-family: "Kanit-500";
+                        font-size: 24px;
+                        margin-top: 3pt;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    }
+
+                    > .contact-hashtag {
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        padding: 3pt 0;
+
+                        tag-event {
+                            display: block;
+                            width: 100%;
+                            > .tag-event {
+                                padding: unset;
+                                > .tag-emergency {
+                                    padding: unset;
+                                }
+                                > .tag-objective {
+                                    padding: unset;
+                                    margin: unset;
+                                }
+                            }
+                        }
+
+                        > .contact-content {
+                            display: none;
+                            // display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            max-width: 50%;
+                            padding-top: 5pt;
+
+                            a {
+                                &:hover {
+                                    opacity: 0.7;
+                                    text-decoration: underline !important;
+                                }
+
+                                > .contact-event {
+                                    margin: 0 10pt 0 8px;
+                                    font-family: "Kanit-500";
+                                    font-size: 14px;
+                                    color: $color-warm-red;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                }
+                            }
+
+                            > .icon {
+                                width: 10pt;
+                                height: 10pt;
+
+                                g,
+                                path {
+                                    fill: $color-warm-red;
+                                }
+                            }
+
+                            > .event-cos {
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+                                color: rgb($black, 0.5);
+                            }
+                        }
+                    }
+                    > .list-item {
+                        display: none;
+                    }
+                }
+
+                > .story-right {
+                    // flex: 1 1 0%;
+                    flex: 0 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: stretch;
+
+                    > .profile-user {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-end;
+                        flex: 1 1 0%;
+
+                        > .profile-contact {
+                            text-align: right;
+
+                            > .joinus {
+                                font-family: "Kanit-500";
+                                font-size: 18px;
+                                color: $bg-color4;
+                            }
+
+                            > .user {
+                                word-break: break-all;
+                                color: rgba(0, 0, 0, 0.7);
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+
+                                a {
+                                    color: #a5a5a6;
+
+                                    &:hover {
+                                        text-decoration: underline !important;
+                                    }
+                                }
+                            }
+                        }
+
+                        > .img {
+                            margin-left: 10pt;
+                            width: 40pt;
+                            height: 40pt;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+
+                        > .donator {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            width: 30pt;
+                            height: 30pt;
+                            margin-left: 10pt;
+                            border-radius: 50%;
+                            box-shadow: 2.5px 0px 0px 0 #ffffff;
+                            overflow: hidden;
+                            color: $brandcolor;
+                            background: $color-warm-red;
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+
+                            a {
+                                color: $brandcolor;
+                            }
+                        }
+                    }
+
+                    > .confirm {
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+
+                        > .butt-fulfill {
+                            font-family: "Kanit-500";
+                        }
+
+                        > .text-fulfill-close {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: $color-warm-red;
+                        }
+
+                        > .button-view-post {
+                            margin-left: 10pt;
+                        }
+                    }
+                }
+
+                > .preload-head-story {
+                    display: block;
+                    width: 100%;
+
+                    > .preload-card {
+                        > .postcard {
+                            margin-bottom: unset;
+                            padding: 10pt;
+
+                            > .post-card-center {
+                                height: auto !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .body-story {
+                flex: 1 1 0%;
+                display: flex;
+                overflow: hidden;
+
+                > .body-story-left {
+                    width: 60%;
+                }
+
+                > .body-story-right {
+                    // width: 50%;
+                    flex: 1 1 0%;
+
+                    > .grop-fulfill {
+                        box-shadow: inset 0 -1px 0 1px rgba($border-color, 0.7);
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        min-width: 320pt;
+                        position: relative;
+
+                        > .case-confirmed {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba($black, 0.2);
+                            z-index: 1;
+                            bottom: 0;
+                            pointer-events: none;
+                        }
+
+                        > .header {
+                            flex: 0 0 auto;
+                            border-bottom: 1px solid rgba($border-color, 0.7);
+                            font-family: "Kanit-500";
+                            font-size: 18px;
+                            height: 45pt;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 0 10pt;
+                            > .btn-close {
+                                display: none;
+                            }
+                        }
+
+                        > .fulfilling {
+                            // display: grid;
+                            // grid-template-columns: 1fr 1fr;
+                            // gap: 10px;
+                            // padding: 5pt 10pt;
+                            overflow-y: auto;
+                            flex: 1 1 0%;
+                            display: flex;
+                            align-items: flex-start;
+                            align-content: flex-start;
+                            flex-wrap: wrap;
+                            padding: 2.5pt;
+
+                            &::-webkit-scrollbar {
+                                width: 9px;
+                            }
+
+                            &::-webkit-scrollbar-track {
+                                background: $white;
+                            }
+
+                            &::-webkit-scrollbar-thumb {
+                                background: $color-warm-red;
+                            }
+
+                            &::-webkit-scrollbar-thumb:hover {
+                                background: $color-warm-red;
+                            }
+
+                            fulfill-item-card {
+                                width: 50%;
+                            }
+
+                            > .plus-item {
+                                display: flex;
+                                justify-content: center;
+                                height: auto;
+                                @include pointer();
+                                border-style: dashed;
+                                background: transparent;
+                                width: calc(50% - 20pt - 5pt - 2pt);
+                                padding: 10pt;
+                                position: relative;
+                                border: 1pt solid rgba($border-color, 0.7);
+                                background: rgb($bg-grey, 0.2);
+                                border-radius: 4px;
+                                // align-self: stretch;
+                                min-height: 140pt;
+                                margin: 2.5pt;
+                                align-items: stretch;
+
+                                > .d-plus {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    // width: 100%;
+                                    // height: 100%;
+                                    background: rgb($bg-grey, 0.2);
+
+                                    > .material-icons {
+                                        color: $bg-color4;
+                                        font-size: 70px;
+                                        font-weight: 900;
+                                    }
+                                }
+                            }
+                        }
+
+                        > .grop-bottom {
+                            flex: 0 0 auto;
+                            display: flex;
+                            border-top: 1px solid rgba($border-color, 0.7);
+                            flex-direction: row;
+                            align-items: center;
+                            padding: 10pt;
+
+                            > .fulfill-status {
+                                width: 100%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+
+                                > .fulfill-status-text {
+                                    font-family: "Kanit-500";
+                                    font-size: 12pt;
+                                    color: #7aaf67;
+                                }
+
+                                > .fulfill-action {
+                                    // padding-right: 50pt;
+                                    // justify-content: space-between;
+                                    // display: flex;
+                                    // width: 100%;
+
+                                    > .butt-fulfill-bottom {
+                                        font-family: "Kanit-500";
+                                        font-size: 14px;
+
+                                        &:last-child {
+                                            margin-left: 6pt;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.drop-menu-filter {
+    > .mat-menu-item {
+        font-family: "Kanit-500";
+        font-size: 14px;
+        height: 40px;
+    }
+}
+
+.select-profile {
+    padding: 5px 16px !important;
+    height: 44pt !important;
+
+    > .mat-option-text {
+        display: flex;
+        align-items: center;
+
+        > .profile {
+            width: 28pt;
+            height: 28pt;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: 0 0 auto;
+            user-select: none;
+        }
+
+        > .select-name {
+            flex: 1 1 0%;
+            font-family: "Kanit-500";
+            font-size: 18px;
+            margin-left: 10pt;
+        }
+    }
+}
+
+.page-list {
+    padding: 5px 34px 5px 16px !important;
+    height: 44pt !important;
+    display: flex !important;
+    align-items: center;
+
+    > .donator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30pt;
+        height: 30pt;
+        border-radius: 50%;
+        box-shadow: 2.5px 0px 0px 0 #ffffff;
+        overflow: hidden;
+        color: $brandcolor;
+        background: $color-warm-red;
+        font-family: "Kanit-500";
+        font-size: 16px;
+    }
+
+    > .profile {
+        width: 30pt;
+        height: 30pt;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: 0 0 auto;
+        user-select: none;
+    }
+
+    > .select-name {
+        flex: 1 1 0%;
+        font-family: "Kanit-500";
+        font-size: 18px;
+        margin-left: 10pt;
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .fulfill-page {
+        > .fulfill-body {
+            > .fulfill-left {
+                > .mobile-fulfill-profile {
+                    > .fulfill-profile {
+                        > .menu-profile {
+                            > .mat-button-wrapper {
+                                > .box-profile {
+                                    > .name-page {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .fulfill-con {
+                }
+            }
+            > .fulfill-right {
+                > .head-story {
+                    > .story-right {
+                        > .profile-user {
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                        }
+                        > .contact-head {
+                        }
+                        > .contact-hashtag {
+                            padding: unset;
+                            tag-event {
+                                .tag-event {
+                                    &.active {
+                                        padding: unset;
+                                    }
+                                    > .tag-emergency {
+                                        padding: 0 5px 0 0;
+                                        margin: 0 3px 0 0;
+                                    }
+                                }
+                            }
+                            > .contact-content {
+                                max-width: unset;
+                                display: none;
+                            }
+                        }
+                        > .list-item {
+                            display: flex;
+                            font-family: "Kanit-500";
+                            font-size: 14px;
+                            color: $bg-color4;
+                            // padding-top: 4pt;
+                            @include pointer();
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        width: 100%;
+                        &.active {
+                            display: none;
+                        }
+                    }
+                    > .body-story-right {
+                        > .grop-fulfill {
+                            > .header {
+                                position: relative;
+                                > .btn-close {
+                                    display: flex;
+                                    align-items: center;
+                                    position: absolute;
+                                    right: 5pt;
+                                    bottom: 0;
+                                    top: 0;
+                                    > .material-icons {
+                                        @include pointer();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .fulfill-page {
+        > .fulfill-body {
+            > .fulfill-left {
+                > .mobile-fulfill-profile {
+                    > .fulfill-profile {
+                        > .menu-profile {
+                            > .mat-button-wrapper {
+                                > .box-profile {
+                                    > .name-page {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .fulfill-con {
+                }
+            }
+            > .fulfill-right {
+                > .head-story {
+                    > .story-right {
+                        > .profile-user {
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                        }
+                        > .contact-head {
+                        }
+                        > .contact-hashtag {
+                            padding: unset;
+                            tag-event {
+                                .tag-event {
+                                    &.active {
+                                        padding: unset;
+                                    }
+                                    > .tag-emergency {
+                                        padding: 0 5px 0 0;
+                                        margin: 0 3px 0 0;
+                                    }
+                                }
+                            }
+                            > .contact-content {
+                                max-width: unset;
+                                display: none;
+                            }
+                        }
+                        > .list-item {
+                            display: flex;
+                            font-family: "Kanit-500";
+                            font-size: 14px;
+                            color: $bg-color4;
+                            padding-top: 4pt;
+                            @include pointer();
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        width: 100%;
+                    }
+                    > .body-story-right {
+                        display: none;
+                        > .grop-fulfill {
+                            > .header {
+                                position: relative;
+                                > .btn-close {
+                                    display: flex;
+                                    align-items: center;
+                                    position: absolute;
+                                    right: 5pt;
+                                    bottom: 0;
+                                    top: 0;
+                                    > .material-icons {
+                                        @include pointer();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .fulfill-page {
+        height: calc(100vh - 55pt - 40pt - 7pt);
+        padding: unset;
+        > .fulfill-body {
+            > .fulfill-left {
+                width: 100%;
+                > .mobile-fulfill-profile {
+                    display: flex;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #e5e5e5;
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: flex;
+                        }
+                    }
+                    > .fulfill-profile {
+                        border-bottom: unset;
+                        height: unset;
+                        > .menu-profile {
+                            > .mat-button-wrapper {
+                                > .box-profile {
+                                    > .name-page {
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .fulfill-con {
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            > .fulfill-right {
+                display: none;
+                &.active {
+                    display: flex;
+                    width: 100%;
+                    margin: unset;
+                    border-right: 1px solid #e5e5e5;
+                }
+                > .head-story {
+                    padding: 10px;
+                    position: relative;
+                    // align-items: center;
+                    &.active {
+                        padding: 10px 10px 10px 20pt;
+                    }
+                    > .back {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex: 0 0 auto;
+                        height: 40px;
+                        width: 40px;
+                        border-radius: 50%;
+                        background: #f1f1f1;
+                        margin-right: 8pt;
+                        @include pointer();
+
+                        > .icon-back {
+                            width: 15pt;
+                            height: 15pt;
+                        }
+                        &:hover {
+                            background-color: $background-hover;
+                            border-radius: 50%;
+                        }
+                    }
+                    > .story-right {
+                        > .confirm {
+                            padding-top: 10pt;
+                        }
+                        > .profile-user {
+                            > .profile-contact {
+                                display: none;
+                            }
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                            > .lookfor {
+                                font-size: 14px;
+                            }
+                            > .date {
+                                font-size: 14px;
+                            }
+                        }
+                        > .contact-head {
+                            font-size: 22px;
+                            margin-top: unset;
+                        }
+                        > .contact-hashtag {
+                            padding: unset;
+                            tag-event {
+                                .tag-event {
+                                    &.active {
+                                        padding: unset;
+                                    }
+                                    > .tag-emergency {
+                                        padding: 0 5px 0 0;
+                                        margin: 0 3px 0 0;
+                                    }
+                                }
+                            }
+                            > .contact-content {
+                                max-width: unset;
+                                display: none;
+                            }
+                        }
+                        // > .list-item {
+                        //     display: flex;
+                        //     font-family: "Kanit-500";
+                        //     font-size: 14px;
+                        //     color: $bg-color4;
+                        //     @include pointer();
+                        //     &:hover {
+                        //         text-decoration: underline;
+                        //     }
+                        // }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        width: 100%;
+                        &.active {
+                            display: none;
+                        }
+                    }
+                    > .body-story-right {
+                        display: none;
+                        > .header {
+                            height: 35pt;
+                        }
+                        > .grop-fulfill {
+                            min-width: unset;
+                            > .header {
+                                height: 34pt;
+                                position: relative;
+                                > .btn-close {
+                                    display: flex;
+                                    align-items: center;
+                                    position: absolute;
+                                    right: 5pt;
+                                    bottom: 0;
+                                    top: 0;
+                                    > .material-icons {
+                                        @include pointer();
+                                    }
+                                }
+                            }
+                            > .fulfilling {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .fulfill-page {
+        height: calc(100vh - 95pt - 2px);
+        padding: unset;
+        > .fulfill-body {
+            > .fulfill-left {
+                width: 100%;
+                > .mobile-fulfill-profile {
+                    display: flex;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #e5e5e5;
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: flex;
+                        }
+                    }
+                    > .fulfill-profile {
+                        > .menu-profile {
+                            > .mat-button-wrapper {
+                                > .box-profile {
+                                    > .name-page {
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .fulfill-con {
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            > .fulfill-right {
+                display: none;
+                &.active {
+                    display: flex;
+                    width: 100%;
+                    margin: unset;
+                    border-right: 1px solid #e5e5e5;
+                }
+                > .head-story {
+                    > .story-right {
+                        > .confirm {
+                            padding-top: 10pt;
+                        }
+                        > .profile-user {
+                            > .profile-contact {
+                                display: none;
+                            }
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                            > .lookfor {
+                                font-size: 14px;
+                            }
+                            > .date {
+                                font-size: 14px;
+                            }
+                        }
+                        > .contact-head {
+                            font-size: 22px;
+                            margin-top: unset;
+                        }
+                        > .contact-hashtag {
+                            padding: unset;
+                            tag-event {
+                                .tag-event {
+                                    &.active {
+                                        padding: unset;
+                                    }
+                                    > .tag-emergency {
+                                        padding: 0 5px 0 0;
+                                        margin: 0 3px 0 0;
+                                    }
+                                }
+                            }
+                            > .contact-content {
+                                max-width: unset;
+                                display: none;
+                            }
+                        }
+                        // > .list-item {
+                        //     display: flex;
+                        //     font-family: "Kanit-500";
+                        //     font-size: 14px;
+                        //     color: $bg-color4;
+                        //     @include pointer();
+                        //     &:hover {
+                        //         text-decoration: underline;
+                        //     }
+                        // }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        width: 100%;
+                        &.active {
+                            display: none;
+                        }
+                    }
+                    > .body-story-right {
+                        display: none;
+                        > .header {
+                            height: 35pt;
+                        }
+                        > .grop-fulfill {
+                            min-width: unset;
+                            > .header {
+                                height: 34pt;
+                                position: relative;
+                                > .btn-close {
+                                    display: flex;
+                                    align-items: center;
+                                    position: absolute;
+                                    right: 5pt;
+                                    bottom: 0;
+                                    top: 0;
+                                    > .material-icons {
+                                        @include pointer();
+                                    }
+                                }
+                            }
+                            > .fulfilling {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .fulfill-page {
+        height: calc(100vh - 95pt - 30pt - 2px);
+        padding: unset;
+        > .fulfill-body {
+            > .fulfill-left {
+                min-width: unset;
+                width: 100%;
+                > .mobile-fulfill-profile {
+                    // border-bottom: 1px solid #e5e5e5;
+                    // fulfill-menu {
+                    //     overflow: hidden;
+                    //     .fulfill-menu {
+                    //         display: flex;
+                    //     }
+                    // }
+                    > .fulfill-profile {
+                        border-bottom: unset;
+                        height: unset;
+                        > .menu-profile {
+                            > .mat-button-wrapper {
+                                > .box-profile {
+                                    img {
+                                        width: 35pt;
+                                        height: 35pt;
+                                        margin: unset;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .fulfill-con {
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: none;
+                        }
+                    }
+                    > .fulfill-contact {
+                        > .contact-top {
+                            > .contact-top-left {
+                                > .menu-filter {
+                                    height: 25pt;
+                                }
+                            }
+                            > .contact-top-right {
+                                > .menu-filter {
+                                    height: 25pt;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            > .fulfill-right {
+                &.active {
+                }
+                > .head-story {
+                    height: unset !important;  
+                    // align-items: unset;
+                    &.activeTransition {
+                        transition: all .5s ease;
+                    }
+                    > .story-right {
+                        flex-direction: unset;
+                        &.active {
+                            flex-direction: column;
+                        }
+                        > .profile-user {
+                            > .profile-contact {
+                                // display: none;
+                                > .img {
+                                    margin-left: unset;
+                                }
+                            }
+                        }
+                        > .confirm {
+                            // display: none;
+                            >.text-fulfill-close {
+                                display: none;
+                            }
+                            > .butt-fulfill {
+                                // width: 30px;
+                                // height: 30px;
+                                // line-height: unset;
+                                opacity: 0.7;
+                                z-index: 10;
+                                background: #fff;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                &:hover {
+                                    opacity: 1;
+                                }
+                            }
+                            > .mat-button-wrapper {
+                                > .material-icons {
+                                    font-size: 26px;
+                                }
+                            }
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                            // display: none;
+                            > .lookfor {
+                            }
+                            > .date {
+                            }
+                        }
+                        > .contact-head {
+                        }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        width: 100%;
+                        &.active {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .fulfill-page {
+        height: calc(100vh - 79pt - 14pt - 2px);
+        padding: unset;
+        > .fulfill-body {
+            > .fulfill-left {
+                // display: none;
+                min-width: unset;
+                width: 100%;
+                // > .mobile-fulfill-profile {
+                //     display: flex;
+                //     justify-content: space-between;
+                //     fulfill-menu {
+                //         .fulfill-menu {
+                //             display: flex;
+                //         }
+                //     }
+                //     > .fulfill-profile {
+                //         > .menu-profile {
+                //             > .mat-button-wrapper {
+                //                 > .box-profile {
+                //                     > .name-page {
+                //                         display: none;
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                > .fulfill-con {
+                    fulfill-menu {
+                        .fulfill-menu {
+                            display: none;
+                        }
+                    }
+                    > .fulfill-contact {
+                        > .contact-top {
+                            > .contact-top-left {
+                                > .menu-filter {
+                                }
+                            }
+                            > .contact-top-right {
+                                > .menu-filter {
+                                }
+                            }
+                        }
+                        > .user-contact {
+                            margin-bottom: 40pt;
+                        }
+                    }
+                }
+            }
+            > .fulfill-right {
+                &.active {
+                    height: calc(100% - 40pt);
+                }
+                > .head-story { 
+                    // height: auto !important;
+                    &.activeTransition {
+                        transition: all .5s ease;
+                    }
+                    > .back {
+                    }
+                    > .story-right {
+                        &.active {
+                            flex-direction: column;
+                        }
+                        > .profile-user {
+                            > .profile-contact {
+                                display: none;
+                            }
+                        }
+                        > .confirm {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-end;
+                            padding-top: 6pt;
+
+                            > .text-fulfill-close {
+                                display: none;
+                                margin-bottom: 5pt;
+                            }
+                            > .button-view-post {
+                                // width: 59pt;
+                                margin-left: unset;
+                            }
+                            > .butt-fulfill {
+                            }
+                        }
+                    }
+                    > .story-left {
+                        > .story-category {
+                            // display: none;
+                            > .lookfor {
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                            }
+                            > .date {
+                                > a {
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                }
+                            }
+                        }
+                        > .contact-head {
+                            font-size: 22px;
+                            margin-top: unset;
+                        }
+                        > .contact-hashtag {
+                            // display: none;
+                            padding: unset;
+                            > .contact-content {
+                                max-width: unset;
+                                // display: none;
+                            }
+                        }
+                    }
+                }
+                > .body-story {
+                    > .body-story-left {
+                        &.active {
+                            display: none;
+                        }
+                    }
+                    > .body-story-right {
+                        > .header {
+                        }
+                        > .grop-fulfill {
+                            > .header {
+                                > .btn-close {
+                                }
+                            }
+                            > .fulfilling {
+                                > .plus-item {
+                                    // min-height: unset;
+                                    > .d-plus {
+                                        > .material-icons {
+                                            font-size: 56px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .menu-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
+        min-height: unset;
+        height: auto;
+    }
+}
+
+// .cdk-overlay-pane {
+//     >.mat-menu-panel {
+//         min-height: unset;
+//         height: auto;
+//     }
+// }

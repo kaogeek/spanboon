@@ -1,0 +1,96 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.create-title-text {
+    width: 100%;
+    position: relative;
+    .create-title-text-h {
+        width: calc(100% - 60px);
+        height: 40px;
+        background-color: #eaeaea;
+        display: flex;
+        align-items: center;
+        padding: 0px 30px;
+        span {
+        }
+    }
+    .create-title-text-b {
+        width: calc(100% - 40px);
+        position: relative;
+        padding: 10px 20px;
+        .text-style {
+            width: 100%;
+            height: 20pt;
+            margin: 10px 0px;
+            display: flex;
+            .text-align {
+                height: 100%;
+                display: flex;
+                margin: 0px 2px;
+                .text-align-b {
+                    transition: 0.2s;
+                    cursor: pointer;
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: solid 1px #d2d2d2;
+                    border-radius: 2px;
+                    margin: 0px 2px;
+                    &:hover {
+                        transition: 0.2s;
+                        transform: scale(1.2);
+                    }
+                }
+            }
+        }
+        .text-area {
+            width: calc(100% - 32px);
+            resize: none;
+            font-size: 12px;
+            padding: 10px;
+            border: 1px solid rgb(226, 226, 226);
+            overflow: auto;
+        }
+        .hashtag {
+            background-color: red;
+            color: #ffffff;
+            padding: 0px 2px;
+        }
+
+        .atsign {
+            background-color: green;
+            color: #ffffff;
+            padding: 0px 2px;
+        }
+    }
+    .create-title-text-f {
+        width: calc(100% - 40px);
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 20px;
+        .save-buttom {
+            transition: 0.2s;
+            width: 60pt;
+            height: 20pt;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background-color: #fd545a;
+            &:hover {
+                transition: 0.2s;
+                transform: scale(1.1);
+            }
+        }
+    }
+}

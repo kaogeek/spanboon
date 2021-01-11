@@ -1,0 +1,269 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.status-bar {
+    display: flex;
+    width: 100%;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    margin-bottom: 10pt;
+    padding: 5pt 0 7pt 0;
+    border-bottom: 3px solid $black;
+    background: $white;
+
+    > .wrapper-left {
+        display: flex;
+        margin-left: 20pt;
+        margin-right: 5%;
+        flex: 1 1 0;
+        align-items: center;
+
+        > .user-image {
+            width: 50pt;
+            height: 50pt;
+            border-radius: 50%;
+            margin: 0 10pt 0 0;
+            border: 2px solid $white;
+            object-fit: cover;
+            flex: 0 0 auto;
+        }
+
+        > .icon {
+            background-color: $color-warm-red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: $white;
+            font-family: "Kanit-500";
+            font-size: 20px;
+        }
+
+        > .wrapper-topic {
+            > .topic-label {
+                font-family: "Kanit-500";
+                font-size: 26px;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            > .topic-icon {
+                display: flex;
+                align-items: center;
+            }
+
+            > .wrapper-icon {
+                > span {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+
+    > .topic-label-right {
+        text-align: right;
+        display: flex;
+        align-items: flex-end;
+
+        > .topic-create {
+            font-family: "Kanit-500";
+            font-size: 14px;
+            color: $koalaGray;
+
+            .icon-time {
+                height: $width-time;
+                width: $height-time;
+                margin-right: 5pt;
+            }
+        }
+
+        > .topic-count {
+            font-family: "Kanit-500";
+            font-size: 20px;
+            color: $color-black;
+
+            > .topic-type {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: gray;
+
+                > .image {
+                    width: 50pt;
+                    height: 50pt;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+            }
+
+            > .topic-see-all {
+                color: $color-warm-red;
+                font-family: "Kanit-500";
+                font-size: 18px;
+                margin-left: 5pt;
+                white-space: nowrap;
+                @include pointer();
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .status-bar {
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                > .topic-see-all {
+                    font-size: 17px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .status-bar {
+        padding: 3pt 0 5pt;
+
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+                    font-size: 20px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                font-size: 18px;
+
+                > .topic-see-all {
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .status-bar {
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                font-size: 16px;
+
+                > .topic-see-all {
+                    font-size: 15px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .status-bar {
+        > .wrapper-left {
+            margin-left: 15pt;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    // font-size: 20px;
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                > .topic-see-all {
+                    // font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .status-bar {
+        > .wrapper-left {
+            margin-left: 10pt;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    font-size: 18px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                > .topic-see-all {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .status-bar {
+        // padding: 5pt 0;
+
+        > .wrapper-left {
+            margin-left: 0;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    // font-size: 18px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-count {
+                // font-size: 16px;
+            }
+        }
+    }
+}

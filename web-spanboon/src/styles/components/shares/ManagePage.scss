@@ -1,0 +1,241 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.manage-page {
+    > .listPage {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        @include pointer();
+        transition: 0.3s background-color ease;
+
+        &:active {
+            background-color: $border-color;
+        }
+
+        > .btn-listPage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 16pt;
+
+            &.active {
+                rect {
+                    fill: $brandcolor2;
+                }
+            }
+        }
+    }
+
+    .mat-drawer-container {
+        // display: none;
+        visibility: hidden;
+        opacity: 0;
+        position: fixed;
+        background-color: transparent;
+        height: calc(100% - #{$height-header-top});
+        width: 100vw;
+        top: $height-header-top;
+        left: 0;
+        transition: all 0.5s ease;
+
+        &.active {
+            // display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+        .wrapper-mat-backdrop {
+            display: block;
+            position: fixed;
+            width: 100%;
+            height: calc(100% + 55pt);
+            top: -55pt;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            > .mat-backdrop {
+                background-color: rgba(0, 0, 0, 0.25);
+                position: relative;
+                width: 100%;
+                top: 110pt;
+                height: calc(100% - 110pt);
+            }
+        }
+        .mat-drawer-shown {
+            background-color: rgba(0, 0, 0, 0.25);
+        }
+        .mat-drawer {
+            cursor: unset;
+        }
+        .mat-raised-button:not([class*="mat-elevation-z"]) {
+            box-shadow: none;
+        }
+        .list-page {
+            position: relative;
+            // width: 100%;
+            width: 280pt;
+            height: 100%;
+            overflow-x: hidden;
+            button.mat-menu-item {
+                width: unset;
+            }
+            .mat-menu-item {
+                overflow: unset;
+                line-height: 0px;
+            }
+            .mat-menu-content {
+                padding: unset;
+            }
+            .wrapper-header-list {
+                display: flex;
+                position: sticky;
+                height: 30pt;
+                top: 0;
+                background-color: $white;
+                justify-content: space-between;
+                padding: 10pt 15pt;
+                align-items: center;
+                z-index: 99;
+                border-bottom: $width-border solid $border-separator;
+                border-top: $width-border solid$border-separator;
+                font-family: "Kanit-500";
+                font-size: 16px;
+                > .page-name-div {
+                }
+
+                > .btn-create-page {
+                    display: flex;
+                    justify-content: center;
+                    width: 120px;
+                    align-items: center;
+
+                        >.add-page{
+                            @include pointer();
+                            margin: 0 7pt;
+                            background: $brandcolor2;
+                            color: $white;
+                            border-radius: 50%;
+                            padding: 5pt;
+                            box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
+
+                            &:hover{
+                                transform: scale(1.05 , 1.05);
+                            }
+                        }
+                }
+            }
+            .wrapper-list-page {
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+                padding: 0 16pt;
+                align-items: center;
+                border-bottom: $width-border solid $border-separator;
+                background-color: $white;
+                z-index: 1;
+                @include pointer();
+                &:hover {
+                    background-color: $background-hover;
+                    border-radius: 8pt;
+                }
+                > .list-page {
+                    display: flex;
+                    align-items: center;
+                    width: calc(100% - 30pt);
+                    > .image-page {
+                        padding: 5pt;
+                        > .img {
+                            width: 40pt;
+                            height: 40pt;
+                            border-radius: 50%;
+                        }
+                    }
+                    > .wrapper-message {
+                        display: flex;
+                        align-items: center;
+                        // padding: 0 5pt;
+                        @include text-limit();
+                        font-family: "Kanit-500";
+                        font-size: 18px;
+                        > .con-text-name {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+                        // > .wrapper-page-name {
+                        > .wrapper-page-name-eng {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: $koalaGray;
+                        }
+                        > .offical-page {
+                            width: 13pt;
+                            height: 13pt;
+                            // padding: 0 4pt;
+                            padding-right: 4pt;
+                        }
+                    }
+                    // }
+                }
+
+                > .wrapper-option {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    svg {
+                        width: $width-time;
+                        height: $height-time;
+                    }
+                }
+            }
+            > .page-none {
+                flex-direction: column;
+                justify-content: center;
+                height: calc(100% - 60pt);
+                font-family: "Kanit-500";
+                font-size: 18px;
+                > .logo-img {
+                    margin: 10pt;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .manage-page {
+        > .listPage {
+            width: 36px;
+            height: 36px;
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .manage-page {
+        .mat-drawer-container {
+            height: calc(100% - 39pt);
+            top: 39pt;
+
+            .wrapper-mat-backdrop {
+                > .mat-backdrop {
+                    top: 94pt;
+                    height: calc(100% - 94pt);
+                }
+            }
+
+            .list-page {
+                width: 100vw;
+            }
+        }
+    }
+}

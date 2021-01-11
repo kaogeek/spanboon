@@ -1,0 +1,112 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.card-checkbox {
+    border: $width-border solid $border-color;
+    border-radius: $border-radius-4px;
+    background: $white;
+
+    > .header-title {
+        padding: 15pt;
+        border-bottom: $width-border solid $border-color; 
+        font-family: "Kanit-500";
+        font-size: 18px;
+    }
+
+    > .wrapper-card {
+        border-bottom: $width-border solid $border-color;
+        background-color: $white;
+
+        > .card-follow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3pt 10pt;
+            width: calc(100% - 20pt);
+            // @include pointer();
+
+            &:hover {
+                background-color: $background-hover;
+            }
+            > .item-checkbox {
+                width: 100%;
+                > .mat-checkbox-layout {
+                    width: 100%; 
+                    > .mat-checkbox-inner-container {
+                    }
+                    > .mat-checkbox-label {
+                        display: flex;
+                        width: 100%;
+                    }
+                }
+            }
+
+            .description {
+                font-family: "Kanit-500";
+                margin-left: 6pt;
+                > .top {
+                    font-size: 14px;
+                    color: #a5a5a6;
+                }
+                > .middle {
+                    font-size: 16px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-all;
+                }
+                > .trend {
+                    font-size: 14px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-all;
+                    > .count {
+                    }
+                    // > .tag {
+                    //     color: #1b95e0;
+                    // }
+                }
+            }
+
+            > .wrapper-btn-follow {
+                > button-follow {
+                }
+            }
+            > .item-checkbox {
+                > .mat-checkbox-layout {
+                    white-space: break-spaces;
+                }
+            }
+        }
+        > .checkbox {
+            padding: 8pt;
+            width: calc(100% - 16pt);
+            >.item-checkbox {
+                width: 100%;
+                >.mat-checkbox-layout {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    > .follow-all {
+        padding: 8pt 15pt;
+        text-align: center;
+        color: $color-warm-red;
+        @include pointer(); 
+        font-family: "Kanit-500";
+        font-size: 16px;
+        min-height: 26pt;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

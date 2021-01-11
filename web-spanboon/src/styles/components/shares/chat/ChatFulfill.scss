@@ -1,0 +1,20 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.chat-fulfill-wrapper {
+    background: #f1f3f5;
+    border-radius: 6px; 
+    font-family: "Kanit-400";
+    font-size: 16px;
+    position: relative;
+
+    > .chat-item-action {
+        > .item-name {
+            color: #7aaf67;
+        }
+    }
+}

@@ -1,0 +1,28 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="setting-account">
+    <div class="container">
+        <div class="setting-top"> 
+            <div class="label-top">การตั้งค่า</div>
+        </div>
+        <div class="settings-flex"> 
+            <div class="settings-left"> 
+                <div class="settings-list">
+                    <div class="list-item-menu" matRipple matTooltip="{{link.label}}" [matTooltipPosition]="'right'"
+                        *ngFor="let link of links" (click)="selecedInformation(link)"
+                        [class.active]="selected === link.label">
+                        <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
+                        <span class="settings-title">{{link.label}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-right">  
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,243 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="header-search" [class.show]="filled" (window:resize)="checkMenu($event)">
+    <div class="search">
+        <div class="wrapper-search">
+            <label class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'" for="searchInput"
+                (click)="clickShowSearch()" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
+                search
+            </label>
+            <div class="home-back-left" *ngIf="SearchShow" matRipple [matRippleCentered]="'centered'"
+                (click)="clickHideSearch(); search.value ='' ">
+                <svg class="home-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
+                    style="enable-background:new 0 0 443.52 443.52;" xml:space="preserve">
+                    <g>
+                        <g>
+                            <path d="M143.492,221.863L336.226,29.129c6.663-6.664,6.663-17.468,0-24.132c-6.665-6.662-17.468-6.662-24.132,0l-204.8,204.8
+                c-6.662,6.664-6.662,17.468,0,24.132l204.8,204.8c6.78,6.548,17.584,6.36,24.132-0.42c6.387-6.614,6.387-17.099,0-23.712
+                L143.492,221.863z" />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div id="search" [class.active]="SearchShow">
+                <label class="material-icons icon-search" for="searchInput">
+                    search
+                </label>
+                <input #search id="searchInput" type="search" [placeholder]="filled ? 'Search' : '' "
+                    [ngClass]="{'filled': filled }" (keyup.enter)="onClickSearchLink($event); search.value =''"
+                    [ngStyle]="{'width' : !SearchShow ? '0' : '100%'}" autocomplete="off">
+                <span matRipple [matRippleCentered]="'centered'" class="material-icons close" *ngIf="filled"
+                    (click)="clickHideSearch(); search.value='';">
+                    close
+                </span>
+            </div>
+        </div>
+
+        <div class="wrapper-body-tag" #wrapperBodyTag *ngIf="filled" (click)="$event.stopPropagation();">
+            <ng-container *ngIf="search.value; else elseSearch">
+                <div class="list-body-search">
+                    <ng-container *ngIf="isLoading; else elseIsloading">
+                        <loading></loading>
+                    </ng-container>
+                    <ng-template #elseIsloading>
+                        <ng-container *ngIf="resSearch.length > 0; else elseNotFound">
+                            <div class="item-search" *ngFor="let item of resSearch; let index = index">
+                                <ng-container *ngIf="item.historyId; else elseHistory">
+                                    <div class="search-name" (click)="clickOpenLink(item)">
+                                        <svg class="icon-history" xmlns="http://www.w3.org/2000/svg" width="18.412"
+                                            height="20.418" viewBox="0 0 18.412 20.418">
+                                            <g id="Group_1212" data-name="Group 1212"
+                                                transform="translate(-39.993 -360.215)" opacity="1">
+                                                <g id="Group_390" data-name="Group 390"
+                                                    transform="translate(47.801 367.8)">
+                                                    <g id="Group_389" data-name="Group 389" transform="translate(0)">
+                                                        <path id="Path_251" data-name="Path 251"
+                                                            d="M207.369,522.246h-3.923v-3.923a.723.723,0,0,0-1.446,0v4.646a.723.723,0,0,0,.723.723h4.646a.723.723,0,0,0,0-1.446Z"
+                                                            transform="translate(-202 -517.6)" />
+                                                    </g>
+                                                </g>
+                                                <path id="Path_252" data-name="Path 252"
+                                                    d="M372.57,612.674c-.018.109-.01.066,0,0Z"
+                                                    transform="translate(-316.538 -240.292)" fill="#474747" />
+                                                <path id="Path_253" data-name="Path 253"
+                                                    d="M58.378,370.786a10.4,10.4,0,0,0-.241-1.559,1.167,1.167,0,0,0-1.423-.808,1.181,1.181,0,0,0-.808,1.423c.048.2.087.41.124.618.005.028.018.178.005.026s0,.032.007.072q.02.183.031.366a8.17,8.17,0,0,1-.006,1.117q-.009.117-.021.233c0,.027-.009.072-.015.109l.02-.12c-.026.151-.047.3-.077.454a7.982,7.982,0,0,1-.239.911q-.07.214-.152.424l-.008.021c-.033.066-.059.136-.09.2a8.054,8.054,0,0,1-.44.81q-.117.188-.244.37-.063.091-.129.18l-.012.017c-.189.226-.38.448-.589.657s-.445.4-.671.6h0q-.089.066-.18.129-.195.136-.4.26a8.041,8.041,0,0,1-.812.437c-.057.026-.118.049-.174.077q-.235.092-.475.17a8,8,0,0,1-.88.229c-.13.026-.261.045-.392.067l-.051.006q-.133.014-.266.023a8.13,8.13,0,0,1-.979.01q-.234-.012-.467-.037l-.047-.005-.2-.033a8,8,0,0,1-.887-.212q-.216-.065-.429-.142-.106-.038-.21-.08l-.038-.016a9.125,9.125,0,0,1-1.545-.906l-.01-.008c-.057-.047-.114-.093-.17-.141q-.168-.143-.328-.3a8.107,8.107,0,0,1-.624-.667c-.041-.049-.08-.106-.124-.154l-.007-.009q-.14-.191-.269-.39a8.029,8.029,0,0,1-.455-.8q-.05-.1-.1-.2l-.049-.111-.034-.084q-.046-.12-.089-.241a8.006,8.006,0,0,1-.25-.872q-.051-.224-.088-.45l-.011-.07c-.006-.054-.018-.152-.021-.181a8.167,8.167,0,0,1-.034-.977q.006-.235.025-.47.01-.116.023-.232l0-.021a8,8,0,0,1,.2-.926c.079-.285.178-.562.284-.837l0-.005c.031-.068.062-.136.094-.2q.1-.215.219-.424a8.08,8.08,0,0,1,.491-.776l.068-.092c.02-.025.039-.052.058-.075q.15-.183.31-.358a8.1,8.1,0,0,1,.655-.637l.144-.122.123-.1.042-.031q.1-.074.207-.146a8.041,8.041,0,0,1,.788-.473q.2-.1.4-.2l.028-.012c.067-.025.132-.055.2-.08a8.016,8.016,0,0,1,.895-.278q.206-.051.415-.091.113-.022.227-.04l.05-.008.155-.014-.633,1.292a.752.752,0,0,0,.954,1.029l4-1.6a.494.494,0,0,0,.275-.642l-1.59-3.972a.752.752,0,0,0-1.4.011l-.594,1.553a1.134,1.134,0,0,0-.228-.022,9.331,9.331,0,0,0-7.528,3.914,9.2,9.2,0,0,0-1.167,8.313A9.193,9.193,0,0,0,55,378.571,9.18,9.18,0,0,0,58.378,370.786Zm-11.937,6.976-.008,0Z"
+                                                    transform="translate(0)" fill="#474747" />
+                                            </g>
+                                        </svg>
+                                        <span class="history-name">
+                                            {{item.label}}
+                                        </span>
+                                    </div>
+                                    <div class="list-right">
+                                        <i class="material-icons" (click)="onDeleteHistory(item,index)">
+                                            clear
+                                        </i>
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseHistory>
+                                    <div class="search-name" (click)="clickOpenLink(item)">
+                                        <svg class="icon-history" xmlns="http://www.w3.org/2000/svg" width="20.276"
+                                            height="20.682" viewBox="0 0 20.276 20.682">
+                                            <g id="surface1" transform="translate(-27)">
+                                                <path id="Path_104" data-name="Path 104"
+                                                    d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
+                                                    transform="translate(26.891 0)" fill="#474747" />
+                                            </g>
+                                        </svg>
+                                        <span class="history-name">
+                                            {{item.label}}
+                                        </span>
+                                    </div>
+
+                                </ng-template>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseNotFound>
+                            <div class="list-body-search noneInformation">
+                                ไม่ค้นพบข้อมูล
+                            </div>
+                        </ng-template>
+                    </ng-template>
+                </div>
+            </ng-container>
+            <ng-template #elseSearch>
+                <div class="tab" #tabs *ngIf="heightSearch">
+                    <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
+                        (click)="tabSearch($event , 'popular')" id="defaultOpen1">กำลังได้รับความสนใจ</div>
+                    <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
+                        (click)="tabSearch($event , 'history')" id="defaultOpen2">ค้นหาล่าสุด</div>
+                </div>
+                <div class="wrapper-popular tabcontent" id="popular">
+                    <div class="wrapper-header">
+                        <div class="now-regrad">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24.658" height="15.919"
+                                viewBox="0 0 24.658 15.919">
+                                <path id="Path_3173" data-name="Path 3173"
+                                    d="M382.213,454h-4.821a.847.847,0,0,0-.575,1.469l1.17,1.082-2.254,2.254-5.789,5.789-.136.136-2.691-2.691-.56-.56a1.7,1.7,0,0,0-2.372,0l-4.894,4.894-.7.7a1.677,1.677,0,0,0,2.372,2.372l4.4-4.4,2.691,2.691.56.56a1.7,1.7,0,0,0,2.372,0l3.615-3.615,5.738-5.738.947,1.049a.847.847,0,0,0,1.476-.568v-4.859A.557.557,0,0,0,382.213,454Z"
+                                    transform="translate(-358.111 -454)" fill="#111" opacity="0.13" />
+                            </svg>
+
+                            <span class="name"> กำลังได้รับความสนใจ </span>
+                        </div>
+                        <div class="have-participate">
+                            มีส่วนร่วม
+                        </div>
+                    </div>
+                    <div class="list-popular">
+                        <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
+                            (click)="searchHashTag(trend,index);clickOpenLink(trend)">
+                            <div class="tag-popular">
+                                {{trend.label}}
+                            </div>
+                            <div class="count-participate">
+                                {{trend.count | shortNumber }} ครั้ง
+                            </div>
+                        </div>
+                        <div class="wrapper-allPost" (click)="loadMoreHashTag()">
+                            ดูเพิ่มเติม
+                        </div>
+                    </div>
+                </div>
+                <div class="wrapper-history tabcontent" id="history">
+                    <div class="wrapper-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18.412" height="20.418"
+                            viewBox="0 0 18.412 20.418">
+                            <g id="Group_1212" data-name="Group 1212" transform="translate(-39.993 -360.215)"
+                                opacity="0.13">
+                                <g id="Group_390" data-name="Group 390" transform="translate(47.801 367.8)">
+                                    <g id="Group_389" data-name="Group 389" transform="translate(0)">
+                                        <path id="Path_251" data-name="Path 251"
+                                            d="M207.369,522.246h-3.923v-3.923a.723.723,0,0,0-1.446,0v4.646a.723.723,0,0,0,.723.723h4.646a.723.723,0,0,0,0-1.446Z"
+                                            transform="translate(-202 -517.6)" />
+                                    </g>
+                                </g>
+                                <path id="Path_252" data-name="Path 252" d="M372.57,612.674c-.018.109-.01.066,0,0Z"
+                                    transform="translate(-316.538 -240.292)" fill="#111" />
+                                <path id="Path_253" data-name="Path 253"
+                                    d="M58.378,370.786a10.4,10.4,0,0,0-.241-1.559,1.167,1.167,0,0,0-1.423-.808,1.181,1.181,0,0,0-.808,1.423c.048.2.087.41.124.618.005.028.018.178.005.026s0,.032.007.072q.02.183.031.366a8.17,8.17,0,0,1-.006,1.117q-.009.117-.021.233c0,.027-.009.072-.015.109l.02-.12c-.026.151-.047.3-.077.454a7.982,7.982,0,0,1-.239.911q-.07.214-.152.424l-.008.021c-.033.066-.059.136-.09.2a8.054,8.054,0,0,1-.44.81q-.117.188-.244.37-.063.091-.129.18l-.012.017c-.189.226-.38.448-.589.657s-.445.4-.671.6h0q-.089.066-.18.129-.195.136-.4.26a8.041,8.041,0,0,1-.812.437c-.057.026-.118.049-.174.077q-.235.092-.475.17a8,8,0,0,1-.88.229c-.13.026-.261.045-.392.067l-.051.006q-.133.014-.266.023a8.13,8.13,0,0,1-.979.01q-.234-.012-.467-.037l-.047-.005-.2-.033a8,8,0,0,1-.887-.212q-.216-.065-.429-.142-.106-.038-.21-.08l-.038-.016a9.125,9.125,0,0,1-1.545-.906l-.01-.008c-.057-.047-.114-.093-.17-.141q-.168-.143-.328-.3a8.107,8.107,0,0,1-.624-.667c-.041-.049-.08-.106-.124-.154l-.007-.009q-.14-.191-.269-.39a8.029,8.029,0,0,1-.455-.8q-.05-.1-.1-.2l-.049-.111-.034-.084q-.046-.12-.089-.241a8.006,8.006,0,0,1-.25-.872q-.051-.224-.088-.45l-.011-.07c-.006-.054-.018-.152-.021-.181a8.167,8.167,0,0,1-.034-.977q.006-.235.025-.47.01-.116.023-.232l0-.021a8,8,0,0,1,.2-.926c.079-.285.178-.562.284-.837l0-.005c.031-.068.062-.136.094-.2q.1-.215.219-.424a8.08,8.08,0,0,1,.491-.776l.068-.092c.02-.025.039-.052.058-.075q.15-.183.31-.358a8.1,8.1,0,0,1,.655-.637l.144-.122.123-.1.042-.031q.1-.074.207-.146a8.041,8.041,0,0,1,.788-.473q.2-.1.4-.2l.028-.012c.067-.025.132-.055.2-.08a8.016,8.016,0,0,1,.895-.278q.206-.051.415-.091.113-.022.227-.04l.05-.008.155-.014-.633,1.292a.752.752,0,0,0,.954,1.029l4-1.6a.494.494,0,0,0,.275-.642l-1.59-3.972a.752.752,0,0,0-1.4.011l-.594,1.553a1.134,1.134,0,0,0-.228-.022,9.331,9.331,0,0,0-7.528,3.914,9.2,9.2,0,0,0-1.167,8.313A9.193,9.193,0,0,0,55,378.571,9.18,9.18,0,0,0,58.378,370.786Zm-11.937,6.976-.008,0Z"
+                                    transform="translate(0)" fill="#111" />
+                            </g>
+                        </svg>
+                        <div class="label">
+                            ค้นหาล่าสุด
+                        </div>
+                    </div>
+                    <div class="list-body">
+                        <ng-container *ngIf="searchRecent.length === 0; else elseisMsgHistory">
+                            <div class="list-fanpage page-recent"
+                                [ngStyle]="{'display': searchRecentName.length > 0 ? 'none' : 'flex'}">
+                                ไม่พบข้อมูลล่าสุด
+                            </div>
+                        </ng-container>
+                        <ng-template #elseisMsgHistory>
+                            <div class="list-fanpage">
+                                <div (click)="clickOpenLink(data)" class="wrapper-profile"
+                                    *ngFor="let data of searchRecent">
+                                    <ng-container *ngIf="isLoading || data.isLoadingImage; else elseIsLoadIng">
+                                        <span class="loading-image">
+                                            <div class="linear-background">
+                                            </div>
+                                        </span>
+                                    </ng-container>
+                                    <ng-template #elseIsLoadIng>
+                                        <ng-container
+                                            *ngIf="data.imageBase64 && data.imageBase64 !== null; else elseBase64">
+                                            <img class="avatar" src="{{data.imageBase64}}">
+                                        </ng-container>
+                                        <ng-template #elseBase64>
+                                            <div class="avatar image-file-waste">
+                                                <img src="../../../../assets/img/photo.png" alt=""
+                                                    style="width: 40%; height: auto;">
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+
+
+                                    <div class="fanpage-name">
+                                        {{data.label}}
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <div class="list-search">
+                            <div class="item" (click)="clickOpenLink(item)" *ngFor="let item of searchRecentName">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18.412" height="20.418"
+                                    viewBox="0 0 18.412 20.418">
+                                    <g id="Group_1212" data-name="Group 1212" transform="translate(-39.993 -360.215)"
+                                        opacity="0.13">
+                                        <g id="Group_390" data-name="Group 390" transform="translate(47.801 367.8)">
+                                            <g id="Group_389" data-name="Group 389" transform="translate(0)">
+                                                <path id="Path_251" data-name="Path 251"
+                                                    d="M207.369,522.246h-3.923v-3.923a.723.723,0,0,0-1.446,0v4.646a.723.723,0,0,0,.723.723h4.646a.723.723,0,0,0,0-1.446Z"
+                                                    transform="translate(-202 -517.6)" />
+                                            </g>
+                                        </g>
+                                        <path id="Path_252" data-name="Path 252"
+                                            d="M372.57,612.674c-.018.109-.01.066,0,0Z"
+                                            transform="translate(-316.538 -240.292)" fill="#111" />
+                                        <path id="Path_253" data-name="Path 253"
+                                            d="M58.378,370.786a10.4,10.4,0,0,0-.241-1.559,1.167,1.167,0,0,0-1.423-.808,1.181,1.181,0,0,0-.808,1.423c.048.2.087.41.124.618.005.028.018.178.005.026s0,.032.007.072q.02.183.031.366a8.17,8.17,0,0,1-.006,1.117q-.009.117-.021.233c0,.027-.009.072-.015.109l.02-.12c-.026.151-.047.3-.077.454a7.982,7.982,0,0,1-.239.911q-.07.214-.152.424l-.008.021c-.033.066-.059.136-.09.2a8.054,8.054,0,0,1-.44.81q-.117.188-.244.37-.063.091-.129.18l-.012.017c-.189.226-.38.448-.589.657s-.445.4-.671.6h0q-.089.066-.18.129-.195.136-.4.26a8.041,8.041,0,0,1-.812.437c-.057.026-.118.049-.174.077q-.235.092-.475.17a8,8,0,0,1-.88.229c-.13.026-.261.045-.392.067l-.051.006q-.133.014-.266.023a8.13,8.13,0,0,1-.979.01q-.234-.012-.467-.037l-.047-.005-.2-.033a8,8,0,0,1-.887-.212q-.216-.065-.429-.142-.106-.038-.21-.08l-.038-.016a9.125,9.125,0,0,1-1.545-.906l-.01-.008c-.057-.047-.114-.093-.17-.141q-.168-.143-.328-.3a8.107,8.107,0,0,1-.624-.667c-.041-.049-.08-.106-.124-.154l-.007-.009q-.14-.191-.269-.39a8.029,8.029,0,0,1-.455-.8q-.05-.1-.1-.2l-.049-.111-.034-.084q-.046-.12-.089-.241a8.006,8.006,0,0,1-.25-.872q-.051-.224-.088-.45l-.011-.07c-.006-.054-.018-.152-.021-.181a8.167,8.167,0,0,1-.034-.977q.006-.235.025-.47.01-.116.023-.232l0-.021a8,8,0,0,1,.2-.926c.079-.285.178-.562.284-.837l0-.005c.031-.068.062-.136.094-.2q.1-.215.219-.424a8.08,8.08,0,0,1,.491-.776l.068-.092c.02-.025.039-.052.058-.075q.15-.183.31-.358a8.1,8.1,0,0,1,.655-.637l.144-.122.123-.1.042-.031q.1-.074.207-.146a8.041,8.041,0,0,1,.788-.473q.2-.1.4-.2l.028-.012c.067-.025.132-.055.2-.08a8.016,8.016,0,0,1,.895-.278q.206-.051.415-.091.113-.022.227-.04l.05-.008.155-.014-.633,1.292a.752.752,0,0,0,.954,1.029l4-1.6a.494.494,0,0,0,.275-.642l-1.59-3.972a.752.752,0,0,0-1.4.011l-.594,1.553a1.134,1.134,0,0,0-.228-.022,9.331,9.331,0,0,0-7.528,3.914,9.2,9.2,0,0,0-1.167,8.313A9.193,9.193,0,0,0,55,378.571,9.18,9.18,0,0,0,58.378,370.786Zm-11.937,6.976-.008,0Z"
+                                            transform="translate(0)" fill="#111" />
+                                    </g>
+                                </svg>
+                                <div class="item-name">{{item.label}}</div>
+                                <div class="date-time">{{item.createdDate | dateFormat}}</div>
+                            </div>
+                        </div>
+                        <div class="list-footer">
+                            ดูเพิ่มเติม
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<div class="backdrop-active" *ngIf="filled" (click)="clickHideSearch(); search.value ='' "></div>

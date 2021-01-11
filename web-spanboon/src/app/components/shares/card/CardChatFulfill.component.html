@@ -1,0 +1,179 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="card-chat-fulfill-wrapper"
+    *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_EDIT' || messageType === 'FULFILLMENT_REQUEST_DELETE'">
+    <!-- <div class="chat-fulfill-item-wrapper">
+        <div class="chat-fulfill-item">
+            <div class="chat-fulfill-item-icon">
+                <img class="fulfill-item-icon" src="{{imageURL}}" />
+            </div>
+        </div>
+        <div class="fulfill-item-footer">
+            <div class="fulfill-item-name">
+                <span class="item-name">{{itemName}}</span>
+            </div>
+            <div class="fulfill-item-quantity">
+                <span class="item-quantity">
+                    {{currentQuantity}} {{itemUnit}}
+                </span>
+            </div>
+        </div>
+    </div> -->
+    <card-fulfill-item [itemName]="itemName" [itemQuantity]="currentQuantity" [itemUnit]="itemUnit"
+        [imageURL]="imageURL"></card-fulfill-item>
+    <div class="chat-fulfill-arrow-wrapper">
+        <div class="chat-fulfill-arrow">
+            <img class="fulfill-arrow-icon" src="../../../../assets/img/fast-forward.svg" />
+        </div>
+    </div>
+    <div class="chat-fulfill-item-wrapper"
+        [ngStyle]="{'background': (messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_DELETE') ? '#f1f3f5':'#ffffff','border':(messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_DELETE') ? '0.5px solid #c7c7c7':'none'}">
+        <div class="chat-fulfill-item">
+            <div class="chat-fulfill-item-icon">
+                <img class="fulfill-item-icon" src="{{imageURL}}" *ngIf="messageType === 'FULFILLMENT_REQUEST_EDIT'" />
+
+                <svg class="fulfill-item-icon" *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE'" width="50"
+                    height="50" viewBox="0 0 80.662 70.194" xmlns="http://www.w3.org/2000/svg">
+                    <g data-name="Group 2388" id="Group_2388" transform="translate(1705.345 -3207.5)">
+                        <path
+                            d="M266.951,37.465a13.432,13.432,0,0,1,13.366,13.366c0,13.5-24.57,26.863-24.57,26.863s-24.57-13.562-24.57-26.863a13.387,13.387,0,0,1,24.57-7.338,13.365,13.365,0,0,1,11.2-6.028"
+                            data-name="Path 3531" fill="#C7C7C7" id="Path_3531" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M230.789,62.659H211.01a4.582,4.582,0,0,1-4.577-4.577V18.855a4.582,4.582,0,0,1,4.577-4.577h39.226a4.581,4.581,0,0,1,4.577,4.577V36.693c.1.142.2.279.295.424a17.371,17.371,0,0,1,6.484-5.858v-12.4A11.369,11.369,0,0,0,250.236,7.5H211.01a11.368,11.368,0,0,0-11.355,11.355V58.082A11.368,11.368,0,0,0,211.01,69.437h26.736a70.126,70.126,0,0,1-6.957-6.778"
+                            data-name="Path 3532" fill="#C7C7C7" id="Path_3532" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M213.178,27.585H212.9a1.537,1.537,0,0,1-1.537-1.537V23.163a1.537,1.537,0,0,1,1.537-1.537h.283a1.536,1.536,0,0,1,1.537,1.537v2.885a1.536,1.536,0,0,1-1.537,1.537"
+                            data-name="Path 3533" fill="#C7C7C7" id="Path_3533" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M218.861,27.585h-.283a1.537,1.537,0,0,1-1.537-1.537V21.089a1.537,1.537,0,0,1,1.537-1.537h.283a1.536,1.536,0,0,1,1.537,1.537v4.959a1.536,1.536,0,0,1-1.537,1.537"
+                            data-name="Path 3534" fill="#C7C7C7" id="Path_3534" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M224.574,27.585h-.284a1.537,1.537,0,0,1-1.537-1.537V23.163a1.537,1.537,0,0,1,1.537-1.537h.284a1.536,1.536,0,0,1,1.536,1.537v2.885a1.536,1.536,0,0,1-1.536,1.537"
+                            data-name="Path 3535" fill="#C7C7C7" id="Path_3535" transform="translate(-1905 3200)">
+                        </path>
+                    </g>
+                </svg>
+
+                <img class="fulfill-item-icon" src="../../../../assets/img/delete.svg"
+                    *ngIf="messageType === 'FULFILLMENT_REQUEST_DELETE'" />
+            </div>
+        </div>
+        <div class="fulfill-item-footer">
+            <div class="fulfill-item-name"
+                [ngStyle]="{'text-align': (messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_DELETE') ? 'center': ''}">
+                <span class="item-name" *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE'">
+                    เพิ่มรายการ
+                </span>
+                <span class="item-name" *ngIf="messageType === 'FULFILLMENT_REQUEST_EDIT'">
+                    {{itemName}}
+                </span>
+                <span class="item-name" *ngIf="messageType === 'FULFILLMENT_REQUEST_DELETE'">
+                    ลบรายการ
+                </span>
+            </div>
+            <div class="fulfill-item-quantity" *ngIf="messageType === 'FULFILLMENT_REQUEST_EDIT'">
+                <span class="item-quantity">
+                    {{newQuantity}} {{itemUnit}}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fulfill-case-create-wrapper"
+    *ngIf="((postData !== null && postData !== undefined) && messageType === 'FULFILLMENT_CASE_CREATE')">
+    <div class="fulfill-case-create-message">
+        {{message}}
+    </div>
+
+    <div class="fulfill-case-create-header">
+        <div class="post-title">
+            {{postData.title}}
+        </div>
+
+        <div class="fulfill-case-create-detail">
+            <span class="material-icons status"> lens </span>
+            <span class="lookfor">มองหา</span>
+
+            <div class="fulfill-case-create-hashtag">
+                <div class="fulfill-case-create-content"
+                    *ngIf="postData.emergencyEventTag !== null && postData.emergencyEventTag !== undefined && postData.emergencyEventTag !== ''">
+                    <svg class="icon" height="15" viewBox="0 0 23 21" width="15" xmlns="http://www.w3.org/2000/svg">
+                        <g data-name="Group 1312" id="Group_1312" transform="translate(-672.701 -415.463)">
+                            <path
+                                d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                data-name="Subtraction 2" fill="#fd545a" id="Subtraction_2" stroke="rgba(0,0,0,0)"
+                                stroke-miterlimit="10" stroke-width="1" transform="translate(7129.611 -573.082)"></path>
+                            <path d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                data-name="Rectangle 572" fill="#fd545a" id="Rectangle_572"
+                                transform="translate(674.701 434.463)">
+                            </path>
+                            <rect data-name="Rectangle 573" fill="#fd545a" height="3" id="Rectangle_573" rx="1"
+                                transform="translate(683.701 415.463)" width="2"></rect>
+                            <rect data-name="Rectangle 574" fill="#fd545a" height="3.962" id="Rectangle_574" rx="0.699"
+                                transform="translate(678.115 416.918) rotate(-30)" width="1.398"></rect>
+                            <rect data-name="Rectangle 575" fill="#fd545a" height="3.962" id="Rectangle_575" rx="0.699"
+                                transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)" width="1.398"></rect>
+                            <rect data-name="Rectangle 576" fill="#fd545a" height="3.962" id="Rectangle_576" rx="0.699"
+                                transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)" width="1.398"></rect>
+                            <rect data-name="Rectangle 577" fill="#fd545a" height="3.962" id="Rectangle_577" rx="0.699"
+                                transform="translate(689.761 416.304) rotate(31.145)" width="1.398"></rect>
+                            <rect data-name="Rectangle 578" fill="#fd545a" height="3" id="Rectangle_578" rx="0.5"
+                                transform="translate(672.701 427.463) rotate(-90)" width="1"></rect>
+                            <rect data-name="Rectangle 579" fill="#fd545a" height="3" id="Rectangle_579" rx="0.5"
+                                transform="translate(692.701 427.463) rotate(-90)" width="1"></rect>
+                        </g>
+                    </svg>
+                    <span class="fulfill-case-create-event">#{{postData.emergencyEventTag}}</span>
+                </div>
+                <div class="fulfill-case-create-content"
+                    *ngIf="postData.objectiveTag !== null && postData.objectiveTag !== undefined && postData.objectiveTag !== ''">
+                    <svg class="icon" height="15" viewBox="0 0 22.899 22.899" width="15"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="mission" transform="translate(0)">
+                            <path
+                                d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                data-name="Path 3205" fill="#fd545a" id="Path_3205" transform="translate(0 -299.903)">
+                            </path>
+                            <path
+                                d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                data-name="Path 3206" fill="#fd545a" id="Path_3206" transform="translate(-295.877)">
+                            </path>
+                            <path
+                                d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                data-name="Path 3207" fill="#fd545a" id="Path_3207"
+                                transform="translate(-131.312 -333.558)"></path>
+                            <path
+                                d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                data-name="Path 3208" fill="#fd545a" id="Path_3208"
+                                transform="translate(-248.03 -228.703)">
+                            </path>
+                        </g>
+                    </svg>
+                    <span class="fulfill-case-create-event">#{{postData.objectiveTag}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fulfill-case-create-footer">
+        <spanboon-button (click)="viewPost(postData.id)" [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'"
+            [bgColor]="'#E02438'" [text]="'ดูโพสต์'">
+        </spanboon-button>
+    </div>
+</div>
+
+<div *ngIf="messageType === 'FULFILLMENT_CASE_CANCEL'">
+    <div class="fulfill-case-cancel-wrapper">
+        {{sender}} ได้ทำการ <span style="color: #E02438;">ยกเลิกเติมเต็ม</span>
+    </div>
+</div>

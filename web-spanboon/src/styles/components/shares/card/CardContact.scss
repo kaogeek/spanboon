@@ -1,0 +1,200 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.card-contact {
+    box-shadow: inset 0 -1px 0 1px rgba($border-color, 0.7);
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    background: $white;
+    @include pointer();
+
+    &:hover {
+        background: $bg-grey;
+    }
+
+    > .card-color {
+        width: 5pt;
+        background: $bg-fog-gray;
+        flex: 0 0 auto;
+    }
+
+    > .user-contact {
+        padding: 10pt 10pt 10pt 0;
+        flex: 1 1 0%;
+        display: flex;
+        flex-direction: row;
+
+        > .donator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40pt;
+            height: 40pt;
+            margin: 0 10pt;
+            border-radius: 50%;
+            box-shadow: 2.5px 0px 0px 0 #ffffff;
+            overflow: hidden;
+            color: $brandcolor;
+            background: $color-warm-red;
+            @include font-size-8-100("Kanit-500");
+        }
+
+        > .img {
+            height: 40pt;
+            width: 40pt;
+            border-radius: 50%;
+            object-fit: cover;
+            user-select: none;
+            margin: 0 10pt;
+            flex: 0 0 auto;
+        }
+
+        > .card-contact-body {
+            flex: 1 1 0%;
+
+            > .contact-head {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+
+                > .head-left {
+                    flex: 1 1 0%;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    margin-right: 15pt;
+                    word-break: break-all;
+                }
+
+                > .head-right {
+                    flex: 0 0 auto;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    > .count-contact-user {
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        background: $color-warm-red;
+                        color: $white;
+                        border-radius: 10px;
+                        padding: 0 10px;
+                        user-select: none;
+                    }
+
+                    > .status {
+                        width: 24px;
+                        font-size: 10pt;
+                        color: $color-warm-red;
+                        text-align: center;
+                        margin-left: 5px;
+                    }
+                }
+            }
+
+            > .contact-hashtag {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 3pt 0;
+
+                > .contact-content {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    max-width: 50%;
+
+                    > .icon {
+                        width: 10pt;
+                        height: 10pt;
+                    }
+
+                    > .contact-event {
+                        margin: 0 10pt 0 8px;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        color: rgb($black, 0.7);
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    }
+
+                    > .event-cos {
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        color: rgb($black, 0.5);
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    }
+                }
+            }
+
+            > .user-contact {
+                font-family: "Kanit-500";
+                font-size: 16px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                > .user {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    max-width: 40%;
+                    word-break: break-all;
+                    flex: 0 0 auto;
+                    color: rgb($black, 0.7);
+
+                    > .user-name {
+                    }
+                }
+
+                > .contact-text {
+                    color: $color-warm-red;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-all;
+                }
+
+                > .pointer {
+                    margin: 0 5px;
+                }
+
+                > .contact-date {
+                    color: rgb($black, 0.5);
+                    flex: 0 0 auto;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+   
+    .card-contact {
+        > .user-contact { 
+            > .card-contact-body {
+                > .contact-head {
+                }
+                > .contact-hashtag {
+                    padding: unset;
+                }
+            }
+        }
+    }
+}

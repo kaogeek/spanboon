@@ -1,0 +1,257 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40pt;
+  height: $height-header-top;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: $white;
+  > .wrapper-logo {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: $color-warm-red;
+    font-family: "Kanit-500";
+    font-size: 1.5em;
+    @include pointer();
+
+    > .icon-spanboon {
+      height: 40pt;
+    }
+
+    > .name-spanboon {
+      margin-left: 10pt;
+    }
+  }
+  > .middle {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    > .wrapper-home {
+      display: flex;
+      align-items: center;
+      font-family: "Kanit-400";
+      font-size: 1.15em;
+      margin: 0 auto;
+      pointer-events: auto;
+
+      > .icon {
+        display: flex;
+        padding: 0 10pt;
+        align-items: center;
+        @include pointer();
+        color: $black;
+        flex: 0 0 auto;
+
+        &.active-link {
+          color: $brandcolor2;
+        }
+
+        &:hover {
+          background-color: $background-hover;
+          border-radius: 8pt;
+          color: $color-warm-red;
+
+          svg,
+          circle,
+          path,
+          g {
+            opacity: 1;
+            fill: $color-warm-red;
+          }
+        }
+
+        > .icon-home {
+          height: $height-icon;
+          width: $width-icon;
+        }
+
+        > .icon-recommend {
+          width: $width-icon-recommend;
+        }
+
+        > .label-name {
+          padding: 5pt;
+        }
+      }
+    }
+  }
+
+  > .wrapper-menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 10pt 0 10pt 15pt;
+    border-left: $width-border solid $bg-fog-gray2;
+
+    > .menu-search {
+      margin-left: 15pt;
+    }
+
+    > .menu-chat,
+    > .menu-fulfill {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @include pointer();
+      transition: 0.3s background-color ease;
+
+      &:active {
+        background-color: $border-color;
+      }
+    }
+
+    > .menu-chat > svg {
+      height: 22px;
+      width: 22px;
+    }
+
+    > .menu-fulfill > svg {
+      height: 24px;
+      width: 24px;
+    }
+
+    > .menu-user {
+      display: flex;
+      width: 13pt;
+      @include pointer();
+
+      > .image-profile {
+        border-radius: 50%;
+        width: 25pt;
+        height: 25pt;
+        object-fit: cover;
+      }
+    }
+
+    > .list-right-menu {
+      margin-left: 5pt;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &.menu-nofitication {
+        margin-right: 5pt;
+      }
+
+      &:nth-child(1) {
+        margin-left: 15pt;
+      }
+    }
+
+    > .menu-profile {
+      // display: flex;
+      // align-items: center;
+    }
+
+    > .menu-nofitication {
+      // display: flex;
+      // padding: 0 15pt;
+      // @include pointer();
+    }
+
+    > .menu-page {
+      // display: flex;
+      // padding: 0 15pt;
+    }
+
+    > .menu {
+      // display: flex;
+      // height: 30pt;
+      // padding: 0 15pt;
+      // @include pointer();
+    }
+  }
+}
+
+@media (max-width: $xxlarge) {
+  .header-top {
+    padding: 0 30pt;
+  }
+}
+
+@media (max-width: $xlarge) {
+  .header-top {
+    padding: 0 20pt;
+  }
+}
+
+@media (max-width: $large) {
+  .header-top {
+    padding: 0 15pt;
+
+    >.middle { 
+      display: none;
+
+      > .wrapper-home {
+      }
+    }
+  }
+}
+
+@media (max-width: $lmedium) {
+  .header-top {
+    > .wrapper-menu {
+      > .menu-chat,
+      > .menu-fulfill {
+        width: 36px;
+        height: 36px;
+      }
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .header-top {
+    padding: 0 10pt;
+    > .wrapper-logo {
+      .name-spanboon {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .header-top {
+    height: 39pt;
+    padding: 0 0 0 10pt;
+
+    > .wrapper-logo {
+      > .icon-spanboon {
+        width: 36pt;
+      }
+    }
+
+    > .wrapper-menu {
+      border-left: none;
+
+      > .menu-chat,
+      > .menu-fulfill {
+        display: none;
+      }
+
+      > .list-right-menu {
+        margin-left: 3pt;
+      }
+    }
+  }
+}

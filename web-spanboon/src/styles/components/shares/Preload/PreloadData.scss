@@ -1,0 +1,61 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.preload-data {
+    width: 100%;
+    .div-preload {
+        background: $bg-grey;
+        height: 8pt;
+        border-radius: 10pt;
+        display: inline-block;
+        animation: cardani 5s infinite;
+
+        @keyframes cardani {
+            0% {
+                opacity: 1;
+            }
+            25% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    }
+
+    >.wrapper-preload {
+        padding: 10pt 20pt;
+        // border: $width-border solid $border-color;
+        background-color: $white; 
+        border-radius: $border-radius-4px;
+        overflow: hidden;
+        position: relative;
+        display: flex; 
+        justify-content: flex-start;
+        >.preload-row {
+            display: flex;
+            align-items: center;
+            >.preload-image {
+                width: 45pt;
+                height: 45pt;
+                border-radius: 50%; 
+                object-fit: cover;
+            }
+            >.preload-top {
+                display: flex;
+                flex-direction: column;
+                padding-left: 12pt;
+            }
+        }
+    }
+}

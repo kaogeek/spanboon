@@ -1,0 +1,145 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.dialog-image{
+    width: auto;
+    height: auto;
+    background: $white;
+
+    >.dialog-image-title{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        background: $shadow-vote-vard;
+        height: 30pt;
+
+        >.dialog-image-title-left{
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0 10pt;
+
+            >.title-name{
+                @include font-size-8-100("Kanit-500");
+            }
+        }
+
+        >.dialog-image-title-right{
+            width: 30pt;
+            height: 30pt;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            >.material-icons{
+                cursor: pointer;
+                opacity: 0.4;
+
+                &:hover{
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+
+    >.dialog-image-body{
+        padding: 10pt 10pt;
+        position: relative;
+
+        >.file-upload{
+            width: 100%;
+            margin-bottom: 5pt;
+
+
+            >.label-open-img{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60pt;
+                width: calc(100% - 2pt);
+                cursor: pointer;
+                border: 1px dashed $color-4;
+                background: transparent;
+                opacity: 0.8;
+
+                &:hover{
+                    opacity: 1;
+                    background: $bg-color1;
+                }
+
+                >.input-img[type="file"] {
+                    display: none;
+                }
+            }
+        }
+
+        img-cropper{
+
+            >.ng2-imgcrop{
+
+            }
+        }
+
+        >.img-fix{
+            position: absolute;
+            right: 12pt;
+            bottom: 15pt;
+            width: 50pt;
+            height: 50pt;
+        }
+    }
+
+    >.dialog-image-bottom{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+        background: $shadow-vote-vard;
+        padding: 0 10pt;
+        height: 30pt;
+
+        >.dialog-image-bottom-left{
+            width: 100%;
+        }
+
+        >.dialog-image-bottom-right{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            
+            >.butt{
+                border-radius: 5px;
+                padding: 2pt 0;
+                @include font-size-8-100("Kanit-400");
+                cursor: pointer;
+                width: 54pt;
+                height: 16pt;
+                text-align: center;
+                color: $white;
+                opacity: 0.9;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &:hover{
+                    opacity: 1;
+                }
+            }
+
+            >.but-cancel{
+                background: $shadow-vote-vard-hover;
+                margin: 0 5pt;
+            }
+
+            >.but-confirmed{
+                background: $color-black;
+            }
+        }
+    }
+}

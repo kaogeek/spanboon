@@ -1,0 +1,92 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.create-image {
+    width: 100%;
+    position: relative;
+    @include font-size-9-100("Sarabun-Light");
+    .create-image-h {
+        width: calc(100% - 60px);
+        height: 40px;
+        background-color: #eaeaea;
+        display: flex;
+        align-items: center;
+        padding: 0px 30px;
+        span {
+        }
+    }
+    .create-image-b {
+        width: calc(100% - 40px);
+        position: relative;
+        padding: 10px 20px;
+        display: flex;
+        .image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            width: 50%;
+            max-height: 120pt;
+            background-color: rgb(202, 202, 202);
+            background-size: cover;
+            background-position: 50% 40%;
+        }
+        .select-image {
+            width: calc(50% - 30px);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            .create-image-b-add-img {
+                transition: 0.4s;
+                width: 80%;
+                height: 20pt;
+                border: solid 1px #dadada;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 14px;
+                &:hover {
+                    transition: 0.4s;
+                    transform: scale(1.1);
+                }
+            }
+            .key-link {
+                margin-bottom: 15px;
+                width: calc(100% - 20px);
+                border: 1px solid #e2e2e2;
+                border-radius: 4px;
+                padding: 10px;
+            }
+        }
+    }
+    .create-image-f {
+        width: calc(100% - 40px);
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 20px;
+        .save-buttom {
+            transition: 0.2s;
+            width: 60pt;
+            height: 20pt;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background-color: #fd545a;
+            &:hover {
+                transition: 0.2s;
+                transform: scale(1.1);
+            }
+        }
+    }
+}

@@ -1,0 +1,597 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="fanpage" (window:resize)="onResize($event)">
+    <div class="container">
+        <ng-container *ngIf="!msgPageNotFound; else elsePageNotFound">
+            <div class="spanboon-fan-page">
+                <div class="fan-page-background">
+                    <ng-container *ngIf="isPload; else elseisLoading">
+                        <div style="height: 100%;" class="body-cover-image loading"></div>
+                    </ng-container>
+                    <ng-template #elseisLoading>
+                        <ng-container *ngIf="resDataPage">
+                            <ng-container *ngIf="!resDataPage.coverBase64; else elseCoverImage">
+                                <ng-container *ngIf="isNotAccess; else elseOwner">
+                                    <div class="wrapper-cover-image" [class.hide]="isFiles"
+                                        (click)="fileInputCover.click()" dragdrop-image (files)="filesDropped($event)">
+                                        <div *ngIf="!isSpiner" class="text-wrapper">
+                                            <span class="wrapper-icon-upload">
+                                                <svg class="icon-upload" version="1.1" id="Capa_1"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                    viewBox="0 0 480.24 480.24"
+                                                    style="enable-background:new 0 0 480.24 480.24;"
+                                                    xml:space="preserve">
+                                                    <g>
+                                                        <g>
+                                                            <g>
+                                                                <path
+                                                                    d="M391.86,144.552c0.16-2.712,0.248-5.464,0.248-8.312c0.09-59.919-39.046-112.838-96.364-130.3
+                   c-71.85-21.89-147.842,18.61-169.732,90.46c-2.024-0.104-3.976-0.16-5.904-0.16c-66.274,0-120,53.726-120,120s53.726,120,120,120
+                   h72.088c4.418,0,8-3.582,8-8s-3.582-8-8-8h-72.088c-57.438,0-104-46.562-104-104s46.562-104,104-104
+                   c3.688,0.01,7.373,0.211,11.04,0.6c3.93,0.329,7.534-2.2,8.56-6.008c13.401-53.473,61.51-90.937,116.637-90.828
+                   c66.274,0.13,119.894,53.962,119.763,120.236c0.021,4.99-0.303,9.975-0.968,14.92c-0.049,0.358-0.073,0.72-0.073,1.081
+                   c0.001,4.418,3.583,7.999,8.001,7.999h1.04c44.183,0,80,35.817,80,80c0,44.183-35.817,80-80,80h-95.464c-4.418,0-8,3.582-8,8
+                   s3.582,8,8,8h95.464c50.028,0.01,91.677-38.401,95.707-88.267C484.086,195.127,444.707,148.823,391.86,144.552z" />
+                                                                <polygon points="336.276,245.088 240.108,148.928 143.94,245.088 155.26,256.408 232.108,179.552 232.108,480.24 248.108,480.24 
+                   248.108,179.552 324.956,256.408" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                                <div class="centered">ลากรูป</div>
+                                                <div class="centered">หรือ</div>
+                                                <div class="centered browse">คลิกเพื่อเพิ่มรูปภาพ</div>
+                                                <div class="centered">
+                                                    <div class="image-upload">
+                                                        <label for="file-input">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </div>
+                                        <input style="display: none;" id="file-input" #fileInputCover type="file"
+                                            (change)="onFileSelect($event)" accept="image/*" />
+                                    </div>
+                                    <div class="btn-save-cover" *ngIf="isFiles" (click)="saveCoverImage()">
+                                        <span>บันทึกรูปภาพ</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseOwner>
+                                    <div class="wrapper-cover-image image-not-edit">
+                                        <img class="image-cover" alt="">
+                                    </div>
+                                </ng-template>
+
+                            </ng-container>
+                            <ng-template #elseCoverImage>
+                                <div class="cover-img" [class.hide]="isFiles">
+                                    <div class="wrapper-img" [phxPreload]="resDataPage" [preloadClass]="'wrapper-img'"
+                                        [ngStyle]="resDataPage && resDataPage.coverBase64 ? {'background-image': 'url('+resDataPage.coverBase64+')' ,'background-position-y' : position+'px' } : {}">
+                                    </div>
+                                    <ng-container
+                                        *ngIf="resDataPage && resDataPage.subTitle && resDataPage.subTitle !== ''; else elseSubTitle">
+                                        <div class="img-phrase">
+                                            {{resDataPage.subTitle}}
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseSubTitle>
+                                        <div class="img-phrase" style="display: none;"></div>
+                                    </ng-template>
+                                </div>
+                                <ng-container *ngIf="isLogin() && isNotAccess">
+                                    <ng-template #elseButton>
+                                        <div class="btn-edit-cover">
+                                            <div class="image-upload">
+                                                <label for="file-input">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.071"
+                                                        height="14.996" viewBox="0 0 20.071 14.996">
+                                                        <g id="camera" transform="translate(0 -48.918)">
+                                                            <g id="Group_1312" data-name="Group 1312"
+                                                                transform="translate(0 48.918)">
+                                                                <g id="Group_1311" data-name="Group 1311"
+                                                                    transform="translate(0 0)">
+                                                                    <path id="Path_3216" data-name="Path 3216"
+                                                                        d="M133.888,143a3.26,3.26,0,1,0,3.26,3.259A3.26,3.26,0,0,0,133.888,143Zm1.788,5.048a2.527,2.527,0,1,1,0-3.574A2.527,2.527,0,0,1,135.676,148.049Z"
+                                                                        transform="translate(-123.853 -138.121)"
+                                                                        fill="#747474" />
+                                                                    <path id="Path_3217" data-name="Path 3217"
+                                                                        d="M19.706,50.935a1.245,1.245,0,0,0-.882-.367H14.079l-.166-.855a1.071,1.071,0,0,0-.28-.556.79.79,0,0,0-.573-.239H7.013a.787.787,0,0,0-.548.207l-.027.023a1.069,1.069,0,0,0-.28.552l-.166.855H1.245A1.245,1.245,0,0,0,0,51.8V62.665a1.245,1.245,0,0,0,.365.882h0a1.245,1.245,0,0,0,.882.367H18.826a1.245,1.245,0,0,0,1.245-1.245V51.817A1.245,1.245,0,0,0,19.706,50.935ZM3.378,54.058H2.756a.78.78,0,0,1,0-1.56h.622a.78.78,0,0,1,0,1.56Zm6.659,7.347a4.347,4.347,0,0,1,0-8.694h0a4.347,4.347,0,0,1,0,8.694Z"
+                                                                        transform="translate(0 -48.918)"
+                                                                        fill="#747474" />
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                    </svg>
+                                                    <span class="label-edit-cover">แก้ไขรูปภาพปก</span>
+                                                </label>
+                                                <input id="file-input" type="file" (change)="onFileSelect($event)"
+                                                    accept="image/*" />
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </ng-container>
+                            </ng-template>
+                        </ng-container>
+                    </ng-template>
+                    <img id="images" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
+                </div>
+                <Preload-card *ngIf="isPload" [isShowCard1]="true" [isShowCard2]="false"
+                    [class]="'preload-profile'">
+                </Preload-card>
+                <div class="wrapper-fan-page">
+                    <div *ngIf="!isPload" class="wrapper-profile-fan-page" #pagefixHeight>
+                        <div class="profile-fan-page">
+                            <div class="img-profile">
+                                <ng-container
+                                    *ngIf="resDataPage && resDataPage.imageBase64 !== undefined  && resDataPage.imageBase64 !== '' && resDataPage.imageBase64 !== null; else elseImgUrl">
+                                    <img class="image-profile-fan-page" [phxPreload]="resDataPage"
+                                        [preloadClass]="'image-profile-fan-page'" src="{{resDataPage.imageBase64}}">
+                                </ng-container>
+                                <ng-template #elseImgUrl>
+                                    <img class="image-profile-fan-page" src="../../../../assets/img/profile.svg">
+
+                                </ng-template>
+                            </div>
+                            <div class="fan-page-name" [phxPreload]="resDataPage" [preloadClass]="'fan-page-name'">
+                                <svg *ngIf="resDataPage && resDataPage.isOfficial ? resDataPage.isOfficial : false"
+                                    class="offical-page" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
+                                    height="47.208" viewBox="0 0 43.383 47.208">
+                                    <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                                        <path id="Path_141" data-name="Path 141"
+                                            d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                            transform="translate(-36.867)" fill="#28a745" />
+                                        <path id="Path_142" data-name="Path 142"
+                                            d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                            transform="translate(-259.715 -289.198)" fill="#28a745" />
+                                    </g>
+                                </svg>
+                                <div class="official-name">
+                                    {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
+                                </div>
+                            </div>
+                            <div class="fan-page-tag" [phxPreload]="resDataPage" [preloadClass]="'fan-page-tag'">
+                                {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
+                            </div>
+                        </div>
+                        <div *ngIf="!isPload" class="wrapper-btn-action" [phxPreload]="resDataPage"
+                            [preloadClass]="'wrapper-btn-action'">
+                            <div class="btn-follow-about">
+                                <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
+                                    [bgColor]="'#FFFFFF'"
+                                    [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
+                                    (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
+                                </button-follow>
+                            </div>
+                            <div class="btn-follow-about btn_fa">
+                                <div class="count-follow">
+                                    <span class="count-follow-top">
+                                        <svg class="icon-user" id="user_3_" data-name="user (3)"
+                                            xmlns="http://www.w3.org/2000/svg" width="30.332" height="36.356"
+                                            viewBox="0 0 30.332 36.356">
+                                            <path id="Path_136" data-name="Path 136"
+                                                d="M95.788,17.513a8.472,8.472,0,0,0,6.191-2.565,8.473,8.473,0,0,0,2.565-6.191,8.474,8.474,0,0,0-2.565-6.191,8.754,8.754,0,0,0-12.382,0,8.473,8.473,0,0,0-2.565,6.191A8.473,8.473,0,0,0,89.6,14.948,8.474,8.474,0,0,0,95.788,17.513Zm0,0"
+                                                transform="translate(-80.852 0)" fill="#464646" />
+                                            <path id="Path_137" data-name="Path 137"
+                                                d="M30.258,257.711a21.629,21.629,0,0,0-.295-2.3,18.1,18.1,0,0,0-.565-2.31,11.407,11.407,0,0,0-.949-2.154,8.126,8.126,0,0,0-1.432-1.866,6.312,6.312,0,0,0-2.057-1.292,7.107,7.107,0,0,0-2.626-.475,2.665,2.665,0,0,0-1.423.6c-.427.278-.926.6-1.483.956a8.5,8.5,0,0,1-1.918.845,7.449,7.449,0,0,1-4.693,0,8.472,8.472,0,0,1-1.917-.845c-.552-.353-1.051-.674-1.484-.956a2.661,2.661,0,0,0-1.423-.6,7.1,7.1,0,0,0-2.625.476,6.308,6.308,0,0,0-2.057,1.292,8.129,8.129,0,0,0-1.431,1.866A11.431,11.431,0,0,0,.932,253.1a18.144,18.144,0,0,0-.565,2.309,21.553,21.553,0,0,0-.295,2.3c-.048.7-.073,1.418-.073,2.147a6.037,6.037,0,0,0,1.793,4.567,6.454,6.454,0,0,0,4.62,1.685H23.918a6.453,6.453,0,0,0,4.62-1.685,6.034,6.034,0,0,0,1.793-4.568c0-.733-.025-1.455-.074-2.147Zm0,0"
+                                                transform="translate(0 -229.755)" fill="#464646" />
+                                        </svg>
+                                        {{ resDataPage && resDataPage.followers ? resDataPage.followers : 0 | shortNumber}}
+                                        คน
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="btn-follow-about btn_fa">
+                                เกี่ยวกับ
+                            </div>
+                        </div>
+                        <!-- <div *ngIf="!isPload" class="wrapper-looking-for" style="display: none;">
+                            <div class="wrapper-header">
+                                <div class="header-looking-for">
+                                    ติดต่อเพื่อเติมเต็ม
+                                </div>
+                            </div>
+                            <ng-container *ngIf="expression; else elseTemplates">
+                                <div class="list-looking-for">
+                                    <div class="item-looking-for">
+                                        <span>
+
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-template #elseTemplates>
+                                <div class="list-looking-for none">
+                                    ไม่ค้นพบข้อมูล
+                                </div>
+                            </ng-template>
+                            <div class="btn-donate">
+                                <span class="btn-donate-top">
+                                    ติดต่อ
+                                </span>
+                                <div class="btn-donate-bottom">
+                                    {{ resDataPage && resDataPage.name ? resDataPage.name : '' }}
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- <ng-container
+                            *ngIf="resDataPage && !isPload && resDataPage.needs && resDataPage.needs.length > 0;">
+                            <div class="wrapper-looking-for">
+                                <div class="wrapper-header">
+                                    <div class="header-option">
+                                        <div class="header-looking-for">
+                                            สิ่งที่ {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
+                                        </div>
+                                        <div class="label-looking-for">
+                                            กำลังมองหาอยู่
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <svg style="height: 12pt;" xmlns="http://www.w3.org/2000/svg" width="5"
+                                            height="21" viewBox="0 0 5 21">
+                                            <g id="Group_1211" data-name="Group 1211" transform="translate(-453 -178)">
+                                                <circle id="Ellipse_224" data-name="Ellipse 224" cx="2.5" cy="2.5"
+                                                    r="2.5" transform="translate(453 178)" fill="#A5A5A6" />
+                                                <circle id="Ellipse_225" data-name="Ellipse 225" cx="2.5" cy="2.5"
+                                                    r="2.5" transform="translate(453 186)" fill="#A5A5A6" />
+                                                <circle id="Ellipse_226" data-name="Ellipse 226" cx="2.5" cy="2.5"
+                                                    r="2.5" transform="translate(453 194)" fill="#A5A5A6" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="list-looking-for"
+                                    *ngFor="let item of resDataPage.needs; let index = index;">
+                                    <div class="item-looking-for" *ngIf="index >= 0 && index <= 4">
+                                        <span>
+                                            <img class="icon-looking-for"
+                                                src="data:image/png;base64,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"
+                                                alt="">
+                                            <div class="title-looking-for">
+                                                <div class="top">{{item.name}}</div>
+                                            </div>
+                                        </span>
+                                        <div class="wrapper-option">
+                                            <div class="amount-looking-for">
+                                                <div class="top">{{item.quantity}}</div>
+                                                <div class="bottom">{{item.unit}}</div>
+                                            </div>
+                                            <div class="option">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="5" height="21"
+                                                    viewBox="0 0 5 21">
+                                                    <g id="Group_1211" data-name="Group 1211"
+                                                        transform="translate(-453 -178)">
+                                                        <circle id="Ellipse_224" data-name="Ellipse 224" cx="2.5"
+                                                            cy="2.5" r="2.5" fill="#A5A5A6"
+                                                            transform="translate(453 178)" />
+                                                        <circle id="Ellipse_225" data-name="Ellipse 225" cx="2.5"
+                                                            cy="2.5" r="2.5" fill="#A5A5A6"
+                                                            transform="translate(453 186)" />
+                                                        <circle id="Ellipse_226" data-name="Ellipse 226" cx="2.5"
+                                                            cy="2.5" r="2.5" fill="#A5A5A6"
+                                                            transform="translate(453 194)" />
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-donate" *ngIf="resDataPage.needs.length > 6">
+                                    <span class="btn-donate-top">
+                                        ร่วมเติมเต็ม
+                                    </span>
+                                    <div class="btn-donate-bottom">
+                                        {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container> -->
+                        <div class="wrapper-looking-for">
+                            <div class="wrapper-header">
+                                <div class="header-looking-for">
+                                    ความเป็นมา
+                                </div>
+                                <!-- <span class="material-icons" *ngIf="isLogin() && isNotAccess"> edit </span> -->
+                            </div>
+                            <div class="wrapper-body-doing" style="height: auto;"
+                                *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
+                                <div class="con-text">
+                                    {{resDataPage.backgroundStory | slice:0:320}}<span
+                                        *ngIf="resDataPage.backgroundStory.length > 320"
+                                        style="margin-left: 1px;">...</span>
+                                </div>
+                            </div>
+                            <div class="list-looking-for" *ngFor="let dataContact of resContact">
+                                <div class="item-looking-for">
+                                    <span>
+                                        <svg style="padding-right: 5pt;" xmlns="http://www.w3.org/2000/svg"
+                                            width="17.305" height="14.033" viewBox="0 0 17.305 14.033">
+                                            <g id="folder" transform="translate(0 -48.403)">
+                                                <g id="Group_1348" data-name="Group 1348"
+                                                    transform="translate(0 48.403)">
+                                                    <g id="Group_1347" data-name="Group 1347"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3227" data-name="Path 3227"
+                                                            d="M13.642,49.665H4.716a.5.5,0,0,1-.5-.5v-.251a.51.51,0,0,0-.51-.51H1.021A1.021,1.021,0,0,0,0,49.424v8.59l1.31-6.373a.5.5,0,0,1,.49-.4H14.663v-.556A1.021,1.021,0,0,0,13.642,49.665Z"
+                                                            transform="translate(0 -48.403)" fill="#e65857" />
+                                                    </g>
+                                                </g>
+                                                <g id="Group_1350" data-name="Group 1350"
+                                                    transform="translate(0.228 52.243)">
+                                                    <g id="Group_1349" data-name="Group 1349"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3228" data-name="Path 3228"
+                                                            d="M22.8,162.01H8.726l-1.97,9.584a.507.507,0,0,0,.5.609H21.9a1.021,1.021,0,0,0,1.015-.909l.9-8.151A1.021,1.021,0,0,0,22.8,162.01Z"
+                                                            transform="translate(-6.746 -162.01)" fill="#e65857" />
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                        <span> {{dataContact.op}} </span>
+                                    </span>
+                                </div>
+                                <div class="item-looking-for">
+                                    <span style="padding-left: 18pt;">
+                                        <span> {{dataContact.address}} </span>
+                                    </span>
+                                </div>
+                                <div class="item-looking-for">
+                                    <span style="padding-left: 18pt;">
+                                        <span> {{dataContact.time}} </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="footer-contact-social">
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="8.16"
+                                        viewBox="0 0 22 8.16">
+                                        <g id="line_1_" data-name="line (1)" transform="translate(-119.276 -124.917)">
+                                            <g id="Group_1357" data-name="Group 1357"
+                                                transform="translate(119.276 124.917)">
+                                                <path id="Path_3254" data-name="Path 3254"
+                                                    d="M162.128,207.391v-5.6a.854.854,0,0,0-.854-.854h0a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563Z"
+                                                    transform="translate(-160.419 -200.94)" fill="#ececec" />
+                                                <path id="Path_3255" data-name="Path 3255"
+                                                    d="M213.539,209.1h-.373a.668.668,0,0,1-.668-.668v-6.824a.668.668,0,0,1,.668-.668h.373a.668.668,0,0,1,.668.668v6.824A.668.668,0,0,1,213.539,209.1Z"
+                                                    transform="translate(-206.56 -200.938)" fill="#ececec" />
+                                                <path id="Path_3256" data-name="Path 3256"
+                                                    d="M243.679,201.795v3.941s-3.412-4.451-3.464-4.509a.85.85,0,0,0-.67-.285.878.878,0,0,0-.821.889v6.415a.854.854,0,0,0,.854.854h0a.854.854,0,0,0,.854-.854v-3.917s3.464,4.489,3.515,4.538a.849.849,0,0,0,.578.234.886.886,0,0,0,.862-.89V201.8a.854.854,0,0,0-.854-.854h0A.854.854,0,0,0,243.679,201.795Z"
+                                                    transform="translate(-229.796 -200.94)" fill="#ececec" />
+                                                <path id="Path_3257" data-name="Path 3257"
+                                                    d="M313.533,201.794h0a.854.854,0,0,0-.854-.854H309.26a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563A.854.854,0,0,0,313.533,201.794Z"
+                                                    transform="translate(-291.532 -200.94)" fill="#ececec" />
+                                            </g>
+                                        </g>
+                                    </svg>
+
+                                </div>
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="7.073" height="14.146"
+                                        viewBox="0 0 7.073 14.146">
+                                        <path id="facebook_1_" data-name="facebook (1)"
+                                            d="M11.969,2.349H13.26V.1A16.676,16.676,0,0,0,11.379,0C7.293,0,8.4,4.627,8.242,5.3H6.187V7.819H8.242v6.327h2.519V7.82h1.972l.313-2.514H10.76c.111-1.664-.449-2.956,1.209-2.956Z"
+                                            transform="translate(-6.187)" fill="#ececec" />
+                                    </svg>
+
+                                </div>
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13.813" height="11.223"
+                                        viewBox="0 0 13.813 11.223">
+                                        <path id="twitter"
+                                            d="M13.813,49.329a5.9,5.9,0,0,1-1.632.447,2.816,2.816,0,0,0,1.246-1.565,5.659,5.659,0,0,1-1.8.685,2.831,2.831,0,0,0-4.9,1.936,2.916,2.916,0,0,0,.066.646A8.015,8.015,0,0,1,.962,48.516a2.832,2.832,0,0,0,.87,3.785,2.8,2.8,0,0,1-1.279-.349v.031a2.845,2.845,0,0,0,2.269,2.782,2.826,2.826,0,0,1-.742.093,2.5,2.5,0,0,1-.536-.048,2.859,2.859,0,0,0,2.646,1.973A5.69,5.69,0,0,1,.678,57.991,5.3,5.3,0,0,1,0,57.952a7.972,7.972,0,0,0,4.344,1.271,8,8,0,0,0,8.06-8.058c0-.125,0-.246-.01-.366A5.649,5.649,0,0,0,13.813,49.329Z"
+                                            transform="translate(0 -48)" fill="#ececec" />
+                                    </svg>
+
+                                </div>
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11.352" height="16.146"
+                                        viewBox="0 0 11.352 16.146">
+                                        <g id="placeholder" transform="translate(-76)">
+                                            <path id="Path_3258" data-name="Path 3258"
+                                                d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
+                                                fill="#ececec" />
+                                            <path id="Path_3259" data-name="Path 3259"
+                                                d="M256,0V2.838a2.838,2.838,0,0,1,0,5.676v7.631a.468.468,0,0,0,.419-.233l4.453-7.332a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,256,0Z"
+                                                transform="translate(-174.324)" fill="#ececec" />
+                                        </g>
+                                    </svg>
+
+                                </div>
+                                <div class="contact-social">
+                                    <svg id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552" height="12.552"
+                                        viewBox="0 0 12.552 12.552">
+                                        <path id="Path_3246" data-name="Path 3246"
+                                            d="M11.561,8.264a7.17,7.17,0,0,1-2.251-.358.966.966,0,0,0-.98.207L6.9,9.189A7.962,7.962,0,0,1,3.362,5.648L4.409,4.256a1,1,0,0,0,.245-1.011A7.178,7.178,0,0,1,4.294.991.991.991,0,0,0,3.3,0H.991A.991.991,0,0,0,0,.991,11.574,11.574,0,0,0,11.561,12.552a.991.991,0,0,0,.991-.991V9.255A.991.991,0,0,0,11.561,8.264Z"
+                                            fill="#ececec" />
+                                    </svg>
+
+                                </div>
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18.87" height="13.479"
+                                        viewBox="0 0 18.87 13.479">
+                                        <g id="email" transform="translate(0 -68.267)">
+                                            <g id="Group_1359" data-name="Group 1359"
+                                                transform="translate(0.674 68.267)">
+                                                <g id="Group_1358" data-name="Group 1358" transform="translate(0 0)">
+                                                    <path id="Path_3260" data-name="Path 3260"
+                                                        d="M34.589,68.267H17.067l8.761,7.217,8.86-7.2A.61.61,0,0,0,34.589,68.267Z"
+                                                        transform="translate(-17.067 -68.267)" fill="#ececec" />
+                                                </g>
+                                            </g>
+                                            <g id="Group_1361" data-name="Group 1361" transform="translate(0 69.457)">
+                                                <g id="Group_1360" data-name="Group 1360" transform="translate(0 0)">
+                                                    <path id="Path_3261" data-name="Path 3261"
+                                                        d="M9.86,105.826a.674.674,0,0,1-.854,0L0,98.406v11.615a.674.674,0,0,0,.674.674H18.2a.674.674,0,0,0,.674-.674V98.506Z"
+                                                        transform="translate(0 -98.406)" fill="#ececec" />
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="contact-social">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13.747" height="13.795"
+                                        viewBox="0 0 13.747 13.795">
+                                        <g id="internet" transform="translate(-0.881)">
+                                            <path id="Path_3262" data-name="Path 3262"
+                                                d="M157.724,272H152.4a.135.135,0,0,0-.135.138c.016.624.058,1.219.123,1.783a.135.135,0,0,0,.167.116,10.222,10.222,0,0,1,5.011,0,.135.135,0,0,0,.167-.116c.064-.563.107-1.159.123-1.783A.135.135,0,0,0,157.724,272Z"
+                                                transform="translate(-147.31 -264.672)" fill="#ececec" />
+                                            <path id="Path_3263" data-name="Path 3263"
+                                                d="M157.736,164.39a.135.135,0,0,0-.167-.116,10.222,10.222,0,0,1-5.011,0,.135.135,0,0,0-.167.116c-.064.563-.107,1.159-.123,1.783a.135.135,0,0,0,.135.138h5.32a.135.135,0,0,0,.135-.138C157.843,165.549,157.8,164.953,157.736,164.39Z"
+                                                transform="translate(-147.31 -159.844)" fill="#ececec" />
+                                            <path id="Path_3264" data-name="Path 3264"
+                                                d="M167.935,3.409A10.766,10.766,0,0,0,166.9.2a.134.134,0,0,0-.091-.067,6.981,6.981,0,0,0-2.752,0,.134.134,0,0,0-.091.067,10.765,10.765,0,0,0-1.038,3.205.134.134,0,0,0,.1.153,9.25,9.25,0,0,0,2.409.317,9.249,9.249,0,0,0,2.409-.318A.134.134,0,0,0,167.935,3.409Z"
+                                                transform="translate(-157.676)" fill="#ececec" />
+                                            <path id="Path_3265" data-name="Path 3265"
+                                                d="M355.541,22.581a.135.135,0,0,0-.181.172l0,.006A13.436,13.436,0,0,1,356,25.052a.135.135,0,0,0,.184.1,9.255,9.255,0,0,0,1.512-.791.135.135,0,0,0,.026-.205q-.082-.088-.168-.174A6.894,6.894,0,0,0,355.541,22.581Z"
+                                                transform="translate(-344.92 -21.96)" fill="#ececec" />
+                                            <path id="Path_3266" data-name="Path 3266"
+                                                d="M386.228,116.531h2.947a.135.135,0,0,0,.134-.146,6.83,6.83,0,0,0-1.108-3.212.135.135,0,0,0-.188-.038,10.1,10.1,0,0,1-1.634.875q-.177.075-.355.142a.135.135,0,0,0-.086.143c.085.676.137,1.382.155,2.1A.135.135,0,0,0,386.228,116.531Z"
+                                                transform="translate(-374.683 -110.065)" fill="#ececec" />
+                                            <path id="Path_3267" data-name="Path 3267"
+                                                d="M162.924,368.471a10.766,10.766,0,0,0,1.038,3.205.134.134,0,0,0,.091.067,6.981,6.981,0,0,0,2.752,0,.134.134,0,0,0,.091-.067,10.765,10.765,0,0,0,1.038-3.205.134.134,0,0,0-.1-.153,9.3,9.3,0,0,0-4.818,0A.134.134,0,0,0,162.924,368.471Z"
+                                                transform="translate(-157.676 -358.085)" fill="#ececec" />
+                                            <path id="Path_3268" data-name="Path 3268"
+                                                d="M3.811,274.522q.177-.075.355-.142a.135.135,0,0,0,.086-.143c-.085-.676-.137-1.382-.155-2.1A.135.135,0,0,0,3.963,272H1.015a.135.135,0,0,0-.134.146,6.83,6.83,0,0,0,1.108,3.211.135.135,0,0,0,.188.038A10.091,10.091,0,0,1,3.811,274.522Z"
+                                                transform="translate(0 -264.673)" fill="#ececec" />
+                                            <path id="Path_3269" data-name="Path 3269"
+                                                d="M357.694,394.012a9.255,9.255,0,0,0-1.512-.791.135.135,0,0,0-.184.1,13.433,13.433,0,0,1-.635,2.293l0,.006a.135.135,0,0,0,.181.172,6.9,6.9,0,0,0,2.01-1.4q.086-.086.168-.174A.135.135,0,0,0,357.694,394.012Z"
+                                                transform="translate(-344.921 -382.616)" fill="#ececec" />
+                                            <path id="Path_3270" data-name="Path 3270"
+                                                d="M386.094,272.131c-.018.722-.071,1.428-.155,2.1a.135.135,0,0,0,.086.143q.179.068.355.142a10.1,10.1,0,0,1,1.634.875.135.135,0,0,0,.188-.038,6.83,6.83,0,0,0,1.108-3.212.135.135,0,0,0-.134-.146h-2.947A.135.135,0,0,0,386.094,272.131Z"
+                                                transform="translate(-374.682 -264.671)" fill="#ececec" />
+                                            <path id="Path_3271" data-name="Path 3271"
+                                                d="M67.483,24.359a9.253,9.253,0,0,0,1.512.791.135.135,0,0,0,.184-.1,13.43,13.43,0,0,1,.635-2.293l0-.006a.135.135,0,0,0-.181-.172,6.9,6.9,0,0,0-2.01,1.4q-.086.086-.168.174A.135.135,0,0,0,67.483,24.359Z"
+                                                transform="translate(-64.747 -21.959)" fill="#ececec" />
+                                            <path id="Path_3272" data-name="Path 3272"
+                                                d="M4.094,116.531a21.267,21.267,0,0,1,.158-2.235.135.135,0,0,0-.086-.143q-.179-.068-.355-.142a10.1,10.1,0,0,1-1.634-.875.135.135,0,0,0-.188.038,6.83,6.83,0,0,0-1.108,3.211.135.135,0,0,0,.134.146Z"
+                                                transform="translate(0 -110.065)" fill="#ececec" />
+                                            <path id="Path_3273" data-name="Path 3273"
+                                                d="M69.636,395.789a.135.135,0,0,0,.181-.172l0-.006a13.433,13.433,0,0,1-.635-2.293.135.135,0,0,0-.184-.1,9.254,9.254,0,0,0-1.512.791.135.135,0,0,0-.026.205q.082.088.168.174A6.894,6.894,0,0,0,69.636,395.789Z"
+                                                transform="translate(-64.748 -382.615)" fill="#ececec" />
+                                        </g>
+                                    </svg>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="isPload" class="wrapper-profile-fan-page">
+                        <Preload-card *ngFor="let item of [0 , 1]" [isShowCard1]="true" [isShowCard2]="false">
+                        </Preload-card>
+                    </div>
+                    <div class="wrapper-feed-fan-page">
+                        <div *ngIf="!isPload" class="wrapper-feed-menu">
+                            <div class="sub-page-ford">
+                                <a matRipple [matRippleCentered]="'centered'" href={{linkmain}} class="back_ford">
+                                    <img src="https://download.seaicons.com/icons/icons8/ios7/512/Arrows-Back-icon.png">
+                                </a>
+                            </div>
+                        </div>
+                        <div *ngIf="!isPload" class="wrapper-feed">
+                            <div class="main-feed" style="padding: 5px 0;">
+                                <ng-container *ngFor="let itemPost of resDataPost;let index = index">
+                                    <post-data [itemPost]="itemPost" [user]="userImage"
+                                        (action)="actionComment($event,index)" (comment)="createComment($event)"
+                                        [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
+                                        (delete)="deletePost($event,index)"></post-data>
+                                </ng-container>
+                            </div>
+                            <div class="side-feed" #sidefeedHeight>
+                                <ng-container
+                                    *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
+                                    <div class="wrapper-doing-user-relate">
+                                        <div class="title">
+                                            ความเป็นมา
+                                        </div>
+                                        <div class="wrapper-body-doing" style="height: auto;">
+                                            <div class="con-text">
+                                                {{resDataPage.backgroundStory | slice:0:320}}<span
+                                                    *ngIf="resDataPage.backgroundStory.length > 320"
+                                                    style="margin-left: 1px;">...</span>
+                                            </div>
+                                        </div>
+                                        <div class="content-all">
+                                            ดูทั้งหมด
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
+
+                                    <div class="wrapper-doing-user-relate">
+                                        <div class="title">
+                                            สิ่งที่ {{resDataPage && resDataPage.name ? '"'+resDataPage.name+'"' : ''}}
+                                            กำลังทำอยู่
+                                        </div>
+                                        <div class="wrapper-body-doing">
+                                            <ng-container
+                                                *ngFor="let item of resDataPage.pageObjectives; let index = index">
+                                                <div class="wrapper-doing" *ngIf="index <= 5">
+                                                    <display-image [class]="'image-tag'" [isPreload]="'true'"
+                                                        [isLoaded]="item.isLoaded" [base64]="item.iconBase64">
+                                                    </display-image>
+                                                    <span class="i_title">
+                                                        {{item.title}}
+                                                    </span>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+
+                                        <div class="content-all" *ngIf="resDataPage.pageObjectives.length > 6">
+                                            ดูทั้งหมด
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="isCheck === true; else elseTemplateLoads">
+                            <div *ngIf="isPload" class="wrapper-feed">
+                                <div class="main-feed">
+                                    <Preload-card *ngFor="let item of [0 , 1]" [isShowCard1]="true"
+                                        [isShowCard2]="false">
+                                    </Preload-card>
+                                </div>
+                                <div class="side-feed">
+                                    <Preload-card *ngFor="let item of [0 , 1]" [isShowCard1]="true"
+                                        [isShowCard2]="false">
+                                    </Preload-card>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseTemplateLoads>
+                            
+                        </ng-template>
+                    </div>
+                </div>
+
+                <!-- <div style="width: 100%; height: 200vh;">
+
+            </div> -->
+            </div>
+        </ng-container>
+        <ng-template #elsePageNotFound>
+            <div class="spanboon-fan-page pageNotFound">
+                <svg id="Group_142" data-name="Group 142" xmlns="http://www.w3.org/2000/svg" width="67.553"
+                    height="33.8" viewBox="0 0 67.553 33.8">
+                    <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(60.047 11.275)" fill="#a2a2a2" />
+                    <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(0 11.275)" fill="#a2a2a2" />
+                    <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(30.024)" fill="#a2a2a2" />
+                    <path id="Path_201" data-name="Path 201"
+                        d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
+                        transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
+                </svg>
+                <div class="text-NotFound">ไม่พบเพจ</div>
+            </div>
+        </ng-template>
+    </div>
+</div>

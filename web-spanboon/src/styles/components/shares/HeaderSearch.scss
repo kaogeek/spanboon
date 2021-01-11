@@ -1,0 +1,695 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.header-search {
+    > .search {
+        position: relative;
+        z-index: 10000;
+        width: 100%;
+
+        > .wrapper-search {
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            > .icon-search-out {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                @include pointer();
+                position: absolute;
+                right: 0;
+                border-radius: 50%;
+            }
+
+            > .home-back-left {
+                display: none;
+                height: 40px;
+                width: 40px;
+                border-radius: 50%;
+                background: $bg-grey;
+                margin-right: 5pt;
+                @include pointer();
+                > .home-back {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            > #search {
+                width: 40px;
+                // display: none;
+                visibility: hidden;
+                transition: width 0.5s;
+                // position: absolute;
+                // top: 0;
+                // right: 0;
+                position: relative;
+
+                &.active {
+                    visibility: visible;
+                    width: 50vw;
+                    max-width: 95vw;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+
+                input::-webkit-search-decoration,
+                input::-webkit-search-cancel-button {
+                    display: none;
+                }
+
+                input[type="search"] {
+                    width: 0;
+                    border: 1px solid rgb($black, 0.3);
+                    height: 40px;
+                    border-radius: 10em;
+                    outline: none;
+                    @include pointer();
+                }
+
+                & > input[type="search"].filled {
+                    color: $color-black;
+                    background-color: $white;
+                    cursor: auto;
+                    padding: 0 50px 0 42px;
+                    // box-shadow: 0 0 5px rgba(109, 207, 246, 0.5);
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                }
+
+                & > input[type="search"]:hover {
+                    background-color: #fff;
+                }
+
+                & > input:-moz-placeholder {
+                    color: transparent;
+                }
+
+                & > input::-webkit-input-placeholder {
+                    color: transparent;
+                }
+                & > input[type="search"].filled:-moz-placeholder {
+                    color: $koalaGray;
+                }
+                & > input[type="search"].filled::-webkit-input-placeholder {
+                    color: $koalaGray;
+                }
+
+                > .icon-search {
+                    height: 40px;
+                    width: 40px;
+                    position: absolute;
+                    left: 0;
+                    font-size: 18pt;
+                    z-index: 1;
+                    @include pointer();
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                > .close {
+                    height: 20pt;
+                    width: 20pt;
+                    border-radius: 50%;
+                    position: absolute;
+                    right: 10pt;
+                    @include pointer();
+                    font-size: 15pt;
+                    border: unset;
+                    outline: unset;
+                    background: transparent;
+                    z-index: 1;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+        }
+
+        > .wrapper-body-tag {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            position: absolute;
+            height: 400pt;
+            width: 50vw;
+            max-width: 95vw;
+            max-height: calc(95vh - 40pt);
+            top: calc(100% + 3pt);
+            right: 0;
+            background-color: $white;
+            border: $width-border solid $border-separator;
+            box-shadow: 3px 3px 6px 0px rgba($black, 0.15);
+
+            > .tab {
+                width: 100%;
+                overflow: hidden;
+                background-color: $bg-fog-gray2;
+                display: flex;
+                height: 40pt;
+
+                > .tablinks {
+                    width: 50%;
+                    padding: 0 10pt;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    transition: 0.3s;
+                    font-size: 18px;
+                    font-family: "Kanit-500";
+                    color: $black;
+                    border-bottom: 3pt solid transparent;
+
+                    &:hover {
+                        background: rgba($color-warm-red, 0.1);
+                        color: $color-warm-red;
+                    }
+
+                    &.active {
+                        color: $color-warm-red;
+                        border-bottom: 3pt solid $color-warm-red;
+                    }
+                }
+            }
+
+            > .wrapper-popular {
+                width: 45%;
+                flex: 1 1 0%;
+                overflow: hidden;
+                height: 100%;
+                background-color: $white;
+                border: $width-border solid $border-separator;
+                display: flex;
+                flex-direction: column;
+
+                > .wrapper-header {
+                    display: flex;
+                    position: relative;
+                    height: 46pt;
+                    flex: 0 0 auto;
+                    align-items: center;
+                    border-bottom: $width-border solid $border-separator;
+                    padding: 0 30pt 0 15pt;
+
+                    > .now-regrad {
+                        flex: 1 1 0%;
+                        display: flex;
+                        align-items: center;
+
+                        svg {
+                            margin-right: 15pt;
+                        }
+
+                        span {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                        }
+                    }
+
+                    > .have-participate {
+                        flex: 0 0 auto;
+                        text-align: right;
+                        width: 70pt;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        color: $koalaGray;
+                    }
+                }
+
+                > .list-popular {
+                    width: 100%;
+                    flex: 1 1 0%;
+                    border-right: $width-border solid $border-separator;
+                    background-color: $white;
+                    overflow-x: hidden;
+
+                    > .item-popular {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 15pt 30pt 15pt 50pt;
+                        border-bottom: $width-border solid $border-separator;
+                        @include pointer();
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+
+                        &:hover {
+                            background-color: $background-hover;
+                            border-radius: 8pt;
+                        }
+
+                        > .tag-popular {
+                            display: flex;
+                            flex: 1 1 0%;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            word-break: break-all;
+                            padding-right: 15pt;
+                        }
+
+                        > .count-participate {
+                            text-align: right;
+                            width: 70pt;
+                            flex: 0 0 auto;
+                        }
+                    }
+
+                    > .wrapper-allPost {
+                        display: flex;
+                        justify-content: center;
+                        padding: 15pt 0;
+                        background-color: $bg-fog-gray2;
+                        border-bottom: $width-border solid $border-separator;
+                        @include pointer();
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                    }
+                }
+            }
+            > .wrapper-history {
+                width: 55%;
+                flex: 1 1 0%;
+                overflow: hidden;
+                height: 100%;
+                background-color: $bg-fog-gray2;
+                border: 0.7px solid $border-separator;
+                display: flex;
+                flex-direction: column;
+
+                > .wrapper-header {
+                    display: flex;
+                    position: sticky;
+                    align-items: center;
+                    flex: 0 0 auto;
+                    height: 45pt;
+                    border-bottom: $width-border solid $border-separator;
+                    padding: 0 20pt;
+                    top: 0;
+                    z-index: 1;
+                    background-color: whitesmoke;
+
+                    svg {
+                        margin-right: 15pt;
+                    }
+
+                    > .label {
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                    }
+                }
+
+                > .list-body {
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    flex: 1 1 0%;
+
+                    > .list-fanpage {
+                        display: flex;
+                        width: calc(100% - 28pt);
+                        padding: 14pt;
+                        border-bottom: $width-border solid $border-separator;
+                        background-color: $white;
+
+                        > .wrapper-profile {
+                            display: flex;
+                            width: calc(100pt - 22pt);
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            text-align: center;
+                            padding: 11pt;
+                            cursor: pointer;
+
+                            &:last-of-type {
+                                margin-right: unset;
+                            }
+
+                            &:hover {
+                                background-color: $background-hover;
+                                border-radius: 8pt;
+                            }
+
+                            > .avatar {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                width: 50pt;
+                                height: 50pt;
+                                border-radius: 50%;
+                                margin-bottom: 5pt;
+                            }
+
+                            .image-file-waste {
+                                background-color: $bg-grey;
+                            }
+
+                            > .fanpage-name {
+                                color: $color-warm-red;
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                word-break: break-all;
+                                width: 100%;
+                            }
+
+                            > .fanpage-subline {
+                                font-family: "Kanit-500";
+                                font-size: 12px;
+                                margin-bottom: 5pt;
+                            }
+
+                            > .fanpage-tag {
+                                font-family: "Kanit-500";
+                                font-size: 12px;
+                                color: $koalaGray;
+                            }
+                        }
+                    }
+
+                    > .page-recent {
+                        justify-content: center;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                    }
+
+                    > .list-search {
+                        width: calc(100% - 1.4px);
+                        background-color: $white;
+                        border-left: $width-border solid $border-separator;
+                        border-right: $width-border solid $border-separator;
+
+                        > .item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 15pt 25pt;
+                            border-bottom: $width-border solid $border-separator;
+
+                            &:hover {
+                                background-color: $background-hover;
+                                border-radius: 8pt;
+                            }
+
+                            > .item-name {
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+                                font-weight: bold;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                word-break: break-all;
+                                flex: 1 1 0%;
+                                margin: 0 15pt 0 10pt;
+                            }
+
+                            > .date-time {
+                                flex: 0 0 auto;
+                                color: $koalaGray;
+                                font-family: "Kanit-500";
+                                font-size: 12px;
+                            }
+                        }
+                    }
+
+                    > .list-footer {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: $bg-fog-gray2;
+                        height: 46pt;
+                        border-bottom: $width-border solid $border-separator;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        @include pointer();
+                    }
+                }
+            }
+
+            > .list-body-search {
+                width: 100%;
+                background-color: $white;
+                overflow-y: auto;
+                font-family: "Kanit-500";
+                font-size: 16px;
+
+                > .item-search {
+                    display: flex;
+                    width: calc(100% - 40pt);
+                    justify-content: space-between;
+                    padding: 10pt 20pt;
+                    align-items: center;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: $background-hover;
+                        border-radius: 8pt;
+                    }
+
+                    > .search-name {
+                        display: flex;
+                        align-items: center;
+                        width: calc(100% - 20pt);
+
+                        > .icon-history {
+                            padding-right: 10pt;
+                            width: 13pt;
+                            flex: 0 0 auto;
+                        }
+                        > .history-name {
+                            display: flex;
+                            white-space: normal;
+                        }
+                    }
+
+                    > .list-right {
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+
+                        > .material-icons {
+                            font-size: 18px;
+                        }
+                    }
+                }
+
+                .noneInformation {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    font-family: "Kanit-500";
+                    font-size: 24px;
+                }
+            }
+        }
+    }
+}
+
+.backdrop-active {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    #menuCenter {
+        display: flex;
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .header-search {
+        > .search {
+            > .wrapper-body-tag {
+                > .tab {
+                    > .tablinks {
+                        font-size: 16px;
+                    }
+                }
+
+                > .wrapper-popular {
+                    height: calc(100% - 40pt);
+
+                    > .wrapper-header {
+                        > .now-regrad {
+                            > svg {
+                                display: none;
+                            }
+
+                            > span {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+
+                > .wrapper-history {
+                    height: calc(100% - 40pt);
+
+                    > .wrapper-header {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .header-search {
+        > .search {
+            > .wrapper-body-tag {
+                > .tab {
+                    > .tablinks {
+                        font-size: 15px;
+                    }
+                }
+
+                > .wrapper-popular,
+                > .wrapper-history {
+                    // height: calc(100% - 40pt);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .header-search {
+        &.show {
+            position: fixed;
+            left: 2.5vw;
+            right: 2.5vw;
+            top: 15pt;
+            z-index: 10000;
+        }
+
+        > .search {
+            > .wrapper-search {
+                > .home-back-left {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex: 0 0 auto;
+                }
+
+                > #search {
+                    &.active {
+                        width: 100%;
+                    }
+                }
+            }
+
+            > .wrapper-body-tag {
+                width: 100%;
+                height: 100vh;
+                max-height: calc(100vh - 110pt);
+
+                > .tab {
+                    > .tablinks {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+
+    .backdrop-active {
+        background: $white;
+    }
+}
+
+@media (max-width: $lmedium) {
+    .header-search {
+        > .search {
+            > .wrapper-search {
+                > .icon-search-out {
+                    width: 36px;
+                    height: 36px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .header-search {
+        > .search {
+            > .wrapper-body-tag {
+                max-height: calc(100vh - 90pt);
+
+                > .tab {
+                    > .tablinks {
+                        // font-size: 13px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .header-search {
+        > .search {
+            > .wrapper-body-tag {
+                // max-height: calc(100vh - 52pt);
+                max-height: calc(100vh - 130pt);
+
+                > .tab {
+                    > .tablinks {
+                        // font-size: 12px;
+                    }
+                }
+
+                > .wrapper-popular {
+                    > .wrapper-header {
+                        padding: 0 15pt;
+
+                        > .now-regrad {
+                            svg {
+                                display: none;
+                            }
+                        }
+                    }
+
+                    > .list-popular {
+                        > .item-popular {
+                            padding: 13pt 15pt 13pt 20pt;
+                        }
+                    }
+                }
+
+                > .wrapper-history {
+                    > .wrapper-header {
+                        padding: 0 15pt;
+                    }
+
+                    > .list-body {
+                        > .list-search {
+                            > .item {
+                                padding: 13pt 15pt;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,98 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<ng-container *ngIf="fieldTable.formatColor || fieldTable.formatImage; else elseColorImage">
+    <ng-container *ngIf="data[fieldTable.name]; else elseColorImageNone">
+        <ng-container *ngIf="fieldTable.formatColor">
+            <div class="wrapper-col-color">
+                <span class="col-color" [ngStyle]="{'background-color': data[fieldTable.name]}"></span>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="fieldTable.formatImage">
+            <a href="{{data[fieldTable.name]}}" target="_blank">
+                <img src="{{data[fieldTable.name]}}" class="col-image" alt=""> 
+            </a>
+        </ng-container>
+    </ng-container>
+    <ng-template #elseColorImageNone>
+        -
+    </ng-template> 
+</ng-container>
+<ng-template #elseColorImage>
+    <ng-container *ngIf="fieldTable.link.length > 0; else elseTemplate">
+        <a href="{{getLink()}}" target="_blank">
+            <ng-container *ngIf="fieldTable.formatDate; else elseFormatId">
+                <ng-container *ngIf="fieldTable.formatId">
+                    <ng-container *ngIf="data[fieldTable.name]; else elseFieldName">
+                        {{data[fieldTable.name] | prefixNumber: 5}}
+                    </ng-container>
+                    <ng-template #elseFieldName>
+                        -
+                    </ng-template>
+                </ng-container>
+                <ng-container *ngIf="fieldTable.formatDate">
+                    <ng-container *ngIf="data[fieldTable.name]; else elseFieldDate">
+                        {{data[fieldTable.name] | date:defaultDateTimeFormat}}
+                    </ng-container>
+                    <ng-template #elseFieldDate>
+                        -
+                    </ng-template>
+                </ng-container>
+            </ng-container>
+            <ng-template #elseFormatId>
+                <ng-container *ngIf="data[fieldTable.name]; else elseData">
+                    <ng-container *ngIf="(!isWordCountOver(data[fieldTable.name]) || isSeeMore); else elseIsSeeMore">
+                        {{data[fieldTable.name]}}
+                    </ng-container>
+                    <ng-template #elseIsSeeMore>
+                        {{data[fieldTable.name] | slice:0:220}}...
+                    </ng-template>
+                    <span class="see-more" *ngIf="isWordCountOver()" (click)="clickOpenDropDown()" [class.see-less]="isSeeMore">{{
+                        isSeeMore ? 'แสดงน้อยลง' : 'ดูเพิ่มเติม'}}</span>
+                </ng-container>
+                <ng-template #elseData>
+                    -
+                </ng-template>
+            </ng-template>
+        </a>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <ng-container *ngIf="fieldTable.formatId || fieldTable.formatDate; else elseFormatId">
+            <ng-container *ngIf="fieldTable.formatId">
+                <ng-container *ngIf="data[fieldTable.name]; else elseFieldName">
+                    {{data[fieldTable.name] | prefixNumber: 5}}
+                </ng-container>
+                <ng-template #elseFieldName>
+                    -
+                </ng-template>
+            </ng-container>
+            <ng-container *ngIf="fieldTable.formatDate">
+                <ng-container *ngIf="data[fieldTable.name]; else elseFieldDate">
+                    {{data[fieldTable.name] | date:defaultDateTimeFormat}}
+                </ng-container>
+                <ng-template #elseFieldDate>
+                    -
+                </ng-template>
+            </ng-container>
+        </ng-container>
+        <ng-template #elseFormatId>
+            <ng-container *ngIf="data[fieldTable.name]; else elseData">
+                <ng-container *ngIf="(!isWordCountOver(data[fieldTable.name]) || isSeeMore); else elseIsSeeMore">
+                    {{data[fieldTable.name]}}
+                </ng-container>
+                <ng-template #elseIsSeeMore>
+                    {{data[fieldTable.name] | slice:0:220}}...
+                </ng-template>
+                <span class="see-more" *ngIf="isWordCountOver(data[fieldTable.name])" (click)="clickOpenDropDown()" [class.see-less]="isSeeMore">{{
+                    isSeeMore ? 'แสดงน้อยลง' : 'ดูเพิ่มเติม'}}</span>
+            </ng-container>
+            <ng-template #elseData>
+                -
+            </ng-template>
+        </ng-template>
+    </ng-template>
+</ng-template>

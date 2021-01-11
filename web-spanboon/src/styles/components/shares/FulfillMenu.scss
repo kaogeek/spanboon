@@ -1,0 +1,80 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.fulfill-menu {
+    width: calc(50pt - 10pt);
+    padding: 5pt;
+    border-right: 1px solid $border-color;
+    overflow-y: auto;
+    flex: 0 0 auto;
+    height: 100%;
+
+    &.activeMobile {
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        height: auto;
+        border-right: unset;
+        overflow-y: hidden;
+        overflow-x: auto;
+
+        >.list-menu {
+            margin: unset;
+            flex: 0 0 auto;
+        }
+    }
+
+    > .list-menu {
+        margin: 0 auto;
+        width: 40pt;
+        height: 40pt;
+        border-radius: 3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        @include pointer();
+        background: $white; 
+
+        > .icon {
+            width: 20pt;
+            height: 20pt;
+
+            > g,
+            path,
+            rect {
+                fill: rgba($black, 0.6);
+            }
+        }
+
+        &:hover {
+            background: rgba($color-warm-red, 0.2);
+
+            > .icon {
+                > g,
+                path,
+                rect {
+                    fill: rgba($black, 1);
+                }
+            }
+        }
+
+        &.active {
+            background: rgba($color-warm-red, 0.2);
+
+            > .icon {
+                > g,
+                path,
+                rect {
+                    fill: $color-warm-red;
+                }
+            }
+            &:hover {
+                background: rgba($color-warm-red, 0.25);
+            }
+        }
+    }
+}

@@ -1,0 +1,59 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="preload-card">
+    <div class="postcard" *ngIf="isShowCard1" [ngClass]="class">
+        <div class="post-card-top">
+            <div class="left">
+                <div class="div-preload" style="width: 30pt;"></div>
+                <div class="div-preload" style="width: 50pt; margin-left: 5pt;"></div>
+                <div class="div-preload" style="width: 80pt; margin-left: 5pt;"></div>
+            </div>
+            <div class="right">
+                <div class="div-preload" style="width: 20pt;"></div>
+            </div>
+        </div>
+        <div class="post-card-center">
+            <div class="div-preload" style="width: 100%; height: 200pt;"></div>
+        </div>
+        <div class="post-card-bottom">
+            <div class="div-preload" style="width: 50pt;"></div>
+            <div class="div-preload" style="width: 50pt; margin:0 5pt;"></div>
+            <div class="div-preload" style="width: 50pt;"></div>
+        </div>
+    </div>
+
+    <div class="postcard" *ngIf="isShowCard2" [ngClass]="class">
+        <div class="post-card-top">
+            <div class="left">
+                <div class="div-preload" style="width: 70pt;"></div>
+            </div>
+            <div class="right">
+                <div class="div-preload" style="width: 20pt;"></div>
+            </div>
+        </div>
+        <div class="post-card-center" style="height: 100pt;"></div>
+        <div class="post-card-bottom">
+            <div class="div-preload" style="width: 50pt;"></div>
+            <div class="div-preload" style="width: 50pt; margin:0 5pt;"></div>
+            <div class="div-preload" style="width: 50pt;"></div>
+        </div>
+    </div>
+
+    <div class="postcard card-pad" *ngIf="isShowCard3" [ngClass]="class">
+        <div class="post-card-top">
+            <div class="left" style="flex: 0 0 auto; margin-right: 10pt;">
+                <div class="div-preload" style="width: 40pt; height: 40pt; border-radius: 50%;"></div>
+            </div>
+            <div class="right" style="flex: 1 1 0%; display: flex; flex-direction: column;">
+                <div class="div-preload" style="width: 60%;"></div>
+                <div class="div-preload" style="width: 50%; margin: 5pt 0;"></div>
+                <div class="div-preload" style="width: 60%;"></div>
+            </div>
+        </div>
+    </div>
+</div>

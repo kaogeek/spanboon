@@ -1,0 +1,835 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.choose-item {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+
+    > .top {
+        flex: 0 0 auto;
+        padding: 10pt 20pt;
+        font-family: "Kanit-500";
+
+        > .header {
+            font-size: 22px;
+        }
+
+        > .title {
+            color: $koalaGray;
+            font-size: 16px;
+        }
+    }
+
+    > .tab {
+        flex: 0 0 auto;
+        width: 100%;
+        overflow: hidden;
+        background-color: $bg-fog-gray2;
+        display: none;
+        height: 40pt;
+
+        > .tablinks {
+            width: 50%;
+            padding: 0 10pt;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 18px;
+            font-family: "Kanit-500";
+            color: $black;
+            border-bottom: 3pt solid transparent;
+
+            &:hover {
+                background: rgba($color-warm-red, 0.1);
+                color: $color-warm-red;
+            }
+
+            &.active {
+                color: $color-warm-red;
+                border-bottom: 3pt solid $color-warm-red;
+            }
+        }
+    }
+
+    > .center {
+        flex: 1 1 0%;
+        display: flex;
+        overflow: hidden;
+        border-top: 0.7pt solid $border-color;
+
+        > .center-left {
+            // width: 50%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            > .doing-search {
+                flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                padding: 0 20pt;
+                height: 50pt;
+                border-bottom: 0.7pt solid $border-color;
+                @include font-size-9-100("Kanit-500");
+
+                > .label-doing {
+                    display: flex;
+                    align-items: center;
+                    height: 39pt;
+
+                    > .active-hover {
+                        @include pointer();
+                        > .non-active {
+                            color: $koalaGray;
+                        }
+                        &:hover {
+                            > .folder-sub {
+                                color: $color-warm-red;
+                                text-decoration: underline;
+                            }
+                        }
+
+                        > .sub {
+                            margin: 0 3pt;
+                        }
+                    }
+                }
+
+                > .doing-search-box {
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    margin-right: 10pt;
+                    position: relative;
+                    flex: 1 1 0%;
+
+                    > .icon-search {
+                        position: absolute;
+                        left: 8px;
+                        user-select: none;
+                    }
+
+                    > .search-img {
+                        height: 30pt;
+                        width: 100%;
+                        border: 0.7pt solid #e5e5e5;
+                        border-radius: 5pt;
+                        padding: 5pt 25pt;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                    }
+
+                    > .icon-clear {
+                        position: absolute;
+                        right: 8px;
+                        @include pointer();
+                    }
+                }
+
+                > .search-data {
+                    width: 50pt;
+                    flex: 0 0 auto;
+                }
+            }
+
+            > .body-list-item {
+                flex: 1 1 0%;
+                padding: 10pt 20pt;
+                overflow-y: auto;
+
+                > .search-latest {
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    width: 100%;
+                }
+                .list-search-doing {
+                    width: 100%;
+                    margin-top: 10pt;
+                    height: auto;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+
+                    > .body-data-category {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 5pt;
+                        width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                        padding: 15pt 8pt;
+                        border: 0.7pt solid $border-color;
+                        border-radius: 5pt;
+                        @include pointer();
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        align-self: stretch;
+
+                        &.active {
+                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                        }
+                        &.folder {
+                            justify-content: unset; 
+                        }
+
+                        > .icon-back {
+                            width: 40pt;
+                            height: 40pt; 
+                            border-radius: 50%;
+                            padding: 5pt;
+                        }
+
+                        > .icon-correct {
+                            position: absolute;
+                            top: 5pt;
+                            right: 5pt;
+                        }
+
+                        > .name {
+                            width: calc(100% - 20pt);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            padding: 0 10pt;
+                            text-align: center;
+                        }
+
+                        &:hover {
+                            background-color: $background-hover;
+                            // border-radius: 8pt;
+                        }
+
+                        &.active-click-data {
+                            border-radius: 8pt;
+                            border: 0.7pt solid $color-warm-red;
+                        }
+
+                        > .category-img {
+                            // position: relative;
+                            // display: flex;
+                            // justify-content: center;
+                            padding: 5pt;
+                            position: relative;
+                            display: flex;
+                            justify-content: center;
+                            flex-direction: column;
+                            align-items: center;
+
+                            > .notify-count {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                position: absolute;
+                                // right: 11pt;
+                                right: 0;
+                                bottom: 0;
+                                width: 25pt;
+                                height: 25pt;
+                                border-radius: 50%;
+                                background-color: $color-warm-red;
+                                > .count-item {
+                                    color: $brandcolor;
+                                }
+                            }
+                            > .icon-category {
+                                width: 45pt;
+                                height: 45pt;
+                                border-radius: 50%;
+                            }
+                            > .img-folder {
+                                width: 45pt;
+                                height: 45pt;
+                                // margin-bottom: 10pt;
+                                border-radius: 50%;
+                            }
+
+                            > .icon-folder {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                > .crop-div {
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    word-break: break-all;
+                                    width: 100%;
+                                }
+                            }
+
+                            > .loading-image {
+                                > .linear-background {
+                                }
+                            }
+                        }
+                        > .item-name {
+                            width: calc(100% - 20pt);
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            padding: 0 10pt;
+                            text-align: center;
+                        }
+                        > .path-name {
+                            color: #a5a5a6;
+                            font-size: 14px;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        }
+
+                        > .icon-folder {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            > .crop-div {
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                word-break: break-all;
+                                // width: calc(100% - 15pt - 5pt);
+                                width: 100%;
+
+                                // > .folder-name {
+                                //     overflow: hidden;
+                                //     text-overflow: ellipsis;
+                                //     white-space: nowrap;
+                                //     text-align: center;
+                                // }
+                            }
+                        }
+                        > .svg-folder {
+                            width: 15pt;
+                            height: 15pt;
+                            position: absolute;
+                            top: 5pt;
+                            right: 5pt;
+                        }
+                    }
+                    > .empty-data {
+                        border: unset;
+                        width: 100%;
+                    }
+                    > .body-empty {
+                        border: 3pt dashed #1288ce;
+                        width: calc(25% - 8pt - 8pt - 2.8pt - 10pt - 6pt);
+                        > .add-item {
+                            color: $koalaGray;
+                            // padding-left: 5pt; 
+                            @include pointer();
+                        }
+                        > .label-item {
+                            color: $koalaGray;
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+        }
+
+        > .center-right {
+            flex: 0 0 auto;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-left: 0.7pt solid $border-color;
+
+            > .doing-items {
+                border-bottom: 0.7pt solid $border-color;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 20pt;
+                height: 50pt;
+                font-family: "Kanit-500";
+                font-size: 16px;
+
+                > .label-doing-left {
+                }
+
+                > .doing-count-item {
+                }
+            }
+            > .body-list-items {
+                flex: 1 1 0%;
+                overflow-y: auto;
+            }
+        }
+    }
+
+    > .bottom {
+        border-top: 0.7pt solid $border-color;
+        flex: 0 0 auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 10pt 20pt;
+
+        > .close-dialog {
+            margin-right: 5pt;
+            &.active {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+.input-shake {
+    position: relative;
+    animation: shake 0.1s linear;
+    animation-iteration-count: 3;
+}
+
+.input-shake::-webkit-input-placeholder {
+    color: red;
+}
+
+.input-shake::-ms-input-placeholder {
+    color: red;
+}
+
+.input-shake:-ms-input-placeholder {
+    color: red;
+}
+
+.input-shake::-moz-placeholder {
+    opacity: 1;
+    color: red;
+}
+
+.input-shake:-moz-placeholder {
+    opacity: 1;
+    color: red;
+}
+
+.input-shake::placeholder {
+    color: red;
+}
+
+.list-sorted {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    white-space: normal;
+
+    &.msg-error {
+        width: calc(100% - 1.4pt);
+    }
+}
+
+.list-sorted-item {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #fff;
+    padding: 20px 10px;
+    justify-content: space-between;
+    border: 0.7pt solid $border-color;
+    font-family: "Kanit-400";
+    font-size: 16px;
+    @include pointer();
+
+    &:hover {
+        background-color: $background-hover;
+    }
+
+    &.msg-error {
+        border: 0.7pt solid red;
+    }
+
+    > .body-list {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: stretch;
+
+        > .list-items {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+
+            > .list-img {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+
+                > .icon-move {
+                    display: flex;
+                    align-items: center;
+                    width: 10pt;
+                    height: 10pt;
+                    padding-right: 5pt;
+
+                    &:hover {
+                        cursor: move;
+                    }
+                }
+
+                > .wrapper-category {
+                    display: flex;
+                    padding-right: 10pt;
+
+                    > .img-category {
+                        width: 25pt;
+                        height: 25pt;
+                        border-radius: 50%;
+                    }
+                }
+            }
+
+            > .list-data {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+
+                > .list-item-name {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                > .input-add {
+                    background: $white;
+                    padding: 0 7pt;
+                    width: calc(100% - 14pt);
+                    height: 22pt;
+                    border-radius: 20pt;
+                    text-align: left;
+                    border: unset;
+                    box-shadow: 0 2px 9px 0 #e5e3dd;
+                    font-family: "Kanit-300";
+                    font-size: 16px;
+                }
+
+                > .list-category {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+
+                    > .item-amount {
+                        margin-left: 10pt;
+
+                        > .item-count {
+                            background: $white;
+                            padding: 0 7pt;
+                            width: calc(60pt - 14pt);
+                            height: 22pt;
+                            border-radius: 20pt;
+                            text-align: right;
+                            border: unset;
+                            font-family: "Kanit-400";
+                            font-size: 16px;
+                            border: 1px solid rgb($black, 0.1);
+                        }
+
+                        > .item-unit,
+                        > .item-unit-customize {
+                            background: $white;
+                            padding: 0 7pt;
+                            width: calc(80pt - 14pt);
+                            height: 22pt;
+                            border-radius: 20pt;
+                            text-align: center;
+                            border: unset;
+                            font-family: "Kanit-300";
+                            font-size: 16px;
+                            border: 1px solid rgb($black, 0.1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    > .list-item-unit {
+        display: flex;
+        align-items: center;
+
+        > .icon-trash {
+            margin: 0 10pt;
+            height: 18pt;
+            width: 18pt;
+            transform: scale(1, 1);
+
+            &:hover {
+                > #trash {
+                    > path {
+                        fill: $color-warm-red;
+                    }
+                }
+            }
+
+            &:active {
+                transform: scale(0.9, 0.9);
+            }
+        }
+    }
+}
+.highlight-text-search {
+    background-color: yellow;
+}
+
+.cdk-drag-placeholder,
+.cdk-drag-preview {
+    opacity: 1;
+    background: #dedede2e;
+    font-family: "Kanit-500";
+    font-size: 18px;
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+    transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media (max-width: $xxlarge) {
+    .choose-item {
+        > .center {
+            > .center-left {
+                > .body-list-item {
+                    .list-search-doing {
+                        > .body-data-category {
+                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                        }
+                        > .empty-data {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .choose-item {
+        > .center {
+            > .center-left {
+                &.active {
+                    display: flex;
+                }
+                > .body-list-item {
+                    .list-search-doing {
+                        > .body-data-category {
+                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                        }
+                        > .empty-data {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .choose-item {
+        height: 100vh;
+        > .tab {
+            display: flex;
+
+            > .tablinks {
+            }
+        }
+
+        > .center {
+            > .center-left {
+                width: 100%;
+                &.active {
+                    display: flex;
+                }
+                > .body-list-item {
+                    .list-search-doing {
+                        > .body-data-category {
+                            width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                        }
+                    }
+                }
+            }
+
+            > .center-right {
+                display: none;
+                width: 100%;
+                &.active {
+                    display: flex;
+                }
+            }
+
+            > .mongha {
+                // display: none;
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .choose-item {
+        > .center {
+            > .center-left {
+                > .body-list-item {
+                    height: calc(100vh - 20pt);
+                    .list-search-doing {
+                        > .body-data-category {
+                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                        }
+                        > .empty-data {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .choose-item {
+        // height: 100%;
+        height: 100vh;
+        > .center {
+            flex: unset;
+            > .center-left {
+                > .open-folder {
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                }
+
+                > .body-list-item {
+                    .list-search-doing {
+                        > .body-data-category {
+                            width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                        }
+                        > .empty-data {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .choose-item {
+        > .center {
+            > .center-left {
+                > .doing-search {
+                    height: 40pt;
+                }
+                > .open-folder {
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                }
+                > .body-list-item {
+                    .list-search-doing {
+                        justify-content: stretch;
+                        > .body-data-category {
+                            width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
+
+                            &.active {
+                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
+                            }
+                            > .add-item {
+                                font-size: 33px;
+                            }
+                            > .label-item {
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+                            }
+                        }
+                        > .body-empty {
+                            width: calc(50% - 8pt - 8pt - 2.8pt - 10pt - 6pt);
+                        }
+                    }
+                }
+            }
+            > .center-right {
+                > .body-list-items {
+                    > .list-sorted {
+                        > .list-sorted-item {
+                            padding: 15px 7px;
+                            > .body-list {
+                                > .list-items {
+                                    > .list-img {
+                                        > .wrapper-category {
+                                            padding-right: 6pt;
+                                        }
+                                    }
+                                    > .list-data {
+                                        > .list-category {
+                                            > .item-amount {
+                                                margin-left: 5pt;
+                                                > .item-count {
+                                                    width: calc(39pt - 14pt);
+                                                }
+                                                > .item-unit {
+                                                    width: calc(55pt - 14pt);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            > .list-item-unit {
+                                margin: 0 5pt;
+                                > .icon-trash {
+                                    margin: unset;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        > .bottom {
+            justify-content: center;
+        }
+    }
+}

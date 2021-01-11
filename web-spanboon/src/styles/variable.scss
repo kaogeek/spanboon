@@ -1,0 +1,176 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+// Spanboon variables
+// --------------------
+
+// 1.Color
+// 2.Font Size
+// 2 Breakpoints
+// 3.mixin
+
+// 1. Color
+// ---------
+
+// ----- root color -----
+$blue: #007bff;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #28a745;
+$teal: #20c997;
+$cyan: #17a2b8;
+$white: #fff;
+$gray: #6c757d;
+$gray-dark: #343a40;
+$primary: #007bff;
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #343a40;
+$black: #000000;
+$goldenrod: #daa520;
+
+$color: rgb(249, 113, 84);
+$color-1: rgb(126, 121, 115);
+$color-2: rgb(89, 178, 204);
+$color-3: rgba(0, 179, 225, 1);
+$color-4: rgb(194, 194, 194);
+$color-5: rgb(30, 44, 61);
+$color-6: rgb(0, 110, 176);
+$color-7: #279d90;
+$color-8: #41f3e3;
+$color-9: rgb(243, 243, 243);
+$color-10: rgba(255, 255, 255, 1);
+$color-11: #8e8e8e;
+$color-12: #1e7bf3;
+
+//
+$padding-page-side: 45pt;
+
+$color-warm-red: #fd545a;
+$color-black: #212721;
+
+$brandcolor: #f8f7f2;
+$brandcolor2: #c62634;
+$koalaGray: #a5a5a6;
+$bg-fog-gray: #e5e3dd;
+$bg-fog-gray2: #f5f5f5;
+$border-color: #e5e5e5;
+$bg-grey: #f1f1f1;
+$border-separator: #efefef;
+$font-color-none: #c5c4c4;
+//
+$bg-color1: #f3f3f3;
+$bg-color2: rgb(27, 27, 27);
+$bg-color3: rgb(255, 101, 101);
+$bg-color4: #7aaf67;
+
+$blur: #00000070;
+$background-hover: #f1f1f1d9;
+
+$shadow-vote-vard: #d3d3d4;
+$shadow-vote-vard-hover: #adadb0;
+$shwdow-cards: #c2c2cc;
+
+// 3.font size
+$font-size-1: 72px;
+$font-size-2: 68px;
+$font-size-3: 62px;
+$font-size-4: 54px;
+$font-size-5: 44px;
+$font-size-6: 36px;
+$font-size-7: 24px;
+$font-size-8: 18px;
+$font-size-9: 16px;
+$font-size-10: 14px;
+$font-size-11: 12px;
+
+// @media (max-width: )
+
+// 2. Breakpoints
+// --------------
+
+$small: 479px;
+$medium: 768px;
+$lmedium: 899px;
+$large: 1024px;
+$xlarge: 1280px;
+$xxlarge: 1440px;
+
+$breakpoints: (
+  small: 479px,
+  medium: 768px,
+  lmedium: 899px,
+  large: 1024px,
+  xlarge: 1280px,
+  xxlarge: 1440px,
+);
+$print-breakpoint: large;
+$breakpoint-classes: (small medium large);
+
+// spanboon
+
+$width-border: 0.7px;
+// icon time
+$width-time: 12pt;
+$height-time: 12pt;
+
+//headerTop
+$width-icon: 12pt;
+$height-icon: 12pt;
+$height-header-top: 55pt;
+$width-icon-recommend: $width-icon + 5;
+
+// home
+$margin-and-padding-side-home-pade: 45pt;
+$margin-and-padding-side-home-pade-xlarge: 25pt;
+
+// fanpage
+$height-cover-img-fanpage: 295pt;
+$height-cover-img-fanpage-xlarge: 260pt;
+$width-profile-fanpage: 255pt;
+$width-profile-fanpage-xlarge: 260pt;
+$padding-right-img-phrase: 20pt;
+$width-image-profile-fan-page: 90pt;
+$width-image-profile-fan-page-xlarge: 120pt;
+$padding-side-wrapper-looking-for: 30pt;
+$height-profile-btn-action-fan-page: 50pt;
+$width-side-feed-fan-page: 234pt;
+$width-side-feed-fan-page-xlarge: 220pt;
+
+//profile
+$width-feed-profile: 450pt;
+$width-side-follow: 234pt;
+
+// BoxPost
+$height-box-post: 100%;
+$height-wrapper-tool-post: 45pt;
+$padding-side-wrapper-tool-post: 15pt;
+
+$border-radius-4px: 4px;
+
+@media (max-width: $xxlarge) {
+}
+
+@media (max-width: $xlarge) {
+}
+
+@media (max-width: $large) {
+}
+
+@media (max-width: $medium) {
+}
+
+@media (max-width: $small) {
+}

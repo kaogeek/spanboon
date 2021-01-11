@@ -1,0 +1,53 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="item-card">
+    <div class="item-body">
+        <div class="item-status">
+            <div class="item-status-left">
+                <!-- <img class="icon-active looking" src="../../../../assets/img/icon_Share_Active.svg"> -->
+                <div class="icon-active looking">
+                    <span>{{status}}</span>
+                </div>
+            </div>
+            <div class="item-label"> {{allPost}}
+            </div>
+        </div>
+        <div class="row-item">
+            <div class="item-left">
+                <img class="item-img" src="https://pbs.twimg.com/media/EOoioS8VAAAy6lO.jpg">
+                <div class="item-name">{{itemName}}
+                </div>
+            </div>
+            <div class="item-right">
+                <div class="item-amount">{{amount}}
+                    <div class="item-unit">
+                        {{unit}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item-etc">
+            และอีก 3 สิ่ง ที่กำลัังมองหา
+        </div>
+        <div class="item-footer">
+            <div class="item-footer-icon">
+                สร้างโดย:
+                <img class="item-footer-offical" src="../../../../assets/img/icon_Share_Active.svg">
+                <div class="item-footer-pageName"> {{pageName}}
+                </div>
+                <img class="footer-icon-user" src="../../../../assets/img/icon_Share_Active.svg">
+                <div class="user-count">
+                    {{countUser}}
+                </div>
+            </div>
+            <div>
+                <spanboon-button [bgColor]="'#c62634'" [text]="'เต็มเติม'"> </spanboon-button>
+            </div>
+        </div>
+    </div>
+</div>

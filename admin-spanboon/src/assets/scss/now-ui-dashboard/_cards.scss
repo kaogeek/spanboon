@@ -1,0 +1,108 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author: Americaso <treerayuth.o@absolute.co.th>
+ */
+ 
+@import "newconsensus-ui-admin/mixins";
+@import "newconsensus-ui-admin/variable";
+.card {
+    border: 0;
+    border-radius: $border-radius-small;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin-bottom: 20px;
+    box-shadow: $box-shadow;
+    .card-body {
+        padding: 15px 25px 10px;
+        position: relative;
+        height: calc(100% - 50pt);
+        &.table-full-width {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+    .card-header {
+        &:not([data-background-color]) {
+            background-color: transparent;
+        }
+        display: flex;
+        position: relative;
+        height: 50pt;
+        justify-content: space-between;
+        padding: 15px 25px 0;
+        border: 0;
+        .card-title {
+            margin-top: 10px;
+        }
+        .btn-top-table {
+            margin-top: 10px;
+            background-color: #59b2cc;
+            color: #fff;
+        }
+    }
+    .map {
+        border-radius: $border-radius-small;
+        &.map-big {
+            height: 400px;
+        }
+    }
+    &[data-background-color="orange"] {
+        background-color: $primary-color;
+        .card-header {
+            background-color: $primary-color;
+        }
+        .card-footer {
+            .stats {
+                color: $white-color;
+            }
+        }
+    }
+    &[data-background-color="red"] {
+        background-color: $danger-color;
+    }
+    &[data-background-color="yellow"] {
+        background-color: $warning-color;
+    }
+    &[data-background-color="blue"] {
+        background-color: $info-color;
+    }
+    &[data-background-color="green"] {
+        background-color: $success-color;
+    }
+    .image {
+        overflow: hidden;
+        height: 200px;
+        position: relative;
+    }
+    .avatar {
+        width: 30px;
+        height: 30px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 1px solid $bg-color1;
+    }
+    label {
+        font-size: $font-size-small;
+        margin-bottom: 5px;
+        color: $dark-gray;
+    }
+    .card-footer {
+        background-color: transparent;
+        border: 0;
+        .stats {
+            i {
+                margin-right: 5px;
+                position: relative;
+                top: 2px;
+            }
+        }
+        .btn {
+            margin: 0;
+        }
+    }
+}

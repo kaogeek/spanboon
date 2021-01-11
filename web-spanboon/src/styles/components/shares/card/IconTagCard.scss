@@ -1,0 +1,185 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.icon-tag-card {
+    display: flex;
+    justify-content: center;
+    border: 0.7pt solid $bg-fog-gray;
+    background-color: $bg-grey;
+    padding: 15pt;
+
+    > .wrapper-entity {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @include pointer();
+
+        > .wrapper-image {
+            overflow: hidden;
+            width: 80pt;
+            height: 80pt;
+            border-radius: 50%;
+            margin-bottom: 5pt;
+
+            > .wrapper-image-icon {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            > .icon-spanboon {
+                background-color: $white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        > a {
+            > .wrapper-tag {
+                display: flex;
+                color: $black;
+                font-family: "Kanit-500";
+                font-size: 24px;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        > .wrapper-offical {
+            display: contents;
+
+            > .page-createBy {
+                display: flex;
+                align-items: center;
+                margin-top: 5pt;
+                font-family: "Kanit-500";
+                font-size: 14px;
+
+                > .page-by {
+                    padding-right: 5pt;
+                    flex: 0 0 auto;
+                }
+
+                > .name-pa {
+                    display: flex;
+                    align-items: center;
+
+                    > .page-offical {
+                        width: 12pt;
+                        height: 12pt;
+                        padding: 0 3pt 0 5pt;
+                        flex: 0 0 auto;
+                    }
+                    > a {
+                        > .page-name {
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            color: $green;
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+
+                > .page-sub {
+                    width: 12pt;
+                    height: 12pt;
+                    padding: 0 5pt 0 0;
+                    flex: 1 1 0%;
+                }
+
+                > .count-user {
+                    color: $koalaGray;
+                }
+            }
+
+            > .action-footer {
+                border-top: 0.7pt solid $bg-fog-gray;
+                margin-top: 5pt;
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+                    font-size: 22px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+                    
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+                
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .icon-tag-card {
+        > .wrapper-entity {
+            > a {
+                > .wrapper-tag {
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+}

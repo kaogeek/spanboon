@@ -1,0 +1,183 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.not-log {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+
+    > .profile {
+        @include pointer();
+        width: 13pt;
+        padding: 0 !important;
+        min-width: unset !important;
+        border-radius: 50% !important;
+    }
+}
+
+.log-header {
+    min-width: unset !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+}
+
+.menu-user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include pointer();
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+
+    > .image-profile {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &.displayName {
+        background: $color-warm-red;
+        box-shadow: 2.5px 0px 0px 0 $white;
+        color: $brandcolor;
+
+        > .donator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Kanit-500";
+            font-size: 16px;
+        }
+    }
+}
+
+.menu-set {
+    margin: 5pt 0 0 0;
+    width: 320px !important; 
+    overflow-y: auto !important;
+    max-height: calc(100vh - 48px - 20pt) !important;
+
+    > .mat-menu-content {
+        > .header-menu-profile {
+            > .profile-header {
+                padding: 15pt 10pt;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-family: "Kanit-500";
+                text-align: center;
+                border-bottom: $width-border solid $border-separator;
+
+                > .image-profile_z {
+                    width: 40pt;
+                    height: 40pt;
+                    border-radius: 50%;
+                    overflow: hidden;
+                }
+
+                > .menu-user_z {
+                    user-select: none;
+                    width: 70px;
+                    height: 70px;
+                    background: $color-warm-red;
+                    border: rgb($black, 0.1);
+                    color: $brandcolor;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    > span {
+                        font-family: "Kanit-500";
+                        font-size: 34px;
+                    }
+                }
+
+                > .profile-detail {
+                    > .profile-name {
+                        font-size: 1.5em;
+                        line-height: 1em;
+                        margin-top: 10pt;
+                    }
+
+                    > .profile-name-eng {
+                        color: $koalaGray;
+                        font-size: 16px;
+                    }
+
+                    > .header-follow {
+                        display: flex;
+                        align-items: center;
+                        font-size: 16px;
+
+                        > .following {
+                        }
+
+                        > .dote {
+                            font-size: 24px;
+                            line-height: 16px;
+                            margin: 0 5pt;
+                        }
+
+                        > .followers {
+                        }
+
+                        span {
+                            color: $koalaGray;
+                        }
+                    }
+                }
+            }
+
+            > .list-setting {
+                > .setting {
+                    display: flex;
+                    padding: 5pt 25pt;
+                    align-items: center;
+                    border-bottom: $width-border solid $border-separator;
+                    @include pointer();
+
+                    &:hover {
+                        background: $bg-grey;
+                    }
+
+                    > .icon {
+                        width: 12pt;
+                    }
+
+                    > .name {
+                        padding: 5pt 13pt;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) { 
+    .profile-sub-menu+* .cdk-overlay-pane{
+        right: 0 !important;
+        top: 39pt !important;
+    }
+    .menu-set {
+        height: calc(100vh - 39pt) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        min-height: 100vh !important;
+        margin: unset;
+    }
+    .header-menu-profile {
+        height: calc(100vh - 30pt);
+    }
+}

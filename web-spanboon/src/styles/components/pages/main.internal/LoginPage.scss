@@ -1,0 +1,168 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.wrapper-login-page {
+  min-height: calc(100vh - 55pt);
+  position: relative;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  > .background {
+    position: fixed;
+    top: 30pt;
+    left: 0;
+    height: 100%;
+    width: 75%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  > .wrapper-box-detail {
+    width: 320pt;
+    margin: 50pt 100pt 50pt 0;
+    position: relative;
+    z-index: 1;
+
+    > .label {
+      text-align: center;
+      font-family: "Kanit-500";
+      font-size: 24px;
+      color: $brandcolor2;
+      margin-bottom: 20pt;
+    }
+
+    > .form-group {
+      > .input-text {
+        display: block;
+        width: calc(100% - 45pt);
+        height: 30pt;
+        padding: 2pt 21pt;
+        background-color: $white;
+        background-clip: padding-box;
+        border: 0.7pt solid $bg-grey;
+        border-radius: 25px;
+        font-size: 16px;
+        font-family: "Kanit-500";
+        box-shadow: 0px 1px 9px 0 #00000020;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        margin-bottom: 10pt;
+      }
+    }
+
+    > .wrapper-forget-password {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10pt 0;
+
+      > .forget {
+        font-family: "Kanit-500";
+        font-size: 14px;
+        @include pointer();
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    > .login-div {
+      .login {
+        margin-top: 10pt;
+      }
+
+      > .center-line {
+        margin: 30pt 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > .border-span {
+          border-top: $width-border solid $bg-fog-gray;
+          flex: 1 1 0;
+        }
+
+        > .span-for {
+          flex: 0 0 auto;
+          display: inline-block;
+          font-family: "Kanit-500";
+          font-size: 16px;
+          position: relative;
+          padding: 0 20px;
+        }
+      }
+
+      .button-social {
+        margin-bottom: 10pt;
+      }
+    }
+
+    > .wrapper-footer-login {
+      text-align: center;
+      font-weight: 300;
+      margin-top: 30pt;
+      font-family: "Sarabun-Light";
+      font-size: 16px;
+
+      > .wrapper-register {
+        color: $color-warm-red;
+        font-family: "Kanit-500";
+        font-size: 16px;
+        @include pointer();
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $xxlarge) {
+  .wrapper-login-page {
+    > .background {
+      left: -115pt;
+    }
+  }
+}
+
+@media (max-width: $large) {
+  .wrapper-login-page {
+    > .background {
+      display: none;
+    }
+
+    > .wrapper-box-detail {
+      margin: 50pt auto;
+    }
+  }
+}
+
+@media (max-width: $large) {
+  .wrapper-login-page {
+    > .wrapper-box-detail {
+      margin: 30pt auto 50pt auto;
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .wrapper-login-page {
+  }
+}
+
+@media (max-width: $small) {
+  .wrapper-login-page {
+    min-height: calc(100vh - 39pt);
+
+    > .wrapper-box-detail {
+      width: 80%;
+    }
+  }
+}

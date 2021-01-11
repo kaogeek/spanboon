@@ -1,0 +1,61 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div style="padding: 4%;" class="wrapper">
+    TEST PAGE
+    <br> ///////////// CONFIG //////////////
+    <br>
+    <table style="border: black solid 1px;">
+        <tr style="border: black solid 1px;">
+            <th style="border: black solid 1px;">Name</th>
+            <th style="border: black solid 1px;">ByUsername</th>
+        </tr>
+        <tr style="border: black solid 1px;" *ngFor="let item of configList">
+            <td style="border: black solid 1px;">{{item.name}}</td>
+            <td style="border: black solid 1px;">{{item.createdByUsername}}</td>
+            <td style="border: black solid 1px;"><button (click)="setButtonEdit(item.name)">Edit</button></td>
+            <td style="border: black solid 1px;"><button (click)="deleteConfig(item.name)">Remove</button></td>
+        </tr>
+        <br>
+        <tr style="border: black solid 1px;">
+            <th style="border: black solid 1px;">Name</th>
+            <th style="border: black solid 1px;">ByUsername</th>
+            <th style="border: black solid 1px;">Type</th>
+        </tr>
+        <tr style="border: black solid 1px;">
+            <td style="border: black solid 1px;"> <input type="text" [(ngModel)]="configname"></td>
+            <td style="border: black solid 1px;"> <input type="text" [(ngModel)]="configvalue"></td>
+            <td style="border: black solid 1px;"> <input type="text" [(ngModel)]="configtype"></td>
+        </tr>
+    </table>
+    <button (click)="createConfig()">CREATECONFIG</button>
+    <br> ///////////// HASHTAG //////////////
+    <br>
+    <table style="border: black solid 1px;">
+        <tr style="border: black solid 1px;">
+            <th style="border: black solid 1px;">id</th>
+            <th style="border: black solid 1px;">Name</th>
+            <th style="border: black solid 1px;">Date</th>
+        </tr>
+        <tr style="border: black solid 1px;" *ngFor="let item of hashtagList">
+            <td style="border: black solid 1px;">{{item.id}}</td>
+            <td style="border: black solid 1px;">{{item.name}}</td>
+            <td style="border: black solid 1px;">{{item.lastActiveDate}}</td>
+            <td style="border: black solid 1px;"><button (click)="deleteHashtag(item)">Remove</button></td>
+        </tr>
+        <br>
+        <tr style="border: black solid 1px;">
+            <th style="border: black solid 1px;">Name</th>
+            <th style="border: black solid 1px;">Tag</th>
+        </tr>
+        <tr style="border: black solid 1px;">
+            <td style="border: black solid 1px;"> <input type="text" [(ngModel)]="hashtagname"></td>
+            <td style="border: black solid 1px;"> <input type="text" [(ngModel)]="hashtagTag"></td>
+        </tr>
+        <button (click)="createHashtag()">CREATEHASHTAG</button>
+    </table>
+</div>

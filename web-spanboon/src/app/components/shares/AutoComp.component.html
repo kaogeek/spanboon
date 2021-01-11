@@ -1,0 +1,28 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div style="display: flex;">
+    <mat-form-field appearance="none">
+        <!-- <input #inPut type="text" placeholder="{{title}}" (click)="onClickSearch()" matInput -->
+        <!-- <mat-label>ค้นหา</mat-label> -->
+        <input #inPut type="text" placeholder="{{title}}" matInput [(ngModel)]="autoCompHashTag" name="autoCompHashTag"
+            [formControl]="autoCompControl" [matAutocomplete]="autoComplete" [readonly]="isDisabled">
+        <button mat-button *ngIf="autoComp" matSuffix mat-icon-button aria-label="Clear" (click)="clearAutoComp()">
+            <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete #autoComplete="matAutocomplete" (optionSelected)="selectAutoComp($event.option.value)">
+            <mat-option class="mat-option-progress" *ngIf="isLoading">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </mat-option>
+            <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let option of options" [value]="option">
+                    {{getLabel(option)}}
+                </mat-option>
+            </ng-container>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>

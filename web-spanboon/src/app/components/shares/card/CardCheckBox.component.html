@@ -1,0 +1,91 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="card-checkbox">
+    <div class="header-title">
+        {{title}}
+    </div> 
+    <ng-container *ngIf="isDetail; else elseCheckBox">
+        <div class="wrapper-card">
+            <ng-container *ngFor="let item of data; let i = index" > 
+                <ng-container *ngIf="i <= 4"> 
+                    <div class="card-follow">
+                        <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()"
+                            [(ngModel)]="item.selected" (change)="checkBoxvalue($event, item , i)"> 
+                            <div class="description">
+                                <!-- <div class="top">{{i+1.}} {{item.topic}}</div> -->
+                                <ng-container *ngIf="item.hashTag !== '' "> 
+                                    <div class="middle">{{'#'+item.hashTag}}</div>
+                                </ng-container>
+        
+                                <ng-container *ngIf="item && item.title">
+                                    <div class="trend" [innerHTML]='item.title | highlight'>
+                                    </div>
+                                </ng-container>
+        
+                            </div>
+                        </mat-checkbox>
+                    </div>
+                </ng-container>
+                
+            </ng-container> 
+        </div>
+    </ng-container>
+    <ng-template #elseCheckBox>
+        <div class="wrapper-card">
+            <ng-container *ngFor="let item of data let index = index"> 
+                <!-- <ng-container *ngIf="index <= 4">  -->
+                    <ng-container *ngIf="isMutipleCheckbox; else elseisMutiple">  
+                        <div class="card-follow checkbox" >
+                            <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()" [(ngModel)]="item.selected"
+                                (change)="checkBoxMutiple($event, item , index)">
+                                <ng-container *ngIf="item.name; else elseHashTag">
+                                    <div class="description">
+                                        <div class="middle">{{item.name}}</div>
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseHashTag>
+                                    <div class="description">
+                                        <div class="middle">{{'#'+item.value}}</div>
+                                    </div>
+                                </ng-template>
+                                
+                            </mat-checkbox>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseisMutiple> 
+                        <div class="card-follow checkbox" *ngIf="item.value !== '' " (change)="checkBoxvalue($event, item , index)" >
+                            <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()" [(ngModel)]="item.selected"
+                                (change)="checkBoxvalue($event, item , index)">
+                                <ng-container *ngIf="isObjective; else elseObjective">
+                                    <div class="description">
+                                        <div class="middle">{{'#'+item.hashTag}}</div>
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseObjective>
+                                    <ng-container *ngIf="item.value; else typeDescription">
+                                        <div class="description">
+                                            <div class="middle">{{'#'+item.value}}</div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #typeDescription>
+                                        <div class="description">
+                                            <div class="middle">{{item.name}}</div>
+                                        </div>
+                                    </ng-template>
+                                </ng-template>
+                            </mat-checkbox>
+                        </div>
+                    </ng-template> 
+                <!-- </ng-container> -->
+            </ng-container>
+        </div>
+    </ng-template> 
+    <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)">
+        เพิ่มเติม
+    </div>
+</div>

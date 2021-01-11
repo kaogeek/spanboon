@@ -1,0 +1,1584 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.page-hashtag {
+    min-height: calc(100vh - 55pt);
+    background: $bg-fog-gray2;
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 10px;
+
+        > .page-recommended {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            > .page-recommended-menu {
+                width: 245px;
+                position: sticky;
+                top: 55pt;
+                padding-left: 5px;
+                padding-right: 5px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+
+                > .list-menu {
+                    @include pointer();
+                    padding-top: 7px;
+                    padding-bottom: 7px;
+
+                    > .list-item {
+                        color: $black;
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        align-items: center;
+                        width: max-content;
+                        border-radius: 50px;
+                        padding: 10px;
+
+                        > .icon-setting {
+                            height: 1.75rem;
+                            fill: currentcolor;
+                            user-select: none;
+                        }
+
+                        > .title-setting {
+                            margin: 0 15px;
+                            font-size: 18px;
+                            font-family: "Kanit-500";
+                        }
+                    }
+
+                    &:hover {
+                        > .list-item {
+                            color: $color-warm-red;
+                            background: rgba($color-warm-red, 0.1);
+
+                            > .icon-setting {
+                            }
+                        }
+                    }
+
+                    &.active {
+                        > .list-item {
+                            color: $color-warm-red;
+
+                            > .icon-setting {
+                            }
+                        }
+                    }
+                }
+            }
+            > .slide-left {
+                width: 234pt;
+                position: sticky;
+                top: 55pt;
+                padding-left: 5px;
+                padding-right: 5px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: stretch;
+                > .popup-left {
+                    display: none; 
+                }
+                > .card-checkbox-view {
+                    border: $width-border solid $border-color;
+                    border-radius: $border-radius-4px;
+                    background: $white;
+
+                    > .header-title {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 10pt;
+                        border-bottom: $width-border solid $border-color;
+                        font-size: 18px;
+                        font-family: "Kanit-500";
+                        > .left {
+                            display: flex;
+                            align-items: center;
+                            &:last-of-type {
+                                font-size: 14px;
+                            }
+                            > .mat-slide-toggle {
+                                margin-left: 5pt;
+                            }
+                        }
+                    }
+
+                    > .wrapper-card {
+                        // border-bottom: $width-border solid $border-color;
+                        display: flex;
+                        background-color: $white;
+                        padding: 8pt 10pt;
+                        flex-direction: column;
+                        // > .select-calendar {
+                        //     width: 100%;
+                        //     font-family: "Kanit-500";
+                        //     font-size: 14px;
+                        //     border: 1pt solid $border-color;
+                        //     color: $koalaGray;
+                        //     > .mat-button-wrapper {
+                        //         display: flex;
+                        //         align-items: center;
+                        //     }
+                        // }
+                        > .date-range {
+                            width: 100%;
+                            flex: 1 1 0%;
+                            > .mat-form-field-wrapper {
+                                padding-bottom: 0;
+                                > .mat-form-field-flex {
+                                    display: flex;
+                                    align-items: center;
+                                    > .mat-form-field-infix {
+                                        width: auto;
+                                        padding: 0;
+                                        border-top: 0;
+                                        > .input-date {
+                                            display: flex;
+                                            border-radius: 25px;
+                                            background-color: #fff;
+                                            height: 25pt;
+                                            color: #212721;
+                                            padding: 2pt 10pt 2pt 13pt;
+                                            font-family: "Kanit-500";
+                                            font-size: 14px;
+                                            box-shadow: 0px 1px 9px 0 #00000020;
+                                        }
+                                    }
+                                    > .mat-form-field-suffix {
+                                        > .mat-datepicker-toggle {
+                                            > .mat-icon-button {
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+
+                                                > .mat-button-wrapper {
+                                                    > .mat-datepicker-toggle {
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                > .mat-form-field-underline {
+                                    height: 0px;
+                                    > .mat-form-field-ripple {
+                                        background-color: unset;
+                                        opacity: 0;
+                                    }
+                                }
+                            }
+                        }
+                        > .btn {
+                            display: flex;
+                            align-items: center;
+                            @include pointer();
+                            font-family: "Kanit-300";
+                            font-size: 16px;
+                            color: $koalaGray;
+                            margin-left: 9pt;
+                            width: 50pt;
+                            flex: 0 0 auto;
+                            &:hover {
+                                color: $color-warm-red;
+                            }
+                        }
+
+                        > .card-follow {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 3pt 10pt;
+                            @include pointer();
+
+                            &:hover {
+                                background-color: $background-hover;
+                            }
+
+                            .description {
+                                font-family: "Kanit-500";
+                                margin-left: 6pt;
+                                > .top {
+                                    font-size: 14px;
+                                    color: #a5a5a6;
+                                }
+                                > .middle {
+                                    font-size: 16px;
+                                }
+                                > .trend {
+                                    display: flex;
+                                    font-size: 14px;
+                                    > .count {
+                                    }
+                                    // > .tag {
+                                    //     color: #1b95e0;
+                                    // }
+                                }
+                            }
+
+                            > .wrapper-btn-follow {
+                                > button-follow {
+                                }
+                            }
+                        }
+                        > .header-card {
+                            padding: 4pt 5pt;
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                        }
+                        > .box-slider {
+                            // border: 0.7pt solid $border-color;
+                            padding: 5pt 11pt;
+                            // background-color: #f5f5f5;
+                        }
+                        .ng5-slider {
+                            > .ng5-slider-span {
+                                > .ng5-slider-selection {
+                                    background-color: $color-warm-red;
+                                }
+                                > .ng5-slider[disabled] .ng5-slider-bar {
+                                    background-color: #c4c4c4;
+                                }
+                            }
+                            .ng5-slider-pointer {
+                                background-color: $color-warm-red;
+                                width: 12px;
+                                height: 12px;
+                                top: -5px;
+                                outline: none;
+                            }
+                            .ng5-slider-pointer::after {
+                                position: absolute;
+                                top: -9px;
+                                left: -9px;
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                transform: scale(0);
+                                opacity: 0;
+                                transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                                    background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                                    opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                            }
+                            > .ng5-slider-bubble {
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+                            }
+                            > .ng5-slider-pointer.ng5-slider-active::after {
+                                transform: scale(1);
+                                opacity: 1;
+                                background-color: rgba(255, 64, 129, 0.2);
+                            }
+                        }
+                    }
+                    > .column-date {
+                        flex-direction: unset;
+                    }
+
+                    > .follow-all {
+                        padding: 8pt 15pt;
+                        text-align: center;
+                        color: $color-warm-red;
+                        @include pointer();
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        min-height: 26pt;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                }
+                > .check-left {
+                    margin-top: 5pt;
+                }
+                > card-checkbox {
+                    .card-checkbox {
+                        margin-top: 5pt;
+                    }
+                }
+                > .recommended-right {
+                    display: none;
+                }
+            }
+
+            > .body-recommended {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                width: calc(100% - 245pt);
+
+                > .recommended-left {
+                    // width: calc(100% - 243pt - 5pt);
+                    flex: 1 1 0%;
+                    // max-width: 600px;
+                    margin-right: 5pt;
+                    background: #f5f5f5;
+                    min-width: 243pt;
+
+                    > .feed-body-search {
+                        position: sticky;
+                        top: 55pt;
+                        z-index: 2;
+                        border-left: $width-border solid $border-color;
+                        border-top: $width-border solid $border-color;
+                        border-right: $width-border solid $border-color;
+                        background-color: $white;
+                        margin-bottom: 5pt;
+
+                        > .feed-header-search {
+                            display: flex;
+                            justify-content: stretch;
+                            padding: 0 20pt;
+                            align-items: center;
+                            > .filter {
+                                display: flex;
+                                flex: 1 1 0%;
+                                margin: 15pt 0;
+                                align-items: center;
+                                @include pointer();
+                                > .btn-filter {
+                                    display: none;
+                                }
+                                > .search {
+                                    display: flex;
+                                    width: calc(100% - 40pt);
+                                    border-radius: 25pt;
+                                    background-color: #e6ecf0;
+                                    border: unset;
+                                    flex: 1 1 0%;
+                                    margin-left: 10pt;
+                                    > .icons-search {
+                                        display: flex;
+                                        align-items: center;
+                                        padding-left: 10pt;
+                                    }
+
+                                    > .home-back-left {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        position: absolute;
+                                        top: 19pt;
+                                        left: 8pt;
+                                        border-radius: 50%;
+
+                                        > .home-back {
+                                            height: 15pt;
+                                            width: 15pt;
+                                        }
+
+                                        &:hover {
+                                            background-color: $background-hover;
+                                            width: 25pt;
+                                            height: 25pt;
+                                        }
+                                    }
+
+                                    > .autocomp-search {
+                                        width: 100%;
+                                        padding: 7pt;
+
+                                        div {
+                                            width: 100%;
+
+                                            > .mat-form-field {
+                                                width: 100%;
+
+                                                > .mat-form-field-wrapper {
+                                                    > .mat-form-field-flex {
+                                                        > .mat-form-field-infix {
+                                                            width: 100%;
+
+                                                            > .mat-input-element {
+                                                                width: calc(100% - 35pt);
+                                                                background: url(/../../../assets/img/search.svg);
+                                                                background-repeat: no-repeat;
+                                                                background-position: 12px 9px;
+                                                                background-size: 13pt;
+                                                                border-radius: 25pt;
+                                                                border: unset;
+                                                                height: 27pt;
+                                                                padding-left: 35pt;
+                                                                background-color: rgb(230, 236, 240);
+                                                            }
+                                                        }
+
+                                                        > .mat-form-field-outline {
+                                                            // border-radius: 25pt;
+                                                            //     border: 0.7pt solid;
+                                                            //     height: 23pt;
+                                                        }
+                                                    }
+
+                                                    > .mat-form-field-underline {
+                                                        height: 0px !important;
+
+                                                        > .mat-form-field-ripple {
+                                                            background-color: unset;
+                                                            opacity: 0;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            > .clip-board {
+                                width: 30pt;
+                                flex: 0 0 auto;
+                                margin-left: 10pt;
+                                @include pointer();
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+
+                                &:hover {
+                                    background-color: $background-hover;
+                                }
+
+                                > svg {
+                                    width: 100%;
+                                    // padding: 4pt;
+                                }
+
+                                > .btn {
+                                }
+                            }
+                        }
+                        > .feed-body {
+                            padding: 0 20pt 10pt;
+                            > .mat-chip-list {
+                                > .mat-chip-list-wrapper {
+                                    > .mat-chip-hashtag {
+                                        border: 1pt solid $brandcolor2;
+                                        background-color: #ff001624;
+                                        color: $brandcolor2 !important;
+                                        > .mat-chip-remove {
+                                            color: #c62634 !important;
+                                            opacity: 0.7 !important;
+                                        }
+                                    }
+                                }
+                            }
+                            .mat-chip.mat-standard-chip::after {
+                                background: #0000;
+                            }
+                        }
+                        > .footer-bar {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 0 10pt;
+                            border-bottom: 0.7pt solid $border-color;
+
+                            > .nav-bar-tab {
+                                width: 100%;
+                                flex: 1 1 0%;
+                                > .mat-tab-nav-bar {
+                                    display: flex;
+                                    align-items: center;
+                                    border-bottom: unset;
+                                    > .mat-tab-link-container {
+                                        > .mat-tab-list {
+                                            > .mat-tab-links {
+                                                > .mat-tab-link {
+                                                    min-width: auto;
+                                                    @include font-size-8-100("Kanit-400");
+                                                    font-weight: bold;
+                                                    opacity: 1;
+
+                                                    &:hover {
+                                                        color: $color-warm-red;
+                                                        background: rgba($color-warm-red, 0.1);
+                                                    }
+                                                }
+
+                                                > .mat-tab-label-active {
+                                                    color: $color-warm-red;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            > .sorting {
+                                flex: 0 0 auto;
+                                > .menu-sorting {
+                                    height: 20pt;
+                                    border: 0.7pt solid $border-color;
+                                    font-family: "Kanit-400";
+                                    font-size: 16px;
+                                    &:hover {
+                                        color: $color-warm-red;
+                                        background: rgba($color-warm-red, 0.1);
+                                        svg,
+                                        g,
+                                        path {
+                                            fill: $color-warm-red;
+                                        }
+                                    }
+                                    > .mat-button-wrapper {
+                                        display: flex;
+                                        align-items: center;
+                                        > .box-sorting {
+                                            padding-left: 5pt;
+                                            > .sorting-name {
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    > .wrapper-feed-card {
+                        position: relative;
+                        z-index: 1;
+                        background-color: white;
+                        border-left: $width-border solid $border-color;
+                        border-right: $width-border solid $border-color;
+
+                        > .feed-post-card {
+                            display: flex;
+                            width: calc(100% - 20pt);
+                            height: 100%;
+                            padding: 10pt;
+                            border-bottom: $width-border solid $border-color;
+                            border-top: $width-border solid $border-color;
+                            @include pointer();
+                            &:hover {
+                                background-color: $background-hover;
+                            }
+                            > .wrapper-card-top {
+                                margin-right: 10pt;
+
+                                > .com-img {
+                                    height: 37pt;
+                                    width: 37pt;
+                                    border-radius: 50%;
+                                    position: relative;
+                                    overflow: hidden;
+
+                                    > .image-user {
+                                        width: 100%;
+                                        height: 100%;
+                                    }
+
+                                    &:hover {
+                                        &::after {
+                                            content: "";
+                                            position: absolute;
+                                            top: 0;
+                                            left: 0;
+                                            width: 100%;
+                                            height: 100%;
+                                            background: rgba($black, 0.2);
+                                        }
+                                    }
+                                }
+                            }
+
+                            > .wrapper-body-card {
+                                display: flex;
+                                flex-direction: column;
+
+                                > .card-header-top {
+                                    > .profile-name {
+                                        > .profile-page {
+                                            display: inline-block;
+
+                                            > .page-user {
+                                                &:hover {
+                                                    text-decoration: underline;
+                                                }
+                                            }
+
+                                            > .page-user-name {
+                                                padding: 0 5pt;
+                                                color: $koalaGray;
+                                                &:hover {
+                                                    text-decoration: underline;
+                                                }
+                                            }
+                                        }
+
+                                        > .feed-date-time {
+                                            &:hover {
+                                                text-decoration: underline;
+                                            }
+                                        }
+                                    }
+
+                                    > .post-description {
+                                    }
+                                }
+                                > .card-body-post {
+                                    padding: 15pt 0 0;
+
+                                    > .post-image {
+                                        border: $width-border solid $border-color;
+
+                                        > .feed-img {
+                                            width: 100%;
+                                            height: 100%;
+                                            background-color: $white;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    > .feed-none-post {
+                        text-align: center;
+                        padding: 20pt 0;
+                        @include font-size-7-100("Kanit-500");
+                    }
+
+                    > .wrapper-body-middle {
+                        position: relative;
+                        padding-bottom: 140px;
+
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            left: 0;
+                            min-height: calc(100vh - 55pt);
+                            z-index: 1;
+                            border-left: 0.5px solid #e5e5e5;
+                        }
+
+                        &::after {
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            right: 0;
+                            min-height: calc(100vh - 55pt);
+                            z-index: 1;
+                            border-right: 0.5px solid #e5e5e5;
+                        }
+
+                        > .header-top-name {
+                            padding: 15pt;
+                            border-top: 0.5px solid #e5e5e5;
+                            border-bottom: 0.5px solid #e5e5e5;
+                            font-size: 18px;
+                            font-family: "Kanit-500";
+                            background: $white;
+                            position: sticky;
+                            top: 55pt;
+                        }
+
+                        > .wrapper-body-trend {
+                            background-color: $white;
+                            padding: 10px 15px;
+                            border-bottom: 0.5px solid #e5e5e5;
+                            @include pointer();
+
+                            &:hover {
+                                background-color: $background-hover;
+                            }
+
+                            > .trend-title {
+                                // @include font-size-10-100("Kanit-400");
+                                font-family: "Kanit-400";
+                                font-size: 16px;
+                                color: $koalaGray;
+                            }
+
+                            > .trend-hashtag {
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+                                color: $black;
+                            }
+
+                            > .trend-hashtag-count {
+                                margin-top: 5px;
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+                                color: $koalaGray;
+                            }
+                        }
+
+                        > .read-more {
+                            @include pointer();
+                            padding: 15px;
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: $brandcolor2;
+
+                            &:hover {
+                                background-color: $background-hover;
+                            }
+                        }
+                    }
+                }
+            }
+            .recommended-right {
+                width: 234pt;
+                position: sticky;
+                top: 55pt;
+                margin-bottom: 10pt;
+                > .side-follow {
+                    > .box-right {
+                        border-radius: 4px;
+                        overflow: hidden;
+                        border: $width-border solid $border-color;
+                        border-radius: 4px;
+                        margin-bottom: 5pt;
+                        background-color: white;
+
+                        &:last-child {
+                            display: none;
+                        }
+
+                        > .wrapper-filter {
+                            // padding-bottom: 30pt;
+
+                            > .wrapper-filter-name {
+                                padding: 10pt;
+                                border-bottom: $width-border solid $border-color;
+                                font-size: 18px;
+                                font-family: "Kanit-500";
+                            }
+
+                            > .body-filter {
+                                padding: 10pt;
+                                border-bottom: $width-border solid $border-color;
+
+                                > .checkbox-filter {
+                                    display: flex;
+                                    flex-direction: column;
+
+                                    > .header-name {
+                                        font-size: 16px;
+                                        font-family: "Kanit-500";
+                                    }
+
+                                    > .mat-radio-group {
+                                        display: flex;
+                                        flex-direction: column;
+
+                                        > .mat-radio-button {
+                                            > .mat-radio-label {
+                                                padding: 3pt 0;
+                                                display: flex;
+                                                flex-direction: row-reverse;
+                                                justify-content: space-between;
+                                                align-items: center;
+                                                font-family: "Kanit-500";
+                                                font-size: 16px;
+                                                color: rgba($black, 0.6);
+
+                                                > .mat-radio-container {
+                                                    > .mat-radio-ripple,
+                                                    > .mat-ripple {
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            > .footer-more {
+                                padding: 10pt;
+                                font-size: 18px;
+                                font-family: "Kanit-500";
+
+                                > .search-page {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    padding: 9pt 0;
+                                    align-items: center;
+                                    > .rigth {
+                                        display: flex;
+                                        align-items: center;
+                                        border: 1px solid $border-color;
+                                        border-radius: 4px;
+                                        padding: 0 7pt;
+                                        height: 26pt;
+                                        flex: 1 1 0%;
+                                        margin-right: 5pt;
+                                        > .input-data {
+                                            font-family: "Kanit-400";
+                                            font-size: 16px;
+                                        }
+                                        > .autocomp-close {
+                                            @include pointer();
+                                        }
+                                    }
+                                    // > .btn {
+                                    //     width: 50pt;
+                                    //     flex: 0 0 auto;
+                                    // }
+                                    > .btn {
+                                        display: flex;
+                                        align-items: center;
+                                        @include pointer();
+                                        font-family: "Kanit-300";
+                                        font-size: 16px;
+                                        color: $koalaGray;
+                                        margin-left: 9pt;
+                                        width: 50pt;
+                                        flex: 0 0 auto;
+                                        &:hover {
+                                            color: $color-warm-red;
+                                        }
+                                    }
+                                }
+                                > .card-page {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    padding: 5pt;
+                                    margin-bottom: 5pt;
+                                    border: 0.7px solid $border-color;
+                                    > .left {
+                                        display: flex;
+                                        align-items: center;
+
+                                        > .page-img {
+                                            width: 30pt;
+                                            height: 30pt;
+                                            border-radius: 50%;
+                                            object-fit: cover;
+                                        }
+                                        > .not-image {
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background-color: $color-warm-red;
+                                            font-family: "Kanit-500";
+                                            font-size: 14px;
+                                            color: $white;
+                                        }
+
+                                        > .page-name {
+                                            margin-left: 5pt;
+                                            > .top {
+                                                font-family: "Kanit-500";
+                                                font-size: 16px;
+                                            }
+                                            > .page-username {
+                                                color: $koalaGray;
+                                                font-family: "Kanit-500";
+                                                font-size: 16px;
+                                            }
+                                        }
+                                    }
+                                    > .material-icons {
+                                        @include pointer();
+                                    }
+                                }
+                            }
+                        }
+
+                        > .lable-follow {
+                            padding: 10pt;
+                            border-bottom: $width-border solid $border-color;
+                            background-color: $white;
+                            font-family: "Kanit-500";
+                            font-size: 18px;
+                        }
+                        > .wrapper-card {
+                            background-color: $white;
+                            > .card-follow {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 3pt 10pt;
+                                @include pointer();
+                                &:hover {
+                                    background-color: $background-hover;
+                                }
+                                > .follow {
+                                    display: flex;
+                                    padding: 5pt 0;
+                                    align-items: center;
+                                    > .img-user {
+                                        width: 40pt;
+                                        height: 40pt;
+                                        border-radius: 50%;
+                                        object-fit: cover;
+                                    }
+                                    > .list-follow-name {
+                                        margin-left: 5pt;
+                                        > .follow-name {
+                                            font-family: "Kanit-500";
+                                            font-size: 14px;
+                                        }
+                                        > .follow-name-eng {
+                                            font-family: "Kanit-400";
+                                            font-size: 14px;
+                                            color: $koalaGray;
+                                        }
+                                    }
+                                }
+                                > .wrapper-btn-follow {
+                                    > .btn-follow {
+                                    }
+                                }
+                            }
+                            > .follow-all {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                padding: 8pt 15pt;
+                                text-align: center;
+                                color: $color-warm-red;
+                                min-height: 26pt;
+                                border-top: $width-border solid $border-color;
+                                @include pointer();
+                                font-size: 16px;
+                                font-family: "Kanit-500";
+                            }
+                        }
+                        > .wrapper-matter {
+                            // border-bottom: $width-border solid $border-color;
+                            background-color: $white;
+                            margin-top: 5pt;
+                            > .body-matter {
+                                padding: 10pt;
+                                margin-top: 5pt;
+                                border-bottom: $width-border solid $border-color;
+                                font-size: 18px;
+                                font-family: "Kanit-500";
+                            }
+                            > .item-all {
+                                color: $color-warm-red;
+                                padding: 10pt;
+                                text-align: center;
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+                                @include pointer();
+                            }
+                        }
+                    }
+                    > card-checkbox {
+                        .card-checkbox {
+                            margin-top: 5pt;
+                        }
+                    }
+
+                    > .hashtag-all {
+                        border-radius: 4px;
+                        overflow: hidden;
+                        position: relative;
+                        background-color: #f5f8fa;
+                        margin-bottom: 5pt;
+                        border: $width-border solid $border-color;
+
+                        > .header-top-name {
+                            // font-size: 18px;
+                            font-family: "Kanit-500";
+                            font-size: 18px;
+                            font-family: "Kanit-500";
+                            width: calc(100% - 20pt);
+                            padding: 10pt;
+                            border-radius: 4px;
+                            border-bottom: 0.7px solid $border-color;
+                        }
+                        > .wrapper-body-trend {
+                            padding: 10pt;
+                            @include pointer();
+                            &:hover {
+                                background-color: $background-hover;
+                                border-radius: 8pt;
+                            }
+                            > .trend-hashtag {
+                                font-family: "Kanit-400";
+                                font-size: 14px;
+                            }
+                            > .trend-hashtag-count {
+                                color: $koalaGray;
+                                font-family: "Kanit-500";
+                                font-size: 14px;
+                            }
+                        }
+                    }
+                    // >.lable-follow {
+                    //     border-top: $width-border solid $border-color;
+                    // }
+                }
+
+                > .div-follow {
+                    border: $width-border solid $border-color;
+                    border-radius: $border-radius-4px;
+                    background: $white;
+
+                    > .head-follow {
+                        padding: 15pt;
+                        border-bottom: $width-border solid $border-color;
+                        font-size: 18px;
+                        font-family: "Kanit-500";
+                    }
+
+                    > .wrapper-card {
+                        border-bottom: $width-border solid $border-color;
+                        background-color: $white;
+
+                        > .card-follow {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 3pt 10pt;
+                            @include pointer();
+
+                            &:hover {
+                                background-color: $background-hover;
+                            }
+
+                            > .follow {
+                                display: flex;
+                                padding: 5pt 0;
+                                align-items: center;
+
+                                > .img-user {
+                                    width: 40pt;
+                                    height: 40pt;
+                                    border-radius: 50%;
+                                    object-fit: cover;
+                                }
+
+                                > .list-follow-name {
+                                    margin-left: 5pt;
+
+                                    > .follow-name {
+                                        font-family: "Kanit-500";
+                                        font-size: 14px;
+
+                                        > .img-icon {
+                                            width: 12pt;
+                                            height: 12pt;
+                                        }
+                                    }
+
+                                    > .follow-name-eng {
+                                        font-family: "Kanit-500";
+                                        font-size: 14px;
+                                        color: $koalaGray;
+                                    }
+                                }
+                            }
+
+                            > .wrapper-btn-follow {
+                                > button-follow {
+                                }
+                            }
+                        }
+                    }
+
+                    > .follow-all {
+                        padding: 8pt 15pt;
+                        text-align: center;
+                        color: $color-warm-red;
+                        @include pointer();
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        min-height: 26pt;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                } 
+            }
+        }
+    }
+}
+page-hashtag {
+    .backdrop {
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.32);
+    }
+}
+.mat-autocomplete-panel {
+    > .img-users {
+        > .mat-option-text {
+            > .list-autocomp {
+                display: flex;
+                align-items: center;
+                > .img {
+                    height: 25pt;
+                    width: 25pt;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+                > .not-image {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: $color-warm-red;
+                    font-family: "Kanit-500";
+                    font-size: 14px;
+                    color: $white;
+                }
+                > .show-name {
+                    flex: 1 1 0%;
+                    padding-left: 5pt;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-all;
+                }
+            }
+        }
+    }
+}
+
+.cdk-overlay-container {
+    .mat-menu-content {
+        > .select-by-name {
+            font-family: "Kanit-500";
+            font-size: 18px;
+            padding: 10pt;
+            border-bottom: 0.7pt solid $border-color;
+        }
+        > .list-sort {
+            font-family: "Kanit-500";
+            font-size: 16px;
+            padding: 0 18pt;
+            > .select-name {
+                &.active {
+                    color: $color-warm-red;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .page-hashtag {
+        .container {
+            > .page-recommended {
+                > .slide-left {  
+                }
+                > .body-recommended {
+                    > .recommended-left {
+                        // width: calc(100% - 250pt - 5pt);
+                        > .feed-body-search {
+                            > .footer-bar {
+                                > .sorting {
+                                    > .menu-sorting {
+                                        > .mat-button-wrapper {
+                                            > .box-sorting {
+                                                display: none;
+                                            }
+                                        }
+                                    }
+                                }
+                                > .nav-bar-tab {
+                                    // width: 240pt;
+                                }
+                            }
+                        }
+                    }
+
+                    > .recommended-right {
+                        width: calc(250pt - 10px);
+                    }
+                }
+            }
+        }
+    }
+}
+@media (max-width: $xlarge) {
+    .page-hashtag {
+        .container {
+            max-width: 991px;
+            > .page-recommended {
+                justify-content: center;
+                > .slide-left {
+                    display: flex;
+                    position: fixed;
+                    bottom: 0;
+                    z-index: 999;
+                    background-color: white;  
+                    visibility: hidden;
+                    overflow-y: auto;
+                    left: 0;
+                    transition: all 0.3s ease;
+                    transform: translate3d(-100%, 0, 0);
+                    &.active {
+                        visibility: visible;
+                        transform: none;
+                        height: unset;
+                        top: 55pt;
+                    }
+                    > .recommended-right {
+                        display: block;
+                        width: unset;
+                        margin-top: 5pt;
+                        position: relative;
+                        top: 0;
+                        margin-bottom: 0;
+                    }
+                }
+                > .menu-rreload-card {
+                    display: none;
+                }
+
+                .page-recommended-menu {
+                    width: 88px;
+                    align-items: center;
+
+                    > .list-menu {
+                        > .list-item {
+                            > .title-setting {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+                > .body-recommended {
+                    max-width: 600px;
+                    > .recommended-left {
+                        > .feed-body-search {
+                            > .feed-header-search {
+                                > .filter {
+                                    > .btn-filter {
+                                        display: flex;
+                                        padding: 5pt;
+                                        &:hover {
+                                            background-color: $background-hover;
+                                        }
+                                    }
+                                }
+                            }
+                            > .footer-bar {
+                                > .sorting {
+                                    > .menu-sorting {
+                                        > .mat-button-wrapper {
+                                            > .box-sorting {
+                                            }
+                                        }
+                                    }
+                                }
+                                > .nav-bar-tab {
+                                    // width: 220pt;
+                                }
+                            }
+                        }
+                    }
+                    > .recommended-right {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+@media (max-width: $large) {
+    .page-hashtag {
+        .container {
+            > .page-recommended {
+                > .popup-left {
+                    display: flex; 
+                    &.active {
+                    }
+                } 
+
+                > .page-recommended-menu {
+                    width: 68px;
+                }
+
+                > .body-recommended {
+                    > .recommended-left {
+                        // width: 100%;
+                        > .feed-body-search {
+                            > .footer-bar {
+                                > .nav-bar-tab {
+                                }
+                                > .sorting {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+
+                    > .recommended-right {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .page-hashtag {
+        .container {
+            max-width: 768px;
+            padding: 0;
+            > .page-recommended {
+                > .body-recommended {
+                    width: 100%;
+                    > .recommended-left {
+                        margin-right: unset;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .page-hashtag {
+        .container {
+            > .page-recommended {
+                > .slide-left {
+                    &.active {
+                        // height: calc(100% - 95pt);
+                        // bottom: 40pt;
+                    }
+                }
+                > .body-recommended {
+                    width: 100%;
+                    > .recommended-left {
+                        > .feed-body-search {
+                            > .footer-bar {
+                                > .nav-bar-tab {
+                                    // width: 230pt;
+                                }
+                                > .sorting {
+                                    display: none;
+                                }
+                            }
+                        }
+                        > .wrapper-body-middle {
+                            padding-bottom: 100px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // .page-hashtag {
+    //     .container {
+    //         > .page-recommended {
+    //             > .slide-left {
+    //                 transform: translate3d(-100%, -19pt, 0);
+    //                 &.active {
+    //                     // top: 55pt;
+    //                     width: calc(100% - 10px);
+    //                     // height: calc(100% - 55pt);
+    //                     // bottom: 0;
+    //                 }
+    //                 > .popup-left {
+    //                     position: sticky;
+    //                     top: 0; 
+    //                     background: white;
+    //                     z-index: 99;
+    //                     display: flex;
+    //                     justify-content: space-between;
+    //                     align-items: center;
+    //                     // height: 35pt;
+    //                     > .home-left {
+    //                         display: flex;
+    //                         align-items: center;
+    //                         justify-content: center;
+    //                         height: 40px;
+    //                         width: 40px;
+    //                         overflow: unset;
+    //                         border-radius: 50%;
+    //                         background: $bg-grey;
+    //                         margin-right: 5pt;
+    //                         @include pointer();
+    //                         > .home-back {
+    //                             width: 20px;
+    //                             height: 20px;
+    //                         }
+    //                     }
+    //                     > .text {
+    //                         color: $color-warm-red;
+    //                         @include pointer();
+    //                         &:hover {
+    //                             text-decoration: underline;
+    //                         }
+    //                     }
+    //                 }
+    //                 > .recommended-right {
+    //                     > .side-follow {
+    //                         > .box-right {
+    //                             &:last-child {
+    //                                 display: none;
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             > .page-recommended-menu {
+    //                 top: 0;
+    //             }
+    //             > .body-recommended {
+    //                 > .recommended-left {
+    //                     > .feed-body-search {
+    //                         top: 39pt;
+    //                         > .feed-header-search {
+    //                             padding: 0 8pt;
+    //                             > .filter {
+    //                                 margin: 6pt 0;
+    //                             }
+    //                             > .clip-board {
+    //                                 margin-left: unset;
+    //                             }
+    //                         }
+    //                         > .feed-body {
+    //                             padding: 0 8pt 5pt;
+    //                         }
+    //                         > .footer-bar {
+    //                             padding: 0 8pt;
+    //                             > .nav-bar-tab {
+    //                                 > .mat-tab-nav-bar {
+    //                                     > .mat-tab-link-container {
+    //                                         > .mat-tab-list {
+    //                                             > .mat-tab-links {
+    //                                                 > .mat-tab-link {
+    //                                                     font-family: "Kanit-500";
+    //                                                     font-size: 16px;
+    //                                                 }
+    //                                             }
+    //                                         }
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                     > .wrapper-body-middle {
+    //                         > .header-top-name {
+    //                             top: 0pt;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+@media (max-width: $small) {
+    .page-hashtag {
+        min-height: calc(100vh - 39pt);
+        .container {
+            > .page-recommended {
+                > .slide-left { 
+                    transform: translate3d(-100%, -32pt, 0);
+                    &.active {
+                        top: 39pt;
+                        width: calc(100% - 10px);  
+                        // bottom: 0;
+                    }
+                    > .popup-left {
+                        position: sticky;
+                        top: 0;
+                        margin-bottom: 5pt;
+                        background: white;
+                        z-index: 99;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center; 
+                        padding: 16pt 10pt;  
+                        
+                        > .home-left {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 40px;
+                            width: 40px;
+                            overflow: unset;
+                            border-radius: 50%;
+                            background: $bg-grey;
+                            margin-right: 5pt;
+                            @include pointer();
+                            > .home-back {
+                                width: 20px;
+                                height: 20px;
+                            }
+                        }
+                        > .text {
+                            color: $color-warm-red;
+                            @include pointer();
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                    > .recommended-right {
+                        > .side-follow {
+                            > .box-right {
+                                &:last-child {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+                > .page-recommended-menu {
+                    top: 0;
+                }
+                > .body-recommended {
+                    > .recommended-left {
+                        > .feed-body-search {
+                            top: 39pt;
+                            > .feed-header-search {
+                                padding: 0 8pt;
+                                > .filter {
+                                    margin: 6pt 0;
+                                }
+                                > .clip-board {
+                                    margin-left: unset;
+                                }
+                            }
+                            > .feed-body {
+                                padding: 0 8pt 5pt;
+                            }
+                            > .footer-bar {
+                                padding: 0 8pt;
+                                > .nav-bar-tab {
+                                    > .mat-tab-nav-bar {
+                                        > .mat-tab-link-container {
+                                            > .mat-tab-list {
+                                                > .mat-tab-links {
+                                                    > .mat-tab-link {
+                                                        font-family: "Kanit-500";
+                                                        font-size: 16px;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        > .wrapper-body-middle {
+                            > .header-top-name {
+                                top: 0pt;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

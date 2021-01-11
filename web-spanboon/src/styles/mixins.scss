@@ -1,0 +1,1599 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+@mixin text-limit() {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+@mixin pointer { 
+    cursor: pointer;
+    -webkit-user-select: none;
+    /* Safari 3.1+ */
+    -moz-user-select: none;
+    /* Firefox 2+ */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Standard syntax */ 
+}
+
+
+// 1.font
+@mixin font-size-1-100($font-family) {
+    font-size: $font-size-1;
+    font-family: $font-family;
+    
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-1 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-1 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-1 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-1 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-1 - 12px;
+    }
+}
+
+@mixin font-size-2-100($font-family) {
+    font-size: $font-size-2;
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-2 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-2 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-2 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-2 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-2 - 12px;
+    }
+}
+
+@mixin font-size-3-100($font-family) {
+    font-size: $font-size-3;
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-3 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-3 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-3 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-3 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-1 - 12px;
+    }
+}
+
+@mixin font-size-4-100($font-family) {
+    font-size: $font-size-4;
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-4 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-4 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-4 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-4 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-4 - 12px;
+    }
+}
+
+@mixin font-size-5-100($font-family) {
+    font-size: $font-size-5;
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-5 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-5 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-5 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-5 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-5 - 12px;
+    }
+}
+
+@mixin font-size-6-100($font-family) {
+    font-size: $font-size-6;
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-6 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-6 - 4px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-6 - 6px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-6 - 8px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-6 - 12px;
+    }
+}
+
+@mixin font-size-7-100($font-family) {
+    font-size: $font-size-7;
+
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-7 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-7 - 3px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-7 - 4px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-7 - 5px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-7 - 7px;
+    }
+}
+
+@mixin font-size-8-100($font-family) {
+    font-size: $font-size-8;
+
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-8 - 2px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-8 - 3px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-8 - 4px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-8 - 5px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-8 - 6px;
+    }
+}
+
+@mixin font-size-9-100($font-family) {
+    font-size: $font-size-9;
+
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-9 - 1px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-9 - 2px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-9 - 3px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-9 - 4px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-9 - 5px;
+    }
+}
+
+@mixin font-size-10-100($font-family) {
+    font-size: $font-size-10;
+
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-10 - 1px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-10 - 2px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-10 - 3px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-10 - 4px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-10 - 5px;
+    }
+}
+
+@mixin font-size-11-100($font-family) {
+    font-size: $font-size-11;
+
+    font-family: $font-family;
+
+    @media (max-width: $xxlarge) {
+        font-size: $font-size-11 - 1px;
+    }
+
+    @media (max-width: $xlarge) {
+        font-size: $font-size-11 - 2px;
+    }
+
+    @media (max-width: $large) {
+        font-size: $font-size-11 - 3px;
+    }
+
+    @media (max-width: $medium) {
+        font-size: $font-size-11 - 4px;
+    }
+
+    @media (max-width: $small) {
+        font-size: $font-size-11 - 5px;
+    }
+}
+
+// -----------------------------------------
+
+// @mixin font-size-1-200 {
+//     font-size: $font-size-1;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-1 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-1 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-1 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-1 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-1 - 12px;
+//     }
+// }
+
+// @mixin font-size-2-200 {
+//     font-size: $font-size-2;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-2 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-2 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-2 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-2 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-2 - 12px;
+//     }
+// }
+
+// @mixin font-size-3-200 {
+//     font-size: $font-size-3;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-3 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-3 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-3 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-3 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-3 - 12px;
+//     }
+// }
+
+// @mixin font-size-4-200 {
+//     font-size: $font-size-4;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-4 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-4 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-4 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-4 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-4 - 12px;
+//     }
+// }
+
+// @mixin font-size-5-200 {
+//     font-size: $font-size-5;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-5 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-5 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-5 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-5 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-5 - 12px;
+//     }
+// }
+
+// @mixin font-size-6-200 {
+//     font-size: $font-size-6;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-6 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-6 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-6 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-6 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-6 - 12px;
+//     }
+// }
+
+// @mixin font-size-7-200 {
+//     font-size: $font-size-7;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-7 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-7 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-7 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-7 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-7 - 6px;
+//     }
+// }
+
+// @mixin font-size-8-200 {
+//     font-size: $font-size-8;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-8 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-8 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-8 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-8 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-8 - 6px;
+//     }
+// }
+
+// @mixin font-size-9-200 {
+//     font-size: $font-size-9;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-9 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-9 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-9 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-9 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-9 - 5px;
+//     }
+// }
+
+// @mixin font-size-10-200 {
+//     font-size: $font-size-10;
+//     font-family: 'sukhumvitset200' , 'prompt200' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-10 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-10 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-10 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-10 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-10 - 5px;
+//     }
+// }
+
+// // -----------------------------------------
+
+// @mixin font-size-1-300 {
+//     font-size: $font-size-1;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-1 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-1 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-1 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-1 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-1 - 12px;
+//     }
+// }
+
+// @mixin font-size-2-300 {
+//     font-size: $font-size-2;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-2 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-2 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-2 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-2 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-2 - 12px;
+//     }
+// }
+
+// @mixin font-size-3-300 {
+//     font-size: $font-size-3;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-3 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-3 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-3 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-3 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-3 - 12px;
+//     }
+// }
+
+// @mixin font-size-4-300 {
+//     font-size: $font-size-4;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-4 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-4 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-4 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-4 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-4 - 12px;
+//     }
+// }
+
+// @mixin font-size-5-300 {
+//     font-size: $font-size-5;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-5 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-5 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-5 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-5 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-5 - 12px;
+//     }
+// }
+
+// @mixin font-size-6-300 {
+//     font-size: $font-size-6;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-6 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-6 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-6 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-6 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-6 - 12px;
+//     }
+// }
+
+// @mixin font-size-7-300 {
+//     font-size: $font-size-7;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-7 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-7 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-7 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-7 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-7 - 6px;
+//     }
+// }
+
+// @mixin font-size-8-300 {
+//     font-size: $font-size-8;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-8 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-8 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-8 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-8 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-8 - 6px;
+//     }
+// }
+
+// @mixin font-size-9-300 {
+//     font-size: $font-size-9;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-9 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-9 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-9 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-9 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-9 - 5px;
+//     }
+// }
+
+// @mixin font-size-10-300 {
+//     font-size: $font-size-10;
+//     font-family: 'sukhumvitset300' , 'prompt300' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-10 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-10 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-10 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-10 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-10 - 5px;
+//     }
+// }
+
+// // -----------------------------------------
+
+// @mixin font-size-1-400 {
+//     font-size: $font-size-1;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-1 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-1 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-1 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-1 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-1 - 12px;
+//     }
+// }
+
+// @mixin font-size-2-400 {
+//     font-size: $font-size-2;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-2 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-2 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-2 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-2 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-2 - 12px;
+//     }
+// }
+
+// @mixin font-size-3-400 {
+//     font-size: $font-size-3;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-3 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-3 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-3 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-3 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-3 - 12px;
+//     }
+// }
+
+// @mixin font-size-4-400 {
+//     font-size: $font-size-4;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-4 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-4 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-4 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-4 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-4 - 12px;
+//     }
+// }
+
+// @mixin font-size-5-400 {
+//     font-size: $font-size-5;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-5 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-5 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-5 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-5 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-5 - 12px;
+//     }
+// }
+
+// @mixin font-size-6-400 {
+//     font-size: $font-size-6;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-6 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-6 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-6 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-6 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-6 - 12px;
+//     }
+// }
+
+// @mixin font-size-7-400 {
+//     font-size: $font-size-7;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-7 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-7 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-7 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-7 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-7 - 6px;
+//     }
+// }
+
+// @mixin font-size-8-400 {
+//     font-size: $font-size-8;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-8 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-8 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-8 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-8 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-8 - 6px;
+//     }
+// }
+
+// @mixin font-size-9-400 {
+//     font-size: $font-size-9;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-9 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-9 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-9 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-9 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-9 - 5px;
+//     }
+// }
+
+// @mixin font-size-10-400 {
+//     font-size: $font-size-10;
+//     font-family: 'sukhumvitset400' , 'prompt400' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-10 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-10 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-10 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-10 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-10 - 5px;
+//     }
+// }
+
+// // -----------------------------------------
+
+// @mixin font-size-1-500 {
+//     font-size: $font-size-1;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-1 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-1 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-1 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-1 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-1 - 12px;
+//     }
+// }
+
+// @mixin font-size-2-500 {
+//     font-size: $font-size-2;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-2 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-2 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-2 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-2 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-2 - 12px;
+//     }
+// }
+
+// @mixin font-size-3-500 {
+//     font-size: $font-size-3;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-3 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-3 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-3 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-3 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-3 - 12px;
+//     }
+// }
+
+// @mixin font-size-4-500 {
+//     font-size: $font-size-4;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-4 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-4 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-4 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-4 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-4 - 12px;
+//     }
+// }
+
+// @mixin font-size-5-500 {
+//     font-size: $font-size-5;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-5 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-5 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-5 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-5 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-5 - 12px;
+//     }
+// }
+
+// @mixin font-size-6-500 {
+//     font-size: $font-size-6;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-6 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-6 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-6 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-6 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-6 - 12px;
+//     }
+// }
+
+// @mixin font-size-7-500 {
+//     font-size: $font-size-7;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-7 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-7 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-7 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-7 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-7 - 6px;
+//     }
+// }
+
+// @mixin font-size-8-500 {
+//     font-size: $font-size-8;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-8 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-8 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-8 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-8 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-8 - 6px;
+//     }
+// }
+
+// @mixin font-size-9-500 {
+//     font-size: $font-size-9;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-9 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-9 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-9 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-9 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-9 - 5px;
+//     }
+// }
+
+// @mixin font-size-10-500 {
+//     font-size: $font-size-10;
+//     font-family: 'sukhumvitset500' , 'prompt500' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-10 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-10 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-10 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-10 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-10 - 5px;
+//     }
+// }
+
+// // -----------------------------------------
+
+// @mixin font-size-1-600 {
+//     font-size: $font-size-1;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-1 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-1 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-1 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-1 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-1 - 12px;
+//     }
+// }
+
+// @mixin font-size-2-600 {
+//     font-size: $font-size-2;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-2 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-2 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-2 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-2 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-2 - 12px;
+//     }
+// }
+
+// @mixin font-size-3-600 {
+//     font-size: $font-size-3;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-3 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-3 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-3 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-3 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-3 - 12px;
+//     }
+// }
+
+// @mixin font-size-4-600 {
+//     font-size: $font-size-4;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-4 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-4 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-4 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-4 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-4 - 12px;
+//     }
+// }
+
+// @mixin font-size-5-600 {
+//     font-size: $font-size-5;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-5 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-5 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-5 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-5 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-5 - 12px;
+//     }
+// }
+
+// @mixin font-size-6-600 {
+//     font-size: $font-size-6;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-6 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-6 - 4px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-6 - 6px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-6 - 8px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-6 - 12px;
+//     }
+// }
+
+// @mixin font-size-7-600 {
+//     font-size: $font-size-7;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-7 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-7 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-7 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-7 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-7 - 6px;
+//     }
+// }
+
+// @mixin font-size-8-600 {
+//     font-size: $font-size-8;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-8 - 2px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-8 - 3px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-8 - 4px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-8 - 5px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-8 - 6px;
+//     }
+// }
+
+// @mixin font-size-9-600 {
+//     font-size: $font-size-9;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-9 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-9 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-9 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-9 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-9 - 5px;
+//     }
+// }
+
+// @mixin font-size-10-600 {
+//     font-size: $font-size-10;
+//     font-family: 'sukhumvitset600' , 'prompt600' , sans-serif;
+
+//     @media (max-width: $xxlarge) {
+//         font-size: $font-size-10 - 1px;
+//     }
+
+//     @media (max-width: $xlarge) {
+//         font-size: $font-size-10 - 2px;
+//     }
+
+//     @media (max-width: $large) {
+//         font-size: $font-size-10 - 3px;
+//     }
+
+//     @media (max-width: $medium) {
+//         font-size: $font-size-10 - 4px;
+//     }
+
+//     @media (max-width: $small) {
+//         font-size: $font-size-10 - 5px;
+//     }
+// }
+
+// @mixin breakpoint($point) {
+//     @if $point == xxlarge {
+//         @media (max-width: $xxlarge) { @content; }
+//     }
+//     @else if $point == xlarge {
+//         @media (max-width: $xlarge) { @content; }
+//     }
+//     @else if $point == large {
+//         @media (max-width: $large)  { @content; }
+//     }
+//     @else if $point == medium {
+//         @media (max-width: $medium)  { @content; }
+//     }
+//     @else if $point == small {
+//         @media (max-width: $small)  { @content; }
+//     }
+// }
+
+// @mixin container {
+//     max-width: 1440px;
+//     margin: 0 auto; 
+// }
+
+@mixin newcon-container($newcon-container-height: 500pt, $newcon-container-bg-color: $bg-color1) {
+    background-color: $newcon-container-bg-color;
+    width: calc(100% - #{$newcon-container-padding}*2);
+    height: $newcon-container-height;
+    padding: $newcon-container-padding;
+}
+
+@mixin newcon-header {
+    padding-bottom: $newcon-header-padding;
+}

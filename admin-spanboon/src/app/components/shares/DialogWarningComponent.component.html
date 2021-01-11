@@ -1,0 +1,18 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-actions>
+  <ng-container *ngIf="!data.error; else elseTemplate">
+    <button mat-button [mat-dialog-close]="false" cdkFocusInitial>ไม่</button>
+    <button mat-button [mat-dialog-close]="true">ใช่</button>    
+  </ng-container>
+  <ng-template #elseTemplate>
+      <button mat-button [mat-dialog-close]="true">ตกลง</button>        
+  </ng-template>
+  
+</div>

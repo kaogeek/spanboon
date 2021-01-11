@@ -1,0 +1,77 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+display-gallery {
+    .div-image-gallery {
+        > .cover-img {
+            display: flex;
+            width: 100%;
+            // height: 250pt;
+            object-fit: cover;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+        }
+        > .box-sub-image {
+            display: flex;
+            margin-top: 3pt;
+            > .sub-list-image {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: calc(33.52% - 3pt);
+                height: 100pt;
+                object-fit: cover;
+                cursor: pointer;
+                &:nth-child(odd) {
+                    margin: 0 3pt 0 0;
+                }
+                &:nth-child(3n - 1) {
+                    margin: 0 3pt 0 0;
+                }
+                &:nth-child(3n) {
+                    margin: 0 0 0 0;
+                }
+            } 
+            
+            > .wrapper-gallery-more {
+                position: relative;
+                width: calc(33.52% - 3pt);
+                height: 100pt;
+                cursor: pointer;
+                > .sub-list-image {
+                    width: 100%;
+                    height: 100pt;
+                    object-fit: cover;
+                }
+                > .image {
+                    width: 100%;
+                    height: 100pt;
+                    object-fit: cover;
+                }
+                > .image-more {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    @include font-size-8-100("Anakotmai-Medium");
+                    color: $white;
+                    background-color: #000;
+                    opacity: 0.5;
+                }
+            }
+        }
+        .mat-progress-spinner circle,
+        .mat-spinner circle {
+            stroke: $brandcolor2 !important;
+        }
+    }
+}

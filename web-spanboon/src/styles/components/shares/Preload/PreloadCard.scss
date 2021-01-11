@@ -1,0 +1,144 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.preload-card {
+    .div-preload {
+        background: $bg-grey;
+        height: 8pt;
+        border-radius: 10pt;
+        display: inline-block;
+        animation: cardani 5s infinite;
+
+        @keyframes cardani {
+            0% {
+                opacity: 1;
+            }
+            25% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    }
+
+    // .div-preload {
+    //     -webkit-animation-duration: 1s;
+    //     animation-duration: 1s;
+    //     -webkit-animation-fill-mode: forwards;
+    //     animation-fill-mode: forwards;
+    //     -webkit-animation-iteration-count: infinite;
+    //     animation-iteration-count: infinite;
+    //     -webkit-animation-name: placeHolderShimmer;
+    //     animation-name: placeHolderShimmer;
+    //     -webkit-animation-timing-function: linear;
+    //     animation-timing-function: linear;
+    //     background: #f6f7f8;
+    //     background: #eeeeee;
+    //     background: -webkit-gradient(
+    //         linear,
+    //         left top,
+    //         right top,
+    //         color-stop(8%, #eeeeee),
+    //         color-stop(18%, #dddddd),
+    //         color-stop(33%, #eeeeee)
+    //     );
+    //     background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    //     background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    //     -webkit-background-size: 800px 104px;
+    //     background-size: 800px 104px;
+    //     height: 8pt;
+    //     border-radius: 10pt;
+    //     display: inline-block;
+    //     position: relative;
+
+    //     @-webkit-keyframes placeHolderShimmer {
+    //         0% {
+    //             background-position: -468px 0;
+    //             opacity: 1;
+    //         }
+    //         25% {
+    //             opacity: 0.6;
+    //         }
+    //         50% {
+    //             opacity: 0.3;
+    //         }
+    //         75% {
+    //             opacity: 0.6;
+    //         }
+    //         100% {
+    //             background-position: 468px 0;
+    //             opacity: 1;
+    //         }
+    //     }
+
+    //     @keyframes placeHolderShimmer {
+    //         0% {
+    //             background-position: -468px 0;
+    //             opacity: 1;
+    //         }
+    //         25% {
+    //             opacity: 0.6;
+    //         }
+    //         50% {
+    //             opacity: 0.3;
+    //         }
+    //         75% {
+    //             opacity: 0.6;
+    //         }
+    //         100% {
+    //             background-position: 468px 0;
+    //             opacity: 1;
+    //         }
+    //     }
+    // }
+
+    > .postcard {
+        padding: 15pt 20pt;
+        border: $width-border solid $border-color;
+        background-color: $white;
+        margin-bottom: 5pt;
+        border-radius: $border-radius-4px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+
+        &.card-pad{
+            padding: 5pt 10pt;
+        }
+
+        > .post-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            > .left {
+            }
+
+            > .right {
+            }
+        }
+
+        > .post-card-center {
+            margin: 20pt 0;
+        }
+
+        > .post-card-bottom {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+    }
+}

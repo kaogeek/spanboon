@@ -1,0 +1,99 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <ng-container *ngIf="orinalDataForm.name.trim() === ''; else elseTitle">
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        </ng-container>
+                        <ng-template #elseTitle>
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        </ng-template>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>ชื่อ *</label>
+                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name" [ngModelOptions]="{standalone: true}" [disabled]="orinalDataForm.name.trim() !== '' ? true : false">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.name.trim() === ''">
+                                            กรุณาใส่ ชื่อ
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รายละเอียด</label>
+                                        <ng-container>
+                                            <textarea class="form-control" [(ngModel)]="dataForm.description" [ngModelOptions]="{standalone: true}"></textarea>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>อยู่ภายใต้ประเภท</label>
+                                        <mat-form-field>
+                                            <input matInput (keyup.enter)="testVaridate(dataForm.parent)" [(ngModel)]="dataForm.parent" [formControl]="myControl" [matAutocomplete]="auto">
+                                            <mat-autocomplete #auto="matAutocomplete">
+                                              <mat-option  (click)="testVaridate(option)" *ngFor="let option of filteredOptions | async" [value]="option">
+                                                {{ option }}
+                                              </mat-option>
+                                            </mat-autocomplete>
+                                          </mat-form-field>
+                                          <div class="alert alert-danger" style="margin-top: 5pt;background-color: #217b36;" *ngIf="successText">
+                                            {{successText}}
+                                        </div>
+                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="erorrText">
+                                            {{erorrText}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label>รูปภาพ</label>
+                            <div class="form-group">
+                                <mat-form-field class="example-form-field">
+                                    <mat-label>เลือกรูปภาพ</mat-label>
+                                    <input *ngIf="!imageName" disabled matInput type="text"
+                                        [(ngModel)]="dataForm.imageURL" [ngModelOptions]="{standalone: true}">
+                                    <input *ngIf="imageName" disabled matInput type="text" [(ngModel)]="imageName"
+                                        [ngModelOptions]="{standalone: true}">
+                                    <button style="font-size: 25px;color: #a32126;" class="form-group" mat-button
+                                        matSuffix mat-icon-button (click)="value=''">
+                                        <mat-icon>add_photo_alternate</mat-icon>
+                                        <input #myInput type="file" id="file" (change)="handleInputChange($event)">
+                                    </button>
+                                </mat-form-field>
+                            </div>
+                            <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="!statusImg">
+                                กรุณาอัพรูปขนาด 60*60 เท่านั้น
+                            </div>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <admin-form-component [data]="dataForm" [fields]="fields" [title]="'ค่าระบบ'" (close)="clickCloseDrawer()" (save)="clickSave()"></admin-form-component> -->
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [facade]="standardItemCategoryFacade" [title]="'ประเภทสิ่งของบริจาค'" [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()" (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

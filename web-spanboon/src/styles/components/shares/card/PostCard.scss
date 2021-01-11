@@ -1,0 +1,313 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.post-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
+
+    > .post-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin: 5pt 10pt;
+        // height: 28px;
+
+        > .page-name {
+            display: flex;
+            align-items: center;
+            flex: 1 1 0%;
+            margin-right: 15pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+
+            > .sup-name-page {
+                display: flex;
+                align-items: center;
+                color: $black;
+
+                &:hover {
+                    > span {
+                        text-decoration: underline;
+                    }
+                }
+
+                > .icon-time {
+                    flex: 0 0 auto;
+                }
+
+                > span {
+                    word-break: break-all;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            }
+        }
+
+        > a {
+            > .date-time {
+                flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                color: $koalaGray;
+                font-family: "Kanit-500";
+                font-size: 14px;
+                @include pointer();
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .icon-time {
+            height: $width-time;
+            width: $height-time;
+            margin-right: 5pt;
+        }
+    }
+
+    > .post-card-body {
+        display: flex;
+        -webkit-box-pack: justify;
+        flex-direction: column;
+        flex: 1;
+        border: 0.7pt solid $bg-fog-gray;
+
+        > .wrapper-image-post {
+            display: flex;
+            position: relative;
+            width: 100%;
+            height: 180pt;
+
+            &.none-img {
+                align-items: center;
+                background-color: #ec8181;
+
+                > .wrapper-btn-action {
+                    position: relative;
+                    background-color: #443d3d45;
+                }
+            }
+
+            > .image-post {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            > .card-post {
+                background-color: $white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            > .wrapper-btn-action {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                display: flex;
+                width: 100%;
+                // height: 42pt;
+                max-height: 42pt;
+                padding: 8pt 0;
+                justify-content: center;
+                align-items: center;
+                background-color: #2d2d2d94;
+            }
+        }
+
+        > .wrapper-content-post {
+            // width: calc(100% - 30pt);
+            height: 100%;
+            background-color: $white;
+            padding: 15pt 15pt 10pt 15pt;
+            word-break: break-all;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
+
+            > .title-post {
+                font-family: "Kanit-500";
+                font-size: 18px;
+                margin-bottom: 5pt;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            > .content-post {
+                min-height: 55pt;
+                margin-bottom: 15pt;
+                flex: 1 1 0%;
+                font-family: "Sarabun-Light";
+                font-size: 16px;
+                word-break: break-word;
+
+                > .btn-read-more {
+                    position: relative;
+                    z-index: 4;
+                    color: $color-warm-red;
+                    @include pointer();
+                    font-family: "Kanit-300";
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            > .wrapper-footer-fulfill {
+                > .footer-post {
+                    height: 26pt;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: $width-border solid $border-separator;
+
+                    > .left {
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        font-weight: normal;
+                        flex: 0 0 auto;
+                    }
+
+                    > .right {
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+                        margin-left: 15pt;
+
+                        > .icon-offical-post-card {
+                            width: 20px;
+                            height: 20px;
+                            margin: 0 3pt;
+                            flex: 0 0 auto;
+                        }
+
+                        > .icon-offical-user {
+                            width: 8pt;
+                            margin: 0 5pt;
+                        }
+
+                        > a {
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            flex: 1 1 0;
+
+                            > .post-card-page-name {
+                                color: $green;
+                                cursor: pointer;
+                                position: relative;
+                                z-index: 5;
+
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+
+                        > .count-user {
+                            color: $koalaGray;
+                        }
+                    }
+                }
+
+                > .wrapper-offical {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    // height: 36pt;
+                    margin-top: 7pt;
+
+                    > .list-donator {
+                        display: flex;
+                        // flex-direction: row-reverse;
+
+                        a {
+                            color: $white !important;
+                        }
+
+                        > .donator {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            width: 28pt;
+                            height: 28pt;
+                            // margin-left: -6pt;
+                            border-radius: 50%;
+                            box-shadow: 2.5px 0px 0px 0 $white;
+                            overflow: hidden;
+                            color: $brandcolor;
+                            font-family: "Kanit-500";
+                            font-size: 14px;
+                            @include pointer();
+                            z-index: 2;
+
+                            &:nth-child(2){
+                                margin-left: -6pt;
+                                z-index: 1;
+                            }
+
+                            &:nth-child(3){
+                                margin-left: -6pt;
+                                z-index: 0;
+                            }
+
+                            // &:last-of-type {
+                            //     margin-left: unset;
+                            // }
+
+                            img {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                            }
+                        }
+                    }
+
+                    > a {
+                        > .btn-donate {
+                        }
+                    }
+
+                    span {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .post-card {
+        > .post-card-body {
+            > .wrapper-content-post {
+                padding: 7pt 10pt;
+
+                > .title-post {
+                    font-size: 16px;
+                }
+
+                >.content-post{
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}

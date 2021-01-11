@@ -1,0 +1,143 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.dialog-contact {
+    position: relative;
+    max-width: 500px;
+    width: 90vw;
+    height: 258pt;
+    background-color: $white;
+    box-shadow: 0px 1px 3px 0px #d3d3d4;
+    transition: 0.3s;
+    overflow: hidden;
+    > .dialog-contact-header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 30pt;
+        background-color: $color-warm-red;
+        > .material-icons {
+            display: flex;
+            justify-content: flex-end;
+            cursor: pointer;
+            color: $white;
+            opacity: 0.4;
+            padding-right: 10pt;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+    > .body-create-contact {
+        height: 180pt;
+        > .upload-image {
+            display: flex;
+            .upload > input {
+                display: none;
+            }
+            .upload svg {
+                display: flex;
+                align-items: center;
+                margin-left: 5pt;
+                width: 15pt;
+                height: 15pt;
+                cursor: pointer;
+                // &.active-click {
+                //     path {
+                //         fill: $color-warm-red;
+                //     }
+                // }
+            }
+            label {
+                > .browse-file {
+                    display: flex;
+                    > .upload-img {
+                        display: flex;
+                        align-items: center;
+                        width: 50pt;
+                        padding: 20pt;
+                        background-color: $border-color;
+                        justify-content: center;
+                        border-radius: 8pt;
+                        @include pointer();
+                        > .social {
+                            width: 20pt;
+                        }
+                    }
+                }
+            }
+        }
+        > .form-group {
+            display: flex;
+            > .input-text {
+                display: flex;
+                align-items: center;
+                height: 45pt;
+                width: 100%;
+                img {
+                    padding-right: 10pt;
+                    width: 20pt;
+                }
+                // > .input-text {
+                > .mat-form-field {
+                    > .mat-form-field-wrapper {
+                        > .mat-form-field-flex {
+                            > .mat-form-field-infix {
+                                width: 140px !important;
+                                > .mat-input-element {
+                                    display: flex;
+                                    margin-top: 10pt;
+                                    border-radius: 25px;
+                                    background-color: $white;
+                                    width: 200pt;
+                                    height: 25pt;
+                                    color: $color-black;
+                                    padding: 0 17pt;
+                                    @include font-size-10-100("Anakotmai-Medium");
+                                    box-shadow: 0px 1px 9px 0 #e5e3dd;
+                                    > .mat-form-field-label-wrapper {
+                                    }
+                                }
+                            }
+                            > .mat-form-field-suffix {
+                                > .mat-datepicker-toggle {
+                                    > .mat-icon-button {
+                                        display: flex;
+                                        align-items: center;
+                                        padding: 1pt 4pt !important;
+                                        > .mat-button-wrapper {
+                                            > .mat-datepicker-toggle {
+                                                // margin-bottom: 30pt;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        > .mat-form-field-underline {
+                            height: 0px !important;
+                            > .mat-form-field-ripple {
+                                background-color: unset;
+                                opacity: 0;
+                            }
+                        }
+                    }
+                }
+                // }
+            }
+        }
+    }
+    > .footer-confirm {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10pt 20pt;
+        border-top: 0.7pt solid $border-color;
+        > .close-dialog {
+            margin: 0 5pt;
+        }
+    }
+}

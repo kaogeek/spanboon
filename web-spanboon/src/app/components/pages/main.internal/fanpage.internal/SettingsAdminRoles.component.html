@@ -1,0 +1,639 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="fanpage-admin-roles">
+    <div class="header-admin">
+        <div class="head">
+            บทบาทในเพจ
+        </div>
+        <div class="title">
+            ทุกคนที่ทำงานบนเพจของคุณจะมีบทบาทที่แตกต่างกันไป โดยขึ้นอยู่กับสิ่งที่พวกเขาต้องทำ
+        </div>
+    </div>
+    <div class="body-admin">
+        <div class="admin-y1">
+            <div class="y1-title">
+                กำหนดบทบาทใหม่บนเพจ
+            </div>
+            <div class="set-your">
+                <div class="set-how-title" *ngIf="isHow">
+                    <span class="material-icons please-note">
+                        privacy_tip
+                    </span>
+                    <span class="how-title">
+                        หากคุณกำลังเพิ่มผู้ดูแลใหม่ไปยังเพจของคุณ
+                        โปรดจำไว้ว่าพวกเขาจะมีสิทธิ์การอนุญาตเดียวกับที่คุณมีเพื่อทำการเปลี่ยนแปลงต่อเพจนี้
+                    </span>
+                </div>
+                <div class="set-your-admin">
+                    <form class="form-field">
+                        <div class="search-form">
+                            <img class="profile" src="{{valueSt.imageURL}}"
+                                [ngStyle]="{'display': valueSt.imageURL != null || valueSt.imageURL != undefined ? 'block' : 'none'}">
+                            <input #search class="search-input" matInput placeholder="พิมพ์ชื่อหรืออีเมล"
+                                (keyup)="keyUpAutoComp(search.value)" [matAutocomplete]="auto" [ngModel]="valueSt.name"
+                                [ngModelOptions]="{standalone: true}"
+                                [ngStyle]="{'padding-left': valueSt.imageURL != null || valueSt.imageURL != undefined ? '30pt' : '10pt'}">
+                            <mat-icon class="search-close" matRipple [matRippleCentered]="'centered'"
+                                (click)="clearInputData()">close</mat-icon>
+                        </div>
+                        <mat-autocomplete class="autocom-dropdow" #auto="matAutocomplete">
+                            <ng-container *ngFor="let state of dataUser">
+                                <mat-option *ngIf="state.type === 'USER' " [value]="state.displayName || state.name"
+                                    (click)="clickChange(state)">
+                                    <ng-container
+                                        *ngIf="state && state.imageURL !== '' && state.imageURL !== undefined && state.imageURL !== null; else elseImageProfile">
+                                        <img class="option-img" src="{{state.imageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseImageProfile>
+                                        <img class="option-img" aria-hidden src="../../../../../assets/img/profile.svg">
+                                    </ng-template>
+                                    <span>{{state.displayName || state.name}}</span>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </form>
+                    <div class="select-roles">
+                        <mat-select [(ngModel)]="selectPower">
+                            <mat-option *ngFor="let power of powers; let i = index" [value]="power"
+                                [attr.data-index]="i" (click)="clickRoles(i)">
+                                {{power.label}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                    <button mat-flat-button [disableRipple]="true" class="save-card" (click)="addUserLevel()"
+                        [class.active]="isActive">เพิ่ม</button>
+                </div>
+                <div class="title-power">{{selectPower.title}}</div>
+            </div>
+        </div>
+        <div class="admin-y1">
+            <div class="y1-title">
+                บทบาทในเพจที่มีอยู่แล้ว
+            </div>
+            <div class="set-your">
+                <!-- OWNER -->
+                <div class="true-selected">
+                    <ng-container *ngFor="let power of powers">
+                        <div class="top-selected" *ngIf="power.keyword === 'OWNER'">
+                            <div class=header>
+                                {{power.label}}
+                            </div>
+                            <div class="title">
+                                {{power.title}}
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="body-selected">
+                        <ng-container *ngFor="let item of resListPage; let i = index">
+                            <div class="card-selected" *ngIf="item.level === 'OWNER'">
+                                <div class="selected-con">
+                                    <ng-container
+                                        *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage1">
+                                        <img class="image-profile" src="{{item.user.imageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseImage1>
+                                        <div class="image-profile not-image">
+                                            {{item.user.displayName | slice: 0:1  }}
+                                        </div>
+                                    </ng-template>
+
+                                    <div class="profile">
+                                        <div class="name">{{item.user.displayName}}</div>
+                                        <div class="access">เจ้าของเพจ</div>
+                                    </div>
+                                    <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                        (click)="clickEditAdmin(i , 'OWNER')">แก้ไข</button>
+                                </div> 
+                                <div class="edit" *ngIf="editOwnerIndex === i" [class.active]="isCancel">
+                                    <div class="edit-top" *ngIf="item.level === 'OWNER'" style="pointer-events: none;">
+                                        <div class="edit-mat-select">
+                                            <div class="card-edit">
+                                                <ng-container
+                                                    *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage2">
+                                                    <img class="profile" src="{{item.user.imageURL}}">
+                                                </ng-container>
+                                                <ng-template #elseImage2>
+                                                    <div class="profile not-image">
+                                                        {{item.user.displayName | slice: 0:1  }}
+                                                    </div>
+                                                </ng-template>
+                                                <span>{{item.user.displayName}}</span>
+                                            </div>
+                                            <div class="select-edit" *ngIf="item.level === 'OWNER'"
+                                                style="pointer-events: none;  opacity: 0.7;">
+                                                <mat-select [(ngModel)]="selected">
+                                                    <mat-option *ngFor="let power of powers; let i = index"
+                                                        [(value)]="power.label" [attr.data-index]="i"
+                                                        (click)="getDataTitle(power.value)">
+                                                        {{power.label}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngFor="let power of powers;">
+                                            <div class="edit-title" *ngIf="power.value === indexTitle ">
+                                                {{power.title}}
+                                            </div>
+                                        </ng-container>
+
+                                    </div>
+                                    <div class="edit-bottom">
+                                        <div class="edit-bottom-right">
+                                            <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                (click)="clickcancel()">ยกเลิก</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- admin -->
+                <div class="true-selected">
+                    <ng-container *ngFor="let power of powers">
+                        <div class="top-selected" *ngIf="power.keyword === 'ADMIN'">
+                            <div class=header>
+                                {{power.label}}
+                            </div>
+                            <div class="title">
+                                {{power.title}}
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="body-selected">
+                        <ng-container *ngFor="let item of resListPage; let i = index">
+                            <div class="card-selected" *ngIf="item.level === 'ADMIN'">
+                                <div class="selected-con">
+                                    <ng-container
+                                        *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage1">
+                                        <img class="image-profile" src="{{item.user.imageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseImage1>
+                                        <div class="image-profile not-image">
+                                            {{item.user.displayName | slice: 0:1  }}
+                                        </div>
+                                    </ng-template>
+
+                                    <div class="profile">
+                                        <div class="name">{{item.user.displayName}}</div>
+                                        <div class="access">ผู้ดูแล</div>
+                                    </div>
+                                    <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                        (click)="clickEditAdmin(i)">แก้ไข</button>
+                                </div>
+                                <div class="edit" *ngIf="editAdminIndex === i" [class.active]="isCancel">
+                                    <div class="edit-top" *ngIf="item.level === 'ADMIN'" style="pointer-events: none;">
+                                        <div class="edit-mat-select">
+                                            <div class="card-edit">
+                                                <ng-container
+                                                    *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage2">
+                                                    <img class="profile" src="{{item.user.imageURL}}">
+                                                </ng-container>
+                                                <ng-template #elseImage2>
+                                                    <div class="profile not-image">
+                                                        {{item.user.displayName | slice: 0:1  }}
+                                                    </div>
+                                                </ng-template>
+                                                <span>{{item.user.displayName}}</span>
+                                            </div>
+                                            <div class="select-edit" *ngIf="item.level === 'ADMIN'"
+                                                style="pointer-events: none;  opacity: 0.7;">
+                                                <mat-select [(ngModel)]="selected">
+                                                    <mat-option *ngFor="let power of powers; let i = index"
+                                                        [(value)]="power.label" [attr.data-index]="i"
+                                                        (click)="getDataTitle(power.value)">
+                                                        {{power.label}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngFor="let power of powers;">
+                                            <div class="edit-title" *ngIf="power.value === indexTitle ">
+                                                {{power.title}}
+                                            </div>
+                                        </ng-container>
+
+                                    </div>
+                                    <div class="edit-bottom">
+                                        <div class="edit-bottom-right">
+                                            <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                (click)="clickcancel()">ยกเลิก</button>
+                                            <button mat-flat-button [disableRipple]="true" class="save-card"
+                                                *ngIf="item.level === 'OWNER'" style="pointer-events: none;"
+                                                (click)="clicksave()">บันทึก</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- MODERATOR -->
+                <div class="true-selected">
+                    <div class="top-selected" *ngFor="let power of powers | slice:1:2;">
+                        <div class=header>
+                            {{power.label}}
+                        </div>
+                        <div class="title">
+                            {{power.title}}
+                        </div>
+                    </div>
+                    <div class="body-selected">
+                        <ng-container *ngFor="let userList of resListPage; let i = index">
+                            <ng-container *ngIf="userList.level === 'MODERATOR' ;">
+                                <div class="card-selected">
+                                    <div class="selected-con">
+                                        <ng-container
+                                            *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                            <img class="image-profile" src="{{userList.user.imageURL}}">
+                                        </ng-container>
+                                        <ng-template #elseListImage>
+                                            <div class="image-profile not-image">
+                                                {{userList.user.displayName | slice: 0:1  }}
+                                            </div>
+                                        </ng-template>
+
+                                        <div class="profile">
+                                            <div class="name">{{userList.user.displayName}}</div>
+                                            <div class="access">ผู้จัดการ</div>
+                                        </div>
+                                        <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                            (click)="clickEdit(i)">แก้ไข</button>
+                                    </div>
+                                    <div class="edit" *ngIf="editIndex === i" [class.active]="isCancel">
+                                        <div class="edit-top">
+                                            <div class="edit-mat-select">
+                                                <div class="card-edit">
+                                                    <ng-container
+                                                        *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                                        <img class="profile" src="{{userList.user.imageURL}}">
+                                                    </ng-container>
+                                                    <ng-template #elseListImage>
+                                                        <div class="profile not-image">
+                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                        </div>
+                                                    </ng-template>
+                                                    <span>{{userList.user.displayName}}</span>
+                                                </div>
+                                                <div class="select-edit">
+                                                    <mat-select [(ngModel)]="selectedEdit">
+                                                        <mat-option *ngFor="let power of powers; let i = index"
+                                                            (click)="getDataTitleEdit(power.value)"
+                                                            [(value)]="power.label" [attr.data-index]="i">
+                                                            {{power.label}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngFor="let power of powers;">
+                                                <div class="edit-title" *ngIf="power.value === indexTitleEdit ">
+                                                    {{power.title}}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                        <div class="edit-bottom">
+                                            <svg class="delete-card" class="delete-card" (click)="clickDelete(userList)"
+                                                xmlns="http://www.w3.org/2000/svg" width="78.566" height="96.194"
+                                                viewBox="0 0 78.566 96.194">
+                                                <g id="trash" transform="translate(0 0)">
+                                                    <path id="Path_3396" data-name="Path 3396"
+                                                        d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                        transform="translate(0 0)" fill="#858585" />
+                                                    <path id="Path_3397" data-name="Path 3397"
+                                                        d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                        transform="translate(-217.889 -134.468)" fill="#858585" />
+                                                    <path id="Path_3398" data-name="Path 3398"
+                                                        d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                        transform="translate(-85.917 -134.471)" fill="#858585" />
+                                                    <path id="Path_3399" data-name="Path 3399"
+                                                        d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                        transform="translate(-157.758 -134.47)" fill="#858585" />
+                                                </g>
+                                            </svg>
+
+                                            <div class="edit-bottom-right">
+                                                <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                    (click)="clickcancel()">ยกเลิก</button>
+                                                <button mat-flat-button [disableRipple]="true" class="save-card"
+                                                    [class.active]="isButtonActive"
+                                                    (click)="clicksave(userList)">บันทึก</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- POST_MODERATOR -->
+                <div class="true-selected">
+                    <ng-container *ngFor="let power of powers">
+                        <div class="top-selected" *ngIf="power.keyword === 'POST_MODERATOR'">
+                            <div class=header>
+                                {{power.label}}
+                            </div>
+                            <div class="title">
+                                {{power.title}}
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="body-selected">
+                        <ng-container *ngFor="let item of resListPage; let i = index">
+                            <div class="card-selected" *ngIf="item.level === 'POST_MODERATOR'">
+                                <div class="selected-con">
+                                    <ng-container
+                                        *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage1">
+                                        <img class="image-profile" src="{{item.user.imageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseImage1>
+                                        <div class="image-profile not-image">
+                                            {{item.user.displayName | slice: 0:1  }}
+                                        </div>
+                                    </ng-template>
+
+                                    <div class="profile">
+                                        <div class="name">{{item.user.displayName}}</div>
+                                        <div class="access">ผู้จัดการโพสต์</div>
+                                    </div>
+                                    <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                        (click)="clickEditAdmin(i , 'POST_MODERATOR')">แก้ไข</button>
+                                </div>
+                                <div class="edit" *ngIf="moderatorPostIndex === i" [class.active]="isCancel">
+                                    <div class="edit-top" *ngIf="item.level === 'POST_MODERATOR'">
+                                        <div class="edit-mat-select">
+                                            <div class="card-edit">
+                                                <ng-container
+                                                    *ngIf="item.user.imageURL && item.user.imageURL !== '' && item.user.imageURL !== null; else elseImage2">
+                                                    <img class="profile" src="{{item.user.imageURL}}">
+                                                </ng-container>
+                                                <ng-template #elseImage2>
+                                                    <div class="profile not-image">
+                                                        {{item.user.displayName | slice: 0:1  }}
+                                                    </div>
+                                                </ng-template>
+                                                <span>{{item.user.displayName}}</span>
+                                            </div>
+                                            <div class="select-edit" *ngIf="item.level === 'POST_MODERATOR'">
+                                                <mat-select [(ngModel)]="selectedPostModerator">
+                                                    <mat-option *ngFor="let power of powers; let i = index"
+                                                        [(value)]="power.label" [attr.data-index]="i"
+                                                        (click)="getDataTitle(power.value)">
+                                                        {{power.label}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngFor="let power of powers;">
+                                            <div class="edit-title" *ngIf="power.value === indexTitle ">
+                                                {{power.title}}
+                                            </div>
+                                        </ng-container>
+
+                                    </div>
+                                    <div class="edit-bottom">
+                                        <svg class="delete-card" class="delete-card" (click)="clickDelete(item)"
+                                            xmlns="http://www.w3.org/2000/svg" width="78.566" height="96.194"
+                                            viewBox="0 0 78.566 96.194">
+                                            <g id="trash" transform="translate(0 0)">
+                                                <path id="Path_3396" data-name="Path 3396"
+                                                    d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                    transform="translate(0 0)" fill="#858585" />
+                                                <path id="Path_3397" data-name="Path 3397"
+                                                    d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                    transform="translate(-217.889 -134.468)" fill="#858585" />
+                                                <path id="Path_3398" data-name="Path 3398"
+                                                    d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                    transform="translate(-85.917 -134.471)" fill="#858585" />
+                                                <path id="Path_3399" data-name="Path 3399"
+                                                    d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                    transform="translate(-157.758 -134.47)" fill="#858585" />
+                                            </g>
+                                        </svg>
+
+                                        <div class="edit-bottom-right">
+                                            <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                (click)="clickcancel()">ยกเลิก</button>
+                                            <button mat-flat-button [disableRipple]="true" class="save-card"
+                                                [class.active]="isButtonActive"
+                                                (click)="clicksave(item)">บันทึก</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- CHAT_MODERATOR -->
+                <div class="true-selected">
+                    <ng-container *ngFor="let power of powers">
+                        <div class="top-selected" *ngIf="power.keyword === 'CHAT_MODERATOR'">
+                            <div class=header>
+                                {{power.label}}
+                            </div>
+                            <div class="title">
+                                {{power.title}}
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div class="body-selected">
+                        <ng-container *ngFor="let userList of resListPage; let i = index">
+                            <ng-container *ngIf="userList.level === 'CHAT_MODERATOR';">
+                                <div class="card-selected">
+                                    <div class="selected-con">
+                                        <ng-container
+                                            *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                            <img class="image-profile" src="{{userList.user.imageURL}}">
+                                        </ng-container>
+                                        <ng-template #elseListImage>
+                                            <div class="image-profile not-image">
+                                                {{userList.user.displayName | slice: 0:1  }}
+                                            </div>
+                                        </ng-template>
+
+                                        <div class="profile">
+                                            <div class="name">{{userList.user.displayName}}</div>
+                                            <div class="access">ผุ้จัดการแชท</div>
+                                        </div>
+                                        <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                            (click)="clickEditAdmin(i,'CHAT_MODERATOR')">แก้ไข</button>
+                                    </div>
+                                    <div class="edit" *ngIf="moderatorChatIndex === i" [class.active]="isCancel">
+                                        <div class="edit-top">
+                                            <div class="edit-mat-select">
+                                                <div class="card-edit">
+                                                    <ng-container
+                                                        *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                                        <img class="profile" src="{{userList.user.imageURL}}">
+                                                    </ng-container>
+                                                    <ng-template #elseListImage>
+                                                        <div class="profile not-image">
+                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <span>{{userList.user.displayName}}</span>
+                                                </div>
+                                                <div class="select-edit">
+                                                    <mat-select [(ngModel)]="selectedChatModerator">
+                                                        <mat-option *ngFor="let power of powers; let i = index"
+                                                            (click)="getDataTitleEdit(power.value)"
+                                                            [(value)]="power.label" [attr.data-index]="i">
+                                                            {{power.label}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngFor="let power of powers;">
+                                                <div class="edit-title" *ngIf="power.value === indexTitleEdit ">
+                                                    {{power.title}}
+                                                </div>
+                                            </ng-container>
+
+                                        </div>
+                                        <div class="edit-bottom">
+                                            <svg class="delete-card" class="delete-card" (click)="clickDelete(userList)"
+                                                xmlns="http://www.w3.org/2000/svg" width="78.566" height="96.194"
+                                                viewBox="0 0 78.566 96.194">
+                                                <g id="trash" transform="translate(0 0)">
+                                                    <path id="Path_3396" data-name="Path 3396"
+                                                        d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                        transform="translate(0 0)" fill="#858585" />
+                                                    <path id="Path_3397" data-name="Path 3397"
+                                                        d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                        transform="translate(-217.889 -134.468)" fill="#858585" />
+                                                    <path id="Path_3398" data-name="Path 3398"
+                                                        d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                        transform="translate(-85.917 -134.471)" fill="#858585" />
+                                                    <path id="Path_3399" data-name="Path 3399"
+                                                        d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                        transform="translate(-157.758 -134.47)" fill="#858585" />
+                                                </g>
+                                            </svg>
+
+                                            <div class="edit-bottom-right">
+                                                <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                    (click)="clickcancel()">ยกเลิก</button>
+                                                <button mat-flat-button [disableRipple]="true" class="save-card"
+                                                    [class.active]="isButtonActive"
+                                                    (click)="clicksave(userList)">บันทึก</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- FULFILL -->
+                <div class="true-selected">
+                    <ng-container *ngFor="let power of powers">
+                        <div class="top-selected" *ngIf="power.keyword === 'FULFILLMENT_MODERATOR'">
+                            <div class=header>
+                                {{power.label}}
+                            </div>
+                            <div class="title">
+                                {{power.title}}
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div class="body-selected">
+                        <ng-container *ngFor="let userList of resListPage; let i = index">
+                            <ng-container *ngIf="userList.level === 'FULFILLMENT_MODERATOR' ;">
+                                <div class="card-selected">
+                                    <div class="selected-con">
+                                        <ng-container
+                                            *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                            <img class="image-profile" src="{{userList.user.imageURL}}">
+                                        </ng-container>
+                                        <ng-template #elseListImage>
+                                            <div class="image-profile not-image">
+                                                {{userList.user.displayName | slice: 0:1  }}
+                                            </div>
+                                        </ng-template>
+
+                                        <div class="profile">
+                                            <div class="name">{{userList.user.displayName}}</div>
+                                            <div class="access">ผู้จัดการเติมเต็ม</div>
+                                        </div>
+                                        <button mat-stroked-button [disableRipple]="true" class="edit-selected"
+                                            (click)="clickEditAdmin(i,'FULFILLMENT_MODERATOR')">แก้ไข</button>
+                                    </div>
+                                    <div class="edit" *ngIf="moderatorFulFillIndex === i" [class.active]="isCancel">
+                                        <div class="edit-top">
+                                            <div class="edit-mat-select">
+                                                <div class="card-edit">
+                                                    <ng-container
+                                                        *ngIf="userList.user && userList.user.imageURL && userList.user.imageURL !== '' && userList.user.imageURL !== undefined && userList.user.imageURL !== null; else elseListImage">
+                                                        <img class="profile" src="{{userList.user.imageURL}}">
+                                                    </ng-container>
+                                                    <ng-template #elseListImage>
+                                                        <div class="profile not-image">
+                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <span>{{userList.user.displayName}}</span>
+                                                </div>
+                                                <div class="select-edit">
+                                                    <mat-select [(ngModel)]="selectedFulFillModerator">
+                                                        <mat-option *ngFor="let power of powers; let i = index"
+                                                            (click)="getDataTitleEdit(power.value)"
+                                                            [(value)]="power.label" [attr.data-index]="i">
+                                                            {{power.label}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </div>
+                                            </div>
+
+                                            <ng-container *ngFor="let power of powers;">
+                                                <div class="edit-title" *ngIf="power.value === indexTitleEdit ">
+                                                    {{power.title}}
+                                                </div>
+                                            </ng-container>
+
+                                        </div>
+                                        <div class="edit-bottom">
+                                            <svg class="delete-card" class="delete-card" (click)="clickDelete(userList)"
+                                                xmlns="http://www.w3.org/2000/svg" width="78.566" height="96.194"
+                                                viewBox="0 0 78.566 96.194">
+                                                <g id="trash" transform="translate(0 0)">
+                                                    <path id="Path_3396" data-name="Path 3396"
+                                                        d="M78.322,21.5,76.2,15.134a5.923,5.923,0,0,0-5.625-4.054H52.722V5.268A5.273,5.273,0,0,0,47.456,0H31.109a5.274,5.274,0,0,0-5.266,5.269V11.08H7.993a5.924,5.924,0,0,0-5.626,4.054L.243,21.5a4.767,4.767,0,0,0,4.521,6.274h2.22L11.871,88.2a8.742,8.742,0,0,0,8.663,8H59.023a8.741,8.741,0,0,0,8.662-8l4.886-60.422H73.8A4.766,4.766,0,0,0,78.322,21.5ZM31.48,5.636H47.085V11.08H31.48ZM62.067,87.743a3.074,3.074,0,0,1-3.044,2.815H20.534a3.074,3.074,0,0,1-3.044-2.815l-4.85-59.968H66.917ZM5.973,22.139l1.742-5.221a.293.293,0,0,1,.279-.2H70.573a.294.294,0,0,1,.279.2l1.742,5.221Zm0,0"
+                                                        transform="translate(0 0)" fill="#858585" />
+                                                    <path id="Path_3397" data-name="Path 3397"
+                                                        d="M270.968,222.012c.05,0,.1,0,.149,0a2.817,2.817,0,0,0,2.812-2.671l2.646-50.8a2.818,2.818,0,0,0-5.629-.294l-2.646,50.8a2.818,2.818,0,0,0,2.668,2.961Zm0,0"
+                                                        transform="translate(-217.889 -134.468)" fill="#858585" />
+                                                    <path id="Path_3398" data-name="Path 3398"
+                                                        d="M108.569,219.353a2.818,2.818,0,0,0,2.812,2.665c.051,0,.1,0,.156,0a2.818,2.818,0,0,0,2.66-2.967l-2.772-50.8a2.818,2.818,0,1,0-5.628.307Zm0,0"
+                                                        transform="translate(-85.917 -134.471)" fill="#858585" />
+                                                    <path id="Path_3399" data-name="Path 3399"
+                                                        d="M197.072,222.018a2.818,2.818,0,0,0,2.818-2.818V168.4a2.818,2.818,0,0,0-5.636,0v50.8A2.818,2.818,0,0,0,197.072,222.018Zm0,0"
+                                                        transform="translate(-157.758 -134.47)" fill="#858585" />
+                                                </g>
+                                            </svg>
+
+                                            <div class="edit-bottom-right">
+                                                <button mat-stroked-button [disableRipple]="true" class="cancel-card"
+                                                    (click)="clickcancel()">ยกเลิก</button>
+                                                <button mat-flat-button [disableRipple]="true" class="save-card"
+                                                    [class.active]="isButtonActive"
+                                                    (click)="clicksave(userList)">บันทึก</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

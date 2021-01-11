@@ -1,0 +1,571 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-create-story">
+    <div class="create-story">
+        <div *ngIf="!isSelectImage" class="create-story-h full">
+            <div class="create-story-h-icon-r">
+                <h2 style="margin: 0;">สร้างสตอรี่ของคุณ</h2>
+                <span style="font-size: 12px;color: #8c8c8c;">สร้างสตอรี่เพื่อบอกเล่าเรื่องราวในแบบของคุณ</span>
+            </div>
+            <div class="create-story-h-icon-l">
+                <spanboon-button style="margin-right:10px ;" (click)="onClose()" [color]="'black'" [width]="'60pt'"
+                    [radius]="'4px'" [height]="'30pt'" [bgColor]="'white'" [text]="'ยกเลิก'">
+                </spanboon-button>
+                <spanboon-button (click)="onConfirm()" [width]="'60pt'" [radius]="'4px'" [height]="'30pt'"
+                    [bgColor]="'#c62634'" [text]="'บันทึก'">
+                </spanboon-button>
+            </div>
+        </div>
+        <div *ngIf="!isSelectImage" class="create-story-h small">
+            <div class="create-story-h-icon-r">
+                <h2 style="margin: 0;">สร้างสตอรี่</h2>
+            </div>
+            <div class="create-story-h-icon-l">
+                <spanboon-button style="margin-right:10px ;" (click)="onClose()" [color]="'black'" [width]="'50pt'"
+                    [radius]="'4px'" [height]="'25pt'" [bgColor]="'white'" [text]="'ยกเลิก'">
+                </spanboon-button>
+                <spanboon-button (click)="onConfirm()" [width]="'50pt'" [radius]="'4px'" [height]="'25pt'"
+                    [bgColor]="'#c62634'" [text]="'บันทึก'">
+                </spanboon-button>
+            </div>
+        </div>
+        <div *ngIf="!isSelectImage" class="create-story-b">
+
+            <div class="create-story-b-story" id="story">
+                <div class="background-story" [ngStyle]="{'background-image': 'url(' + image + ')'}">
+                    <div class="text-h">
+                        <span style="font-size: 23px;font-weight: 600;">{{textH}}</span>
+                        <span style="color: #cecece;">{{textS}}</span>
+                        <div class="line"></div>
+                        <div class="background-text-score">
+                            <span class="text-score">60 แสดงความคิดเห็น</span>
+                            <span class="text-point"> • </span>
+                            <span class="text-score">3k บอกต่อ</span>
+                            <span class="text-point"> • </span>
+                            <span class="text-score">58 ถูกใจ</span>
+                            <span class="text-point"> • </span>
+                            <span class="text-score">3 แชร์</span>
+                        </div>
+                    </div>
+                    <div (click)="setImageUPload()" class="box-create-story-editbackground">
+                        <input id="file-input-image-backG" style="display: none;" #fileImageB type="file"
+                            (change)="onFileSelectB($event)" accept="image/*" />
+                        <svg style="fill: white;" id="Capa_1" enable-background="new 0 0 512 512" height="20px"
+                            viewBox="0 0 512 512" width="20px" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <circle cx="256" cy="296" r="81" />
+                                <path
+                                    d="m374.297 91-5.177-25.883c-2.794-13.974-15.166-24.117-29.417-24.117h-167.406c-14.25 0-26.623 10.143-29.417 24.117l-5.177 25.883z" />
+                                <path
+                                    d="m467 121c-35.223 0-405.516 0-422 0-24.813 0-45 20.187-45 45v260c0 24.813 20.187 45 45 45h422c24.813 0 45-20.187 45-45v-260c0-24.813-20.187-45-45-45zm-339 94h-48c-8.284 0-15-6.716-15-15s6.716-15 15-15h48c8.284 0 15 6.716 15 15s-6.716 15-15 15zm128 192c-61.206 0-111-49.794-111-111s49.794-111 111-111 111 49.794 111 111-49.794 111-111 111z" />
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="box-create-story-editbackground-dialog">
+                        <div *ngIf="isImageUPload" (click)="fileImageB.click()"
+                            class="box-create-story-editbackground-sub one">
+                            อัปโหลดรูปปก
+                        </div>
+                        <div *ngIf="isImageUPload && data.imagesTimeline.length > 0" (click)="switImage()"
+                            class="box-create-story-editbackground-sub two">
+                            เลือกจากโพสต์
+                        </div>
+                        <div *ngIf="isImageUPload && coverImage !== undefined" (click)="removeCoverImage()"
+                            class="box-create-story-editbackground-sub three">
+                            ลบออก
+                        </div>
+                    </div>
+                </div>
+                <div class="box-create">
+                    <div class="box-create-story">
+                        <div *ngIf="user" class="box-create-user">
+                            <div class="dis-sub-name-page">
+                                <div class="dis-sub-img-page">
+                                    <div class="img-user">
+                                        <img style="width: 100%;" src={{user.imageBase64}}>
+                                    </div>
+                                </div>
+                                <div class="dis-sub-name-text-page">
+                                    <div class="user">
+                                        <span>{{user.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-create-component">
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isText" (click)="text();"
+                                class="component top">T</div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isTitleText" (click)="Title();"
+                                class="component top">H</div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isLink" (click)="Link();"
+                                class="component top link">
+                                <svg id="icon" height="20px" viewBox="0 0 128 128" width="20px"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m89.56 62.81 10.4-10.4a17.232 17.232 0 0 0 -24.37-24.37l-10.4 10.4a17.232 17.232 0 0 0 24.37 24.37zm-7.879-29.25a9.022 9.022 0 0 1 12.759 12.759l-10.969 10.969a9.022 9.022 0 0 1 -12.759-12.759z"
+                                        fill="#62667c" />
+                                    <path
+                                        d="m52.408 99.962 10.4-10.4a17.232 17.232 0 0 0 -24.368-24.372l-10.4 10.4a17.232 17.232 0 0 0 24.37 24.37zm-7.879-29.25a9.022 9.022 0 0 1 12.759 12.759l-10.969 10.969a9.022 9.022 0 0 1 -12.759-12.759z"
+                                        fill="#62667c" />
+                                    <path
+                                        d="m56.39 77.318 20.928-20.928a4.036 4.036 0 0 0 -5.708-5.708l-20.928 20.928a4.036 4.036 0 0 0 5.708 5.708z"
+                                        fill="#525666" />
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isImage" (click)="Image();"
+                                class="component top image">
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="20px"
+                                    viewBox="0 0 582 582" width="20px" xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path d="M446.575,0H65.425C29.349,0,0,29.35,0,65.426v381.149C0,482.65,29.349,512,65.425,512h381.15
+                C482.651,512,512,482.65,512,446.574V65.426C512,29.35,482.651,0,446.575,0z M481.842,446.575
+                c0,19.447-15.821,35.267-35.267,35.267H65.425c-19.447,0-35.268-15.821-35.268-35.267v-55.007l99.255-84.451
+                c3.622-3.082,8.906-3.111,12.562-0.075l62.174,51.628c5.995,4.977,14.795,4.569,20.304-0.946L372.181,209.77
+                c2.67-2.675,5.783-2.935,7.408-2.852c1.62,0.083,4.695,0.661,7.078,3.596l95.176,117.19V446.575z M481.842,279.865l-71.766-88.366
+                c-7.117-8.764-17.666-14.122-28.942-14.701c-11.268-0.57-22.317,3.672-30.294,11.662L212.832,326.681l-51.59-42.839
+                c-14.959-12.422-36.563-12.293-51.373,0.308l-79.712,67.822V65.426c0-19.447,15.821-35.268,35.268-35.268h381.15
+                c19.447,0,35.267,15.821,35.267,35.268V279.865z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path d="M161.174,62.995c-40.095,0-72.713,32.62-72.713,72.713c0,40.094,32.619,72.713,72.713,72.713s72.713-32.619,72.713-72.713
+                S201.269,62.995,161.174,62.995z M161.174,178.264c-23.466,0-42.556-19.091-42.556-42.556c0-23.466,19.09-42.556,42.556-42.556
+                c23.466,0,42.556,19.091,42.556,42.556S184.64,178.264,161.174,178.264z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isVideo" (click)="Video();"
+                                class="component top video"><svg id="Capa_1" enable-background="new 0 0 512 512"
+                                    height="20px" viewBox="0 0 512 512" width="20px" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <path
+                                            d="m338.95 243.28-120-75c-4.625-2.89-10.453-3.043-15.222-.4-4.77 2.643-7.729 7.667-7.729 13.12v150c0 5.453 2.959 10.476 7.729 13.12 2.266 1.256 4.77 1.88 7.271 1.88 2.763 0 5.522-.763 7.95-2.28l120-75c4.386-2.741 7.05-7.548 7.05-12.72s-2.663-9.979-7.049-12.72zm-112.95 60.656v-95.873l76.698 47.937z" />
+                                        <path
+                                            d="m437 61h-362c-41.355 0-75 33.645-75 75v240c0 41.355 33.645 75 75 75h362c41.355 0 75-33.645 75-75v-240c0-41.355-33.645-75-75-75zm45 315c0 24.813-20.187 45-45 45h-362c-24.813 0-45-20.187-45-45v-240c0-24.813 20.187-45 45-45h362c24.813 0 45 20.187 45 45z" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <div style="width: 20px;"></div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isLeft" class="component top"
+                                (click)="align('left');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 333 333" style="enable-background:new 0 0 333 333;"
+                                    xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,31.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,31.5,323,31.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M230,114.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h220c5.5,0,10-4.5,10-10S235.5,114.5,230,114.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,198.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,198.5,323,198.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M151,281.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h141c5.5,0,10-4.5,10-10S156.5,281.5,151,281.5z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isCenter"
+                                class="component top italic" (click)="align('center');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 334.367 334.367"
+                                    style="enable-background:new 0 0 334.367 334.367;" xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <g>
+                                                <path d="M10.449,52.245h313.469c5.771,0,10.449-4.678,10.449-10.449s-4.678-10.449-10.449-10.449H10.449
+                C4.678,31.347,0,36.025,0,41.796S4.678,52.245,10.449,52.245z" />
+                                                <path d="M57.469,114.939c-5.771,0-10.449,4.678-10.449,10.449c0,5.771,4.678,10.449,10.449,10.449h219.429
+                c5.771,0,10.449-4.678,10.449-10.449c0-5.771-4.678-10.449-10.449-10.449H57.469z" />
+                                                <path d="M323.918,198.531H10.449C4.678,198.531,0,203.209,0,208.98s4.678,10.449,10.449,10.449h313.469
+                c5.771,0,10.449-4.678,10.449-10.449S329.689,198.531,323.918,198.531z" />
+                                                <path d="M237.714,282.122H96.653c-5.771,0-10.449,4.678-10.449,10.449s4.678,10.449,10.449,10.449h141.061
+                c5.771,0,10.449-4.678,10.449-10.449S243.485,282.122,237.714,282.122z" />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isRight"
+                                class="component top underline" (click)="align('right');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 333 333" style="enable-background:new 0 0 333 333;"
+                                    xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,31.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,31.5,323,31.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,114.5H104c-5.5,0-10,4.5-10,10s4.5,10,10,10h219c5.5,0,10-4.5,10-10S328.5,114.5,323,114.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,198.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,198.5,323,198.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,281.5H182c-5.5,0-10,4.5-10,10s4.5,10,10,10h141c5.5,0,10-4.5,10-10S328.5,281.5,323,281.5z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div [class.disable]="!(selectIndex !== null && selectIndex !== undefined)"
+                                class="component component-edit-d" (click)="componentDelete(selectIndex,0);">
+                                <mat-icon>delete</mat-icon>
+                            </div>
+                            <div style="position: absolute;right: 0;" class="component underline" (click)="testCom();">
+                                <svg height="20px" viewBox="0 0 450 450" width="20px"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m405.332031 192h-170.664062v-170.667969c0-11.773437-9.558594-21.332031-21.335938-21.332031-11.773437 0-21.332031 9.558594-21.332031 21.332031v170.667969h-170.667969c-11.773437 0-21.332031 9.558594-21.332031 21.332031 0 11.777344 9.558594 21.335938 21.332031 21.335938h170.667969v170.664062c0 11.777344 9.558594 21.335938 21.332031 21.335938 11.777344 0 21.335938-9.558594 21.335938-21.335938v-170.664062h170.664062c11.777344 0 21.335938-9.558594 21.335938-21.335938 0-11.773437-9.558594-21.332031-21.335938-21.332031zm0 0" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="box-create-component buttom">
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isText" (click)="text();"
+                                class="component">T</div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isTitleText" (click)="Title();"
+                                class="component">H</div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isLink" (click)="Link();"
+                                class="component link">
+                                <svg id="icon" height="20px" viewBox="0 0 128 128" width="20px"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m89.56 62.81 10.4-10.4a17.232 17.232 0 0 0 -24.37-24.37l-10.4 10.4a17.232 17.232 0 0 0 24.37 24.37zm-7.879-29.25a9.022 9.022 0 0 1 12.759 12.759l-10.969 10.969a9.022 9.022 0 0 1 -12.759-12.759z"
+                                        fill="#62667c" />
+                                    <path
+                                        d="m52.408 99.962 10.4-10.4a17.232 17.232 0 0 0 -24.368-24.372l-10.4 10.4a17.232 17.232 0 0 0 24.37 24.37zm-7.879-29.25a9.022 9.022 0 0 1 12.759 12.759l-10.969 10.969a9.022 9.022 0 0 1 -12.759-12.759z"
+                                        fill="#62667c" />
+                                    <path
+                                        d="m56.39 77.318 20.928-20.928a4.036 4.036 0 0 0 -5.708-5.708l-20.928 20.928a4.036 4.036 0 0 0 5.708 5.708z"
+                                        fill="#525666" />
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isImage" (click)="Image();"
+                                class="component image">
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="20px"
+                                    viewBox="0 0 582 582" width="20px" xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path d="M446.575,0H65.425C29.349,0,0,29.35,0,65.426v381.149C0,482.65,29.349,512,65.425,512h381.15
+                C482.651,512,512,482.65,512,446.574V65.426C512,29.35,482.651,0,446.575,0z M481.842,446.575
+                c0,19.447-15.821,35.267-35.267,35.267H65.425c-19.447,0-35.268-15.821-35.268-35.267v-55.007l99.255-84.451
+                c3.622-3.082,8.906-3.111,12.562-0.075l62.174,51.628c5.995,4.977,14.795,4.569,20.304-0.946L372.181,209.77
+                c2.67-2.675,5.783-2.935,7.408-2.852c1.62,0.083,4.695,0.661,7.078,3.596l95.176,117.19V446.575z M481.842,279.865l-71.766-88.366
+                c-7.117-8.764-17.666-14.122-28.942-14.701c-11.268-0.57-22.317,3.672-30.294,11.662L212.832,326.681l-51.59-42.839
+                c-14.959-12.422-36.563-12.293-51.373,0.308l-79.712,67.822V65.426c0-19.447,15.821-35.268,35.268-35.268h381.15
+                c19.447,0,35.267,15.821,35.267,35.268V279.865z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path d="M161.174,62.995c-40.095,0-72.713,32.62-72.713,72.713c0,40.094,32.619,72.713,72.713,72.713s72.713-32.619,72.713-72.713
+                S201.269,62.995,161.174,62.995z M161.174,178.264c-23.466,0-42.556-19.091-42.556-42.556c0-23.466,19.09-42.556,42.556-42.556
+                c23.466,0,42.556,19.091,42.556,42.556S184.64,178.264,161.174,178.264z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isVideo" (click)="Video();"
+                                class="component video"><svg id="Capa_1" enable-background="new 0 0 512 512"
+                                    height="20px" viewBox="0 0 512 512" width="20px" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <path
+                                            d="m338.95 243.28-120-75c-4.625-2.89-10.453-3.043-15.222-.4-4.77 2.643-7.729 7.667-7.729 13.12v150c0 5.453 2.959 10.476 7.729 13.12 2.266 1.256 4.77 1.88 7.271 1.88 2.763 0 5.522-.763 7.95-2.28l120-75c4.386-2.741 7.05-7.548 7.05-12.72s-2.663-9.979-7.049-12.72zm-112.95 60.656v-95.873l76.698 47.937z" />
+                                        <path
+                                            d="m437 61h-362c-41.355 0-75 33.645-75 75v240c0 41.355 33.645 75 75 75h362c41.355 0 75-33.645 75-75v-240c0-41.355-33.645-75-75-75zm45 315c0 24.813-20.187 45-45 45h-362c-24.813 0-45-20.187-45-45v-240c0-24.813 20.187-45 45-45h362c24.813 0 45 20.187 45 45z" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <div style="width: 20px;"></div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isLeft" class="component"
+                                (click)="align('left');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 333 333" style="enable-background:new 0 0 333 333;"
+                                    xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,31.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,31.5,323,31.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M230,114.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h220c5.5,0,10-4.5,10-10S235.5,114.5,230,114.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,198.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,198.5,323,198.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M151,281.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h141c5.5,0,10-4.5,10-10S156.5,281.5,151,281.5z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isCenter" class="component italic"
+                                (click)="align('center');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 334.367 334.367"
+                                    style="enable-background:new 0 0 334.367 334.367;" xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <g>
+                                                <path d="M10.449,52.245h313.469c5.771,0,10.449-4.678,10.449-10.449s-4.678-10.449-10.449-10.449H10.449
+                C4.678,31.347,0,36.025,0,41.796S4.678,52.245,10.449,52.245z" />
+                                                <path d="M57.469,114.939c-5.771,0-10.449,4.678-10.449,10.449c0,5.771,4.678,10.449,10.449,10.449h219.429
+                c5.771,0,10.449-4.678,10.449-10.449c0-5.771-4.678-10.449-10.449-10.449H57.469z" />
+                                                <path d="M323.918,198.531H10.449C4.678,198.531,0,203.209,0,208.98s4.678,10.449,10.449,10.449h313.469
+                c5.771,0,10.449-4.678,10.449-10.449S329.689,198.531,323.918,198.531z" />
+                                                <path d="M237.714,282.122H96.653c-5.771,0-10.449,4.678-10.449,10.449s4.678,10.449,10.449,10.449h141.061
+                c5.771,0,10.449-4.678,10.449-10.449S243.485,282.122,237.714,282.122z" />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div [class.disable]="!(ary.length > 0)" [class.active]="!isRight"
+                                class="component underline" (click)="align('right');">
+                                <svg width="15px" height="15px" version="1.1" id="Capa_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 333 333" style="enable-background:new 0 0 333 333;"
+                                    xml:space="preserve">
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,31.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,31.5,323,31.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,114.5H104c-5.5,0-10,4.5-10,10s4.5,10,10,10h219c5.5,0,10-4.5,10-10S328.5,114.5,323,114.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,198.5H10c-5.5,0-10,4.5-10,10s4.5,10,10,10h313c5.5,0,10-4.5,10-10S328.5,198.5,323,198.5z" />
+                                        </g>
+                                    </g>
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M323,281.5H182c-5.5,0-10,4.5-10,10s4.5,10,10,10h141c5.5,0,10-4.5,10-10S328.5,281.5,323,281.5z" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div [class.active]="!isTitleText" class="box-create-component-sub">
+                            <div style="font-size: 20px;" (click)="Title('h1');" class="component"
+                                [class.active]="titleActive('H1')">H1</div>
+                            <div style="font-size: 18px;" (click)="Title('h2');" class="component"
+                                [class.active]="titleActive('H2')">H2</div>
+                            <div style="font-size: 16px;" (click)="Title('h3');" class="component"
+                                [class.active]="titleActive('H3')">H3</div>
+                            <div style="font-size: 14px;" (click)="Title('h4');" class="component"
+                                [class.active]="titleActive('H4')">H4</div>
+                            <div style="font-size: 12px;" (click)="Title('h5');" class="component"
+                                [class.active]="titleActive('H5')">H5</div>
+                        </div>
+                        <div [class.active]="!isText" class="box-create-component-sub toolbar">
+                            <a href="javascript:void(0);" data-command='bold' class="component"><i
+                                    class='fa fa-bold component' id="BOLD"></i></a>
+                            <a href="javascript:void(0);" data-command='italic' class="component"><i
+                                    class='fa fa-italic component'></i></a>
+                            <a href="javascript:void(0);" data-command='underline' class="component"><i
+                                    class='fa fa-underline'></i></a>
+                        </div>
+                        <div [class.active]="!isLink" class="box-create-component-sub">
+                            <input (keyup)="onConfirmFrom('LINK')" [(ngModel)]="linkUrl" placeholder="URL">
+                            <input (keyup)="onConfirmFrom('LINK')" [(ngModel)]="linkText" placeholder="Text">
+                            <section class="example-section">
+                                <mat-checkbox class="example-margin" [(ngModel)]="LinkNewTeb">เปิดหน้าต่างใหม่
+                                </mat-checkbox>
+                            </section>
+                        </div>
+                        <div [class.active]="!isImage" class="box-create-component-sub">
+                            <input (keyup)="onConfirmFrom('IMAGE')" [(ngModel)]="imageUrl" placeholder="URL">
+                            <input (keyup)="onConfirmFrom('IMAGE')" [(ngModel)]="imageDetail"
+                                placeholder="คำอธิบายใต้ภาพ">
+                            <select (click)="onConfirmFrom('IMAGE')" [(ngModel)]="imageSize" style="padding: 4px;
+                                border: solid 1px #b5b5b5;
+                                border-radius: 4px;
+                                margin: 5px 5px;
+                                font-size: 11px;" name="cars" id="cars">
+                                <option value="50%">50%</option>
+                                <option value="80%">80%</option>
+                                <option value="100%">100%</option>
+                            </select>
+                            <!-- <section class="example-section">
+                                <mat-checkbox class="example-margin" [(ngModel)]="isImageLink">Link เว็บภายนอก
+                                </mat-checkbox>
+                            </section> -->
+                            <!-- <spanboon-button style="position: absolute;right: 10px;" (click)="onConfirmFrom('IMAGE')"
+                                [width]="'40pt'" [radius]="'4px'" [fontSize]="'12px'" [height]="'20pt'"
+                                [bgColor]="'#c62634'" [text]="'update'">
+                            </spanboon-button> -->
+                        </div>
+                        <div [class.active]="isImageLink && !isImage" class="box-create-component-sub">
+                            <input style="width:180px;" placeholder="Link">
+                            <section class="example-section">
+                                <mat-checkbox class="example-margin" [(ngModel)]="newTeb">เปิดหน้าต่างใหม่
+                                </mat-checkbox>
+                            </section>
+                        </div>
+                        <div [class.active]="!isVideo" class="box-create-component-sub">
+                            <input [(ngModel)]="videoUrl" placeholder="URL Youtube">
+                            <spanboon-button style="position: absolute;right: 10px;" (click)="onConfirmFrom('VIDEO')"
+                                [width]="'40pt'" [radius]="'4px'" [fontSize]="'12px'" [height]="'20pt'"
+                                [bgColor]="'#c62634'" [text]="'update'">
+                            </spanboon-button>
+                        </div>
+                        <!-- <div [class.active]="!isText" class="box-create-component-input-sub toolbar">
+                            <textarea placeholder="sadasdsadsadasdsadsadasdasd"></textarea>
+                        </div> -->
+                        <div cdkDropList (cdkDropListDropped)="drop($event)" class="box-create-body" id="storybody">
+                            <div cdkDrag [cdkDragStartDelay]="500" (click)="getDataInSelect(i,item)"
+                                class="box-create-add-com" *ngFor="let item of ary;let i = index"
+                                [class.active]="selectIndex === i">
+                                <div cdkDragHandle [class.active]="selectIndex === i" class="comSelect">
+                                    <svg class="icon-move" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                        viewBox="0 0 53 82">
+                                        <g id="Group_1425" data-name="Group 1425" transform="translate(3329 -1090.033)">
+                                            <rect id="Rectangle_626" data-name="Rectangle 626" width="23" height="23"
+                                                transform="translate(-3329 1090.033)" fill="#bfbfbf" />
+                                            <rect id="Rectangle_632" data-name="Rectangle 632" width="23" height="24"
+                                                transform="translate(-3329 1119.033)" fill="#bfbfbf" />
+                                            <rect id="Rectangle_634" data-name="Rectangle 634" width="23" height="23"
+                                                transform="translate(-3329 1149.033)" fill="#bfbfbf" />
+                                            <rect id="Rectangle_630" data-name="Rectangle 630" width="24" height="23"
+                                                transform="translate(-3300 1090.033)" fill="#bfbfbf" />
+                                            <rect id="Rectangle_631" data-name="Rectangle 631" width="24" height="24"
+                                                transform="translate(-3300 1119.033)" fill="#bfbfbf" />
+                                            <rect id="Rectangle_633" data-name="Rectangle 633" width="24" height="23"
+                                                transform="translate(-3300 1149.033)" fill="#bfbfbf" />
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div style="width: 90%;">
+                                    <div id={{i}}
+                                        [ngStyle]="{'text-align': item.style.textalign,'font-size': item.style.fontsize,'font-weight':item.style.fontweight}"
+                                        class="ct-background-text" contenteditable (keyup)="getTitleHtml()"
+                                        *ngIf="titleType(item.htmlType);">
+                                    </div>
+                                    <div id={{i}} class="ct-background-text textarea-editor-s"
+                                        *ngIf="textType(item.htmlType);">
+                                        <create-text [fontsize]="item.style.fontsize" [value]="[(item.value)]"
+                                            [textalign]="item.style.textalign" [index]="i">
+                                        </create-text>
+                                    </div>
+
+                                    <div id={{i}} style="display:flex;flex-direction: column;"
+                                        [ngStyle]="{'align-items': item.style.imagealign}"
+                                        *ngIf="imageType(item.htmlType);" id={{i}}>
+                                        <input id="file-input-image" style="display: none;" #fileImage type="file"
+                                            (change)="onFileSelect($event)" accept="image/*" />
+                                        <div *ngIf="!item.image64" (click)="fileImage.click()"
+                                            class="col-12 rmpm dropzone" dragdrop-image (files)="filesDropped($event)">
+                                            <div class="text-wrapper">
+                                                <div class="centered">Drop your file here!</div>
+                                            </div>
+                                        </div>
+                                        <img class="ct-background-image" *ngIf="item.image64"
+                                            [ngStyle]="{'width': item.style.imageSize}" (click)="fileImage.click()"
+                                            style="cursor: pointer;" [src]="item.image64 ">
+                                        <span>{{item.imageDetail}}</span>
+                                    </div>
+                                    <div id={{i}} class="ct-background-video"
+                                        style="display:flex;justify-content: center;flex-direction: column;"
+                                        *ngIf="videoType(item.htmlType);"
+                                        [ngStyle]="{'align-items': item.style.imagealign}" contenteditable="true"
+                                        id={{i}}>
+                                        <iframe style="width: 400px;height: 300px;background-color: gray;border:none;"
+                                            src="" id=iframeV{{i}}></iframe>
+                                        <span>{{item.videoDetail}}</span>
+                                    </div>
+                                    <div id={{i}}
+                                        [ngStyle]="{'text-align': item.style.textalign,'font-size': item.style.fontsize}"
+                                        *ngIf="linkType(item.htmlType);" id={{i}}>
+                                        <a style="color: #fd545a;" href={{item.link}}>{{item.value}}</a>
+                                    </div>
+                                </div>
+                                <div style="width: 5%;display: flex;align-items: center;justify-content: center;"
+                                    class="component comDelet" [class.active]="selectIndex === i"
+                                    (click)="componentDelete(i,item);">
+                                    <mat-icon>delete</mat-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-create-story-needs">
+                        <div class="sticky">
+                            <!-- <ng-container>
+                                <ng-container>
+                                    <card-item [itemData]="dataNeeds"></card-item>
+                                </ng-container>
+                            </ng-container> -->
+                            <ng-container>
+                                <ng-container>
+                                    <card-concerned></card-concerned>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="isSelectImage" class="create-story-h">
+            <div class="create-story-h-icon-r">
+                <h2 style="margin: 0;cursor: pointer;" (click)="switImage()"> ย้อนกลับ</h2>
+            </div>
+        </div>
+        <div style="display: block;" *ngIf="isSelectImage" class="create-story-b">
+            <img class="cover-image" (click)="setImageBG(item)" [class.select]="coverImage.id === item.id"
+                *ngFor="let item of data.imagesTimeline;let i = index" src={{item.image}}>
+        </div>
+    </div>
+</div>

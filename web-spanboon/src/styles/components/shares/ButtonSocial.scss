@@ -1,0 +1,108 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+// .butt-social {
+//     display: flex;
+//     align-items: center;
+//     width: 100%;
+//     height: 34pt;
+//     vertical-align: middle;
+//     background-color: unset;
+//     box-shadow: 0px 3px 1px -2px #00000040;
+//     border: unset;
+//     border-radius: 25pt;
+//     justify-content: center;
+//     text-decoration: unset;
+//     color: unset;
+//     cursor: pointer;
+//     -webkit-user-select: none;
+//     /* Safari 3.1+ */
+//     -moz-user-select: none;
+//     /* Firefox 2+ */
+//     -ms-user-select: none;
+//     /* IE 10+ */
+//     user-select: none;
+//     /* Standard syntax */
+//     @include font-size-8-100("Kanit-500");
+//     transform: scale(1, 1);
+
+//     &:focus {
+//         outline: none;
+//     }
+//     &:hover {
+//         opacity: .95;
+//     }
+//     &.disable {
+//         opacity: 0.5;
+//         pointer-events: none;
+//     }
+//     &::selection {
+//         background: transparent;
+//     }
+//     >.wrapper-butt-social {
+//         display: flex;
+//         align-items: center;
+//         background-image: unset;
+//         background-color: unset;
+//         background-repeat: no-repeat;
+//         padding-left: 20pt;
+//         height: 18pt;
+//     }
+
+//     &:active{
+//         transform: scale(.99, .99);
+//     }
+
+//     >.mat-ripple-element{
+//         display: none;
+//       }
+// }
+
+.butt-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 34pt;
+    vertical-align: middle;
+    background: unset;
+    box-shadow: 0px 3px 1px -2px #00000040;
+    border: unset;
+    border-radius: 25pt;
+    text-decoration: unset;
+    color: unset;
+    @include pointer();
+    @include font-size-8-100("Kanit-500");
+    transform: scale(1, 1);
+
+    &:active {
+        transform: scale(0.99, 0.99);
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        opacity: 0.95;
+    }
+
+    &.disable {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    > .img-social {
+        width: 20pt;
+        height: 20pt;
+        margin: 0 10pt 0 15pt;
+    }
+
+    >.wrapper-butt-social{
+        width: 70pt;
+    }
+}

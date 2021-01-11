@@ -1,0 +1,226 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.wrapper-body-objective {
+  // position: absolute;
+  width: 50vw;
+  background-color: $white;
+  box-shadow: 0px 1px 9px 0 #e5e3dd;
+  // top: 23pt;
+  // left: 0;
+  // bottom: auto;
+  // z-index: 10000;
+  min-width: 250pt;
+  max-width: 550pt;
+
+  &.active {
+    top: auto;
+    bottom: 0;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  > .search-header-objective {
+    display: flex;
+    padding: 10pt;
+    height: 16pt;
+    border-bottom: $width-border solid $border-separator;
+
+    > .img-search {
+      width: 12pt;
+    }
+
+    > .form-search-field {
+      padding-left: 10pt;
+      font-family: "Kanit-500";
+      font-size: 16px;
+
+      > .mat-form-field-wrapper {
+        > .mat-form-field-flex {
+          > .mat-form-field-infix {
+            padding: unset;
+            border-top: unset;
+          }
+        }
+      }
+    }
+  }
+
+  > .wrapper-add-doing {
+    border-bottom: $width-border solid $border-separator;
+
+    > .wrapper-add-image {
+      display: flex;
+      justify-content: space-between;
+      padding: 10pt;
+      align-items: center;
+
+      > .page-doing {
+        font-family: "Kanit-500";
+        font-size: 16px;
+      }
+
+      > .image-upload {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-family: "Kanit-500";
+        font-size: 16px;
+        @include pointer();
+
+        > .icon-add {
+          width: 12pt;
+          margin: 0 10pt;
+        }
+      }
+    }
+  }
+
+  > .wrapper-choose-tag {
+    display: flex;
+    height: 245pt;
+
+    > .wrapper-body-doing {
+      display: flex;
+      flex-wrap: wrap;
+      border: unset;
+      overflow-x: hidden;
+      -webkit-user-select: none;
+      width: 100%;
+      @include pointer();
+
+      > .wrapper-not-objective {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        font-family: "Kanit-500";
+        font-size: 16px;
+      }
+
+      > .wrapper-doing {
+        text-align: center;
+        padding: 14pt;
+        margin: 0;
+        width: calc(25% - 28pt);
+        font-family: "Kanit-500";
+        font-size: 16px;
+        height: max-content;
+
+        &:hover {
+          background-color: $background-hover;
+        }
+
+        &.active-click-doing {
+          background-color: $color-warm-red;
+
+          > .name-objective,
+          > .div-objective {
+            color: $brandcolor;
+          }
+        }
+
+        .name-objective {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          max-width: 100%;
+          word-break: break-all;
+        }
+
+        .div-objective {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+
+          .bo_2 {
+            padding: 0 5pt;
+          }
+        }
+
+        > .image-tag {
+          width: 60pt;
+          height: 60pt;
+          border-radius: 50%;
+        }
+
+        > .loading-image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 65pt;
+
+          mat-spinner {
+            width: 45pt;
+            height: 45pt;
+
+            svg {
+              width: 45pt;
+              height: 45pt;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.image-waste {
+  background-color: $bg-grey;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.linear-background {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background-size: 1000px 104px;
+  width: 60pt;
+  height: 60pt;
+  position: relative;
+  border-radius: 50%;
+}
+
+@media (max-width: $medium) {
+  .wrapper-body-objective {
+    >.wrapper-choose-tag {
+      >.wrapper-body-doing {
+        >.wrapper-doing {
+          width: calc(50% - 28pt);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $small) {
+  .wrapper-body-objective {
+    >.wrapper-choose-tag {
+      >.wrapper-body-doing {
+        >.wrapper-doing {
+          width: calc(50% - 28pt);
+        }
+      }
+    }
+  }
+}

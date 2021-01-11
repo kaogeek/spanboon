@@ -1,0 +1,40 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="slider-view check-left">
+    <div class="header-title">
+        <div class="left">
+            {{topic}}
+        </div>
+        <div class="left">ขั้นสูง:
+            <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isAdvance"
+                (change)="onChangeSlide($event)"></mat-slide-toggle>
+        </div>
+    </div>
+    <ng-container *ngIf="isAdvance; else elseSilder">
+        <div class="wrapper-card" *ngFor="let item of advance">
+            <div class="header-card">
+                {{item.topic}}
+            </div>
+            <div class="box-slider">
+                <ng5-slider [(value)]="item.value" [(highValue)]="item.highValue" [options]="sliderOptions(item)"
+                    (userChangeStart)="onUserChangeStart($event,item)" (userChange)="onUserChange($event,item)"
+                    (userChangeEnd)="onUserChangeEnd($event,item)">
+                </ng5-slider>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #elseSilder>
+        <div class="wrapper-card">
+            <ng5-slider [(value)]="value" [(highValue)]="highValue" [options]="options"
+                (userChangeStart)="onUserChangeStart($event,item)" (userChange)="onUserChange($event,2)"
+                (userChangeEnd)="onUserChangeEnd($event,2)"></ng5-slider>
+            <!-- <ng5-slider [(value)]="from" [(highValue)]="highValueShare" [options]="sliderOptions(item)"></ng5-slider> -->
+        </div>
+    </ng-template>
+
+</div>

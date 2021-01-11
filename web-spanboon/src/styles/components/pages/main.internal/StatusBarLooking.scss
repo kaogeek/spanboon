@@ -1,0 +1,286 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.status-bar-looking {
+    display: flex;
+    width: 100%;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    margin-bottom: 10pt;
+    padding: 5pt 0 7pt 0;
+    border-bottom: 3px solid $black;
+    background: $white;
+
+    > .wrapper-left {
+        display: flex;
+        margin-left: 20pt;
+        margin-right: 5%;
+        flex: 1 1 0;
+        align-items: center;
+
+        > .wrapper-topic {
+            > .topic-label {
+                font-family: "Kanit-500";
+                font-size: 26px;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        }
+    }
+
+    > .topic-label-right {
+        text-align: right;
+        display: flex;
+        align-items: center;
+
+        > .topic-count {
+            font-family: "Kanit-500";
+            font-size: 22px;
+            color: $color-black;
+
+            > a {
+                > .topic-type {
+                    color: $color-warm-red;
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    margin-left: 5pt;
+                    @include pointer();
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        > .topic-date {
+            color: $color-black;
+            font-family: "Kanit-500";
+            font-size: 20px;
+
+            > .date {
+                display: flex;
+                align-items: center;
+
+                > .time {
+                    height: 12pt;
+                    width: 12pt;
+                    margin-right: 5pt;
+                }
+
+                > span {
+                }
+            }
+
+            > a {
+                > .topic-type {
+                    color: $color-warm-red;
+                    font-family: "Kanit-500";
+                    font-size: 18px;
+                    margin-left: 5pt;
+                    @include pointer();
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+    .status-bar-looking {
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-date {
+                > a {
+                    > .topic-type {
+                        font-size: 17px;
+                    }
+                }
+            }
+
+            > .topic-count {
+                > a {
+                    > .topic-type {
+                        font-size: 17px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .status-bar-looking {
+        padding: 3pt 0 5pt;
+
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+                    font-size: 20px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-date {
+                font-size: 18px;
+
+                > a {
+                    > .topic-type {
+                        font-size: 16px;
+                    }
+                }
+            }
+
+            > .topic-count {
+                font-size: 18px;
+
+                > a {
+                    > .topic-type {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .status-bar-looking {
+        > .wrapper-left {
+            > .wrapper-topic {
+                > .topic-label {
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-date {
+                font-size: 16px;
+
+                > a {
+                    > .topic-type {
+                        font-size: 15px;
+                    }
+                }
+            }
+
+            > .topic-count {
+                font-size: 16px;
+
+                > a {
+                    > .topic-type {
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .status-bar-looking {
+        > .wrapper-left {
+            margin-left: 15pt;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    // font-size: 20px;
+                }
+            }
+        }
+
+        > .topic-label-right {
+            > .topic-date {
+                > a {
+                    > .topic-type {
+                        // font-size: 14px;
+                    }
+                }
+            }
+
+            > .topic-count {
+                // font-size: 16px;
+
+                > a {
+                    > .topic-type {
+                        // font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .status-bar-looking {
+        > .wrapper-left {
+            margin-left: 10pt;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    font-size: 18px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        >.topic-label-right{
+            >.topic-date , > .topic-count{
+                >a{
+                    >.topic-type{
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .status-bar-looking {
+        // padding: 5pt 0;
+
+        > .wrapper-left {
+            margin-left: 0;
+
+            > .wrapper-topic {
+                > .topic-label {
+                    // font-size: 18px;
+                }
+
+                > .wrapper-icon {
+                    > span {
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+    }
+}

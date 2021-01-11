@@ -1,0 +1,428 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-create-page">
+    <span class="onClose" (click)="onClose()">
+        <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
+            style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">
+            <g>
+                <path d="M27.948,20.878L40.291,8.536c1.953-1.953,1.953-5.119,0-7.071c-1.951-1.952-5.119-1.952-7.07,0L20.878,13.809L8.535,1.465
+		c-1.951-1.952-5.119-1.952-7.07,0c-1.953,1.953-1.953,5.119,0,7.071l12.342,12.342L1.465,33.22c-1.953,1.953-1.953,5.119,0,7.071
+		C2.44,41.268,3.721,41.755,5,41.755c1.278,0,2.56-0.487,3.535-1.464l12.343-12.342l12.343,12.343
+		c0.976,0.977,2.256,1.464,3.535,1.464s2.56-0.487,3.535-1.464c1.953-1.953,1.953-5.119,0-7.071L27.948,20.878z" />
+            </g>
+        </svg>
+    </span>
+    <div class="create-left">
+        <div class="create-teaser">
+            <div class="header">
+                สร้างเพจสะพานบุญ
+            </div>
+            <div class="title">
+                สร้างเพจสะพานบุญให้กับตัวคุณ หรือองค์กรของคุณ เพื่อบอกต่อเรื่องราว และความต้องการที่คุณกำลังมองหา
+                แล้วคุณจะแปลกใจที่รู้ว่ายังมีอีกหลายคนบนโลกใบนี้ที่พร้อมเติมเต็มให้กับคุณผ่านแพลตฟอร์มสะพานบุญเพื่อสร้างสรรค์สิ่งดีๆ 
+                ให้เกิดขึ้นบนโลกใบนี้
+            </div>
+        </div>
+    </div>
+    <div class="create-right">
+        <!-- <div class="right-top">
+            <span class="create-help">
+                ให้เราช่วยคุณไหม?
+            </span>
+        </div> -->
+        <div class="right-body">
+            <div class="box-create">
+                <div class="box-header">
+                    <div class="header">
+                        เลือกประเภทขององค์กรของคุณ
+                    </div>
+                    <div class="title">
+                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                    </div>
+                </div>
+                <div class="box-center">
+                    <ng-container *ngIf="!isLoading; else elseTemplatePage">
+                        <div class="list-items-organization" matRipple [matRippleCentered]="'centered'"
+                            [matRippleColor]="'#00000008'" [class.active]="typeId === item.id"
+                            *ngFor="let item of resPageType; let index = index" (click)="selectedListType(item)">
+                            <div class="box-center-left">
+                                <ng-container *ngIf="item.iconBase64 && item.iconBase64 !== ''; else elseIconBase64">
+                                    <img class="img-type" src="{{item.iconBase64}}">
+                                </ng-container>
+                                <ng-template #elseIconBase64>
+                                    <img class="img-type" src="../../../../assets/img/profile.svg">
+                                </ng-template>
+                            </div>
+                            <div class="box-center-right">
+                                <div class="type-name">
+                                    <span>
+                                        {{item.name}}
+                                    </span>
+                                </div>
+                                <div class="type-arrow" *ngIf="typeId === item.id">
+                                    <span class="material-icons">
+                                        arrow_forward
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-items-organization" matRipple [matRippleCentered]="'centered'"
+                            [matRippleColor]="'#00000008'" [class.active]="isActive" (click)="selectedListType(1)">
+                            <div class="box-center-left">
+                                <img class="img-type" src="../../../../assets/img/profile.svg">
+                            </div>
+                            <div class="box-center-right">
+                                <div class="type-name">
+                                    <span>
+                                        อื่นๆ
+                                    </span>
+                                </div>
+                                <div class="type-arrow" *ngIf="isActive">
+                                    <span class="material-icons">
+                                        arrow_forward
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplatePage>
+                        <Preload-card *ngFor="let item of [0 , 1 , 2 , 3 , 4]; let index = index" [isShowCard3]="true">
+                        </Preload-card>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="box-create">
+                <div class="box-header">
+                    <div class="header">
+                        ตั้งโปรไฟล์ของเพจ
+                    </div>
+                    <div class="title">
+                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                    </div>
+                </div>
+                <div class="box-center">
+                    <div class="profile-page">
+                        <div class="set-profile-page">
+                            <!-- <ng-container *ngIf="resProfilePage && resProfilePage.image ; else elseTemplateProfile">
+                                <img class="image-user" name="image" src="{{resProfilePage.image}}" alt="">
+                            </ng-container>
+                            <ng-template #elseTemplateProfile>
+                                <img class="image-user" src="../../../../assets/img/profile.svg" alt="">
+                            </ng-template> -->
+                            <img class="image-user" src="../../../../assets/img/profile.svg" alt="">
+                            <div class="open-img" (click)="showDialogImage()">
+                                <svg class="icon-image" height="14.996" viewBox="0 0 20.071 14.996" width="20.071"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g id="camera" transform="translate(0 -48.918)">
+                                        <g data-name="Group 1312" id="Group_1312" transform="translate(0 48.918)">
+                                            <g data-name="Group 1311" id="Group_1311" transform="translate(0 0)">
+                                                <path
+                                                    d="M133.888,143a3.26,3.26,0,1,0,3.26,3.259A3.26,3.26,0,0,0,133.888,143Zm1.788,5.048a2.527,2.527,0,1,1,0-3.574A2.527,2.527,0,0,1,135.676,148.049Z"
+                                                    data-name="Path 3216" fill="#747474" id="Path_3216"
+                                                    transform="translate(-123.853 -138.121)"></path>
+                                                <path
+                                                    d="M19.706,50.935a1.245,1.245,0,0,0-.882-.367H14.079l-.166-.855a1.071,1.071,0,0,0-.28-.556.79.79,0,0,0-.573-.239H7.013a.787.787,0,0,0-.548.207l-.027.023a1.069,1.069,0,0,0-.28.552l-.166.855H1.245A1.245,1.245,0,0,0,0,51.8V62.665a1.245,1.245,0,0,0,.365.882h0a1.245,1.245,0,0,0,.882.367H18.826a1.245,1.245,0,0,0,1.245-1.245V51.817A1.245,1.245,0,0,0,19.706,50.935ZM3.378,54.058H2.756a.78.78,0,0,1,0-1.56h.622a.78.78,0,0,1,0,1.56Zm6.659,7.347a4.347,4.347,0,0,1,0-8.694h0a4.347,4.347,0,0,1,0,8.694Z"
+                                                    data-name="Path 3217" fill="#747474" id="Path_3217"
+                                                    transform="translate(0 -48.918)"></path>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="box-input">
+                            <mat-label class="title">ชื่อเพจ</mat-label>
+                            <div class="drop-input">
+                                <input #pageName id="username" type="text" class="input-page"
+                                    placeholder="ใส่ชื่อเพจของคุณ" shake [shake]="isEmpty">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">กรุณากรอกชื่อเพจของคุณ</div>
+                        </div>
+                        <div class="box-input">
+                            <mat-label class="title">URL ของเพจ</mat-label>
+                            <div class="drop-input">
+                                <span class="add-page">@</span>
+                                <!-- [class.correct]='uuid' -->
+                                <input #urlPage id="urlPage" maxlength="15" type="text" class="input-page add-to-page"
+                                    [class.correct]='uuid' placeholder="เพจ" (keyup)="checkUUID(urlPage.value)">
+                            </div>
+                            <!-- <div class="label-show-error">กรุณากรอก URL ของเพจ</div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-create">
+                <div class="box-header">
+                    <div class="header">
+                        ตั้งโปรไฟล์ของเพจ
+                    </div>
+                    <div class="title">
+                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                    </div>
+                </div>
+                <div class="box-center">
+                    <div class="detail-page">
+                        <div class="box-input input-detail">
+                            <mat-label class="title">หน่วยงาน</mat-label>
+                            <div class="drop-input">
+                                <input type="text" #organizations id="organization" [(ngModel)]="organization"
+                                    class="input-page" placeholder="หน่วยงาน">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">หน่วยงาน</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">หมายเลขโทรศัพท์</mat-label>
+                            <div class="drop-input">
+                                <input #mobiles id="mobile" [(ngModel)]="mobile" type="text" class="input-page"
+                                    placeholder="หมายเลขโทรศัพท์">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">หมายเลขโทรศัพท์</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">อีเมล์</mat-label>
+                            <div class="drop-input">
+                                <input #emails id="email" [(ngModel)]="email" type="text" id="email" class="input-page checkEmail"
+                                    placeholder="อีเมล์" (keyup)="checkPatternEmail(emails.value)">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">อีเมล์</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">ไลน์</mat-label>
+                            <div class="drop-input">
+                                <input #lines id="line" [(ngModel)]="line" type="text" class="input-page"
+                                    placeholder="ไลน์">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">ไลน์</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">เฟสบุ๊ค</mat-label>
+                            <div class="drop-input">
+                                <input #facebooks id="facebook" [(ngModel)]="facebook" type="text" class="input-page"
+                                    placeholder="เฟสบุ๊ค">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">เฟสบุ๊ค</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">ทวิตเตอร์</mat-label>
+                            <div class="drop-input">
+                                <input #twitters id="twitter" [(ngModel)]="twitter" type="text" class="input-page"
+                                    placeholder="ทวิตเตอร์">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">ทวิตเตอร์</div>
+                        </div>
+                        <div class="box-input input-detail">
+                            <mat-label class="title">เว็บไซต์</mat-label>
+                            <div class="drop-input">
+                                <input #webs type="text" id="web" [(ngModel)]="web" class="input-page"
+                                    placeholder="เว็บไซต์">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">เว็บไซต์</div>
+                        </div>
+                        <!-- <div class="box-input input-detail">
+                            <mat-label class="title">ชื่อเพจ</mat-label>
+                            <div class="drop-input">
+                                <input type="text" class="input-page" placeholder="ใส่ชื่อเพจของคุณ">
+                            </div>
+                            <div class="label-show-error" *ngIf="isNull">กรุณากรอกชื่อเพจของคุณ</div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-create">
+                <div class="box-center box-confirm">
+                    <div class="page-success">
+                        <!-- <div class="top">
+                            <div class="header">
+                                ยืนยันการสร้างเพจ
+                            </div>
+                            <div class="title">
+                                หลังจากการยืนยันคุณสามารถเข้าใช้งานเพจของคุณได้แล้ว
+                            </div>
+                        </div> -->
+                        <!-- <div class="bottom">
+                            <ng-container *ngIf="isEmptyObject(resProfilePage); else elseTemplateImage">
+                                <img src="{{resProfilePage.image}}" alt="" class="image-user">
+                            </ng-container>
+                            <ng-template #elseTemplateImage>
+                                <img src="../../../../assets/img/profile.svg" alt="" class="image-user">
+                            </ng-template>
+                            <div class="username">
+                                {{pName}}
+                            </div>
+                        </div> -->
+
+                        <div class="page-confirm">
+                            <!-- <div class="box-input input-detail">
+                                <mat-label class="title">หน่วยงาน</mat-label>
+                                <div class="drop-input">
+                                    <input type="text" #organizations id="organization" [(ngModel)]="organization" class="input-page" placeholder="หน่วยงาน">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">หน่วยงาน</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">หมายเลขโทรศัพท์</mat-label>
+                                <div class="drop-input">
+                                    <input [(ngModel)]="mobile" type="text" class="input-page" placeholder="หมายเลขโทรศัพท์">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">หมายเลขโทรศัพท์</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">อีเมล์</mat-label>
+                                <div class="drop-input">
+                                    <input #emailComfirm [(ngModel)]="email" type="text" class="input-page" placeholder="อีเมล์" (keyup)="checkPatternEmail(emailComfirm.value)">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">อีเมล์</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">ไลน์</mat-label>
+                                <div class="drop-input">
+                                    <input  [(ngModel)]="line" type="text" class="input-page" placeholder="ไลน์">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">ไลน์</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">เฟสบุ๊ค</mat-label>
+                                <div class="drop-input">
+                                    <input  [(ngModel)]="facebook" type="text" class="input-page" placeholder="เฟสบุ๊ค">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">เฟสบุ๊ค</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">ทวิตเตอร์</mat-label>
+                                <div class="drop-input">
+                                    <input [(ngModel)]="twitter" type="text" class="input-page" placeholder="ทวิตเตอร์">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">ทวิตเตอร์</div>
+                            </div>
+                            <div class="box-input input-detail">
+                                <mat-label class="title">เว็บไซต์</mat-label>
+                                <div class="drop-input">
+                                    <input  type="text"  [(ngModel)]="web" class="input-page" placeholder="เว็บไซต์">
+                                </div>
+                                <div class="label-show-error" *ngIf="isNull">เว็บไซต์</div>
+                            </div> -->
+                            <div class="head-confirm">
+                                ความเป็นส่วนตัวและข้อกำหนด
+                            </div>
+                            <div class="detail-confirm">
+                                <div class="agreement">
+                                    <div class="agreement-title">
+                                        ยินดีต้อนรับสู่ เพจสะพานบุญ
+                                    </div>
+                                    <div class="grop-agreement">
+                                        <div class="header-agreement">
+                                            ในการสร้างเพจของสะพานบุญ คุณจะต้องยอมรับข้อกำหนดในการให้บริการด้านล่าง
+                                        </div>
+                                        <ul>
+                                            <li>
+                                                <p>หลักการปฏิบัติทางธุรกิจที่ไม่อนุญาต</p>
+                                                เพจ กลุ่ม และงานกิจกรรมต้องไม่โปรโมทสินค้า บริการ แผนการ
+                                                หรือข้อเสนอโดยใช้หลักปฏิบัติทางธุรกิจ
+                                                ที่หลอกลวง หรือชวนให้เข้าใจผิด ซึ่งรวมถึงวิธีการต่างๆ
+                                                ที่เจตนาเพื่อหลอกลวงให้ผู้คนเสียเงิน หรือให้ข้อมูลส่วนตัว
+                                            </li>
+                                            <li>
+                                                <p>การปลอมแปลงเป็นผู้อื่น</p>
+                                                เพจ กลุ่ม และงานกิจกรรมต้องไม่ปลอมเป็นบุคคลอื่น
+                                                หรือหลอกลวงเป็นตัวแทนของแบรนด์ หน่วยงาน หรือบุคคลสาธารณะ หากเพจ กลุ่ม
+                                                หรืองานกิจกรรมใช้เพื่อแสดงการสนับสนุน หรือความสนใจในแบรนด์ หน่วยงาน
+                                                หรือบุคคลสาธารณะ จะต้องระบุให้ชัดเจนในชื่อ
+                                                หรือคำอธิบายว่าไม่ใช่เป็นตัวแทนอย่างเป็นทางการ
+                                            </li>
+                                            <li>
+                                                <p>การจูงใจ</p>
+                                                เพจ กลุ่ม และงานกิจกรรมต้องไม่จูงใจเพื่อโน้มน้าวผู้คนให้ใช้ฟีเจอร์
+                                                หรือฟังก์ชั่นของ สะพานบุญ ในทางที่ผิด
+                                            </li>
+                                        </ul>
+                                        <div class="header-agreement">
+                                            <div class="check-true">
+                                                <mat-checkbox [disableRipple]="'true'" [(ngModel)]="checkedCon"></mat-checkbox>
+                                                <span (click)="checkedClick()">ฉันได้อ่านข้อความที่กล่าวมา และยินยอมตามข้อกำหนดของสะพานบุญ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-create">
+                <div class="box-center">
+                    <div class="page-success">
+                        <div class="top">
+                            <div class="header">
+                                สร้างเพจสำเร็จ
+                            </div>
+                            <div class="title">
+                                คุณสามารถเข้าใช้งานเพจของคุณได้แล้ว
+                            </div>
+                        </div>
+                        <div class="bottom">
+                            <ng-container
+                                *ngIf="resProfilePage && resProfilePage.imageURL !== undefined && resProfilePage.imageURL !== '' && resProfilePage.imageURL !== null; else elseTemplate">
+                                <img src="{{apiBaseURL+resProfilePage.imageURL+'/image'}}" alt="" class="image-user">
+                            </ng-container>
+                            <ng-template #elseTemplate>
+                                <img src="../../../../assets/img/profile.svg" alt="" class="image-user">
+                            </ng-template>
+
+                            <!-- <ng-container
+                            *ngIf="resUser && resUser.imageBase64 && resUser.imageBase64 !== ''; else elseProfile">
+                            <img src="{{resUser && resUser.imageBase64}}" alt="" class="image-user">
+                        </ng-container>
+                        <ng-template #elseProfile>
+                            <div class="image-user not-image">
+                                {{resUser && resUser.displayName | slice: 0:1 }}
+                            </div>
+                        </ng-template> -->
+
+                            <div class="username">
+                                {{resProfilePage && resProfilePage.name}}
+                            </div>
+                            <div class="sub-name"
+                                *ngIf="resProfilePage && resProfilePage.pageUsername  && resProfilePage.pageUsername !== '' && resProfilePage.pageUsername !== undefined && resProfilePage.pageUsername !== null">
+                                {{'@'+resProfilePage.pageUsername}}
+                            </div>
+                            <!-- <div class="sub-name"
+                                *ngIf="resProfilePage && resProfilePage.pageUsername  && resProfilePage.pageUsername !== '' && resProfilePage.pageUsername !== undefined && resProfilePage.pageUsername !== null">
+                                {{'@'+resProfilePage.pageUsername}}
+                            </div>  -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-bottom">
+            <div class="bottom-left">
+                <button mat-stroked-button class="but-canc" (click)="onClose()" *ngIf="isCanCel">ยกเลิก</button>
+                <button mat-stroked-button class="but-prev" id="prevBtn" *ngIf="isBack"(click)="nextPrev(-1)">ย้อนกลับ</button>
+            </div>
+            <div class="bottom-center">
+                <div class="wizar">
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                </div>
+            </div>
+            <div class="bottom-right">
+                <button mat-stroked-button class="but-skip" id="skipBtn" *ngIf="isSkip" (click)="skip(3)">ข้าม</button>
+                <button mat-stroked-button class="but-conf" id="nextBtn" *ngIf="isNext"
+                    (click)="nextPrev(1)">ถัดไป</button>
+            </div>
+        </div>
+    </div>
+</div>

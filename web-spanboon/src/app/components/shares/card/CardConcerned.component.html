@@ -1,0 +1,21 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="concerned">
+    <div class="concerned-text-h">
+        <span>ที่เกี่ยวของ</span>
+    </div>
+    <div *ngFor="let hashtag of dataStoryHashtag;let index = index" class="concerned-text">
+        <span class="text-top">กำลังมาแรงมากๆ</span>
+        <span class="text-center">{{hashtag.title}}</span>
+        <div class="text-bottom">
+            <span style="margin-right: 10px;">{{likeCount}} ถูกใจ</span>
+            <span class="drot">•</span>
+            <span style="margin-left: 10px;">{{shareCount}} บอกต่อ</span>
+        </div>
+    </div>
+</div>

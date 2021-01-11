@@ -1,0 +1,434 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.card-item-looking-for {
+    background-color: $white;
+    border: $width-border solid $border-color;
+    border-radius: $border-radius-4px;
+    margin-top: 5pt;
+    font-family: "Kanit-500";
+    font-size: 16px;
+
+    > .wrapper-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 15pt;
+        border-bottom: $width-border solid $border-color;
+
+        > .header-option {
+            flex: 1 1 0%;
+            padding-right: 15pt;
+
+            > .header-looking-for {
+                font-family: "Kanit-500";
+                font-size: 18px;
+            }
+            > .material-icons {
+                @include pointer();
+            }
+
+            > .label-looking-for {
+                font-family: "Kanit-500";
+                font-size: 18px;
+            }
+
+            > .subline-looking-for {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: $koalaGray;
+            }
+        }
+
+        div {
+            flex: 0 0 auto;
+
+            > .material-icons {
+                font-size: 20px;
+                @include pointer();
+            }
+        }
+    }
+    > .wrapper-body-doing {
+        width: 100%;
+        height: auto;
+        padding: unset !important;
+        border-bottom: unset !important;
+
+        > .con-text {
+            // display: -webkit-box;
+            // -webkit-line-clamp: 10;
+            // -webkit-box-orient: vertical;
+            // overflow: hidden;
+            // word-break: break-all;
+            padding: 10pt 15pt;
+            font-family: "Kanit-300";
+            font-size: 16px;
+            // color: rgba($black, 0.6);
+        }
+
+        > .wrapper-doing {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: calc(33.33% - 20pt - 6px);
+            padding: 15pt 10pt;
+            margin: 3px;
+            @include pointer();
+
+            &:hover {
+                background-color: $background-hover;
+            }
+
+            display-image {
+                > .image-tag {
+                    margin: unset !important;
+                    margin-bottom: 5pt;
+                    width: 45pt;
+                    height: 45pt;
+                    border-radius: 50%;
+                }
+            }
+
+            > .loading-image {
+                > .linear-background {
+                }
+            }
+
+            > .i_title {
+                margin-top: 2pt;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-all;
+                width: 100%;
+            }
+        }
+        > .content-all {
+            border-top: $width-border solid $border-color;
+            width: calc(100% - 30pt);
+            padding: 8pt 15pt;
+            text-align: center;
+            color: $color-warm-red;
+            @include pointer();
+            font-family: "Kanit-500";
+            font-size: 16px;
+            min-height: 26pt;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    > .doing-swipper {
+        display: none;
+        padding: 10px;
+
+        > .swiper-container {
+            // display: flex;
+            // align-items: center;
+
+            > .swiper-wrapper {
+                > .swiper-slide {
+                    > .wrapper-doing {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px;
+                        border-radius: 4px;
+                        background: $bg-fog-gray2;
+                        border: 0.7px solid #F2F2F2;
+                        @include pointer();
+
+                        display-image {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin-bottom: 5pt;
+
+                            > .image-tag {
+                                user-select: none;
+                                width: 60pt;
+                                height: 60pt;
+                                object-fit: cover;
+                                border-radius: 50%;
+                            }
+                        }
+
+                        > .i_title {
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            word-break: break-all;
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: rgb($black, 0.6);
+                        }
+                    }
+                }
+            }
+
+            // > .swiper-button-prev {
+            //     left: 5pt;
+            // }
+
+            // > .swiper-button-next {
+            //     right: 5pt;
+            // }
+
+            // > .swiper-button-prev,
+            // > .swiper-button-next {
+            //     top: unset;
+            //     display: flex;
+            //     align-items: center;
+            //     justify-content: center;
+            //     width: 30pt;
+            //     height: 30pt;
+            //     border-radius: 50%;
+            //     background: $color-warm-red;
+            //     border: 0.7px solid rgb($black, 0.2);
+
+            //     &.swiper-button-disabled {
+            //         opacity: 0;
+            //     }
+
+            //     &:hover {
+            //         background: rgb($color-warm-red, 0.9);
+            //     }
+
+            //     > .material-icons {
+            //         user-select: none;
+            //         font-size: 26pt;
+            //         color: $white;
+            //     }
+            // }
+        }
+    }
+
+    > .list-looking-for {
+        > .item-looking-for {
+            padding: 10pt 8pt 10pt 15pt;
+            margin: 0;
+
+            &:hover {
+                border-radius: 0;
+            }
+
+            > span {
+                > .icon-looking-for {
+                }
+
+                > .title-looking-for {
+                    > .top {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        word-break: break-all;
+                    }
+
+                    > .bottom {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        word-break: break-all;
+                    }
+                }
+            }
+
+            > .wrapper-option {
+                > .amount-looking-for {
+                    > .top {
+                    }
+
+                    > .bottom {
+                    }
+                }
+
+                > .option {
+                    > svg {
+                        height: 12pt;
+                    }
+                }
+            }
+        }
+    }
+
+    > .looking-swipper {
+        display: none;
+        padding: 10px;
+
+        > .swiper-container {
+            // display: flex;
+            // align-items: center;
+
+            > .swiper-wrapper {
+                > .swiper-slide {
+                    > .list-items-ob {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        border-radius: 4px;
+                        background: $white;
+                        border: 0.7px solid #F2F2F2;
+                        @include pointer();
+
+                        > .div-img {
+                            width: 100%;
+                            padding: 15pt 0;
+                            background: $bg-fog-gray2;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            > .icon-ob {
+                                width: 60pt;
+                                height: 60pt;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                user-select: none;
+                                margin-bottom: 5pt;
+                            }
+                        }
+
+                        > .bottom-ob {
+                            padding: 10pt 15pt;
+                            width: calc(100% - 30pt);
+                            user-select: none;
+
+                            > .name-ob {
+                                width: 100%;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                word-break: break-all;
+                                font-family: "Kanit-500";
+                                font-size: 16px;
+                                color: rgb($black, 0.6);
+                            }
+
+                            > .ob-flex {
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-end;
+                                margin-top: 5pt;
+                                width: 100%;
+
+                                > .ob-top {
+                                    font-family: "Kanit-500";
+                                    font-size: 16px;
+                                    color: $bg-color4;
+                                }
+
+                                > .ob-bottom {
+                                    margin-left: 5pt;
+                                    font-family: "Kanit-500";
+                                    font-size: 16px;
+                                    color: rgb($black, 0.6);
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    word-break: break-all;
+                                }
+
+                                // > .obflex-right {
+                                //     flex: 0 0 auto;
+
+                                //     > a {
+                                //         spanboon-button {
+                                //             > .ob-btn {
+                                //                 width: 60pt;
+                                //             }
+                                //         }
+                                //     }
+                                // }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // > .swiper-button-prev {
+            //     left: 5pt;
+            // }
+
+            // > .swiper-button-next {
+            //     right: 5pt;
+            // }
+
+            // > .swiper-button-prev,
+            // > .swiper-button-next {
+            //     top: unset;
+            //     display: flex;
+            //     align-items: center;
+            //     justify-content: center;
+            //     width: 26pt;
+            //     height: 26pt;
+            //     border-radius: 50%;
+            //     background: $color-warm-red;
+            //     border: 0.7px solid rgb($black, 0.2);
+
+            //     &.swiper-button-disabled {
+            //         opacity: 0;
+            //     }
+
+            //     &:hover {
+            //         background: rgb($color-warm-red, 0.9);
+            //     }
+
+            //     > .material-icons {
+            //         user-select: none;
+            //         font-size: 26pt;
+            //         color: $white;
+            //     }
+            // }
+        }
+    }
+
+    > .btn-donate {
+        padding: 8pt 15pt;
+        text-align: center;
+        min-height: 26pt;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+
+        > .btn {
+            width: 60pt;
+        }
+
+        > .btn-fulfill {
+            padding: 3pt 9pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+            @include pointer();
+            color: $white;
+            background-color: #84b572;
+            border-radius: 5pt;
+            border: 3pt solid #7aaf67;
+        }
+
+        > .btn-donate-top {
+            font-family: "Kanit-500";
+            font-size: 16px;
+            color: $color-warm-red;
+        }
+
+        > .btn-donate-bottom {
+            font-family: "Kanit-500";
+            font-size: 14px;
+            color: $koalaGray;
+        }
+    }
+}

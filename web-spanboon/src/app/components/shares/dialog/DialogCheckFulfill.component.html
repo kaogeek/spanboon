@@ -1,0 +1,101 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-confirm-fulfill">
+    <span class="onClose" (click)="onClose()">
+        <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
+            style="enable-background:new 0 0 41.756 41.756;" xml:space="preserve">
+            <g>
+                <path d="M27.948,20.878L40.291,8.536c1.953-1.953,1.953-5.119,0-7.071c-1.951-1.952-5.119-1.952-7.07,0L20.878,13.809L8.535,1.465
+		c-1.951-1.952-5.119-1.952-7.07,0c-1.953,1.953-1.953,5.119,0,7.071l12.342,12.342L1.465,33.22c-1.953,1.953-1.953,5.119,0,7.071
+		C2.44,41.268,3.721,41.755,5,41.755c1.278,0,2.56-0.487,3.535-1.464l12.343-12.342l12.343,12.343
+		c0.976,0.977,2.256,1.464,3.535,1.464s2.56-0.487,3.535-1.464c1.953-1.953,1.953-5.119,0-7.071L27.948,20.878z" />
+            </g>
+        </svg>
+    </span>
+
+    <div class="confirm-fulfill-header">
+        <div class="top">
+            <div class="header">
+                <div class="title">{{data.text}}</div>
+            </div>
+        </div>
+
+        <div class="confirm-fulfill-item">
+            <mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="imageURL">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ng-container *ngIf="element.imageURL; else elseImageURL">
+                            <img src="{{apiBaseURL+element.imageURL+'/image'}}" style="width: 25pt;height: 25pt;" />
+                        </ng-container>
+                        <ng-template #elseImageURL>
+                            <img src="../../../../assets/img/pic2.svg" style="width: 25pt;height: 25pt;" />
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef>
+                        รายการ
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        {{element.name}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="quantity">
+                    <mat-header-cell *matHeaderCellDef>
+                        จำนวน
+                    </mat-header-cell>
+                    <mat-cell class="cell-number" *matCellDef="let element">
+                        {{element.quantity}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="unit">
+                    <mat-header-cell *matHeaderCellDef>
+                        หน่วย
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        {{element.unit}}
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns;
+                 sticky: true"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </div>
+    <div class="confirm-fulfill-footer">
+        <div class="check-fulfill-button">
+            <div class="button button-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onCancel() ">
+                {{data.bottomText1 ? data.bottomText1 : "ยกเลิก"}}</div>
+            <div class="button button-edit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ไม่, เปิดคำขอเติมเต็มใหม่"}}
+            </div>
+            <div class="button button-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="onClose() ">{{data.bottomText3 ? data.bottomText3 : "ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม"}}
+            </div>
+        </div>
+
+        <!-- <spanboon-button class="confirm-fulfill-button button-cancel"
+            [text]="data.bottomText1 ? data.bottomText1 : 'ยกเลิก'" [radius]="'5pt'" [bgColor]="'#F8F7F2'"
+            [width]="'80pt'" [color]="'#212721'" (click)="onCancel()">
+        </spanboon-button>
+        <spanboon-button class="confirm-fulfill-button button-edit"
+            [text]="data.bottomText2 ? data.bottomText2 : 'ไม่, เปิดคำขอเติมเต็มใหม่'" [bgColor]="'#F8F7F2'"
+            [radius]="'5pt'" [color]="'#212721'" [width]="'130pt'" (click)="onConfirm()">
+        </spanboon-button>
+        <spanboon-button class="confirm-fulfill-button button-submit"
+            [text]="data.bottomText3 ? data.bottomText3 : 'ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม'" [bgColor]="'#7AAF67'"
+            [radius]="'5pt'" [width]="'130pt'" (click)="onClose()">
+        </spanboon-button> -->
+    </div>
+</div>

@@ -1,0 +1,265 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.btn-notfication {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: unset !important;
+    padding: unset !important;
+    position: relative;
+    @include pointer();
+    transition: 0.3s background-color ease;
+
+    &:active {
+        background-color: $border-color;
+    }
+
+    &.active {
+        svg {
+            path {
+                fill: $brandcolor2 !important;
+            }
+        }
+    }
+
+    .notiAlert {
+        min-width: 20px;
+        height: 20px;
+        padding: 1px;
+        border-radius: 10px;
+        color: white;
+        background-color: $color-warm-red;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: -6px;
+        right: -5px;
+        font-family: "Kanit-300";
+        font-size: 14px;
+
+        &.active-plus {
+            padding: 1px 5px;
+        }
+    }
+
+    > svg {
+        height: 22px;
+        width: 22px;
+
+        g,
+        path {
+            fill: $black;
+        }
+    }
+}
+
+.wrapper-notification {
+    width: 300pt !important;
+    max-width: 350pt !important;
+    margin: 5pt 0 0 0;
+
+    button.mat-menu-item {
+        width: unset !important;
+    }
+
+    .mat-menu-item {
+        overflow: unset !important;
+        line-height: 0px !important;
+    }
+
+    .mat-menu-content {
+        padding: unset !important;
+    }
+}
+
+.cdk-overlay-connected-position-bounding-box {
+    .wrapper-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40pt;
+        padding: 0 15pt;
+        border-bottom: $width-border solid $border-separator;
+        font-family: "Kanit-500";
+        font-size: 16px;
+
+        > .wrapper-noti {
+        }
+        > .wrapper-setting {
+        }
+    }
+
+    .noti-sc {
+        overflow-y: auto;
+        max-height: calc(100vh - 40pt - 40pt - 55pt);
+
+        .wrapper-list {
+            display: flex;
+            transition: 0.5s;
+            justify-content: space-between;
+            padding: 10pt;
+            align-items: center;
+            cursor: pointer;
+            // margin-bottom: 69pt;
+            border-bottom: $width-border solid $border-separator;
+
+            &:hover {
+                transition: 0.5s;
+                background-color: rgb(243, 243, 243);
+            }
+
+            &.active {
+                background-color: rgb(243, 243, 243);
+            }
+
+            > a {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+
+                > .wrapper-list-div {
+                    display: flex;
+                    align-items: center;
+
+                    > .user-noti {
+                        padding: 5pt 10pt;
+
+                        > .img {
+                            width: 34pt;
+                            height: 34pt;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+                    }
+
+                    > .wrapper-message {
+                        font-family: "Kanit-500";
+                        font-size: 14px;
+
+                        > .top {
+                            color: $black;
+
+                            > .name {
+                                display: contents;
+                                font-weight: bold;
+                            }
+                        }
+
+                        > .wrapper-time {
+                            display: flex;
+                            align-items: center;
+                            color: $koalaGray;
+                            font-family: "Kanit-400";
+                            font-size: 12px;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+
+                            svg {
+                                width: $width-time;
+                                height: $height-time;
+                                padding-right: 5pt;
+                            }
+                        }
+                    }
+                }
+
+                > .wrapper-setting {
+                }
+            }
+        } 
+        .preload {
+            padding: unset;
+        }
+    }
+
+    .wrapper-all-footer {
+        border-top: $width-border solid $border-separator;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40pt;
+        background-color: $bg-grey;
+        @include pointer();
+        font-family: "Kanit-500";
+        font-size: 14px;
+        user-select: none;
+    }
+}
+
+@media (max-width: $lmedium) {
+    .btn-notfication {
+        width: 36px;
+        height: 36px;
+    }
+    // .wrapper-notification {
+    //     height: calc(100vh - 55pt) !important;
+    //     width: 100vw !important;
+    //     max-width: 100vw !important;
+    //     max-height: 100vh !important;
+    //     min-height: 100vh !important;
+    //     margin: unset;
+    // }
+    // .cdk-overlay-pane {
+    //     right: 0 !important;
+    //     top: 55pt !important;
+    // }
+}
+
+@media (max-width: $medium) {
+    // .wrapper-notification {
+    //     max-width: 100vw !important;
+    //     max-height: calc(100vh - 55pt) !important;
+    //     min-height: calc(100vh - 55pt) !important;
+    //     width: 100vw !important;
+    //     height: 100vh !important;
+    // }
+    // .cdk-overlay-connected-position-bounding-box {
+    //     right: 0 !important;
+    // }
+}
+
+@media (max-width: $small) {
+    .btn-notfication {
+        .notiAlert {
+            min-width: 16px;
+            height: 16px;
+            font-size: 12px;
+            top: -2px;
+            right: -3px;
+
+            &.active-plus {
+                padding: 1px 2px;
+            }
+        }
+    }
+    .wrapper-notification {
+        height: calc(100vh - 39pt - 5pt) !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        min-height: 100vh !important;
+        margin: unset;
+    }
+    .noti-sub-menu+* .cdk-overlay-pane {
+        right: 0 !important;
+        top: 39pt !important;
+    }
+
+    .cdk-overlay-connected-position-bounding-box {
+        .noti-sc {
+            max-height: calc(100vh - 40pt - 40pt - 39pt);
+        }
+    }
+}

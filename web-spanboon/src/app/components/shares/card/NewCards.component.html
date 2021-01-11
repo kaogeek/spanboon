@@ -1,0 +1,82 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div *ngIf="!showLoading" class="new-cards">
+  <div class="wrapper-body">
+    <div class="wrapper-status">
+      <div class="wrapper-icon">
+        <div class="icon-active looking" *ngIf="isStausIcon">
+        </div>
+        <span [ngStyle]="{'margin-left': isStausIcon ? '5pt' : '0pt' }">{{status}}</span>
+      </div>
+      <a href={{linkPost}} target="_blank">
+        <div class="wrapper-time" style="cursor: pointer;">
+          <svg class="icon-img" height="512pt" viewBox="0 0 512 512" width="512pt" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+              fill="#A5A5A6" />
+            <path
+              d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+              fill="#A5A5A6" /></svg>
+          <span>{{createDate}}</span>
+        </div>
+      </a>
+    </div>
+    <div #topicDiv style="position: relative;" class="new-cards-topic" (mousemove)="onMouseEnter($event, topicDiv)">
+      {{topic}}
+      <div matTooltipShowDelay="{{800}}" matTooltip="{{topic}}" class="TooltipShow"
+        [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
+      </div>
+    </div>
+    <div #contentDiv style="position: relative;" (mousemove)="onMouseEnter($event, contentDiv)"
+      class="new-cards-content">
+      <div matTooltipShowDelay="{{800}}" matTooltip="{{content}}" class="TooltipShow"
+        [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
+      </div>
+      {{content | slice:0:100 }}
+      <ng-container *ngIf="content && content.length > 100">
+        <span>...</span>
+      </ng-container>
+    </div>
+    <control-action (submit)="action($event)" [userLike]="userLike" [userReboon]="userReboon"
+      [userComment]="userComment" [comment]="comment" [isWhite]="isWhite" [reboon]="reboon" [like]="like"
+      [share]="share" [widthBtnAction]="widthBtnAction" [marginPerAction]="marginPerAction" [isBlack]="'true'"
+      [isAction]="isAction" [isRed]="isRed" class="wrapper-new-cards-favorite"></control-action>
+    <div class="new-cards-footer">
+      <div #pageNameDiv style="position: relative;" (mousemove)="onMouseEnter($event, pageNameDiv)"
+        class="new-footer-icon">
+        <div matTooltipShowDelay="{{800}}" matTooltip="{{pageName}}" class="TooltipShow"
+          [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
+        </div>
+        <span class="wrapper-des-page" #showTooltip (mouseover)="Tooltip(showTooltip , data)">
+          <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
+            viewBox="0 0 43.383 47.208" *ngIf="isOfficial">
+            <g id="Group_88" data-name="Group 88" transform="translate(0)">
+              <path id="Path_141" data-name="Path 141"
+                d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                transform="translate(-36.867)" fill="#28a745" />
+              <path id="Path_142" data-name="Path 142"
+                d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                transform="translate(-259.715 -289.198)" fill="#28a745" />
+            </g>
+          </svg>
+          <a href={{linkPage}} target="_blank">
+            <div class="new-cards-pageName"> {{ pageName }} </div>
+          </a>
+        </span>
+        <span class="wrapper-des-page-bottom">
+        </span>
+      </div>
+      <a href={{linkPost}} target="_blank" class="btn-fulfill">
+        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" (click)="navigate();" [text]="'ร่วมเติมเต็ม'"
+          [radius]="'6px'" [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn"> </spanboon-button>
+      </a>
+    </div>
+  </div>
+</div>
+<Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
+</Preload-card>

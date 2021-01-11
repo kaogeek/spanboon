@@ -1,0 +1,335 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.arrow-top {
+    position: absolute;
+    z-index: 2;
+    top: 0px;
+    left: calc(50% - 25px);
+    width: 25px;
+    height: 25px;
+    background: $white;
+    box-shadow: -3px -3px 6px -1px rgba($black, 0.15);
+    transform: rotate(45deg);
+    margin: 8px auto -15px auto;
+    display: block;
+    border-bottom-right-radius: 100%;
+    opacity: 0;
+}
+
+.arrow-bottom {
+    position: absolute;
+    z-index: 2;
+    bottom: 0px;
+    left: calc(50% - 25px);
+    width: 25px;
+    height: 25px;
+    background: $white;
+    box-shadow: 3px 3px 6px -1px rgba($black, 0.15);
+    transform: rotate(45deg);
+    margin: -15px auto 8px auto;
+    display: block;
+    border-top-left-radius: 100%;
+    opacity: 0;
+}
+
+.tooltip-body {
+    margin: 17px 0;
+    position: relative;
+    padding: 20pt 15pt 15pt 15pt;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    width: 285pt;
+    max-width: 90vw;
+    background: $white;
+    border: 1px solid rgb($black, 0.1);
+    box-shadow: 3px 3px 6px 0px rgba($black, 0.15);
+    user-select: none;
+    z-index: 1;
+
+    // &::before {
+    //     content: "";
+    //     position: absolute;
+    //     bottom: -15px;
+    //     left: 40px;
+    //     width: 30px;
+    //     height: 30px;
+    //     background: $white;
+    //     box-shadow: 3px 3px 6px -1px rgba($black, 0.15);
+    //     transform: rotate(45deg);
+    //     z-index: -1;
+    // }
+
+    > .detail {
+        display: flex;
+        flex-direction: row;
+
+        > .profile {
+            overflow: hidden;
+            width: 65pt;
+            height: 65pt;
+            border-radius: 50%;
+            border: 4px solid rgb($black, 0.1);
+            flex: 0 0 auto;
+            object-fit: cover;
+        }
+
+        > .right {
+            flex: 1 1 0%;
+            margin-left: 12pt;
+
+            > .name {
+                font-family: "Kanit-500";
+                font-size: 22px;
+                line-height: 28px;
+                color: $black;
+                word-break: break-word;
+
+                &:hover {
+                    text-decoration: underline !important;
+                }
+            }
+
+            > .sub-name {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: rgb($black, 0.5);
+                word-break: break-word;
+                margin-top: 5pt;
+            }
+
+            > .category {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-top: 5pt;
+
+                > .icon {
+                    width: 20pt;
+                    height: 20pt;
+                    margin: 0 7pt;
+                }
+
+                > .text-category {
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                    color: $black;
+                }
+            }
+
+            > .follow {
+                margin-top: 5pt;
+                display: flex;
+                flex-direction: row;
+                color: $black;
+
+                > .follow-left {
+                    // width: calc(55% - 7pt);
+                    // padding-right: 7pt;
+                }
+
+                > .follow-right {
+                    // width: 45%;
+                }
+
+                > .follow-left,
+                > .follow-right {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    padding-right: 7pt;
+
+                    > .fol-span {
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        color: $black;
+                    }
+
+                    > .new-cards-status {
+                        width: 10pt;
+                        height: 10pt;
+                        margin-left: 5pt;
+
+                        svg,
+                        path {
+                            fill: $black;
+                        }
+                    }
+
+                    > .count {
+                        margin-left: 5pt;
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                        color: $black;
+                    }
+                }
+            }
+
+            > .user-pro-sub {
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: center;
+                justify-content: flex-end;
+                margin-top: 5pt;
+
+                > .img-user {
+                    width: 28pt;
+                    height: 28pt;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    flex: 0 0 auto;
+                    overflow: hidden;
+                    box-shadow: 2.5px 0px 0px 0 $white;
+                    font-size: 14px;
+                    font-family: "Kanit-500";
+                    margin-left: -6pt;
+                    background: $color-warm-red;
+                    color: $white;
+                    @include pointer();
+
+                    // &:first-child {
+                    //     margin-left: unset;
+                    // }
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+
+            > .user-detail {
+                color: $black;
+                margin-top: 5pt;
+
+                > .user-birthday {
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                }
+
+                > .user-follow {
+                    margin-top: 3pt;
+                    font-family: "Kanit-500";
+                    font-size: 16px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    > .follow-status {
+                        width: 10pt;
+                        height: 10pt;
+                        margin-left: 5pt;
+
+                        svg,
+                        path {
+                            fill: $black;
+                        }
+                    }
+
+                    > span {
+                        margin-left: 5pt;
+                    }
+                }
+            }
+        }
+    }
+
+    > .tooltip-bottom {
+        margin-top: 15pt;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        > button-follow {
+            flex: 1 1 0%;
+            margin-right: 15pt;
+
+            > .button-follow {
+                height: calc(30pt - 2px) !important;
+                min-height: calc(40px - 2px);
+                max-height: calc(40px - 2px);
+                width: calc(100% - 2px) !important;
+                font-size: 16px !important;
+
+                &:hover {
+                    background: rgb($color-warm-red, 0.1) !important;
+                }
+            }
+
+            &.active {
+                > .button-follow {
+                    background-color: $color-warm-red !important;
+                    color: $white !important;
+                }
+            }
+        }
+
+        > .tooltip-bottom-right {
+            flex: 0 0 auto;
+
+            > .but-send {
+                height: 30pt;
+                min-height: 40px;
+                max-height: 40px;
+                width: 52pt;
+                min-width: auto;
+                border-radius: 8px;
+                color: rgb($black, 0.7);
+                background: rgb($black, 0.03);
+                border: 0.7px solid rgb($black, 0.1);
+
+                &:first-child {
+                    margin-right: 8pt;
+                }
+
+                > .mat-button-wrapper {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    > .material-icons {
+                        font-size: 18pt;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.tool-sel {
+    > .mat-menu-content {
+        > .mat-menu-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            > .icon {
+                margin-right: 7pt;
+            }
+
+            > .text-label {
+                font-family: "Kanit-400";
+                font-size: 14px;
+                padding-right: 15pt;
+            }
+        }
+    }
+}
+
+// .back-drop-tool{
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+// }

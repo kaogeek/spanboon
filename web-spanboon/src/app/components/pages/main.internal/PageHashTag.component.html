@@ -1,0 +1,654 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="page-hashtag">
+    <div class="container">
+        <div class="page-recommended">
+            <div class="slide-left" #recommendedLeft>
+                <div class="popup-left" >
+                    <div class="home-left" matRipple [matRippleCentered]="'centered'" (click)="focusout()">
+                        <svg class="home-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
+                            style="enable-background:new 0 0 443.52 443.52;" xml:space="preserve">
+                            <g>
+                                <g>
+                                    <path d="M143.492,221.863L336.226,29.129c6.663-6.664,6.663-17.468,0-24.132c-6.665-6.662-17.468-6.662-24.132,0l-204.8,204.8
+                    c-6.662,6.664-6.662,17.468,0,24.132l204.8,204.8c6.78,6.548,17.584,6.36,24.132-0.42c6.387-6.614,6.387-17.099,0-23.712
+                    L143.492,221.863z" />
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="text" (click)="focusout()">
+                        ดูผลลัพธ์
+                    </span>
+                </div>
+                <ng-container *ngIf="!showLoading; else elseTemplateLoadMenu">
+                    <div class="card-checkbox-view">
+                        <div class="header-title">
+                            ค้นหาโพสต์จากวันที่
+                        </div>
+                        <div class="wrapper-card column-date">
+                            <mat-form-field class="date-range">
+                                <input matInput class="input-date" placeholder="" [satDatepicker]="picker2"
+                                    [(ngModel)]="startDate" [max]="maxDate" [min]="minDate"
+                                    (dateChange)="saveDate($event)">
+                                <sat-datepicker #picker2 [rangeMode]="true">
+                                </sat-datepicker>
+                                <sat-datepicker-toggle matSuffix [for]="picker2"></sat-datepicker-toggle>
+                            </mat-form-field>
+                            <spanboon-button class="btn" [bgColor]="'#FD545A'" [color]="'#FFFFFF'" [text]="'ล้างค่า'"
+                                [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn" (click)="clearDate()"
+                                [radius]="'6px'">
+                            </spanboon-button>
+                        </div>
+                    </div>
+                    <div class="card-checkbox-view check-left"> 
+                        <div class="header-title">
+                            <div class="left">
+                                การเข้าถึง
+                            </div>
+                            <div class="left">ขั้นสูง:
+                                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isAdvanceRich"
+                                    (change)="onChangeSlide($event , false)"></mat-slide-toggle>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="isAdvanceRich; else elseSilder1">
+                            <div class="wrapper-card" *ngFor="let itemEngagement of engagement">
+                                <div class="header-card">
+                                    {{itemEngagement.topic}}
+                                </div>
+                                <div class="box-slider">
+                                    <ng5-slider [(value)]="itemEngagement.value"
+                                        [(highValue)]="itemEngagement.highValue"
+                                        [options]="sliderOptions(itemEngagement)"
+                                        (userChangeStart)="onUserChangeStart($event,itemEngagement)"
+                                        (userChange)="onUserChange($event,itemEngagement)"
+                                        (userChangeEnd)="onUserChangeEnd($event,itemEngagement)">
+                                    </ng5-slider>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseSilder1>
+                            <div class="wrapper-card">
+                                <ng5-slider [(value)]="minEngagment" [(highValue)]="maxEngagment"
+                                    [options]="optionsEngagment" (userChangeStart)="onUserChangeStart($event,1)"
+                                    (userChange)="onUserChange($event,3)" (userChangeEnd)="onUserChangeEnd($event,1)">
+                                </ng5-slider>
+                            </div>
+                        </ng-template>
+
+                    </div>
+                    <div class="card-checkbox-view check-left">
+                        <div class="header-title">
+                            <div class="left">
+                                การมีส่วนร่วม
+                            </div>
+                            <div class="left">ขั้นสูง:
+                                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isAdvance"
+                                    (change)="onChangeSlide($event,true)"></mat-slide-toggle>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="isAdvance; else elseSilder">
+                            <div class="wrapper-card" *ngFor="let item of advance">
+                                <div class="header-card">
+                                    {{item.topic}}
+                                </div>
+                                <div class="box-slider">
+                                    <ng5-slider [(value)]="item.value" [(highValue)]="item.highValue"
+                                        [options]="sliderOptions(item)"
+                                        (userChangeStart)="onUserChangeStart($event,item)"
+                                        (userChange)="onUserChange($event,item)"
+                                        (userChangeEnd)="onUserChangeEnd($event,item)">
+                                    </ng5-slider>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseSilder>
+                            <div class="wrapper-card">
+                                <ng5-slider [(value)]="value" [(highValue)]="highValue" [options]="options"
+                                    (userChangeStart)="onUserChangeStart($event,item)"
+                                    (userChange)="onUserChange($event,2)" (userChangeEnd)="onUserChangeEnd($event,2)">
+                                </ng5-slider>
+                            </div>
+                        </ng-template> 
+                    </div>
+                    <!-- <card-checkbox [title]="'สถานที่'"></card-checkbox> -->
+                    <card-checkbox [title]="'ประเภทเพจ'" [data]="resPageType" [typePage]="page"
+                        [isMutipleCheckbox]="'true'" (clickMutiple)="getPagecategory($event)"
+                        (loadMore)="loadMore($event)"></card-checkbox>
+                     <div class="recommended-right">
+                        <div class="side-follow">
+                            <div class="box-right">
+                                <div class="wrapper-filter">
+                                    <div class="wrapper-filter-name">
+                                        ค้นหาจาก
+                                    </div>
+                                    <div class="body-filter">
+                                        <section class="checkbox-filter">
+                                            <mat-radio-group [(ngModel)]="filterType">
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="ทั้งหมด" (change)="radioChange($event)"> ทั้งหมด
+                                                </mat-radio-button>
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="เฉพาะที่คุณติดตาม" (change)="radioChange($event)"
+                                                    *ngIf="isLogin()">
+                                                    เฉพาะที่คุณติดตาม </mat-radio-button>
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="กำหนดเอง" (change)="radioChange($event)"> กำหนดเอง
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </section>
+                                    </div>
+                                    <div class="footer-more" *ngIf="filterType === 'กำหนดเอง' ">
+                                        <div>ผู้คนหรือเพจที่ต้องการค้นหา</div>
+                                        <div class="search-page">
+                                            <div class="rigth">
+                                                <input matInput type="text" class="input-data"
+                                                    placeholder="ชื่อคนหรือเพจ" name="createdname"
+                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
+                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                <mat-autocomplete #autoComplete="matAutocomplete">
+                                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
+                                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option class="img-users" *ngFor="let user of dataUser"
+                                                            (click)="selectAutoComp(user)" [value]="user.displayName">
+                                                            <div class="list-autocomp">
+                                                                <ng-container
+                                                                    *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
+                                                                    <img class="img"
+                                                                        src="{{apiBaseURL+user.imageURL+'/image'}}"
+                                                                        alt="">
+                                                                </ng-container>
+                                                                <ng-template #imageURL>
+                                                                    <div class="img not-image">
+                                                                        {{user.displayName || user.name | slice: 0:1  }}
+                                                                    </div>
+                                                                </ng-template>
+
+                                                                <div class="show-name">
+                                                                    {{user.displayName || user.name}}
+                                                                </div>
+                                                            </div>
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                                <span class="material-icons autocomp-close" (click)="resetAutocomp()">
+                                                    close
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngIf="isRowCard">
+                                            <div class="card-page" *ngFor="let item of rowUser; let index = index;">
+                                                <div class="left">
+                                                    <ng-container
+                                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                                        <img class="page-img"
+                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                    </ng-container>
+                                                    <ng-template #elsePhoto>
+                                                        <div class="page-img not-image">
+                                                            {{item.displayName || item.name | slice: 0:1  }}
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <div class="page-name">
+                                                        <div class="top">
+                                                            {{item.displayName || item.name }}
+                                                        </div>
+                                                        <ng-container *ngIf="item.uniqueId; else elseUniqueId">
+                                                            <div class="page-username">
+                                                                {{'@' + item.uniqueId || item.pageUsername}}
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-template #elseUniqueId>
+                                                            <div class="page-username" *ngIf="item.pageUsername;">
+                                                                {{'@' + item.pageUsername}}
+                                                            </div>
+                                                        </ng-template>
+
+
+                                                    </div>
+                                                </div>
+                                                <span class="material-icons" (click)="removeCard(item,index)">
+                                                    close
+                                                </span>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                                [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
+                                (loadMore)="loadMore($event)"></card-checkbox>
+                            <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
+                                [dataParam]="objective" (click)="getObjective($event)" (click)="getEmergency($event)"
+                                (loadMore)="loadMore($event)">
+                            </card-checkbox>
+                            <card-checkbox [title]="'อยู่ในกระแส'" [data]="resHashTag" [hashtag]="matHashTag"
+                                [isRemove]="true" [isMutipleCheckbox]="true" (clickMutiple)="checkBoxMutiple($event)"
+                                [matHashtag]="test" (loadMore)="loadMore($event)">
+                            </card-checkbox>
+
+                            <div class="box-right" style="margin-top: 5pt;">
+                                <div class="lable-follow">
+                                    ผู้คนและเพจที่เกี่ยวข้อง
+                                </div>
+                                <div class="wrapper-card">
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng">
+                                                    @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FD545A'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FFFFFF'"
+                                                [text]="'ติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng"> @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FFFFFF'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FD545A'"
+                                                [text]="'กำลังติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng"> @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FD545A'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FFFFFF'"
+                                                [text]="'ติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="follow-all">
+                                        ดูทั้งหมด
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #elseTemplateLoadMenu>
+                    <Preload-card *ngFor="let item of [0,1,2]" [isShowCard2]="true"
+                        class="menu-rreload-card slide-left">
+                    </Preload-card>
+                </ng-template>
+            </div>
+            <div class="body-recommended">
+                <div class="recommended-left" *ngIf="!showLoading">
+                    <div class="feed-body-search">
+                        <div class="feed-header-search">
+                            <div class="filter">
+                                <svg class="btn-filter" (click)="clickfilter()" xmlns="http://www.w3.org/2000/svg"
+                                    width="21.163" height="20.279" viewBox="0 0 21.163 20.279">
+                                    <g id="settings_1_" data-name="settings (1)" transform="translate(0 -10.668)">
+                                        <g id="Group_2597" data-name="Group 2597" transform="translate(0 24.776)">
+                                            <g id="Group_2596" data-name="Group 2596">
+                                                <path id="Path_3578" data-name="Path 3578"
+                                                    d="M20.281,354.2H17.933a3.066,3.066,0,0,0-5.885,0H.882a.882.882,0,0,0,0,1.764H12.048a3.066,3.066,0,0,0,5.885,0h2.348a.882.882,0,0,0,0-1.764Zm-5.291,2.2a1.323,1.323,0,1,1,1.323-1.323A1.324,1.324,0,0,1,14.99,356.409Z"
+                                                    transform="translate(0 -352)" fill="#4d4d4d" />
+                                            </g>
+                                        </g>
+                                        <g id="Group_2599" data-name="Group 2599" transform="translate(0 10.667)">
+                                            <g id="Group_2598" data-name="Group 2598" transform="translate(0 0)">
+                                                <path id="Path_3579" data-name="Path 3579"
+                                                    d="M20.281,12.871H17.933a3.066,3.066,0,0,0-5.885,0H.882a.882.882,0,0,0,0,1.764H12.048a3.066,3.066,0,0,0,5.885,0h2.348a.882.882,0,0,0,0-1.764Zm-5.291,2.2a1.323,1.323,0,1,1,1.323-1.323A1.324,1.324,0,0,1,14.99,15.076Z"
+                                                    transform="translate(0 -10.667)" fill="#4d4d4d" />
+                                            </g>
+                                        </g>
+                                        <g id="Group_2601" data-name="Group 2601" transform="translate(0 17.721)">
+                                            <g id="Group_2600" data-name="Group 2600" transform="translate(0 0)">
+                                                <path id="Path_3580" data-name="Path 3580"
+                                                    d="M20.281,183.538H9.115a3.066,3.066,0,0,0-5.885,0H.882a.882.882,0,1,0,0,1.764H3.23a3.066,3.066,0,0,0,5.885,0H20.281a.882.882,0,0,0,0-1.764Zm-14.109,2.2A1.323,1.323,0,1,1,7.5,184.42,1.324,1.324,0,0,1,6.173,185.743Z"
+                                                    transform="translate(0 -181.334)" fill="#4d4d4d" />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <div class="search">
+                                    <span class="material-icons icons-search">
+                                        search
+                                    </span>
+                                    <input matInput class="autocomp-search" type="text" name="autocompSearch" matInput
+                                        [(ngModel)]="keyword" id="autocompSearch" #autocompSearch placeholder="ค้นหา"
+                                        #autocompSearch (keyup)="autocomp($event)">
+                                </div>
+                            </div>
+                            <div class="clip-board">
+                                <svg class="btn" (click)="copyLink()" version="1.1" id="Layer_1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    x="0px" y="0px" viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;"
+                                    xml:space="preserve">
+                                    <path fill="#212721"
+                                        d="M15.35,13.77c-0.65,0-1.24,0.28-1.65,0.72l-2.97-1.55c0.09-0.25,0.15-0.52,0.15-0.8c0-0.21-0.04-0.41-0.09-0.6
+                                   l2.94-1.75c0.41,0.41,0.98,0.67,1.61,0.67c1.26,0,2.29-1.03,2.29-2.29c0-1.26-1.03-2.29-2.29-2.29c-1.26,0-2.29,1.03-2.29,2.29
+                                   c0,0.28,0.06,0.55,0.15,0.81l-2.87,1.71C9.93,10.18,9.3,9.85,8.6,9.85c-1.26,0-2.29,1.03-2.29,2.29c0,1.26,1.03,2.29,2.29,2.29
+                                   c0.63,0,1.2-0.26,1.61-0.67l2.99,1.56c-0.08,0.23-0.13,0.48-0.13,0.74c0,1.26,1.03,2.29,2.29,2.29c1.26,0,2.29-1.03,2.29-2.29
+                                   C17.63,14.8,16.61,13.77,15.35,13.77z M15.35,6.85c0.73,0,1.32,0.59,1.32,1.32c0,0.73-0.59,1.32-1.32,1.32
+                                   c-0.73,0-1.32-0.59-1.32-1.32C14.03,7.44,14.62,6.85,15.35,6.85z M8.6,13.46c-0.73,0-1.32-0.59-1.32-1.32
+                                   c0-0.73,0.59-1.32,1.32-1.32c0.73,0,1.32,0.59,1.32,1.32C9.92,12.87,9.32,13.46,8.6,13.46z M15.35,17.38
+                                   c-0.73,0-1.32-0.59-1.32-1.32c0-0.73,0.59-1.32,1.32-1.32c0.73,0,1.32,0.59,1.32,1.32C16.67,16.79,16.08,17.38,15.35,17.38z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="feed-body">
+                            <mat-chip-list #chipList>
+                                <mat-chip class="mat-chip-hashtag" *ngFor="let tag of matHashTag" disableRipple
+                                    [selectable]="selectable" [removable]="removable" (removed)="remove(tag)">
+                                    {{'#'+tag}}
+                                    <mat-icon matChipRemove (click)="remove(tag)">cancel</mat-icon>
+                                </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                        <div class="footer-bar">
+                            <div class="nav-bar-tab">
+                                <nav mat-tab-nav-bar [disableRipple]="true">
+                                    <a mat-tab-link *ngFor="let link of links"
+                                        (click)="getTypeSearch(link); activeLink = link.label"
+                                        [active]="activeLink == link.label">
+                                        {{link.label}}
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="sorting">
+                                <button mat-button [matMenuTriggerFor]="menusort" [disableRipple]="true"
+                                    class="menu-sorting">
+                                    <svg class="icon-sorting-date" xmlns="http://www.w3.org/2000/svg" width="12.887"
+                                        height="12.982" viewBox="0 0 12.887 12.982">
+                                        <g id="Group_2429" data-name="Group 2429"
+                                            transform="translate(-574.479 -149.91)">
+                                            <path id="Path_3479" data-name="Path 3479"
+                                                d="M579.4,160.11H578v-9.967a.225.225,0,0,0-.066-.167.23.23,0,0,0-.169-.065h-1.4a.23.23,0,0,0-.169.065.225.225,0,0,0-.066.167v9.967h-1.4a.217.217,0,0,0-.22.145.221.221,0,0,0,.051.254l2.342,2.318a.268.268,0,0,0,.169.065.25.25,0,0,0,.169-.065l2.334-2.311a.267.267,0,0,0,.074-.173.226.226,0,0,0-.066-.167.229.229,0,0,0-.168-.065Z"
+                                                fill="#474747" fill-rule="evenodd" />
+                                            <path id="Path_3480" data-name="Path 3480"
+                                                d="M609.226,186.519h-3.279a.229.229,0,0,0-.168.064.225.225,0,0,0-.066.167v1.391a.221.221,0,0,0,.066.166.23.23,0,0,0,.168.065h3.279a.229.229,0,0,0,.168-.065.221.221,0,0,0,.066-.166V186.75a.225.225,0,0,0-.066-.167.228.228,0,0,0-.168-.064Z"
+                                                transform="translate(-24.905 -29.19)" fill="#474747"
+                                                fill-rule="evenodd" />
+                                            <path id="Path_3481" data-name="Path 3481"
+                                                d="M612.2,149.976a.229.229,0,0,0-.168-.065h-6.088a.23.23,0,0,0-.169.065.225.225,0,0,0-.066.167v1.391a.222.222,0,0,0,.066.167.23.23,0,0,0,.169.065h6.088a.23.23,0,0,0,.168-.065.225.225,0,0,0,.066-.167v-1.391a.224.224,0,0,0-.066-.167Z"
+                                                transform="translate(-24.905)" fill="#474747" fill-rule="evenodd" />
+                                            <path id="Path_3482" data-name="Path 3482"
+                                                d="M610.631,168.215h-4.684a.226.226,0,0,0-.168.065.222.222,0,0,0-.066.167v1.39a.225.225,0,0,0,.066.167.23.23,0,0,0,.168.065h4.684A.234.234,0,0,0,610.8,170a.228.228,0,0,0,.066-.167v-1.39a.225.225,0,0,0-.066-.167.233.233,0,0,0-.169-.065Z"
+                                                transform="translate(-24.905 -14.595)" fill="#474747"
+                                                fill-rule="evenodd" />
+                                        </g>
+                                    </svg>
+                                    <span class="material-icons">
+                                        arrow_drop_down
+                                    </span>
+                                </button>
+                                <mat-menu #menusort="matMenu">
+                                    <button mat-menu-item *ngFor="let sort of sortingBy; let index = index"
+                                        class="list-sort" (click)="clickSorting(sort, index)">
+                                        <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                        </div>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="isLoadingClickTab; else IsLoadingPost">
+                        <Preload-card [isShowCard1]="true" [isShowCard2]="true"></Preload-card>
+                    </ng-container>
+                    <ng-template #IsLoadingPost>
+                        <ng-container *ngIf="resPost && resPost.length > 0 else elsePost">
+                            <ng-container *ngFor="let item of resPost;let index = index">
+                                <post-data [itemPost]="item.post" [user]="userImage" [isComments]="isLogin()"
+                                    [isShowProfile]="true" [isSearchHashTag]="true"
+                                    [isUserPage]="isLogin() && isNotAccess" (action)="actionComment($event,index)"
+                                    (comment)="createComment($event)" [pageUser]="pageUser" [isPage]="isNotAccess"
+                                    [isNotAccess]="isNotAccess" [isShowUser]="false"
+                                    (delete)="deletePost($event,index)"></post-data>
+                            </ng-container>
+                            <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
+                            </Preload-card>
+                        </ng-container>
+                        <ng-template #elsePost>
+                            <div class="wrapper-feed-card feed-none-post">
+                                ไม่พบเรื่องราว
+                            </div>
+                        </ng-template>
+                    </ng-template>
+                </div>
+
+                <ng-container *ngIf="showLoading">
+                    <Preload-card *ngFor="let item of [0]" [isShowCard1]="true" [isShowCard2]="false"
+                        class="recommended-left">
+                    </Preload-card>
+                </ng-container>
+
+                <div class="recommended-right" #recommendedRight>
+                    <div class="side-follow">
+                        <ng-container *ngIf="!showLoading; else elseTemplateLoadMenu1">
+                            <div class="box-right">
+                                <div class="wrapper-filter">
+                                    <div class="wrapper-filter-name">
+                                        ค้นหาจาก
+                                    </div>
+                                    <div class="body-filter">
+                                        <section class="checkbox-filter">
+                                            <mat-radio-group [(ngModel)]="filterType">
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="ทั้งหมด" (change)="radioChange($event)"> ทั้งหมด
+                                                </mat-radio-button>
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="เฉพาะที่คุณติดตาม" (change)="radioChange($event)"
+                                                    *ngIf="isLogin()">
+                                                    เฉพาะที่คุณติดตาม </mat-radio-button>
+                                                <mat-radio-button class="example-margin" [disableRipple]="true"
+                                                    value="กำหนดเอง" (change)="radioChange($event)"> กำหนดเอง
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </section>
+                                    </div>
+                                    <div class="footer-more" *ngIf="filterType === 'กำหนดเอง' ">
+                                        <div>ผู้คนหรือเพจที่ต้องการค้นหา</div>
+                                        <div class="search-page">
+                                            <div class="rigth">
+                                                <input matInput type="text" class="input-data"
+                                                    placeholder="ชื่อคนหรือเพจ" name="createdname"
+                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
+                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                <mat-autocomplete #autoComplete="matAutocomplete">
+                                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
+                                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option class="img-users" *ngFor="let user of dataUser"
+                                                            (click)="selectAutoComp(user)" [value]="user.displayName">
+                                                            <div class="list-autocomp">
+                                                                <ng-container
+                                                                    *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
+                                                                    <img class="img"
+                                                                        src="{{apiBaseURL+user.imageURL+'/image'}}"
+                                                                        alt="">
+                                                                </ng-container>
+                                                                <ng-template #imageURL>
+                                                                    <div class="img not-image">
+                                                                        {{user.displayName || user.name | slice: 0:1  }}
+                                                                    </div>
+                                                                </ng-template>
+
+                                                                <div class="show-name">
+                                                                    {{user.displayName || user.name}}
+                                                                </div>
+                                                            </div>
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                                <span class="material-icons autocomp-close" (click)="resetAutocomp()">
+                                                    close
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngIf="isRowCard">
+                                            <div class="card-page" *ngFor="let item of rowUser; let index = index;">
+                                                <div class="left">
+                                                    <ng-container
+                                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                                        <img class="page-img"
+                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                    </ng-container>
+                                                    <ng-template #elsePhoto>
+                                                        <div class="page-img not-image">
+                                                            {{item.displayName || item.name | slice: 0:1  }}
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <div class="page-name">
+                                                        <div class="top">
+                                                            {{item.displayName || item.name }}
+                                                        </div>
+                                                        <ng-container *ngIf="item.uniqueId; else elseUniqueId">
+                                                            <div class="page-username">
+                                                                {{'@' + item.uniqueId || item.pageUsername}}
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-template #elseUniqueId>
+                                                            <div class="page-username" *ngIf="item.pageUsername;">
+                                                                {{'@' + item.pageUsername}}
+                                                            </div>
+                                                        </ng-template>
+
+
+                                                    </div>
+                                                </div>
+                                                <span class="material-icons" (click)="removeCard(item,index)">
+                                                    close
+                                                </span>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                                [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
+                                (loadMore)="loadMore($event)"></card-checkbox>
+                            <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
+                                [dataParam]="objective" (click)="getObjective($event)" (click)="getEmergency($event)"
+                                (loadMore)="loadMore($event)">
+                            </card-checkbox>
+                            <card-checkbox [title]="'อยู่ในกระแส'" [data]="resHashTag" [hashtag]="matHashTag"
+                                [isRemove]="true" [isMutipleCheckbox]="true" (clickMutiple)="checkBoxMutiple($event)"
+                                [matHashtag]="test" (loadMore)="loadMore($event)">
+                            </card-checkbox>
+
+                            <div class="box-right" style="margin-top: 5pt;">
+                                <div class="lable-follow">
+                                    ผู้คนและเพจที่เกี่ยวข้อง
+                                </div>
+                                <div class="wrapper-card">
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng">
+                                                    @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FD545A'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FFFFFF'"
+                                                [text]="'ติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng"> @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FFFFFF'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FD545A'"
+                                                [text]="'กำลังติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="card-follow">
+                                        <div class="follow">
+                                            <img class="img-user"
+                                                src="https://www.thairath.co.th/media/dFQROr7oWzulq5FZYSpBo0dkwhuYYRz6361yfwGiUSL3GFYDV6ajNnya0CURvDwyMZn.webp"
+                                                alt="">
+                                            <div class="list-follow-name">
+                                                <div class="follow-name"> ธนาธร จึงรุ่งเรืองกิจ
+                                                </div>
+                                                <div class="follow-name-eng"> @Thanathorn J...
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-btn-follow">
+                                            <button-follow class="btn-follow" [color]="'#FD545A'"
+                                                [border]="'0.7px solid #FD545A'" [bgColor]="'#FFFFFF'"
+                                                [text]="'ติดตาม'">
+                                            </button-follow>
+                                        </div>
+                                    </div>
+                                    <div class="follow-all">
+                                        ดูทั้งหมด
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #elseTemplateLoadMenu1>
+                            <Preload-card *ngFor="let item of [0,1,2]" [isShowCard2]="true" class="menu-rreload-card">
+                            </Preload-card>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="backdrop" *ngIf="isBackdrop" (click)="focusout()"></div>

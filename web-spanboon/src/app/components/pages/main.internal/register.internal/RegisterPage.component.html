@@ -1,0 +1,140 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="register-page">
+    <form #register="ngForm" class="wrapper-body">
+        <div class="header">
+            สมัครสมาชิก
+        </div>
+        <div class="wrapper-upload">
+            <div class="user-profile">
+                <ng-container *ngIf="imagesAvatar && imagesAvatar.image ; else elseTemplate">
+                    <img class="image-user" name="image" src="{{imagesAvatar.image}}" alt="">
+                </ng-container>
+                <ng-template #elseTemplate>
+                    <img class="image-user" src="../../../../assets/img/profile.svg" alt="">
+                </ng-template>
+                <div class="edit-profile" (click)="showDialogImage()">
+                    <svg class="icon-image" xmlns="http://www.w3.org/2000/svg" width="20.071" height="14.996"
+                        viewBox="0 0 20.071 14.996">
+                        <g id="camera" transform="translate(0 -48.918)">
+                            <g id="Group_1312" data-name="Group 1312" transform="translate(0 48.918)">
+                                <g id="Group_1311" data-name="Group 1311" transform="translate(0 0)">
+                                    <path id="Path_3216" data-name="Path 3216"
+                                        d="M133.888,143a3.26,3.26,0,1,0,3.26,3.259A3.26,3.26,0,0,0,133.888,143Zm1.788,5.048a2.527,2.527,0,1,1,0-3.574A2.527,2.527,0,0,1,135.676,148.049Z"
+                                        transform="translate(-123.853 -138.121)" fill="#747474" />
+                                    <path id="Path_3217" data-name="Path 3217"
+                                        d="M19.706,50.935a1.245,1.245,0,0,0-.882-.367H14.079l-.166-.855a1.071,1.071,0,0,0-.28-.556.79.79,0,0,0-.573-.239H7.013a.787.787,0,0,0-.548.207l-.027.023a1.069,1.069,0,0,0-.28.552l-.166.855H1.245A1.245,1.245,0,0,0,0,51.8V62.665a1.245,1.245,0,0,0,.365.882h0a1.245,1.245,0,0,0,.882.367H18.826a1.245,1.245,0,0,0,1.245-1.245V51.817A1.245,1.245,0,0,0,19.706,50.935ZM3.378,54.058H2.756a.78.78,0,0,1,0-1.56h.622a.78.78,0,0,1,0,1.56Zm6.659,7.347a4.347,4.347,0,0,1,0-8.694h0a4.347,4.347,0,0,1,0,8.694Z"
+                                        transform="translate(0 -48.918)" fill="#747474" />
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <div class="user">
+                <div class="user-grop">
+                    <input type="text" name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
+                        class="input-text" [(ngModel)]="data.displayName" required shake [shake]="active">
+                </div>
+                <div class="user-grop">
+                    <ng-container *ngIf="uuid; else elseUUid">
+                        <label for="username">@</label>
+                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username id="username" name="username" placeholder="ยูสเซอร์เนม"
+                            maxlength="15" class="input-text" [class.correct]='uuid' [(ngModel)]="data.uniqueId"
+                            required (keyup)="checkUUID(username.value)">
+                    </ng-container>
+                    <ng-template #elseUUid>
+                        <label for="username">@</label>
+                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username id="username" name="username" placeholder="ยูสเซอร์เนม"
+                            maxlength="15" class="input-text" [class.incorrect]='uuid === false'
+                            [(ngModel)]="data.uniqueId" required (keyup)="checkUUID(username.value)">
+
+                    </ng-template>
+                    <div class="display-name">www.spanboon.com/@{{data.uniqueId}}</div>
+                </div>
+            </div>
+            <!-- <div class="wrapper-field-upload">
+                <div class="top">
+                    อัพโหลดรูปโปรไฟล์
+                </div>
+                <div class="btn-upload">
+                    <input type="button" value="อัพโหลดรูปภาพ" class="button-social" (click)="showDialogImage()"
+                        matRipple />
+                </div>
+            </div> -->
+        </div>
+        <div class="form-register">
+            <div class="form-group">
+                <input type="text" name="firstName" placeholder="ชื่อ" class="input-text-group"
+                    [(ngModel)]="data.firstName">
+
+                <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
+                    [(ngModel)]="data.lastName">
+                <ng-container *ngIf="mode !== 'normal'; else elseEmail">
+                    <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text readonly" shake
+                        readonly [(ngModel)]="data.email" [email]="true" required>
+                </ng-container>
+                <ng-template #elseEmail>
+                    <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
+                        [shake]="activeEmail" [(ngModel)]="data.email" [email]="true" required>
+                </ng-template>
+            </div>
+
+            <ng-container *ngIf="mode === 'normal' ">
+                <div class="title-label" *ngIf="mode === 'normal' ">รหัสผ่านอย่างน้อย 6 ตัว</div>
+                <input type="password" id="password" name="password" minlength="6" placeholder="รหัสผ่าน"
+                    class="input-text" [(ngModel)]="password" required [shake]="activePass">
+
+                <input type="password" id="repassword" name="repassword" minlength="6"
+                    placeholder="ใส่รหัสผ่าน อีกครั้ง" class="input-text" [(ngModel)]="repassword" required
+                    [shake]="activeRePass">
+            </ng-container>
+
+            <div for="birthday" class="title-label">วันเกิด</div>
+            <mat-form-field>
+                <input #birthday matInput [matDatepicker]="dp3" placeholder="" name="birthday"
+                    [(ngModel)]="data.birthday " [min]="minDate" [max]="maxDate" required>
+                <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+                <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+            </mat-form-field>
+
+            <div for="male female custom" class="title-label">เพศ</div>
+            <mat-radio-group class="custom-control-input" name="gender" [(ngModel)]="data.gender ">
+                <mat-radio-button [value]="0" style="width: 70pt;">ชาย</mat-radio-button>
+                <mat-radio-button [value]="1" style="width: 70pt;">หญิง</mat-radio-button>
+                <mat-radio-button [value]="-1">กำหนดเอง</mat-radio-button>
+            </mat-radio-group>
+
+            <input type="text" id="genderTxt" name="genderTxt" placeholder="เพศ" class="input-text"
+                [(ngModel)]="genderTxt" required *ngIf="gender === -1 || data.gender === -1 " style="margin-top: 10pt;">
+
+            <ng-container *ngIf="mode === 'normal'; else btnComfirm">
+                <div class="wrapper-policy"></div>
+                <div class="div-btn">
+                    <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
+                        [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
+                    <spanboon-button [text]="'สมัครสมาชิก'" [height]="'35pt'" (click)="onClickregister(register.value)"
+                        [bgColor]="'#FD545A'" [color]="'#F8F7F2'" [fontSize]="'16px'"></spanboon-button>
+                </div>
+            </ng-container>
+            <ng-template #btnComfirm>
+                <div class="wrapper-policy">คุณสามารถสมัครสมาชิกสะพานบุญโดยใช้อีเมล facebook twitter google
+                    ได้โดยตั้งค่า "พาสเวิด" <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
+                </div>
+                <div class="div-btn">
+                    <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
+                        [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
+                    <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'" [bgColor]="'#FD545A'" [color]="'#F8F7F2'"
+                        [fontSize]="'16px'" (click)="onClickregister(register.value)">
+                    </spanboon-button>
+                </div>
+            </ng-template>
+        </div>
+    </form>
+    <img class="background-register" src="../../../../assets/img/bg-register.png" alt="">
+</div>

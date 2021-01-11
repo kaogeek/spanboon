@@ -1,0 +1,149 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.control-action {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+
+    > .collis {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        flex: 1 1 0%;
+
+        > .wrapper-action {
+            display: flex;
+            align-items: center;
+            font-family: "Kanit-500";
+            font-size: 16px;
+
+            > .label-count {
+                text-align: center;
+                min-width: 9pt;
+                user-select: none;
+            }
+
+            > .img-action {
+                margin-left: 3pt;
+                cursor: pointer;
+                padding: 3pt;
+
+                &:hover {
+                    border-radius: 5pt;
+                    background-color: #ffd3d38a;
+                }
+            }
+
+            &:last-of-type {
+                margin-right: unset !important;
+            }
+
+            &:active {
+                fill: $brandcolor2;
+            }
+        }
+    }
+
+    > .control-slider {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        color: rgb($white, 0.7);
+
+        > .list-items {
+            font-family: "Kanit-400";
+            font-size: 14px;
+
+            &:nth-child(5) {
+                display: none;
+            }
+
+            > .count-aontrol {
+            }
+
+            > .title-control {
+                margin-left: 5px;
+            }
+
+            > .drot {
+                margin: 0 7pt;
+            }
+        }
+    }
+
+    .field-profile {
+        > .mat-form-field-wrapper {
+            padding-bottom: unset;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            > .mat-form-field-flex {
+                > .mat-form-field-infix {
+                    display: flex;
+                    margin-left: 7px;
+                    position: relative;
+                    flex: auto;
+                    width: auto;
+                    min-width: 0;
+                    border-top: unset;
+                    padding: unset;
+
+                    > .div-profile {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    > .mat-select {
+                        display: flex;
+                        width: 100%;
+                        outline: 0;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.icon-images,
+.donator-contro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $color-warm-red;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 0.7px solid $border-color;
+    overflow: hidden;
+    color: $white;
+    @include pointer();
+    font-size: 16px;
+    font-family: "Kanit-500";
+}
+
+@media (max-width: $xlarge) {
+    .control-action {
+        > .control-slider {
+            > .list-items {
+                display: none;
+
+                &:nth-child(5) {
+                    display: block;
+                }
+            }
+        }
+    }
+}

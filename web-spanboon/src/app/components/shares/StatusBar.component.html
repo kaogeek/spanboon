@@ -1,0 +1,64 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="status-bar" [ngStyle]="{'background-color': bgColor}">
+    <div class="wrapper-left">
+        <ng-container *ngIf="isLogin()">
+            <ng-container
+                *ngIf="dataName === '' && dataName === null && dataName === undefined && dataName.data === '' && dataName.data === null && dataName.data === undefined && dataName.data.name === '' && dataName.data.name === null && dataName.data.name === undefined">
+                <img class="user-image" *ngIf="isImage && images" [src]="images">
+                <div *ngIf="!images" class="user-image icon">
+                    <span>{{ dataName && dataName.data && dataName.data.name | slice: 0:1 }}</span>
+                </div>
+            </ng-container>
+        </ng-container>
+        <div class="wrapper-topic">
+            <div class="topic-label">{{topic}}</div>
+            <div class="wrapper-icon">
+                <ng-container *ngIf="isStausIcon else elseIcon">
+                    <div class="icon-active looking">
+                    </div>
+                    <span [ngStyle]="{'margin-left': isStausIcon ? '5pt' : '0pt' }">{{status}}</span>
+                </ng-container>
+                <ng-template #elseIcon>
+                    <div class="icon-active fulfill">
+                    </div>
+                    <span [ngStyle]="{'margin-left':'5pt'}">{{status}}</span>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div class="topic-label-right">
+        <ng-container *ngIf="isSeeAll else elseSeeAll">
+            <div class="topic-count">
+                <!-- <div class="topic-type">  </div> -->
+                <div class="topic-see-all" (click)="actions()" *ngIf="isSeeAll">{{seeAll}}</div>
+            </div>
+        </ng-container>
+        <ng-template #elseSeeAll>
+            <div class="topic-count"> {{count}}
+                <div class="topic-type"> {{action}} </div>
+            </div>
+        </ng-template>
+
+        <!-- <ng-container *ngIf="isShow; else elseShow">
+                <div class="topic-create">
+                    <svg class="icon-time" height="512pt" viewBox="0 0 512 512" width="512pt" xmlns="http://www.w3.org/2000/svg">
+                        <path d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" fill="#A5A5A6"/>
+                        <path d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " fill="#A5A5A6"/>
+                    </svg>
+                    {{create}}</div> 
+            </ng-container>
+            <ng-template #elseShow>
+                
+            </ng-template> -->
+
+
+
+    </div>
+    <!-- </ng-template> -->
+</div>

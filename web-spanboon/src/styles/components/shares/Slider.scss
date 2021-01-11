@@ -1,0 +1,213 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+> .slider-view {
+    border: $width-border solid $border-color;
+    border-radius: $border-radius-4px;
+    background: $white;
+
+    > .header-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 10pt;
+        border-bottom: $width-border solid $border-color;
+        @include font-size-8-100("Kanit-500");
+        > .left {
+            display: flex;
+            align-items: center;
+            &:last-of-type {
+                font-size: 14px;
+            }
+            > .mat-slide-toggle {
+                margin-left: 5pt;
+            }
+        }
+    }
+
+    > .wrapper-card {
+        // border-bottom: $width-border solid $border-color;
+        display: flex;
+        background-color: $white;
+        padding: 8pt 10pt;
+        flex-direction: column;
+        // > .select-calendar {
+        //     width: 100%;
+        //     font-family: "Kanit-500";
+        //     font-size: 14px;
+        //     border: 1pt solid $border-color;
+        //     color: $koalaGray;
+        //     > .mat-button-wrapper {
+        //         display: flex;
+        //         align-items: center;
+        //     }
+        // }
+        > .date-range {
+            width: 100%;
+            flex: 1 1 0%;
+            > .mat-form-field-wrapper {
+                padding-bottom: 0;
+                > .mat-form-field-flex {
+                    display: flex;
+                    align-items: center;
+                    > .mat-form-field-infix {
+                        width: auto;
+                        padding: 0;
+                        border-top: 0;
+                        > .input-date {
+                            display: flex;
+                            border-radius: 25px;
+                            background-color: #fff;
+                            height: 25pt;
+                            color: #212721;
+                            padding: 2pt 10pt 2pt 13pt;
+                            font-family: "Kanit-500";
+                            font-size: 14px;
+                            box-shadow: 0px 1px 9px 0 #00000020;
+                        }
+                    }
+                    > .mat-form-field-suffix {
+                        > .mat-datepicker-toggle {
+                            > .mat-icon-button {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                > .mat-button-wrapper {
+                                    > .mat-datepicker-toggle {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                > .mat-form-field-underline {
+                    height: 0px;
+                    > .mat-form-field-ripple {
+                        background-color: unset;
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+        > .btn {
+            display: flex;
+            align-items: center;
+            @include pointer();
+            font-family: "Kanit-300";
+            font-size: 16px;
+            color: $koalaGray;
+            margin-left: 9pt;
+            width: 50pt;
+            flex: 0 0 auto;
+            &:hover {
+                color: $color-warm-red;
+            }
+        }
+
+        > .card-follow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3pt 10pt;
+            @include pointer();
+
+            &:hover {
+                background-color: $background-hover;
+            }
+
+            .description {
+                font-family: "Kanit-500";
+                margin-left: 6pt;
+                > .top {
+                    font-size: 14px;
+                    color: #a5a5a6;
+                }
+                > .middle {
+                    font-size: 16px;
+                }
+                > .trend {
+                    display: flex;
+                    font-size: 14px;
+                    > .count {
+                    }
+                    // > .tag {
+                    //     color: #1b95e0;
+                    // }
+                }
+            }
+
+            > .wrapper-btn-follow {
+                > button-follow {
+                }
+            }
+        }
+        > .header-card {
+            padding: 4pt 5pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+        }
+        > .box-slider {
+            // border: 0.7pt solid $border-color;
+            padding: 5pt 11pt;
+            // background-color: #f5f5f5;
+        }
+        .ng5-slider {
+            > .ng5-slider-span {
+                > .ng5-slider-selection {
+                    background-color: $color-warm-red;
+                }
+                > .ng5-slider[disabled] .ng5-slider-bar {
+                    background-color: #c4c4c4;
+                }
+            }
+            .ng5-slider-pointer {
+                background-color: $color-warm-red;
+                width: 12px;
+                height: 12px;
+                top: -5px;
+                outline: none;
+            }
+            .ng5-slider-pointer::after {
+                position: absolute;
+                top: -9px;
+                left: -9px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                transform: scale(0);
+                opacity: 0;
+                transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                    background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                    opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+            > .ng5-slider-bubble {
+                font-family: "Kanit-500";
+                font-size: 14px;
+            }
+            > .ng5-slider-pointer.ng5-slider-active::after {
+                transform: scale(1);
+                opacity: 1;
+                background-color: rgba(255, 64, 129, 0.2);
+            }
+        }
+    }
+    > .column-date {
+        flex-direction: unset;
+    }
+
+    > .follow-all {
+        padding: 8pt 15pt;
+        text-align: center;
+        color: $color-warm-red;
+        @include pointer();
+        @include font-size-9-100("Kanit-500");
+        min-height: 26pt;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

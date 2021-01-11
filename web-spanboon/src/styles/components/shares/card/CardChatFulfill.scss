@@ -1,0 +1,186 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.card-chat-fulfill-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-top: 10pt;
+
+    > .chat-fulfill-item-wrapper {
+        background-color: $white;
+        border-radius: 5pt;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 5pt;
+
+        > .chat-fulfill-item {
+            margin: 10pt 30pt;
+
+            > .chat-fulfill-item-icon {
+                width: 60px;
+                margin: 0 auto;
+
+                > .fulfill-item-icon {
+                    width: 100%;
+                }
+            }
+        }
+
+        > .fulfill-item-footer {
+            padding: 0 10pt 10pt 10pt;
+            width: calc(100% - 20pt);
+            color: #000000;
+
+            > .fulfill-item-name {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-all;
+            }
+
+            > .fulfill-item-quantity {
+                display: flex;
+
+                > .item-quantity {
+                    width: 100%;
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    > .chat-fulfill-arrow-wrapper {
+        display: flex;
+        align-items: center;
+        padding: 10pt;
+
+        > .chat-fulfill-arrow {
+            width: 30px;
+
+            > .fulfill-arrow-icon {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.fulfill-case-create-message {
+    padding-bottom: 5pt;
+}
+
+.fulfill-case-create-wrapper {
+    > .fulfill-case-create-header {
+        border-top: 1px solid #e1e1e1;
+        padding: 8pt 0;
+
+        > .fulfill-case-create-detail {
+            display: flex;
+            align-items: center;
+            font-family: "Kanit-500";
+            padding: 8pt 0;
+            font-size: 11pt;
+            border-bottom: 1px solid #e1e1e1;
+
+            > .status {
+                font-size: 10pt;
+                color: $color-warm-red;
+            }
+
+            > .lookfor {
+                margin-left: 5px;
+            }
+
+            > .fulfill-case-create-hashtag {
+                display: flex;
+
+                > .fulfill-case-create-content {
+                    display: flex;
+                    align-items: center;
+                    margin-left: 5px;
+
+                    > .fulfill-case-create-event {
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+    }
+
+    > .fulfill-case-create-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: $small) {
+    .card-chat-fulfill-wrapper {
+        > .chat-fulfill-item-wrapper {
+            margin: unset; 
+            > .chat-fulfill-item {
+                margin: 10pt 23pt;
+                > .chat-fulfill-item-icon {
+                    width: unset;
+                    margin: unset;
+                    > .fulfill-item-icon {
+                        width: 30pt;
+                        height: 30pt;
+                    }
+                }
+            }
+
+            > .fulfill-item-footer {
+                font-family: "Kanit-400";
+                font-size: 14px;
+                > .fulfill-item-name {
+                }
+
+                > .fulfill-item-quantity {
+                    > .item-quantity {
+                    }
+                }
+            }
+        }
+
+        > .chat-fulfill-arrow-wrapper {
+            padding: 5pt;
+            > .chat-fulfill-arrow {
+                width: 15px;
+                > .fulfill-arrow-icon {
+                }
+            }
+        }
+    }
+
+    .fulfill-case-create-message {
+    }
+
+    .fulfill-case-create-wrapper {
+        > .fulfill-case-create-header {
+            > .fulfill-case-create-detail {
+                > .status {
+                }
+
+                > .lookfor {
+                }
+
+                > .fulfill-case-create-hashtag {
+                    > .fulfill-case-create-content {
+                        > .fulfill-case-create-event {
+                        }
+                    }
+                }
+            }
+        }
+
+        > .fulfill-case-create-footer {
+        }
+    }
+}

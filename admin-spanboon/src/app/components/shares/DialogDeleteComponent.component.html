@@ -1,0 +1,21 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<h1 mat-dialog-title>คุณต้องการที่จะลบ {{data.name ? data.name : data.title}} ?</h1>
+<div mat-dialog-content>
+  <p>กรูณาใส่ชื่อข้อมูลที่จะลบให้ถูกต้อง</p>
+  <mat-form-field>
+    <input matInput placeholder="ใส่ชื่อข้อมูล" [formControl]="nameFormControl"  (keyup)="checkName($event)">
+    <mat-error *ngIf="nameFormControl.hasError('required')">
+      <strong>กรุณาใส่ชื่อให้ตรงกัน</strong>
+    </mat-error>
+</mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false" cdkFocusInitial>ไม่</button>
+  <button mat-button (click)="clickDelete()">ใช่</button>
+</div>
