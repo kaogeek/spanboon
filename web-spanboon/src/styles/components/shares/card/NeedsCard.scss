@@ -21,11 +21,16 @@
         padding: 0 14pt;
         > .left {
             font-family: "Kanit-500";
-            font-size: 16px;
-            > .count-fufill {
-                padding-left: 10pt;
-                color: $bg-color4;
+            font-size: 16px; 
+            &.active {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
             }
+        }
+        .count-fufill {
+            padding-left: 10pt;
+            color: $bg-color4;
         }
         > .right {
             flex: 0 0 auto;

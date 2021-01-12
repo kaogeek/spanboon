@@ -39,6 +39,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
   public isFulfillQuantity: boolean = false;
   @Input()
   public isFulfill: boolean = false;
+  @Input()
+  public isButtonFulfill: boolean = true;
 
   @Output()
   public close: EventEmitter<any> = new EventEmitter();
@@ -107,7 +109,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
       }  
-      this.getOffsetHeight();
+      this.getOffsetHeight(); 
     }
 
     if (this.directiveRef !== undefined && this.directiveRef !== null) {

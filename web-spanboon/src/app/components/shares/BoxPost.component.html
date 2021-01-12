@@ -204,7 +204,7 @@
             </div>
         </div>
         <needs-card #needsCard style="padding-left: 10pt; padding-right: 10pt; display: block;" [isClose]="true"
-            [itemNeeds]="arrListItem" (close)="removeNeeds($event)"></needs-card>
+            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill" [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right">
                 <div *ngIf="isRepost && isMobilePost  && isMobileText" class="text-limit"
@@ -507,7 +507,7 @@
                         แก้ไขสตอรี่
                     </div>
                 </div>
-                <ng-container *ngIf="arrListItem && arrListItem.length > 0 ; else elseNeeds">
+                <ng-container *ngIf="arrListItem && arrListItem.length > 0 && isTypeNeed; else elseNeeds">
                     <div class="wrapper-edit-story" (click)="showDialogDoing()">
                         <span class="label-needs"> กำลังมองหา {{getObjectLength(arrListItem)}} รายการ</span>
                     </div>
@@ -539,7 +539,7 @@
             <repost-data [isRepost]="true" [itemPost]="rePote"></repost-data>
         </div>
 
-        <div class="fulfill-items-wrapper" *ngIf="isFulfill">
+        <!-- <div class="fulfill-items-wrapper" *ngIf="isFulfill">
             <div class="fulfill-items-header">
                 <div class="header-left">
                     <span>รายการเติมเต็ม</span>
@@ -553,7 +553,7 @@
                     [imageURL]='item.imageURL'>
                 </card-fulfill-item>
             </div>
-        </div>
+        </div> -->
 
         <div class="wrapper-tool-post" #toolBar (window:resize)="onResize()">
             <div class="left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
