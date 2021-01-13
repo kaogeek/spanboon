@@ -10,7 +10,6 @@ import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Dele
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PageService } from '../services/PageService';
 import { Page } from '../models/Page';
-import { CustomItem } from '../models/CustomItem';
 import { CreatePageRequest } from './requests/CreatePageRequest';
 import { UpdatePageRequest } from './requests/UpdatePageRequest';
 import { ObjectID } from 'mongodb';
@@ -31,8 +30,6 @@ import { PostsGalleryService } from '../services/PostsGalleryService';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { FulfillmentService } from '../services/FulfillmentService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { StandardItemService } from '../services/StandardItemService';
-import { CustomItemService } from '../services/CustomItemService';
 import { Asset } from '../models/Asset';
 import { FileUtil, ObjectUtil } from '../../utils/Utils';
 import { ASSET_SCOPE, ASSET_PATH } from '../../constants/AssetScope';
@@ -50,6 +47,7 @@ import { MAX_SEARCH_ROWS, PAGE_FOLLOWER_LIMIT_DEFAULT, PAGE_FOLLOWER_OFFSET_DEFA
 import { PostsGallery } from '../models/PostsGallery';
 import { PostsComment } from '../models/PostsComment';
 import { Fulfillment } from '../models/Fulfillment';
+import { PageSocialAccount } from '../models/PageSocialAccount';
 import { CheckUniqueIdRequest } from './requests/CheckUniqueIdRequest';
 import { UniqueIdHistoryService } from '../services/UniqueIdHistoryService';
 import { UNIQUEID_LOG_ACTION, UNIQUEID_LOG_TYPE } from '../../constants/UniqueIdHistoryAction';
@@ -57,9 +55,13 @@ import { UniqueIdHistory } from '../models/UniqueIdHistory';
 import { GetFollowersListResponse } from './responses/GetFollowersListResponse';
 import { PageCategory } from '../models/PageCategory';
 import { PageCategoryService } from '../services/PageCategoryService';
-import { PageNeedsRequest } from './requests/PageNeedsRequest';
-import { FulfillmentRequestService } from '../services/FulfillmentRequestService';
+import { PageSocialAccountService } from '../services/PageSocialAccountService';
+import { FacebookService } from '../services/FacebookService';
+import { TwitterService } from '../services/TwitterService';
 import { CheckPageNameRequest } from './requests/CheckPageNameRequest';
+import { PageSocialFBBindingRequest } from './requests/PageSocialFBBindingRequest';
+import { PageSocialTWBindingRequest } from './requests/PageSocialTWBindingRequest';
+import { PROVIDER } from '../../constants/LoginProvider';
 
 @JsonController('/page')
 export class PageController {
@@ -80,9 +82,9 @@ export class PageController {
         private assetService: AssetService,
         private userService: UserService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
-        private standardItemService: StandardItemService,
-        private customItemService: CustomItemService,
-        private fulfillmentRequestService: FulfillmentRequestService
+        private pageSocialAccountService: PageSocialAccountService,
+        private facebookService: FacebookService,
+        private twitterService: TwitterService
     ) { }
 
     // Find Page API
@@ -274,22 +276,22 @@ export class PageController {
     }
 
     /**
-     * @api {post} /api/page/:id/needs Create Page Needs API
+     * @api {post} /api/page/:id/social/facebook Binding Page Social API
      * @apiGroup Page
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     *      "message": "Successfully Created Page Needs",
+     *      "message": "Successfully Binding Page Social",
      *      "data": "{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/page/:id/needs
-     * @apiErrorExample {json} Unable Create Page Needs
+     * @apiSampleRequest /api/page/:id/social/facebook
+     * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Post('/:id/needs')
+    @Post('/:id/social/facebook')
     @Authorized('user')
-    public async addPageNeeds(@Param('id') pageId: string, @Body({ validate: true }) needsList: PageNeedsRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async bindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -300,142 +302,73 @@ export class PageController {
                 return res.status(401).send('You cannot create page needs.', undefined);
             }
 
-            if (needsList.needs === undefined || needsList.needs.length <= 0) {
-                return res.status(200).send('No needs was created.', []);
+            const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
+            if (checkAccessToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
             }
 
-            const standardItemMap = {};
-            const customItemMap = {};
-
-            for (const reqNeed of needsList.needs) {
-                if (reqNeed.standardItemId !== undefined && reqNeed.standardItemId !== '') {
-                    // check standard item
-                    const sItemId = reqNeed.standardItemId;
-                    if (standardItemMap[sItemId] !== undefined) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Standard Item was duplicate', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const sItem = await this.standardItemService.findOne({ _id: new ObjectID(sItemId) });
-                    if (sItem === undefined) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Standard Item ' + sItemId + ' was not found', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    // check page item exist
-                    const pageNeed = await this.getPageNeedStandardItem(pageId, sItemId);
-                    if (pageNeed) {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Already has page need ' + sItemId, undefined));
-                    }
-
-                    standardItemMap[sItemId] = sItem;
-
-                } else {
-                    // custom Item
-                    const customItemName = (reqNeed.name === undefined) ? '' : reqNeed.name.trim();
-                    const customItemUnit = (reqNeed.unit === undefined) ? '' : reqNeed.unit.trim();
-
-                    if (customItemName === undefined || customItemName === '' ||
-                        customItemUnit === undefined || customItemUnit === '') {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Item name or unit was not found', undefined));
-                    }
-
-                    if (customItemMap[customItemName] !== undefined) {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Custom Item was not duplicate', undefined));
-                    }
-
-                    // check page item exist
-                    const pageNeed = await this.getPageNeedCustomItemByName(pageId, customItemName);
-                    if (pageNeed) {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Already has page need ' + customItemName, undefined));
-                    }
-
-                    let custItem = await this.customItemService.findOne({ name: customItemName });
-                    if (custItem === undefined) {
-                        // create new 
-                        const customItem = new CustomItem();
-                        customItem.name = customItemName;
-                        customItem.unit = customItemUnit;
-                        customItem.userId = userId;
-                        customItem.standardItemId = null;
-                        custItem = await this.customItemService.create(customItem);
-                    }
-
-                    customItemMap[customItemName] = custItem;
-                }
+            if (checkAccessToken.error !== undefined) {
+                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
+                return res.status(400).send(errorResponse);
             }
 
-            const result = [];
-            for (const reqNeed of needsList.needs) {
-                let standardItemId = undefined;
-                let customItemId = undefined;
-                let itemName = (reqNeed.name === undefined) ? '' : reqNeed.name.trim();
-                let itemUnit = (reqNeed.unit === undefined) ? '' : reqNeed.unit.trim();
-                // check id
-                if (reqNeed.standardItemId !== undefined && reqNeed.standardItemId !== '') {
-                    // check standard item
-                    const standardItem = standardItemMap[reqNeed.standardItemId];
-
-                    if (standardItem === undefined) {
-                        continue;
-                    }
-
-                    standardItemId = standardItem.id;
-                    itemName = standardItem.name;
-                    itemUnit = standardItem.unit;
-                } else {
-                    // check customItem
-                    const customItem = customItemMap[itemName];
-
-                    if (customItem === undefined) {
-                        continue;
-                    }
-
-                    customItemId = customItem.id;
-                }
-
-                // create need to page
-                const need = new Needs();
-                need.standardItemId = standardItemId;
-                need.customItemId = customItemId;
-                need.pageId = pageObjId;
-                need.name = itemName;
-                need.active = true;
-                need.fullfilled = false;
-                need.quantity = reqNeed.quantity;
-                need.unit = itemUnit;
-                need.description = reqNeed.description;
-                need.fulfillQuantity = 0;
-                need.pendingQuantity = 0;
-
-                const createdNeed = await this.needsService.create(need);
-
-                result.push(createdNeed);
+            if (checkAccessToken.data === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Success Create Page Needs.', result));
+            const expiresAt = checkAccessToken.data.expires_at;
+            const today = moment().toDate();
+
+            if (expiresAt < today.getTime()) {
+                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+                return res.status(400).send(errorResponse);
+            }
+
+            const fbUser = await this.facebookService.getFacebookUser(socialBinding.accessToken);
+
+            if (fbUser === null || fbUser === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Facebook User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+
+            const fbAccessExpirationTime = socialBinding.fbAccessExpirationTime;
+            const fbSignedRequest = socialBinding.fbSignedRequest;
+            const properties = { fbAccessExpTime: fbAccessExpirationTime, fbSigned: fbSignedRequest };
+
+            const pageSocialAccount = new PageSocialAccount();
+            pageSocialAccount.page = pageObjId;
+            pageSocialAccount.properties = properties;
+            pageSocialAccount.providerName = PROVIDER.FACEBOOK;
+            pageSocialAccount.providerPageId = socialBinding.facebookPageId;
+            pageSocialAccount.storedCredentials = fbUser.token;
+
+            const result = await this.pageSocialAccountService.create(pageSocialAccount);
+
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', result));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }
     }
 
     /**
-     * @api {put} /api/page/:id/needs Edit Page Needs API
+     * @api {post} /api/page/:id/social/twitter Binding Page Social API
      * @apiGroup Page
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     *      "message": "Successfully Edit Page Needs",
+     *      "message": "Successfully Binding Page Social",
      *      "data": "{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/page/:id/needs
-     * @apiErrorExample {json} Unable Create Page Needs
+     * @apiSampleRequest /api/page/:id/social/twitter
+     * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Put('/:id/needs')
+    @Post('/:id/social/twitter')
     @Authorized('user')
-    public async editPageNeeds(@Param('id') pageId: string, @Body({ validate: true }) needsList: PageNeedsRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async bindingPageTwitter(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -443,124 +376,56 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit page needs.', undefined));
+                return res.status(401).send('You cannot create page needs.', undefined);
             }
 
-            if (needsList.needs === undefined || needsList.needs.length <= 0) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('No needs was created.', []));
-            }
+            // ! implement check with real server
+            // const twUser = await this.twitterService.getTwitterUser(socialBinding.twitterUserId);
 
-            const needsMap = {};
+            // if (twUser === null || twUser === undefined) {
+            //     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter User was not found.' };
+            //     return res.status(400).send(errorUserNameResponse);
+            // }
 
-            for (const reqNeed of needsList.needs) {
-                if (reqNeed.id === undefined || reqNeed.id === '') {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need id is required.', undefined));
-                }
+            const storedCredentials = 'oauth_token=' + socialBinding.twitterOauthToken + '&oauth_token_secret=' + socialBinding.twitterTokenSecret + '&user_id=' + socialBinding.twitterUserId;
+            const properties = {
+                userId: socialBinding.twitterUserId,
+                oauthToken: socialBinding.twitterOauthToken,
+                oauthTokenSecret: socialBinding.twitterTokenSecret
+            };
 
-                if (typeof reqNeed.quantity !== 'number' || reqNeed.quantity < 0) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Quantity is not a number and not less than 0.', undefined));
-                }
+            const pageSocialAccount = new PageSocialAccount();
+            pageSocialAccount.page = pageObjId;
+            pageSocialAccount.properties = properties;
+            pageSocialAccount.providerName = PROVIDER.TWITTER;
+            pageSocialAccount.providerPageId = socialBinding.twitterUserId;
+            pageSocialAccount.storedCredentials = storedCredentials;
 
-                const needId = reqNeed.id;
+            const result = await this.pageSocialAccountService.create(pageSocialAccount);
 
-                const dbNeed = await this.needsService.findOne({ _id: new ObjectID(needId) });
-                if (!dbNeed) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need id was not found.', undefined));
-                }
-
-                if ((dbNeed.pageId + '') !== pageId) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need is not belong to the page.', undefined));
-                }
-
-                needsMap[needId] = dbNeed;
-            }
-
-            const result = [];
-            for (const reqNeed of needsList.needs) {
-                const needId = reqNeed.id;
-                const needItem = needsMap[needId];
-                let itemName = (reqNeed.name === undefined) ? '' : reqNeed.name.trim();
-                let itemUnit = (reqNeed.unit === undefined) ? '' : reqNeed.unit.trim();
-
-                if (!needItem) {
-                    continue;
-                }
-
-                if (itemName === '') {
-                    itemName = needItem.name; // set to old name
-                }
-
-                if (itemUnit === '') {
-                    itemUnit = needItem.unit; // set to old unit
-                }
-
-                // edit need to page
-                const updateIdStmt = {
-                    _id: new ObjectID(needId)
-                };
-                const updateStmt = {
-                    $set: {
-                        quantity: reqNeed.quantity
-                    }
-                };
-                needItem.quantity = reqNeed.quantity;
-
-                // edit customItem name/unit
-                const isCustomItem: boolean = (needItem.customItemId !== undefined && needItem.customItemId !== null && needItem.customItemId !== '') ? true : false;
-
-                if (isCustomItem) {
-                    // can edit custom Item name
-                    needItem.name = itemName;
-                    needItem.unit = itemUnit;
-
-                    updateStmt['$set']['name'] = itemName;
-                    updateStmt['$set']['unit'] = itemUnit;
-
-                    // edit customItem
-                    const customItem = await this.customItemService.findOne({ _id: needItem.customItemId });
-                    if (customItem) {
-                        customItem.name = itemName;
-                        customItem.unit = itemUnit;
-
-                        await this.customItemService.update({ _id: needItem.customItemId }, {
-                            $set: {
-                                name: itemName,
-                                unit: itemUnit
-                            }
-                        });
-                    }
-                } else {
-                    // can not edit standard item info
-                }
-
-                await this.needsService.update(updateIdStmt, updateStmt);
-
-                result.push(needItem);
-            }
-
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Success Edit Page Needs.', result));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', result));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }
     }
 
     /**
-     * @api {delete} /api/page/:id/needs Delete Page Needs API
+     * @api {Delete} /api/page/:id/social/facebook Unbinding Page Social API
      * @apiGroup Page
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     *      "message": "Successfully Delete Page Needs",
+     *      "message": "Successfully Unbinding Page Social",
      *      "data": "{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/page/:id/needs
-     * @apiErrorExample {json} Unable Create Page Needs
+     * @apiSampleRequest /api/page/:id/social/facebook
+     * @apiErrorExample {json} Unable to Unbinding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Delete('/:id/needs')
+    @Delete('/:id/social/facebook')
     @Authorized('user')
-    public async deletePageNeeds(@Param('id') pageId: string, @Body({ validate: true }) needsList: PageNeedsRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async unbindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -568,60 +433,79 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot delete page needs.', undefined));
+                return res.status(401).send('You cannot create page needs.', undefined);
             }
 
-            if (needsList.needs === undefined || needsList.needs.length <= 0) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('No needs was created.', []));
+            const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
+            if (checkAccessToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
             }
 
-            const needsMap = {};
-
-            for (const reqNeed of needsList.needs) {
-                if (reqNeed.id === undefined || reqNeed.id === '') {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need id is required.', undefined));
-                }
-
-                const needId = reqNeed.id;
-
-                const dbNeed = await this.needsService.findOne({ _id: new ObjectID(needId) });
-                if (!dbNeed) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need id was not found.', undefined));
-                }
-
-                if ((dbNeed.pageId + '') !== pageId) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Need is not belong to the page.', undefined));
-                }
-
-                // check if need is use in case
-                const whereCondition: any = {
-                    needsId: new ObjectID(needId),
-                    deleted: false
-                };
-                const needHasRequest = await this.fulfillmentRequestService.search(1, 0, undefined, undefined, whereCondition, undefined, false);
-
-                if (needHasRequest !== undefined && needHasRequest.length > 0) {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Cannot delete Need that has fulfillment Request.', undefined));
-                }
-
-                needsMap[needId] = dbNeed;
+            if (checkAccessToken.error !== undefined) {
+                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
+                return res.status(400).send(errorResponse);
             }
 
-            const result = [];
-            for (const reqNeed of needsList.needs) {
-                const needId = reqNeed.id;
-                const needItem = needsMap[needId];
-
-                if (!needItem) {
-                    continue;
-                }
-
-                await this.needsService.delete({ _id: needItem.id });
-
-                result.push(needId);
+            if (checkAccessToken.data === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Success Delete Page Needs.', result));
+            const expiresAt = checkAccessToken.data.expires_at;
+            const today = moment().toDate();
+
+            if (expiresAt < today.getTime()) {
+                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+                return res.status(400).send(errorResponse);
+            }
+
+            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.FACEBOOK });
+            if (!result) {
+                const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
+                return res.status(200).send(errorResponse);
+            }
+
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Facebook Social.', undefined));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+        }
+    }
+
+    /**
+     * @api {delete} /api/page/:id/social/twitter UnBinding Page Social API
+     * @apiGroup Page
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully UnBinding Page Social",
+     *      "data": "{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/social/twitter
+     * @apiErrorExample {json} Unable Binding Page Social
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Delete('/:id/social/twitter')
+    @Authorized('user')
+    public async unbindingPageTwitter(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjId = new ObjectID(pageId);
+        const userId = new ObjectID(req.user.id);
+        const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (pageData) {
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send('You cannot create page needs.', undefined);
+            }
+
+            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.TWITTER });
+            if (!result) {
+                const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
+                return res.status(200).send(errorResponse);
+            }
+
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', undefined));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }
