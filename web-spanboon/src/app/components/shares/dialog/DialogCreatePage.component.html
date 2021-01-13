@@ -420,8 +420,7 @@
             </div>
             <div class="bottom-right">
                 <button mat-stroked-button class="but-skip" id="skipBtn" *ngIf="isSkip" (click)="skip(3)">ข้าม</button>
-                <button mat-stroked-button class="but-conf" id="nextBtn" *ngIf="isNext"
-                    (click)="nextPrev(1)">ถัดไป</button>
+                <button mat-stroked-button class="but-conf" *ngIf="isNext" id="nextBtn" (click)="nextPrev(1)">ถัดไป</button>
             </div>
         </div>
     </div>

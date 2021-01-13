@@ -231,55 +231,45 @@ export class DialogCreatePage extends AbstractPage {
         ordering: 1
       }
       console.log('dataPage ',dataPage) 
-      // this.pageFacade.create(dataPage).then((value: any) => {
-      //   console.log('value ', value)
-      //   if (value.status === 1) {
-      //     this.resProfilePage = value.data;
-      //     this.observManager.publish('authen.createPage', value.data);
-      //     this.isCloseDialog = true;
-      //     // this.onClose();
-      //     // alertMessages = 'สร้างเพจสำเร็จ'
-      //     // let dialog = this.showAlertDialogWarming(alertMessages, "none");
-      //     // dialog.afterClosed().subscribe((res) => {
-      //     //   if (res) {
-      //     //     this.observManager.publish('authen.createPage', value.data);
-      //     //     this.onClose()
-      //     //     // if (this.redirection) {
-      //     //     //   this.router.navigateByUrl(this.redirection);
-      //     //     // } else {
-      //     //     //   this.router.navigate(['/login']);
-      //     //     // }
-      //     //   }
-      //     // });
-      //   }
-      // }).catch((err: any) => {
-      //   let alertMessages: string;
-      //   if (err.error.message === 'Page is Exists') {
-      //     alertMessages = 'ชื่อเพจนี้สร้างแล้ว'
-      //     let dialog = this.showAlertDialogWarming(alertMessages, "none");
-      //     dialog.afterClosed().subscribe((res) => {
-      //       if (res) {
-      //         // this.observManager.publish('authen.check', null);
-      //         // if (this.redirection) {
-      //         //   this.router.navigateByUrl(this.redirection);
-      //         // } else {
-      //         //   this.router.navigate(['/login']);
-      //         // }
-      //       }
-      //     });
-      //   }
-      // })
-    }
-
-    // if (this.content === undefined || this.content === null || this.content === '') {
-    //   alert('กรุณากรอกเนื้อหา');
-    //   return;
-    // }
-
-    // if (this.isEmptyString(this.content)) {
-    //   alert('กรุณากรอกเนื้อหา');
-    //   return;
-    // } 
+      this.pageFacade.create(dataPage).then((value: any) => {
+        console.log('value ', value)
+        if (value.status === 1) {
+          this.resProfilePage = value.data;
+          this.observManager.publish('authen.createPage', value.data);
+          this.isCloseDialog = true;
+          // this.onClose();
+          // alertMessages = 'สร้างเพจสำเร็จ'
+          // let dialog = this.showAlertDialogWarming(alertMessages, "none");
+          // dialog.afterClosed().subscribe((res) => {
+          //   if (res) {
+          //     this.observManager.publish('authen.createPage', value.data);
+          //     this.onClose()
+          //     // if (this.redirection) {
+          //     //   this.router.navigateByUrl(this.redirection);
+          //     // } else {
+          //     //   this.router.navigate(['/login']);
+          //     // }
+          //   }
+          // });
+        }
+      }).catch((err: any) => {
+        let alertMessages: string;
+        if (err.error.message === 'Page is Exists') {
+          alertMessages = 'ชื่อเพจนี้สร้างแล้ว'
+          let dialog = this.showAlertDialogWarming(alertMessages, "none");
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              // this.observManager.publish('authen.check', null);
+              // if (this.redirection) {
+              //   this.router.navigateByUrl(this.redirection);
+              // } else {
+              //   this.router.navigate(['/login']);
+              // }
+            }
+          });
+        }
+      })
+    } 
   }
 
   public checkUUID(text: string) {
@@ -405,25 +395,34 @@ export class DialogCreatePage extends AbstractPage {
       // document.getElementById("regForm").submit();
       return false;
     }
-
+    if(currentTab === 0){ 
+      this.isNext = false;
+    }
+    if(currentTab === 1){ 
+      this.isNext = true;
+    }
+    console.log('currentTab ',currentTab)
     if (currentTab === 2) {
       this.isSkip = true; 
     } else {
       this.isCanCel = false;
     }
  
-    if (currentTab === 3) { 
-      if (this.checkedCon === true) {
-        this.isNext = true;
-        this.isBack = false;
-      } else {
-        this.isNext = false;
-      }
+    if (currentTab === 3) {
+      this.isNext = true; 
+      $('.but-conf').addClass('active');
+      // if (this.checkedCon === true) {
+      //   $('.but-conf').removecClass('active');
+      //   // this.isNext = true;
+      //   // this.isBack = false;
+      // } else {
+      //   $('.but-conf').addClass('active');
+      //   // this.isNext = false;
+      // }
     } else {
       if(currentTab === 4){
         this.isBack = false;
       }
-      this.isNext = true;
       // this.isBack = false;
     }
 
@@ -491,9 +490,9 @@ export class DialogCreatePage extends AbstractPage {
     this.checkedCon = !this.checkedCon;
 
     if (this.checkedCon === true) {
-      this.isNext = true;
+      $('.but-conf').removeClass('active');
     } else {
-      this.isNext = false;
+      $('.but-conf').addClass('active');
     }
   }
 }

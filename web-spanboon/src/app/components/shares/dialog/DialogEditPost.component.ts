@@ -45,9 +45,7 @@ export class DialogEditPost implements OnInit {
         }
     }
 
-    public ngOnInit(): void {
-        console.log("this.data ", this.data)
-        console.log("this.data ", this.dataUser.firstName)
+    public ngOnInit(): void { 
     }
 
     public onClose(): void {
