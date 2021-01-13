@@ -58,6 +58,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild('pagefixHeight', { static: false }) pagefixHeight: ElementRef;
   @ViewChild('sidefeedHeight', { static: false }) sidefeedHeight: ElementRef;
+  @ViewChild('imgprofile', { static: false }) imgprofile: ElementRef;
+  @ViewChild('fanpagebackground', { static: false }) fanpagebackground: ElementRef;
 
   private objectiveFacade: ObjectiveFacade;
   private pageFacade: PageFacade;
@@ -107,6 +109,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public linkmain: any = '';
   public labelStatus: string;
   public isCheck: boolean = true;
+  public countScroll: number;
 
   public CheckPost: boolean = true;
 
@@ -184,6 +187,18 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
+      this.countScroll = scrollTop.fix;
+      this.setProfile();
+
+      // if (this.isLoading !== true) {
+      //   var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
+
+      //   if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll) {
+      //     this.imgprofile.nativeElement.style.marginTop = '-50pt';
+      //   } else {
+      //     this.imgprofile.nativeElement.style.marginTop = '10pt';
+      //   }
+      // }
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
@@ -1026,7 +1041,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       } else {
         if (this.pagefixHeight) {
-          this.pagefixHeight.nativeElement.style.top = '100pt';
+          this.pagefixHeight.nativeElement.style.top = '55pt';
         }
       }
 
@@ -1246,6 +1261,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public onResize($event) {
     this.setCop();
+    this.setProfile();
+  }
+
+  public setProfile(){
+    if(window.innerWidth > 899){
+      if (this.isLoading !== true) {
+        var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
+  
+        if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll  + 150) {
+          this.imgprofile.nativeElement.style.marginTop = '-50pt';
+        } else {
+          this.imgprofile.nativeElement.style.marginTop = '10pt';
+        }
+      }
+    } else{
+      this.imgprofile.nativeElement.style.marginTop = '-55pt';
+    }
   }
 }
 

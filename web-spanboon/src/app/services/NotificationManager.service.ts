@@ -116,13 +116,13 @@ export class NotificationManager extends AbstractFacade {
     }
 
     public loadCurrentUserNotification(): Promise<any> {
-        const currentUser = this.authMgr.getCurrentUser();
-
+        const currentUser = this.authMgr.getCurrentUser(); 
+        
         if (currentUser === undefined) {
             throw 'Current User was not found';
         }
 
-        const userId = currentUser.id;
+        const userId = currentUser && currentUser.id;
         this.notificationMap[userId] = [];
 
         return new Promise((resolve: any, reject: any) => {

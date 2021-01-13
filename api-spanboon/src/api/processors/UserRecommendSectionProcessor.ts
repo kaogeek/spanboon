@@ -148,11 +148,16 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     let iconURL = '';
                     let followUserCount = 0;
                     const followUsers = [];
+                    let isHot = false;
                     if (page !== undefined) {
                         const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
                         followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
                         // contentTitle = page.name;
                         iconURL = page.imageURL;
+                        // mock data to mark flag hot.
+                        if (page.isOfficial) {
+                            isHot = true;
+                        }
 
                         const folFiveStmt = [
                             { $match: { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE } },
@@ -210,7 +215,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     if (firstImg) {
                         contentModel.coverPageUrl = firstImg.imageURL;
                     }
-                    
+
                     if (row.rootReferencePost !== undefined) {
                         const rootRefPost = (row.rootRefPost !== undefined && row.rootRefPost.length > 0) ? row.rootRefPost[0] : undefined;
                         const rootRefFirstImg = (row.rootRefGallery !== undefined && row.rootRefGallery.length > 0) ? row.rootRefGallery[0] : undefined;
@@ -220,7 +225,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         if (rootRefFirstImg) {
                             contentModel.coverPageUrl = rootRefFirstImg.imageURL;
                         }
-                        console.log('rootRefPost: '+rootRefPost);
+                        console.log('rootRefPost: ' + rootRefPost);
                         contentModel.rootReferencePost = rootRefPost;
                         this.removePostField(contentModel.rootReferencePost);
                     }
@@ -236,6 +241,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);
+                        contentModel.owner.isHot = isHot;
                     } else if (user !== undefined) {
                         contentModel.owner = this.parseUserField(user);
                     }

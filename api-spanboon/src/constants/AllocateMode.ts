@@ -5,11 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import 'reflect-metadata';
-
-export class AllocateRequest {
-
-    public pageId: string;
-    public postId: string;
-    public items: any[];
+export enum ALLOCATE_MODE {
+    AUTO = 'AUTO',
+    MANUAL = 'MANUAL',
+    POST = 'POST'
 }

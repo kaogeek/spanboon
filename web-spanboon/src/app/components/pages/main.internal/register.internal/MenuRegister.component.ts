@@ -14,9 +14,10 @@ import { ObservableManager } from '../../../../services/ObservableManager.servic
 import { AuthenManager } from '../../../../services/AuthenManager.service';
 import { MESSAGE } from '../../../../AlertMessage';
 import { User } from '../../../../models/User';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
+import { TwitterService } from "../../../../services/facade/TwitterService.service";
 
 const PAGE_NAME: string = 'register/menu';
 
@@ -33,6 +34,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     private googleToken: any;
     private activatedRoute: ActivatedRoute;
     private observManager: ObservableManager;
+    private twitterService: TwitterService;
 
     public authenManager: AuthenManager;
     public dialog: MatDialog;
@@ -40,12 +42,19 @@ export class MenuRegister extends AbstractPage implements OnInit {
     public googleUser = {};
     public auth2: any;
 
+    //twitter
+    public authorizeLink = 'https://api.twitter.com/oauth/authorize';
+    public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
+    public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+    public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
+
     constructor(authenManager: AuthenManager,
         private socialAuthService: SocialAuthService,
         activatedRoute: ActivatedRoute,
         router: Router,
         dialog: MatDialog,
         observManager: ObservableManager,
+        twitterService: TwitterService,
         _ngZone: NgZone,) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.authenManager = authenManager;
@@ -54,12 +63,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.dialog = dialog;
         this._ngZone = _ngZone
         this.observManager = observManager;
-
-        // if ((this.router.url === "/register/menu")) {
-        //     $(".icon-post-bottom").css({
-        //         'display': "none"
-        //     });
-        // }
+        this.twitterService = twitterService;
 
         this.activatedRoute.params.subscribe(param => {
             this.redirection = param['redirection'];
@@ -69,24 +73,53 @@ export class MenuRegister extends AbstractPage implements OnInit {
     ngOnInit(): void {
         super.ngOnInit();
         this.checkLoginAndRedirection();
+
+
+        let doRunAccessToken = false;
+        const fullURL = window.location.href;
+        if (fullURL !== undefined && fullURL !== '') {
+            let split = fullURL.split('?');
+            if (split.length >= 2) {
+                const queryParam = split[1];
+                this.accessTokenLink += '?' + queryParam;
+                doRunAccessToken = true;
+            }
+        }
+
+        if (doRunAccessToken) {
+            let httpOptions: any = {
+                responseType: 'text'
+            };
+            this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
+                let spilt = res.split('&');
+                const token = spilt[0].split('=')[1];
+                const token_secret = spilt[1].split('=')[1];
+                const userId = spilt[2].split('=')[1];
+                const name = spilt[3];
+                this.loginTwitter(token, token_secret, userId);
+
+            }).catch((err: any) => [
+                console.log('err ', err)
+            ])
+        }
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-      }
-       
-      isPageDirty(): boolean {
+    }
+
+    isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
         return false;
-      }
-      onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
-      onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
+    }
 
     public clickLoginGoogle(): void {
         this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
@@ -105,6 +138,57 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }).catch((error) => {
             console.log('error >>> ', error);
+        });
+    }
+
+    public loginTwitter(token: string, token_secret: string, userId: string) {
+        let mode = 'TWITTER';
+        let twitter = {
+            twitterOauthToken: token,
+            twitterOauthTokenSecret: token_secret,
+            twitterUserId: userId
+        }
+        this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+            // login success redirect to main page
+            this.observManager.publish('authen.check', null);
+            if (this.redirection) {
+                this.router.navigateByUrl(this.redirection);
+            } else {
+                this.router.navigate(['home']);
+            }
+        }).catch((err) => {
+            const statusMsg = err.error.message;
+            if (statusMsg === "Twitter was not registed.") {
+                let navigationExtras: NavigationExtras = {
+                    state: {
+                        accessToken: twitter,
+                        redirection: this.redirection
+                    },
+                    queryParams: { mode: 'twitter' }
+                }
+                this.router.navigate(['/register'], navigationExtras);
+            } else if (err.error.message === 'Baned PageUser.') {
+                this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: MESSAGE.TEXT_LOGIN_BANED,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDsplay1: "none"
+                    }
+                });
+            }
+        });
+    }
+
+    public clickLoginTW() {
+        this.twitterService.requestToken().then((result: any) => {
+            this.authorizeLink += '?' + result;
+            // this.authenticateLink += '?' + result;
+            // console.log('result ', this.authorizeLink) 
+            window.open(this.authorizeLink);
+        }).catch((error: any) => {
+            console.log(error);
         });
     }
 
