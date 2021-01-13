@@ -5,10 +5,10 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="chat-spanboon">
+<div class="chat-spanboon"> 
     <div class="case-confirmed" *ngIf="isCaseConfirmed && isCaseHasPost"
         [ngStyle]="{'top': header.offsetHeight + 'px','height': talking.offsetHeight + 'px'}"></div>
-    <div class="header" #header> 
+    <div class="header" #header>
         <span class="material-icons back-arrow" [class.active]="!isBackArrow" (click)="back.emit()">
             chevron_left
         </span>
@@ -132,10 +132,34 @@
         </div>
 
         <div class="case-confirm" *ngIf="isCaseConfirmed">
-            <span class="confirm-text">สิ้นสุดการสนทนา</span>
+            <div class="case-div">
+                <div class="confirm-text">
+                    สิ้นสุดการสนทนา
+                </div>
+                <span class="confirm-text left">คำขอเติมเต็มถูกยืนยันแล้ว
+                    <ng-container *ngIf="isCaseConfirmed && isCaseHasPost; else elseTemplatePost">
+                        <span class="click-post" (click)="clickPost.emit()">ไปที่โพสต์</span>
+                    </ng-container>
+                    <ng-template #elseTemplatePost> 
+                        <ng-container *ngIf="asPage; else elseTemplateAsPage">
+                            <span  class="click-post" (click)="createPost.emit()">ไปที่สร้างโพสต์</span>
+                        </ng-container>
+                        <ng-template #elseTemplateAsPage>
+                            <span>รอการสร้างโพสต์</span>
+                        </ng-template> 
+                    </ng-template>
+                    <!-- <ng-container *ngIf="status.status === 'CONFIRM' && (status.fulfillmentPost !== null && status.fulfillmentPost !== undefined && status.fulfillmentPost !== ''); else elseTemplatePost">
+                        <span class="click-post" (click)="clickPost.emit()">ไปที่โพสต์</span>
+                    </ng-container>
+                    <ng-template #elseTemplatePost>
+                        <span *ngIf="status.status === 'CONFIRM' && (status.fulfillmentPost === null || status.fulfillmentPost === undefined || status.fulfillmentPost === '') " (click)="createPost.emit()" >รอการสร้างโพสต์</span>
+                    </ng-template>  -->
+
+                </span>
+            </div>
         </div>
     </div>
-    <div class="typing" #typing [class.active]="isCaseConfirmed" >
+    <div class="typing" #typing [class.active]="isCaseConfirmed">
         <ng-container *ngIf="imageURL !== '' && imageURL !== undefined && imageURL !== null ; else elseImage">
             <img class="img-profile" src="{{imageURL}}" alt="">
         </ng-container>

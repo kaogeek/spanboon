@@ -73,7 +73,7 @@
         > .wrapper-doing {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             width: calc(33.33% - 20pt - 6px);
             padding: 15pt 10pt;
@@ -102,10 +102,10 @@
             > .i_title {
                 margin-top: 2pt;
                 display: -webkit-box;
-                -webkit-line-clamp: 1;
+                -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                word-break: break-all;
+                word-break: break-word;
                 width: 100%;
             }
         }
