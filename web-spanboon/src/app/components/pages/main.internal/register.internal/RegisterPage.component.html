@@ -74,10 +74,10 @@
                     [(ngModel)]="data.firstName">
 
                 <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
-                    [(ngModel)]="data.lastName">
-                <ng-container *ngIf="mode !== 'normal'; else elseEmail">
+                    [(ngModel)]="data.lastName"> 
+                <ng-container *ngIf="mode === 'facebook' || mode === 'google'; else elseEmail">
                     <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text readonly" shake
-                        readonly [(ngModel)]="data.email" [email]="true" required>
+                     readonly [(ngModel)]="data.email" [email]="true" required>
                 </ng-container>
                 <ng-template #elseEmail>
                     <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake

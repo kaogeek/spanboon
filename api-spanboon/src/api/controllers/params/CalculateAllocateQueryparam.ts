@@ -6,10 +6,11 @@
  */
 
 import 'reflect-metadata';
+import { ALLOCATE_MODE } from '../../../constants/AllocateMode';
 
-export class AllocateRequest {
+export class CalculateAllocateQueryparam {
 
-    public pageId: string;
-    public postId: string;
-    public items: any[];
+    public mode: ALLOCATE_MODE;
+    public emergencyEvent: string;
+    public objective: string;
 }

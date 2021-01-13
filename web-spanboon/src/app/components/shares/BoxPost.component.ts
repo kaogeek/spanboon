@@ -152,6 +152,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isStory: boolean;
   public isDataStroy: boolean;
   public isTablet: boolean;
+  public isButtonFulfill: boolean;
+  public isTypeNeed: boolean = true;
   public typeStroy: any;
   public dataAutoComp: any; // 2: click, 1: totic, 0: content
   public dataObjective: any; // 2: click, 1: totic, 0: content
@@ -268,6 +270,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isStoryResultData = true;
     this.isListPage = false;
     this.isTablet = false;
+    this.isButtonFulfill = false;
     this.data = {};
 
     this.observManager.subscribe('authen.check', (data) => {
@@ -422,6 +425,14 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
         this.isLoading = false;
       }, 100);
+    } else {
+      if(this.content && this.content.isFulfill){
+        this.isButtonFulfill = false;
+        this.isTypeNeed = false;
+        for(let data of this.content.fulfillRequest){ 
+          this.arrListItem.push(data)
+        }
+      }
     }
     this.onResize();
 
@@ -700,8 +711,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.dataItem.resNeeds = doingItem.resNeeds
         }
         if (this.arrListItem !== undefined) {
-          this.arrListItem = this.arrListItem.slice()
-          console.log('slice ', this.arrListItem)
+          this.arrListItem = this.arrListItem.slice() 
         }
       }
       if (doingItem && doingItem.length === 0) {

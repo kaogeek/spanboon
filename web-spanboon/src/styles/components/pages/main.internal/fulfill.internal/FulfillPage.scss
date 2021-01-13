@@ -183,7 +183,7 @@
             background: $white;
             border-top-left-radius: 4px;
             border-top: 1px solid $border-color;
-            border-left: 1px solid $border-color;
+            border-left: 1px solid $border-color; 
 
             > .head-story {
                 flex: 0 0 auto;
@@ -709,9 +709,9 @@
                             display: flex;
                             font-family: "Kanit-500";
                             font-size: 14px;
-                            color: $bg-color4;
-                            // padding-top: 4pt;
+                            color: $bg-color4; 
                             @include pointer();
+                            padding-top: 4pt;
                             &:hover {
                                 text-decoration: underline;
                             }
@@ -887,11 +887,15 @@
                 }
                 > .head-story {
                     padding: 10px;
-                    position: relative;
-                    // align-items: center;
+                    position: relative; 
+
                     &.active {
                         padding: 10px 10px 10px 20pt;
                     }
+                    &.activeTransition {
+                        transition: all .5s ease;
+                    }
+
                     > .back {
                         display: flex;
                         justify-content: center;
@@ -953,17 +957,7 @@
                                 max-width: unset;
                                 display: none;
                             }
-                        }
-                        // > .list-item {
-                        //     display: flex;
-                        //     font-family: "Kanit-500";
-                        //     font-size: 14px;
-                        //     color: $bg-color4;
-                        //     @include pointer();
-                        //     &:hover {
-                        //         text-decoration: underline;
-                        //     }
-                        // }
+                        } 
                     }
                 }
                 > .body-story {
@@ -1050,6 +1044,9 @@
                     border-right: 1px solid #e5e5e5;
                 }
                 > .head-story {
+                    &.activeTransition {
+                        transition: all .5s ease;
+                    }
                     > .story-right {
                         > .confirm {
                             padding-top: 10pt;
@@ -1090,17 +1087,7 @@
                                 max-width: unset;
                                 display: none;
                             }
-                        }
-                        // > .list-item {
-                        //     display: flex;
-                        //     font-family: "Kanit-500";
-                        //     font-size: 14px;
-                        //     color: $bg-color4;
-                        //     @include pointer();
-                        //     &:hover {
-                        //         text-decoration: underline;
-                        //     }
-                        // }
+                        } 
                     }
                 }
                 > .body-story {
@@ -1150,14 +1137,7 @@
             > .fulfill-left {
                 min-width: unset;
                 width: 100%;
-                > .mobile-fulfill-profile {
-                    // border-bottom: 1px solid #e5e5e5;
-                    // fulfill-menu {
-                    //     overflow: hidden;
-                    //     .fulfill-menu {
-                    //         display: flex;
-                    //     }
-                    // }
+                > .mobile-fulfill-profile { 
                     > .fulfill-profile {
                         border-bottom: unset;
                         height: unset;
@@ -1200,8 +1180,7 @@
                 &.active {
                 }
                 > .head-story {
-                    height: unset !important;  
-                    // align-items: unset;
+                    height: unset !important;   
                     &.activeTransition {
                         transition: all .5s ease;
                     }
@@ -1382,12 +1361,10 @@
                             font-size: 22px;
                             margin-top: unset;
                         }
-                        > .contact-hashtag {
-                            // display: none;
+                        > .contact-hashtag { 
                             padding: unset;
                             > .contact-content {
-                                max-width: unset;
-                                // display: none;
+                                max-width: unset; 
                             }
                         }
                     }
@@ -1407,8 +1384,7 @@
                                 }
                             }
                             > .fulfilling {
-                                > .plus-item {
-                                    // min-height: unset;
+                                > .plus-item { 
                                     > .d-plus {
                                         > .material-icons {
                                             font-size: 56px;
