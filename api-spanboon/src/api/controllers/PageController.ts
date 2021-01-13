@@ -57,7 +57,6 @@ import { PageCategory } from '../models/PageCategory';
 import { PageCategoryService } from '../services/PageCategoryService';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { FacebookService } from '../services/FacebookService';
-import { TwitterService } from '../services/TwitterService';
 import { CheckPageNameRequest } from './requests/CheckPageNameRequest';
 import { PageSocialFBBindingRequest } from './requests/PageSocialFBBindingRequest';
 import { PageSocialTWBindingRequest } from './requests/PageSocialTWBindingRequest';
@@ -83,8 +82,7 @@ export class PageController {
         private userService: UserService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
         private pageSocialAccountService: PageSocialAccountService,
-        private facebookService: FacebookService,
-        private twitterService: TwitterService
+        private facebookService: FacebookService
     ) { }
 
     // Find Page API
@@ -2344,26 +2342,26 @@ export class PageController {
         return true;
     }
 
-    private async getPageNeedStandardItem(pageId: string, standardItemId: string): Promise<Needs> {
-        const stmt = {
-            pageId: new ObjectID(pageId),
-            post: { $exists: false },
-            standardItemId: new ObjectID(standardItemId)
-        };
+    // private async getPageNeedStandardItem(pageId: string, standardItemId: string): Promise<Needs> {
+    //     const stmt = {
+    //         pageId: new ObjectID(pageId),
+    //         post: { $exists: false },
+    //         standardItemId: new ObjectID(standardItemId)
+    //     };
 
-        return await this.needsService.findOne(stmt);
-    }
+    //     return await this.needsService.findOne(stmt);
+    // }
 
-    private async getPageNeedCustomItemByName(pageId: string, customItemName: string): Promise<Needs> {
-        const stmt = {
-            pageId: new ObjectID(pageId),
-            post: { $exists: false },
-            customItemId: { $exists: true },
-            name: customItemName
-        };
+    // private async getPageNeedCustomItemByName(pageId: string, customItemName: string): Promise<Needs> {
+    //     const stmt = {
+    //         pageId: new ObjectID(pageId),
+    //         post: { $exists: false },
+    //         customItemId: { $exists: true },
+    //         name: customItemName
+    //     };
 
-        return await this.needsService.findOne(stmt);
-    }
+    //     return await this.needsService.findOne(stmt);
+    // }
 
     /*
     private async getPageNeedCustomItem(pageId: string, customItemId: string): Promise<Needs> {

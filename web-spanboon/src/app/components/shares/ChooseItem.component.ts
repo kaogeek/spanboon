@@ -519,7 +519,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 if (data.isAddItem) {
                     if (data.itemName === undefined || data.itemName === '' || data.itemName === null) {
                         this.isName = true;
-                        document.getElementById('itemNameCustomize' + indexData).style.border = "0.7pt solid red";
+                        document.getElementById('itemNameCustomize' + indexData).style.border = "1px solid red";
                         return document.getElementById('itemNameCustomize' + indexData).focus();
 
                     } else {
@@ -529,7 +529,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
 
                     if (data.unit === undefined || data.unit === '' || data.unit === null) {
                         this.isUnit = true;
-                        document.getElementById('itemUnit' + indexData).style.border = "0.7pt solid red";
+                        document.getElementById('itemUnit' + indexData).style.border = "1px solid red";
                         return document.getElementById('itemUnit' + indexData).focus();
 
                     } else {
@@ -539,7 +539,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 } else {
                     if (data.unit === undefined || data.unit === '' || data.unit === null) {
                         this.isUnitSelect = true;
-                        document.getElementById('itemUnitPrice' + indexData).style.border = "0.7pt solid red";
+                        document.getElementById('itemUnitPrice' + indexData).style.border = "1px solid red";
                         return document.getElementById('itemUnitPrice' + indexData).focus();
                     } else {
                         this.isUnitSelect = false;

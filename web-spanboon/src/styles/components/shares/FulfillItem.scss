@@ -310,18 +310,16 @@
                             position: absolute;
                             top: 5pt;
                             right: 5pt;
+                        } 
+                        > .label-item {
+                            color: $koalaGray;
+                            text-align: center;
                         }
                     }
                     > .body-empty {
-                        border: 3pt dashed blue;
-                        // width: calc(25% - 8pt - 8pt - 3pt - 10pt);
-                        // width: calc(14.28% - 8pt - 8pt - 3pt - 10pt);
-                        // &.active {
-                        //     width: calc(25% - 8pt - 8pt - 3pt - 10pt);
-                        // }
+                        border: 3pt dashed blue; 
                         > .add-item {
-                            color: $koalaGray;
-                            // padding-left: 5pt;
+                            color: $koalaGray; 
                             font-size: 42px;
                             @include pointer();
                         }

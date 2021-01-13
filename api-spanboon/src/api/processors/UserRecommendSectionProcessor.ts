@@ -241,6 +241,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);
+                        contentModel.owner.isHot = isHot;
                     } else if (user !== undefined) {
                         contentModel.owner = this.parseUserField(user);
                     }

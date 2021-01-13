@@ -1,7 +1,8 @@
-# Awesome Project Build with TypeORM
+# Spanboon API
 
 Steps to run this project:
 
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+1. Run `npm install` command
+2. Create 
+2. Setup Enviromnent settings inside `.env` file
+3. Run `npm start serv` command
