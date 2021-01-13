@@ -6,3 +6,4 @@
  */
 
 export * from './FulfillPage.component';
+export * from './FulfillAllocatePage.component';
