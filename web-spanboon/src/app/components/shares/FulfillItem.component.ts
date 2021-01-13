@@ -107,24 +107,21 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 if (this.data.isFrom === 'POST') {
                     this.selectedDataItem(this.data.currentPostItem, this.data.isFrom);
                 } else if (this.data.isFrom === 'FULFILL') {
-                    for (const currentFulfillItem of this.data.currentFulfillItem) {
-                        this.disableCurrentItem(currentFulfillItem, this.data.isFrom);
+                    if (this.data.currentFulfillItem !== undefined && this.data.currentFulfillItem !== null) {
+                        for (const currentFulfillItem of this.data.currentFulfillItem) {
+                            this.disableCurrentItem(currentFulfillItem, this.data.isFrom);
+                        }
                     }
                 }
             }
             this.resFulfillOriginal = JSON.stringify(this.resFulfill);
         }
 
-        if (this.data && this.data.arrListItem !== undefined && this.data.arrListItem.length > 0) {
-            this.arrListItem = this.data.arrListItem;
-            this.readdChildSelectMap();
-        }
-
-
         this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem));
         setTimeout(() => {
+            console.log('this.data', this.data)
             this.onResize();
-        }, 0);
+        }, 500);
     }
 
     public ngOnDestroy(): void {
@@ -145,6 +142,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public selectedDataItem(fulfillItem: any, isFrom: any) {
+        console.log('fulfillItem', fulfillItem)
+        console.log('isFrom', isFrom)
         if (fulfillItem !== null && fulfillItem !== undefined) {
             // this.isListItem = true;
             let isSelected = true;
@@ -314,6 +313,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     private disableCurrentItem(currentFulfillItem: any, isFrom: any) {
+        console.log('currentFulfillItem', currentFulfillItem)
+        console.log('isFrom', isFrom)
         let isSelected = true;
 
         if ((this.resFulfill !== null && this.resFulfill !== undefined) && (currentFulfillItem !== null && currentFulfillItem !== undefined)) {
