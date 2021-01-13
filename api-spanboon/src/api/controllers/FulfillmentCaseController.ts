@@ -63,6 +63,7 @@ import { InputFormatterUtils } from '../../utils/InputFormatterUtils';
 import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
 import { CustomItem } from '../models/CustomItem';
+import { CustomItemService } from '../services/CustomItemService';
 
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -85,7 +86,8 @@ export class FulfillmentController {
         private notificationService: NotificationService,
         private fulfillmentService: FulfillmentService,
         private needsService: NeedsService,
-        private stdItemService: StandardItemService
+        private stdItemService: StandardItemService,
+        private customItemService: CustomItemService
     ) { }
 
     // Find Page API
@@ -899,12 +901,18 @@ export class FulfillmentController {
                 requesterObjId = new ObjectID(requester);
 
                 if ((postId !== null && postId !== undefined && postId !== '') && (pageId === null || pageId === undefined || pageId === '')) {
+                    // POST mode
                     postsObjId = new ObjectID(postId);
 
                     const posts: Posts = await this.postsService.findOne({ _id: new ObjectID(postId), type: POST_TYPE.NEEDS });
 
                     if (posts !== null && posts !== undefined) {
                         pageObjId = new ObjectID(posts.pageId);
+
+                        // check needs
+                        if (data.needs === undefined || data.needs.length <= 0) {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('Posts Case require needs.', undefined));
+                        }
 
                         fulfillCaseCreate = await this.createNewFulfillmentCase(pageObjId, postsObjId, requesterObjId, userObjId, username, today);
 
@@ -916,12 +924,47 @@ export class FulfillmentController {
                         }
                         */
                     } else {
-                        return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Allow Only Posts Needs', undefined));
+                        return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Allow Only Posts needs', undefined));
                     }
                 } else {
-                    // ! PAGE MODE implement as a case with no Post.
+                    // PAGE MODE implement as a case with no Post.
                     // return res.status(400).send(ResponseUtil.getErrorResponse('PostsId Required', undefined));
                     pageObjId = new ObjectID(pageId);
+
+                    const page = await this.pageService.findOne({ _id: pageObjId, banned: false });
+
+                    if (!page) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
+                    }
+
+                    if (data.items === undefined || data.items.length <= 0) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Page Case require items.', undefined));
+                    }
+
+                    for (const item of items) {
+                        const stdItemId = item.standardItemId;
+                        const customItemId = item.customItemId;
+                        const quantity = item.quantity;
+
+                        if (stdItemId !== null && stdItemId !== undefined && stdItemId !== '') {
+                            const stdItem = await this.stdItemService.findOne({ _id: new ObjectID(stdItemId) });
+                            if (!stdItem) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('standardItemId was not found.', undefined));
+                            }
+                            stdItemMap[stdItemId] = { quantity };
+                            stdItemIdList.push(new ObjectID(stdItemId));
+                        } else if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
+                            const customItem: CustomItem = await this.customItemService.findOne({ _id: new ObjectID(customItemId) });
+                            if (!customItem) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('customItemId was not found.', undefined));
+                            }
+
+                            customItemMap[customItemId] = { quantity };
+                            customItemIdList.push(new ObjectID(customItemId));
+                        } else {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('standardItemId or customItemId is Required.', undefined));
+                        }
+                    }
 
                     fulfillCaseCreate = await this.createNewFulfillmentCase(pageObjId, postsObjId, requesterObjId, userObjId, username, today);
                 }
@@ -1010,22 +1053,6 @@ export class FulfillmentController {
                     }
                 } else {
                     if (items !== null && items !== undefined && items.length > 0) {
-                        for (const item of items) {
-                            const stdItemId = item.standardItemId;
-                            const customItemId = item.customItemId;
-                            const quantity = item.quantity;
-
-                            if (stdItemId !== null && stdItemId !== undefined && stdItemId !== '') {
-                                stdItemMap[stdItemId] = { quantity };
-                                stdItemIdList.push(new ObjectID(stdItemId));
-                            } else if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
-                                if (customItemMap[customItemId] === null || customItemMap[customItemId] === undefined) {
-                                    customItemMap[customItemId] = { quantity };
-                                    customItemIdList.push(new ObjectID(customItemId));
-                                }
-                            }
-                        }
-
                         if (stdItemIdList !== null && stdItemIdList !== undefined && stdItemIdList.length > 0) {
                             const stdItemList: StandardItem[] = await this.stdItemService.find({ _id: { $in: stdItemIdList } });
 
