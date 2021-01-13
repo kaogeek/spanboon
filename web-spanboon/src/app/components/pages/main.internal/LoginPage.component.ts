@@ -74,13 +74,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
 
-
-    // if ((this.router.url === "/login")) { 
-    //   $(".icon-post-bottom").css({
-    //     'display': "none"
-    //   });
-    // }  
-
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
     //     this.isShowFacebook = (config.value.toLowerCase() === 'true');

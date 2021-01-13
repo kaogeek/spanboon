@@ -7,6 +7,7 @@
 
 import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MatPaginator, MatTableDataSource, MAT_DIALOG_DATA } from '@angular/material';
+import { environment } from '../../../../environments/environment';
 
 let fulfill: any[] = [];
 
@@ -21,6 +22,8 @@ export class DialogConfirmFulfill {
     public displayedColumns: string[] = ['imageURL', 'name', 'currentQuantity', 'fulfillQuantity', 'remainQuantity'];
     public dataSource: MatTableDataSource<any> = undefined;
 
+    public apiBaseURL = environment.apiBaseURL;
+    
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
     constructor(public dialogRef: MatDialogRef<DialogConfirmFulfill>,
