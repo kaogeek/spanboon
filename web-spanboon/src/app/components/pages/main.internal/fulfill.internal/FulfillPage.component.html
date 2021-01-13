@@ -119,7 +119,7 @@
             </div>
         </div>
         <div class="fulfill-right" *ngIf="canAccessCase && canAccessChatRoom" id="fulfill-right"
-            [class.active]="isActiveClass">  
+            [class.active]="isActiveClass">   
             <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop [class.activeTransition]="isTransition"
                 [ngStyle]="{'height': (fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
                 <ng-container *ngIf="!showChatRoom; else elsePreload">
@@ -311,10 +311,10 @@
                 <div class="body-story-left" [class.active]="isListItem">
                     <ng-container *ngIf="!showChatRoom; else elsePreload2">
                         <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
-                            [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
+                            [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL" 
                             [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed" [isCaseHasPost]="isCaseHasPost"
-                            [sender]="sender" [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()"
-                            (expand)="expandMore()" (back)="onBack()" [isBackArrow]="isBackArrow">
+                            [sender]="sender" [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()" (createPost)="createFulfillPost(fulfillCaseId,asPage)"
+                            (expand)="expandMore()" (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
                         </chat-message>
                     </ng-container>
                     <ng-template #elsePreload2>
@@ -350,7 +350,7 @@
                                     [pageId]="pageId" [asPage]="asPage" [fulfillCaseId]="fulfillCaseId" [item]="item"
                                     [canEdit]="canEdit" [isCaseConfirmed]="isCaseConfirmed" [class]="'fulfill-items'"
                                     [requestId]="item.requestId" [needsId]="item.id" [name]="item.name"
-                                    [unit]="item.unit" [quantity]="item.quantity" [imageURL]="item.imageURL"
+                                    [unit]="item.unit" [quantity]="item.quantity" [imageURL]="item.imageBase64"
                                     [chatRoomId]="chatRoomId"
                                     (onFulfillItemChange)="saveFulfillQuantity($event,item.requestId,item)"
                                     (onFulfillItemClick)="deleteFulfillRequest(item,index,asPage)">

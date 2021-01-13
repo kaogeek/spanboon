@@ -853,3 +853,92 @@
         
     }
 }
+
+@media (max-width: $xlarge) {
+    .recommended {
+        .container {
+            max-width: 991px; 
+            >.body-recommend {
+                >.body-recommended {
+                    >.recommended-right {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+@media (max-width: $large) {
+    .recommended {
+        .container { 
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .recommended {
+        .container {
+            max-width: 768px;
+            padding: 0;  
+            >.body-recommend {
+                >.page-recommended-menu {
+                    width: unset;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    >.list-menu {
+                        >.list-item {
+                            >.icon-setting {
+
+                            }
+                            >.title-setting {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+                >.body-recommended {
+                    margin-left: 5pt;
+                    width: calc(100% - 5pt);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .recommended {
+        .container { 
+            >.body-recommend {
+                >.page-recommended-menu {
+                    padding-left : 10px;
+                    padding-right: 10px;
+                    top: 39pt;
+                }
+            }
+        }
+    } 
+}
+
+@media (max-width: $small) {
+    .recommended {
+        min-height: calc(100vh - 40pt - 39pt);
+        .container { 
+            >.body-recommend {
+                >.page-recommended-menu { 
+                }
+                >.body-recommended {
+                    margin-left : unset;
+                    width: 100%;
+                    >.recommended-left {
+                        min-width: unset;
+                        >.wrapper-body-middle {
+                            >.header-top-name {
+                                top: 39pt;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
