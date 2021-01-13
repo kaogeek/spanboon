@@ -35,6 +35,7 @@ import { UniqueIdHistoryService } from '../services/UniqueIdHistoryService';
 import { Page } from '../models/Page';
 import { User } from '../models/User';
 import { PageService } from '../services/PageService';
+import moment from 'moment';
 
 @JsonController('/user')
 export class UserController {
@@ -77,24 +78,15 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
 
-        // const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, );
-        // if (updateExpireToken) {
-        //     const successResponse: any = { status: 1, message: 'Successfully Logout' };
-        //     return res.status(200).send(successResponse);
-        // } else {
-        //     const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
-        //     return res.status(400).send(deleteErrorResponse);
-        // }
-
-        /*
-        const deleteToken = await this.authenticationIdService.delete({ _id: authenId.id });
-        if (deleteToken) {
+        const currentDateTime = moment().toDate();
+        const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
+        if (updateExpireToken) {
             const successResponse: any = { status: 1, message: 'Successfully Logout' };
             return res.status(200).send(successResponse);
         } else {
             const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
             return res.status(400).send(deleteErrorResponse);
-        }*/
+        }
     }
 
     // PagePost List API
@@ -501,7 +493,7 @@ export class UserController {
     @Post('/uniqueid/check')
     public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any): Promise<any> {
         const uniqueId = user.uniqueId;
-        console.log('checkUniqueIdUser');
+        
         const checkValid = await this.checkUniqueIdValid(uniqueId);
         if (checkValid.status === 1) {
             return res.status(200).send(checkValid);

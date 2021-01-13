@@ -40,6 +40,9 @@ export class AuthenticationId extends BaseModel {
     @Column({ name: 'properties' })
     public properties: any;
 
+    @Column({ name: 'expirationDate' })
+    public expirationDate: Date;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

@@ -95,6 +95,7 @@ export const DEFAULT_RELATETAG_TRENDING_SCORE_CALCULATE_CONFIG = {
     CORE_INDICATOR: 1
 };
 export const USER_EXPIRED_TIME_CONFIG = 'user.expiration.time';
+export const DEFAULT_USER_EXPIRED_TIME = 30; // as day
 
 export const USER_EXP_VALUE_CONFIG_NAME = {
     CREATE: 'user.exp.value.create',

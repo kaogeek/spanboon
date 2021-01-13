@@ -175,7 +175,7 @@ export class TwitterService {
                 headers: []
             };
 
-            https.get('https://cors-anywhere.herokuapp.com/'+url, options, (res) => {
+            https.get('https://cors-anywhere.herokuapp.com/' + url, options, (res) => {
                 console.error('res', res);
             }).on('error', (e) => {
                 console.error(`Got error: ${e.message}`);
@@ -197,8 +197,14 @@ export class TwitterService {
     }
 
     public async getTwitterUser(twitterUserId: string): Promise<User> {
+        if (twitterUserId === undefined || twitterUserId === null || twitterUserId === '') {
+            return Promise.resolve(undefined);
+        }
         const authenId = await this.getTwitterUserAuthenId(twitterUserId);
-        return await this.userService.findOne({_id: authenId.user});
+        if (authenId === undefined) {
+            return Promise.resolve(undefined);
+        }
+        return await this.userService.findOne({ _id: authenId.user });
     }
 
     // return true if post success, false if not success
