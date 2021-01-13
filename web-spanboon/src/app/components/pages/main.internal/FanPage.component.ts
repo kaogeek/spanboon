@@ -187,12 +187,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
-      console.log('type >>> ',type)
+      console.log('type >>> ', type)
       let data = {
-        type : type,
-        offset : 0
+        type: type,
+        offset: 0
       }
-      this.searchPostPageType(data , true);
+      this.searchPostPageType(data, true);
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -384,7 +384,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           this.isLoadingClickTab = false;
           this.isLoadDataPost = false;
         }, 1500);
-      } else { 
+      } else {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
@@ -708,14 +708,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (this.boxPost !== undefined) {
         this.boxPost.clearDataAll();
       }
-      if (res.data && res.data.needs && res.data.needs.length > 0) { 
+      if (res.data && res.data.needs && res.data.needs.length > 0) {
         for (let n of res.data.needs) {
           if (n.standardItemId) {
             this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
-              this.assetFacade.getPathFile(needs.imageURL).then((imgURL) => {
-                n.imageURL = imgURL.data
-              }).catch((err: any) => {
-              })
+              n.imageURL = needs.imageURL
             }).catch((err: any) => {
             })
           }

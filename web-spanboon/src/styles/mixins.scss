@@ -10,7 +10,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-@mixin pointer { 
+@mixin pointer {
     cursor: pointer;
     -webkit-user-select: none;
     /* Safari 3.1+ */
@@ -19,15 +19,14 @@
     -ms-user-select: none;
     /* IE 10+ */
     user-select: none;
-    /* Standard syntax */ 
+    /* Standard syntax */
 }
-
 
 // 1.font
 @mixin font-size-1-100($font-family) {
     font-size: $font-size-1;
     font-family: $font-family;
-    
+
     @media (max-width: $xxlarge) {
         font-size: $font-size-1 - 2px;
     }
@@ -1584,16 +1583,24 @@
 
 // @mixin container {
 //     max-width: 1440px;
-//     margin: 0 auto; 
+//     margin: 0 auto;
 // }
 
 @mixin newcon-container($newcon-container-height: 500pt, $newcon-container-bg-color: $bg-color1) {
     background-color: $newcon-container-bg-color;
-    width: calc(100% - #{$newcon-container-padding}*2);
+    width: calc(100% - #{$newcon-container-padding}* 2);
     height: $newcon-container-height;
     padding: $newcon-container-padding;
 }
 
 @mixin newcon-header {
     padding-bottom: $newcon-header-padding;
+}
+
+@mixin limit-text-length($line) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $line; /* number of lines to show */
+    -webkit-box-orient: vertical;
 }
