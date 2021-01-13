@@ -30,4 +30,26 @@ export class ObjectUtil {
 
         return true;
     }
+
+    public static parseQueryParamToMap(queryParamString: string): any {
+        if (queryParamString === undefined || queryParamString === null || queryParamString === '') {
+            return {};
+        }
+
+        const splitString = queryParamString.split('&');
+        const keyMap = {};
+        if (splitString.length > 0) {
+            for (const value of splitString) {
+                const splitValue = value.split('=');
+                if (splitValue.length < 2) {
+                    continue;
+                }
+                const key = splitValue[0];
+                const val = splitValue[1];
+                keyMap[key] = val;
+            }
+        }
+
+        return keyMap;
+    }
 }
