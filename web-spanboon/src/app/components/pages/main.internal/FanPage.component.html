@@ -9,7 +9,7 @@
     <div class="container">
         <ng-container *ngIf="!msgPageNotFound; else elsePageNotFound">
             <div class="spanboon-fan-page">
-                <div *ngIf="!showLoading" class="fan-page-background">
+                <div *ngIf="!showLoading" class="fan-page-background" #fanpagebackground>
                     <ng-container *ngIf="isLoading; else elseisLoading">
                         <div style="height: 100%;" class="body-cover-image loading"></div>
                     </ng-container>
@@ -137,8 +137,7 @@
                 <div class="wrapper-fan-page">
                     <div *ngIf="!showLoading" class="wrapper-profile-fan-page" #pagefixHeight>
                         <div class="profile-fan-page">
-                            <div *ngIf="!showLoading" [ngStyle]="{'width': pagefixHeight.offsetWidth + 'px'}"></div>
-                            <div class="img-profile">
+                            <div class="img-profile" #imgprofile>
                                 <div class="edit-profile-fan-page" *ngIf="isLogin() && isNotAccess"
                                     (click)="showDialogImage()">
                                     <svg class="icon-image" xmlns="http://www.w3.org/2000/svg" width="20.071"
