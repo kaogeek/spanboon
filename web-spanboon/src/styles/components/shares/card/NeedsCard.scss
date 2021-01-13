@@ -6,34 +6,47 @@
  */
 
 .list-needs-for {
-    padding: 5pt 14pt; 
+    padding: 5pt 14pt;
+
     &.active {
-        background: white;
+        background: $white;
         border-top: 0.7px solid $border-color;
         border-bottom: 0.7px solid $border-color;
         margin-top: 15pt;
         padding: 10pt 14pt;
     }
+
     > .item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 14pt;
+        padding: 0;
+
         > .left {
             font-family: "Kanit-500";
-            font-size: 16px; 
+            font-size: 16px;
+
             &.active {
                 display: flex;
                 justify-content: space-between;
                 width: 100%;
             }
         }
+
         .count-fufill {
             padding-left: 10pt;
             color: $bg-color4;
+
+            &.active {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
         }
+
         > .right {
             flex: 0 0 auto;
+            
             > spanboon-button {
                 > .spanboon-button {
                     width: auto !important;

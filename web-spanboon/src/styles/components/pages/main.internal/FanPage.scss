@@ -207,7 +207,7 @@
 
         > .wrapper-profile-fan-page {
           position: sticky;
-          top: 100pt;
+          top: 55pt;
           width: $width-profile-fanpage;
           margin-bottom: 10pt;
 
@@ -226,6 +226,7 @@
               margin-bottom: 10pt;
               position: relative;
               user-select: none;
+              transition: 1s margin-top ease;
 
               > .edit-profile-fan-page {
                 width: 30pt;
@@ -502,7 +503,7 @@
                 align-items: center;
                 border-right: $width-border solid $border-color;
                 cursor: pointer;
-                text-decoration: none; 
+                text-decoration: none;
 
                 &:last-of-type {
                   border-right: none;
@@ -1424,8 +1425,8 @@
 
             > .profile-fan-page {
               > .img-profile {
-                width: 120pt;
-                height: 120pt;
+                // width: 120pt;
+                // height: 120pt;
                 margin-top: -55pt;
               }
             }
@@ -1518,6 +1519,17 @@
 
           > .cover-img {
             height: calc(#{$height-cover-img-fanpage} - 80pt);
+          }
+        }
+
+        > .wrapper-fan-page {
+          > .wrapper-feed-fan-page {
+            > .wrapper-feed {
+              > .main-feed {
+                margin: 0;
+                width: 100%;
+              }
+            }
           }
         }
       }
