@@ -747,7 +747,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
             let dialog = this.dialog.open(DialogConfirmFulfill, { data });
 
-            dialog.afterClosed().subscribe((res) => { });
+            dialog.afterClosed().subscribe((res) => {
+                if(res){ 
+                    this.statusColor = "#FFB800";
+                }
+             });
         }
     }
 

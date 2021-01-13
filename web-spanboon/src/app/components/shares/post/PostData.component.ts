@@ -18,6 +18,7 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
 import { BoxPost } from '../shares';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'post-data',
@@ -32,12 +33,13 @@ export class PostData {
   private needsFacade: NeedsFacade;
   private pageFacade: PageFacade;
   private assetFacade: AssetFacade;
+  private router: Router;
   public dialog: MatDialog;
 
   public commentpost: any[] = []
   public isComment: boolean
   public referencePost: any
-  public reboonData: any  
+  public reboonData: any
 
   @Input()
   public isRepost: boolean
@@ -54,7 +56,7 @@ export class PostData {
   @Input()
   public isUserPage: boolean;
   @Input()
-  public isShowUser: boolean; 
+  public isShowUser: boolean;
   @Input()
   public isShowProfile: boolean = false;
   @Input()
@@ -79,7 +81,7 @@ export class PostData {
   public userpage: EventEmitter<any> = new EventEmitter();
 
   public value: any
-  public isLoading: Boolean; 
+  public isLoading: Boolean;
   public linkPost: string;
   public isFulfill: boolean = false;
 
@@ -91,7 +93,7 @@ export class PostData {
   public menuProfile: any;
 
   constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager,
-    observManager: ObservableManager) {
+    observManager: ObservableManager, router: Router,) {
     this.dialog = dialog;
     this.authenManager = authenManager;
     this.postCommentFacade = postCommentFacade
@@ -100,11 +102,12 @@ export class PostData {
     this.assetFacade = assetFacade
     this.needsFacade = needsFacade
     this.pageFacade = pageFacade
+    this.router = router;
     this.isComment = false
     this.isRepost = true;
-    this.isLoading = true; 
+    this.isLoading = true;
 
-    setTimeout(() => {  
+    setTimeout(() => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;
@@ -116,12 +119,12 @@ export class PostData {
           }
         }
       }
-      if (this.itemPost.needs !== undefined && this.itemPost.needs !== null) {
+      if (this.itemPost && this.itemPost.needs !== undefined && this.itemPost.needs !== null) {
         // this.isFulfill = false;
         for (let needs of this.itemPost.needs) {
           if (needs.standardItemId !== null && needs.standardItemId !== '' && needs.standardItemId !== undefined) {
             this.needsFacade.getNeeds(needs.standardItemId).then((res: any) => {
-              needs.imageURL = res.imageURL 
+              needs.imageURL = res.imageURL
             }).catch((err: any) => {
             });
           }
@@ -129,7 +132,7 @@ export class PostData {
       }
       if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
         this.isFulfill = true;
-        for (let fulfill of this.itemPost.caseFulfillment) { 
+        for (let fulfill of this.itemPost.caseFulfillment) {
           for (let item of this.itemPost.caseNeeds) {
             if (fulfill.need === item._id) {
               fulfill.fulfillQuantity = fulfill.quantity
@@ -141,12 +144,12 @@ export class PostData {
                   fulfill.imageURL = res.imageURL
                 }).catch((err: any) => {
                 });
-              } 
+              }
             }
-          } 
+          }
           this.itemPost.needs.push(fulfill)
-        } 
-      } 
+        }
+      }
       this.linkPost = (this.mainPostLink + this.itemPost._id)
       this.isLoading = false
     }, 1000);
@@ -249,6 +252,29 @@ export class PostData {
 
   public more() {
     this.getComment(true);
+  }
+
+  public clickDevelop(index, text) {
+    let url = ''
+    if (index === 1) {
+      url += "emergency=#" + text
+    } else if (index === 2) {
+      url += "objective=" + text
+    }
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: "ระบบอยู่ในระหว่างการพัฒนา",
+        bottomText2: "ตกลง",
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      this.router.navigateByUrl('/search?' + url)
+    });
+    console.log(' >>>>> ', text)
+    console.log(' index >>>>> ', index)
   }
 
   private getComment(limit?) {
