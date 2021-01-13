@@ -12,7 +12,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 5pt;
+    // margin: 5pt;
 
     > .card-fulfill-item {
         margin: 10pt 30pt;
@@ -23,6 +23,7 @@
 
             > .fulfill-item-icon {
                 width: 100%;
+                border-radius: 50%;
             }
         }
     }
@@ -46,6 +47,33 @@
             > .item-quantity {
                 width: 100%;
                 text-align: right;
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .card-fulfill-item-wrapper {  
+        > .card-fulfill-item {   
+            > .card-fulfill-item-icon { 
+                width: 35pt; 
+                height: 35pt;
+                > .fulfill-item-icon {  
+                }
+            }
+        }
+    
+        > .fulfill-item-footer { 
+            font-family: "Kanit-400";
+            font-size: 14px;
+            padding: 0 10pt 5pt 10pt;
+            > .fulfill-item-name { 
+            }
+    
+            > .fulfill-item-quantity { 
+    
+                > .item-quantity { 
+                }
             }
         }
     }

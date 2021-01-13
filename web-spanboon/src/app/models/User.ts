@@ -32,6 +32,6 @@ export class User extends BaseModel {
     public idToken: string;
     //Twitter
     public twitterOauthToken: string;
-    public twitterOauthTokenSecret: string;
+    public twitterTokenSecret: string;
     public twitterUserId: string;
 }

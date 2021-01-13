@@ -51,7 +51,7 @@ export class CardContact {
 
     constructor() { }
 
-    ngOnInit(): void {
+    ngOnInit(): void { 
         if (this.data.status === FULFILLMENT_STATUS.INPROGRESS && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {
             this.statusColor = "#E5E3DD";
         } else if (this.data.status === FULFILLMENT_STATUS.CONFIRM && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {

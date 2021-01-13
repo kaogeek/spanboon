@@ -11,10 +11,11 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { interval, Observable, Subject, Subscription, timer } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { Asset } from 'src/app/models/models';
-import { AssetFacade, AuthenManager, ChatRoomFacade, ObservableManager } from 'src/app/services/services';
-import { ValidBase64ImageUtil } from 'src/app/utils/ValidBase64ImageUtil';
-import { environment } from 'src/environments/environment';
+import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
+import { Asset } from '../../../models/models';
+import { AssetFacade, AuthenManager, ChatRoomFacade, ObservableManager } from '../../../services/services';
+import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
+import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 const PAGE_NAME: string = 'ChatMessage';
@@ -48,6 +49,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
   @Input()
   public asPage: string = 'asPage';
   @Input()
+  public isConfirm: boolean = false; 
+  @Input()
   public isCaseConfirmed: boolean = false;
   @Input()
   public isCaseHasPost: boolean = false;
@@ -59,6 +62,10 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public expand: EventEmitter<any> = new EventEmitter();
   @Output()
   public back: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public clickPost: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public createPost: EventEmitter<any> = new EventEmitter();
   @ViewChild('chatMessage', { static: false })
   public chatMessage: any;
   //
@@ -79,6 +86,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public senderType: string = '';
   public senderName: string = '';
   public senderImage: any;
+  public status: any;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
     chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef) {
@@ -93,7 +101,10 @@ export class ChatMessage extends AbstractPage implements OnInit {
     this.isLoading = false;
   }
 
-  public ngOnInit(): void {
+  public ngOnInit(): void {  
+    for (let message of this.data) {
+      this.status = message;    
+    }
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       interval(30000).pipe(
         concatMap(() => {
@@ -275,5 +286,5 @@ export class ChatMessage extends AbstractPage implements OnInit {
         talkingDom.scrollTop = talkingDom.scrollHeight;
       }, 1000);
     }
-  }  
+  }
 }

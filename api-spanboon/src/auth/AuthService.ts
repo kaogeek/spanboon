@@ -12,14 +12,19 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { env } from '../env';
 import { User } from '../api/models/User';
+import { AuthenticationId } from '../api/models/AuthenticationId';
 import { UserRepository } from '../api/repositories/UserRepository';
 import { FacebookService } from '../api/services/FacebookService';
 import { TwitterService } from '../api/services/TwitterService';
+import { AuthenticationIdService } from '../api/services/AuthenticationIdService';
+import { ObjectUtil } from '../utils/Utils';
+import moment from 'moment';
 
 @Service()
 export class AuthService {
 
-    constructor(@OrmRepository() private userRepository: UserRepository, private facebookService: FacebookService, private twitterService: TwitterService) { }
+    constructor(@OrmRepository() private userRepository: UserRepository, private facebookService: FacebookService,
+        private twitterService: TwitterService, private authenticationIdService: AuthenticationIdService) { }
 
     public async parseBasicAuthFromRequest(req: express.Request): Promise<any> {
         const authorization = req.header('authorization');
@@ -47,20 +52,8 @@ export class AuthService {
                     }
                 } if (mode === 'TW') {
                     const twToken = token;
-                    const splitString = twToken.split('&');
-                    const keyMap = {};
-                    if (splitString.length > 0) {
-                        for (const value of splitString) {
-                            const splitValue = value.split('=');
-                            if (splitValue.length < 2) {
-                                continue;
-                            }
-                            const key = splitValue[0];
-                            const val = splitValue[1];
-                            keyMap[key] = val;
-                        }
-                    }
-                    console.log('keyMap',keyMap);
+                    const keyMap = ObjectUtil.parseQueryParamToMap(twToken);
+                    
                     // ! re implement this when fix bug
                     if (keyMap['user_id'] !== undefined) {
                         const twUserObj: any = await this.twitterService.getTwitterUser(keyMap['user_id']);
@@ -98,6 +91,19 @@ export class AuthService {
         const user = await this.userRepository.findOne({ where: { _id: uid } });
 
         console.log(user);
+
+        // check token expired
+        const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
+        if (authenId !== undefined && authenId.expirationDate !== undefined) {
+            const expiresAt = authenId.expirationDate;
+            const today = moment().toDate();
+
+            if (expiresAt.getTime() <= today.getTime()) {
+                return undefined;
+            }
+        } else {
+            return undefined;
+        }
 
         if (user) {
             return user;

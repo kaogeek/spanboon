@@ -9,3 +9,7 @@ export * from './FileUtil';
 export * from './ObjectUtil';
 export * from './ResponseUtil';
 export * from './SearchUtil';
+export * from './InputFormatterUtils';
+export * from './DecayFunctionUtil';
+export * from './GenerateUUIDUtil';
+export * from './OAuthUtil';

@@ -7,10 +7,15 @@
 
 <div class="list-needs-for" [class.active]="isFulfill" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
     <div class="item" *ngIf="isFulfill">
-        <div class="left">
-            รายการเติมเต็ม <span class="count-fufill"> {{itemNeeds.length}} รายการ</span>
-        </div>
-        <div class="right">
+        <div class="left" [class.active]="!isButtonFulfill">
+            <span>รายการเติมเต็ม</span> 
+            <span class="count-fufill"> {{itemNeeds.length}} รายการ</span>
+        </div> 
+        <!-- <div class="left" *ngIf="isButtonFulfill">
+            รายการเติมเต็ม 
+        </div> 
+        <span class="count-fufill"> {{itemNeeds.length}} รายการ</span> -->
+        <div class="right" *ngIf="isButtonFulfill">
             <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'ร่วมเติมเต็ม'"
             [radius]="'4px'">
         </spanboon-button>
