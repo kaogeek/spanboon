@@ -355,16 +355,28 @@
                                 background-color: $bg-grey;
                             }
 
-                            > .fanpage-name {
-                                color: $color-warm-red;
-                                font-family: "Kanit-500";
-                                font-size: 16px;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 1;
-                                -webkit-box-orient: vertical;
-                                overflow: hidden;
-                                word-break: break-all;
-                                width: 100%;
+                            > .bottom-offical {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                > .offical-page {
+                                    width: 20px;
+                                    height: 20px;
+                                    margin-right: 3pt;
+                                }
+
+                                > .fanpage-name {
+                                    color: $color-warm-red;
+                                    font-family: "Kanit-500";
+                                    font-size: 16px;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    word-break: break-all;
+                                    width: 100%;
+                                }
                             }
 
                             > .fanpage-subline {

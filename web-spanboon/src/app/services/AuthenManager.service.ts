@@ -114,8 +114,7 @@ export class AuthenManager {
     });
   }
 
-  public loginWithTwitter(data: any, mode?: string): Promise<any> {
-    console.log('data ',data)
+  public loginWithTwitter(data: any, mode?: string): Promise<any> { 
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {};
@@ -128,10 +127,8 @@ export class AuthenManager {
         headers = headers.set('mode', mode);
       }
 
-      let httpOptions = { headers };
-      console.log('body ',body)
-      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        console.log('response ',response)
+      let httpOptions = { headers }; 
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => { 
         let result: any = {
           token: response.data.token,
           user: response.data.user

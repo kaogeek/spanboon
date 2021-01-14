@@ -35,6 +35,8 @@ import { GenerateUUIDUtil } from '../../utils/GenerateUUIDUtil';
 import { ChangePasswordRequest } from './requests/ChangePasswordRequest';
 import { GoogleService } from '../services/GoogleService';
 import { TwitterService } from '../services/TwitterService';
+import { DEFAULT_USER_EXPIRED_TIME } from '../../constants/Constants';
+import { ObjectUtil } from '../../utils/Utils';
 
 @JsonController()
 export class GuestController {
@@ -666,18 +668,20 @@ export class GuestController {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
                     } else if (token) {
-                        const userLoginEmail = userLogin.email;
-                        const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLoginEmail, providerName: PROVIDER.EMAIL } });
+                        const currentDateTime = moment().toDate();
+                        // find user
+                        const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
                         const newToken = new AuthenticationId();
-                        newToken.user = userLoginEmail;
-                        newToken.lastAuthenTime = moment().toDate();
+                        newToken.user = userLogin.id;
+                        newToken.lastAuthenTime = currentDateTime;
                         newToken.providerUserId = userObjId;
                         newToken.providerName = PROVIDER.EMAIL;
                         newToken.storedCredentials = token;
+                        newToken.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
 
                         if (checkAuthen !== null && checkAuthen !== undefined) {
-                            const updateQuery = { user: userLoginEmail, providerName: PROVIDER.EMAIL };
-                            const newValue = { $set: { lastAuthenTime: moment().toDate(), storedCredentials: token } };
+                            const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
+                            const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
                             await this.authenticationIdService.update(updateQuery, newValue);
                         } else {
                             await this.authenticationIdService.create(newToken);
@@ -715,7 +719,7 @@ export class GuestController {
             const expiresAt = checkAccessToken.data.expires_at;
             const today = moment().toDate();
 
-            if (expiresAt < today.getDate()) {
+            if (expiresAt < today.getTime()) {
                 const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
                 return res.status(400).send(errorResponse);
             }
@@ -726,10 +730,12 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
-                const authTime = moment().toDate();
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                 const facebookUserId = fbUser.authId.providerUserId;
                 const query = { providerUserId: facebookUserId };
-                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token } };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
@@ -754,7 +760,7 @@ export class GuestController {
             const expiresAt = checkIdToken.expire;
             const today = moment().toDate();
 
-            if (expiresAt < today.getDate()) {
+            if (expiresAt < today.getTime()) {
                 const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
                 return res.status(400).send(errorResponse);
             }
@@ -766,10 +772,12 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
-                const authTime = moment().toDate();
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                 const googleUserId = googleUser.userId;
                 const query = { providerUserId: googleUserId };
-                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken } };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
@@ -824,14 +832,16 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
-                const authTime = moment().toDate();
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                 const query = { _id: twAuthenId.id };
-                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime } };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
-                    
+
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                 }
@@ -1009,13 +1019,23 @@ export class GuestController {
     // Check Account Status Function
     @Get('/check_status')
     public async checkAccountStatus(@QueryParam('token') tokenParam: string, @Req() request: any, @Res() response: any): Promise<any> {
-        const isFBMode = request.header('mode');
+        const isMode = request.header('mode');
 
         let user;
 
-        if (isFBMode !== undefined && isFBMode === 'FB') {
+        if (isMode !== undefined && isMode === 'FB') {
             try {
                 user = await this.facebookService.getFacebookUser(tokenParam);
+            } catch (ex) {
+                const errorResponse: any = { status: 0, message: ex.message };
+                return response.status(400).send(errorResponse);
+            }
+        } if (isMode !== undefined && isMode === 'TW') {
+            try {
+                // ! edit here when fix bug
+                // tw tokenParam is in pattern oauth_token=xxxx&oauth_token_secret=xxx&user_id=xxxx
+                const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
+                user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
@@ -1038,14 +1058,25 @@ export class GuestController {
         }
 
         // check expire token
-        if (isFBMode) {
-            const today = moment().toDate();
+        const today = moment().toDate();
+        if (isMode !== undefined && isMode === 'FB') {
             if (user.fbAccessExpirationTime < today.getDate()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 return response.status(400).send(errorUserNameResponse);
             }
         } else {
-            // ! implement check expired for normal mode
+            // normal mode
+            const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id } });
+            if (authenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                return response.status(400).send(errorUserNameResponse);
+            }
+            const expiresAt = authenId.expirationDate;
+
+            if (expiresAt.getTime() <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                return response.status(400).send(errorUserNameResponse);
+            }
         }
         const userFollowings = await this.userFollowService.find({ where: { userId: user.id, subjectType: SUBJECT_TYPE.USER } });
         const userFollowers = await this.userFollowService.find({ where: { subjectId: user.id, subjectType: SUBJECT_TYPE.USER } });

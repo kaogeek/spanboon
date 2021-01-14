@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { AuthenManager } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
+import { environment } from 'src/environments/environment';
 import { DialogFulfill } from '../dialog/DialogFulfill.component';
 
 const PAGE_NAME: string = 'carditem';
@@ -59,12 +60,16 @@ export class CardItem extends AbstractPage implements OnInit {
     public index: number;
     public item: any;
 
+
+    public apiBaseURL = environment.apiBaseURL;
+
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.authenManager = authenManager;
         this.dialog = dialog;
         this.router = router;
+
     }
 
     ngOnInit(): void {
@@ -72,29 +77,34 @@ export class CardItem extends AbstractPage implements OnInit {
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-      }
-       
-      isPageDirty(): boolean {
+    }
+
+    isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
         return false;
-      }
-      onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
-      onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
-      
+    }
+
 
     public showDialogEdit() {
         this.submit.emit();
     }
     public fulfillNeeds(item: any, index: number) {
+        for (let f of item) {
+            f.isFrom = "FULFILL"
+        }
+        let itemArr: any
+        itemArr = { fulfill: item, isFrom: 'FULFILL', currentPostItem: [] }
         let dialog = this.dialog.open(DialogFulfill, {
             width: 'auto',
-            data: this.itemData,
+            data: itemArr,
             disableClose: false,
         });
 

@@ -104,7 +104,7 @@ export class ControlAction {
   }
 
   public selectAccessPage(page: any) {
-    if (page.imageURL !== undefined && page.imageURL !== null) {
+    if (page.imageURL !== undefined && page.imageURL !== null && page.imageURL !== '') {
       this.selectedAccessPageimges = page
       this.isImges = true
       this.isDis = false
@@ -114,7 +114,7 @@ export class ControlAction {
       this.isImges = false
       this.isDis = true
       this.emitpage.emit(page);
-    }
+    } 
   }
 
   public postLike() {

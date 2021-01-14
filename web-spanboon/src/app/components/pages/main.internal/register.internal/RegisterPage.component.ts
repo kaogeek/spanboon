@@ -193,8 +193,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
-  public onClickregister(formData) { 
-    console.log('formData >>> ', formData); 
+  public onClickregister(formData) {  
     const register = new User();
     register.username = formData.email;
     register.firstName = formData.firstName === undefined ? "" : formData.firstName;
@@ -211,58 +210,65 @@ export class RegisterPage extends AbstractPage implements OnInit {
     register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
     if (formData.displayName === '' || formData.displayName === undefined) {
       this.active = true;
-      return document.getElementById("displayName").focus();
-      // return this.showAlertDialog("กรุณากรอกชื่อที่ต้องการแสดง");
+      document.getElementById('displayName').style.border = "1px solid red";
+      return document.getElementById("displayName").focus(); 
     } else {
+      document.getElementById('displayName').style.border = "unset";
       this.active = false;
     }
     if (formData.email === '' || formData.email === undefined) {
       this.activeEmail = true;
-      return document.getElementById("email").focus();
-      // return this.showAlertDialog("กรุณากรอกอีเมล");
+      document.getElementById('email').style.border = "1px solid red";
+      return document.getElementById("email").focus(); 
     } else {
+      document.getElementById('email').style.border = "unset";
       this.activeEmail = false;
     }
 
     let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
     if (!formData.email.match(emailPattern)) {
       this.activeEmail = true;
-      return document.getElementById("email").focus();
-      // return this.showAlertDialog("กรุณากรอกอีเมลให้ถูกต้อง");
+      document.getElementById('email').style.border = "1px solid red";
+      return document.getElementById("email").focus(); 
     } else {
+      document.getElementById('email').style.border = "unset";
       this.activeEmail = false;
     }
 
     if (this.mode === "normal") {
       if (formData.password === "" && formData.repassword === "") {
         this.activePass = true;
-        return document.getElementById("password").focus();
-        // return this.showAlertDialog("กรุณากรอกรหัสผ่าน");
+        document.getElementById('password').style.border = "1px solid red";
+        return document.getElementById("password").focus(); 
       } else {
+        document.getElementById('password').style.border = "unset";
         this.activePass = false;
       }
 
       if (formData.password.length !== undefined || formData.repassword.length !== undefined) {
         if (formData.password.length < 6 || formData.repassword.length < 6) {
           this.activePass = true;
-          return document.getElementById("password").focus();
-          // return this.showAlertDialog("รหัสผ่านอย่างน้อย 6 ตัว");
+          document.getElementById('password').style.border = "1px solid red";
+          return document.getElementById("password").focus(); 
         } else {
+          document.getElementById('password').style.border = "unset";
           this.activePass = false;
         }
       }
       if (formData.password !== formData.repassword) {
         this.activeRePass = true;
-        return document.getElementById("repassword").focus();
-        // return this.showAlertDialog("รหัสผ่านไม่ตรงกัน");
+        document.getElementById('repassword').style.border = "1px solid red";
+        return document.getElementById("repassword").focus(); 
       } else {
+        document.getElementById('repassword').style.border = "unset";
         this.activeRePass = false;
       }
     }
     if (formData.gender === -1 && formData.genderTxt === undefined) {
-      document.getElementById("genderTxt").focus();
-      // return this.showAlertDialog("กรุณากรอกเพศ");
+      document.getElementById('genderTxt').style.border = "1px solid red";
+      return document.getElementById("genderTxt").focus(); 
     }
+    
     const asset = new Asset();
     if (this.imagesAvatar !== undefined && Object.keys(this.imagesAvatar).length > 0) {
       let data = this.imagesAvatar.image.split(',')[0];
@@ -304,7 +310,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         }
       }).catch((err) => {
         if (err.error.status === 0) {
-          let alertMessages: string = 'สมัครสมาชิกสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
+          let alertMessages: string;
           if (err.error.message === 'This Email already exists') {
             alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
           } else if (err.error.message === 'Register Failed') {
@@ -331,9 +337,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         register.password = this.passwordModeSocial;
       } else {
         register.password = this.passwordModeSocial === undefined ? "" : this.passwordModeSocial;
-      }
-
-      console.log('this.mode >>> ', this.mode);
+      } 
 
       if (this.mode === "facebook" || this.mode === "FACEBOOK") {
         register.fbAccessExpirationTime = this.accessToken.fbexptime;
@@ -347,10 +351,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
       } else if (this.mode === "twitter" || this.mode === "TWITTER") {
         register.twitterUserId = this.accessToken.twitterUserId;
         register.twitterOauthToken = this.accessToken.twitterOauthToken;
-        register.twitterOauthTokenSecret = this.accessToken.twitterOauthTokenSecret;
-      }
-
-      this.authenManager.registerSocial(register, this.mode).then((value: any) => {
+        register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
+      } 
+      this.authenManager.registerSocial(register, this.mode).then((value: any) => { 
         if (value.status === 1) {
           let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
           let isValid = false;
@@ -372,16 +375,17 @@ export class RegisterPage extends AbstractPage implements OnInit {
           });
         }
 
-      }).catch((err: any) => {
-        if (err) {
-          let alertMessages: string = 'สมัครสมาชิกสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
+      }).catch((err: any) => { 
+        if (err.error.status === 0) {
+          let alertMessages: string;
           if (err.error.message === 'This Email already exists') {
             alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
           } else if (err.error.message === 'Register Facebook Failed') {
             alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
+          } else if (err.error.message === 'Twitter TokenSecret is required'){
+            alertMessages = 'โทเค็นของคุณหมดอายุ';
           }
-          let dialog = this.showAlertDialogWarming(alertMessages, "none");
-
+          let dialog = this.showAlertDialogWarming(alertMessages, "none"); 
           dialog.afterClosed().subscribe((res) => {
             if (res) {
               this.observManager.publish('authen.check', null);
@@ -400,15 +404,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   }
 
   public checkUUID(event) {
-    this.isLoading = true
-    // $('#username').on('input', function () {              //Using input event for instant effect
-    //   let text = $(this).val()
-    //   text = text.replace(/[^a-z_0-9-_.]/g, '')                        //Remove illegal characters 
-    //   if (text.length > 0) text = text.replace(/.{0}/, '$&@')  //Add hyphen at pos.4
-    //   console.log('text ', text)                           //Get the value
-    //   // // if (text.length > 7) text = text.replace(/.{7}/, '$&-')  //Add hyphen at pos.8
-    //   $(this).val(text);                                 //Set the new text
-    // });
+    this.isLoading = true 
     if (event === '') {
       return;
     }

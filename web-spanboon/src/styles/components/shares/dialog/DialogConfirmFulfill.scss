@@ -96,7 +96,10 @@
                 > .mat-row {
                     > .mat-cell {
                         justify-content: center;
-                        font-family: "Kanit-400";
+                        font-family: "Kanit-400"; 
+                        img {
+                            border-radius: 50%;
+                        }
                     }
                 }
 

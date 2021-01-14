@@ -9,7 +9,7 @@
     <div class="container">
         <div class="page-recommended">
             <div class="slide-left" #recommendedLeft>
-                <div class="popup-left" >
+                <div class="popup-left">
                     <div class="home-left" matRipple [matRippleCentered]="'centered'" (click)="focusout()">
                         <svg class="home-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
@@ -47,7 +47,7 @@
                             </spanboon-button>
                         </div>
                     </div>
-                    <div class="card-checkbox-view check-left"> 
+                    <div class="card-checkbox-view check-left">
                         <div class="header-title">
                             <div class="left">
                                 การเข้าถึง
@@ -115,13 +115,13 @@
                                     (userChange)="onUserChange($event,2)" (userChangeEnd)="onUserChangeEnd($event,2)">
                                 </ng5-slider>
                             </div>
-                        </ng-template> 
+                        </ng-template>
                     </div>
                     <!-- <card-checkbox [title]="'สถานที่'"></card-checkbox> -->
                     <card-checkbox [title]="'ประเภทเพจ'" [data]="resPageType" [typePage]="page"
                         [isMutipleCheckbox]="'true'" (clickMutiple)="getPagecategory($event)"
                         (loadMore)="loadMore($event)"></card-checkbox>
-                     <div class="recommended-right">
+                    <div class="recommended-right">
                         <div class="side-follow">
                             <div class="box-right">
                                 <div class="wrapper-filter">
@@ -168,7 +168,7 @@
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
-                                                                        {{user.displayName || user.name | slice: 0:1  }}
+                                                                        {{user.displayName || user.name | slice: 0:1 }}
                                                                     </div>
                                                                 </ng-template>
 
@@ -194,7 +194,7 @@
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">
-                                                            {{item.displayName || item.name | slice: 0:1  }}
+                                                            {{item.displayName || item.name | slice: 0:1 }}
                                                         </div>
                                                     </ng-template>
 
@@ -452,7 +452,7 @@
 
                 <ng-container *ngIf="showLoading">
                     <Preload-card *ngFor="let item of [0]" [isShowCard1]="true" [isShowCard2]="false"
-                        class="recommended-left">
+                        class="recommended-left"> 
                     </Preload-card>
                 </ng-container>
 
@@ -504,7 +504,7 @@
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
-                                                                        {{user.displayName || user.name | slice: 0:1  }}
+                                                                        {{user.displayName || user.name | slice: 0:1 }}
                                                                     </div>
                                                                 </ng-template>
 
@@ -530,7 +530,7 @@
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">
-                                                            {{item.displayName || item.name | slice: 0:1  }}
+                                                            {{item.displayName || item.name | slice: 0:1 }}
                                                         </div>
                                                     </ng-template>
 

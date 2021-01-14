@@ -3,7 +3,7 @@
  * (c) 2020-2021 KaoGeek. http://kaogeek.dev
  * License: MIT. https://opensource.org/licenses/MIT
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
- */ 
+ */
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ViewContainerRef } from '@angular/core';
@@ -72,7 +72,7 @@ import {
   forgotPasswordPage,
   // FanPage,
   MainPage,
-  Redirect, 
+  Redirect,
   DialogEditComment,
   DialogEditPost,
   RegisterPage,
@@ -99,6 +99,7 @@ import {
   DialogContact,
   DialogSettingDateTime,
   DialogResetForgotPassword,
+  DialogFulfillAllocate,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -121,7 +122,7 @@ import {
   //
   StatusBar,
   StatusBarLooking,
-  HeaderSearch, 
+  HeaderSearch,
   Notification,
   ManagePage,
   MenuProfile,
@@ -180,7 +181,7 @@ import { TestComponent } from './components/TestComponent.component';
 
 import {
   // Manager
-  AuthenManager, 
+  AuthenManager,
   PageUserInfo,
   ObservableManager,
   CacheConfigInfo,
@@ -201,7 +202,7 @@ import {
   PostCommentFacade,
   SearchHistoryFacade,
   UserAccessFacade,
-  NotificationFacade, 
+  NotificationFacade,
   PageContentHasTagFacade,
   EditProfileUserPageFacade,
   AccountFacade,
@@ -264,7 +265,7 @@ const COMPONENTS: any[] = [
   FulfillPage,
   PageHashTag,
   PageRecommended,
-  Redirect, 
+  Redirect,
   // shares
   DialogEditComment,
   DialogEditPost,
@@ -285,6 +286,7 @@ const COMPONENTS: any[] = [
   DialogCheckFulfill,
   DialogConfirmFulfill,
   DialogInput,
+  DialogFulfillAllocate,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -307,7 +309,7 @@ const COMPONENTS: any[] = [
   //
   StatusBar,
   StatusBarLooking,
-  HeaderSearch, 
+  HeaderSearch,
   Notification,
   ManagePage,
   MenuProfile,
@@ -379,7 +381,7 @@ const DIRECTIVE_CLASSES: any[] = [
 
 const SERVICE_CLASSES: any[] = [
   // manager
-  AuthenManager, 
+  AuthenManager,
   PageUserInfo,
   ObservableManager,
   CacheConfigInfo,
@@ -400,7 +402,7 @@ const SERVICE_CLASSES: any[] = [
   PostCommentFacade,
   SearchHistoryFacade,
   UserAccessFacade,
-  NotificationFacade, 
+  NotificationFacade,
   PageContentHasTagFacade,
   EditProfileUserPageFacade,
   AccountFacade,

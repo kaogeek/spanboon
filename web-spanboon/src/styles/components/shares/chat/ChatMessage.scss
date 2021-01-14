@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-.chat-spanboon {
+ .chat-spanboon {
     box-shadow: inset 0 -1px 0 1px rgba($border-color, 0.7);
     width: 100%;
     height: 100%;
@@ -19,7 +19,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba($black, 0.2);
+        // background: rgba($black, 0.2);
         z-index: 1;
         bottom: 0;
         pointer-events: none;
@@ -62,7 +62,7 @@
                 }
             }
         }
-        > .back {
+        > .back-arrow {
             display: none;
         }
         > .expand {
@@ -183,7 +183,7 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-end;
-                    margin: 15px 15px 20px 20px;
+                    // margin: 15px 15px 20px 20px;
 
                     a {
                         > .donator {
@@ -288,16 +288,27 @@
             justify-content: center;
             font-family: "Kanit-400";
             font-size: 16px;
-            margin-bottom: 5pt;
-
-            > .confirm-text {
-                width: 130pt;
-                height: 25pt;
-                color: #969696;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            padding: 10pt 0;
+            >.case-div { 
+                > .confirm-text { 
+                    height: 25pt;
+                    color: #969696;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0 10pt; 
+    
+                    >.click-post {
+                        color: $color-warm-red;
+                        padding-left: 5pt;
+                        @include pointer();
+                    }
+                }
+                >.left {
+                    display: flex; 
+                }
             }
+
         }
     }
 
@@ -309,6 +320,9 @@
         align-items: center;
         padding: 10pt;
 
+        &.active {
+            display: none;
+        }
         > .donator {
             display: flex;
             justify-content: center;
@@ -416,21 +430,84 @@
     }
 }
 
+@media (max-width: $xlarge) {
+    .chat-spanboon {
+        > .header {
+            > .back-arrow {
+                display: none; 
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .chat-spanboon {
+        > .header {
+            > .back-arrow {
+                display: none;
+                &.active {
+                    display: flex;
+                    position: absolute;
+                    left: 9pt;
+                    border-radius: 50%;
+                    background: $bg-grey;
+                    font-size: 26px;
+                    @include pointer();
+                }
+            }
+            > .expand {
+                display: flex;
+                position: absolute;
+                right: 6pt;
+                transform: rotate(0);
+                @include pointer();
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .chat-spanboon {
+        > .header {
+            > .back-arrow {
+                display: none;
+                &.active {
+                    display: flex;
+                    position: absolute;
+                    left: 9pt;
+                    border-radius: 50%;
+                    background: $bg-grey;
+                    font-size: 26px;
+                    @include pointer();
+                }
+            }
+            > .expand {
+                display: flex;
+                position: absolute;
+                right: 6pt;
+                transform: rotate(0);
+                @include pointer();
+            }
+        }
+    }
+}
+
 @media (max-width: $medium) {
     .chat-spanboon {
         > .header {
             height: 34pt;
 
             > .back-arrow {
-              display: none;
-              &.active {
-                display: flex;
-                position: absolute;
-                left: 9pt;
-                border-radius: 50%;
-                background: $bg-grey;
-                font-size: 26px;
-              }
+                display: none;
+                &.active {
+                    display: flex;
+                    position: absolute;
+                    left: 9pt;
+                    border-radius: 50%;
+                    background: $bg-grey;
+                    font-size: 26px;
+                    @include pointer();
+                }
             }
 
             > .expand {
@@ -438,6 +515,7 @@
                 position: absolute;
                 right: 6pt;
                 transform: rotate(180deg);
+                @include pointer();
             }
         }
         > .talking {
@@ -450,10 +528,7 @@
             }
         }
         > .typing {
-            padding: 15pt 10pt;
-            &.active {
-                display: none;
-            }
+            padding: 15pt 10pt; 
             > .drop-input {
                 height: 30pt;
             }
@@ -476,6 +551,7 @@
                     border-radius: 50%;
                     background: $bg-grey;
                     font-size: 26px;
+                    @include pointer();
                 }
             }
 
@@ -484,6 +560,7 @@
                 position: absolute;
                 right: 6pt;
                 transform: rotate(0);
+                @include pointer();
             }
         }
         > .talking {

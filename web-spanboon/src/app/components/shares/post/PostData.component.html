@@ -424,7 +424,7 @@
                             </svg>
                         </div>
 
-                        <div class="profile-left">
+                        <div class="profile-right">
                             <ng-container
                                 *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
                                 <img class="post-data-profile"
@@ -507,7 +507,7 @@
                         [isShowObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
                         [isNameObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
                         [isIconObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
-                        [nameObjective]="itemPost.objectiveTag"></tag-event>
+                        [nameObjective]="itemPost.objectiveTag" (emergencyClick)="clickDevelop($event , itemPost.emergencyEventTag)" (objectiveClick)="clickDevelop($event , itemPost.objectiveTag)" ></tag-event>
                 </div>
                 <div class="right">
                     <control-action [isAction]="'true'" [comment]="itemPost.commentCount ? itemPost.commentCount : 0 "

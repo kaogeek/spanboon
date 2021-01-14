@@ -6,13 +6,15 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body } from 'routing-controllers';
+import { JsonController, Res, Post, Body, QueryParams } from 'routing-controllers';
 import { ObjectID } from 'mongodb';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { NeedsService } from '../services/NeedsService';
 import { AllocateRequest } from './requests/allocate/AllocateRequest';
 import { POST_TYPE } from '../../constants/PostType';
 import { AllocateResponse } from './responses/allocate/AllocateResponse';
+import { CalculateAllocateQueryparam } from './params/CalculateAllocateQueryparam';
+import { Posts } from '../models/Posts';
 
 @JsonController('/allocate')
 export class AllocateController {
@@ -35,7 +37,7 @@ export class AllocateController {
      */
     @Post('/')
     public async createAllocate(@Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
-
+        console.log('allocate');
     }
 
     // Calculate Allocate API
@@ -54,12 +56,13 @@ export class AllocateController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/calculate')
-    public async calculateAllocate(@Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
+    public async calculateAllocate(@QueryParams() params: CalculateAllocateQueryparam, @Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
         try {
             const pageId = allocate.pageId;
+            const postId = allocate.postId;
             const items = allocate.items;
 
-            const result: AllocateResponse[] = await this.allocate(pageId, items);
+            const result: AllocateResponse[] = await this.allocate(pageId, postId, items, params);
 
             if (result !== null && result !== undefined && result.length > 0) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', result));
@@ -71,14 +74,24 @@ export class AllocateController {
         }
     }
 
-    private async allocate(pageId: string, items: any[]): Promise<AllocateResponse[]> {
+    private async allocate(pageId: string, postId: string, items: any[], params?: CalculateAllocateQueryparam): Promise<AllocateResponse[]> {
+        const stdItemIdList: ObjectID[] = [];
+        const customItemIdList: ObjectID[] = [];
+        const itemsMap: any = {};
+        const result: AllocateResponse[] = [];
+        let needsList: any[] = [];
+        // let mode;
+        // let emergencyEvent;
+        // let objective;
+
+        // if (params !== null && params !== undefined) {
+        //     mode = params.mode;
+        //     emergencyEvent = params.emergencyEvent;
+        //     objective = params.objective;
+        // }
+
         if (pageId !== null && pageId !== undefined && pageId !== '') {
             const pageObjId = new ObjectID(pageId);
-            const stdItemIdList: ObjectID[] = [];
-            const customItemIdList: ObjectID[] = [];
-            const itemsMap: any = {};
-            const result: AllocateResponse[] = [];
-            let needsList: any[] = [];
 
             if (items !== null && items !== undefined && items.length > 0) {
                 for (const item of items) {
@@ -122,8 +135,7 @@ export class AllocateController {
                             }
                         },
                         { $match: { 'posts.type': POST_TYPE.NEEDS } },
-                        { $sort: { 'posts.createdDate': 1 } },
-                        { $project: { posts: 0 } }
+                        { $sort: { 'posts.createdDate': 1 } }
                     ]);
 
                     if (needsList !== null && needsList !== undefined && needsList.length > 0) {
@@ -133,11 +145,21 @@ export class AllocateController {
                             const stdItemValue = itemsMap[stdItemId];
                             const customItemValue = itemsMap[customItemId];
 
+                            const posts = new Posts();
+                            posts.type = needs.posts.type;
+                            posts.createdDate = needs.posts.createdDate;
+                            posts.title = needs.posts.title;
+                            posts.detail = needs.posts.detail;
+                            posts.emergencyEventTag = needs.posts.emergencyEventTag;
+                            posts.objectiveTag = needs.posts.objectiveTag;
+
                             const allocateResult: AllocateResponse = new AllocateResponse();
                             allocateResult.postsId = needs.post;
                             allocateResult.needsId = needs._id;
                             allocateResult.itemName = needs.name;
+                            allocateResult.quantity = needs.quantity;
                             allocateResult.itemUnit = needs.unit;
+                            allocateResult.posts = posts;
 
                             if (stdItemValue) {
                                 allocateResult.amount = needs.fulfillQuantity + stdItemValue.amount;
@@ -150,10 +172,8 @@ export class AllocateController {
                     }
                 }
             }
-
-            return result;
-        } else {
-            return undefined;
         }
+
+        return result;
     }
 } 

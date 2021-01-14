@@ -76,6 +76,7 @@ span:focus {
 
     .list-looking-for {
         width: 100%;
+
         > .item-looking-for {
             display: flex;
             justify-content: space-between;
@@ -84,39 +85,48 @@ span:focus {
             margin: 5pt 0;
             border-bottom: $width-border solid $border-color;
             cursor: pointer;
+
             &:hover {
                 background-color: $background-hover;
             }
+
             .top {
                 display: flex;
                 flex-direction: column;
                 font-family: "Kanit-500";
                 font-size: 14px;
             }
+
             .bottom {
                 font-family: "Kanit-500";
                 font-size: 14px;
                 color: $koalaGray;
             }
+
             span {
                 display: flex;
                 align-items: center;
+
                 > .icon-looking-for {
                     width: 35pt;
                     height: 35pt;
                     object-fit: cover;
                     border-radius: 50%;
                 }
+
                 > .title-looking-for {
                     margin-left: 10pt;
                 }
             }
+
             > .wrapper-option {
                 display: flex;
                 align-items: center;
+
                 > .amount-looking-for {
                     padding: 0 10pt;
                     text-align: right;
+
                     > .option {
                         cursor: pointer;
                         @include pointer();
@@ -130,29 +140,45 @@ span:focus {
         display: flex;
         align-items: center;
         color: $koalaGray;
+
         > .icon-active {
             flex: 0 0 auto;
             width: 8pt;
             height: 8pt;
             border-radius: 50%;
             background-color: $koalaGray;
+
+            &.new-card {
+                width: 7pt;
+                height: 7pt;
+            }
+
+            &.new-cards {
+                width: 6pt;
+                height: 6pt;
+            }
         }
+
         > .looking {
             background-color: $brandcolor2;
         }
+
         > .lookingWhite {
             background-color: transparent;
             border: 0.7pt solid $white;
         }
+
         > .fulfill {
             background-color: $green;
         }
+
         span {
             font-family: "Kanit-500";
             font-size: 18px;
             margin-left: 5pt;
         }
     }
+
     .wrapper-time {
         display: flex;
         color: $bg-fog-gray;
@@ -168,13 +194,16 @@ span:focus {
     .wrapper-breadcrumb {
         margin-bottom: 8pt;
         color: $color-7;
+
         a {
             text-decoration: unset;
             color: $color-7;
+
             &:hover {
                 text-decoration: underline;
             }
         }
+
         span {
             color: $brandcolor;
         }
@@ -184,13 +213,16 @@ span:focus {
         height: 100%;
         box-shadow: unset;
     }
+
     mat-ink-bar {
         background-color: $brandcolor2 !important;
         height: 4pt !important;
     }
+
     .swiper-pagination-bullet-active {
         background: $color-8;
     }
+
     > .div-top {
         cursor: pointer;
         position: fixed;
@@ -202,10 +234,12 @@ span:focus {
         background: $gray-dark;
         border-radius: 4px;
         transform: scale3d(1, 1, 1);
+
         &:hover {
             transform: scale3d(1.1, 1.1, 1.1);
             background: $color-warm-red;
         }
+
         > .to-top {
             width: 30pt;
             height: 30pt;
@@ -259,12 +293,14 @@ span:focus {
         padding: 10pt 0;
         flex-wrap: wrap;
         border-bottom: $width-border solid $border-color;
+
         > .wrapper-doing {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             margin: 0 5pt 5pt;
+
             > .image-tag {
                 display: flex;
                 flex-direction: column;
@@ -277,10 +313,12 @@ span:focus {
             }
         }
     }
+
     .wrapper-upload {
         display: flex;
         border-bottom: $width-border solid $border-color;
         padding: 10pt 0;
+
         > .div-image {
             > .image-user {
                 box-shadow: 0px 5px 9px 0 #e5e3dd;
@@ -290,17 +328,20 @@ span:focus {
                 border: 7pt solid $brandcolor;
             }
         }
+
         > .wrapper-field-upload {
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
             padding: 20pt;
+
             > .top {
                 font-family: "Kanit-500";
                 font-size: 16px;
                 color: $bg-color2;
                 text-align: left;
             }
+
             > .btn-upload {
                 > .button-social {
                     background-image: url(/../../../../../assets/img/upload.svg);
@@ -322,16 +363,20 @@ span:focus {
                     justify-content: center;
                     border: unset;
                     font-family: 300;
+
                     &:focus {
                         outline: none;
                     }
+
                     &:hover {
                         opacity: 1;
                     }
+
                     &.disable {
                         opacity: 0.5;
                         pointer-events: none;
                     }
+
                     &::selection {
                         background: transparent;
                     }
@@ -339,6 +384,7 @@ span:focus {
             }
         }
     }
+
     .image-upload > input {
         display: none;
     }
@@ -351,6 +397,7 @@ span:focus {
         height: 15pt;
         cursor: pointer;
     }
+
     .tribute-container {
         color: $color-warm-red;
         padding: 3pt 5pt;
@@ -360,12 +407,15 @@ span:focus {
     .tribute-container :hover {
         background-color: rgb(34, 64, 119);
     }
+
     .tribute-container-hashtag {
         color: blue;
     }
+
     .tribute-container-like {
         color: blue;
     }
+
     .atwho-query {
         color: blue;
     }
@@ -378,6 +428,7 @@ span:focus {
             background-position: 468px 0;
         }
     }
+
     .preload-background {
         animation-duration: 1s;
         animation-fill-mode: forwards;
@@ -391,6 +442,7 @@ span:focus {
         position: relative;
         overflow: hidden;
     }
+
     .inter-draw {
         background: $white;
         width: 100%;
@@ -398,6 +450,7 @@ span:focus {
         position: absolute;
         top: 100px;
     }
+
     .inter-right--top {
         background: $white;
         width: 100%;
@@ -406,6 +459,7 @@ span:focus {
         top: 20px;
         left: 100px;
     }
+
     .inter-right--bottom {
         background: $white;
         width: 100%;
@@ -414,6 +468,7 @@ span:focus {
         top: 60px;
         left: 100px;
     }
+
     .inter-crop {
         background: $white;
         width: 20px;
@@ -422,6 +477,7 @@ span:focus {
         top: 0;
         left: 100px;
     }
+
     .highlight-text {
         @include pointer();
         color: rgb(27, 149, 224);
@@ -444,8 +500,9 @@ span:focus {
         position: relative;
         animation: shake 0.1s linear;
         animation-iteration-count: 3;
-        color: red;
+        color: red; 
     }
+
     .input-shake {
         position: relative;
         animation: shake 0.1s linear;
@@ -456,37 +513,40 @@ span:focus {
         /* Chrome/Opera/Safari/Edge */
         /*styles here*/
         color: red;
+        // border: 1px solid red;
     }
 
     .input-shake::-ms-input-placeholder {
         /* Microsoft Edge */
         /*styles here*/
         color: red;
+        // border: 1px solid red;
     }
 
     .input-shake:-ms-input-placeholder {
         /* IE 10+ */
         /*styles here*/
         color: red;
+        // border: 1px solid red;
     }
 
     .input-shake::-moz-placeholder {
         /* Firefox 19+ */
         opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
-        color: red;
+        color: red; 
     }
 
     .input-shake:-moz-placeholder {
         /* Firefox 18- */
         opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
-        color: red;
+        color: red; 
     }
 
     .input-shake::placeholder {
         /*styles here*/
-        color: red;
+        color: red; 
     }
 }
 
@@ -564,13 +624,16 @@ span:focus {
                 }
             }
         }
+
         > .wrapper-content-page {
             min-height: calc(100% - 105pt);
         }
+
         .wrapper-center-none-list-content {
             min-height: 270pt;
         }
     }
+
     .avatar {
         width: 33pt;
         height: 33pt;
@@ -591,9 +654,11 @@ span:focus {
                 }
             }
         }
+
         > .wrapper-content-page {
             min-height: calc(100% - 55pt - 40pt - 32pt);
         }
+
         .wrapper-center-none-list-content {
             min-height: 260pt;
         }
@@ -602,6 +667,16 @@ span:focus {
             > .icon-active {
                 width: 7pt;
                 height: 7pt;
+
+                &.new-card {
+                    width: 6pt;
+                    height: 6pt;
+                }
+
+                &.new-cards {
+                    width: 5.5pt;
+                    height: 5.5pt;
+                }
             }
         }
     }
@@ -626,9 +701,11 @@ span:focus {
                 }
             }
         }
+
         > .wrapper-content-page {
             min-height: calc(100% - 50pt - 35pt - 31pt);
         }
+
         .wrapper-center-none-list-content {
             min-height: 250pt;
         }
@@ -645,6 +722,7 @@ span:focus {
             }
         }
     }
+
     .avatar {
         width: 29pt;
         height: 29pt;
@@ -668,9 +746,11 @@ span:focus {
                 }
             }
         }
+
         > .wrapper-content-page {
             min-height: calc(100% - 40pt - 35pt - 60pt);
         }
+
         .wrapper-center-none-list-content {
             min-height: 240pt;
         }
@@ -688,9 +768,20 @@ span:focus {
             > .icon-active {
                 width: 6pt;
                 height: 6pt;
+
+                &.new-card {
+                    width: 5pt;
+                    height: 5pt;
+                }
+
+                &.new-cards {
+                    width: 5pt;
+                    height: 5pt;
+                }
             }
         }
     }
+
     .avatar {
         width: 26pt;
         height: 26pt;
@@ -711,6 +802,7 @@ span:focus {
                 }
             }
         }
+
         > .wrapper-content-page {
             min-height: calc(100% - 40pt - 35pt - 55pt);
         }

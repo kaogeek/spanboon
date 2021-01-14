@@ -127,6 +127,16 @@
                         -webkit-line-clamp: 1;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
+
+                        > .pointer {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            margin: 0 5px;
+                        }
+                        > .list-length {
+                            color: rgba(0, 0, 0, 0.5);
+                            flex: 0 0 auto;
+                        }
                     }
 
                     > .event-cos {
@@ -185,9 +195,8 @@
 }
 
 @media (max-width: $small) {
-   
     .card-contact {
-        > .user-contact { 
+        > .user-contact {
             > .card-contact-body {
                 > .contact-head {
                 }

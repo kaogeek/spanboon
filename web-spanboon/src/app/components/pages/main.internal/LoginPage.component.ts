@@ -74,13 +74,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
 
-
-    // if ((this.router.url === "/login")) { 
-    //   $(".icon-post-bottom").css({
-    //     'display': "none"
-    //   });
-    // }  
-
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
     //     this.isShowFacebook = (config.value.toLowerCase() === 'true');
@@ -104,8 +97,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       let split = fullURL.split('?');
       if (split.length >= 2) {
         const queryParam = split[1];
-        this.accessTokenLink += '?' + queryParam;
-        console.log('this.accessTokenLink ', this.accessTokenLink)
+        this.accessTokenLink += '?' + queryParam; 
         doRunAccessToken = true;
       }
     }
@@ -114,15 +106,12 @@ export class LoginPage extends AbstractPage implements OnInit {
       let httpOptions: any = {
         responseType: 'text'
       };
-      this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
-        console.log('res ', res)
+      this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => { 
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
         const token_secret = spilt[1].split('=')[1];
         const userId = spilt[2].split('=')[1];
-        const name = spilt[3];
-        console.log('token_secret ', token_secret)
-        console.log('token ', token)
+        const name = spilt[3]; 
         this.loginTwitter(token, token_secret, userId);
        
       }).catch((err: any) => [
@@ -161,16 +150,14 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
   }
 
-  public loginTwitter(token: string, token_secret: string, userId: string) {
-    console.log('twitter')
+  public loginTwitter(token: string, token_secret: string, userId: string) { 
     let mode = 'TWITTER';
     let twitter = {
       twitterOauthToken : token,
       twitterOauthTokenSecret : token_secret,
       twitterUserId : userId
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
-      console.log('data ',data)
+    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => { 
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -215,8 +202,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginGoogle(): void {
-    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
-      console.log('result >>> ', result);
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => { 
 
       if (result !== null && result !== undefined) {
         let googleToken = {

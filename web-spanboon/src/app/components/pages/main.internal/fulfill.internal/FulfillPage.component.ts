@@ -117,7 +117,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public isChecKMobile: boolean;
     public Expand: boolean;
     public isTransition: boolean;
-    public isBackArrow: boolean;
+    public isBackArrow: boolean; 
     //
     public needsFromState: any;
     public sorting: any;
@@ -403,6 +403,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
 
                 this.fulfillCase = fulfillList;
+                console.log('this.fulfillCase ',this.fulfillCase)
 
                 setTimeout(() => {
                     this.showLoading = false;
@@ -415,7 +416,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
     }
 
-    public createFulfillPost(fulfillCaseId: string, asPage?: string) {
+    public createFulfillPost(fulfillCaseId: string, asPage?: string) { 
         const data = {
             fulfillCaseId,
             asPage,
@@ -426,6 +427,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isListPage: false,
             isEdit: false,
         };
+        console.log('data ',data)
 
         const dialogRef = this.dialog.open(DialogPost, {
             width: 'auto',
@@ -478,7 +480,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost === null || fulfill.fulfillmentPost === undefined || fulfill.fulfillmentPost === '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
                 console.log("s1 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
-                this.isCaseHasPost = false;
+                this.isCaseHasPost = false; 
             } else if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost !== null && fulfill.fulfillmentPost !== undefined && fulfill.fulfillmentPost !== '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
                 console.log("s2 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
@@ -589,7 +591,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             }
                         }
 
-                        this.chatData = chatData;
+                        this.chatData = chatData; 
                         setTimeout(() => {
                             this.showChatRoom = false;
                         }, 2000);
@@ -745,7 +747,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
             let dialog = this.dialog.open(DialogConfirmFulfill, { data });
 
-            dialog.afterClosed().subscribe((res) => { });
+            dialog.afterClosed().subscribe((res) => {
+                if(res){ 
+                    this.statusColor = "#FFB800";
+                }
+             });
         }
     }
 
@@ -1085,14 +1091,14 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     this.assetFacade.getPathFile(data.imageURL).then((image: any) => {
                         if (image.status === 1) {
                             if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                data.imageURL = null;
+                                data.imageBase64 = null;
                             } else {
-                                data.imageURL = image.data;
+                                data.imageBase64 = image.data;
                             }
                         }
                     }).catch((err: any) => {
                         if (err.error.message === "Unable got Asset") {
-                            data.imageURL = '';
+                            data.imageBase64 = '';
                         }
                     });
                 }
@@ -1121,10 +1127,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
         if (window.innerWidth <= 487) {
             this.isChecKMobile = true;
             this.Expand = false;
+            this.isBackArrow = false;
         }
         if (window.innerWidth <= 1024) {
             this.isMobile = true;
             this.Expand = false;
+            this.isBackArrow = false;
         } else {
             this.isMobile = false;
             this.isChecKMobile = false;

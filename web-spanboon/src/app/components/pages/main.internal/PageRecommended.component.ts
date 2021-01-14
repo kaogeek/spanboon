@@ -8,11 +8,8 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage';
-import { DialogImage } from '../../components';
-import { FileHandle } from '../../shares/directive/directives';
-import * as $ from 'jquery';
-import { Asset } from '../../../models/Asset';
+import { AbstractPage } from '../AbstractPage'; 
+import { FileHandle } from '../../shares/directive/directives'; 
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost } from '../../shares/shares';
 import { SearchFilter } from '../../../models/SearchFilter';
@@ -83,8 +80,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     this.searchTrendTag();
-    this.openLoading();
-    console.log('ssss ', this.checkPath())
+    this.openLoading(); 
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -106,12 +102,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public checkPath(): boolean {
     return this.router.url.includes('hashtag');
   }
-
-  // private stopLoading(): void {
-  //   setTimeout(() => {
-  //     this.isLoading = false;
-  //   }, 1000);
-  // }
+ 
   private openLoading() {
     this.isloading = true;
   }
@@ -167,10 +158,8 @@ public heightWindow() {
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       setTimeout(() => {
         this.closeLoading();
-      }, 1000);
-
-      this.dataTrend = res
-      console.log(this.dataTrend)
+      }, 1000); 
+      this.dataTrend = res 
     }).catch((err: any) => {
       console.log(err)
     })
