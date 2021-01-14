@@ -97,9 +97,14 @@ export class CardItem extends AbstractPage implements OnInit {
         this.submit.emit();
     }
     public fulfillNeeds(item: any, index: number) {
+        for (let f of item) {
+            f.isFrom = "FULFILL"
+        }
+        let itemArr: any
+        itemArr = { fulfill: item, isFrom: 'FULFILL', currentPostItem: [] }
         let dialog = this.dialog.open(DialogFulfill, {
             width: 'auto',
-            data: item,
+            data: itemArr,
             disableClose: false,
         });
 
