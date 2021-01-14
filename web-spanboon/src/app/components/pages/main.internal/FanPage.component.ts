@@ -727,10 +727,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         for (let n of res.data.needs) {
           if (n.standardItemId) {
             this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
-              this.assetFacade.getPathFile(needs.imageURL).then((imgURL) => {
-                n.imageURL = imgURL.data
-              }).catch((err: any) => {
-              })
+              n.imageURL = needs.imageURL
             }).catch((err: any) => {
             })
           }

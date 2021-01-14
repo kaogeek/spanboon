@@ -6,7 +6,7 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
 
 @Entity('PageSocialAccount')
@@ -16,4 +16,26 @@ export class PageSocialAccount {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
+
+    @Column({ name: 'page' })
+    public page: ObjectID;
+
+    @Column({ name: 'lastAuthenTime' })
+    public lastAuthenTime: Date;
+
+    @Column({ name: 'lastSuccessAuthenTime' })
+    public lastSuccessAuthenTime: Date;
+
+    @Column({ name: 'providerName' })
+    public providerName: string;
+
+    @Column({ name: 'providerUserId' })
+    public providerPageId: any;
+
+    @Column({ name: 'storedCredentials' })
+    public storedCredentials: string;
+
+    @Column({ name: 'properties' })
+    public properties: any;
+
 }

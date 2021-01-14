@@ -11,7 +11,7 @@ export class CreateFulfillmentCaseRequest {
 
     public postId: string;
     public pageId: string;
-    public needs: any[];
-    public items: any[];
+    public needs: any[]; // for post mode
+    public items: any[]; // for page mode ex. {standardItemId: string, quantity: number } or {customItemId: string, quantity: number } 
     public requester: string;
 }

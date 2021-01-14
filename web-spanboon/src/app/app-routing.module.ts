@@ -18,7 +18,7 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, FulfillAllocatePage, Redirect, SettingAccount,
+  SettingsFanPage, forgotPasswordPage, FulfillPage, Redirect, SettingAccount,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
