@@ -1033,7 +1033,11 @@ export class GuestController {
         } if (isMode !== undefined && isMode === 'TW') {
             try {
                 // ! edit here when fix bug
-                // tw tokenParam is in pattern oauth_token=xxxx&oauth_token_secret=xxx&user_id=xxxx
+                // tw tokenParam is in pattern oauth_token=xxxx;oauth_token_secret=xxx;user_id=xxxx
+                const find = ';';
+                const re = new RegExp(find, 'g');
+                tokenParam = tokenParam.replace(re, '&');
+
                 const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
@@ -1073,7 +1077,7 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
 
-            if (expiresAt.getTime() <= today.getTime()) {
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 return response.status(400).send(errorUserNameResponse);
             }
