@@ -48,7 +48,7 @@
                 > .topic-type {
                     color: $color-warm-red;
                     font-family: "Kanit-500";
-                    font-size: 18px;
+                    font-size: 16px;
                     margin-left: 5pt;
                     @include pointer();
 
@@ -82,7 +82,7 @@
                 > .topic-type {
                     color: $color-warm-red;
                     font-family: "Kanit-500";
-                    font-size: 18px;
+                    font-size: 16px;
                     margin-left: 5pt;
                     @include pointer();
 
@@ -108,7 +108,7 @@
             > .topic-date {
                 > a {
                     > .topic-type {
-                        font-size: 17px;
+                        // font-size: 17px;
                     }
                 }
             }
@@ -116,7 +116,7 @@
             > .topic-count {
                 > a {
                     > .topic-type {
-                        font-size: 17px;
+                        // font-size: 17px;
                     }
                 }
             }
@@ -148,7 +148,7 @@
 
                 > a {
                     > .topic-type {
-                        font-size: 16px;
+                        font-size: 15px;
                     }
                 }
             }
@@ -158,7 +158,7 @@
 
                 > a {
                     > .topic-type {
-                        font-size: 16px;
+                        font-size: 15px;
                     }
                 }
             }
@@ -181,7 +181,7 @@
 
                 > a {
                     > .topic-type {
-                        font-size: 15px;
+                        font-size: 14px;
                     }
                 }
             }
@@ -191,7 +191,7 @@
 
                 > a {
                     > .topic-type {
-                        font-size: 15px;
+                        font-size: 14px;
                     }
                 }
             }
@@ -236,7 +236,7 @@
 @media (max-width: $medium) {
     .status-bar-looking {
         > .wrapper-left {
-            margin-left: 10pt;
+            margin-left: 5pt;
 
             > .wrapper-topic {
                 > .topic-label {
@@ -255,7 +255,7 @@
             >.topic-date , > .topic-count{
                 >a{
                     >.topic-type{
-                        font-size: 14px;
+                        // font-size: 13px;
                     }
                 }
             }
@@ -268,7 +268,7 @@
         // padding: 5pt 0;
 
         > .wrapper-left {
-            margin-left: 0;
+            // margin-left: 0;
 
             > .wrapper-topic {
                 > .topic-label {

@@ -861,6 +861,7 @@
           // width: calc(100% - 10pt);
           margin: 0;
           width: 100%;
+          max-width: unset;
 
           > .profile-background {
             > .cover-img,
