@@ -1077,7 +1077,7 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
 
-            if (expiresAt.getTime() <= today.getTime()) {
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 return response.status(400).send(errorUserNameResponse);
             }
