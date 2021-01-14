@@ -385,8 +385,9 @@ export class SearchHistoryController {
 
                     const imageURL = page ? (page.imageURL ? page.imageURL : '') : '';
                     const pageUsername = page ? (page.pageUsername ? page.pageUsername : '') : '';
+                    const isOfficial = page ? (page.isOfficial ? page.isOfficial : false) : false;
 
-                    value = { value: resultId, label: history.keyword, imageURL, pageUsername, type: history.resultType, createdDate: history.createdDate };
+                    value = { value: resultId, label: history.keyword, imageURL, pageUsername, type: history.resultType, createdDate: history.createdDate, isOfficial };
                 }
 
                 if (resultType === SEARCH_TYPE.USER) {

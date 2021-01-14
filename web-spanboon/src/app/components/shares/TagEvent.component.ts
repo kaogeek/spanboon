@@ -41,6 +41,11 @@ export class TagEvent extends AbstractPage implements OnInit {
   protected clickEmergency: EventEmitter<any> = new EventEmitter();
   @Output()
   protected clickObjective: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public emergencyClick: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public objectiveClick: EventEmitter<any> = new EventEmitter();
+  
 
   constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
     super(null, authenManager, dialog, router);

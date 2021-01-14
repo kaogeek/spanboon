@@ -80,15 +80,15 @@ export class AllocateController {
         const itemsMap: any = {};
         const result: AllocateResponse[] = [];
         let needsList: any[] = [];
-        let mode;
-        let emergencyEvent;
-        let objective;
+        // let mode;
+        // let emergencyEvent;
+        // let objective;
 
-        if (params !== null && params !== undefined) {
-            mode = params.mode;
-            emergencyEvent = params.emergencyEvent;
-            objective = params.objective;
-        }
+        // if (params !== null && params !== undefined) {
+        //     mode = params.mode;
+        //     emergencyEvent = params.emergencyEvent;
+        //     objective = params.objective;
+        // }
 
         if (pageId !== null && pageId !== undefined && pageId !== '') {
             const pageObjId = new ObjectID(pageId);

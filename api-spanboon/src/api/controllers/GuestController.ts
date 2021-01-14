@@ -669,10 +669,10 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     } else if (token) {
                         const currentDateTime = moment().toDate();
-                        const userLoginEmail = userLogin.email;
-                        const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLoginEmail, providerName: PROVIDER.EMAIL } });
+                        // find user
+                        const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
                         const newToken = new AuthenticationId();
-                        newToken.user = userLoginEmail;
+                        newToken.user = userLogin.id;
                         newToken.lastAuthenTime = currentDateTime;
                         newToken.providerUserId = userObjId;
                         newToken.providerName = PROVIDER.EMAIL;
@@ -680,7 +680,7 @@ export class GuestController {
                         newToken.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
 
                         if (checkAuthen !== null && checkAuthen !== undefined) {
-                            const updateQuery = { user: userLoginEmail, providerName: PROVIDER.EMAIL };
+                            const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
                             const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
                             await this.authenticationIdService.update(updateQuery, newValue);
                         } else {
