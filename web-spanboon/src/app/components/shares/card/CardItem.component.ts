@@ -101,7 +101,7 @@ export class CardItem extends AbstractPage implements OnInit {
             f.isFrom = "FULFILL"
         }
         let itemArr: any
-        itemArr = { fulfill: item, isFrom: 'FULFILL', currentPostItem: [] }
+        itemArr = { fulfill: item, isFrom: 'FULFILL', isPage: true, currentPostItem: [] }
         let dialog = this.dialog.open(DialogFulfill, {
             width: 'auto',
             data: itemArr,

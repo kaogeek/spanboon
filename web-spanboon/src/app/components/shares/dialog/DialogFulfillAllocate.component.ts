@@ -62,7 +62,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
-        this.checkLoginAndRedirection();
+        // this.checkLoginAndRedirection();
 
     }
 
@@ -84,8 +84,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         // throw new Error('Method not implemented.');
         return;
     }
-
-
 
     private checkLoginAndRedirection(): void {
         if (!this.isLogin()) {
