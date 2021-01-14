@@ -1,6 +1,5 @@
 # Spanboon Project
-
-+ [Live Demo](https://www.spanboon.com)
++ <a href="https://www.spanboon.com" target="_blank">Live Demo</a>
 
 ### What's included
 + [Spanboon API](https://github.com/kaogeek/spanboon/tree/main/api-spanboon)
