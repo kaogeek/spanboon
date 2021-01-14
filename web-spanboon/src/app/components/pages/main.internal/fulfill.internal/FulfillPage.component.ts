@@ -117,7 +117,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public isChecKMobile: boolean;
     public Expand: boolean;
     public isTransition: boolean;
-    public isBackArrow: boolean; 
+    public isBackArrow: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -202,7 +202,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.fulfillCase = [];
         this.chatData = [];
         this.reqData = [];
-        this.Expand = true;  
+        this.Expand = true;
 
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
@@ -403,7 +403,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
 
                 this.fulfillCase = fulfillList;
-                console.log('this.fulfillCase ',this.fulfillCase)
+                console.log('this.fulfillCase ', this.fulfillCase)
 
                 setTimeout(() => {
                     this.showLoading = false;
@@ -416,7 +416,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
     }
 
-    public createFulfillPost(fulfillCaseId: string, asPage?: string) { 
+    public createFulfillPost(fulfillCaseId: string, asPage?: string) {
         const data = {
             fulfillCaseId,
             asPage,
@@ -427,7 +427,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isListPage: false,
             isEdit: false,
         };
-        console.log('data ',data)
+        console.log('data ', data)
 
         const dialogRef = this.dialog.open(DialogPost, {
             width: 'auto',
@@ -480,7 +480,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost === null || fulfill.fulfillmentPost === undefined || fulfill.fulfillmentPost === '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
                 console.log("s1 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
-                this.isCaseHasPost = false; 
+                this.isCaseHasPost = false;
             } else if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost !== null && fulfill.fulfillmentPost !== undefined && fulfill.fulfillmentPost !== '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
                 console.log("s2 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
@@ -591,7 +591,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             }
                         }
 
-                        this.chatData = chatData; 
+                        this.chatData = chatData;
                         setTimeout(() => {
                             this.showChatRoom = false;
                         }, 2000);
@@ -748,10 +748,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
             let dialog = this.dialog.open(DialogConfirmFulfill, { data });
 
             dialog.afterClosed().subscribe((res) => {
-                if(res){ 
+                if (res) {
                     this.statusColor = "#FFB800";
                 }
-             });
+            });
         }
     }
 
@@ -867,18 +867,21 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
+        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];
 
             if (data !== null && data !== undefined) {
                 let postId: string;
+                let pageId: string;
                 let fulfillCaseId: string;
                 let fulfillCaseStatus: string;
                 let canCreateNewCase = false;
 
                 for (const result of data) {
                     postId = result.postId;
+                    pageId = result.pageId
                     needsResult.push(result);
                 }
 
@@ -993,6 +996,14 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }).catch((error) => {
                         console.log('error >>> ', error.message);
                     });
+                } else {
+                    let fulfillData = {
+                        postId,
+                        pageId,
+                        requester: this.getCurrentUserId()
+                    };
+                    Object.assign(fulfillData, { items: data });
+                    this.createFulfillmentCase(fulfillData);
                 }
             } else {
                 this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
@@ -1006,6 +1017,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
+            console.log('createResult', createResult)
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
         }).catch((createError) => {
             console.log('createError >>> ', createError.message);
@@ -1166,7 +1178,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 fulfillLeft.style.display = 'none'
                 this.isActiveClass = true;
                 this.isFirst = true;
-            } 
+            }
         } else {
         }
     }
@@ -1180,7 +1192,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.isFirst = false;
             this.Expand = false;
             this.isBackArrow = false;
-        } 
+        }
     }
 
     public onBack() {
