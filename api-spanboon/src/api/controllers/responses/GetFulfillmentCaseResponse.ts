@@ -10,4 +10,5 @@ export class GetFulfillmentCaseResponse {
     public fulfillCase: any;
     public chatRoom: any;
     public chatMessages: any;
+    public unreadMessageCount: number;
 }
