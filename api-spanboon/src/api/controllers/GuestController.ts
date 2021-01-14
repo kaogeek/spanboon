@@ -1033,7 +1033,11 @@ export class GuestController {
         } if (isMode !== undefined && isMode === 'TW') {
             try {
                 // ! edit here when fix bug
-                // tw tokenParam is in pattern oauth_token=xxxx&oauth_token_secret=xxx&user_id=xxxx
+                // tw tokenParam is in pattern oauth_token=xxxx;oauth_token_secret=xxx;user_id=xxxx
+                const find = ';';
+                const re = new RegExp(find, 'g');
+                tokenParam = tokenParam.replace(re, '&');
+
                 const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
