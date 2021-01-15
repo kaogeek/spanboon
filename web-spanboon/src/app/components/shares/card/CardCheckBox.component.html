@@ -58,7 +58,7 @@
                         </div>
                     </ng-container>
                     <ng-template #elseisMutiple> 
-                        <div class="card-follow checkbox" *ngIf="item.value !== '' " (change)="checkBoxvalue($event, item , index)" >
+                        <div class="card-follow checkbox" *ngIf="item.value !== '' ">
                             <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()" [(ngModel)]="item.selected"
                                 (change)="checkBoxvalue($event, item , index)">
                                 <ng-container *ngIf="isObjective; else elseObjective">

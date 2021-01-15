@@ -264,7 +264,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           const splitText = substringPath.split('&');
           for (let text of splitText) {
             if (text.includes('hashtag')) {
-              this.matHashTag = text.split('=')[1].split(',');
+              this.matHashTag = text.split('=')[1].split(','); 
             } else if (text.includes('keyword')) {
               this.keyword = text.split('=')[1].split(',');
               console.log(' this.keyword ', this.keyword)
@@ -318,7 +318,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.endActionCount = Number(text.split('=')[1]);
             }
           }
-          this.searchTrendTag();
+          // this.searchTrendTag();
           // const splitText = substringPath.split('=');
           // console.log('splitText ',splitText)
           // let hashtag: string = '';
@@ -348,21 +348,21 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
-      this.heightWindowLeft();  
-      var scrollTop = scrollTop.fix;  
+      this.heightWindowLeft();
+      var scrollTop = scrollTop.fix;
       var y = this.feedbodysearch.nativeElement.offsetHeight;
-      var x =document.getElementsByClassName('header-top')[0].clientHeight;
-      let top =  x + y; 
-      if(this.prevOld > scrollTop){ 
-        if(window.innerWidth < 489){
-          this.feedbodysearch.nativeElement.style.top = 39 +'pt'; 
-        } else { 
-          this.feedbodysearch.nativeElement.style.top = 55 +'pt'; 
+      var x = document.getElementsByClassName('header-top')[0].clientHeight;
+      let top = x + y;
+      if (this.prevOld > scrollTop) {
+        if (window.innerWidth < 489) {
+          this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
+        } else {
+          this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
         }
       } else {
         this.feedbodysearch.nativeElement.style.top = - top + 'px';
       }
-      this.prevOld = scrollTop;  
+      this.prevOld = scrollTop;
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -390,7 +390,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.searchObjective();
     this.searchHashTag();
     this.searchPageCategory();
-    this.getCount(); 
+    this.getCount();
   }
 
   ngAfterViewInit(): void {
@@ -836,6 +836,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       keywordFilter.filter.offset = 0;
       this.isLoadingPost = true;
     } else {
+      console.log('this.resPost.length ',this.resPost.length)
       keywordFilter.filter.offset = this.resPost && this.resPost.length ? this.resPost.length : SEARCH_OFFSET
     }
     let originalPost: any[] = this.resPost;
@@ -890,7 +891,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         if (offset) {
           this.resPost = [];
         }
-      } 
+      }
     }).catch((error: any) => {
       console.log(error);
     });
@@ -1088,13 +1089,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public remove(tag) {
-    this.test = tag
+    // this.test = tag
     const index = this.matHashTag.indexOf(tag);
     if (index >= 0) {
       this.matHashTag.splice(index, 1);
       this.searchTrendTag();
     }
-    // return this.matHashTag;
   }
   public removeCard(card: any, index: number) {
     const indexCard = this.rowUser.indexOf(card);
@@ -1108,7 +1108,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     }
     this.searchTrendTag();
-    // return this.matHashTag;
   }
 
   onUserChangeStart(changeContext: ChangeContext, item: any): void {
@@ -1350,7 +1349,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       var postion = $(".slide-left");
       postion.addClass("active");
     }
-  } 
+  }
 }
 
 
