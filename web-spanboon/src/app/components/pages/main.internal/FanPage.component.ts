@@ -202,7 +202,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
-      console.log('type >>> ', type)
       let data = {
         type: type,
         offset: 0
@@ -1004,7 +1003,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       if (result !== undefined) {
         this.editImagePage(result)
       }
@@ -1232,7 +1230,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public onImageElementLoadOK(imageElement: any): void {
-    console.log('ok')
   }
 
   public onImageElementLoadError(imageElement: any): void {
@@ -1240,7 +1237,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public onImageLoaded(imageElement: any[]): void {
-    console.log('imageElement ', imageElement)
     setTimeout(() => {
       this.showLoading = false;
     }, 2000);

@@ -241,9 +241,7 @@ export class PostData {
       for (let c of this.commentpost) {
         comments.push(c.id)
       }
-      console.log('action', action)
       this.postCommentFacade.getPostCommentStatus(this.itemPost._id, comments, this.user.id).then((res: any) => {
-        console.log('res', res)
       }).catch((err: any) => {
       })
     }
@@ -273,8 +271,6 @@ export class PostData {
     dialog.afterClosed().subscribe((res) => {
       this.router.navigateByUrl('/search?' + url)
     });
-    console.log(' >>>>> ', text)
-    console.log(' index >>>>> ', index)
   }
 
   private getComment(limit?) {

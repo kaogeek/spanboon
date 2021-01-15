@@ -696,7 +696,6 @@ export class PostPage extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       if (result !== undefined) {
         this.editImagePage(result)
       }

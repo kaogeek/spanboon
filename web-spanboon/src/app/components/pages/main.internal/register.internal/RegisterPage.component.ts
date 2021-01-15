@@ -130,7 +130,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       const state = navigation.extras.state;
       if (this.mode !== "normal") {
         if (state) {
-          console.log('state ',state)
           this.redirection = state.redirection;
           this.accessToken = state.accessToken;
 
@@ -441,7 +440,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(res => {
-      console.log(res);
       if(res.password !== '' && res.password !== null && res.password !== undefined){ 
         this.passwordModeSocial = res.password;
         this.onClickregister(this.registerForm.value);
@@ -452,7 +450,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public getTwitterUser(){
     this.accessToken
     this.twitterService.accountVerify(this.accessToken.twitterOauthToken, this.accessToken.twitterOauthTokenSecret).then((account: any) => {
-      console.log('account ', account)
       this.data = account;
       this.data.displayName = account.name;
       this.images = account.profile_image_url_https;
@@ -491,7 +488,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       fields: 'name, first_name, last_name,birthday,picture,id,email,gender'
     }, (userInfo) => {
       this.data = userInfo;
-      console.log('userInfo ', userInfo)
       this.data.displayName = userInfo.name;
       this.data.firstName = userInfo.first_name;
       this.data.lastName = userInfo.last_name;
@@ -499,7 +495,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined;
       this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal';
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal&access_token='+this.accessToken.fbtoken;
-      console.log('this.images ', this.images)
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;
       }).catch(err => {

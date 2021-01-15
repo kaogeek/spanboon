@@ -509,7 +509,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                                     console.log('err ', err)
                                 });
                                 this.arrListItem.push(needs);
-                                console.log('this.arrListItem ', this.arrListItem)
                             }
                             index++;
                         }
@@ -751,7 +750,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                 }
                 if (this.arrListItem !== undefined) {
                     this.arrListItem = this.arrListItem.slice()
-                    console.log('slice ', this.arrListItem)
                 }
             }
             if (doingItem && doingItem.length === 0) {
@@ -2201,7 +2199,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result !== undefined) {
                 this.imageIcon = result;
-                console.log(this.imageIcon)
                 // this.imageIcon.push(result);
             }
             this.stopLoading();
@@ -2279,7 +2276,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
         dialogRef.afterClosed().subscribe(res => {
             if (res !== undefined) {
-                console.log(res);
                 this.imagesTimeline = res;
             }
         });
@@ -2375,8 +2371,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
     public removeNeeds(item) {
         let index = 0;
-        console.log('item ', item)
-        console.log('needs ', this.arrListItem)
         // for (let data of this.arrListItem) {
         //   if (data.standardItemId === item.standardItemId) {
         //     this.arrListItem.splice(index, 1);
@@ -2394,17 +2388,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             let tag = this.tagEvent && this.tagEvent.nativeElement.offsetHeight;
             let toolbar = this.toolBar && this.toolBar.nativeElement.offsetHeight;
             let x = top + topic + tag + toolbar + 1.4;
-            console.log('xxxxxx ', x)
             var chromeH = window.outerHeight - window.innerHeight;
             var needs = this.needsElement && this.needsElement.listNeeds && this.needsElement.listNeeds.nativeElement.offsetHeight;
             if (needs) {
                 x = x + needs;
-                console.log(' needs ', needs)
             }
 
             if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
                 // x = x + 30.5; 
-                console.log('x ', x)
                 x = x + chromeH;
 
             } else {
@@ -2445,7 +2436,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             this.isTablet = true;
             setTimeout(() => {
                 let x = this.getHeight();
-                console.log('get h ', x)
                 if (x && x !== undefined) {
                     this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
                 }

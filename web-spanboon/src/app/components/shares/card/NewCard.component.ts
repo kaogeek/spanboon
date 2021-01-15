@@ -116,7 +116,6 @@ export class NewCard {
       data: data,
     })
       .subscribe(res => {
-        console.log(res);
       });
   }
 

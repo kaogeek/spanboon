@@ -184,9 +184,7 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   private validBase64Image(base64Image: string, iconURL): boolean {
-    console.log(iconURL)
     const regex = /^data:image\/(?:gif|png|jpeg)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/;
-    console.log(regex.test(base64Image))
     return base64Image && regex.test(base64Image) ? true : false;
   }
 
@@ -300,7 +298,6 @@ export class DialogCreatePage extends AbstractPage {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        console.log(result)
         this.resProfilePage = result
       }
       this.stopLoading();

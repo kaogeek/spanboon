@@ -267,7 +267,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.matHashTag = text.split('=')[1].split(',');
             } else if (text.includes('keyword')) {
               this.keyword = text.split('=')[1].split(',');
-              console.log(' this.keyword ', this.keyword)
             } else if (text.includes('follow')) {
               this.follow = Boolean(JSON.parse(text.split('=')[1].toLowerCase()));
               if (this.follow) {
@@ -464,7 +463,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.startDateLong = new Date(event.value.begin).getTime();
     this.endDateLong = new Date(event.value.end).getTime();
     // this.searchTrendTag();
-    console.log(this.startDateLong);
   }
 
   public checkPath(): boolean {
@@ -1010,7 +1008,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
       url += "?" + queryParams;
     }
-    console.log('url', url)
 
     document.addEventListener('copy', (e: ClipboardEvent) => {
       e.clipboardData.setData('text/plain', (url));

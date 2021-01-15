@@ -483,7 +483,6 @@ export class HomePage extends AbstractPage implements OnInit {
   private getMainPageModel(userId?: string) {
     this.mainPageModelFacade.getMainPageModel(userId).then((res) => {
       this.dataMainPage = res;
-      console.log('dataMainPage', this.dataMainPage);
       let contentsIndex = 0;
       for (let image of this.dataMainPage.emergencyEvents.contents) {
         this.dataMainPage.emergencyEvents.contents[contentsIndex].isLoadingCover = true;
@@ -611,7 +610,6 @@ export class HomePage extends AbstractPage implements OnInit {
           }
         }
         if (mode.templateType === 'MULTIPLE') {
-          console.log('mode ', mode)
           for (let dataMultiple of mode.contents) {
             if (dataMultiple && dataMultiple.coverPageUrl && dataMultiple.coverPageUrl !== null && dataMultiple.coverPageUrl !== "" && dataMultiple.coverPageUrl !== undefined) {
               this.assetFacade.getPathFile(dataMultiple.coverPageUrl).then((res: any) => {
@@ -811,7 +809,6 @@ export class HomePage extends AbstractPage implements OnInit {
         } else if (myType === "cover") {
           this.dataMainPage.emergencyEvents.contents[index].isLoadingCover = false;
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-            console.log('sss', this.dataMainPage.emergencyEvents.contents[index])
             Object.assign(this.dataMainPage.emergencyEvents.contents[index], { coverBase64: res.data });
           } else {
             Object.assign(this.dataMainPage.emergencyEvents.contents[index], { coverBase64: '' });

@@ -121,7 +121,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
         this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem));
         setTimeout(() => {
-            console.log('this.data', this.data)
             this.onResize();
         }, 500);
     }
@@ -401,7 +400,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
                         // x = x + 70;
                     }
                 }
-                console.log('a ', x)
                 this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
             }
         }

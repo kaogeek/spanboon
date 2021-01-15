@@ -26,7 +26,6 @@ export class CardConcerned {
     public shareCount: number;
 
     constructor() {
-        console.log('dataStoryHashtag', this.dataStoryHashtag)
     }
 
     ngOnInit(): void {

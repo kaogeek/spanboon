@@ -134,7 +134,6 @@ export class AuthenManager {
       let httpOptions = { headers };
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
 
-        console.log('response ', response)
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -293,7 +292,6 @@ export class AuthenManager {
       let httpOptions = {
         headers: headers
       };
-      console.log(registEmail)
 
       this.http.post(url, registEmail, httpOptions).toPromise().then((response: any) => {
         resolve(response);
@@ -367,7 +365,6 @@ export class AuthenManager {
     sessionStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(TOKEN_MODE_KEY);
     sessionStorage.removeItem(TOKEN_MODE_KEY);
-    console.log('clearstorage')
   }
 
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {

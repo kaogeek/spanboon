@@ -269,7 +269,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
           }
         });
 
-        console.log('res >>> ', res.data);
 
         this.data.push(res.data);
       }
