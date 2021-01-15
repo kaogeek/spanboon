@@ -13,7 +13,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 declare var atwho: any;
 declare var $: any;
 
-const PAGE_NAME: string = 'register-page-test';
+const PAGE_NAME: string = 'createpage-tester';
 export interface Fruit {
   name: string;
 }
@@ -60,6 +60,9 @@ export class RegisterPageTestComponent extends AbstractPageImageLoader implement
 
   }
   ngOnInit(): void {
+    // if (this.isLogin()) {
+    //   this.showAlertLoginDialog("/createpage-tester");
+    // }
   }
 
   public ngOnDestroy(): void {
