@@ -1107,7 +1107,7 @@ export class GuestController {
         delete user.modifiedBy;
         delete user.modifiedByUsername;
 
-        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user } };
+        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);
     }
