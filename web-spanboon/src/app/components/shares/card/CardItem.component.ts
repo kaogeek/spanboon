@@ -49,6 +49,9 @@ export class CardItem extends AbstractPage implements OnInit {
     @Input()
     public isShowWidthButton: number;
 
+    @Input()
+    private isDevelop: boolean;
+
     @ViewChild(SwiperComponent, { static: false }) componentRef: SwiperComponent;
     @ViewChild(SwiperDirective, { static: false }) directiveRef: SwiperDirective;
 
@@ -97,6 +100,10 @@ export class CardItem extends AbstractPage implements OnInit {
         this.submit.emit();
     }
     public fulfillNeeds(item: any, index: number) {
+        if (this.isDevelop) {
+            this.showAlertDevelopDialog();
+            return
+        }
         for (let f of item) {
             f.isFrom = "FULFILL"
         }
