@@ -34,7 +34,7 @@ export class TwitterService {
     */
     // 1. request for token
     public requestToken(): Promise<any> {
-        const url: string = 'https://cors-anywhere.herokuapp.com/https://api.twitter.com/oauth/request_token';
+        const url: string = 'https://api.twitter.com/oauth/request_token';
         const twitterUrl: string = 'https://api.twitter.com/oauth/request_token';
         const body: any = {};
         const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
@@ -74,7 +74,7 @@ export class TwitterService {
 
     public getAcessToKen(accessTokenLink: string, httpOptions) {
         return new Promise((resolve, reject) => {
-            this.http.get('https://cors-anywhere.herokuapp.com/' + accessTokenLink, httpOptions).toPromise().then((result: any) => { 
+            this.http.get(accessTokenLink, httpOptions).toPromise().then((result: any) => { 
                 resolve(result);
             }).catch((error) => {
                 console.log(error);
@@ -88,7 +88,7 @@ export class TwitterService {
    */
     // 1. token for information
     public accountVerify(accessToKen: string, tokenSecret: string): Promise<any> {
-        const url: string = 'https://cors-anywhere.herokuapp.com/https://api.twitter.com/1.1/account/verify_credentials.json';
+        const url: string = 'https://api.twitter.com/1.1/account/verify_credentials.json';
         const twitterUrl: string = 'https://api.twitter.com/1.1/account/verify_credentials.json';
         const body: any = {};
         const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
