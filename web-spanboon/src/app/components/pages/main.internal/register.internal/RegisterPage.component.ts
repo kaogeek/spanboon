@@ -314,6 +314,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
             alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
           } else if (err.error.message === 'Register Failed') {
             alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
+          } else if (err.error.message === 'Facebook was registered.'){
+            alertMessages = 'คุณได้สมัครอีเมล์นี้แล้ว กรุณาลองล็อคอินอีกครั้ง';
           }
           let dialog = this.showAlertDialogWarming(alertMessages, "none");
           dialog.afterClosed().subscribe((res) => {

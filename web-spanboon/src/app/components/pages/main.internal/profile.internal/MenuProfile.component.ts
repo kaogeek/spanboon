@@ -85,7 +85,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public getProfileImage(data: any) {
-        let userCloneData = JSON.parse(JSON.stringify(data));
+        let userCloneData = JSON.parse(JSON.stringify(data)); 
         if (data !== undefined && data.imageURL && data.imageURL !== '') {
             this.assetFacade.getPathFile(data.imageURL).then((res: any) => {
                 if (res.status === 1) {
