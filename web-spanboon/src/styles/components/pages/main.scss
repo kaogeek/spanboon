@@ -500,7 +500,7 @@ span:focus {
         position: relative;
         animation: shake 0.1s linear;
         animation-iteration-count: 3;
-        color: red; 
+        color: red;
     }
 
     .input-shake {
@@ -534,19 +534,19 @@ span:focus {
         /* Firefox 19+ */
         opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
-        color: red; 
+        color: red;
     }
 
     .input-shake:-moz-placeholder {
         /* Firefox 18- */
         opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
         /*styles here*/
-        color: red; 
+        color: red;
     }
 
     .input-shake::placeholder {
         /*styles here*/
-        color: red; 
+        color: red;
     }
 }
 
@@ -941,5 +941,58 @@ $baby-blue: #f8faff;
     100% {
         background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.tool-developer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba($black, 0.7);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+
+    > span {
+        font-family: "Kanit-300";
+        font-size: 18px;
+        color: $white;
+        margin-right: 20px;
+    }
+
+    > button {
+        flex: 0 0 auto;
+        font-family: "Kanit-400";
+        font-size: 16px;
+        // padding: 2pt 15pt;
+        background: $white;
+        color: $black;
+    }
+}
+
+@media(max-width: $medium){
+    .tool-developer {
+        > span {
+            font-size: 16px;
+        }
+
+        > button {
+            font-size: 15px;
+        }
+    }
+}
+
+@media(max-width: $small){
+    .tool-developer {
+        > span {
+            font-size: 15px;
+        }
+        
+        > button {
+            font-size: 14px;
+        }
     }
 }

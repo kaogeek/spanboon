@@ -106,8 +106,7 @@
                     <ng-template #elseAsPage>
                         <span class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
-                </span>
-                {{isRead}}
+                </span> 
                 <span class="contact-text" matTooltipShowDelay="{{800}}" [ngStyle]="{'color': isRead ? 'grey':''}"
                     matTooltip="{{chatMessage}}">{{chatMessage}}</span>
                 <span class="pointer"

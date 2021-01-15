@@ -127,7 +127,7 @@ export class CardCheckBox {
         this.checkBoxMutiple(event, item, i)
     }
 
-    public checkBoxvalue(event, item, i) {
+    public checkBoxvalue(event, item, i) { 
         if (typeof (this.index) === 'number') {
             if (this.index !== i) {
                 Object.assign(this.data[this.index], { selected: false });
