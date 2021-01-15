@@ -598,7 +598,7 @@ export class MainPageController {
                 sortBy = data.sortBy;
             }
 
-            console.log('keyword >>>> ', keyword);
+            postStmt.push({ $match: { deleted: false } });
 
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};
