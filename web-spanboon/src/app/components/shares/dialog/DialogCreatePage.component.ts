@@ -30,13 +30,7 @@ export class DialogCreatePage extends AbstractPage {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
-  @ViewChild('urlPage', { static: false }) urlPage: ElementRef;
-  // @ViewChild('mobile', { static: false }) mobile: ElementRef;
-  // @ViewChild('email', { static: false }) email: ElementRef;
-  // @ViewChild('line', { static: false }) line: ElementRef;
-  // @ViewChild('twitter', { static: false }) twitter: ElementRef;
-  // @ViewChild('web', { static: false }) web: ElementRef;
-  // @ViewChild('facebook', { static: false }) facebook: ElementRef;
+  @ViewChild('urlPage', { static: false }) urlPage: ElementRef; 
 
   private pageCategoryFacade: PageCategoryFacade;
   private observManager: ObservableManager;
@@ -375,17 +369,23 @@ export class DialogCreatePage extends AbstractPage {
     }
     if(currentTab === 1){ 
       this.isNext = true;
+      $('.but-conf').removeClass('active');
     } 
 
     if (currentTab === 2) {
       this.isSkip = true; 
+      $('.but-conf').removeClass('active');
     } else {
       this.isCanCel = false;
     }
  
     if (currentTab === 3) {
-      this.isNext = true; 
-      $('.but-conf').addClass('active'); 
+      this.isNext = true;   
+    if (this.checkedCon === true) {
+      $('.but-conf').removeClass('active');
+    } else {
+      $('.but-conf').addClass('active');
+    }
     } else {
       if(currentTab === 4){
         this.isBack = false;
