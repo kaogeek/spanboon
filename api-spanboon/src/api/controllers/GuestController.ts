@@ -210,7 +210,7 @@ export class GuestController {
 
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.FACEBOOK });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.FACEBOOK });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Facebook was registered.', undefined);
                     return res.status(400).send(errorResponse);
@@ -348,7 +348,7 @@ export class GuestController {
 
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.GOOGLE });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.GOOGLE });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Google was registered.', undefined);
                     return res.status(400).send(errorResponse);
@@ -490,7 +490,7 @@ export class GuestController {
 
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.TWITTER });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Twitter was registered.', undefined);
                     return res.status(400).send(errorResponse);
