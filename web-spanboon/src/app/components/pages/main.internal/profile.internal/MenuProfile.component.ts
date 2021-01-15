@@ -66,7 +66,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public ngOnInit(): void {
         this.reloadUserImage();
     }
-    
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
     }
@@ -169,6 +169,14 @@ export class MenuProfile extends AbstractPage implements OnInit {
         this.isActive = true;
         this.router.navigateByUrl("/profile/" + this.getCurrentUserId());
 
+    }
+
+    public settingProfile() {
+        this.showAlertDevelopDialog();
+    }
+
+    public notificationProfile() {
+        this.showAlertDevelopDialog();
     }
 
     onMouseEnterItem(e) {

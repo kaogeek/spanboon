@@ -29,6 +29,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     private activatedRoute: ActivatedRoute;
 
     public listItem: any
+    public wizardConfig: any
 
     constructor(authenManager: AuthenManager, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
@@ -55,6 +56,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 "type": "MANUALGENERAL"
             }
         ]
+
+        this.wizardConfig = {
+            "quantity": 4
+        }
 
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
@@ -83,6 +88,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
+    }
+
+    public getQuantity(num): any {
+        let arrWizard: any[] = []
+
+        for (let index = 0; index < this.wizardConfig.quantity; index++) {
+            arrWizard.push(index);
+        }
+        return arrWizard
+
     }
 
     private checkLoginAndRedirection(): void {

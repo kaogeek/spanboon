@@ -91,7 +91,6 @@ export class FulfillmentController {
         private customItemService: CustomItemService
     ) { }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage
@@ -384,6 +383,7 @@ export class FulfillmentController {
                         fulfilCaseResponse.isRead = fulfill.chats[0].isRead;
                         fulfilCaseResponse.chatMessage = fulfill.chats[0].message;
                         fulfilCaseResponse.chatDate = fulfill.chats[0].createdDate;
+                        fulfilCaseResponse.chatRoom = fulfill.chats[0].room;
 
                         const chatroomId = fulfill.chats[0]['room'];
                         // count unread
@@ -402,6 +402,7 @@ export class FulfillmentController {
                         fulfilCaseResponse.isRead = undefined;
                         fulfilCaseResponse.chatMessage = undefined;
                         fulfilCaseResponse.chatDate = undefined;
+                        fulfilCaseResponse.chatRoom = undefined;
                     }
 
                     fulfilCaseResponse.unreadMessageCount = unreadCount;
@@ -483,7 +484,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/post/:postId Find Main Page Data API
      * @apiGroup MainPage
@@ -521,7 +521,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage
@@ -748,7 +747,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage
