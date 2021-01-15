@@ -13,7 +13,7 @@ import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost, DialogReboonTopic } from '../../shares/shares';
-import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider'; 
+import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
 import { SORT_BY } from '../../../TypePost';
@@ -51,6 +51,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
   // @ViewChild("autoComplete", { static: true }) autocomp: ElementRef; 
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
+  @ViewChild("feedbodysearch", { static: false }) feedbodysearch: ElementRef;
 
   @Output()
   public submitRemove: EventEmitter<any> = new EventEmitter();
@@ -147,7 +148,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public fontSize: any;
 
   mySubscription: any;
-  selectedDate: any; 
+  selectedDate: any;
 
   minDate = new Date(1800, 0, 1);
   maxDate = new Date();
@@ -252,7 +253,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
     this.maxDate.setFullYear(this.maxDate.getFullYear());
 
-    this.router.events.subscribe((event: any) => { 
+    this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         this.url = decodeURI(this.router.url);
         this.urlHashTag = undefined;
@@ -298,7 +299,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergencyUrl = text.split('=')[1].split(',');
               this.emergencyUrl = this.emergencyUrl.pop();
             } else if (text.includes('objective')) {
-              this.objectiveUrl = text.split('=')[1].split(','); 
+              this.objectiveUrl = text.split('=')[1].split(',');
               this.objectiveUrl = this.objectiveUrl.pop();
             } else if (text.includes('startcommentcount')) {
               this.startCommentCount = Number(text.split('=')[1]);
@@ -321,7 +322,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             } else if (text.includes('endactioncount')) {
               this.endActionCount = Number(text.split('=')[1]);
             }
-          } 
+          }
           this.searchTrendTag();
           // const splitText = substringPath.split('=');
           // console.log('splitText ',splitText)
@@ -351,8 +352,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
-      this.heightWindow(); 
-      this.heightWindowLeft(); 
+      this.heightWindow();
+      this.heightWindowLeft();
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -375,14 +376,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });*/
   }
 
-  public ngOnInit(): void { 
+  public ngOnInit(): void {
     this.openLoading();
     this.searchEmergency();
     this.searchObjective();
     this.searchHashTag();
     this.searchPageCategory();
     this.getCount();
-
   }
 
   ngAfterViewInit(): void {
@@ -578,16 +578,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public heightWindow() {
-    if(window.innerWidth > 1024){ 
+    if (window.innerWidth > 1024) {
       var resizeWin = window.innerHeight;
-      var recommended = this.recommendedRight.nativeElement.offsetHeight; 
+      var recommended = this.recommendedRight.nativeElement.offsetHeight;
       var maxrecommended = recommended + 100;
       var count = recommended - resizeWin;
       var maxcount = count + 60;
-  
+
       if (maxrecommended > resizeWin) {
         this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
-  
+
       } else {
         this.recommendedRight.nativeElement.style.top = '55pt';
       }
@@ -595,16 +595,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public heightWindowLeft() {
-    if(window.innerWidth > 1024){ 
+    if (window.innerWidth > 1024) {
       var resizeWin = window.innerHeight;
-      var recommended = this.recommendedLeft.nativeElement.offsetHeight; 
+      var recommended = this.recommendedLeft.nativeElement.offsetHeight;
       var maxrecommended = recommended + 100;
       var count = recommended - resizeWin;
-      var maxcount = count + 60; 
+      var maxcount = count + 60;
       if (maxrecommended > resizeWin) {
         if (this.recommendedLeft) {
           this.recommendedLeft.nativeElement.style.top = '-' + maxcount + 'px';
-        } 
+        }
       } else {
         if (this.recommendedLeft) {
           this.recommendedLeft.nativeElement.style.top = '55pt';
@@ -689,11 +689,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
         this.resObjective = cloneObject;
         if (this.objectiveUrl) {
-          console.log('this.resObjective ',this.resObjective)
+          console.log('this.resObjective ', this.resObjective)
           for (let data of this.resObjective) {
             if (this.objectiveUrl === data.hashTag) {
               this.objective = data.id;
-            } 
+            }
           }
           this.searchTrendTag();
         }
@@ -773,7 +773,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.type = link.keyword.toUpperCase();
     if (this.type === 'TIMELINE') {
       this.type = ''
-    } 
+    }
     this.isLoadingClickTab = true;
     setTimeout(() => {
       this.searchTrendTag(true);
@@ -810,7 +810,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       this.endActionCount = this.countEngagement
     }
-    
+
     const keywordFilter: any = {
       keyword: this.keyword,
       hashtag: this.matHashTag,
@@ -840,7 +840,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         limit: 5,
       }
     };
-    
+
     if (offset) {
       this.resPost = [];
       keywordFilter.filter.offset = 0;
@@ -848,14 +848,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       keywordFilter.filter.offset = this.resPost && this.resPost.length ? this.resPost.length : SEARCH_OFFSET
     }
-    let originalPost: any[] = this.resPost; 
+    let originalPost: any[] = this.resPost;
 
     this.mainPageFacade.searchMainContent(keywordFilter).then((resultData: any) => {
       setTimeout(() => {
         this.closeLoading();
         this.showLoading = false;
         this.isLoadingPost = false;
-      }, 1500); 
+      }, 1500);
       if (resultData && resultData.length > 0) {
         if (resultData && resultData.length !== 5) {
           this.isMaxLoadingPost = true;
@@ -1068,7 +1068,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((err: any) => {
       console.log(err)
-    }) 
+    })
   }
 
   public onChangeSlide(event, isAdvance: boolean) {
@@ -1079,8 +1079,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       if (event.checked) {
         this.isAdvanceRich = event.checked
-      } 
-    }  
+      }
+    }
   }
 
   onSelect(event) {
@@ -1312,7 +1312,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public deletePost(event: any, index: number): any { }
 
-  public focusout() {  
+  public focusout() {
     var postion = $(".slide-left");
     postion.removeClass("active");
     this.isBackdrop = false;
@@ -1320,10 +1320,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       'overflow-y': "auto"
     });
     const scroll = this.recommendedLeft.nativeElement.scrollTop;
-    if(scroll > 0){
+    if (scroll > 0) {
       this.recommendedLeft.nativeElement.scrollTop = 0
     }
-    super.clicktotop(); 
+    super.clicktotop();
   }
 
   public getImageSelector(): string[] {
@@ -1345,8 +1345,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }, 3000);
   }
 
-  public onResize(){
-    if(window.innerWidth <= 1024){
+  public onResize() {
+    if (window.innerWidth <= 1024) {
       var postion = $(".slide-left");
       postion.addClass("active");
     }

@@ -72,6 +72,8 @@ export class NewCard {
   public showLoading: boolean = false;
   @Input()
   public isOfficial: boolean = false;
+  @Input()
+  public butNeeds: boolean = false;
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
