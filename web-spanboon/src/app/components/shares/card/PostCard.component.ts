@@ -153,7 +153,6 @@ export class PostCard {
       data: data,
     })
       .subscribe(res => {
-      console.log(res);
     });
   }
 }

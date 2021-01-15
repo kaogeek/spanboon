@@ -423,7 +423,6 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public clickDelete(access?: any) {
-        console.log('access ', access)
         if (access === undefined) {
             return;
         }

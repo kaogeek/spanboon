@@ -67,7 +67,6 @@ export class IconTagCard {
         this.linkPage = (this.mainPageLink + this.data.owner.id)
       }
     }
-    console.log('this.data ',this.data)
     if (this.data && this.data.title !== undefined && this.data.title !== null) {
       this.linkHashTag = (this.mainHashTagLink + this.data.title) 
       // this.linkHashTag = this.mainHashTagLink
@@ -81,7 +80,6 @@ export class IconTagCard {
       data: data,
     })
       .subscribe(res => {
-      console.log(res);
     });
   }
 }

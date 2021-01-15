@@ -55,7 +55,7 @@ export class AuthService {
                     if (UserId !== undefined) {
                         UserId += ';FB';
                     }
-                } if (mode === 'TW') {
+                } else if (mode === 'TW') {
                     const twToken = token;
                     const keyMap = ObjectUtil.parseQueryParamToMap(twToken);
 

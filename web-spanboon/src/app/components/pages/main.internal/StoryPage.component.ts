@@ -259,7 +259,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.count = false;
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then((res: any) => {
-      console.log('res', res)
       this.postStoryData = res[0]
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data

@@ -216,7 +216,6 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                             }
                             setTimeout(() => {
                                 this.resListPage = res.data
-                                console.log('this.resListPage >>>>> ', this.resListPage)
                             }, 1000);
                         }
 

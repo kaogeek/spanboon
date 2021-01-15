@@ -52,7 +52,6 @@ export class DialogImage {
 
     const inputimage = document.getElementById("inputimage");
     if (inputimage != null) { 
-      console.log(this.imageCropData)
       this.dialogRef.close(this.imageCropData);
       
     }  
