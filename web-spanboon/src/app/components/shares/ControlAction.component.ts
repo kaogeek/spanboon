@@ -123,7 +123,7 @@ export class ControlAction {
   public postComment() {
     this.submit.emit({ mod: 'COMMENT' });
   }
-  public postReboon(type: string) {
+  public postReboon(type?: string) {
     this.submit.emit({ mod: 'REBOON', type: type });
   }
   public postShare() {
