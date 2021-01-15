@@ -742,7 +742,7 @@ export class GuestController {
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                 const facebookUserId = fbUser.authId.providerUserId;
-                const query = { providerUserId: facebookUserId };
+                const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
@@ -784,7 +784,7 @@ export class GuestController {
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                 const googleUserId = googleUser.userId;
-                const query = { providerUserId: googleUserId };
+                const query = { providerUserId: googleUserId, providerName: PROVIDER.GOOGLE };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
