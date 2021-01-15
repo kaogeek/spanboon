@@ -55,10 +55,14 @@ export abstract class AbstractFacade {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.authMgr.getUserToken(),
       'Client-Id': uuid,
-    });
-
+    }); 
+    
     if (this.authMgr.isFacebookMode()) {
       headers = headers.set('mode', 'FB');
+    } else if (this.authMgr.isTwitterMode()){
+      headers = headers.set('mode', 'TW');
+    } else if (this.authMgr.isGoogleMode()){
+      headers = headers.set('mode', 'GG');
     }
 
     return headers;

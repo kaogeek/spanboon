@@ -118,6 +118,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public Expand: boolean;
     public isTransition: boolean;
     public isBackArrow: boolean;
+    public isRead: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -153,7 +154,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
-    public chatDate: any;
+    public chatDate: any; 
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
@@ -203,6 +204,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatData = [];
         this.reqData = [];
         this.Expand = true;
+        this.accessPage = [];
 
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
@@ -273,11 +275,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
         if (data !== null && data !== undefined) {
             this.accessValue = data;
-
+            console.log(' this.accessValue ', this.accessValue)
             if (type === 'page') {
                 this.listAsPage = true;
                 this.asPage = data.id;
-            } else if (type === 'user') {
+            } else if(type === 'user'){
                 this.listAsPage = false;
                 this.asPage = undefined;
             }
@@ -287,37 +289,18 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public searchAccessPage() {
-        this.showLoading = true;
+        this.accessValue = this.getCurrentUser(); 
+        this.showLoading = true; 
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
-                for (let data of res) {
-                    if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
-                        this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
-                            if (image.status === 1) {
-                                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                    data.user.imageURL = null;
-                                } else {
-                                    data.user.imageURL = image.data;
-                                }
-                            }
-                        }).catch((err: any) => {
-                            if (err.error.message === "Unable got Asset") {
-                                data.user.imageURL = '';
-                            }
-                        });
-                    }
-
-                    setTimeout(() => {
-                        this.accessValue = data.user;
-                    }, 1000);
-
+                for (let data of res) { 
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
                             if (image.status === 1) {
                                 if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                    data.page.imageURL = null;
+                                    data.page.imageBase64 = null;
                                 } else {
-                                    data.page.imageURL = image.data;
+                                    data.page.imageBase64 = image.data;
                                 }
                                 setTimeout(() => {
                                     this.accessPage = res;
@@ -325,16 +308,38 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
-                                data.page.imageURL = '';
+                                data.page.imageBase64 = '';
                             }
                         });
                     }
                 }
 
-                setTimeout(() => {
-                    this.accessPage = res;
+                setTimeout(() => {  
+                    this.accessPage = res; 
+                    let data = {
+                        user: {  
+                            isUser : true,
+                            displayName: this.accessValue.displayName,
+                            id: this.accessValue.id,
+                            imageBase64: this.accessValue.imageBase64,
+                            imageURL: this.accessValue.imageURL,
+                        }
+                    }
+                    this.accessPage.push(data);
+                    this.accessPage.reverse();
                     this.showLoading = false;
+                    console.log('this.accessPage ', this.accessPage)
                 }, 1000);
+            } else {
+                let data = {
+                    user: { 
+                        displayName: this.accessValue.displayName,
+                        id: this.accessValue.id,
+                        imageBase64: this.accessValue.imageBase64,
+                        imageURL: this.accessValue.imageURL,
+                    }
+                }
+                this.accessPage.push(data);
             }
         }).catch((err: any) => {
             console.log(err);
@@ -530,6 +535,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.name = fulfill.name;
             this.postDate = fulfill.postDate;
             this.chatDate = fulfill.chatDate;
+            fulfill.isRead = true;
+            fulfill.unreadMessageCount = 0;
+            console.log('fulfill ', fulfill)
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
                 if (res !== null && res !== undefined) {
@@ -549,7 +557,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     chatIds.push(data.chatMessage.id);
                                     this.chatFacade.markReadChatMessage(chatIds).then((readResult) => {
                                         if (readResult !== null && readResult !== undefined) {
-                                            data.isRead = true;
+                                            data.chatMessage.isRead = true;
                                         }
                                     }).catch((error) => {
                                         console.log('error >>>> ', error);
