@@ -16,7 +16,7 @@
     background: $white;
 
     > .fulfill-allocate-box {
-        width: 800px;
+        width: 1000px;
         height: 600px;
         border-radius: 4px;
         box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
@@ -25,7 +25,7 @@
         > .box-hrader {
             font-size: 26px;
             flex-grow: 2;
-            border-bottom: 0px solid rgb(152 152 152 / 12%);
+            border-bottom: 0.1px solid rgb(14 14 14 / 15%);
             display: flex;
             > .left {
                 width: calc(100% - 20px);
@@ -46,12 +46,80 @@
             }
         }
         > .box-body {
+            height: calc(100% - 99px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            > .box-list {
+                width: 700px;
+                height: 400px;
+                > .box-list-hrader {
+                    padding: 10px 20px;
+                    font-size: 22px;
+                }
+                > .box-list-body {
+                    height: calc(100% - 73px);
+                    padding: 10px 20px;
+                    overflow: overlay;
+                    > .list-item {
+                        transition: 0.2s;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        margin: 5px 0px;
+                        border: 2px solid rgb(14 14 14 / 15%);
+                        display: flex;
+                        cursor: pointer;
+                        background-color: $bgcolor-list-item-fulfill-allocate;
+                        &:hover {
+                            transition: 0.2s;
+                            border: 2px solid $color-warm-red;
+                            .pb_arrow_forward {
+                                transition: 0.2s;
+                                color: $color-warm-red;
+                            }
+                        }
+
+                        > .list-item-icon {
+                            padding: 15px;
+                            display: flex;
+                            align-items: center;
+                        }
+                        > .list-item-detail {
+                            display: flex;
+                            width: calc(100% - 60px);
+                            flex-direction: column;
+                            align-items: baseline;
+                            justify-content: center;
+                            > .text-label {
+                                font-size: 20px;
+                            }
+                            > .text-detail {
+                                font-size: 18px;
+                                color: rgba(0, 0, 0, 0.5);
+                                font-family: "Kanit-300";
+                            }
+                        }
+                        > .list-item-forward {
+                            padding: 15px;
+                            display: flex;
+                            align-items: center;
+                        }
+                    }
+                }
+            }
         }
         > .box-footer {
             width: 100%;
-            height: 20px;
+            height: 40px;
             border-top: 1px solid rgb(152 152 152 / 12%);
         }
+    }
+
+    // public class in FulfillAllocatePage
+
+    .pb_arrow_forward {
+        transition: 0.2s;
+        color: $bgcolor-list-item-fulfill-allocate;
     }
 }
 
@@ -62,6 +130,12 @@
 }
 
 @media (max-width: $large) {
+}
+
+@media (max-width: $lmedium) {
+}
+
+@media (max-width: $medium) {
     .fulfill-allocate {
         height: calc(100vh - 55pt - 40pt);
         > .fulfill-allocate-box {
@@ -72,12 +146,18 @@
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader {
         font-size: 20px;
     }
-}
-
-@media (max-width: $lmedium) {
-}
-
-@media (max-width: $medium) {
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list > .box-list-hrader {
+        display: none;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list {
+        height: 100%;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list > .box-list-body {
+        height: calc(100% - 20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 }
 
 @media (max-width: $small) {
@@ -86,5 +166,40 @@
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .right {
         width: calc(20% - 40px);
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list
+        > .box-list-body
+        > .list-item
+        > .list-item-forward {
+        display: none;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .left > span {
+        font-size: 20px;
+        @include limit-text-length(1);
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list
+        > .box-list-body
+        > .list-item
+        > .list-item-detail
+        > .text-label {
+        font-size: 18px;
+        @include limit-text-length(1);
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list
+        > .box-list-body
+        > .list-item
+        > .list-item-detail
+        > .text-detail {
+        font-size: 14px;
+        @include limit-text-length(2);
     }
 }

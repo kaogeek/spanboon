@@ -298,7 +298,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergencyUrl = text.split('=')[1].split(',');
               this.emergencyUrl = this.emergencyUrl.pop();
             } else if (text.includes('objective')) {
-              this.objectiveUrl = text.split('=')[1].split(',');
+              this.objectiveUrl = text.split('=')[1].split(','); 
               this.objectiveUrl = this.objectiveUrl.pop();
             } else if (text.includes('startcommentcount')) {
               this.startCommentCount = Number(text.split('=')[1]);
@@ -689,10 +689,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
         this.resObjective = cloneObject;
         if (this.objectiveUrl) {
+          console.log('this.resObjective ',this.resObjective)
           for (let data of this.resObjective) {
             if (this.objectiveUrl === data.hashTag) {
               this.objective = data.id;
-            }
+            } 
           }
           this.searchTrendTag();
         }
@@ -816,7 +817,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       onlyFollowed: this.follow ? this.follow : undefined,
       type: this.type ? this.type : '',
       createBy: this.userId,
-      objective: this.objective,
+      objective: this.objective ? this.objective : '',
       emergencyEvent: this.emergency,
       startDate: this.startDate && this.startDate.begin,
       endDate: this.startDate && this.startDate.end,

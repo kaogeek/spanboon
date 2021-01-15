@@ -64,6 +64,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isName: boolean;
     public isLoading: boolean;
     public isActiveCss: boolean;
+    public isPage: boolean;
     public query_conversation: any;
     public isFirst: any;
     public msgError: any;
@@ -81,10 +82,15 @@ export class FulfillItem extends AbstractPage implements OnInit {
         this.isUnit = false;
         this.isUnitSelect = false;
         this.isName = false;
-        this.isActiveCss = false; 
+        this.isActiveCss = false;
         this.resultDialog = {};
 
         this.tabClick = this.dataList[0].id;
+
+        // setTimeout(() => {
+
+        // }, 1000);
+
     }
 
     public ngOnInit(): void {
@@ -98,22 +104,26 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
+                this.isPage = this.data.isPage;
 
                 if (this.data.isFrom === 'POST') {
                     this.selectedDataItem(this.data.currentPostItem, this.data.isFrom);
                 } else if (this.data.isFrom === 'FULFILL') {
-                    for (const currentFulfillItem of this.data.currentFulfillItem) {
-                        this.disableCurrentItem(currentFulfillItem, this.data.isFrom);
+                    if (this.data.currentFulfillItem !== undefined && this.data.currentFulfillItem !== null) {
+                        for (const currentFulfillItem of this.data.currentFulfillItem) {
+                            this.disableCurrentItem(currentFulfillItem, this.data.isFrom);
+                        }
                     }
                 }
-            } 
+            }
             this.resFulfillOriginal = JSON.stringify(this.resFulfill);
         }
-        
-        this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem)); 
+
+        this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem));
         setTimeout(() => {
-            this.onResize(); 
-        }, 0);
+            console.log('this.data', this.data)
+            this.onResize();
+        }, 500);
     }
 
     public ngOnDestroy(): void {
@@ -197,6 +207,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             pageId: fulfillItem.pageId,
                             postId: fulfillItem.post,
                             name: fulfillItem.name,
+                            standardItemId: fulfillItem.standardItemId,
+                            customItemId: fulfillItem.customItemId,
                             quantity: pendingQty,
                             unit: fulfillItem.unit,
                             category: fulfillItem.category,
@@ -213,6 +225,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                     pageId: item.pageId,
                                     postId: item.post,
                                     name: item.name,
+                                    standardItemId: item.standardItemId,
+                                    customItemId: item.customItemId,
                                     quantity: pendingQty,
                                     unit: item.unit,
                                     category: item.category,
@@ -229,6 +243,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                 postId: fulfillItem.post,
                                 name: fulfillItem.name,
                                 quantity: pendingQty,
+                                standardItemId: fulfillItem.standardItemId,
+                                customItemId: fulfillItem.customItemId,
                                 unit: fulfillItem.unit,
                                 category: fulfillItem.category,
                                 imageURL: fulfillItem.imageURL,
@@ -275,7 +291,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
             //     tabcontent[1].style.display = "none";
             //     document.getElementById("defaultOpen2").click();
             // }
-        } 
+        }
         this.onResize();
     }
 
@@ -346,32 +362,32 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public onResize() {
-        if (window.innerWidth <= 1024) {   
+        if (window.innerWidth <= 1024) {
             //centerleft 
-            if (this.tabClick === 'defaultOpen1') { 
-                $('#defaultOpen1').addClass('active'); 
-            } else { 
+            if (this.tabClick === 'defaultOpen1') {
+                $('#defaultOpen1').addClass('active');
+            } else {
                 // centerright 
-                this.isActiveCss = false;  
+                this.isActiveCss = false;
                 var data = document.getElementById('centerleft');
                 data.style.display = 'none';
             }
         } else {
             if (window.innerWidth > 1024) {
                 var data = document.getElementById('centerleft');
-                data.style.display = 'flex'; 
-                this.isActiveCss = false; 
+                data.style.display = 'flex';
+                this.isActiveCss = false;
             }
         }
 
-        if (window.innerWidth <= 768) { 
+        if (window.innerWidth <= 768) {
             if (this.tabSelect && this.top && this.bottomConfirm) {
                 let tab = this.tabSelect.nativeElement.offsetHeight;
                 let top = this.top.nativeElement.offsetHeight;
                 let bottom = this.bottomConfirm.nativeElement.offsetHeight;
                 let body = this.bodyList.nativeElement.offsetHeight;
-                let x = top + tab + bottom; 
-                var chromeH = window.outerHeight - window.innerHeight; 
+                let x = top + tab + bottom;
+                var chromeH = window.outerHeight - window.innerHeight;
                 // console.log('elementHeight ', elementHeight)
                 if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
                     // x = x + window.outerHeight;
@@ -385,13 +401,13 @@ export class FulfillItem extends AbstractPage implements OnInit {
                         // x = x + 70;
                     }
                 }
-                console.log('a ',x)
+                console.log('a ', x)
                 this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
-            } 
+            }
         }
     }
 
-    public clickData(event, text) {  
+    public clickData(event, text) {
         if (event.isTrusted) {
             if (text === 'defaultOpen1') {
                 $('#defaultOpen2').removeClass('active');
@@ -400,7 +416,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 data.style.display = 'flex';
                 this.isListItem = false;
                 this.tabClick = text;
-                
+
                 // document.getElementById("defaultOpen1").click();
             } else {
                 $('#defaultOpen1').removeClass('active');
@@ -411,7 +427,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 this.tabClick = text;
                 // document.getElementById("defaultOpen2").click();
             }
-        } 
+        }
     }
 
 
@@ -486,14 +502,30 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
                         needsResult.push(needsData);
                     } else if (isFrom === 'FULFILL') {
-                        needsData = {
-                            id: item.id,
-                            postId: item.postId,
-                            name: item.name,
-                            quantity: item.quantity,
-                            unit: item.unit,
-                            imageURL: item.imageURL
-                        };
+                        if (this.isPage) {
+                            needsData = {
+                                id: item.id,
+                                postId: null,
+                                pageId: item.pageId,
+                                name: item.name,
+                                standardItemId: item.standardItemId,
+                                customItemId: item.customItemId,
+                                quantity: item.quantity,
+                                unit: item.unit,
+                                imageURL: item.imageURL
+                            };
+                        } else {
+                            needsData = {
+                                id: item.id,
+                                postId: item.postId,
+                                name: item.name,
+                                standardItemId: item.standardItemId,
+                                customItemId: item.customItemId,
+                                quantity: item.quantity,
+                                unit: item.unit,
+                                imageURL: item.imageURL
+                            };
+                        }
 
                         needsResult.push(needsData);
                     }
@@ -505,6 +537,9 @@ export class FulfillItem extends AbstractPage implements OnInit {
                     this.dialogRef.close();
                     this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
                 } else if (isFrom === 'FULFILL') {
+                    if (this.isPage) {
+                        this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
+                    }
                     this.dialogRef.close(needsResult);
                 }
             }

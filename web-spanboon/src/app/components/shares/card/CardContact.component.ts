@@ -23,6 +23,8 @@ export class CardContact {
     @Input()
     public fulfillRequestCount: number = 0;
     @Input()
+    public unreadMessageCount: number = 0;
+    @Input()
     public isRead: boolean = false;
     @Input()
     public asPage: string = 'asPage';

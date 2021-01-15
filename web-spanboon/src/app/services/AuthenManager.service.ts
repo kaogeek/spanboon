@@ -28,6 +28,8 @@ export class AuthenManager {
   protected token: string;
   protected user: any;
   protected facebookMode: boolean;
+  protected twitterMode: boolean;
+  protected googleMode: boolean;
   protected observManager: ObservableManager;
 
   constructor(http: HttpClient, observManager: ObservableManager) {
@@ -35,6 +37,8 @@ export class AuthenManager {
     this.observManager = observManager;
     this.baseURL = environment.apiBaseURL;
     this.facebookMode = false;
+    this.twitterMode = false;
+    this.googleMode = false;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
   }
@@ -100,12 +104,12 @@ export class AuthenManager {
 
         this.token = result.token;
         this.user = result.user;
-        this.facebookMode = true;
+        this.googleMode = true;
 
         localStorage.setItem(TOKEN_KEY, result.token);
-        localStorage.setItem(TOKEN_MODE_KEY, 'GOOGLE');
+        localStorage.setItem(TOKEN_MODE_KEY, 'GG');
         sessionStorage.setItem(TOKEN_KEY, result.token);
-        sessionStorage.setItem(TOKEN_MODE_KEY, 'GOOGLE');
+        sessionStorage.setItem(TOKEN_MODE_KEY, 'GG');
 
         resolve(result);
       }).catch((error: any) => {
@@ -114,7 +118,7 @@ export class AuthenManager {
     });
   }
 
-  public loginWithTwitter(data: any, mode?: string): Promise<any> { 
+  public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {};
@@ -127,8 +131,10 @@ export class AuthenManager {
         headers = headers.set('mode', mode);
       }
 
-      let httpOptions = { headers }; 
-      this.http.post(url, body, httpOptions).toPromise().then((response: any) => { 
+      let httpOptions = { headers };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+
+        console.log('response ', response)
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -136,13 +142,12 @@ export class AuthenManager {
 
         this.token = result.token;
         this.user = result.user;
-        this.facebookMode = true;
+        this.twitterMode = true;
 
         localStorage.setItem(TOKEN_KEY, result.token);
         localStorage.setItem(TOKEN_MODE_KEY, 'TW');
         sessionStorage.setItem(TOKEN_KEY, result.token);
         sessionStorage.setItem(TOKEN_MODE_KEY, 'TW');
-
         resolve(result);
       }).catch((error: any) => {
         reject(error);
@@ -206,6 +211,9 @@ export class AuthenManager {
         throw 'Google Token is required.';
       }
     } else if (mode === 'twitter') {
+      if (registSocial.twitterTokenSecret === undefined || registSocial.twitterTokenSecret === '') {
+        throw 'Twitter Token is required.';
+      }
     }
 
     let headers = new HttpHeaders({
@@ -234,13 +242,23 @@ export class AuthenManager {
 
           this.token = result.token;
           this.user = result.user;
-          this.facebookMode = true;
+          // this.facebookMode = true;
+          let social: string;
+          if (mode === 'FACEBOOK') {
+            social = 'FB';
+            this.facebookMode = true;
+          } else if (mode === 'TWITTER') {
+            social = 'TW';
+            this.twitterMode = true;
+          } else if (mode === 'GOOGLE') {
+            social = 'GG';
+          }
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);
-          localStorage.setItem(TOKEN_MODE_KEY, 'FB');
+          localStorage.setItem(TOKEN_MODE_KEY, social);
           sessionStorage.setItem(TOKEN_KEY, result.token);
-          sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
+          sessionStorage.setItem(TOKEN_MODE_KEY, social);
 
           this.observManager.publish(REGISTERED_SUBJECT, result);
 
@@ -284,6 +302,7 @@ export class AuthenManager {
       });
     });
   }
+
   public getDefaultOptions(): any {
     let header = this.getDefaultHeader();
 
@@ -293,6 +312,7 @@ export class AuthenManager {
 
     return httpOptions;
   }
+
   public getDefaultHeader(): HttpHeaders {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -324,6 +344,8 @@ export class AuthenManager {
         this.token = undefined;
         this.user = undefined;
         this.facebookMode = false;
+        this.twitterMode = false;
+        this.googleMode = false;
         this.clearStorage();
 
       }).catch((error: any) => {
@@ -355,13 +377,25 @@ export class AuthenManager {
         isUpdateUser = options.updateUser;
       }
 
+      if (mode === "TW") {
+        token = token.replace(/&/gi, ';');
+      }
+
       let url: string = this.baseURL + '/check_status?token=' + token;
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
       let fbMode = false;
+      let twMode = false;
+      let ggMode = false;
       if (mode && mode === 'FB') {
         fbMode = true;
+        headers = headers.set('mode', mode);
+      } else if (mode && mode === 'TW') {
+        twMode = true;
+        headers = headers.set('mode', mode);
+      } else if (mode && mode === 'GG') {
+        ggMode = true;
         headers = headers.set('mode', mode);
       }
 
@@ -380,6 +414,8 @@ export class AuthenManager {
           this.token = result.token;
           this.user = result.user;
           this.facebookMode = fbMode;
+          this.twitterMode = twMode;
+          this.facebookMode = ggMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);
@@ -387,6 +423,12 @@ export class AuthenManager {
           if (fbMode) {
             localStorage.setItem(TOKEN_MODE_KEY, 'FB');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
+          } else if (twMode) {
+            localStorage.setItem(TOKEN_MODE_KEY, 'TW');
+            sessionStorage.setItem(TOKEN_MODE_KEY, 'TW');
+          } else if (ggMode){
+            localStorage.setItem(TOKEN_MODE_KEY, 'GG');
+            sessionStorage.setItem(TOKEN_MODE_KEY, 'GG');
           } else {
             localStorage.removeItem(TOKEN_MODE_KEY);
             sessionStorage.removeItem(TOKEN_MODE_KEY);
@@ -439,5 +481,11 @@ export class AuthenManager {
 
   public isFacebookMode(): boolean {
     return this.facebookMode;
+  }
+  public isTwitterMode(): boolean {
+    return this.twitterMode;
+  }
+  public isGoogleMode(): boolean {
+    return this.googleMode;
   }
 }

@@ -727,10 +727,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         for (let n of res.data.needs) {
           if (n.standardItemId) {
             this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
-              this.assetFacade.getPathFile(needs.imageURL).then((imgURL) => {
-                n.imageURL = imgURL.data
-              }).catch((err: any) => {
-              })
+              n.imageURL = needs.imageURL
             }).catch((err: any) => {
             })
           }
@@ -843,11 +840,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public postLike(data: any, index: number) {
+  public postLike(data: any, index: number) { 
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/page/" + this.resDataPage.id);
     } else {
-      this.postFacade.like(data.postData._id).then((res: any) => {
+      this.postFacade.like(data.postData._id , data.userAsPage.id).then((res: any) => {
         if (res.isLike) {
           if (data.postData._id === res.posts.id) {
             this.resPost.posts[index].likeCount = res.likeCount;
@@ -1196,11 +1193,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public getAaaPost(action: any, index: number) {
-    let user = this.authenManager.getCurrentUser()
+    let user = this.authenManager.getCurrentUser() 
     if (action.userPage.id === user.id) {
       action.userPage.id = null
-    }
-    this.postFacade.getAaaPost(action.postData, action.userPage).then((pages: any) => {
+    } 
+    this.postFacade.getAaaPost(action.postData, action.userPage.id).then((pages: any) => {
       this.resPost.posts[index].isComment = pages.isComment
       this.resPost.posts[index].isLike = pages.isLike
       this.resPost.posts[index].isRepost = pages.isRepost
@@ -1226,7 +1223,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           p.img64 = res.data
         }).catch((err: any) => {
         });
-      }
+      } 
     }
   }
 
