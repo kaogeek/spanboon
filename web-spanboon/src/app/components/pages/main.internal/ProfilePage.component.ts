@@ -491,7 +491,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             });
           } else if (typeof post.rootReferencePost === 'object' && (post && post.rootReferencePost !== null && Object.keys(post.rootReferencePost).length > 0)) {
             post.referencePostObject = post.rootReferencePost
-          } 
+          }
         }
 
         setTimeout(() => {
@@ -1084,6 +1084,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.Tab = false;
     }
   }
+
 }
 
 

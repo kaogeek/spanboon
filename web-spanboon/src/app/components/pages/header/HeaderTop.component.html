@@ -25,7 +25,7 @@
         </svg>
         <span class="name-spanboon">สะพานบุญ</span>
     </a>
-    <div class="middle" [ngStyle]="{'height': headerTop.offsetHeight + 'px'}"> 
+    <div class="middle" [ngStyle]="{'height': headerTop.offsetHeight + 'px'}">
         <div class="wrapper-home" id="menuCenter" #menuCenter>
             <a class="icon" href="[routerLink]" [routerLink]="'/home'" [routerLinkActive]="['active-link']">
                 <svg class="icon-home" height="512pt" viewBox="0 0 512 512" width="512pt"
@@ -37,10 +37,10 @@
                     หน้าหลัก
                 </div>
             </a>
-            <a class="icon" *ngIf="isLogin()" href="[routerLink]" [routerLink]="checkUniqueId()" 
+            <a class="icon" *ngIf="isLogin()" href="[routerLink]" [routerLink]="checkUniqueId()"
                 [routerLinkActive]="['active-link']" #profile>
-                <svg class="icon-home" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257" height="19.257"
-                    viewBox="0 0 19.257 19.257">
+                <svg class="icon-home" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
+                    height="19.257" viewBox="0 0 19.257 19.257">
                     <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
                         <g id="Group_402" data-name="Group 402">
                             <circle id="Ellipse_155" data-name="Ellipse 155" cx="2.698" cy="2.698" r="2.698"
@@ -90,7 +90,7 @@
     </div>
     <div class="wrapper-menu" #menuRight>
         <header-search class="menu-search list-right-menu" [color]="'#f47732'"></header-search>
-        <a class="menu-chat list-right-menu" href="" *ngIf="isLogin()">
+        <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="68.545" height="69.657" viewBox="0 0 68.545 69.657">
                 <g id="Group_2387" data-name="Group 2387" transform="translate(1788.491 -3310.346)">
                     <path id="Path_3510" data-name="Path 3510"
@@ -105,7 +105,8 @@
                 </g>
             </svg>
         </a>
-        <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']" *ngIf="isLogin()">
+        <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']"
+            *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="80.662" height="70.194" viewBox="0 0 80.662 70.194">
                 <g id="Group_2388" data-name="Group 2388" transform="translate(1705.345 -3207.5)">
                     <path id="Path_3531" data-name="Path 3531"
@@ -126,7 +127,8 @@
                 </g>
             </svg>
         </a>
-        <btn-notification *ngIf="isLogin()" [noti]="noti.noti" class="menu-nofitication list-right-menu"></btn-notification>
+        <btn-notification *ngIf="isLogin()" [noti]="noti.noti" class="menu-nofitication list-right-menu">
+        </btn-notification>
         <notification-check-page (noti)="Notification($event)"></notification-check-page>
         <btn-menu-profile class="menu-profile list-right-menu"></btn-menu-profile>
         <btn-list-page *ngIf="isLogin()" class="menu-page list-right-menu" [link]="'/page'"></btn-list-page>

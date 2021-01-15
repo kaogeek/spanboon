@@ -222,7 +222,7 @@
                                 <div class="header-looking-for">
                                     ความเป็นมา
                                 </div>
-                                <span class="material-icons" *ngIf="isLogin() && isNotAccess"> edit </span>
+                                <span class="material-icons" (click)="showAlertDevelopDialog()" *ngIf="isLogin() && isNotAccess"> edit </span>
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
                                 *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
@@ -276,8 +276,8 @@
                                 </div> -->
                             </div>
                             <div class="footer-contact-social">
-                                <a href="{{'//'+resDataPage && resDataPage.lineId}}" target="_blank"
-                                    class="contact-social"
+                                <!-- <a href="{{'//'+resDataPage && resDataPage.lineId}}" target="_blank" -->
+                                <a (click)="showAlertDevelopDialog()" class="contact-social"
                                     [class.active]="resDataPage && resDataPage.lineId && resDataPage.lineId !== undefined && resDataPage.lineId !== null && resDataPage.lineId !== '' ? true : false">
                                     <svg class="line" xmlns="http://www.w3.org/2000/svg" width="22" height="8.16"
                                         viewBox="0 0 22 8.16">
@@ -301,8 +301,8 @@
                                     </svg>
                                 </a>
 
-                                <a href="//{{resDataPage && resDataPage.facebookURL}}" target="_blank"
-                                    class="contact-social"
+                                <!-- <a href="//{{resDataPage && resDataPage.facebookURL}}" target="_blank" -->
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
                                     [class.active]="resDataPage && resDataPage.facebookURL && resDataPage.facebookURL !== undefined  && resDataPage.facebookURL !== null  && resDataPage.facebookURL !== '' ? true : false">
                                     <svg class="facebook" xmlns="http://www.w3.org/2000/svg" width="7.073"
                                         height="14.146" viewBox="0 0 7.073 14.146">
@@ -312,8 +312,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="//{{resDataPage && resDataPage.twitterURL}}" target="_blank"
-                                    class="contact-social"
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
                                     [class.active]="resDataPage && resDataPage.twitterURL && resDataPage.twitterURL !== undefined && resDataPage.twitterURL !== null && resDataPage.twitterURL !== '' ? true : false">
                                     <svg class="twitter" xmlns="http://www.w3.org/2000/svg" width="13.813"
                                         height="11.223" viewBox="0 0 13.813 11.223">
@@ -323,7 +322,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="" target="_blank" class="contact-social">
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="11.352" height="16.146"
                                         viewBox="0 0 11.352 16.146">
                                         <g id="placeholder" transform="translate(-76)">
@@ -337,7 +336,7 @@
                                     </svg>
                                 </a>
 
-                                <a [href]="" target="_blank" class="contact-social"
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
                                     [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
                                     <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
                                         height="12.552" viewBox="0 0 12.552 12.552">
@@ -347,7 +346,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="" target="_blank" class="contact-social">
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18.87" height="13.479"
                                         viewBox="0 0 18.87 13.479">
                                         <g id="email" transform="translate(0 -68.267)">
@@ -370,8 +369,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="//{{resDataPage && resDataPage.websiteURL}}" target="_blank"
-                                    class="contact-social"
+                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
                                     [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
                                     <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747" height="13.795"
                                         viewBox="0 0 13.747 13.795">
