@@ -310,7 +310,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   filesDropped(files: FileHandle[]): void {
     this.files = files;
     for (let data of this.files) {
-      console.log(data.file)
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.imageCoverSize = data.file.size;
@@ -841,7 +840,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       if (result !== undefined) {
       }
       this.stopLoading();

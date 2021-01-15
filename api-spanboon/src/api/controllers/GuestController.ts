@@ -224,6 +224,7 @@ export class GuestController {
                 authenId.providerName = PROVIDER.FACEBOOK;
                 authenId.storedCredentials = fbToken;
                 authenId.properties = properties;
+                authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -313,6 +314,7 @@ export class GuestController {
                             authenId.providerUserId = fbUserId;
                             authenId.properties = properties;
                             authenId.storedCredentials = users.fbToken;
+                            authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -359,6 +361,7 @@ export class GuestController {
                 authenId.providerUserId = googleUserId;
                 authenId.providerName = PROVIDER.GOOGLE;
                 authenId.storedCredentials = authToken;
+                authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -447,6 +450,7 @@ export class GuestController {
                         } else if (provider === PROVIDER.GOOGLE) {
                             authenId.providerUserId = googleUserId;
                             authenId.storedCredentials = users.fbToken;
+                            authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -505,6 +509,7 @@ export class GuestController {
                     oauthToken: twitterOauthToken,
                     oauthTokenSecret: twitterTokenSecret
                 };
+                authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -599,6 +604,7 @@ export class GuestController {
                                 oauthToken: twitterOauthToken,
                                 oauthTokenSecret: twitterTokenSecret
                             };
+                            authenId.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -741,10 +747,10 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: updateAuth.id } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: query });
                     // const successResponse: any = { status: 1, message: 'Loggedin with Facebook successfully', data: updatedAuth };
                     // return res.status(200).send(successResponse);
-                    loginUser = await this.userService.findOne({ where: { username: updatedAuth.user } });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                 }
             }
@@ -783,11 +789,11 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: updateAuth.id } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
                     // const successResponse: any = { status: 1, message: 'Loggedin with Google successfully', data: updatedAuth };
                     // return res.status(200).send(successResponse);
 
-                    loginUser = await this.userService.findOne({ where: { username: updatedAuth.user } });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                 }
             }

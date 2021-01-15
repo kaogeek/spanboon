@@ -362,7 +362,6 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.observManager.publish('authen.check', null);
             this.observManager.publish('authen.profileUser', data.user);
             if (this.redirection) {
-              console.log('login ', this.redirection)
               this.router.navigateByUrl(this.redirection);
             } else {
               this.router.navigate(['home']);

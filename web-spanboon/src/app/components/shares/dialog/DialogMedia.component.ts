@@ -43,7 +43,6 @@ export class DialogMedia {
         big: image.galleryBase64 || this.apiBaseURL+image.imageURL+'/image'
       })
     } 
-    console.log('this.galleryImages ',this.galleryImages)
   }
 
   ngOnInit() { 

@@ -150,7 +150,6 @@ export class ChooseItem extends AbstractPage implements OnInit {
         }
         this.getNeedsLastest();
         this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem));
-        console.log('window.outerHeight >> ', window.outerHeight)
 
     }
 

@@ -107,7 +107,7 @@ export class PostData {
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => {
+    setTimeout(() => { 
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;
@@ -241,9 +241,7 @@ export class PostData {
       for (let c of this.commentpost) {
         comments.push(c.id)
       }
-      console.log('action', action)
       this.postCommentFacade.getPostCommentStatus(this.itemPost._id, comments, this.user.id).then((res: any) => {
-        console.log('res', res)
       }).catch((err: any) => {
       })
     }
@@ -273,8 +271,6 @@ export class PostData {
     dialog.afterClosed().subscribe((res) => {
       this.router.navigateByUrl('/search?' + url)
     });
-    console.log(' >>>>> ', text)
-    console.log(' index >>>>> ', index)
   }
 
   private getComment(limit?) {
