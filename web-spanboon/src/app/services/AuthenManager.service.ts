@@ -321,6 +321,10 @@ export class AuthenManager {
 
     if (this.isFacebookMode()) {
       headers = headers.set('mode', 'FB');
+    } else if (this.isTwitterMode()) {
+      headers = headers.set('mode', 'TW');
+    } else if (this.isGoogleMode()) {
+      headers = headers.set('mode', 'GG');
     }
     return headers;
   }
@@ -405,6 +409,10 @@ export class AuthenManager {
 
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
 
+        if (mode === "TW") {
+          token = token.replace(/;/gi, '&');
+        }
+
         let result: any = {
           token: token,
           user: response.data.user
@@ -426,7 +434,7 @@ export class AuthenManager {
           } else if (twMode) {
             localStorage.setItem(TOKEN_MODE_KEY, 'TW');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'TW');
-          } else if (ggMode){
+          } else if (ggMode) {
             localStorage.setItem(TOKEN_MODE_KEY, 'GG');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'GG');
           } else {

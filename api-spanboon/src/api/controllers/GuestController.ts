@@ -718,11 +718,13 @@ export class GuestController {
 
             const expiresAt = checkAccessToken.data.expires_at;
             const today = moment().toDate();
+            console.log('expiresAt: ', expiresAt);
+            console.log('today: ', today.getTime());
 
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
+            // if (expiresAt < today.getTime()) {
+            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+            //     return res.status(400).send(errorResponse);
+            // }
 
             const fbUser = await this.facebookService.getFacebookUser(loginParam.token);
 
