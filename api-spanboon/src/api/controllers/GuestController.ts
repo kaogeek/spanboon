@@ -1033,7 +1033,8 @@ export class GuestController {
 
         if (isMode !== undefined && isMode === 'FB') {
             try {
-                user = await this.facebookService.getFacebookUser(tokenParam);
+                const fbUser = await this.facebookService.getFacebookUser(tokenParam);
+                user = fbUser.user;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
@@ -1107,7 +1108,7 @@ export class GuestController {
         delete user.modifiedBy;
         delete user.modifiedByUsername;
 
-        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user } };
+        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);
     }
