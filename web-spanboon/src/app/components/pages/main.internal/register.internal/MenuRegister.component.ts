@@ -121,24 +121,26 @@ export class MenuRegister extends AbstractPage implements OnInit {
         return;
     }
 
-    public clickLoginGoogle(): void {
-        this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+    public clickLoginGoogle(): void { 
+        this.clickSystemDevelopment();
+        // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
 
-            if (result !== null && result !== undefined) {
-                let googleToken = {
-                    googleUserId: result.id,
-                    authToken: result.authToken,
-                    idToken: result.idToken
-                };
+        //     if (result !== null && result !== undefined) {
+        //         let googleToken = {
+        //             googleUserId: result.id,
+        //             authToken: result.authToken,
+        //             idToken: result.idToken
+        //         };
 
-                this.googleToken = googleToken;
+        //         this.googleToken = googleToken;
 
-                this._ngZone.run(() => this.loginGoogle());
-            }
-        }).catch((error) => {
-            console.log('error >>> ', error);
-        });
+        //         this._ngZone.run(() => this.loginGoogle());
+        //     }
+        // }).catch((error) => {
+        //     console.log('error >>> ', error);
+        // });
     }
+ 
 
     public loginTwitter(token: string, token_secret: string, userId: string) {
         let mode = 'TWITTER';
