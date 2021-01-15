@@ -24,6 +24,7 @@ export class FulfillmentListResponse {
     public emergencyEvent: any;
     public objective: any;
     public name: string;
+    public chatRoom: string;
     public chatMessage: string;
     public chatDate: Date;
     public isRead: boolean;
