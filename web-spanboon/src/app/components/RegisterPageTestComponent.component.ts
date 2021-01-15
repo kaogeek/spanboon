@@ -13,7 +13,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 declare var atwho: any;
 declare var $: any;
 
-const PAGE_NAME: string = 'createpage-tester';
+const PAGE_NAME: string = 'createpage-temporary';
 export interface Fruit {
   name: string;
 }
@@ -62,7 +62,7 @@ export class RegisterPageTestComponent extends AbstractPageImageLoader implement
   ngOnInit(): void {
     console.log('this.isLogin()', this.isLogin())
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/createpage-tester");
+      this.showAlertLoginDialog("/createpage-temporary");
     }
   }
 
@@ -158,7 +158,7 @@ export class RegisterPageTestComponent extends AbstractPageImageLoader implement
     if (this.password === this.testpassword) {
       this.aut = false;
     } else {
-      this.showAlertDevelopDialog("รหัสเข้าทดสอบไม่ถูดต้องกรุณาติดต่อเจ้าหน้าที่เพื่อขอรับรหัสทดสอบ")
+      this.showAlertDevelopDialog("รหัสเข้าทดสอบไม่ถูกต้องกรุณาติดต่อเจ้าหน้าที่เพื่อขอรับรหัสทดสอบ")
       this.testpassword = null
     }
   }

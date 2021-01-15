@@ -1,31 +1,14 @@
-<div style="    width: 100%;
-height: calc(100vh - 55pt);
-display: flex;
-align-items: center;
-justify-content: center;">
+<div class="createpage-temporary">
 
-  <div *ngIf="!aut"
-    style="border: solid #fd545a 2px;
-  border-radius: 4px;
-  box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%), 0px 4px 10px 5px rgb(197 197 197 / 12%);">
-    <create-page *ngIf="!aut"></create-page>
+  <div class="createpage-temporary-box" *ngIf="!aut">
+    <create-page></create-page>
   </div>
 
 
 
-  <div *ngIf="aut" class="test-page"
-    style="border: solid #fd545a 2px;
-border-radius: 4px;
-box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%), 0px 4px 10px 5px rgb(197 197 197 / 12%);">
-    <div style="width:500pt;
-    height: 200pt;display: flex;">
-      <div style="height: 100%;
-      width: 200pt;
-      background-color: #fd545a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;">
+  <div class="createpage-temporary-box" *ngIf="aut">
+    <div class="box-icon">
+      <div class="box-icon-svg">
         <svg class="icon-spanboon" id="Group_227" data-name="Group 227" xmlns="http://www.w3.org/2000/svg" width="100pt"
           height="100pt" viewBox="0 0 59.073 29.556">
           <g id="Group_133" data-name="Group 133" transform="translate(0 0)">
@@ -42,16 +25,13 @@ box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 
             </g>
           </g>
         </svg>
-        <span> ส่วนสำหรับผู้ทดสอบการสร้างเพจของเว็บ Spanboon</span>
+        <span> สำหรับทดสอบสร้างเพจของเว็บ Spanboon</span>
       </div>
-      <div style="height: 100%;
-      width: 300pt;
-      display: flex;
-      align-items: center;
-      justify-content: center;">
+      <div class="box-from">
         <div class="test-login">
+          <span class="box-from-text"> * โปรดติดต่อเจ้าหน้าที่ หรือผู้ดูแลเพื่อขอรหัสเข้าทดสอบ</span>
           <input name="testpassword" id="testpassword" [(ngModel)]="testpassword" type="password" class="input-test"
-            placeholder="รหัสผ่าน">
+            placeholder="รหัสทดสอบ">
           <div (click)="login()" class="test-login-bt">
             <span class="span-bt">เข้าทดสอบ</span>
             <mat-icon style="color: white;">arrow_forward</mat-icon>
