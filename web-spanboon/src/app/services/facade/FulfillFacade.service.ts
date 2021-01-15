@@ -26,6 +26,7 @@ export class FulfillFacade extends AbstractFacade {
     }
 
     public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number): Promise<any> {
+        
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/fulfillment_case/list";
             let queryParams: string = "";

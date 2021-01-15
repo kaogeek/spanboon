@@ -48,6 +48,7 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    console.log('case > ',this.data)
     setTimeout(() => {
       this.showLoading = false;
     }, 1000);
