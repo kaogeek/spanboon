@@ -14,6 +14,7 @@ import { SearchFilter } from '../../models/models';
 import { AbstractPage } from '../pages/AbstractPage';
 import { Router } from '@angular/router';
 import { DialogCreatePage } from './dialog/DialogCreatePage.component';
+import { DialogAlert } from './dialog/DialogAlert.component';
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -92,11 +93,26 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.drawer.toggle();
-        const dialogRef = this.dialog.open(DialogCreatePage, {
-            autoFocus: false
+        this.clickSystemDevelopment();
+        // const dialogRef = this.dialog.open(DialogCreatePage, {
+        //     autoFocus: false
+        // });
+        // dialogRef.afterClosed().subscribe(res => {
+        //     console.log(res)
+        // });
+    }
+
+    public clickSystemDevelopment(): void {
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา",
+                bottomText2: "ตกลง",
+                bottomColorText2: "black",
+                btDisplay1: "none"
+            }
         });
-        dialogRef.afterClosed().subscribe(res => {
-            console.log(res)
+        dialog.afterClosed().subscribe((res) => {
         });
     }
 
