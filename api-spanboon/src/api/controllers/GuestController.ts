@@ -1130,7 +1130,7 @@ export class GuestController {
     private async sendActivateCode(user: User, email: string, code: string, subject: string): Promise<any> {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
-        message += '<a href="/change_password?code=' + code + '&email=' + email + '"> Reset Password </a>';
+        message += '<a href="https://spanboon.com/forgotpassword?code=' + code + '&email=' + email + '"> Reset Password </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 
