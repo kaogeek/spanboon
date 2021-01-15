@@ -13,7 +13,7 @@ import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost, DialogReboonTopic } from '../../shares/shares';
-import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider'; 
+import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
 import { SORT_BY } from '../../../TypePost';
@@ -49,7 +49,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
-  // @ViewChild("autoComplete", { static: true }) autocomp: ElementRef; 
+  @ViewChild("feedbodysearch", { static: false }) feedbodysearch: ElementRef;
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
 
   @Output()
@@ -128,16 +128,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public endShareCount: number;
   public pageCategories: number;
   public countEngagement: number;
+  public prevOld: number = 0;
   public userCloneDatas: any
-  // public  startCommentCount: number;
-  // public startRepostCount: number;
-  // public startShareCount: number;
-  // public likecount: number;
   public follow: boolean;
   public isLoadingPost: boolean;
   public isMaxLoadingPost: boolean;
 
-  public isloading: boolean;
   public postId: any
   public isFollow: boolean = true;
   public item: any;
@@ -147,7 +143,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public fontSize: any;
 
   mySubscription: any;
-  selectedDate: any; 
+  selectedDate: any;
 
   minDate = new Date(1800, 0, 1);
   maxDate = new Date();
@@ -252,7 +248,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
     this.maxDate.setFullYear(this.maxDate.getFullYear());
 
-    this.router.events.subscribe((event: any) => { 
+    this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         this.url = decodeURI(this.router.url);
         this.urlHashTag = undefined;
@@ -271,7 +267,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.matHashTag = text.split('=')[1].split(',');
             } else if (text.includes('keyword')) {
               this.keyword = text.split('=')[1].split(',');
-              console.log(' this.keyword ', this.keyword)
             } else if (text.includes('follow')) {
               this.follow = Boolean(JSON.parse(text.split('=')[1].toLowerCase()));
               if (this.follow) {
@@ -298,7 +293,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergencyUrl = text.split('=')[1].split(',');
               this.emergencyUrl = this.emergencyUrl.pop();
             } else if (text.includes('objective')) {
-              this.objectiveUrl = text.split('=')[1].split(','); 
+              this.objectiveUrl = text.split('=')[1].split(',');
               this.objectiveUrl = this.objectiveUrl.pop();
             } else if (text.includes('startcommentcount')) {
               this.startCommentCount = Number(text.split('=')[1]);
@@ -321,7 +316,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             } else if (text.includes('endactioncount')) {
               this.endActionCount = Number(text.split('=')[1]);
             }
-          } 
+          }
           this.searchTrendTag();
           // const splitText = substringPath.split('=');
           // console.log('splitText ',splitText)
@@ -351,8 +346,22 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
-      this.heightWindow(); 
-      this.heightWindowLeft(); 
+      this.heightWindow();
+      this.heightWindowLeft();  
+      var scrollTop = scrollTop.fix;  
+      var y = this.feedbodysearch.nativeElement.offsetHeight;
+      var x =document.getElementsByClassName('header-top')[0].clientHeight;
+      let top =  x + y; 
+      if(this.prevOld > scrollTop){ 
+        if(window.innerWidth < 489){
+          this.feedbodysearch.nativeElement.style.top = 39 +'pt'; 
+        } else { 
+          this.feedbodysearch.nativeElement.style.top = 55 +'pt'; 
+        }
+      } else {
+        this.feedbodysearch.nativeElement.style.top = - top + 'px';
+      }
+      this.prevOld = scrollTop;  
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -375,14 +384,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });*/
   }
 
-  public ngOnInit(): void { 
-    this.openLoading();
+  public ngOnInit(): void {
     this.searchEmergency();
     this.searchObjective();
     this.searchHashTag();
     this.searchPageCategory();
-    this.getCount();
-
+    this.getCount(); 
   }
 
   ngAfterViewInit(): void {
@@ -418,7 +425,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }).catch((err) => {
       console.log(err)
     });
-
   }
 
   public ngOnDestroy(): void {
@@ -439,8 +445,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public keyUpAutoComp(text) {
-    // setTimeout(() => {
-    // }, 1000);
     this.isLoading = true;
     let data = {
       keyword: text.target.value
@@ -454,20 +458,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
   }
 
-  private openLoading() {
-    this.isloading = true;
-  }
-
-  private closeLoading() {
-    this.isloading = false;
-  }
-
   public saveDate(event: any) {
     // this.startDate = { begin: new Date(event.value.begin), end: new Date(event.value.end) }
     this.startDateLong = new Date(event.value.begin).getTime();
     this.endDateLong = new Date(event.value.end).getTime();
     // this.searchTrendTag();
-    console.log(this.startDateLong);
   }
 
   public checkPath(): boolean {
@@ -517,12 +512,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.sorting = data.type;
     this.searchTrendTag();
   }
-
-  // private stopLoading(): void {
-  //   setTimeout(() => {
-  //     this.isLoading = false;
-  //   }, 1000);
-  // } 
 
   public clickDataSearch(data) {
     this.router.navigateByUrl('/search')
@@ -578,16 +567,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public heightWindow() {
-    if(window.innerWidth > 1024){ 
+    if (window.innerWidth > 1024) {
       var resizeWin = window.innerHeight;
-      var recommended = this.recommendedRight.nativeElement.offsetHeight; 
+      var recommended = this.recommendedRight.nativeElement.offsetHeight;
       var maxrecommended = recommended + 100;
       var count = recommended - resizeWin;
       var maxcount = count + 60;
-  
+
       if (maxrecommended > resizeWin) {
         this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
-  
+
       } else {
         this.recommendedRight.nativeElement.style.top = '55pt';
       }
@@ -595,16 +584,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public heightWindowLeft() {
-    if(window.innerWidth > 1024){ 
+    if (window.innerWidth > 1024) {
       var resizeWin = window.innerHeight;
-      var recommended = this.recommendedLeft.nativeElement.offsetHeight; 
+      var recommended = this.recommendedLeft.nativeElement.offsetHeight;
       var maxrecommended = recommended + 100;
       var count = recommended - resizeWin;
-      var maxcount = count + 60; 
+      var maxcount = count + 60;
       if (maxrecommended > resizeWin) {
         if (this.recommendedLeft) {
           this.recommendedLeft.nativeElement.style.top = '-' + maxcount + 'px';
-        } 
+        }
       } else {
         if (this.recommendedLeft) {
           this.recommendedLeft.nativeElement.style.top = '55pt';
@@ -689,11 +678,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
         this.resObjective = cloneObject;
         if (this.objectiveUrl) {
-          console.log('this.resObjective ',this.resObjective)
           for (let data of this.resObjective) {
             if (this.objectiveUrl === data.hashTag) {
               this.objective = data.id;
-            } 
+            }
           }
           this.searchTrendTag();
         }
@@ -773,7 +761,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.type = link.keyword.toUpperCase();
     if (this.type === 'TIMELINE') {
       this.type = ''
-    } 
+    }
     this.isLoadingClickTab = true;
     setTimeout(() => {
       this.searchTrendTag(true);
@@ -810,7 +798,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       this.endActionCount = this.countEngagement
     }
-    
+
     const keywordFilter: any = {
       keyword: this.keyword,
       hashtag: this.matHashTag,
@@ -840,7 +828,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         limit: 5,
       }
     };
-    
+
     if (offset) {
       this.resPost = [];
       keywordFilter.filter.offset = 0;
@@ -848,14 +836,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       keywordFilter.filter.offset = this.resPost && this.resPost.length ? this.resPost.length : SEARCH_OFFSET
     }
-    let originalPost: any[] = this.resPost; 
+    let originalPost: any[] = this.resPost;
 
     this.mainPageFacade.searchMainContent(keywordFilter).then((resultData: any) => {
       setTimeout(() => {
-        this.closeLoading();
         this.showLoading = false;
         this.isLoadingPost = false;
-      }, 1500); 
+      }, 1500);
       if (resultData && resultData.length > 0) {
         if (resultData && resultData.length !== 5) {
           this.isMaxLoadingPost = true;
@@ -901,7 +888,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         if (offset) {
           this.resPost = [];
         }
-      }
+      } 
     }).catch((error: any) => {
       console.log(error);
     });
@@ -947,27 +934,29 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public copyLink() {
     let url = window.location.origin;
-    url += decodeURI(this.router.url).split('?')[0] + '?';
+    url += decodeURI(this.router.url).split('?')[0];
+    let queryParams: string = "";
+
     if (this.matHashTag.length > 0) {
-      url += '&hashtag=' + this.matHashTag.join(",");
+      queryParams += '&hashtag=' + this.matHashTag.join(",");
     }
     if (this.objective) {
-      url += '&objective=' + this.objective;
+      queryParams += '&objective=' + this.objective;
     }
     if (this.emergency) {
-      url += '&emergency=' + this.emergency;
+      queryParams += '&emergency=' + this.emergency;
     }
     if (this.page.length > 0) {
-      url += '&pagecategory=' + this.page;
+      queryParams += '&pagecategory=' + this.page;
     }
     if (this.keyword.length > 0) {
-      url += '&keyword=' + this.keyword;
+      queryParams += '&keyword=' + this.keyword;
     }
     if (this.follow !== undefined) {
       if (this.follow) {
-        url += '&follow=' + this.follow;
+        queryParams += '&follow=' + this.follow;
       } else {
-        url += '&follow=' + this.follow;
+        queryParams += '&follow=' + this.follow;
       }
     }
     if (this.userId) {
@@ -975,43 +964,51 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       for (let user of this.userId) {
         pageName.push(user.id)
       }
-      url += '&createdby=' + pageName;
+      queryParams += '&createdby=' + pageName;
     }
     if (Object.keys(this.startDate).length > 0) {
-      url += '&startdate=' + this.startDateLong;
-      url += '&enddate=' + this.endDateLong;
+      queryParams += '&startdate=' + this.startDateLong;
+      queryParams += '&enddate=' + this.endDateLong;
     }
     if (this.isAdvance) {
 
       if (typeof (this.startCommentCount) === 'number') {
-        url += '&startcommentcount=' + this.startCommentCount;
-        url += '&endcommentcount=' + this.endCommentCount;
+        queryParams += '&startcommentcount=' + this.startCommentCount;
+        queryParams += '&endcommentcount=' + this.endCommentCount;
       }
       if (typeof (this.startRepostCount) === 'number') {
-        url += '&startstartRepostCount=' + this.startRepostCount;
-        url += '&endstartRepostCount=' + this.endRepostCount;
+        queryParams += '&startstartRepostCount=' + this.startRepostCount;
+        queryParams += '&endstartRepostCount=' + this.endRepostCount;
       }
       if (typeof (this.startLikeCount) === 'number') {
-        url += '&startlikecount=' + this.startLikeCount;
-        url += '&endlikecount=' + this.endLikeCount;
+        queryParams += '&startlikecount=' + this.startLikeCount;
+        queryParams += '&endlikecount=' + this.endLikeCount;
       }
       if (typeof (this.startShareCount) === 'number') {
-        url += '&startstartShareCount=' + this.startShareCount;
-        url += '&endstartShareCount=' + this.endShareCount;
+        queryParams += '&startstartShareCount=' + this.startShareCount;
+        queryParams += '&endstartShareCount=' + this.endShareCount;
       }
     } else {
       if (typeof (this.startActionCount) === 'number') {
-        url += '&startactioncount=' + this.startActionCount
+        queryParams += '&startactioncount=' + this.startActionCount
       } else {
-        url += '&startactioncount=' + 0
+        queryParams += '&startactioncount=' + 0
       }
       if (typeof (this.endActionCount) === 'number') {
-        url += '&endactioncount=' + this.endActionCount;
+        queryParams += '&endactioncount=' + this.endActionCount;
       } else {
-        url += '&endactioncount=' + this.countEngagement;
+        queryParams += '&endactioncount=' + this.countEngagement;
       }
     }
-    console.log('url', url)
+
+    if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
+      queryParams = queryParams.substring(1, queryParams.length);
+    }
+
+    if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
+      url += "?" + queryParams;
+    }
+
     document.addEventListener('copy', (e: ClipboardEvent) => {
       e.clipboardData.setData('text/plain', (url));
       e.preventDefault();
@@ -1068,7 +1065,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((err: any) => {
       console.log(err)
-    }) 
+    })
   }
 
   public onChangeSlide(event, isAdvance: boolean) {
@@ -1079,8 +1076,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       if (event.checked) {
         this.isAdvanceRich = event.checked
-      } 
-    }  
+      }
+    }
   }
 
   onSelect(event) {
@@ -1312,7 +1309,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public deletePost(event: any, index: number): any { }
 
-  public focusout() {  
+  public focusout() {
     var postion = $(".slide-left");
     postion.removeClass("active");
     this.isBackdrop = false;
@@ -1320,10 +1317,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       'overflow-y': "auto"
     });
     const scroll = this.recommendedLeft.nativeElement.scrollTop;
-    if(scroll > 0){
+    if (scroll > 0) {
       this.recommendedLeft.nativeElement.scrollTop = 0
     }
-    super.clicktotop(); 
+    super.clicktotop();
   }
 
   public getImageSelector(): string[] {
@@ -1345,12 +1342,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }, 3000);
   }
 
-  public onResize(){
-    if(window.innerWidth <= 1024){
+  public onResize() {
+    if (window.innerWidth <= 1024) {
       var postion = $(".slide-left");
       postion.addClass("active");
     }
-  }
+  } 
 }
 
 

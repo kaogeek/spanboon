@@ -106,7 +106,6 @@ export class ChatFulfill extends AbstractPage implements OnInit {
     }
 
     public openItemFulFIll(){
-        console.log('1111')
         this.submit.emit();
     }
 }

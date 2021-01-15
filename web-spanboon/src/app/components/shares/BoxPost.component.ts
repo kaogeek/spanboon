@@ -391,7 +391,6 @@ export class BoxPost extends AbstractPage implements OnInit {
                   console.log('err ', err)
                 });
                 this.arrListItem.push(needs);
-                console.log('this.arrListItem ', this.arrListItem)
               }
               index++;
             }
@@ -2127,7 +2126,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.imageIcon = result;
-        console.log(this.imageIcon)
         // this.imageIcon.push(result);
       }
       this.stopLoading();

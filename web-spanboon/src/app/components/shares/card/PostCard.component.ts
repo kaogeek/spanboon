@@ -75,6 +75,9 @@ export class PostCard {
   public userReboon: boolean = false;
   @Input()
   public showLoading: boolean = false;
+  @Input()
+  public butNeeds: boolean = false;
+  
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
@@ -150,7 +153,6 @@ export class PostCard {
       data: data,
     })
       .subscribe(res => {
-      console.log(res);
     });
   }
 }

@@ -39,7 +39,6 @@ export class Redirect implements OnInit {
                         if(type.includes('@')){
                             let type_substring = type.substring(1);
                             this.mainPage.account(type_substring).then((res : any)=>{
-                                console.log(res)
                                 if(res.type === 'USER'){
                                     if(res && res.uniqueId && res.uniqueId !== '' && res.uniqueId !== undefined && res.uniqueId !== null ){
                                         this.router.navigateByUrl('/profile/'+res.uniqueId)

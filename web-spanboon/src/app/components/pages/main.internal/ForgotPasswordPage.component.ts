@@ -322,7 +322,6 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
       data: this.email.nativeElement.value
     });
     dialog.afterClosed().subscribe((res) => {
-      console.log('res ', res)
       if (res) {
         this.nextPrev(-1);
         this.resetForm(true);

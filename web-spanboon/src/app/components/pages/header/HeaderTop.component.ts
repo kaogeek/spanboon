@@ -35,7 +35,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   // public logout: EventEmitter<any> = new EventEmitter();
 
   private observManager: ObservableManager;
-  private editProfileFacade: EditProfileUserPageFacade; 
+  private editProfileFacade: EditProfileUserPageFacade;
   private userImage: any;
   public noti: any = [];
 
@@ -45,7 +45,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public isclickmenu: boolean;
   public isLoading: boolean;
   public isFrist: boolean;
-  public isCheck: boolean = undefined;  
+  public isCheck: boolean = undefined;
 
   // @ViewChild('menuRight', { static: false }) set positionCenter(element) {
   //    // initially setter gets called with undefined
@@ -53,21 +53,21 @@ export class HeaderTop extends AbstractPage implements OnInit {
   // }  
 
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
-    editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog , private renderer: Renderer2) {
+    editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
-    this.editProfileFacade = editProfileFacade; 
+    this.editProfileFacade = editProfileFacade;
     this.observManager = observManager;
     this.dialog = dialog;
     this.isLoading = true;
     this.isFrist = true;
 
-    this.observManager.subscribe('authen.check', (data: any) => { 
+    this.observManager.subscribe('authen.check', (data: any) => {
       this.reloadUserImage();
     });
 
-    this.observManager.subscribe('authen.logout', (data: any) => { 
+    this.observManager.subscribe('authen.logout', (data: any) => {
       this.checkSessionTimeOut();
     });
 
@@ -96,20 +96,20 @@ export class HeaderTop extends AbstractPage implements OnInit {
           // element.classList.add("scroll-profile");
         }
       }
-    });  
+    });
   }
 
   ngOnInit() {
-    this.reloadUserImage(); 
+    this.reloadUserImage();
   }
 
-  ngAfterViewInit(): void { 
+  ngAfterViewInit(): void {
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -122,16 +122,16 @@ export class HeaderTop extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
-  
+
   public isLogin(): boolean {
-    this.user = this.authenManager.getCurrentUser(); 
+    this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
   }
 
   public checkUniqueId() {
-    if(this.user.providerName === 'FACEBOOK'){
+    if (this.user.providerName === 'FACEBOOK') {
       return '/profile/' + this.user.user;
-    } else { 
+    } else {
       if (this.user && this.user.id !== '' && this.user.uniqueId && this.user.uniqueId !== "") {
         return '/profile/' + this.user.uniqueId;
       } else {
@@ -193,7 +193,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public checkSessionTimeOut() {
     this.authenManager.clearStorage();
     let body = {
-      user : this.getCurrentUserId()
+      user: this.getCurrentUserId()
     }
     this.authenManager.logout(body).then(() => {
       this.router.navigateByUrl(REDIRECT_PATH);
@@ -208,10 +208,10 @@ export class HeaderTop extends AbstractPage implements OnInit {
     } else {
       return false;
     }
-  } 
+  }
 
   public Notification(noti) {
     this.noti = noti
-  } 
- 
+  }
+
 }

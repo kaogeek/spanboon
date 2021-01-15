@@ -183,7 +183,6 @@ export class DialogPost extends AbstractPage {
   public createPost(data) {
     if (this.isEdit) {
       if (data.title) {
-        console.log(data)
         let pageId = this.data.pageId;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
@@ -203,7 +202,6 @@ export class DialogPost extends AbstractPage {
       }
     } else {
       if (data.title) {
-        console.log(data)
         let pageId = data.id;
         this.pageFacade.createPost(pageId, data).then((res) => {
           let alertMessages: string;

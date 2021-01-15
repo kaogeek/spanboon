@@ -123,7 +123,6 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
     public clickLoginGoogle(): void {
         this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
-            console.log('result >>> ', result);
 
             if (result !== null && result !== undefined) {
                 let googleToken = {
