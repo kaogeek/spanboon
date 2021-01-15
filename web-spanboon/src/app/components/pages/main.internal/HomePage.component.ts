@@ -520,8 +520,7 @@ export class HomePage extends AbstractPage implements OnInit {
               } else {
                 Object.assign(image, { coverBase64: null });
               }
-            }
-            console.log('>>>> ', this.dataMainPage.emergencyPin.contents)
+            } 
           }).catch((err: any) => {
             if (err.error.status === 0) {
               if (err.error.message === 'Unable got Asset') {

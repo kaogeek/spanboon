@@ -15,8 +15,6 @@
             </div>
             <div class="right">
                 <div class="wizard-step">
-                    <!-- <span class="step" *ngFor="let item of getQuantity(wizardConfig.quantity)"
-                        [class.active]="true"></span> -->
                     <span class="step" *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
                 </div>
                 <mat-icon>close</mat-icon>
@@ -107,7 +105,6 @@
             </div>
         </div>
 
-        <!-- @Further development Fulfill-Allocate Box-footer -->
         <div class="box-footer"></div>
     </div>
 

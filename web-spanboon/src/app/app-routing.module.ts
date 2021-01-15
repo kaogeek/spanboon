@@ -22,6 +22,7 @@ import {
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -154,6 +155,10 @@ export const APP_ROUTES: Routes = [
         component: TestComponent,
       },
       {
+        path: RegisterPageTestComponent.PAGE_NAME,
+        component: RegisterPageTestComponent
+      },
+      {
         path: MenuRegister.PAGE_NAME,
         component: MenuRegister,
         children: [
@@ -184,5 +189,9 @@ export const APP_ROUTES: Routes = [
   {
     path: 'test',
     component: TestComponent
+  },
+  {
+    path: 'registerpage',
+    component: RegisterPageTestComponent
   },
 ];
