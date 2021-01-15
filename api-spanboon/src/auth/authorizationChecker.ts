@@ -23,7 +23,7 @@ export function authorizationChecker(connection: Connection): (action: Action, r
         // either promise that resolves a boolean value
         let userId = await authService.parseBasicAuthFromRequest(action.request);
 
-        if (userId === null && userId === undefined) {
+        if (userId === null || userId === undefined) {
             log.warn('No credentials given');
             return false;
         }

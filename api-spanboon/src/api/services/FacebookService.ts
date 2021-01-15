@@ -113,7 +113,7 @@ export class FacebookService {
                     this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
                         console.log('authUser >>> ', authUser);
                         if (authUser) {
-                            authUser = this.userService.cleanAdminUserField(authUser);
+                            authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });
                         } else {
                             resolve(undefined);
@@ -178,5 +178,32 @@ export class FacebookService {
                 resolve(response);
             });
         });
+    }
+
+    private cleanFBUserField(user: any): any {
+        if (user !== undefined && user !== null) {
+            if (user !== undefined && user !== null) {
+                const clearItem = {
+                    id: user.id,
+                    username: user.username,
+                    uniqueId: user.uniqueId,
+                    email: user.email,
+                    displayName: user.displayName,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    birthdate: user.birthdate,
+                    gender: user.gender,
+                    customGender: user.customGender,
+                    imageURL: user.imageURL,
+                    coverURL: user.coverURL,
+                    coverPosition: user.coverPosition,
+                    banned: user.banned,
+                    isAdmin: user.isAdmin,
+                    isSubAdmin: user.isSubAdmin
+                };
+                user = clearItem;
+            }
+        }
+        return user;
     }
 }
