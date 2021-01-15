@@ -30,19 +30,36 @@
             <div class="left"
                 [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                 <div class="wrapper-profile-page" *ngIf="isShowProfile">
-                    <div class="page-img">
+                    <div class="page-img"> 
                         <ng-container *ngIf="itemPost.page; else elseImage">
-                            <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL +'/image'}}" alt="">
+                            <ng-container
+                                *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
+                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL +'/image'}}"
+                                    alt="">
+                            </ng-container>
+                            <ng-template #elseTemplateFileImage>
+                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
+                            </ng-template>
                         </ng-container>
                         <ng-template #elseImage>
-                            <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}" alt="">
+                            <ng-container
+                                *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
+                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
+                                    alt="">
+                            </ng-container>
+                            <ng-template #elseTemplateProfile>
+                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
+                            </ng-template> 
                         </ng-template>
-                        <div class="post-data-name">
+
+                        <div class="post-data-name"> 
                             <ng-container *ngIf="itemPost.page; else elseName">
                                 {{itemPost.page.name}}
                             </ng-container>
-                            <ng-template #elseName>
-                                {{itemPost.user.displayName}}
+                            <ng-template #elseName> 
+                                <ng-container *ngIf="itemPost.user && itemPost.user.displayName !== '' && itemPost.user.displayName !== undefined && itemPost.user.displayName !== null">
+                                    {{itemPost.user.displayName}}
+                                </ng-container> 
                             </ng-template>
 
                             <div class="post-data-createdBy">
@@ -131,7 +148,8 @@
                     <span>คุณได้บอกต่อเรื่องราว</span>
                 </ng-container>
                 <ng-template #UserPage>
-                    <span *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
+                    <span
+                        *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
                         || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อเรื่องราว</span>
                 </ng-template>
             </div>
@@ -247,7 +265,8 @@
                         <span>คุณได้บอกต่อเรื่องราว</span>
                     </ng-container>
                     <ng-template #UserPage>
-                        <span *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
+                        <span
+                            *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
                             || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อเรื่องราว</span>
                     </ng-template>
                 </div>
@@ -346,7 +365,8 @@
                         <span>คุณได้บอกต่อเรื่องราว</span>
                     </ng-container>
                     <ng-template #UserPage>
-                        <span *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
+                        <span
+                            *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
                             || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อเรื่องราว</span>
                     </ng-template>
                 </div>
@@ -487,7 +507,7 @@
                 </div>
             </div>
         </ng-container>
-        <div class="description" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0"> 
+        <div class="description" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0">
             <div class="tag_div">
                 <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                     <a style="color: gray !important;" class="highlight-text" href="/search?hashtag={{hashTag.name}}"
@@ -496,7 +516,7 @@
             </div>
         </div>
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"></needs-card>
-        <div class="description"> 
+        <div class="description">
             <div class="wrapper-footer-post">
                 <div class="left">
                     <tag-event
@@ -507,7 +527,9 @@
                         [isShowObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
                         [isNameObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
                         [isIconObjective]="isEmptyObject(itemPost.objective) && itemPost.objective && itemPost.objectiveTag ? true : false"
-                        [nameObjective]="itemPost.objectiveTag" (emergencyClick)="clickDevelop($event , itemPost.emergencyEventTag)" (objectiveClick)="clickDevelop($event , itemPost.objectiveTag)" ></tag-event>
+                        [nameObjective]="itemPost.objectiveTag"
+                        (emergencyClick)="clickDevelop($event , itemPost.emergencyEventTag)"
+                        (objectiveClick)="clickDevelop($event , itemPost.objectiveTag)"></tag-event>
                 </div>
                 <div class="right">
                     <control-action [isAction]="'true'" [comment]="itemPost.commentCount ? itemPost.commentCount : 0 "
@@ -539,13 +561,14 @@
                         </ng-template>
                     </div>
                     <div class="input-comment">
-                        <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
-                            [(ngModel)]="value" type="text">
+                        <input class="comment-text" placeholder="แสดงความคิดเห็น..."
+                            (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
                     </div>
                 </div>
                 <ng-container *ngIf="commentpost.length > 0">
                     <div class="post-comment" *ngIf="!isSearchHashTag">
-                        <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [commentdata]="commentpost">
+                        <comment-post (isLogin)="isComments" (submit)="commentAction($event)"
+                            [commentdata]="commentpost">
                         </comment-post>
                     </div>
                 </ng-container>
