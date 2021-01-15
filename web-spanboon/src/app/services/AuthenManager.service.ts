@@ -240,8 +240,8 @@ export class AuthenManager {
           };
 
           this.token = result.token;
-          this.user = result.user;
-          // this.facebookMode = true;
+          this.user = result.user; 
+
           let social: string;
           if (mode === 'FACEBOOK') {
             social = 'FB';
@@ -316,9 +316,9 @@ export class AuthenManager {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.getUserToken()
     });
-
+ 
     if (this.isFacebookMode()) {
-      headers = headers.set('mode', 'FB');
+      headers = headers.set('mode', 'FB'); 
     } else if (this.isTwitterMode()) {
       headers = headers.set('mode', 'TW');
     } else if (this.isGoogleMode()) {
@@ -337,7 +337,7 @@ export class AuthenManager {
       // if(user !== null && user !== undefined){
       //   body = Object.assign(user);
       // }
-      // !implement logout from API
+      // !implement logout from API 
       let options = this.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -411,21 +411,25 @@ export class AuthenManager {
         }
 
         let result: any = {
-          token: token,
+          token: response.data.token,
           user: response.data.user
         };
+
+        if (response.data.mode === 'FB') { 
+          fbMode = true;
+          this.facebookMode = true;
+        }
 
         if (isUpdateUser) {
           this.token = result.token;
           this.user = result.user;
           this.facebookMode = fbMode;
-          this.twitterMode = twMode;
-          this.facebookMode = ggMode;
+          this.twitterMode = twMode; 
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);
           sessionStorage.setItem(TOKEN_KEY, result.token);
-          if (fbMode) {
+          if (fbMode) { 
             localStorage.setItem(TOKEN_MODE_KEY, 'FB');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
           } else if (twMode) {
@@ -445,21 +449,6 @@ export class AuthenManager {
       });
     });
   }
-  // public searchCountUserExp(searchFilter: SearchFilter): Promise<any>{
-  //   return new Promise((resolve, reject) => {
-
-  //     let url: string = this.baseURL + '/exp/search' ;
-  //     let body: any = {};
-  //     if (searchFilter !== null && searchFilter !== undefined) {
-  //       body = Object.assign(searchFilter)
-  //     }
-  //     this.http.post(url, body).toPromise().then((response: any) => {
-  //       resolve(response.data as UserExpStatement[]);
-  //     }).catch((error: any) => {
-  //       reject(error);
-  //     });
-  //   });
-  // }
 
   // return current login
   public getCurrentUser(): any {
