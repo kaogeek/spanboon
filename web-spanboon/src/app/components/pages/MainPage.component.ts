@@ -37,6 +37,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public user: any;
   public data: any;
+  public isDev: boolean = true;
 
   public redirection: string;
 
@@ -94,8 +95,8 @@ export class MainPage extends AbstractPage implements OnInit {
     });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        const url: string = decodeURI(this.router.url); 
-        const path = url.split('/')[1]; 
+        const url: string = decodeURI(this.router.url);
+        const path = url.split('/')[1];
         if (url === "/home" || '/' + path === "/page" || '/' + path === "/profile" || url === "/recommend") {
           this.isPost = true;
         }
@@ -120,6 +121,12 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.isPost = false;
     // } 
 
+    const dev = sessionStorage.getItem('isDev');
+    if(dev){
+      this.isDev = false;
+    } else{
+      this.isDev = true;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -140,7 +147,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -167,7 +174,7 @@ export class MainPage extends AbstractPage implements OnInit {
     var scrolltotop = this.mainpage.nativeElement;
     this.observManager.publish('scroll', scrolltotop.scrollTop);
     var postBottom = $(".icon-post-bottom");
-    const path = this.router.url.split('/')[1]; 
+    const path = this.router.url.split('/')[1];
 
     if ((this.router.url === "/login") || (this.router.url === "/register/menu") || (this.router.url === "/register") || (this.router.url === '/register?mode=normal') || (this.router.url === "/forgotpassword") || (path === "fulfill")) {
       this.isdivtop = false;
@@ -237,6 +244,13 @@ export class MainPage extends AbstractPage implements OnInit {
     this.observManager.publish('scroll.fix', {
       fix: scrolltotop.scrollTop
     })
+
+    this.isDev = false;
+  }
+
+  public clickCloseDev() {
+    sessionStorage.setItem('isDev', 'false');
+    this.isDev = false;
   }
 
   public clicktotop() {
@@ -267,17 +281,17 @@ export class MainPage extends AbstractPage implements OnInit {
       }
       this.data.name = dataName;
       this.data.isListPage = true;
-      this.data.isHeaderPage = true; 
+      this.data.isHeaderPage = true;
       this.data.isEdit = false;
       this.data.isFulfill = false;
       this.data.modeDoIng = true;
       this.data.isMobileButton = true;
       this.data.id = this.user.id;
-      
+
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
         data: this.data,
-        disableClose: false,  
+        disableClose: false,
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -309,7 +323,7 @@ export * from './main.internal/ForgotPasswordPage.component';
 export * from './main.internal/ProfilePage.component';
 export * from './main.internal/FanPage.component';
 export * from './main.internal/StoryPage.component';
-export * from './main.internal/PostPage.component'; 
+export * from './main.internal/PostPage.component';
 export * from './main.internal/PageHashTag.component';
 export * from './main.internal/PageRecommended.component';
 export * from './main.internal/register.internal/MenuRegister.component';
