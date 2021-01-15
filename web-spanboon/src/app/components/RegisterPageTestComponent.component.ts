@@ -60,9 +60,10 @@ export class RegisterPageTestComponent extends AbstractPageImageLoader implement
 
   }
   ngOnInit(): void {
-    // if (this.isLogin()) {
-    //   this.showAlertLoginDialog("/createpage-tester");
-    // }
+    console.log('this.isLogin()', this.isLogin())
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/createpage-tester");
+    }
   }
 
   public ngOnDestroy(): void {
