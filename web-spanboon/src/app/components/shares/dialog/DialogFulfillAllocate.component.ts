@@ -29,6 +29,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     private activatedRoute: ActivatedRoute;
 
     public listItem: any
+    public wizardConfig: any
 
     constructor(authenManager: AuthenManager, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
@@ -56,13 +57,17 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             }
         ]
 
+        this.wizardConfig = {
+            "quantity": 4
+        }
+
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
         });
     }
 
     ngOnInit(): void {
-        this.checkLoginAndRedirection();
+        // this.checkLoginAndRedirection();
 
     }
 
@@ -85,7 +90,15 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         return;
     }
 
+    public getQuantity(num): any {
+        let arrWizard: any[] = []
 
+        for (let index = 0; index < this.wizardConfig.quantity; index++) {
+            arrWizard.push(index);
+        }
+        return arrWizard
+
+    }
 
     private checkLoginAndRedirection(): void {
         if (!this.isLogin()) {

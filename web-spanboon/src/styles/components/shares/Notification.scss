@@ -95,6 +95,7 @@
         > .wrapper-noti {
         }
         > .wrapper-setting {
+            cursor: pointer;
         }
     }
 
@@ -178,7 +179,7 @@
                 > .wrapper-setting {
                 }
             }
-        } 
+        }
         .preload {
             padding: unset;
         }
@@ -252,7 +253,7 @@
         min-height: 100vh !important;
         margin: unset;
     }
-    .noti-sub-menu+* .cdk-overlay-pane {
+    .noti-sub-menu + * .cdk-overlay-pane {
         right: 0 !important;
         top: 39pt !important;
     }

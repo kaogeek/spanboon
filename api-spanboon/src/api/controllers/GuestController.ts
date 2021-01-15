@@ -718,11 +718,13 @@ export class GuestController {
 
             const expiresAt = checkAccessToken.data.expires_at;
             const today = moment().toDate();
+            console.log('expiresAt: ', expiresAt);
+            console.log('today: ', today.getTime());
 
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
+            // if (expiresAt < today.getTime()) {
+            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+            //     return res.status(400).send(errorResponse);
+            // }
 
             const fbUser = await this.facebookService.getFacebookUser(loginParam.token);
 
@@ -1033,7 +1035,11 @@ export class GuestController {
         } if (isMode !== undefined && isMode === 'TW') {
             try {
                 // ! edit here when fix bug
-                // tw tokenParam is in pattern oauth_token=xxxx&oauth_token_secret=xxx&user_id=xxxx
+                // tw tokenParam is in pattern oauth_token=xxxx;oauth_token_secret=xxx;user_id=xxxx
+                const find = ';';
+                const re = new RegExp(find, 'g');
+                tokenParam = tokenParam.replace(re, '&');
+
                 const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
@@ -1073,7 +1079,7 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
 
-            if (expiresAt.getTime() <= today.getTime()) {
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 return response.status(400).send(errorUserNameResponse);
             }
@@ -1126,7 +1132,7 @@ export class GuestController {
     private async sendActivateCode(user: User, email: string, code: string, subject: string): Promise<any> {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
-        message += '<a href="/change_password?code=' + code + '&email=' + email + '"> Reset Password </a>';
+        message += '<a href="https://spanboon.com/forgotpassword?code=' + code + '&email=' + email + '"> Reset Password </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 

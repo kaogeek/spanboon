@@ -30,16 +30,16 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     private routeActivated: ActivatedRoute;
     private userAccessFacade: UserAccessFacade;
     private assetFacade: AssetFacade;
-    private pageFacade: PageFacade; 
+    private pageFacade: PageFacade;
 
-    @ViewChild('settingInfo',{static: false}) settingInfo : SettingsInfo;
+    @ViewChild('settingInfo', { static: false }) settingInfo: SettingsInfo;
 
     public redirection: string;
     public isTop: boolean = false;
     public selected: any;
     public resListPage: any;
-    public link: any; 
-    public linkSetting: any; 
+    public link: any;
+    public linkSetting: any;
 
     @Input()
     public dirtyCancelEvent: EventEmitter<any>;
@@ -53,11 +53,11 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         {
             label: "จัดการเพจ",
             keyword: "",
-        }, 
+        },
         {
             label: "โพสต์ของเพจ",
             keyword: "",
-        }, 
+        },
     ];
     public activeLink = this.navLinks[0].label;
 
@@ -128,30 +128,30 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         this.routeActivated = routeActivated;
         this.userAccessFacade = userAccessFacade;
         this.assetFacade = assetFacade;
-        this.pageFacade = pageFacade; 
+        this.pageFacade = pageFacade;
         this.selected = this.links[0].label;
         this.dirtyCancelEvent = new EventEmitter();
-        this.dirtyCancelEvent.subscribe(()=>{   
+        this.dirtyCancelEvent.subscribe(() => {
         });
 
         this.dirtyConfirmEvent = new EventEmitter();
-        this.dirtyConfirmEvent.subscribe((res)=>{  
-            if(this.isTop){ 
+        this.dirtyConfirmEvent.subscribe((res) => {
+            if (this.isTop) {
                 this.activeLink = this.linkSetting.label;
                 if (this.activeLink === 'จัดการเพจ') {
                     this.selected = 'ข้อมูลเพจ';
                 } else if (this.activeLink === 'โพสต์ของเพจ') {
                     this.selected = 'โพสต์ทั้งหมด';
                 }
-            } else { 
-                this.selected = this.link.label; 
+            } else {
+                this.selected = this.link.label;
             }
         });
 
         this.routeActivated.params.subscribe(async (params) => {
             this.pageId = params['id'];
         });
- 
+
     }
 
     ngOnInit(): void {
@@ -159,8 +159,8 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             this.router.navigateByUrl("/home");
         } else {
             this.getAccessPage();
-        } 
-    } 
+        }
+    }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -180,21 +180,22 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     }
 
     public selectedSetting(link: any) {
-        this.linkSetting = link; 
-        const isDirty : boolean = this.settingInfo && this.settingInfo.checkIsDirty(); 
-        if(!isDirty){  
-            this.activeLink = this.linkSetting.label;
-            if (this.activeLink === 'จัดการเพจ') {
-                this.selected = 'ข้อมูลเพจ';
-            } else if (this.activeLink === 'โพสต์ของเพจ') {
-                this.selected = 'โพสต์ทั้งหมด';
-            }
-        } else {
-            this.isTop = true;  
-        }
+        this.showAlertDevelopDialog();
+        // this.linkSetting = link;
+        // const isDirty: boolean = this.settingInfo && this.settingInfo.checkIsDirty();
+        // if (!isDirty) {
+        //     this.activeLink = this.linkSetting.label;
+        //     if (this.activeLink === 'จัดการเพจ') {
+        //         this.selected = 'ข้อมูลเพจ';
+        //     } else if (this.activeLink === 'โพสต์ของเพจ') {
+        //         this.selected = 'โพสต์ทั้งหมด';
+        //     }
+        // } else {
+        //     this.isTop = true;
+        // }
     }
 
-    public selecedInformation(link: any) { 
+    public selecedInformation(link: any) {
         this.link = link; 
         const isDirty : boolean = this.settingInfo.checkIsDirty(); 
         if(!isDirty){

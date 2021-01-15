@@ -64,6 +64,7 @@ import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
 import { CustomItem } from '../models/CustomItem';
 import { CustomItemService } from '../services/CustomItemService';
+import { SearchFilter } from './requests/SearchFilterRequest';
 
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -90,7 +91,6 @@ export class FulfillmentController {
         private customItemService: CustomItemService
     ) { }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage
@@ -362,12 +362,12 @@ export class FulfillmentController {
                     fulfilCaseResponse.pageName = fulfill.page.name;
                     fulfilCaseResponse.pageImageURL = fulfill.page.imageURL;
                     fulfilCaseResponse.fulfillRequestCount = fulfill.fulfillRequest.length;
-                    fulfilCaseResponse.title = fulfill.posts.title;
+                    fulfilCaseResponse.title = (fulfill.posts ? fulfill.posts.title : '');
                     fulfilCaseResponse.postId = fulfill.postId;
                     fulfilCaseResponse.fulfillmentPost = fulfill.fulfillmentPost;
-                    fulfilCaseResponse.postDate = fulfill.posts.createdDate;
-                    fulfilCaseResponse.emergencyEvent = fulfill.posts.emergencyEventTag;
-                    fulfilCaseResponse.objective = fulfill.posts.objectiveTag;
+                    fulfilCaseResponse.postDate = (fulfill.posts ? fulfill.posts.createdDate : undefined);
+                    fulfilCaseResponse.emergencyEvent = (fulfill.posts ? fulfill.posts.emergencyEventTag : undefined);
+                    fulfilCaseResponse.objective = (fulfill.posts ? fulfill.posts.objectiveTag : undefined);
                     fulfilCaseResponse.userId = fulfill.users._id;
                     fulfilCaseResponse.uniqueId = fulfill.users.uniqueId;
                     fulfilCaseResponse.userImageURL = fulfill.users.imageURL;
@@ -378,16 +378,34 @@ export class FulfillmentController {
                     fulfilCaseResponse.updatedByPageDate = fulfill.updatedByPageDate;
                     fulfilCaseResponse.updatedByUserDate = fulfill.updatedByUserDate;
 
+                    let unreadCount = 0;
                     if (fulfillChat !== null && fulfillChat !== undefined && fulfillChat.length > 0) {
                         fulfilCaseResponse.isRead = fulfill.chats[0].isRead;
                         fulfilCaseResponse.chatMessage = fulfill.chats[0].message;
                         fulfilCaseResponse.chatDate = fulfill.chats[0].createdDate;
+                        fulfilCaseResponse.chatRoom = fulfill.chats[0].room;
+
+                        const chatroomId = fulfill.chats[0]['room'];
+                        // count unread
+                        const unreadMsgFilter = new SearchFilter();
+                        unreadMsgFilter.count = true;
+                        unreadMsgFilter.whereConditions = {
+                            room: chatroomId,
+                            isRead: false,
+                            deleted: false
+                        };
+
+                        unreadCount = await this.chatMessageService.search(unreadMsgFilter);
+
+                        console.log('unreadCount', unreadCount);
                     } else {
                         fulfilCaseResponse.isRead = undefined;
                         fulfilCaseResponse.chatMessage = undefined;
                         fulfilCaseResponse.chatDate = undefined;
+                        fulfilCaseResponse.chatRoom = undefined;
                     }
 
+                    fulfilCaseResponse.unreadMessageCount = unreadCount;
                     fulfillmentCaseResult.push(fulfilCaseResponse);
 
                     // Grouping
@@ -433,7 +451,7 @@ export class FulfillmentController {
                         if (containsPageIdx <= -1) {
                             const innerCase: FulfillmentCaseGroupResponse = new FulfillmentCaseGroupResponse();
                             innerCase.groupId = fulfill.postId;
-                            innerCase.groupName = fulfill.posts.title;
+                            innerCase.groupName = (fulfill.posts ? fulfill.posts.title : 'ไม่มีโพส');
                             innerCase.groupType = FULFILL_GROUP.POST;
                             innerCase.cases = [];
                             innerCase.cases.push(fulfilCaseResponse);
@@ -466,7 +484,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/post/:postId Find Main Page Data API
      * @apiGroup MainPage
@@ -504,7 +521,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage
@@ -606,10 +622,9 @@ export class FulfillmentController {
                     let chatMessageResult: any;
 
                     if (fulfillCase !== null && fulfillCase !== undefined && fulfillCase.length > 0) {
-                        let chatRoomId;
 
                         for (const fulfill of fulfillCase) {
-                            chatRoomId = fulfill.chatRoom._id;
+                            const chatRoomId = fulfill.chatRoom._id;
 
                             caseResult = {
                                 id: fulfill._id,
@@ -631,83 +646,89 @@ export class FulfillmentController {
 
                             fulfillResponse.fulfillCase = caseResult;
                             fulfillResponse.chatRoom = chatRoomResult;
-                        }
 
-                        if (chatRoomId !== null && chatRoomId !== undefined && chatRoomId !== '') {
-                            const chatMessages: any[] = await this.chatMessageService.aggregate([
-                                { $match: { room: new ObjectID(chatRoomId), deleted: false } },
-                                { $sort: { createdDate: -1 } },
-                                {
-                                    $lookup: {
-                                        from: 'User',
-                                        localField: 'sender',
-                                        foreignField: '_id',
-                                        as: 'user'
-                                    }
-                                },
-                                {
-                                    $unwind: {
-                                        path: '$user',
-                                        preserveNullAndEmptyArrays: true
-                                    }
-                                },
-                                {
-                                    $lookup: {
-                                        from: 'Page',
-                                        localField: 'sender',
-                                        foreignField: '_id',
-                                        as: 'page'
-                                    }
-                                },
-                                {
-                                    $unwind: {
-                                        path: '$page',
-                                        preserveNullAndEmptyArrays: true
-                                    }
-                                },
-                                { $match: { $or: [{ senderType: SENDER_TYPE.USER }, { senderType: SENDER_TYPE.PAGE }] } }
-                            ]);
+                            if (chatRoomId !== null && chatRoomId !== undefined && chatRoomId !== '') {
+                                const chatMessages: any[] = await this.chatMessageService.aggregate([
+                                    { $match: { room: new ObjectID(chatRoomId), deleted: false } },
+                                    { $sort: { createdDate: -1 } },
+                                    {
+                                        $lookup: {
+                                            from: 'User',
+                                            localField: 'sender',
+                                            foreignField: '_id',
+                                            as: 'user'
+                                        }
+                                    },
+                                    {
+                                        $unwind: {
+                                            path: '$user',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'Page',
+                                            localField: 'sender',
+                                            foreignField: '_id',
+                                            as: 'page'
+                                        }
+                                    },
+                                    {
+                                        $unwind: {
+                                            path: '$page',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    },
+                                    { $match: { $or: [{ senderType: SENDER_TYPE.USER }, { senderType: SENDER_TYPE.PAGE }] } }
+                                ]);
 
-                            const chatMessageList = [];
+                                const chatMessageList = [];
+                                let unreadCount = 0;
 
-                            for (const chat of chatMessages) {
-                                const pageSender = chat.page;
-                                const userSender = chat.user;
-                                const senderType = chat.senderType;
-                                let sender;
-                                let imageURL;
+                                for (const chat of chatMessages) {
+                                    const pageSender = chat.page;
+                                    const userSender = chat.user;
+                                    const senderType = chat.senderType;
+                                    let sender;
+                                    let imageURL;
 
-                                if (pageSender !== null && pageSender !== undefined) {
-                                    if (senderType === SENDER_TYPE.PAGE) {
-                                        sender = pageSender.name;
-                                        imageURL = pageSender.imageURL;
+                                    if (pageSender !== null && pageSender !== undefined) {
+                                        if (senderType === SENDER_TYPE.PAGE) {
+                                            sender = pageSender.name;
+                                            imageURL = pageSender.imageURL;
+                                        }
                                     }
+
+                                    if (userSender !== null && userSender !== undefined) {
+                                        if (senderType === SENDER_TYPE.USER) {
+                                            sender = userSender.displayName;
+                                            imageURL = userSender.imageURL;
+                                        }
+                                    }
+
+                                    if (!chat.isRead) {
+                                        unreadCount += 1;
+                                    }
+
+                                    chatMessageResult = {
+                                        id: chat._id,
+                                        sender,
+                                        senderType,
+                                        imageURL,
+                                        message: chat.message,
+                                        room: chat.room,
+                                        fileId: chat.fileId,
+                                        filePath: chat.filePath,
+                                        videoURL: chat.videoURL,
+                                        deleted: chat.deleted,
+                                        createdDate: chat.createdDate,
+                                        isRead: chat.isRead
+                                    };
+
+                                    chatMessageList.push(chatMessageResult);
                                 }
-
-                                if (userSender !== null && userSender !== undefined) {
-                                    if (senderType === SENDER_TYPE.USER) {
-                                        sender = userSender.displayName;
-                                        imageURL = userSender.imageURL;
-                                    }
-                                }
-
-                                chatMessageResult = {
-                                    id: chat._id,
-                                    sender,
-                                    senderType,
-                                    imageURL,
-                                    message: chat.message,
-                                    room: chat.room,
-                                    fileId: chat.fileId,
-                                    filePath: chat.filePath,
-                                    videoURL: chat.videoURL,
-                                    deleted: chat.deleted,
-                                    createdDate: chat.createdDate
-                                };
-
-                                chatMessageList.push(chatMessageResult);
-
                                 fulfillResponse.chatMessages = chatMessageList;
+                                fulfillResponse.unreadMessageCount = unreadCount;
                             }
                         }
 
@@ -726,7 +747,6 @@ export class FulfillmentController {
         }
     }
 
-    // Find Page API
     /**
      * @api {get} /api/fulfillment_case/list Find Main Page Data API
      * @apiGroup MainPage

@@ -37,7 +37,7 @@ export class AllocateController {
      */
     @Post('/')
     public async createAllocate(@Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
-        console.log('allocate');
+        return res.status(400).send(ResponseUtil.getErrorResponse('This path is under construction.', undefined));
     }
 
     // Calculate Allocate API

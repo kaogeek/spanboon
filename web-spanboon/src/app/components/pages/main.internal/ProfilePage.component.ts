@@ -367,7 +367,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/profile/" + this.resProfile.id);
     } else {
-      this.postFacade.like(post.postData._id).then((res: any) => {
+      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
         this.resPost.posts[index].isLike = res.isLike
         this.resPost.posts[index].likeCount = res.likeCount
       }).catch((err: any) => {
@@ -491,7 +491,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             });
           } else if (typeof post.rootReferencePost === 'object' && (post && post.rootReferencePost !== null && Object.keys(post.rootReferencePost).length > 0)) {
             post.referencePostObject = post.rootReferencePost
-          } 
+          }
         }
 
         setTimeout(() => {
@@ -870,6 +870,13 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     })
   }
 
+  private isLoginCh() {
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/page/" + this.resProfile.id);
+      return
+    }
+  }
+
   public async actionComment(action: any, index: number) {
     this.postId = action.pageId
     let pageInUser: any[]
@@ -958,7 +965,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else if (action.mod === 'LIKE') {
       this.postLike(action, index);
     } else if (action.mod === 'SHARE') {
+      this.isLoginCh();
     } else if (action.mod === 'COMMENT') {
+      this.isLoginCh();
     } else if (action.mod === 'POST') {
       this.router.navigateByUrl('/post/' + action.pageId);
     }
@@ -1017,7 +1026,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     if (action.userPage.id === user.id) {
       action.userPage.id = null
     }
-    this.postFacade.getAaaPost(action.postData, action.userPage).then((pages: any) => {
+    this.postFacade.getAaaPost(action.postData, action.userPage.id).then((pages: any) => {
       this.resPost.posts[index].isComment = pages.isComment
       this.resPost.posts[index].isLike = pages.isLike
       this.resPost.posts[index].isRepost = pages.isRepost
@@ -1075,6 +1084,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.Tab = false;
     }
   }
+
 }
 
 

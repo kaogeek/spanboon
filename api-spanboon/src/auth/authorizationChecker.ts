@@ -21,7 +21,7 @@ export function authorizationChecker(connection: Connection): (action: Action, r
         // you can use them to provide granular access check
         // checker must return either boolean (true or false)
         // either promise that resolves a boolean value
-        const userId = await authService.parseBasicAuthFromRequest(action.request);
+        let userId = await authService.parseBasicAuthFromRequest(action.request);
 
         if (userId === null && userId === undefined) {
             log.warn('No credentials given');
@@ -31,8 +31,14 @@ export function authorizationChecker(connection: Connection): (action: Action, r
         log.debug('roles >>> ', roles);
 
         if (roles[0] === 'user') {
+            let loginType = undefined;
+            const splitId: string[] = userId.split(';');
+            if(splitId.length >= 2){
+                userId = splitId[0];
+                loginType = splitId[1];
+            }
             console.log('userId check: ' + userId);
-            action.request.user = await authService.validateUser(userId);
+            action.request.user = await authService.validateUser(userId, loginType);
 
             if (action.request.user === undefined) {
                 log.warn('Invalid credentials given');

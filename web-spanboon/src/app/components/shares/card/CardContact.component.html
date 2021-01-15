@@ -21,11 +21,11 @@
                 <div class="head-left" matTooltipShowDelay="{{800}}" matTooltip="{{title}}">
                     {{title}}
                 </div>
-                <div class="head-right">
-                    <!-- <span class="count-contact-user">{{fulfillRequestCount}}</span> -->
-                    <span class="material-icons status" [ngStyle]="{'color': statusRead}">
+                <div class="head-right" *ngIf="unreadMessageCount > 0">
+                    <span class="count-contact-user" >{{unreadMessageCount}}</span>
+                    <!-- <span class="material-icons status" [ngStyle]="{'color': statusRead}">
                         lens
-                    </span>
+                    </span> -->
                 </div>
             </div>
             <div class="contact-hashtag">
@@ -107,6 +107,7 @@
                         <span class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
                 </span>
+                {{isRead}}
                 <span class="contact-text" matTooltipShowDelay="{{800}}" [ngStyle]="{'color': isRead ? 'grey':''}"
                     matTooltip="{{chatMessage}}">{{chatMessage}}</span>
                 <span class="pointer"
