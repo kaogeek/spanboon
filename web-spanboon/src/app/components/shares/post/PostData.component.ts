@@ -107,7 +107,7 @@ export class PostData {
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => {
+    setTimeout(() => { 
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;

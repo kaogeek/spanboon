@@ -39,8 +39,8 @@
                     <div class="profile-name">
                         {{userImage.displayName}}
                     </div>
-                    <div class="profile-name-eng">
-                        @{{userImage.displayName}}
+                    <div class="profile-name-eng" *ngIf="userImage && userImage.uniqueId !== '' && userImage.uniqueId !== undefined && userImage.uniqueId !== null" >
+                        @{{userImage.uniqueId}} 
                     </div>
                     <div class="header-follow">
 

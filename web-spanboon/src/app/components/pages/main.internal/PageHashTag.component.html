@@ -315,7 +315,7 @@
             </div>
             <div class="body-recommended">
                 <div class="recommended-left" *ngIf="!showLoading">
-                    <div class="feed-body-search">
+                    <div class="feed-body-search" #feedbodysearch > 
                         <div class="feed-header-search">
                             <div class="filter">
                                 <svg class="btn-filter" (click)="clickfilter()" xmlns="http://www.w3.org/2000/svg"
@@ -425,11 +425,11 @@
                                 </mat-menu>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                     <ng-container *ngIf="isLoadingClickTab; else IsLoadingPost">
                         <Preload-card [isShowCard1]="true" [isShowCard2]="true"></Preload-card>
                     </ng-container>
-                    <ng-template #IsLoadingPost>
+                    <ng-template #IsLoadingPost> 
                         <ng-container *ngIf="resPost && resPost.length > 0 else elsePost">
                             <ng-container *ngFor="let item of resPost;let index = index">
                                 <post-data [itemPost]="item.post" [user]="userImage" [isComments]="isLogin()"

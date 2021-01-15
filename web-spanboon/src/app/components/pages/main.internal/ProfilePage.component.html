@@ -298,8 +298,8 @@
                                     {{resProfile && resProfile.displayName ? resProfile.displayName : ''}}
                                 </div>
                                 <div class="fan-page-tag" [phxPreload]="resProfile" [preloadClass]="'fan-page-tag'"
-                                    [preloadPaddIng]="'10'">
-                                    {{resProfile && resProfile.uniqueId ? resProfile.uniqueId : ''}}
+                                    [preloadPaddIng]="'10'" *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
+                                    @{{ resProfile.uniqueId }}
                                 </div>
                             </div>
                         </div>

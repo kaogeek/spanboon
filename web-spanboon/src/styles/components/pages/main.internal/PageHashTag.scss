@@ -90,7 +90,7 @@
                 justify-content: flex-start;
                 align-items: stretch;
                 > .popup-left {
-                    display: none; 
+                    display: none;
                 }
                 > .card-checkbox-view {
                     border: $width-border solid $border-color;
@@ -117,22 +117,11 @@
                     }
 
                     > .wrapper-card {
-                        // border-bottom: $width-border solid $border-color;
                         display: flex;
                         background-color: $white;
                         padding: 8pt 10pt;
                         flex-direction: column;
-                        // > .select-calendar {
-                        //     width: 100%;
-                        //     font-family: "Kanit-500";
-                        //     font-size: 14px;
-                        //     border: 1pt solid $border-color;
-                        //     color: $koalaGray;
-                        //     > .mat-button-wrapper {
-                        //         display: flex;
-                        //         align-items: center;
-                        //     }
-                        // }
+
                         > .date-range {
                             width: 100%;
                             flex: 1 1 0%;
@@ -326,16 +315,21 @@
                     margin-right: 5pt;
                     background: #f5f5f5;
                     min-width: 243pt;
+                    width: 100%;
 
-                    > .feed-body-search {
+                    > .feed-body-search { 
                         position: sticky;
-                        top: 55pt;
+                        top: 55pt; 
+                        margin-bottom: 5pt;
                         z-index: 2;
                         border-left: $width-border solid $border-color;
                         border-top: $width-border solid $border-color;
                         border-right: $width-border solid $border-color;
                         background-color: $white;
-                        margin-bottom: 5pt;
+                        transition: all 0.8s ease-in-out;
+                        -webkit-transition: all 0.8s ease-in-out;
+                        -moz-transition: all 0.8s ease-in-out;
+                        -ms-transition: all 0.8s ease-in-out;
 
                         > .feed-header-search {
                             display: flex;
@@ -543,14 +537,14 @@
                                 }
                             }
                         }
-                    }
+                    } 
 
                     > .wrapper-feed-card {
                         position: relative;
                         z-index: 1;
                         background-color: white;
                         border-left: $width-border solid $border-color;
-                        border-right: $width-border solid $border-color;
+                        border-right: $width-border solid $border-color; 
 
                         > .feed-post-card {
                             display: flex;
@@ -645,7 +639,7 @@
                     > .feed-none-post {
                         text-align: center;
                         padding: 20pt 0;
-                        @include font-size-7-100("Kanit-500");
+                        @include font-size-7-100("Kanit-500"); 
                     }
 
                     > .wrapper-body-middle {
@@ -1096,7 +1090,7 @@
                         justify-content: center;
                         align-items: center;
                     }
-                } 
+                }
             }
         }
     }
@@ -1168,16 +1162,27 @@ page-hashtag {
     }
 }
 
+// .feed-body-search.hidden {
+//     top: -100% !important;
+//     transform: translateY(100%);
+//     -webkit-transform: translateY(100%); //Safari
+//     -moz-transform: translateY(100%);
+// }
+
+// .card-feed-post.active-feed {
+//     top: 0 !important;
+// }
+
 @media (max-width: $xxlarge) {
     .page-hashtag {
         .container {
             > .page-recommended {
-                > .slide-left {  
+                > .slide-left {
                 }
                 > .body-recommended {
                     > .recommended-left {
                         // width: calc(100% - 250pt - 5pt);
-                        > .feed-body-search {
+                        > .feed-body-search { 
                             > .footer-bar {
                                 > .sorting {
                                     > .menu-sorting {
@@ -1214,7 +1219,7 @@ page-hashtag {
                     position: fixed;
                     bottom: 0;
                     z-index: 999;
-                    background-color: white;  
+                    background-color: white;
                     visibility: hidden;
                     overflow-y: auto;
                     left: 0;
@@ -1255,6 +1260,7 @@ page-hashtag {
                     max-width: 600px;
                     > .recommended-left {
                         > .feed-body-search {
+                            // width: 443pt;
                             > .feed-header-search {
                                 > .filter {
                                     > .btn-filter {
@@ -1294,10 +1300,10 @@ page-hashtag {
         .container {
             > .page-recommended {
                 > .popup-left {
-                    display: flex; 
+                    display: flex;
                     &.active {
                     }
-                } 
+                }
 
                 > .page-recommended-menu {
                     width: 68px;
@@ -1306,7 +1312,8 @@ page-hashtag {
                 > .body-recommended {
                     > .recommended-left {
                         // width: 100%;
-                        > .feed-body-search {
+                        > .feed-body-search {  
+                            //   width: 438pt;
                             > .footer-bar {
                                 > .nav-bar-tab {
                                 }
@@ -1336,6 +1343,9 @@ page-hashtag {
                     width: 100%;
                     > .recommended-left {
                         margin-right: unset;
+                        >.feed-body-search {
+                            // width: 412pt; 
+                        }
                     }
                 }
             }
@@ -1374,107 +1384,6 @@ page-hashtag {
             }
         }
     }
-    // .page-hashtag {
-    //     .container {
-    //         > .page-recommended {
-    //             > .slide-left {
-    //                 transform: translate3d(-100%, -19pt, 0);
-    //                 &.active {
-    //                     // top: 55pt;
-    //                     width: calc(100% - 10px);
-    //                     // height: calc(100% - 55pt);
-    //                     // bottom: 0;
-    //                 }
-    //                 > .popup-left {
-    //                     position: sticky;
-    //                     top: 0; 
-    //                     background: white;
-    //                     z-index: 99;
-    //                     display: flex;
-    //                     justify-content: space-between;
-    //                     align-items: center;
-    //                     // height: 35pt;
-    //                     > .home-left {
-    //                         display: flex;
-    //                         align-items: center;
-    //                         justify-content: center;
-    //                         height: 40px;
-    //                         width: 40px;
-    //                         overflow: unset;
-    //                         border-radius: 50%;
-    //                         background: $bg-grey;
-    //                         margin-right: 5pt;
-    //                         @include pointer();
-    //                         > .home-back {
-    //                             width: 20px;
-    //                             height: 20px;
-    //                         }
-    //                     }
-    //                     > .text {
-    //                         color: $color-warm-red;
-    //                         @include pointer();
-    //                         &:hover {
-    //                             text-decoration: underline;
-    //                         }
-    //                     }
-    //                 }
-    //                 > .recommended-right {
-    //                     > .side-follow {
-    //                         > .box-right {
-    //                             &:last-child {
-    //                                 display: none;
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //             > .page-recommended-menu {
-    //                 top: 0;
-    //             }
-    //             > .body-recommended {
-    //                 > .recommended-left {
-    //                     > .feed-body-search {
-    //                         top: 39pt;
-    //                         > .feed-header-search {
-    //                             padding: 0 8pt;
-    //                             > .filter {
-    //                                 margin: 6pt 0;
-    //                             }
-    //                             > .clip-board {
-    //                                 margin-left: unset;
-    //                             }
-    //                         }
-    //                         > .feed-body {
-    //                             padding: 0 8pt 5pt;
-    //                         }
-    //                         > .footer-bar {
-    //                             padding: 0 8pt;
-    //                             > .nav-bar-tab {
-    //                                 > .mat-tab-nav-bar {
-    //                                     > .mat-tab-link-container {
-    //                                         > .mat-tab-list {
-    //                                             > .mat-tab-links {
-    //                                                 > .mat-tab-link {
-    //                                                     font-family: "Kanit-500";
-    //                                                     font-size: 16px;
-    //                                                 }
-    //                                             }
-    //                                         }
-    //                                     }
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-    //                     > .wrapper-body-middle {
-    //                         > .header-top-name {
-    //                             top: 0pt;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 @media (max-width: $small) {
@@ -1482,11 +1391,11 @@ page-hashtag {
         min-height: calc(100vh - 39pt);
         .container {
             > .page-recommended {
-                > .slide-left { 
+                > .slide-left {
                     transform: translate3d(-100%, -32pt, 0);
                     &.active {
                         top: 39pt;
-                        width: calc(100% - 10px);  
+                        width: calc(100% - 10px);
                         // bottom: 0;
                     }
                     > .popup-left {
@@ -1497,9 +1406,9 @@ page-hashtag {
                         z-index: 99;
                         display: flex;
                         justify-content: space-between;
-                        align-items: center; 
-                        padding: 16pt 10pt;  
-                        
+                        align-items: center;
+                        padding: 16pt 10pt;
+
                         > .home-left {
                             display: flex;
                             align-items: center;
@@ -1539,8 +1448,12 @@ page-hashtag {
                 }
                 > .body-recommended {
                     > .recommended-left {
-                        > .feed-body-search {
+                        > .feed-body-search { 
                             top: 39pt;
+                            transition: all 0.8s ease-in-out;
+                            -webkit-transition: all 0.8s ease-in-out;
+                            -moz-transition: all 0.8s ease-in-out;
+                            -ms-transition: all 0.8s ease-in-out;
                             > .feed-header-search {
                                 padding: 0 8pt;
                                 > .filter {
@@ -1570,7 +1483,8 @@ page-hashtag {
                                     }
                                 }
                             }
-                        }
+                        } 
+
                         > .wrapper-body-middle {
                             > .header-top-name {
                                 top: 0pt;
