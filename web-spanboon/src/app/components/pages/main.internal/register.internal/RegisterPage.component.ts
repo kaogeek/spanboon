@@ -144,25 +144,12 @@ export class RegisterPage extends AbstractPage implements OnInit {
           this.router.navigateByUrl("/login");
         }
       }
-    });
-
-    // if ((this.router.url === "/register/menu") || (this.router.url === '/register?mode=normal')) {
-    //   $(".icon-post-bottom").css({
-    //     'display': "none"
-    //   });
-    // }
+    }); 
   }
 
   ngOnInit(): void {
     super.ngOnInit();
     this.checkLoginAndRedirection();
-
-    // $('#username').on('input', function () {
-    //   let text = $(this).val();
-    //   text = text.replace(/\D/g,'');
-    //   if (text.length > 0) text = text.replace(/.{0}/, '$&@');
-    //   $(this).val(text);
-    // });
   }
 
   public ngOnDestroy(): void {
@@ -358,7 +345,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (value.status === 1) {
           let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
           let isValid = false;
-          if (value.data) {
+          if (value.user) {
             isValid = true;
           }
           let dialog = this.showAlertDialogWarming(alertMessage, "none");
@@ -371,7 +358,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
                 this.router.navigate(['/login']);
               }
             } else {
-              this.router.navigate(['/login']);
+              this.router.navigate(['/login']); 
             }
           });
         }

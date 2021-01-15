@@ -47,8 +47,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.userImage = {}
 
-        this.observManager.subscribe('authen.check', (data: any) => {
-            // this.getProfileImage(data);
+        this.observManager.subscribe('authen.check', (data: any) => { 
             this.reloadUserImage();
         });
         this.observManager.subscribe('authen.image', (data: any) => {
@@ -109,7 +108,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public reloadUserImage() {
-        let user = this.getCurrentUser();
+        let user = this.getCurrentUser(); 
         if (user !== undefined && user !== null) {
             this.getProfileImage(user);
         }
