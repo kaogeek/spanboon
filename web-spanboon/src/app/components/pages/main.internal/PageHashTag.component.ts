@@ -264,7 +264,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           const splitText = substringPath.split('&');
           for (let text of splitText) {
             if (text.includes('hashtag')) {
-              this.matHashTag = text.split('=')[1].split(','); 
+              const dataHashtag = text.split('=')[1].split(',');
+              if (dataHashtag.length > 0) {
+                for (let data of dataHashtag) {
+                  if (data.includes('#')) { 
+                    this.matHashTag.push(data.substring(1, data.length));
+                  } else {
+                    this.matHashTag = text.split('=')[1].split(',');
+                  }
+                }
+              }
             } else if (text.includes('keyword')) {
               this.keyword = text.split('=')[1].split(',');
             } else if (text.includes('follow')) {
@@ -834,7 +843,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       keywordFilter.filter.offset = 0;
       this.isLoadingPost = true;
     } else {
-      console.log('this.resPost.length ',this.resPost.length)
       keywordFilter.filter.offset = this.resPost && this.resPost.length ? this.resPost.length : SEARCH_OFFSET
     }
     let originalPost: any[] = this.resPost;
@@ -1086,7 +1094,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public remove(tag) {
-    // this.test = tag
+    this.test = tag
     const index = this.matHashTag.indexOf(tag);
     if (index >= 0) {
       this.matHashTag.splice(index, 1);
