@@ -54,11 +54,11 @@ export abstract class AbstractPage implements OnInit {
     }
   }
 
-  public showAlertDevelopDialog(): void {
+  public showAlertDevelopDialog(text?): void {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
+        text: text ? text : "ระบบอยู่ในระหว่างการพัฒนา",
         bottomText2: "ตกลง",
         bottomColorText2: "black",
         btDisplay1: "none"

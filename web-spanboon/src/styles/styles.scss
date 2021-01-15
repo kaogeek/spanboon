@@ -50,6 +50,46 @@
   animation: AnimationLoad 5s ease infinite;
 }
 
+//test page spanboon
+
+.test-page {
+  font-family: "Kanit-400";
+  font-size: 16px;
+  span {
+    width: 150pt;
+    color: white;
+    font-size: 12pt;
+    text-align: center;
+  }
+  .test-login {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    align-items: flex-end;
+    .input-test {
+      font-family: "Kanit-400";
+      padding: 6px;
+      width: 100%;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    .test-login-bt {
+      transition: 0.2s;
+      width: 80pt;
+      padding: 4px;
+      background-color: #fd545a;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      &:hover {
+        transition: 0.2s;
+        background-color: #ff4248;
+      }
+    }
+  }
+}
+
 @keyframes AnimationLoad {
   0% {
     background-position: 0% 50%;

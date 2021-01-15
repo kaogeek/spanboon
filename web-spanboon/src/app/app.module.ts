@@ -178,6 +178,7 @@ import {
 
 // remove when finished test
 import { TestComponent } from './components/TestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 
 import {
   // Manager
@@ -356,7 +357,8 @@ const COMPONENTS: any[] = [
   DialogMedia,
   SnackBarFulfill,
   // test
-  TestComponent
+  TestComponent,
+  RegisterPageTestComponent
 ];
 
 const PIPE_CLASSES: any[] = [
