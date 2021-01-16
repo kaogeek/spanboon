@@ -358,7 +358,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.heightWindow();
       this.heightWindowLeft();
       var scrollTop = scrollTop.fix;
-      var y = this.feedbodysearch.nativeElement.offsetHeight;
+      var y = this.feedbodysearch.nativeElement && this.feedbodysearch.nativeElement.offsetHeight;
       var x = document.getElementsByClassName('header-top')[0].clientHeight;
       let top = x + y;
       if (this.prevOld > scrollTop) {

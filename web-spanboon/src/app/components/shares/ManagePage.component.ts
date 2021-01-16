@@ -57,7 +57,7 @@ export class ManagePage extends AbstractPage implements OnInit {
             this.searchAllPage();
         });
         this.observManager.subscribe('authen.check', (data: any) => { 
-            // this.searchAllPage();
+            this.searchAllPage();
         });
     }
     public isLogin(): boolean {
@@ -66,7 +66,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {   
-        // this.searchAllPage();
+        this.searchAllPage();
     }
 
     public ngOnDestroy(): void {

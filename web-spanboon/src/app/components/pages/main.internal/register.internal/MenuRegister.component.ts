@@ -121,8 +121,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         return;
     }
 
-    public clickLoginGoogle(): void { 
-        this.clickSystemDevelopment();
+    public clickLoginGoogle(): void {
+        this.showAlertDevelopDialog("รองรับการสมัครใช้งานผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
         // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
 
         //     if (result !== null && result !== undefined) {
@@ -140,7 +140,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         //     console.log('error >>> ', error);
         // });
     }
- 
+
 
     public loginTwitter(token: string, token_secret: string, userId: string) {
         let mode = 'TWITTER';
@@ -183,14 +183,16 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickLoginTW() {
-        this.twitterService.requestToken().then((result: any) => {
-            this.authorizeLink += '?' + result;
-            // this.authenticateLink += '?' + result;
-            // console.log('result ', this.authorizeLink) 
-            window.open(this.authorizeLink);
-        }).catch((error: any) => {
-            console.log(error);
-        });
+
+        this.showAlertDevelopDialog("รองรับการสมัครใช้งานผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+        // this.twitterService.requestToken().then((result: any) => {
+        //     this.authorizeLink += '?' + result;
+        //     // this.authenticateLink += '?' + result;
+        //     // console.log('result ', this.authorizeLink) 
+        //     window.open(this.authorizeLink);
+        // }).catch((error: any) => {
+        //     console.log(error);
+        // });
     }
 
     private loginGoogle() {

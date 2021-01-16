@@ -191,18 +191,19 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginTwitter() {
-    this.twitterService.requestToken().then((result: any) => {
-      this.authorizeLink += '?' + result;
-      // this.authenticateLink += '?' + result;
-      // console.log('result ', this.authorizeLink) 
-      window.open(this.authorizeLink);
-    }).catch((error: any) => {
-      console.log(error);
-    });
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+    // this.twitterService.requestToken().then((result: any) => {
+    //   this.authorizeLink += '?' + result;
+    //   // this.authenticateLink += '?' + result;
+    //   // console.log('result ', this.authorizeLink) 
+    //   window.open(this.authorizeLink);
+    // }).catch((error: any) => {
+    //   console.log(error);
+    // });
   }
 
   public clickLoginGoogle(): void {
-    this.showAlertDevelopDialog();
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
     // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => { 
 
     //   if (result !== null && result !== undefined) {
