@@ -64,6 +64,8 @@ import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
 import { CustomItem } from '../models/CustomItem';
 import { CustomItemService } from '../services/CustomItemService';
+import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateStatement';
+import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 
 @JsonController('/fulfillment_case')
@@ -88,7 +90,8 @@ export class FulfillmentController {
         private fulfillmentService: FulfillmentService,
         private needsService: NeedsService,
         private stdItemService: StandardItemService,
-        private customItemService: CustomItemService
+        private customItemService: CustomItemService,
+        private fulfillStmtService: FulfillmentAllocateStatementService
     ) { }
 
     /**
@@ -1344,6 +1347,31 @@ export class FulfillmentController {
                     const changeFulfillCaseStatus = await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
 
                     if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
+                        /* Create Statement and update need in service */
+                        const caseReqsList: FulfillmentRequest[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(caseId);
+
+                        if (caseReqsList !== undefined && caseReqsList.length > 0) {
+                            for (const caseReq of caseReqsList) {
+                                const ffStmt = new FulfillmentAllocateStatement();
+                                ffStmt.amount = caseReq.quantity;
+                                ffStmt.needsId = caseReq.needsId;
+                                ffStmt.fulfillmentRequest = caseReq.id;
+                                ffStmt.deleted = false;
+
+                                const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
+
+                                if (stmtObj) {
+                                    // update fulfillment request
+                                    await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                                        $set: {
+                                            statementId: stmtObj.id
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        /* End Statement */
+
                         /* Create Chat */
                         // search chatroom
                         const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
@@ -1453,6 +1481,33 @@ export class FulfillmentController {
                     const changeFulfillCaseStatus = await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
 
                     if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
+                        /* Delete Statement and update need in service */
+                        const caseReqsList: FulfillmentRequest[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(caseId);
+
+                        if (caseReqsList !== undefined && caseReqsList.length > 0) {
+                            for (const caseReq of caseReqsList) {
+                                console.log('caseReq.statementId', caseReq.statementId);
+                                if (caseReq.statementId === undefined || caseReq.statementId === null) {
+                                    continue;
+                                }
+
+                                try {
+                                    const valid = await this.fulfillStmtService.deleteFulfillmentAllocateStatement(caseReq.statementId);
+                                    if (valid) {
+                                        // update fulfillment request
+                                        await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                                            $set: {
+                                                statementId: undefined
+                                            }
+                                        });
+                                    }
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            }
+                        }
+                        /* End Statement */
+
                         /* Create Chat */
                         // search chatroom
                         const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
@@ -2639,11 +2694,13 @@ export class FulfillmentController {
                     continue;
                 }
 
+                /* // uncomment for calculate need
                 const needFulfillQuantity: number = (need.fulfillQuantity === undefined ? 0 : need.fulfillQuantity) + request.quantity; // oldfulfillQuantity + fulfillQuantity
                 let needPendingQuantity: number = (need.quantity === undefined ? 0 : need.quantity) - needFulfillQuantity; // quantity - fulfillQuantity
                 if (needPendingQuantity <= -1) {
                     needPendingQuantity = 0;
                 }
+                */
 
                 const fulfil = new Fulfillment();
                 fulfil.requestId = request.id;
@@ -2659,6 +2716,7 @@ export class FulfillmentController {
 
                 await this.fulfillmentService.create(fulfil);
 
+                /* // uncomment for update need needFulfillQuantity
                 const needUpdate = {
                     $set: {
                         fulfillQuantity: needFulfillQuantity,
@@ -2672,6 +2730,7 @@ export class FulfillmentController {
                 need.fulfillQuantity = needFulfillQuantity;
                 need.pendingQuantity = needPendingQuantity;
                 needMap[needIdKey] = need;
+                */
             }
 
             // create user post
