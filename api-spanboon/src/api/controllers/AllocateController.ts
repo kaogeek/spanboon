@@ -101,14 +101,14 @@ export class AllocateController {
         const result: AllocateResponse[] = [];
         let needsList: any[] = [];
         // let mode;
-        // let emergencyEvent;
-        // let objective;
+        let emergencyEvent;
+        let objective;
 
-        // if (params !== null && params !== undefined) {
-        //     mode = params.mode;
-        //     emergencyEvent = params.emergencyEvent;
-        //     objective = params.objective;
-        // }
+        if (params !== null && params !== undefined) {
+            // mode = params.mode;
+            emergencyEvent = params.emergencyEvent;
+            objective = params.objective;
+        }
 
         const standardItemLeftMap: any = {}; // key as standardItemId
         const customItemLeftMap: any = {}; // key as customItemId
@@ -156,6 +156,16 @@ export class AllocateController {
                     needORStmt.push({ customItemId: { $in: customItemIdList } });
                 }
 
+                const matchPost: any = { 'posts.type': POST_TYPE.NEEDS };
+                // inject filter
+                if (emergencyEvent !== undefined && emergencyEvent !== '') {
+                    matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                }
+
+                if (objective !== undefined && objective !== '') {
+                    matchPost['posts.objective'] = new ObjectID(objective);
+                }
+
                 const needsAggStmt = [
                     {
                         $match: {
@@ -178,7 +188,7 @@ export class AllocateController {
                             preserveNullAndEmptyArrays: true
                         }
                     },
-                    { $match: { 'posts.type': POST_TYPE.NEEDS } },
+                    { $match: matchPost },
                     { $sort: { 'posts.createdDate': 1 } }
                 ];
 
@@ -198,6 +208,16 @@ export class AllocateController {
 
                 if (customItemIdList.length > 0) {
                     needORStmt.push({ customItemId: { $in: customItemIdList } });
+                }
+
+                const matchPost: any = { 'posts.type': POST_TYPE.NEEDS };
+                // inject filter
+                if (emergencyEvent !== undefined && emergencyEvent !== '') {
+                    matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                }
+
+                if (objective !== undefined && objective !== '') {
+                    matchPost['posts.objective'] = new ObjectID(objective);
                 }
 
                 const needsAggStmt = [
@@ -222,7 +242,7 @@ export class AllocateController {
                             preserveNullAndEmptyArrays: true
                         }
                     },
-                    { $match: { 'posts.type': POST_TYPE.NEEDS } },
+                    { $match: matchPost },
                     { $sort: { 'posts.createdDate': 1 } }
                 ];
 
@@ -295,7 +315,7 @@ export class AllocateController {
                 const key = postId + ';' + standardId;
                 postNeedArray = stdNeedPostMap[key];
             }
-            
+
             if (postNeedArray === undefined) {
                 postNeedArray = [];
             }
