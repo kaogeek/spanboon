@@ -159,10 +159,12 @@ export class GuestController {
                         }
                     }
 
-                    let message = '<p> Hello ' + result.firstName + '</p>';
-                    message += '<p> Username : ' + result.email + '</p>';
+                    let message = '<p> สวัสดีคุณ ' + result.firstName + '</p>';
+                    message += '<p> ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม สะพานบุญ </p>';
+                    message += '<p> ข้อมูลสำหรับ Login ของคุณคือ </p>';
+                    message += '<p> ชื่อผู้ใช้ : ' + result.email + '</p>';
 
-                    MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
+                    MAILService.customerLoginMail(message, registerEmail, 'ยินดีต้อนรับสู่สะพานบุญ');
                     result = this.userService.cleanUserField(result);
 
                     const authId = new AuthenticationId();
