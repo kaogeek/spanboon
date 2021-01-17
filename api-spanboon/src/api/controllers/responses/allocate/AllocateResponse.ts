@@ -12,8 +12,11 @@ export class AllocateResponse {
     public needsId: string;
     public postsId: string;
     public posts: Posts;
-    public quantity: number;
+    public fulfillQuantity: number; // current fulfill qty
+    public quantity: number; // allocate qty
     public amount: number;
     public itemName: string;
     public itemUnit: string;
+    public standardItemId: string;
+    public customItemId: string;
 }

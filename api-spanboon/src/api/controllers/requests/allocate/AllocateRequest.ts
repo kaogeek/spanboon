@@ -11,5 +11,5 @@ export class AllocateRequest {
 
     public pageId: string;
     public postId: string;
-    public items: any[];
+    public items: any[]; // {standardItemId: string, amount: number} or {customItemId: string, amount: number}
 }
