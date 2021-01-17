@@ -1040,7 +1040,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     setCaretToEnd(target/*: HTMLDivElement*/, isStart?) {
-        console.log('target', target)
+        10
         const range = document.createRange();
         const sel = window.getSelection();
         const ranges = sel.getRangeAt(0);
@@ -1092,37 +1092,13 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     public onKeyup(event) {
-        // const regex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm;
-        // const str = document.getElementById('editableStory' + this.index).innerHTML;
-        // var inputText = document.getElementById('editableStory' + this.index);
-        // var innerHTML = inputText.innerHTML;
-        // var innerText = inputText.innerText
-        // var target = 'target="_blank"'
-        // let m;
-
-
-
-        // while ((m = regex.exec(str)) !== null) {
-        //     if (m.index === regex.lastIndex) {
-        //         regex.lastIndex++;
-        //     }
-
-        //     m.forEach((match, groupIndex) => {
-        //         var index = innerHTML.indexOf(match);
-        //         var regexs = innerHTML
-        //         var href = "href = https://www." + match + "/"
-        //         innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
-        //         inputText.innerHTML = innerHTML;
-        //         this.setCaretToEnd(event.target);
-        //     });
-        // }
-        const regex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm;
+        const regex = /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gm;
         var inputText = document.getElementById('editableStory' + this.index);
         var innerHTML = inputText.innerHTML;
         var innerText = inputText.innerText
         var target = 'target="_blank"'
         let m;
-        while ((m = regex.exec(this.link)) !== null) {
+        while ((m = regex.exec(innerText)) !== null) {
             // This is necessary to avoid infinite loops with zero-width matches
             if (m.index === regex.lastIndex) {
                 regex.lastIndex++;
@@ -1130,16 +1106,24 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
             // The result can be accessed through the `m`-variable.
             m.forEach((match, groupIndex) => {
-                if (event.key === " " || event.key === undefined) {
+                if (event.key === " ") {
                     var index = innerHTML.indexOf(match);
                     var href = "href = https://www." + match + "/"
-                    innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
-                    inputText.innerHTML = innerHTML;
-                    this.setCaretToEnd(event.target);
+
+                    var stIndex = (innerHTML.indexOf(match) - 13);
+                    var check = innerHTML.substring((stIndex - 1), stIndex)
+                    var beforeCheck = innerHTML.substring((index - 1), index)
+
+                    if (check !== "=") {
+                        if (beforeCheck !== ">") {
+                            innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
+                            inputText.innerHTML = innerHTML;
+                            this.setCaretToEnd(event.target);
+                        }
+                    }
                 }
             });
         }
-        this.link = document.getElementById('editableStory' + this.index).innerText.toString();
 
         clearTimeout(this.setTimeKeyup);
         this.setTimeKeyup = setTimeout(() => {
