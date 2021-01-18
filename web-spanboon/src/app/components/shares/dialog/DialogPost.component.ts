@@ -132,26 +132,28 @@ export class DialogPost extends AbstractPage {
         check = (this.data.title !== '' || this.data.detail)
       }
       if (result.type === 'click' && check) {
-        let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
-        dialog.afterClosed().subscribe((res) => {
-          if (res) {
-            if (this.isListPage) {
-              if (!this.isEdit) {
-                this.data.topic = '';
-                this.data.content = '';
-                this.postFacade.nextMessageTopic(this.data.topic);
-                this.postFacade.nextMessage(this.data.content);
-              }
-            }
-            this.dialogRef.close();
-          } else {
-            if (!this.isEdit) {
-              this.dialog.open(DialogPost, {
-                data: this.data
-              });
-            }
-          }
-        });
+        // let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
+        // dialog.afterClosed().subscribe((res) => {
+        //   if (res) {
+        //     if (this.isListPage) {
+        //       if (!this.isEdit) {
+        //         this.data.topic = '';
+        //         this.data.content = '';
+        //         this.postFacade.nextMessageTopic(this.data.topic);
+        //         this.postFacade.nextMessage(this.data.content);
+        //       }
+        //     }
+        //     this.dialogRef.close();
+        //   } else {
+        //     if (!this.isEdit) {
+        //       this.dialog.open(DialogPost, {
+        //         data: this.data
+        //       });
+        //     }
+        //   }
+        // });
+
+        this.dialogRef.close();
       }
     });
   }
@@ -262,16 +264,18 @@ export class DialogPost extends AbstractPage {
         this.submitCanCelDialog.emit(this.data);
       });
 
-      let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
-      dialog.afterClosed().subscribe((res) => {
-        if (res) {
-          this.data.topic = '';
-          this.data.content = '';
-          this.postFacade.nextMessageTopic(this.data.topic);
-          this.postFacade.nextMessage(this.data.content);
-          this.dialogRef.close();
-        }
-      });
+      // let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
+      // dialog.afterClosed().subscribe((res) => {
+      //   if (res) {
+      //     this.data.topic = '';
+      //     this.data.content = '';
+      //     this.postFacade.nextMessageTopic(this.data.topic);
+      //     this.postFacade.nextMessage(this.data.content);
+      //     this.dialogRef.close();
+      //   }
+      // });
+
+      this.dialogRef.close();
     } else {
       this.dialogRef.close(this.data);
     }

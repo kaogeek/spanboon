@@ -28,8 +28,14 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public redirection: string;
     private activatedRoute: ActivatedRoute;
 
-    public listItem: any
-    public wizardConfig: any
+    public listItem: any;
+    public listItemNeed: any;
+    public wizardConfig: any;
+    public listBoxDisplay: any = 'none';
+    public listItemBoxDisplay: any = 'none';
+    public listGeneralBoxDisplay: any = 'none';
+
+    public textHrader: string = 'จัดการรายการเติมเต็ม';
 
     constructor(authenManager: AuthenManager, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
@@ -38,6 +44,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.router = router;
         this.dialog = dialog;
         this.activatedRoute = activatedRoute;
+
+        this.listBoxDisplay = "block"
 
         this.listItem = [
             {
@@ -54,6 +62,74 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 "label": "เข้าโพสต์มองหาทั่วไป",
                 "detail": "จัดสรรเข้าโพสต์ที่ไม่ระบุเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ",
                 "type": "MANUALGENERAL"
+            }
+        ]
+
+        this.listItemNeed = [
+            {
+                "active": true,
+                "createdDate": "2020-10-22T04:19:24.469Z",
+                "customItemId": "5f91084ca23f15136bd56350",
+                "fulfillQuantity": 0,
+                "id": "วัตถุดิบ(ปลาหมึก)",
+                "name": "วัตถุดิบ(ปลาหมึก)",
+                "pageId": "5f8e6b11a554f760422bc347",
+                "pendingQuantity": 0,
+                "post": "5f91084ca23f15136bd5634c",
+                "quantity": 50,
+                "unit": "กิโล",
+            },
+            {
+                "active": true,
+                "createdDate": "2020-10-22T04:19:24.469Z",
+                "customItemId": "5f91084ca23f15136bd56350",
+                "fulfillQuantity": 0,
+                "id": "วัตถุดิบ(ปลาทู)",
+                "name": "วัตถุดิบ(ปลาทู)",
+                "pageId": "5f8e6b11a554f760422bc347",
+                "pendingQuantity": 0,
+                "post": "5f91084ca23f15136bd5634c",
+                "quantity": 50,
+                "unit": "กิโล",
+            },
+            {
+                "active": true,
+                "createdDate": "2020-10-22T04:19:24.469Z",
+                "customItemId": "5f91084ca23f15136bd56350",
+                "fulfillQuantity": 0,
+                "id": "วัตถุดิบ(ไก่)",
+                "name": "วัตถุดิบ(ไก่)",
+                "pageId": "5f8e6b11a554f760422bc347",
+                "pendingQuantity": 0,
+                "post": "5f91084ca23f15136bd5634c",
+                "quantity": 50,
+                "unit": "กิโล",
+            },
+            {
+                "active": true,
+                "createdDate": "2020-10-22T04:19:24.469Z",
+                "customItemId": "5f91084ca23f15136bd56350",
+                "fulfillQuantity": 0,
+                "id": "วัตถุดิบ(นมสด)",
+                "name": "วัตถุดิบ(นมสด)",
+                "pageId": "5f8e6b11a554f760422bc347",
+                "pendingQuantity": 0,
+                "post": "5f91084ca23f15136bd5634c",
+                "quantity": 50,
+                "unit": "กิโล",
+            },
+            {
+                "active": true,
+                "createdDate": "2020-10-22T04:19:24.469Z",
+                "customItemId": "5f91084ca23f15136bd56350",
+                "fulfillQuantity": 0,
+                "id": "วัตถุดิบ(ไข่)",
+                "name": "วัตถุดิบ(ไข่)",
+                "pageId": "5f8e6b11a554f760422bc347",
+                "pendingQuantity": 0,
+                "post": "5f91084ca23f15136bd5634c",
+                "quantity": 50,
+                "unit": "กิโล",
             }
         ]
 
@@ -108,6 +184,30 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 this.router.navigateByUrl("/home");
             }
         }
+    }
+
+    public checkedClick(event) {
+
+        if (event.type === "AUTO") {
+
+            this.listBoxDisplay = "none";
+            this.listItemBoxDisplay = "block";
+
+        } else if (event.type === "MANUAL") {
+
+            this.listBoxDisplay = "none";
+            this.listItemBoxDisplay = "block";
+            this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+
+        } else if (event.type === "MANUALGENERAL") {
+
+            this.listBoxDisplay = "none";
+            this.listItemBoxDisplay = "block";
+            this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+
+
+        }
+
     }
 
 }

@@ -10,7 +10,7 @@
         <div class="box-hrader">
             <div class="left">
                 <span>
-                    จัดการรายการเติมเต็ม
+                    {{textHrader}}
                 </span>
             </div>
             <div class="right">
@@ -22,14 +22,15 @@
         </div>
 
         <div class="box-body">
-            <div class="box-list">
+
+            <div [ngStyle]="{'display': listBoxDisplay}" class="box-list">
                 <div class="box-list-hrader">
                     <span>
                         เลือกวิธีการจัดสรร
                     </span>
                 </div>
                 <div class="box-list-body">
-                    <div *ngFor="let item of listItem" class="list-item">
+                    <div *ngFor="let item of listItem" (click)="checkedClick(item)" class="list-item">
                         <div class="list-item-icon">
                             <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="35"
                                 height="35" viewBox="0 0 22.32 20" class="icon">
@@ -61,44 +62,26 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="box-body">
-            <div class="box-list">
-                <div class="box-list-hrader">
-                    <span>
-                        เลือกวิธีการจัดสรร
-                    </span>
+            <div [ngStyle]="{'display': listItemBoxDisplay}" class="box-list-item">
+                <div class="box-list-item-hrader">
+                    <div class="list-item-Back">
+                        <span>ย้อนกลับ</span>
+                    </div>
+                    <div class="list-item-Next">
+                        <span>ถัดไป</span>
+                    </div>
                 </div>
-                <div class="box-list-body">
-                    <div *ngFor="let item of listItem" class="list-item">
-                        <div class="list-item-icon">
-                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="35"
-                                height="35" viewBox="0 0 22.32 20" class="icon">
-                                <g id="Group_2202" data-name="Group 2202" transform="translate(0 0)">
-                                    <g id="Group_2201" data-name="Group 2201" transform="translate(8.723 8.292)">
-                                        <path id="Path_3477" data-name="Path 3477"
-                                            d="M306.368,183.246a3.717,3.717,0,0,1,3.7,3.7c0,3.735-6.8,7.434-6.8,7.434s-6.8-3.753-6.8-7.434a3.7,3.7,0,0,1,3.7-3.7h0a3.662,3.662,0,0,1,3.1,1.668A3.7,3.7,0,0,1,306.368,183.246Z"
-                                            transform="translate(-296.468 -183.246)" fill="#474747" />
-                                    </g>
-                                    <path id="Path_3478" data-name="Path 3478"
-                                        d="M273.562,168.545h-5.473a1.268,1.268,0,0,1-1.267-1.267V156.424a1.268,1.268,0,0,1,1.267-1.267h10.855a1.268,1.268,0,0,1,1.267,1.267v4.936c.027.039.056.077.082.117a4.8,4.8,0,0,1,1.794-1.621v-3.432a3.146,3.146,0,0,0-3.142-3.143H268.088a3.146,3.146,0,0,0-3.142,3.143v10.855a3.146,3.146,0,0,0,3.142,3.142h7.4A19.37,19.37,0,0,1,273.562,168.545Z"
-                                        transform="translate(-264.946 -153.281)" fill="#474747" />
-                                </g>
-                                <rect id="Rectangle_899" data-name="Rectangle 899" width="0.929" height="1.649"
-                                    rx="0.465" transform="translate(3.238 3.909)" fill="#474747" />
-                                <rect id="Rectangle_900" data-name="Rectangle 900" width="0.929" height="2.223"
-                                    rx="0.465" transform="translate(4.811 3.335)" fill="#474747" />
-                                <rect id="Rectangle_901" data-name="Rectangle 901" width="0.929" height="1.649"
-                                    rx="0.465" transform="translate(6.392 3.909)" fill="#474747" />
-                            </svg>
+                <div class="box-list-item-body">
+                    <div *ngFor="let item of listItemNeed" class="item">
+                        <div class="item-image">
+                            <div class="image">
+                                <img src="../../../../assets/img/photo.png" alt="" style="width: 40%; height: auto;">
+                            </div>
                         </div>
-                        <div class="list-item-detail">
-                            <span class="text-label">{{item.label}}</span>
-                            <span class="text-detail">{{item.detail}}</span>
-                        </div>
-                        <div class="list-item-forward">
-                            <mat-icon class="pb_arrow_forward">arrow_forward</mat-icon>
+                        <div class="item-name">
+                            <span>{{item.name}}</span>
+                            <span>{{item.quantity}}{{item.unit}}</span>
                         </div>
                     </div>
                 </div>
