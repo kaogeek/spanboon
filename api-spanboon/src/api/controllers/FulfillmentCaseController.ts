@@ -45,7 +45,7 @@ import { FulfillmentCaseGroupResponse } from './responses/FulfillmentCaseGroupRe
 import moment from 'moment';
 import { FULFILL_ORDER_BY, FULFILL_GROUP } from '../../constants/FulfillSort';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
-import { PagePostRequest } from './requests/PagePostsRequest';
+import { FulfillmentPostsRequest } from './requests/FulfillmentPostsRequest';
 import { ASSET_PATH, ASSET_SCOPE } from '../../constants/AssetScope';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { NOTIFICATION_TYPE, USER_TYPE } from '../../constants/NotificationType';
@@ -1821,7 +1821,7 @@ export class FulfillmentController {
      */
     @Post('/:caseId/fulfill')
     @Authorized('user')
-    public async createFulfillmentPostFromCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) pagePost: PagePostRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async createFulfillmentPostFromCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) pagePost: FulfillmentPostsRequest, @Res() res: any, @Req() req: any): Promise<any> {
         try {
             const userId = req.user.id;
             const clientId = req.headers['client-id'];
@@ -2679,7 +2679,7 @@ export class FulfillmentController {
         return await this.fulfillmentCaseService.create(fulfillCase);
     }
 
-    private async createPostFulfillcaseFromCasePost(pagePost: PagePostRequest, fulfillCase: FulfillmentCase, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
+    private async createPostFulfillcaseFromCasePost(pagePost: FulfillmentPostsRequest, fulfillCase: FulfillmentCase, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
         if (pagePost === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Post Content was required.', undefined);
             return Promise.reject(errorResponse);
@@ -2771,8 +2771,8 @@ export class FulfillmentController {
             }
 
             const postPage: Posts = new Posts();
-            postPage.title = pagePost.title;
-            postPage.detail = postDetail;
+            postPage.title = pagePost.title === undefined ? '' : pagePost.title;
+            postPage.detail = postDetail === undefined ? '' : postDetail;
             postPage.isDraft = isDraft;
             postPage.hidden = false;
             postPage.type = POST_TYPE.FULFILLMENT;
