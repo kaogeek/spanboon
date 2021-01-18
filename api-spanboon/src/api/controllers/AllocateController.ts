@@ -11,14 +11,19 @@ import { ObjectID } from 'mongodb';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { NeedsService } from '../services/NeedsService';
 import { AllocateRequest } from './requests/allocate/AllocateRequest';
+import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 import { POST_TYPE } from '../../constants/PostType';
 import { AllocateResponse } from './responses/allocate/AllocateResponse';
 import { CalculateAllocateQueryparam } from './params/CalculateAllocateQueryparam';
 import { Posts } from '../models/Posts';
+import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateStatement';
+import { FulfillmentRequestService } from '../services/FulfillmentRequestService';
+import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 
 @JsonController('/allocate')
 export class AllocateController {
-    constructor(private needsService: NeedsService) { }
+    constructor(private needsService: NeedsService, private fulfillStmtService: FulfillmentAllocateStatementService,
+        private fulfillmentRequestService: FulfillmentRequestService) { }
 
     // Create Allocate API
     /**
@@ -36,8 +41,50 @@ export class AllocateController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/')
-    public async createAllocate(@Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
-        return res.status(400).send(ResponseUtil.getErrorResponse('This path is under construction.', undefined));
+    public async createAllocate(@Body({ validate: true }) allocates: CreateAllocateRequest[], @Res() res: any): Promise<any> {
+        if (allocates.length <= 0) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('CreateAllocateRequest is required.', undefined));
+        }
+
+        const result: any[] = [];
+        for (const allocate of allocates) {
+            // check needIds
+            const needs = await this.needsService.findOne({ _id: new ObjectID(allocate.needsId) });
+            if (needs === undefined) {
+                continue;
+            }
+
+            const caseReq = await this.fulfillmentRequestService.findOne({ _id: new ObjectID(allocate.fulfillmentReqId) });
+            if (caseReq === undefined) {
+                continue;
+            }
+
+            // create statement
+            const ffStmt = new FulfillmentAllocateStatement();
+            ffStmt.amount = allocate.amount;
+            ffStmt.needsId = needs.id;
+            ffStmt.fulfillmentRequest = caseReq.id;
+            ffStmt.deleted = false;
+
+            const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
+
+            if (stmtObj) {
+                // update fulfillment request
+                await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                    $set: {
+                        statementId: stmtObj.id
+                    }
+                });
+
+                result.push(allocate);
+            }
+        }
+
+        if (result !== null && result !== undefined && result.length > 0) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully create Allocate', result));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Create Allocate', undefined));
+        }
     }
 
     // Calculate Allocate API
@@ -320,15 +367,20 @@ export class AllocateController {
                 postNeedArray = [];
             }
 
-            const generalNeedArray = stdNeedMap[standardId];
+            let generalNeedArray = stdNeedMap[standardId];
 
+            if (generalNeedArray === undefined) {
+                generalNeedArray = [];
+            }
+
+            // post mode force add
             for (const needs of postNeedArray) {
                 if (amount <= 0) {
                     break;
                 }
 
                 const needIdString = needs._id + '';
-                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, standardId, '', amount);
+                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, standardId, '', amount, true);
                 const allocateAmount = allocateRow.amount;
                 const leftAmount = amount - allocateAmount;
                 standardItemLeftMap[standardId] = leftAmount;
@@ -393,15 +445,20 @@ export class AllocateController {
                 postNeedArray = [];
             }
 
-            const generalNeedArray = custNeedMap[customId];
+            let generalNeedArray = custNeedMap[customId];
 
+            if (generalNeedArray === undefined) {
+                generalNeedArray = [];
+            }
+
+            // post mode force add
             for (const needs of postNeedArray) {
                 if (amount <= 0) {
                     break;
                 }
 
                 const needIdString = needs._id + '';
-                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, customId, '', amount);
+                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, customId, '', amount, true);
                 const allocateAmount = allocateRow.amount;
                 const leftAmount = amount - allocateAmount;
                 customItemLeftMap[customId] = leftAmount;
