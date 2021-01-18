@@ -67,6 +67,7 @@ import { CustomItemService } from '../services/CustomItemService';
 import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateStatement';
 import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -1368,6 +1369,265 @@ export class FulfillmentController {
                                         }
                                     });
                                 }
+                            }
+                        }
+                        /* End Statement */
+
+                        /* Create Chat */
+                        // search chatroom
+                        const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
+                        if (chatRoom) {
+                            let chatMessage = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
+                            const chatMsg = new ChatMessage();
+                            chatMsg.sender = new ObjectID(userId);
+                            chatMsg.senderType = USER_TYPE.USER;
+                            if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                chatMsg.sender = new ObjectID(asPage);
+                                chatMsg.senderType = USER_TYPE.PAGE;
+
+                                const page = await this.pageService.findOne({ _id: new ObjectID(asPage) });
+                                if (page !== undefined) {
+                                    chatMessage = page.name + ' ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม';
+                                }
+                            }
+                            chatMsg.message = chatMessage;
+                            chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_CASE_CONFIRM;
+                            chatMsg.room = chatRoom.id;
+
+                            await this.chatMessageService.createChatMessage(chatMsg);
+                        }
+                        /* end create Chat */
+
+                        const fulfilmentCancelled: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId });
+
+                        return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Confirmed', fulfilmentCancelled));
+                    } else {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Failed', undefined));
+                    }
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('FulfillmentCase Not Found', undefined));
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
+            }
+        } catch (error) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Error', error.message));
+        }
+    }
+
+    /**
+     * @api {post} /api/fulfillment_case/:caseId/confirm Confirm FulfillmentCase API
+     * @apiGroup Fulfillment Case
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Confirm FulfillmentCase Success",
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/fulfillment_case/:caseId/confirm
+     * @apiErrorExample {json} Confirm FulfillmentCase Failed
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/:caseId/allocate_confirm')
+    @Authorized('user')
+    public async confirmAllocateFulfillmentCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) allocates: CreateAllocateRequest[], @Res() res: any, @Req() req: any): Promise<any> {
+        try {
+            const userId = req.user.id;
+
+            if (allocates === undefined) {
+                allocates = [];
+            }
+
+            if (caseId !== null && caseId !== undefined && caseId !== '') {
+                const caseObjId = new ObjectID(caseId);
+                const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, deleted: false });
+
+                if (fulfillCase !== null && fulfillCase !== undefined) {
+                    const fulfillCaseStatus = fulfillCase.status;
+                    let canChangeStatus = false;
+
+                    if (asPage !== null && asPage !== undefined && asPage !== '') {
+                        const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(userId, asPage);
+
+                        let canAccessPage = false;
+
+                        if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
+                            for (const access of pageAccess) {
+                                if (access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.OWNER) {
+                                    if (JSON.stringify(access.page) === JSON.stringify(asPage)) {
+                                        canChangeStatus = true;
+                                        canAccessPage = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!canAccessPage) {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
+                        }
+                    }
+
+                    if (!canChangeStatus) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('You have not a permisstion to confirm case', undefined));
+                    }
+
+                    if (fulfillCaseStatus === FULFILLMENT_STATUS.CANCEL || fulfillCaseStatus === FULFILLMENT_STATUS.CONFIRM) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm This FulfillmentCase', undefined));
+                    }
+
+                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
+                    if (asPage !== null && asPage !== undefined && asPage !== '') {
+                        setObj.updatedByPageDate = moment().toDate();
+                    } else {
+                        setObj.updatedByUserDate = moment().toDate();
+                    }
+
+                    const changeFulfillCaseStatus = await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
+
+                    if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
+                        /* Create Statement and update need in service */
+                        // check allocate item
+                        const needsMap = {};
+                        const fulfillmentReqMap = {};
+                        const insertFulfillmentReqCount = {};
+                        for (const allocate of allocates) {
+                            if (allocate.needsId === undefined || allocate.needsId === '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('NeedsId is required.', undefined));
+                            }
+
+                            if (allocate.amount === undefined || allocate.amount <= 0) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('amount must greater than 0.', undefined));
+                            }
+
+                            if (allocate.fulfillmentReqId === undefined || allocate.fulfillmentReqId === '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('fulfillmentReqId is required.', undefined));
+                            }
+
+                            // check needIds
+                            const needs = await this.needsService.findOne({ _id: new ObjectID(allocate.needsId) });
+                            if (needs === undefined) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('Needs ' + allocate.needsId + ' was not found.', undefined));
+                            } else {
+                                const needIdString = needs.id + '';
+                                needsMap[needIdString] = needs;
+                            }
+
+                            const caseReq = await this.fulfillmentRequestService.findOne({ _id: new ObjectID(allocate.fulfillmentReqId), fulfillmentCase: caseObjId });
+                            if (caseReq === undefined) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentRequest ' + allocate.fulfillmentReqId + ' was not found.', undefined));
+                            } else {
+                                const reqIdString = caseReq.id + '';
+                                fulfillmentReqMap[reqIdString] = caseReq;
+                            }
+
+                            // check if need not match case
+                            if (caseId !== caseReq.fulfillmentCase + '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('fulfillmentRequest case was not match.', undefined));
+                            }
+
+                            // check if need std/custItem is not match fulfillmentReq item.
+                            if ((needs.standardItemId !== undefined && needs.standardItemId !== null)) {
+                                const caseReqStd = caseReq.standardItemId;
+                                if (caseReqStd === undefined || caseReqStd === null || (caseReqStd + '' !== needs.standardItemId + '')) {
+                                    return res.status(400).send(ResponseUtil.getErrorResponse('Case Request item is not match need item.', undefined));
+                                }
+                            } else if ((needs.customItemId !== undefined && needs.customItemId !== null)) {
+                                const caseReqCust = caseReq.customItemId;
+
+                                if (caseReqCust === undefined || caseReqCust === null || (caseReqCust + '' !== needs.customItemId + '')) {
+                                    return res.status(400).send(ResponseUtil.getErrorResponse('Case Request customitem is not match need item.', undefined));
+                                }
+                            } else {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('Needs is not has an item.', undefined));
+                            }
+
+                            insertFulfillmentReqCount[allocate.fulfillmentReqId] = allocate.amount;
+                        }
+
+                        // find all caseReq
+                        const missingReqAmount = [];
+                        const dbFulfillmentReqList: FulfillmentRequest[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(caseId);
+
+                        if (dbFulfillmentReqList !== undefined && dbFulfillmentReqList.length > 0) {
+                            for (const dbFulfilReq of dbFulfillmentReqList) {
+                                const dbReqId = dbFulfilReq.id + '';
+                                const dbNeedId = dbFulfilReq.needsId + '';
+                                const dbReqAmount = dbFulfilReq.quantity;
+                                const insertReqAmount = insertFulfillmentReqCount[dbReqId];
+
+                                if (insertReqAmount === undefined) {
+                                    // create allocate items
+                                    const acItem = new CreateAllocateRequest();
+                                    acItem.amount = dbReqAmount;
+                                    acItem.fulfillmentReqId = dbReqId;
+                                    acItem.needsId = dbNeedId;
+
+                                    if (fulfillmentReqMap[dbReqId] === undefined) {
+                                        fulfillmentReqMap[dbReqId] = dbFulfilReq;
+                                    }
+
+                                    if (needsMap[dbNeedId] === undefined) {
+                                        const dbNeeds = await this.needsService.findOne({ _id: new ObjectID(dbNeedId) });
+                                        needsMap[dbNeedId] = dbNeeds;
+                                    }
+
+                                    missingReqAmount.push(acItem);
+                                } else {
+                                    if (dbReqAmount > insertReqAmount.quantity) {
+                                        // create allocate left items
+                                        const acItem = new CreateAllocateRequest();
+                                        acItem.amount = dbReqAmount - insertReqAmount.quantity;
+                                        acItem.fulfillmentReqId = dbReqId;
+                                        acItem.needsId = dbFulfilReq.needsId + '';
+
+                                        missingReqAmount.push(acItem);
+                                    }
+                                }
+                            }
+                        }
+
+                        let allocateItems = [];
+                        if (allocates.length > 0) {
+                            allocateItems = allocateItems.concat(allocates);
+                        }
+                        if (missingReqAmount.length > 0) {
+                            allocateItems = allocateItems.concat(missingReqAmount);
+                        }
+
+                        const result: any[] = [];
+                        for (const allocate of allocateItems) {
+                            const needIdString = allocate.needsId + '';
+                            const reqIdString = allocate.fulfillmentReqId + '';
+
+                            const needs = needsMap[needIdString];
+                            if (needs === undefined) {
+                                continue;
+                            }
+
+                            const caseReq = fulfillmentReqMap[reqIdString];
+                            if (caseReq === undefined) {
+                                continue;
+                            }
+
+                            // create statement
+                            const ffStmt = new FulfillmentAllocateStatement();
+                            ffStmt.amount = allocate.amount;
+                            ffStmt.needsId = needs.id;
+                            ffStmt.fulfillmentRequest = caseReq.id;
+                            ffStmt.deleted = false;
+
+                            const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
+
+                            if (stmtObj) {
+                                // update fulfillment request
+                                await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                                    $set: {
+                                        statementId: stmtObj.id
+                                    }
+                                });
+
+                                result.push(allocate);
                             }
                         }
                         /* End Statement */
