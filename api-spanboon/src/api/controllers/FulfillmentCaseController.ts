@@ -808,6 +808,7 @@ export class FulfillmentController {
                         }
                     }
 
+                    // new version without need
                     const lookupStmt = [
                         {
                             $lookup: {
@@ -826,33 +827,31 @@ export class FulfillmentController {
                         {
                             $lookup: {
                                 from: 'StandardItem',
-                                localField: 'needs.standardItemId',
+                                localField: 'standardItemId',
                                 foreignField: '_id',
-                                as: 'stdItems'
+                                as: 'standardItem'
                             }
                         },
                         {
                             $unwind: {
-                                path: '$stdItems',
+                                path: '$standardItem',
                                 preserveNullAndEmptyArrays: true
                             }
                         },
                         {
                             $lookup: {
                                 from: 'CustomItem',
-                                localField: 'needs.customItemId',
+                                localField: 'customItemId',
                                 foreignField: '_id',
-                                as: 'customItems'
+                                as: 'customItem'
                             }
                         },
                         {
                             $unwind: {
-                                path: '$customItems',
+                                path: '$customItem',
                                 preserveNullAndEmptyArrays: true
                             }
-                        },
-                        { $addFields: { imageURL: '$stdItems.imageURL', name: '$needs.name', unit: '$needs.unit' } },
-                        { $project: { stdItems: 0, customItems: 0 } }
+                        }
                     ];
 
                     aggregateStmt = getFulfillStmt.concat(lookupStmt);
@@ -1112,7 +1111,7 @@ export class FulfillmentController {
                                 }
                             }
                         } else if (customItemIdList !== null && customItemIdList !== undefined && customItemIdList.length > 0) {
-                            const customItemList: CustomItem[] = await this.stdItemService.find({ _id: { $in: customItemIdList } });
+                            const customItemList: CustomItem[] = await this.customItemService.find({ _id: { $in: customItemIdList } });
 
                             if (customItemList !== null && customItemList !== undefined && customItemList.length > 0) {
                                 for (const customItem of customItemList) {
@@ -2585,17 +2584,25 @@ export class FulfillmentController {
             return undefined;
         }
 
-        console.log('fulfillFetch >>> ', fulfillFetch);
-
         const fulfillRequestResponse: GetFulfillmentRequestResponse = new GetFulfillmentRequestResponse();
         fulfillRequestResponse.needs = fulfillFetch.needs;
-        fulfillRequestResponse.imageURL = fulfillFetch.imageURL;
-        fulfillRequestResponse.name = fulfillFetch.name;
-        fulfillRequestResponse.unit = fulfillFetch.unit;
         fulfillRequestResponse.id = fulfillFetch._id;
         fulfillRequestResponse.needsId = fulfillFetch.needsId;
         fulfillRequestResponse.quantity = fulfillFetch.quantity;
         fulfillRequestResponse.requestId = fulfillFetch._id;
+        fulfillRequestResponse.imageURL = undefined;
+        fulfillRequestResponse.name = undefined;
+        fulfillRequestResponse.unit = undefined;
+
+        if (fulfillFetch.standardItem !== undefined) {
+            fulfillRequestResponse.imageURL = fulfillFetch.standardItem.imageURL;
+            fulfillRequestResponse.name = fulfillFetch.standardItem.name;
+            fulfillRequestResponse.unit = fulfillFetch.standardItem.unit;
+        } else if (fulfillFetch.customItem !== undefined) {
+            fulfillRequestResponse.imageURL = fulfillFetch.customItem.imageURL;
+            fulfillRequestResponse.name = fulfillFetch.customItem.name;
+            fulfillRequestResponse.unit = fulfillFetch.customItem.unit;
+        }
 
         return fulfillRequestResponse;
     }
@@ -2606,9 +2613,6 @@ export class FulfillmentController {
         }
 
         const lookupStmt = [
-            {
-                $match: { _id: requestIds, deleted: false }
-            },
             {
                 $lookup: {
                     from: 'Needs',
@@ -2626,33 +2630,31 @@ export class FulfillmentController {
             {
                 $lookup: {
                     from: 'StandardItem',
-                    localField: 'needs.standardItemId',
+                    localField: 'standardItemId',
                     foreignField: '_id',
-                    as: 'stdItems'
+                    as: 'standardItem'
                 }
             },
             {
                 $unwind: {
-                    path: '$stdItems',
+                    path: '$standardItem',
                     preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $lookup: {
                     from: 'CustomItem',
-                    localField: 'needs.customItemId',
+                    localField: 'customItemId',
                     foreignField: '_id',
-                    as: 'customItems'
+                    as: 'customItem'
                 }
             },
             {
                 $unwind: {
-                    path: '$customItems',
+                    path: '$customItem',
                     preserveNullAndEmptyArrays: true
                 }
-            },
-            { $addFields: { imageURL: '$stdItems.imageURL', name: '$needs.name', unit: '$needs.unit' } },
-            { $project: { needs: 0, stdItems: 0, customItems: 0 } }
+            }
         ];
 
         const result = await this.fulfillmentRequestService.aggregate(lookupStmt);
