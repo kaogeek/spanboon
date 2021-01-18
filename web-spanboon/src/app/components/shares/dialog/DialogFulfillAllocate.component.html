@@ -10,22 +10,27 @@
         <div class="box-hrader">
             <div class="left">
                 <span>
-                    จัดการรายการเติมเต็ม
+                    {{textHrader}}
                 </span>
             </div>
             <div class="right">
+                <div class="wizard-step">
+                    <span class="step" *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
+                </div>
                 <mat-icon>close</mat-icon>
             </div>
         </div>
+
         <div class="box-body">
-            <div class="box-list">
+
+            <div [ngStyle]="{'display': listBoxDisplay}" class="box-list">
                 <div class="box-list-hrader">
                     <span>
                         เลือกวิธีการจัดสรร
                     </span>
                 </div>
                 <div class="box-list-body">
-                    <div *ngFor="let item of listItem" class="list-item">
+                    <div *ngFor="let item of listItem" (click)="checkedClick(item)" class="list-item">
                         <div class="list-item-icon">
                             <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="35"
                                 height="35" viewBox="0 0 22.32 20" class="icon">
@@ -57,9 +62,32 @@
                     </div>
                 </div>
             </div>
+
+            <div [ngStyle]="{'display': listItemBoxDisplay}" class="box-list-item">
+                <div class="box-list-item-hrader">
+                    <div class="list-item-Back">
+                        <span>ย้อนกลับ</span>
+                    </div>
+                    <div class="list-item-Next">
+                        <span>ถัดไป</span>
+                    </div>
+                </div>
+                <div class="box-list-item-body">
+                    <div *ngFor="let item of listItemNeed" class="item">
+                        <div class="item-image">
+                            <div class="image">
+                                <img src="../../../../assets/img/photo.png" alt="" style="width: 40%; height: auto;">
+                            </div>
+                        </div>
+                        <div class="item-name">
+                            <span>{{item.name}}</span>
+                            <span>{{item.quantity}}{{item.unit}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- @Further development Fulfill-Allocate Box-footer -->
         <div class="box-footer"></div>
     </div>
 

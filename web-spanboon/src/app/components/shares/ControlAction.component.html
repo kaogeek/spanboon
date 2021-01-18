@@ -125,8 +125,8 @@
     </div>
     <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
         <div class="div-profile" *ngIf="accessPage">
-            <img *ngIf="isImges" class="icon-images"
-                src="{{selectedAccessPageimges ? apiBaseURL+selectedAccessPageimges.imageURL+'/image' : ''}}" alt="">
+            <img *ngIf="isImges" class="icon-images" src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}"
+                alt="">
             <div *ngIf="isDis" class="donator-contro">
                 <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
             </div>
@@ -137,8 +137,8 @@
                     <div class="wrapper-img-access">
                         <div class="img-access">
                             <ng-container
-                                *ngIf="data.imageURL !== '' && data.imageURL !== undefined && data.imageURL !== null; else elseImageProfile">
-                                <img class="icon-image" src="{{data ? apiBaseURL+data.imageURL+'/image' : ''}}" alt="">
+                                *ngIf="data.img64 !== '' && data.img64 !== undefined && data.img64 !== null; else elseImageProfile">
+                                <img class="icon-image" src="{{data && data.img64}}" alt="">
                             </ng-container>
                             <ng-template #elseImageProfile>
                                 <div class="donator-contro">

@@ -122,24 +122,25 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickLoginGoogle(): void {
-        this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
-            console.log('result >>> ', result);
+        this.showAlertDevelopDialog("รองรับการสมัครใช้งานผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+        // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
 
-            if (result !== null && result !== undefined) {
-                let googleToken = {
-                    googleUserId: result.id,
-                    authToken: result.authToken,
-                    idToken: result.idToken
-                };
+        //     if (result !== null && result !== undefined) {
+        //         let googleToken = {
+        //             googleUserId: result.id,
+        //             authToken: result.authToken,
+        //             idToken: result.idToken
+        //         };
 
-                this.googleToken = googleToken;
+        //         this.googleToken = googleToken;
 
-                this._ngZone.run(() => this.loginGoogle());
-            }
-        }).catch((error) => {
-            console.log('error >>> ', error);
-        });
+        //         this._ngZone.run(() => this.loginGoogle());
+        //     }
+        // }).catch((error) => {
+        //     console.log('error >>> ', error);
+        // });
     }
+
 
     public loginTwitter(token: string, token_secret: string, userId: string) {
         let mode = 'TWITTER';
@@ -182,14 +183,16 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickLoginTW() {
-        this.twitterService.requestToken().then((result: any) => {
-            this.authorizeLink += '?' + result;
-            // this.authenticateLink += '?' + result;
-            // console.log('result ', this.authorizeLink) 
-            window.open(this.authorizeLink);
-        }).catch((error: any) => {
-            console.log(error);
-        });
+
+        this.showAlertDevelopDialog("รองรับการสมัครใช้งานผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+        // this.twitterService.requestToken().then((result: any) => {
+        //     this.authorizeLink += '?' + result;
+        //     // this.authenticateLink += '?' + result;
+        //     // console.log('result ', this.authorizeLink) 
+        //     window.open(this.authorizeLink);
+        // }).catch((error: any) => {
+        //     console.log(error);
+        // });
     }
 
     private loginGoogle() {
@@ -274,7 +277,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-        }, { scope: 'public_profile,email,user_birthday' });
+            // user_birthday
+        }, { scope: 'public_profile,email' });
     }
 
     private loginFB() {

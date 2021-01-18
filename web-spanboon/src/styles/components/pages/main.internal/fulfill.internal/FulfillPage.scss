@@ -183,7 +183,7 @@
             background: $white;
             border-top-left-radius: 4px;
             border-top: 1px solid $border-color;
-            border-left: 1px solid $border-color; 
+            border-left: 1px solid $border-color;
 
             > .head-story {
                 flex: 0 0 auto;
@@ -582,6 +582,18 @@
                 }
             }
         }
+        > .fulfill-notfound {
+            justify-content: center;
+            align-items: center;
+            svg {
+                width: 60pt;
+                height: 60pt;
+            }
+            > .fulfill-label {
+                font-family: "Kanit-500";
+                font-size: 26px; 
+            }
+        }
     }
 }
 
@@ -709,7 +721,7 @@
                             display: flex;
                             font-family: "Kanit-500";
                             font-size: 14px;
-                            color: $bg-color4; 
+                            color: $bg-color4;
                             @include pointer();
                             padding-top: 4pt;
                             &:hover {
@@ -887,13 +899,13 @@
                 }
                 > .head-story {
                     padding: 10px;
-                    position: relative; 
+                    position: relative;
 
                     &.active {
                         padding: 10px 10px 10px 20pt;
                     }
                     &.activeTransition {
-                        transition: all .5s ease;
+                        transition: all 0.5s ease;
                     }
 
                     > .back {
@@ -957,7 +969,7 @@
                                 max-width: unset;
                                 display: none;
                             }
-                        } 
+                        }
                     }
                 }
                 > .body-story {
@@ -1045,7 +1057,7 @@
                 }
                 > .head-story {
                     &.activeTransition {
-                        transition: all .5s ease;
+                        transition: all 0.5s ease;
                     }
                     > .story-right {
                         > .confirm {
@@ -1087,7 +1099,7 @@
                                 max-width: unset;
                                 display: none;
                             }
-                        } 
+                        }
                     }
                 }
                 > .body-story {
@@ -1137,7 +1149,7 @@
             > .fulfill-left {
                 min-width: unset;
                 width: 100%;
-                > .mobile-fulfill-profile { 
+                > .mobile-fulfill-profile {
                     > .fulfill-profile {
                         border-bottom: unset;
                         height: unset;
@@ -1180,9 +1192,9 @@
                 &.active {
                 }
                 > .head-story {
-                    height: unset !important;   
+                    height: unset !important;
                     &.activeTransition {
-                        transition: all .5s ease;
+                        transition: all 0.5s ease;
                     }
                     > .story-right {
                         flex-direction: unset;
@@ -1199,7 +1211,7 @@
                         }
                         > .confirm {
                             // display: none;
-                            >.text-fulfill-close {
+                            > .text-fulfill-close {
                                 display: none;
                             }
                             > .butt-fulfill {
@@ -1305,10 +1317,10 @@
                 &.active {
                     height: calc(100% - 40pt);
                 }
-                > .head-story { 
+                > .head-story {
                     // height: auto !important;
                     &.activeTransition {
-                        transition: all .5s ease;
+                        transition: all 0.5s ease;
                     }
                     > .back {
                     }
@@ -1361,10 +1373,10 @@
                             font-size: 22px;
                             margin-top: unset;
                         }
-                        > .contact-hashtag { 
+                        > .contact-hashtag {
                             padding: unset;
                             > .contact-content {
-                                max-width: unset; 
+                                max-width: unset;
                             }
                         }
                     }
@@ -1384,7 +1396,7 @@
                                 }
                             }
                             > .fulfilling {
-                                > .plus-item { 
+                                > .plus-item {
                                     > .d-plus {
                                         > .material-icons {
                                             font-size: 56px;

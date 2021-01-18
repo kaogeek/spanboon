@@ -24,6 +24,7 @@ export class FulfillmentListResponse {
     public emergencyEvent: any;
     public objective: any;
     public name: string;
+    public chatRoom: string;
     public chatMessage: string;
     public chatDate: Date;
     public isRead: boolean;
@@ -32,4 +33,5 @@ export class FulfillmentListResponse {
     public updateDate: Date;
     public updatedByPageDate: Date;
     public updatedByUserDate: Date;
+    public unreadMessageCount: number;
 }

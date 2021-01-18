@@ -88,6 +88,8 @@
             position: relative;
             width: 100%;
             height: 180pt;
+            min-height: 180pt;
+            max-height: 180pt;
 
             &.none-img {
                 align-items: center;

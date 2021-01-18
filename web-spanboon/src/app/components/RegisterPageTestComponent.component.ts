@@ -13,17 +13,17 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 declare var atwho: any;
 declare var $: any;
 
-const PAGE_NAME: string = 'test';
+const PAGE_NAME: string = 'createpage-temporary';
 export interface Fruit {
   name: string;
 }
 
 @Component({
-  selector: 'test-component',
-  templateUrl: './TestComponent.component.html',
+  selector: 'register-page-test',
+  templateUrl: './RegisterPageTestComponent.component.html',
 })
 
-export class TestComponent extends AbstractPageImageLoader implements OnInit {
+export class RegisterPageTestComponent extends AbstractPageImageLoader implements OnInit {
   movies = [
     'Episode I - The Phantom Menace',
     'Episode II - Attack of the Clones',
@@ -40,7 +40,11 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   removable: boolean = true;
   addOnBlur: boolean = true;
 
+  private password: String = "@spanboon9173";
+  public aut: boolean = true;
+
   public link = window.location
+  public testpassword: any
 
   // Enter, comma
   separatorKeysCodes = [ENTER, COMMA];
@@ -56,6 +60,10 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
   }
   ngOnInit(): void {
+    console.log('this.isLogin()', this.isLogin())
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/createpage-temporary");
+    }
   }
 
   public ngOnDestroy(): void {
@@ -144,6 +152,15 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   }
 
   public onImageLoaded(imageElement: any[]): void {
+  }
+
+  public login() {
+    if (this.password === this.testpassword) {
+      this.aut = false;
+    } else {
+      this.showAlertDevelopDialog("รหัสเข้าทดสอบไม่ถูกต้องกรุณาติดต่อเจ้าหน้าที่เพื่อขอรับรหัสทดสอบ")
+      this.testpassword = null
+    }
   }
 
 }

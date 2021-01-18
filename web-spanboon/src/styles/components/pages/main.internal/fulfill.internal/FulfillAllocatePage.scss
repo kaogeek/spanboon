@@ -43,6 +43,31 @@
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
+                > .wizard-step {
+                    width: auto;
+                    min-width: 100px;
+                    margin: 0px 10px;
+                    align-items: center;
+                    display: flex;
+                    justify-content: center;
+                    > .step {
+                        transition: 0.2s;
+                        height: 15px;
+                        width: 15px;
+                        margin: 0 2px;
+                        background-color: #c4c4c4;
+                        border: none;
+                        border-radius: 50%;
+                        display: inline-block;
+                        opacity: 0.5;
+                        &.active {
+                            width: 40px;
+                            border-radius: 20px;
+                            background-color: #4e4e4e;
+                            transition: 0.2s;
+                        }
+                    }
+                }
             }
         }
         > .box-body {
@@ -50,6 +75,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+
             > .box-list {
                 width: 700px;
                 height: 400px;
@@ -107,6 +133,95 @@
                     }
                 }
             }
+
+            > .box-list-item {
+                width: 100%;
+                height: 100%;
+                > .box-list-item-hrader {
+                    display: flex;
+                    justify-content: space-between;
+                    border-bottom: 0.1px solid rgb(14 14 14 / 15%);
+                    color: #4e4e4e;
+                    > .list-item-Back {
+                        cursor: pointer;
+                        padding: 15px;
+                        width: 100px;
+                        align-items: center;
+                        justify-content: center;
+                        display: flex;
+                        border-right: 0.1px solid rgba(14, 14, 14, 0.15);
+                        transition: 0.2s;
+                        &:hover {
+                            transition: 0.2s;
+                            background-color: #f0f0f0;
+                        }
+                    }
+                    > .list-item-Next {
+                        cursor: pointer;
+                        padding: 15px;
+                        width: 100px;
+                        align-items: center;
+                        justify-content: center;
+                        display: flex;
+                        border-left: 0.1px solid rgba(14, 14, 14, 0.15);
+                        transition: 0.2s;
+                        &:hover {
+                            transition: 0.2s;
+                            background-color: #f0f0f0;
+                        }
+                    }
+                }
+                > .box-list-item-body {
+                    padding: 15px;
+                    width: calc(100% - 30px);
+                    height: calc(100% - 30px);
+                    display: inline-flex;
+                    flex-wrap: wrap;
+                    overflow-x: auto;
+                    > .item {
+                        transition: 0.2s;
+                        width: 160px;
+                        height: 200px;
+                        border-radius: 4px;
+                        display: flex;
+                        flex-direction: column;
+                        border: 0.1px solid rgba(14, 14, 14, 0.15);
+                        margin: 10px;
+                        cursor: pointer;
+
+                        &:hover {
+                            transition: 0.2s;
+                            border: 0.1px solid #fd545a;
+                        }
+
+                        > .item-image {
+                            width: 100%;
+                            height: 60%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            > .image {
+                                width: 90px;
+                                height: 90px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: #f1f1f1;
+                                border-radius: 50px;
+                            }
+                        }
+                        > .item-name {
+                            width: 100%;
+                            height: 40%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                    }
+                }
+            }
         }
         > .box-footer {
             width: 100%;
@@ -157,6 +272,8 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body {
     }
 }
 

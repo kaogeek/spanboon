@@ -73,7 +73,7 @@
                     [reboon]="dataLastests.rePostCount | shortNumber " [like]="dataLastests.likeCount | shortNumber"
                     [share]="dataLastests.shareCount | shortNumber" [isAction]="'true'" [marginPerAction]="'10pt'"
                     [widthBtnAction]="'18pt'" [fontSize]="'18px'" [heightBtn]="'36pt'" [widthBtn]="'95pt'"
-                    [isOfficial]="dataLastests.owner.isOfficial ? dataLastests.owner.isOfficial : false">
+                    [isOfficial]="dataLastests.owner.isOfficial ? dataLastests.owner.isOfficial : false" [butNeeds]="dataLastests.post.type === 'NEEDS'">
                 </new-card>
             </ng-container>
             <ng-template #elseLastest>
@@ -105,7 +105,7 @@
                                 [createDate]="dataLooking.dateTime | dateFormat" [widthBtnAction]="'14pt'"
                                 [fontSize]="'14px'" [heightBtn]="'28pt'" [widthBtn]="'70pt'" [marginPerAction]="'6pt'"
                                 [isAction]="'true'" [isStausIcon]="'true'"
-                                [isOfficial]="dataLooking.owner.isOfficial ? dataLooking.owner.isOfficial : false">
+                                [isOfficial]="dataLooking.owner.isOfficial ? dataLooking.owner.isOfficial : false" [butNeeds]="dataLooking.post.type === 'NEEDS'">
                             </new-cards>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                             [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
                             [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
                             [textLink]="'อ่านสตอรี่'"
-                            [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false">
+                            [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false" [butNeeds]="dataViewSection.post.type === 'NEEDS'">
                         </post-card>
                     </div>
                     <div class="swiper-button-prev">
@@ -176,7 +176,7 @@
                         [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
                         [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
                         [textLink]="'อ่านสตอรี่'"
-                        [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false">
+                        [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false" [butNeeds]="dataViewSection.post.type === 'NEEDS'">
                     </post-card>
                 </div>
             </ng-template>
@@ -257,7 +257,7 @@
                                     [userReboon]="cardSide.isReboon" [like]="cardSide.likeCount | shortNumber"
                                     [share]="cardSide.shareCount | shortNumber"
                                     [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
-                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'">
+                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'" [butNeeds]="cardSide.post.type === 'NEEDS'">
                                 </post-card>
                             </div>
                             <div class="swiper-button-prev">
@@ -287,7 +287,7 @@
                                 [userComment]="cardSide.isComment" [userReboon]="cardSide.isReboon"
                                 [like]="cardSide.likeCount | shortNumber" [share]="cardSide.shareCount | shortNumber"
                                 [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
-                                [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'">
+                                [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'" [butNeeds]="cardSide.post.type === 'NEEDS'">
                             </post-card>
                         </div>
                     </ng-template>
@@ -377,7 +377,7 @@
                                     [like]="cardTwin.likeCount | shortNumber"
                                     [share]="cardTwin.shareCount | shortNumber" [data]="cardTwin"
                                     [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
-                                    [create]="cardTwin.post.createdDate | dateFormat" [textLink]="'อ่านสตอรี่'">
+                                    [create]="cardTwin.post.createdDate | dateFormat" [textLink]="'อ่านสตอรี่'" [butNeeds]="cardTwin.post.type === 'NEEDS'">
                                 </post-card>
                             </ng-container>
                         </div>

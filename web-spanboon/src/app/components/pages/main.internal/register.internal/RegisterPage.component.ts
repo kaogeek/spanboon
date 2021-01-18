@@ -130,7 +130,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       const state = navigation.extras.state;
       if (this.mode !== "normal") {
         if (state) {
-          console.log('state ',state)
           this.redirection = state.redirection;
           this.accessToken = state.accessToken;
 
@@ -145,25 +144,12 @@ export class RegisterPage extends AbstractPage implements OnInit {
           this.router.navigateByUrl("/login");
         }
       }
-    });
-
-    // if ((this.router.url === "/register/menu") || (this.router.url === '/register?mode=normal')) {
-    //   $(".icon-post-bottom").css({
-    //     'display': "none"
-    //   });
-    // }
+    }); 
   }
 
   ngOnInit(): void {
     super.ngOnInit();
     this.checkLoginAndRedirection();
-
-    // $('#username').on('input', function () {
-    //   let text = $(this).val();
-    //   text = text.replace(/\D/g,'');
-    //   if (text.length > 0) text = text.replace(/.{0}/, '$&@');
-    //   $(this).val(text);
-    // });
   }
 
   public ngOnDestroy(): void {
@@ -315,6 +301,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
             alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
           } else if (err.error.message === 'Register Failed') {
             alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
+          } else if (err.error.message === 'Facebook was registered.'){
+            alertMessages = 'คุณได้สมัครอีเมล์นี้แล้ว กรุณาลองล็อคอินอีกครั้ง';
           }
           let dialog = this.showAlertDialogWarming(alertMessages, "none");
           dialog.afterClosed().subscribe((res) => {
@@ -357,7 +345,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (value.status === 1) {
           let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
           let isValid = false;
-          if (value.data) {
+          if (value.user) {
             isValid = true;
           }
           let dialog = this.showAlertDialogWarming(alertMessage, "none");
@@ -370,7 +358,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
                 this.router.navigate(['/login']);
               }
             } else {
-              this.router.navigate(['/login']);
+              this.router.navigate(['/login']); 
             }
           });
         }
@@ -441,7 +429,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(res => {
-      console.log(res);
       if(res.password !== '' && res.password !== null && res.password !== undefined){ 
         this.passwordModeSocial = res.password;
         this.onClickregister(this.registerForm.value);
@@ -452,12 +439,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public getTwitterUser(){
     this.accessToken
     this.twitterService.accountVerify(this.accessToken.twitterOauthToken, this.accessToken.twitterOauthTokenSecret).then((account: any) => {
-      console.log('account ', account)
       this.data = account;
       this.data.displayName = account.name;
       this.images = account.profile_image_url_https;
       this.data.gender = -1;
-      this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : undefined;
+      this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : new Date();
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;
       }).catch(err => {
@@ -491,15 +477,13 @@ export class RegisterPage extends AbstractPage implements OnInit {
       fields: 'name, first_name, last_name,birthday,picture,id,email,gender'
     }, (userInfo) => {
       this.data = userInfo;
-      console.log('userInfo ', userInfo)
       this.data.displayName = userInfo.name;
       this.data.firstName = userInfo.first_name;
       this.data.lastName = userInfo.last_name;
       this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
-      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined;
+      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : new Date();
       this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal';
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal&access_token='+this.accessToken.fbtoken;
-      console.log('this.images ', this.images)
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;
       }).catch(err => {

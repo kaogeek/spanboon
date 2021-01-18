@@ -64,6 +64,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isName: boolean;
     public isLoading: boolean;
     public isActiveCss: boolean;
+    public isPage: boolean;
     public query_conversation: any;
     public isFirst: any;
     public msgError: any;
@@ -103,6 +104,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
+                this.isPage = this.data.isPage;
 
                 if (this.data.isFrom === 'POST') {
                     this.selectedDataItem(this.data.currentPostItem, this.data.isFrom);
@@ -119,7 +121,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
         this.itemOriginal = JSON.parse(JSON.stringify(this.arrListItem));
         setTimeout(() => {
-            console.log('this.data', this.data)
             this.onResize();
         }, 500);
     }
@@ -142,8 +143,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public selectedDataItem(fulfillItem: any, isFrom: any) {
-        console.log('fulfillItem', fulfillItem)
-        console.log('isFrom', isFrom)
         if (fulfillItem !== null && fulfillItem !== undefined) {
             // this.isListItem = true;
             let isSelected = true;
@@ -207,6 +206,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             pageId: fulfillItem.pageId,
                             postId: fulfillItem.post,
                             name: fulfillItem.name,
+                            standardItemId: fulfillItem.standardItemId,
+                            customItemId: fulfillItem.customItemId,
                             quantity: pendingQty,
                             unit: fulfillItem.unit,
                             category: fulfillItem.category,
@@ -223,6 +224,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                     pageId: item.pageId,
                                     postId: item.post,
                                     name: item.name,
+                                    standardItemId: item.standardItemId,
+                                    customItemId: item.customItemId,
                                     quantity: pendingQty,
                                     unit: item.unit,
                                     category: item.category,
@@ -239,6 +242,8 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                 postId: fulfillItem.post,
                                 name: fulfillItem.name,
                                 quantity: pendingQty,
+                                standardItemId: fulfillItem.standardItemId,
+                                customItemId: fulfillItem.customItemId,
                                 unit: fulfillItem.unit,
                                 category: fulfillItem.category,
                                 imageURL: fulfillItem.imageURL,
@@ -313,8 +318,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     private disableCurrentItem(currentFulfillItem: any, isFrom: any) {
-        console.log('currentFulfillItem', currentFulfillItem)
-        console.log('isFrom', isFrom)
         let isSelected = true;
 
         if ((this.resFulfill !== null && this.resFulfill !== undefined) && (currentFulfillItem !== null && currentFulfillItem !== undefined)) {
@@ -397,7 +400,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
                         // x = x + 70;
                     }
                 }
-                console.log('a ', x)
                 this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
             }
         }
@@ -498,14 +500,30 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
                         needsResult.push(needsData);
                     } else if (isFrom === 'FULFILL') {
-                        needsData = {
-                            id: item.id,
-                            postId: item.postId,
-                            name: item.name,
-                            quantity: item.quantity,
-                            unit: item.unit,
-                            imageURL: item.imageURL
-                        };
+                        if (this.isPage) {
+                            needsData = {
+                                id: item.id,
+                                postId: null,
+                                pageId: item.pageId,
+                                name: item.name,
+                                standardItemId: item.standardItemId,
+                                customItemId: item.customItemId,
+                                quantity: item.quantity,
+                                unit: item.unit,
+                                imageURL: item.imageURL
+                            };
+                        } else {
+                            needsData = {
+                                id: item.id,
+                                postId: item.postId,
+                                name: item.name,
+                                standardItemId: item.standardItemId,
+                                customItemId: item.customItemId,
+                                quantity: item.quantity,
+                                unit: item.unit,
+                                imageURL: item.imageURL
+                            };
+                        }
 
                         needsResult.push(needsData);
                     }
@@ -517,6 +535,9 @@ export class FulfillItem extends AbstractPage implements OnInit {
                     this.dialogRef.close();
                     this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
                 } else if (isFrom === 'FULFILL') {
+                    if (this.isPage) {
+                        this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
+                    }
                     this.dialogRef.close(needsResult);
                 }
             }

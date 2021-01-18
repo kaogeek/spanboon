@@ -161,17 +161,17 @@ export class MainPageController {
         const lastestObjModel = await lastestObjProcessor.process();
         lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
 
-        const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-        lastestObjProcessor2.setData({
-            userId
-        });
-        lastestObjProcessor2.setConfig({
-            limit: 5,
-            showUserAction: true
-        });
-        const lastestObjModel2 = await lastestObjProcessor2.process();
-        lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
-        lastestObjModel2.isList = true;
+        // const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
+        // lastestObjProcessor2.setData({
+        //     userId
+        // });
+        // lastestObjProcessor2.setConfig({
+        //     limit: 5,
+        //     showUserAction: true
+        // });
+        // const lastestObjModel2 = await lastestObjProcessor2.process();
+        // lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
+        // lastestObjModel2.isList = true;
 
         // const result: any = this.getResponsesData();
         const result: any = {};
@@ -224,9 +224,9 @@ export class MainPageController {
             result.sectionModels.push(lastestObjModel);
         }
 
-        if (lastestObjModel2.contents.length > 0) {
-            result.sectionModels.push(lastestObjModel2);
-        }
+        // if (lastestObjModel2.contents.length > 0) {
+        //     result.sectionModels.push(lastestObjModel2);
+        // }
 
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
@@ -598,7 +598,7 @@ export class MainPageController {
                 sortBy = data.sortBy;
             }
 
-            console.log('keyword >>>> ', keyword);
+            postStmt.push({ $match: { deleted: false } });
 
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};

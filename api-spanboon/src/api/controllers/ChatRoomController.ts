@@ -28,6 +28,7 @@ import { FileUtil } from '../../utils/FileUtil';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
+import { CheckChatRoomRequest } from './requests/CheckChatRoomRequest';
 
 @JsonController('/chatroom')
 export class ChatRoomController {
@@ -174,6 +175,57 @@ export class ChatRoomController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to create chat chatroom', undefined);
             return res.status(400).send(errorResponse);
+        }
+    }
+
+    /**
+     * @api {post} /api/chatroom/check_status Check Chat Room message
+     * @apiGroup ChatRoom
+     * @apiParam (Request body) {String} roomIds roomIds
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Successfully Check Chat Room unread Message",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"
+     *  }
+     * @apiSampleRequest /api/chatroom/check_status
+     * @apiErrorExample {json} chat message error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/check_status')
+    @Authorized('user')
+    public async checkUnreadChatRoom(@Body({ validate: true }) chatRoomIdsRequest: CheckChatRoomRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        // ! using for check room access next time
+        // const senderObjId = new ObjectID(req.user.id);
+
+        if (chatRoomIdsRequest.roomIds === undefined || chatRoomIdsRequest.roomIds.length <= 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('roomIds is required.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const roomObjIds = [];
+        for (const roomId of chatRoomIdsRequest.roomIds) {
+            roomObjIds.push(new ObjectID(roomId));
+        }
+
+        const aggregateStmt: any[] = [
+            { $match: { room: { $in: roomObjIds }, isRead: false, deleted: false } },
+            { $sort: { createdDate: -1 } },
+            { $group: { _id: '$room', count: { $sum: 1 }, message: { $first: '$message' } } }
+        ];
+
+        const chatMsgResult: any = await this.chatMessageService.aggregate(aggregateStmt);
+
+        if (chatMsgResult) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully create chatroom', chatMsgResult);
+            return res.status(200).send(successResponse);
+        } else {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully create chatroom', []);
+            return res.status(200).send(successResponse);
         }
     }
 
