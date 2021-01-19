@@ -68,6 +68,15 @@
                         }
                     }
                 }
+                > .close {
+                    transition: 0.2s;
+                    color: #000;
+                    cursor: pointer;
+                    &:hover {
+                        transition: 0.2s;
+                        color: #fd545a;
+                    }
+                }
             }
         }
         > .box-body {
@@ -91,7 +100,7 @@
                         transition: 0.2s;
                         padding: 10px 20px;
                         border-radius: 4px;
-                        margin: 5px 0px;
+                        margin: 10px 0px;
                         border: 2px solid rgb(14 14 14 / 15%);
                         display: flex;
                         cursor: pointer;
@@ -157,6 +166,8 @@
                         }
                     }
                     > .list-item-Next {
+                        opacity: 0.5;
+                        pointer-events: none;
                         cursor: pointer;
                         padding: 15px;
                         width: 100px;
@@ -164,10 +175,17 @@
                         justify-content: center;
                         display: flex;
                         border-left: 0.1px solid rgba(14, 14, 14, 0.15);
-                        transition: 0.2s;
-                        &:hover {
-                            transition: 0.2s;
-                            background-color: #f0f0f0;
+                        transition: 0.3s;
+                        &.active {
+                            transition: 0.3s;
+                            opacity: 1;
+                            pointer-events: unset;
+                            color: white;
+                            background-color: #84b572;
+                            &:hover {
+                                transition: 0.3s;
+                                background-color: #599144;
+                            }
                         }
                     }
                 }
@@ -184,9 +202,11 @@
                         height: 200px;
                         border-radius: 4px;
                         display: flex;
+                        position: relative;
                         flex-direction: column;
                         border: 0.1px solid rgba(14, 14, 14, 0.15);
                         margin: 10px;
+                        background-color: #fcfcfd;
                         cursor: pointer;
 
                         &:hover {
@@ -226,6 +246,7 @@
         > .box-footer {
             width: 100%;
             height: 40px;
+            background-color: white;
             border-top: 1px solid rgb(152 152 152 / 12%);
         }
     }

@@ -17,7 +17,7 @@
                 <div class="wizard-step">
                     <span class="step" *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
                 </div>
-                <mat-icon>close</mat-icon>
+                <mat-icon class="close">close</mat-icon>
             </div>
         </div>
 
@@ -65,15 +65,21 @@
 
             <div [ngStyle]="{'display': listItemBoxDisplay}" class="box-list-item">
                 <div class="box-list-item-hrader">
-                    <div class="list-item-Back">
+                    <div (click)="back()" class="list-item-Back">
                         <span>ย้อนกลับ</span>
                     </div>
-                    <div class="list-item-Next">
+                    <div (click)="next()" [class.active]="selectNeedItem.length > 0" class="list-item-Next">
                         <span>ถัดไป</span>
                     </div>
                 </div>
                 <div class="box-list-item-body">
-                    <div *ngFor="let item of listItemNeed" class="item">
+                    <div (click)="selectItem(i)" *ngFor="let item of listItemNeed;let i = index" class="item">
+                        <svg *ngIf="item.isSelect" style="position: absolute;top: 10px;right: 10px;" height="15px"
+                            viewBox="0 -46 417.81333 417" width="15px" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"
+                                style="fill:#fd545a;" />
+                        </svg>
                         <div class="item-image">
                             <div class="image">
                                 <img src="../../../../assets/img/photo.png" alt="" style="width: 40%; height: auto;">
