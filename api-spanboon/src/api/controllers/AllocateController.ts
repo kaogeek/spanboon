@@ -11,81 +11,14 @@ import { ObjectID } from 'mongodb';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { NeedsService } from '../services/NeedsService';
 import { AllocateRequest } from './requests/allocate/AllocateRequest';
-import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 import { POST_TYPE } from '../../constants/PostType';
 import { AllocateResponse } from './responses/allocate/AllocateResponse';
 import { CalculateAllocateQueryparam } from './params/CalculateAllocateQueryparam';
 import { Posts } from '../models/Posts';
-import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateStatement';
-import { FulfillmentRequestService } from '../services/FulfillmentRequestService';
-import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 
 @JsonController('/allocate')
 export class AllocateController {
-    constructor(private needsService: NeedsService, private fulfillStmtService: FulfillmentAllocateStatementService,
-        private fulfillmentRequestService: FulfillmentRequestService) { }
-
-    // Create Allocate API
-    /**
-     * @api {post} /api/allocate Create Allocate API
-     * @apiGroup Allocate
-     * @apiSuccessExample {json} Success
-     * HTTP/1.1 200 OK
-     * {
-     *      "message": "Successfully Create Allocate"
-     *      "data":"{}"
-     *      "status": "1"
-     * }
-     * @apiSampleRequest /api/allocate
-     * @apiErrorExample {json} Create Allocate error
-     * HTTP/1.1 500 Internal Server Error
-     */
-    @Post('/')
-    public async createAllocate(@Body({ validate: true }) allocates: CreateAllocateRequest[], @Res() res: any): Promise<any> {
-        if (allocates.length <= 0) {
-            return res.status(400).send(ResponseUtil.getErrorResponse('CreateAllocateRequest is required.', undefined));
-        }
-
-        const result: any[] = [];
-        for (const allocate of allocates) {
-            // check needIds
-            const needs = await this.needsService.findOne({ _id: new ObjectID(allocate.needsId) });
-            if (needs === undefined) {
-                continue;
-            }
-
-            const caseReq = await this.fulfillmentRequestService.findOne({ _id: new ObjectID(allocate.fulfillmentReqId) });
-            if (caseReq === undefined) {
-                continue;
-            }
-
-            // create statement
-            const ffStmt = new FulfillmentAllocateStatement();
-            ffStmt.amount = allocate.amount;
-            ffStmt.needsId = needs.id;
-            ffStmt.fulfillmentRequest = caseReq.id;
-            ffStmt.deleted = false;
-
-            const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
-
-            if (stmtObj) {
-                // update fulfillment request
-                await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
-                    $set: {
-                        statementId: stmtObj.id
-                    }
-                });
-
-                result.push(allocate);
-            }
-        }
-
-        if (result !== null && result !== undefined && result.length > 0) {
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully create Allocate', result));
-        } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Create Allocate', undefined));
-        }
-    }
+    constructor(private needsService: NeedsService) { }
 
     // Calculate Allocate API
     /**

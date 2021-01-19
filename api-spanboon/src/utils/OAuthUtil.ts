@@ -9,6 +9,10 @@ import * as crypto from 'crypto';
 
 export class OAuthUtil {
     public static generateNonce(): any {
-        return crypto.randomBytes(16).toString('base64');
+        const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
+        const result = [];
+        crypto.randomBytes(10).toJSON().data.forEach(c =>
+            result.push(charset[c % charset.length]));
+        return result.join('');
     }
 }
