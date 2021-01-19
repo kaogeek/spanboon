@@ -122,18 +122,7 @@ export class MainPageController {
         });
         const userFollowSectionModel = await userFollowProcessor.process();
         userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
-
-        const userFollowProcessor2: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-        userFollowProcessor2.setData({
-            userId
-        });
-        userFollowProcessor2.setConfig({
-            limit: 4,
-            showUserAction: true
-        });
-        const userFollowSectionModel2 = await userFollowProcessor2.process();
-        userFollowSectionModel2.templateType = TEMPLATE_TYPE.MULTIPLE;
-        userFollowSectionModel2.isList = true;
+        userFollowSectionModel.isList = true;
 
         const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
         userPageLookingProcessor.setData({
@@ -145,9 +134,11 @@ export class MainPageController {
         });
         const userPageLookingSectionModel = await userPageLookingProcessor.process();
         userPageLookingSectionModel.templateType = TEMPLATE_TYPE.TWIN;
+        userPageLookingSectionModel.isList = true;
 
         const userPageLookingSectionModel2 = await userPageLookingProcessor.process();
         userPageLookingSectionModel2.templateType = TEMPLATE_TYPE.TWIN;
+        userPageLookingSectionModel2.isList = true;
 
         // open when main icon template show
         const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
@@ -187,18 +178,6 @@ export class MainPageController {
             result.sectionModels.push(userFollowSectionModel);
         }
 
-        if (userFollowSectionModel2.contents.length > 0) {
-            result.sectionModels.push(userFollowSectionModel2);
-        }
-
-        // if (userPageLookingSectionModel.contents.length > 0) {
-        //     result.sectionModels.push(userPageLookingSectionModel);
-        // }
-
-        // if (userPageLookingSectionModel2.contents.length > 0) {
-        //     result.sectionModels.push(userPageLookingSectionModel2);
-        // }
-
         // twin model
         const twinModel = new SectionModel();
         twinModel.title = '';
@@ -209,6 +188,7 @@ export class MainPageController {
         twinModel.contentCount = 0;
         twinModel.templateType = TEMPLATE_TYPE.TWIN;
         twinModel.contents = [];
+        twinModel.isList = true;
 
         result.sectionModels.push(twinModel);
 
