@@ -20,26 +20,6 @@ import { Posts } from '../models/Posts';
 export class AllocateController {
     constructor(private needsService: NeedsService) { }
 
-    // Create Allocate API
-    /**
-     * @api {post} /api/allocate Create Allocate API
-     * @apiGroup Allocate
-     * @apiSuccessExample {json} Success
-     * HTTP/1.1 200 OK
-     * {
-     *      "message": "Successfully Create Allocate"
-     *      "data":"{}"
-     *      "status": "1"
-     * }
-     * @apiSampleRequest /api/allocate
-     * @apiErrorExample {json} Create Allocate error
-     * HTTP/1.1 500 Internal Server Error
-     */
-    @Post('/')
-    public async createAllocate(@Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
-        return res.status(400).send(ResponseUtil.getErrorResponse('This path is under construction.', undefined));
-    }
-
     // Calculate Allocate API
     /**
      * @api {post} /api/allocate Calculate Allocate API
@@ -320,15 +300,20 @@ export class AllocateController {
                 postNeedArray = [];
             }
 
-            const generalNeedArray = stdNeedMap[standardId];
+            let generalNeedArray = stdNeedMap[standardId];
 
+            if (generalNeedArray === undefined) {
+                generalNeedArray = [];
+            }
+
+            // post mode force add
             for (const needs of postNeedArray) {
                 if (amount <= 0) {
                     break;
                 }
 
                 const needIdString = needs._id + '';
-                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, standardId, '', amount);
+                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, standardId, '', amount, true);
                 const allocateAmount = allocateRow.amount;
                 const leftAmount = amount - allocateAmount;
                 standardItemLeftMap[standardId] = leftAmount;
@@ -393,15 +378,20 @@ export class AllocateController {
                 postNeedArray = [];
             }
 
-            const generalNeedArray = custNeedMap[customId];
+            let generalNeedArray = custNeedMap[customId];
 
+            if (generalNeedArray === undefined) {
+                generalNeedArray = [];
+            }
+
+            // post mode force add
             for (const needs of postNeedArray) {
                 if (amount <= 0) {
                     break;
                 }
 
                 const needIdString = needs._id + '';
-                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, customId, '', amount);
+                const allocateRow: AllocateResponse = this.createAllocateResponse(needs, customId, '', amount, true);
                 const allocateAmount = allocateRow.amount;
                 const leftAmount = amount - allocateAmount;
                 customItemLeftMap[customId] = leftAmount;

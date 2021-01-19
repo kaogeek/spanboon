@@ -45,7 +45,7 @@ import { FulfillmentCaseGroupResponse } from './responses/FulfillmentCaseGroupRe
 import moment from 'moment';
 import { FULFILL_ORDER_BY, FULFILL_GROUP } from '../../constants/FulfillSort';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
-import { PagePostRequest } from './requests/PagePostsRequest';
+import { FulfillmentPostsRequest } from './requests/FulfillmentPostsRequest';
 import { ASSET_PATH, ASSET_SCOPE } from '../../constants/AssetScope';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { NOTIFICATION_TYPE, USER_TYPE } from '../../constants/NotificationType';
@@ -67,6 +67,7 @@ import { CustomItemService } from '../services/CustomItemService';
 import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateStatement';
 import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -807,6 +808,7 @@ export class FulfillmentController {
                         }
                     }
 
+                    // new version without need
                     const lookupStmt = [
                         {
                             $lookup: {
@@ -825,33 +827,31 @@ export class FulfillmentController {
                         {
                             $lookup: {
                                 from: 'StandardItem',
-                                localField: 'needs.standardItemId',
+                                localField: 'standardItemId',
                                 foreignField: '_id',
-                                as: 'stdItems'
+                                as: 'standardItem'
                             }
                         },
                         {
                             $unwind: {
-                                path: '$stdItems',
+                                path: '$standardItem',
                                 preserveNullAndEmptyArrays: true
                             }
                         },
                         {
                             $lookup: {
                                 from: 'CustomItem',
-                                localField: 'needs.customItemId',
+                                localField: 'customItemId',
                                 foreignField: '_id',
-                                as: 'customItems'
+                                as: 'customItem'
                             }
                         },
                         {
                             $unwind: {
-                                path: '$customItems',
+                                path: '$customItem',
                                 preserveNullAndEmptyArrays: true
                             }
-                        },
-                        { $addFields: { imageURL: '$stdItems.imageURL', name: '$needs.name', unit: '$needs.unit' } },
-                        { $project: { stdItems: 0, customItems: 0 } }
+                        }
                     ];
 
                     aggregateStmt = getFulfillStmt.concat(lookupStmt);
@@ -1111,7 +1111,7 @@ export class FulfillmentController {
                                 }
                             }
                         } else if (customItemIdList !== null && customItemIdList !== undefined && customItemIdList.length > 0) {
-                            const customItemList: CustomItem[] = await this.stdItemService.find({ _id: { $in: customItemIdList } });
+                            const customItemList: CustomItem[] = await this.customItemService.find({ _id: { $in: customItemIdList } });
 
                             if (customItemList !== null && customItemList !== undefined && customItemList.length > 0) {
                                 for (const customItem of customItemList) {
@@ -1415,6 +1415,265 @@ export class FulfillmentController {
     }
 
     /**
+     * @api {post} /api/fulfillment_case/:caseId/confirm Confirm FulfillmentCase API
+     * @apiGroup Fulfillment Case
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Confirm FulfillmentCase Success",
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/fulfillment_case/:caseId/confirm
+     * @apiErrorExample {json} Confirm FulfillmentCase Failed
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/:caseId/allocate_confirm')
+    @Authorized('user')
+    public async confirmAllocateFulfillmentCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) allocates: CreateAllocateRequest[], @Res() res: any, @Req() req: any): Promise<any> {
+        try {
+            const userId = req.user.id;
+
+            if (allocates === undefined) {
+                allocates = [];
+            }
+
+            if (caseId !== null && caseId !== undefined && caseId !== '') {
+                const caseObjId = new ObjectID(caseId);
+                const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, deleted: false });
+
+                if (fulfillCase !== null && fulfillCase !== undefined) {
+                    const fulfillCaseStatus = fulfillCase.status;
+                    let canChangeStatus = false;
+
+                    if (asPage !== null && asPage !== undefined && asPage !== '') {
+                        const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(userId, asPage);
+
+                        let canAccessPage = false;
+
+                        if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
+                            for (const access of pageAccess) {
+                                if (access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.OWNER) {
+                                    if (JSON.stringify(access.page) === JSON.stringify(asPage)) {
+                                        canChangeStatus = true;
+                                        canAccessPage = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!canAccessPage) {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
+                        }
+                    }
+
+                    if (!canChangeStatus) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('You have not a permisstion to confirm case', undefined));
+                    }
+
+                    if (fulfillCaseStatus === FULFILLMENT_STATUS.CANCEL || fulfillCaseStatus === FULFILLMENT_STATUS.CONFIRM) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm This FulfillmentCase', undefined));
+                    }
+
+                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
+                    if (asPage !== null && asPage !== undefined && asPage !== '') {
+                        setObj.updatedByPageDate = moment().toDate();
+                    } else {
+                        setObj.updatedByUserDate = moment().toDate();
+                    }
+
+                    const changeFulfillCaseStatus = await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
+
+                    if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
+                        /* Create Statement and update need in service */
+                        // check allocate item
+                        const needsMap = {};
+                        const fulfillmentReqMap = {};
+                        const insertFulfillmentReqCount = {};
+                        for (const allocate of allocates) {
+                            if (allocate.needsId === undefined || allocate.needsId === '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('NeedsId is required.', undefined));
+                            }
+
+                            if (allocate.amount === undefined || allocate.amount <= 0) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('amount must greater than 0.', undefined));
+                            }
+
+                            if (allocate.fulfillmentReqId === undefined || allocate.fulfillmentReqId === '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('fulfillmentReqId is required.', undefined));
+                            }
+
+                            // check needIds
+                            const needs = await this.needsService.findOne({ _id: new ObjectID(allocate.needsId) });
+                            if (needs === undefined) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('Needs ' + allocate.needsId + ' was not found.', undefined));
+                            } else {
+                                const needIdString = needs.id + '';
+                                needsMap[needIdString] = needs;
+                            }
+
+                            const caseReq = await this.fulfillmentRequestService.findOne({ _id: new ObjectID(allocate.fulfillmentReqId), fulfillmentCase: caseObjId });
+                            if (caseReq === undefined) {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentRequest ' + allocate.fulfillmentReqId + ' was not found.', undefined));
+                            } else {
+                                const reqIdString = caseReq.id + '';
+                                fulfillmentReqMap[reqIdString] = caseReq;
+                            }
+
+                            // check if need not match case
+                            if (caseId !== caseReq.fulfillmentCase + '') {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('fulfillmentRequest case was not match.', undefined));
+                            }
+
+                            // check if need std/custItem is not match fulfillmentReq item.
+                            if ((needs.standardItemId !== undefined && needs.standardItemId !== null)) {
+                                const caseReqStd = caseReq.standardItemId;
+                                if (caseReqStd === undefined || caseReqStd === null || (caseReqStd + '' !== needs.standardItemId + '')) {
+                                    return res.status(400).send(ResponseUtil.getErrorResponse('Case Request item is not match need item.', undefined));
+                                }
+                            } else if ((needs.customItemId !== undefined && needs.customItemId !== null)) {
+                                const caseReqCust = caseReq.customItemId;
+
+                                if (caseReqCust === undefined || caseReqCust === null || (caseReqCust + '' !== needs.customItemId + '')) {
+                                    return res.status(400).send(ResponseUtil.getErrorResponse('Case Request customitem is not match need item.', undefined));
+                                }
+                            } else {
+                                return res.status(400).send(ResponseUtil.getErrorResponse('Needs is not has an item.', undefined));
+                            }
+
+                            insertFulfillmentReqCount[allocate.fulfillmentReqId] = allocate.amount;
+                        }
+
+                        // find all caseReq
+                        const missingReqAmount = [];
+                        const dbFulfillmentReqList: FulfillmentRequest[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(caseId);
+
+                        if (dbFulfillmentReqList !== undefined && dbFulfillmentReqList.length > 0) {
+                            for (const dbFulfilReq of dbFulfillmentReqList) {
+                                const dbReqId = dbFulfilReq.id + '';
+                                const dbNeedId = dbFulfilReq.needsId + '';
+                                const dbReqAmount = dbFulfilReq.quantity;
+                                const insertReqAmount = insertFulfillmentReqCount[dbReqId];
+
+                                if (insertReqAmount === undefined) {
+                                    // create allocate items
+                                    const acItem = new CreateAllocateRequest();
+                                    acItem.amount = dbReqAmount;
+                                    acItem.fulfillmentReqId = dbReqId;
+                                    acItem.needsId = dbNeedId;
+
+                                    if (fulfillmentReqMap[dbReqId] === undefined) {
+                                        fulfillmentReqMap[dbReqId] = dbFulfilReq;
+                                    }
+
+                                    if (needsMap[dbNeedId] === undefined) {
+                                        const dbNeeds = await this.needsService.findOne({ _id: new ObjectID(dbNeedId) });
+                                        needsMap[dbNeedId] = dbNeeds;
+                                    }
+
+                                    missingReqAmount.push(acItem);
+                                } else {
+                                    if (dbReqAmount > insertReqAmount.quantity) {
+                                        // create allocate left items
+                                        const acItem = new CreateAllocateRequest();
+                                        acItem.amount = dbReqAmount - insertReqAmount.quantity;
+                                        acItem.fulfillmentReqId = dbReqId;
+                                        acItem.needsId = dbFulfilReq.needsId + '';
+
+                                        missingReqAmount.push(acItem);
+                                    }
+                                }
+                            }
+                        }
+
+                        let allocateItems = [];
+                        if (allocates.length > 0) {
+                            allocateItems = allocateItems.concat(allocates);
+                        }
+                        if (missingReqAmount.length > 0) {
+                            allocateItems = allocateItems.concat(missingReqAmount);
+                        }
+
+                        const result: any[] = [];
+                        for (const allocate of allocateItems) {
+                            const needIdString = allocate.needsId + '';
+                            const reqIdString = allocate.fulfillmentReqId + '';
+
+                            const needs = needsMap[needIdString];
+                            if (needs === undefined) {
+                                continue;
+                            }
+
+                            const caseReq = fulfillmentReqMap[reqIdString];
+                            if (caseReq === undefined) {
+                                continue;
+                            }
+
+                            // create statement
+                            const ffStmt = new FulfillmentAllocateStatement();
+                            ffStmt.amount = allocate.amount;
+                            ffStmt.needsId = needs.id;
+                            ffStmt.fulfillmentRequest = caseReq.id;
+                            ffStmt.deleted = false;
+
+                            const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
+
+                            if (stmtObj) {
+                                // update fulfillment request
+                                await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                                    $set: {
+                                        statementId: stmtObj.id
+                                    }
+                                });
+
+                                result.push(allocate);
+                            }
+                        }
+                        /* End Statement */
+
+                        /* Create Chat */
+                        // search chatroom
+                        const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
+                        if (chatRoom) {
+                            let chatMessage = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
+                            const chatMsg = new ChatMessage();
+                            chatMsg.sender = new ObjectID(userId);
+                            chatMsg.senderType = USER_TYPE.USER;
+                            if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                chatMsg.sender = new ObjectID(asPage);
+                                chatMsg.senderType = USER_TYPE.PAGE;
+
+                                const page = await this.pageService.findOne({ _id: new ObjectID(asPage) });
+                                if (page !== undefined) {
+                                    chatMessage = page.name + ' ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม';
+                                }
+                            }
+                            chatMsg.message = chatMessage;
+                            chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_CASE_CONFIRM;
+                            chatMsg.room = chatRoom.id;
+
+                            await this.chatMessageService.createChatMessage(chatMsg);
+                        }
+                        /* end create Chat */
+
+                        const fulfilmentCancelled: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId });
+
+                        return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Confirmed', fulfilmentCancelled));
+                    } else {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Failed', undefined));
+                    }
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('FulfillmentCase Not Found', undefined));
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
+            }
+        } catch (error) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Error', error.message));
+        }
+    }
+
+    /**
      * @api {delete} /api/fulfillment_case/:caseId/confirm Cancel Confirm FulfillmentCase API
      * @apiGroup Fulfillment Case
      * @apiSuccessExample {json} Success
@@ -1561,7 +1820,7 @@ export class FulfillmentController {
      */
     @Post('/:caseId/fulfill')
     @Authorized('user')
-    public async createFulfillmentPostFromCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) pagePost: PagePostRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async createFulfillmentPostFromCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Body({ validate: true }) pagePost: FulfillmentPostsRequest, @Res() res: any, @Req() req: any): Promise<any> {
         try {
             const userId = req.user.id;
             const clientId = req.headers['client-id'];
@@ -2325,17 +2584,25 @@ export class FulfillmentController {
             return undefined;
         }
 
-        console.log('fulfillFetch >>> ', fulfillFetch);
-
         const fulfillRequestResponse: GetFulfillmentRequestResponse = new GetFulfillmentRequestResponse();
         fulfillRequestResponse.needs = fulfillFetch.needs;
-        fulfillRequestResponse.imageURL = fulfillFetch.imageURL;
-        fulfillRequestResponse.name = fulfillFetch.name;
-        fulfillRequestResponse.unit = fulfillFetch.unit;
         fulfillRequestResponse.id = fulfillFetch._id;
         fulfillRequestResponse.needsId = fulfillFetch.needsId;
         fulfillRequestResponse.quantity = fulfillFetch.quantity;
         fulfillRequestResponse.requestId = fulfillFetch._id;
+        fulfillRequestResponse.imageURL = undefined;
+        fulfillRequestResponse.name = undefined;
+        fulfillRequestResponse.unit = undefined;
+
+        if (fulfillFetch.standardItem !== undefined) {
+            fulfillRequestResponse.imageURL = fulfillFetch.standardItem.imageURL;
+            fulfillRequestResponse.name = fulfillFetch.standardItem.name;
+            fulfillRequestResponse.unit = fulfillFetch.standardItem.unit;
+        } else if (fulfillFetch.customItem !== undefined) {
+            fulfillRequestResponse.imageURL = fulfillFetch.customItem.imageURL;
+            fulfillRequestResponse.name = fulfillFetch.customItem.name;
+            fulfillRequestResponse.unit = fulfillFetch.customItem.unit;
+        }
 
         return fulfillRequestResponse;
     }
@@ -2346,9 +2613,6 @@ export class FulfillmentController {
         }
 
         const lookupStmt = [
-            {
-                $match: { _id: requestIds, deleted: false }
-            },
             {
                 $lookup: {
                     from: 'Needs',
@@ -2366,33 +2630,31 @@ export class FulfillmentController {
             {
                 $lookup: {
                     from: 'StandardItem',
-                    localField: 'needs.standardItemId',
+                    localField: 'standardItemId',
                     foreignField: '_id',
-                    as: 'stdItems'
+                    as: 'standardItem'
                 }
             },
             {
                 $unwind: {
-                    path: '$stdItems',
+                    path: '$standardItem',
                     preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $lookup: {
                     from: 'CustomItem',
-                    localField: 'needs.customItemId',
+                    localField: 'customItemId',
                     foreignField: '_id',
-                    as: 'customItems'
+                    as: 'customItem'
                 }
             },
             {
                 $unwind: {
-                    path: '$customItems',
+                    path: '$customItem',
                     preserveNullAndEmptyArrays: true
                 }
-            },
-            { $addFields: { imageURL: '$stdItems.imageURL', name: '$needs.name', unit: '$needs.unit' } },
-            { $project: { needs: 0, stdItems: 0, customItems: 0 } }
+            }
         ];
 
         const result = await this.fulfillmentRequestService.aggregate(lookupStmt);
@@ -2419,7 +2681,7 @@ export class FulfillmentController {
         return await this.fulfillmentCaseService.create(fulfillCase);
     }
 
-    private async createPostFulfillcaseFromCasePost(pagePost: PagePostRequest, fulfillCase: FulfillmentCase, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
+    private async createPostFulfillcaseFromCasePost(pagePost: FulfillmentPostsRequest, fulfillCase: FulfillmentCase, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
         if (pagePost === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Post Content was required.', undefined);
             return Promise.reject(errorResponse);
@@ -2511,8 +2773,8 @@ export class FulfillmentController {
             }
 
             const postPage: Posts = new Posts();
-            postPage.title = pagePost.title;
-            postPage.detail = postDetail;
+            postPage.title = pagePost.title === undefined ? '' : pagePost.title;
+            postPage.detail = postDetail === undefined ? '' : postDetail;
             postPage.isDraft = isDraft;
             postPage.hidden = false;
             postPage.type = POST_TYPE.FULFILLMENT;
