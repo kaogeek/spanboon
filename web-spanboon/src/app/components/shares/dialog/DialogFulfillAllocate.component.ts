@@ -31,9 +31,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public listItem: any;
     public listItemNeed: any;
     public wizardConfig: any;
-    public listBoxDisplay: any = 'none';
-    public listItemBoxDisplay: any = 'none';
-    public listGeneralBoxDisplay: any = 'none';
+    public selectNeedItem: any[] = [];
+
+    public listBoxDisplay: string = 'none';
+    public listItemBoxDisplay: string = 'none';
+    public listGeneralBoxDisplay: string = 'none';
 
     public textHrader: string = 'จัดการรายการเติมเต็ม';
 
@@ -140,6 +142,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
         });
+
+        for (let arr of this.listItemNeed) {
+            arr.isSelect = false
+        }
+
     }
 
     ngOnInit(): void {
@@ -190,9 +197,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         if (event.type === "AUTO") {
 
-            this.listBoxDisplay = "none";
-            this.listItemBoxDisplay = "block";
-
         } else if (event.type === "MANUAL") {
 
             this.listBoxDisplay = "none";
@@ -201,13 +205,40 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         } else if (event.type === "MANUALGENERAL") {
 
-            this.listBoxDisplay = "none";
-            this.listItemBoxDisplay = "block";
-            this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+        }
 
+    }
+
+    public back() {
+
+        this.listBoxDisplay = "block";
+        this.listItemBoxDisplay = "none";
+        this.textHrader = 'จัดการรายการเติมเต็ม';
+
+    }
+
+    public next() {
+
+        this.listBoxDisplay = "none";
+        this.listItemBoxDisplay = "none";
+        this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+
+    }
+
+    public selectItem(index) {
+
+        this.selectNeedItem = []
+        this.listItemNeed[index].isSelect = !this.listItemNeed[index].isSelect;
+
+        for (let arr of this.listItemNeed) {
+
+            if (arr.isSelect) {
+                this.selectNeedItem.push(arr)
+            }
 
         }
 
     }
+
 
 }

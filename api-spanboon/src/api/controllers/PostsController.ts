@@ -1158,7 +1158,43 @@ export class PostsController {
         const pageId = posts.pageId;
         const pageObjId = new ObjectID(pageId);
         const needsQuery = { pageId: pageObjId, post: postObjId };
-        const needs: Needs[] = await this.needsService.find(needsQuery);
+        const aggregateStmt: any = [
+            {
+                $match: needsQuery
+            },
+            {
+                $lookup: {
+                    from: 'StandardItem',
+                    localField: 'standardItemId',
+                    foreignField: '_id',
+                    as: 'standardItem'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$standardItem',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'CustomItem',
+                    localField: 'customItemId',
+                    foreignField: '_id',
+                    as: 'customItem'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$customItem',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            { $addFields: { id: '$_id' } },
+            { $project: { _id: 0 } },
+        ];
+
+        const needs: Needs[] = await this.needsService.aggregate(aggregateStmt);
 
         if (needs) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Get Post Needs Success', needs));

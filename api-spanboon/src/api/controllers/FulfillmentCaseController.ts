@@ -400,8 +400,6 @@ export class FulfillmentController {
                         };
 
                         unreadCount = await this.chatMessageService.search(unreadMsgFilter);
-
-                        console.log('unreadCount', unreadCount);
                     } else {
                         fulfilCaseResponse.isRead = undefined;
                         fulfilCaseResponse.chatMessage = undefined;
@@ -1110,7 +1108,9 @@ export class FulfillmentController {
                                     }
                                 }
                             }
-                        } else if (customItemIdList !== null && customItemIdList !== undefined && customItemIdList.length > 0) {
+                        } 
+
+                        if (customItemIdList !== null && customItemIdList !== undefined && customItemIdList.length > 0) {
                             const customItemList: CustomItem[] = await this.customItemService.find({ _id: { $in: customItemIdList } });
 
                             if (customItemList !== null && customItemList !== undefined && customItemList.length > 0) {
@@ -1745,7 +1745,6 @@ export class FulfillmentController {
 
                         if (caseReqsList !== undefined && caseReqsList.length > 0) {
                             for (const caseReq of caseReqsList) {
-                                console.log('caseReq.statementId', caseReq.statementId);
                                 if (caseReq.statementId === undefined || caseReq.statementId === null) {
                                     continue;
                                 }
