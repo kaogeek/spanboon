@@ -12,3 +12,6 @@ export const ASSET_CONFIG_NAME = {
 export const DEFAULT_ASSET_CONFIG_VALUE = {
     EXPIRE_MINUTE: 60
 };
+
+export const USER_EXPIRED_TIME_CONFIG = 'user.expiration.time';
+export const DEFAULT_USER_EXPIRED_TIME = 30; // as day
