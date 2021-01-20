@@ -8,5 +8,6 @@
 export class CheckChatRoomRequest {
 
     public roomIds: string[];
+    public fetchUserRoom: boolean;
 
 }
