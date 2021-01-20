@@ -69,7 +69,7 @@ export class TwitterService {
             // generate oauth
             const parameters = {
                 oauth_consumer_key: twitter_setup.TWITTER_API_KEY,
-                oauth_token: twitter_setup.TWITER_API_SECRET_KEY,
+                oauth_token: accessToken,
                 oauth_signature_method: 'HMAC-SHA1',
                 oauth_timestamp,
                 oauth_nonce,
@@ -79,7 +79,7 @@ export class TwitterService {
 
             let oauth_signature = '';
             try {
-                oauth_signature = oauthSignature.default.generate('GET', url, parameters, accessToken, tokenSecret, options);
+                oauth_signature = oauthSignature.default.generate('GET', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
             } catch (error) {
                 reject(error.message);
                 return;
@@ -90,103 +90,60 @@ export class TwitterService {
                 json: true
             };
 
-            // headers: {
-            //     'Authorization': 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + twitter_setup.TWITER_API_SECRET_KEY + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"'
-            // },
-
-            // auth: {
-            //     oauth_consumer_key: twitter_setup.TWITTER_API_KEY,
-            //     oauth_token: twitter_setup.TWITER_API_SECRET_KEY,
-            //     oauth_signature_method: 'HMAC-SHA1',
-            //     oauth_timestamp,
-            //     oauth_nonce,
-            //     oauth_version: '1.0',
-            //     oauth_signature
-            // }
-
-            console.log('https://cors-anywhere.herokuapp.com/' + url);
-
-            const req = https.request('https://cors-anywhere.herokuapp.com/' + url, httpOptions, (res) => {
-                console.log('---> 5.1');
+            const req = https.request(url, httpOptions, (res) => {
                 const { statusCode, statusMessage } = res;
-                console.log('---> 5.2');
 
                 if (statusCode !== 200) {
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;
                 }
 
-                console.log('---> 5.3');
-
                 let rawData = '';
                 res.on('data', (chunk) => { rawData += chunk; });
                 res.on('end', () => {
                     try {
-                        // const parsedData = JSON.parse(rawData);
-                        console.log('rawData', rawData);
-                        resolve(rawData);
+                        const parsedData = JSON.parse(rawData);
+                        resolve(parsedData);
                     } catch (e) {
-                        console.log('errorrrrrr', e);
                         reject(e.message);
                     }
                 });
             });
-            const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + twitter_setup.TWITER_API_SECRET_KEY + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
-            console.log('req h1: ', req.getHeaderNames());
+            const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + accessToken + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
             req.setHeader('Content-Type', 'application/json');
             req.setHeader('Accept', '*/*');
-            // req.setHeader('Origin', []);
-            // req.setHeader('X-Requested-With', []);
-            // req.setHeader('Access-Control-Allow-Headers', '*');
-            // req.setHeader('Access-Control-Request-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-            // req.setHeader('Authorization', ['OAuth oauth_consumer_key='+twitter_setup.TWITTER_API_KEY, 'oauth_token='+twitter_setup.TWITER_API_SECRET_KEY, 'oauth_signature_method=HMAC-SHA1', 'oauth_timestamp='+oauth_timestamp, 'oauth_nonce='+oauth_nonce, 'oauth_version=1.0', 'oauth_signature='+oauth_signature]);
             req.setHeader('Authorization', auth);
-            console.log('req h2: ', req.getHeaderNames());
-            console.log('req h3: ', req.getHeader('Authorization'));
             req.flushHeaders();
             req.on('error', (e) => {
-                console.log('errorrrrrr2', e);
                 reject(e);
             });
             req.end();
-
-            // http.request(options, (res) => {
-            //     console.log(`VERRIFY TW:`, res);
-            // }).on('error', (err) => {
-            //     // Handle error
-            //     console.log('err: ' + err);
-            // }).end();
         });
     }
 
     public getTwitterUserFromToken(accessToken: string, tokenSecret: string): Promise<User> {
-        return new Promise((resolve, reject) => {
-            if (accessToken === undefined || accessToken === null || accessToken === '') {
-                return undefined;
+        return new Promise(async (resolve, reject) => {
+            try {
+                const value: any = await this.verifyCredentials(accessToken, tokenSecret);
+
+                const twUserId = value.id_str;
+                if (twUserId === undefined || twUserId === '') {
+                    reject('Twitter User Id was not found.');
+                    return;
+                }
+
+                const authenId = await this.authenIdService.findOne({ providerUserId: twUserId, providerName: PROVIDER.TWITTER });
+                if (authenId === undefined) {
+                    reject('User was not found.');
+                    return;
+                }
+
+                const user = await this.userService.findOne({ _id: authenId.user });
+
+                resolve(user);
+            } catch (err) {
+                reject(err);
             }
-
-            if (tokenSecret === undefined || tokenSecret === null || tokenSecret === '') {
-                return undefined;
-            }
-
-            const url = 'https://api.twitter.com/1.1/account/verify_credentials.json';
-
-            const options: any = {
-                headers: []
-            };
-
-            https.get('https://cors-anywhere.herokuapp.com/' + url, options, (res) => {
-                console.error('res', res);
-            }).on('error', (e) => {
-                console.error(`Got error: ${e.message}`);
-            });
-
-            // http.request(options, (res) => {
-            //     console.log(`VERRIFY TW:`, res);
-            // }).on('error', (err) => {
-            //     // Handle error
-            //     console.log('err: ' + err);
-            // }).end();
 
             return undefined;
         });

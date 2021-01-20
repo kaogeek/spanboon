@@ -92,13 +92,15 @@ export class AllocateController {
 
         const standardItemLeftMap: any = {}; // key as standardItemId
         const customItemLeftMap: any = {}; // key as customItemId
+        let allItemZeroAmountCount = 0;
 
         for (const item of items) {
             const stdItemId = item.standardItemId;
             const customItemId = item.customItemId;
-            const amount = item.amount;
+            const amount = (item.amount !== null && item.amount !== undefined) ? item.amount : 0;
 
             if (amount <= 0) {
+                allItemZeroAmountCount += 1;
                 continue;
             }
 
@@ -120,6 +122,10 @@ export class AllocateController {
                     customItemLeftMap[customItemId] = customItemLeftMap[customItemId] + amount;
                 }
             }
+        }
+
+        if (allItemZeroAmountCount === items.length) {
+            return [];
         }
 
         // search need from post
@@ -245,8 +251,8 @@ export class AllocateController {
 
         if (needsList !== null && needsList !== undefined && needsList.length > 0) {
             for (const needs of needsList) {
-                const stdItemId = needs.standardItemId + '';
-                const customItemId = needs.customItemId + '';
+                const stdItemId = (needs.standardItemId !== null && needs.standardItemId !== undefined) ? needs.standardItemId + '' : '';
+                const customItemId = (needs.customItemId !== null && needs.customItemId !== undefined) ? needs.customItemId + '' : '';
 
                 if (stdItemId !== undefined && stdItemId !== null && stdItemId !== '') {
                     if (stdNeedMap[stdItemId] === undefined) {
