@@ -17,4 +17,5 @@ export class FulfillmentCaseParam {
     public filterType: string;
     public filterId: string;
     public status: string;
+    public caseId: string;
 }
