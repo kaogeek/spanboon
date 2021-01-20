@@ -48,6 +48,7 @@ export class DialogPost extends AbstractPage {
   public isEdit: boolean = true;
   public isFulfill: boolean = true;
   public isPreload: boolean = true;
+  public isFulfillNull: boolean = false;
   public snackBar: MatSnackBar;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -75,9 +76,11 @@ export class DialogPost extends AbstractPage {
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
+      console.log('this.data post ',this.data)
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
+      this.isFulfillNull = this.data.isFulfillNull;
     }
 
     if (this.data && this.data.story && this.data.story !== '' && this.data.story !== undefined && this.data.story !== null) {

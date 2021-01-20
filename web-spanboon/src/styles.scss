@@ -39,12 +39,15 @@ html,
 body {
     height: auto;
     width: 100%;
-    -webkit-tap-highlight-color: transparent;
+    // -webkit-tap-highlight-color: transparent;
 }
 
 body {
     margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
+
 
 figure {
     img {

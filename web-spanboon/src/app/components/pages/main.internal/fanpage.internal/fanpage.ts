@@ -9,3 +9,4 @@ export * from './SettingsFanPage.component';
 export * from './SettingsInfo.component';
 export * from './SettingsAdminRoles.component';
 export * from './AboutPage.component'; 
+export * from './SecurityInfo.component'; 

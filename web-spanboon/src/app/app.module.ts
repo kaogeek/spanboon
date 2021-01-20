@@ -85,6 +85,7 @@ import {
   SettingsFanPage,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   AboutPage,
   // shares
   DialogImage,
@@ -187,6 +188,7 @@ import {
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -261,6 +263,7 @@ const COMPONENTS: any[] = [
   AboutPage,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   MainPage,
   MenuRegister,
   FulfillPage,
@@ -388,6 +391,7 @@ const SERVICE_CLASSES: any[] = [
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // facade 
   PostFacade,
   HashTagFacade,

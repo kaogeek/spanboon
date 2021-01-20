@@ -5,16 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core'; 
 import { MatAutocompleteTrigger, MatInput, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager, ObservableManager, AssetFacade } from '../../../../services/services';
-import { MESSAGE } from '../../../../AlertMessage';
-import { AbstractPage } from '../../AbstractPage';
-import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
+import { AuthenManager, ObservableManager, AssetFacade } from '../../../../services/services'; 
+import { AbstractPage } from '../../AbstractPage'; 
 
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
 const REDIRECT_PATH: string = '/home';
@@ -30,11 +25,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public router: Router;
     private observManager: ObservableManager;
-    private assetFacade: AssetFacade;
-    // private isActive: boolean;
-    // public isSelect: boolean;
-    // public profileUser: any;  
-    // public userImage: any;
+    private assetFacade: AssetFacade; 
     public selected: any;
 
     public links = [
@@ -66,8 +57,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
-        this.assetFacade = assetFacade;
-        // this.userImage = {} 
+        this.assetFacade = assetFacade; 
     }
 
     public ngOnInit(): void { 

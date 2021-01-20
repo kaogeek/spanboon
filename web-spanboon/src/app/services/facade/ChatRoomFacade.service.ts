@@ -71,4 +71,5 @@ export class ChatRoomFacade extends AbstractFacade {
       });
     });
   };
+ 
 }

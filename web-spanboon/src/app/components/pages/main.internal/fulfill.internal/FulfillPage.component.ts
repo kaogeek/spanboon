@@ -10,14 +10,14 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MESSAGE } from '../../../../AlertMessage';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
+import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
 import { DialogPost } from '../../../../components/shares/dialog/DialogPost.component';
 import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
-import { DialogCheckFulfill, DialogConfirmFulfill } from 'src/app/components/shares/shares';
+import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
 
@@ -96,6 +96,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private assetFacade: AssetFacade;
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
+    private chatMessage: CheckMessageManager;
     //
     public isAuthen: boolean;
     public isCaseActive: boolean;
@@ -158,7 +159,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
-        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade,
+        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade,chatMessage: CheckMessageManager,
         userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
@@ -173,6 +174,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.chatFacade = chatFacade;
         this.chatRoomFacade = chatRoomFacade;
+        this.chatMessage = chatMessage;
         this.isAuthen = false;
         this.isCaseActive = true;
         this.showLoading = true;
@@ -225,6 +227,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 console.log('err1 >>>>> ', err);
             });
         });
+
+        this.observManager.subscribe('authen.message', (data: any) => { 
+            console.log('data ',data)
+        });
+ 
     }
 
     ngOnInit(): void {
@@ -271,8 +278,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public changeAccess(data, type) {
-        this.canAccessCase = false;
-
+        this.canAccessCase = false;   
         if (data !== null && data !== undefined) {
             this.accessValue = data;
             if (type === 'page') {
@@ -290,8 +296,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public searchAccessPage() {
         this.accessValue = this.getCurrentUser(); 
         this.showLoading = true; 
-        this.userAccessFacade.getPageAccess().then((res: any) => {
-            if (res.length > 0) {
+      
+        this.userAccessFacade.getPageAccess().then((res: any) => { 
+            if (res.length > 0) {  
                 for (let data of res) { 
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
@@ -301,9 +308,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 } else {
                                     data.page.imageBase64 = image.data;
                                 }
-                                setTimeout(() => {
-                                    this.accessPage = res;
-                                }, 1000);
+                             
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
@@ -311,22 +316,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             }
                         });
                     }
+                    setTimeout(() => {
+                        this.accessPage = res;
+                    }, 1000);
                 }
 
-                setTimeout(() => {  
-                    this.accessPage = res; 
-                    let data = {
-                        user: {  
-                            isUser : true,
-                            displayName: this.accessValue.displayName,
-                            id: this.accessValue.id,
-                            imageBase64: this.accessValue.imageBase64,
-                            imageURL: this.accessValue.imageURL,
-                        }
-                    }
-                    this.accessPage.push(data);
-                    this.accessPage.reverse();
-                    this.showLoading = false;
+                setTimeout(() => {   
+                    this.showLoading = false; 
                 }, 1000);
             } else {
                 let data = {
@@ -338,7 +334,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }
                 }
                 this.accessPage.push(data);
-            }
+            } 
         }).catch((err: any) => {
             console.log(err);
         });
@@ -405,8 +401,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }
                 }
 
-                this.fulfillCase = fulfillList;
-
+                this.fulfillCase = fulfillList; 
+                console.log(' this.fulfillCase ', this.fulfillCase)
                 setTimeout(() => {
                     this.showLoading = false;
                 }, 1000);
@@ -424,10 +420,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
             asPage,
             pageId: this.pageId,
             postId: this.postId,
+            name : this.pageName,
             fulfillRequest: this.reqData,
             isFulfill: true,
             isListPage: false,
             isEdit: false,
+            isFulfillNull : true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {
@@ -456,6 +454,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public getChatRoom(fulfill: any, asPage?: any) {
+        console.log('fulfill >>>> ',fulfill)
         this.chatData = [];
         this.reqData = [];
 
@@ -517,8 +516,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.objective = '';
                 this.linkObjective = '';
             }
-
-            this.pageId = fulfill.pageId;
+            console.log('fulfill ',fulfill)
+            this.pageId = fulfill.pageId; 
             this.postId = fulfill.postId;
             this.linkPost = (this.mainPostLink + fulfill.postId);
             this.fulfillCaseId = fulfill.fulfillCaseId;
@@ -536,8 +535,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     this.showChatRoom = true;
 
                     this.chatRoomId = res.chatRoom.id;
-                    this.pageName = res.fulfillCase.pageName;
-
+                    this.pageName = res.fulfillCase.pageName; 
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
                         this.canAccessCase = true;
                         this.canAccessChatRoom = true;
@@ -834,6 +832,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public viewPost(postId: string) {
+        console.log('postId ',postId)
         if (postId !== null && postId !== undefined && postId !== '') {
             this.router.navigate([]).then(() => {
                 window.open('/post/' + postId, '_blank');
@@ -890,16 +889,15 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         requester: this.getCurrentUserId()
                     };
 
-                    this.getFulfillmentFromPost(postId).then((fulfillList) => {
+                    this.getFulfillmentFromPost(postId).then((fulfillList) => { 
                         if (fulfillList !== null && fulfillList !== undefined) {
                             fulfillList.filter((ff) => {
                                 fulfillCaseId = ff.id;
                                 fulfillCaseStatus = ff.status;
 
-                                if (this.fulfillCase !== null && this.fulfillCase !== undefined && this.fulfillCase.length > 0) {
+                                if (this.fulfillCase !== null && this.fulfillCase !== undefined && this.fulfillCase.length > 0) { 
                                     this.fulfillCase.filter((ffResult) => {
-                                        ffResult.cases.filter((ffcResult) => {
-
+                                        ffResult.cases.filter((ffcResult) => { 
                                             if ((ffcResult.fulfillCaseId === fulfillCaseId) === true) {
                                                 this.getChatRoom(ffcResult, this.asPage);
                                             }
@@ -917,7 +915,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             canCreateNewCase = true;
                         }
 
-                        if (canCreateNewCase) {
+                        if (canCreateNewCase) { 
                             Object.assign(fulfillData, { needs: data });
                             this.createFulfillmentCase(fulfillData);
                         } else {
@@ -1015,7 +1013,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private async createFulfillmentCase(data: any) {
-        this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
+         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {  
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
         }).catch((createError) => {
         });
@@ -1228,4 +1226,32 @@ export class FulfillPage extends AbstractPage implements OnInit {
             });
         }
     }
+
+    public searchPostNeeds() {
+        return this.router.navigateByUrl('/search?type=NEEDS');
+    }
+
+    public clickDevelop(index, text) {
+        let url = ''
+        if (index === 1) {
+          url += "emergency=#" + text
+        } else if (index === 2) {
+          url += "objective=" + text
+        }
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
+            bottomText2: "ตกลง",
+            bottomText1: "ยกเลิก",
+            bottomColorText2: "black",
+            // btDisplay1: "none"
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if(res){ 
+            this.router.navigateByUrl('/search?' + url);
+          }
+        });
+      }
 }

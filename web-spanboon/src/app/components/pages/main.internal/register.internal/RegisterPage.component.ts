@@ -343,7 +343,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       } 
       this.authenManager.registerSocial(register, this.mode).then((value: any) => { 
         if (value.status === 1) {
-          let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
+          let alertMessage: string = 'ลงทะเบียนสำเร็จ';
           let isValid = false;
           if (value.user) {
             isValid = true;
@@ -436,8 +436,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
   }
 
-  public getTwitterUser(){
-    this.accessToken
+  public getTwitterUser(){ 
     this.twitterService.accountVerify(this.accessToken.twitterOauthToken, this.accessToken.twitterOauthTokenSecret).then((account: any) => {
       this.data = account;
       this.data.displayName = account.name;

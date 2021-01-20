@@ -1258,13 +1258,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public setProfile() {
     if (window.innerWidth > 899) {
       if (this.isLoading !== true) {
-        var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
-
-        if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll + 150) {
-          this.imgprofile.nativeElement.style.marginTop = '-50pt';
-        } else {
-          this.imgprofile.nativeElement.style.marginTop = '10pt';
+        if (this.fanpagebackground && this.fanpagebackground.nativeElement !== undefined) {
+          var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
         }
+        if (this.fanpagebackground && this.fanpagebackground.nativeElement !== undefined) {
+          if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll + 150) {
+            this.imgprofile.nativeElement.style.marginTop = '-50pt';
+          } else {
+            this.imgprofile.nativeElement.style.marginTop = '10pt';
+          }
+        }
+
       }
     } else {
       this.imgprofile.nativeElement.style.marginTop = '-55pt';

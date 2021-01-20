@@ -33,10 +33,10 @@
                         </span>
                     </button>
                     <mat-menu #menupage="matMenu">
-                        <div>
+                        <div> 
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <button mat-menu-item *ngIf="index === 0 && data.user.isUser" class="page-list"
-                                    (click)="changeAccess(data.user,'user')"> 
+                                <button mat-menu-item *ngIf="index === 0" class="page-list"
+                                    (click)="changeAccess(data.user,'user')">
                                     <ng-container
                                         *ngIf="data.user && data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile1">
                                         <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile">
@@ -49,19 +49,21 @@
                                     </div>
                                 </button>
 
-                                <button mat-menu-item class="page-list" (click)="changeAccess(data.page,'page')">
-                                    <ng-container
-                                        *ngIf="data.page && data.page.imageBase64 !== '' && data.page.imageBase64 !== undefined && data.page.imageBase64 !== null; else elseImageProfile">
-                                        <img src="{{data.page.imageBase64}}" alt="" class="profile">
-                                    </ng-container>
-                                    <ng-template #elseImageProfile>
-                                        <div class="donator"> {{data.page && data.page.name | slice: 0:1 }} </div>
-                                    </ng-template>
-
-                                    <div class="select-name">
-                                        {{data.page && data.page.name}}
-                                    </div>
-                                </button>
+                                <ng-container *ngIf="data.page && data.page !== undefined && data.page !== null && data.page !== '' ">
+                                    <button mat-menu-item class="page-list"  (click)="changeAccess(data.page,'page')">
+                                        <ng-container
+                                            *ngIf="data.page && data.page.imageBase64 !== '' && data.page.imageBase64 !== undefined && data.page.imageBase64 !== null; else elseImageProfile">
+                                            <img src="{{data.page.imageBase64}}" alt="" class="profile">
+                                        </ng-container>
+                                        <ng-template #elseImageProfile>
+                                            <div class="donator"> {{data.page && data.page.name | slice: 0:1 }} </div>
+                                        </ng-template>
+    
+                                        <div class="select-name">
+                                            {{data.page && data.page.name}}
+                                        </div>
+                                    </button>
+                                </ng-container> 
                             </ng-container>
                         </div>
                     </mat-menu>
@@ -108,16 +110,21 @@
                             </mat-menu>
                         </div>
                     </div>
-                    <div class="user-contact">
-                        <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
-                            [showCase]="showCase" [statusColor]="statusColor" [isCaseSelected]="isCaseSelected"
-                            [groupName]="fulfill.groupName" [data]="fulfill"
-                            (onContactClick)="getChatRoom($event,asPage)">
-                        </collapsible-head>
-                    </div>
+                    <ng-container *ngIf="fulfillCase && fulfillCase.length > 0; else elseTemplateFulFill">
+                        <div class="user-contact">
+                            <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
+                                [showCase]="showCase" [statusColor]="statusColor" [isCaseSelected]="isCaseSelected"
+                                [groupName]="fulfill.groupName" [data]="fulfill"
+                                (onContactClick)="getChatRoom($event,asPage)">
+                            </collapsible-head>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplateFulFill>
+                        <div class="user-contact contact-notfound">ไม่พบรายการคำขอเติมเต็ม</div>
+                    </ng-template>
                 </div>
             </div>
-        </div>
+        </div> 
         <ng-container *ngIf="canAccessCase && canAccessChatRoom; else elseTemplateChatRoom">
             <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
                 <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
@@ -169,7 +176,8 @@
                                     [isShowObjective]="objective !== null && objective !== undefined && objective !== ''"
                                     [isNameObjective]="objective !== null && objective !== undefined && objective !== ''"
                                     [isIconObjective]="objective !== null && objective !== undefined && objective !== ''"
-                                    [nameObjective]="objective"></tag-event>
+                                    [nameObjective]="objective" (emergencyClick)="clickDevelop($event , emergencyEvent)"
+                                    (objectiveClick)="clickDevelop($event , objective)"></tag-event>
 
                                 <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
                                     <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
@@ -420,7 +428,8 @@
                         d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
                         transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
                 </svg>
-                <span class="fulfill-label">ไม่พบรายการแชทเติมเต็ม</span>
+                <span class="fulfill-label">ไม่พบรายการคำขอเติมเต็ม</span>
+                <span class="fulfill-search" (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์กดที่นี่</span>
             </div>
         </ng-template>
     </div>
