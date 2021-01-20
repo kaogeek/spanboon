@@ -120,6 +120,7 @@ export class FulfillmentController {
             const orderBy = params.orderBy;
             const asPage = params.asPage;
             const status = params.status;
+            const caseId = params.caseId;
             let limit = params.limit;
             let offset = params.offset;
             // groupby filter
@@ -157,6 +158,15 @@ export class FulfillmentController {
                 }
             } else {
                 searchFulfillStmt.push({ $match: { requester: userObjId, deleted: false } });
+            }
+
+            // insert filter into first stmt
+            if (searchFulfillStmt.length > 0) {
+                const firstStmt = searchFulfillStmt[0];
+
+                if (caseId !== undefined && caseId !== '') {
+                    firstStmt['$match']['_id'] = new ObjectID(caseId);
+                }
             }
 
             if (status !== null && status !== undefined && status !== '') {
@@ -223,6 +233,8 @@ export class FulfillmentController {
                     matchStmtObj['$match'].postId = new ObjectID(filterId);
                 }
             } else {
+                matchStmtObj['$match'] = {};
+
                 if (filterType === FULFILL_GROUP.PAGE) {
                     matchStmtObj['$match'].pageId = new ObjectID(filterId);
                 } else if (filterType === FULFILL_GROUP.USER) {
@@ -1108,7 +1120,7 @@ export class FulfillmentController {
                                     }
                                 }
                             }
-                        } 
+                        }
 
                         if (customItemIdList !== null && customItemIdList !== undefined && customItemIdList.length > 0) {
                             const customItemList: CustomItem[] = await this.customItemService.find({ _id: { $in: customItemIdList } });
