@@ -208,6 +208,7 @@ import {
   EditProfileUserPageFacade,
   AccountFacade,
   ActionLogFacade,
+  AllocateFacade,
   FulfillFacade,
   ChatRoomFacade,
   ChatFacade,
@@ -390,6 +391,7 @@ const SERVICE_CLASSES: any[] = [
   NotificationManager,
   // facade 
   PostFacade,
+  AllocateFacade,
   HashTagFacade,
   EmergencyEventFacade,
   ObjectiveFacade,

@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AssetFacade, AuthenManager } from '../../../services/services';
+import { AssetFacade, AuthenManager, AllocateFacade } from '../../../services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import * as $ from 'jquery';
 
@@ -27,27 +27,29 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public redirection: string;
     private activatedRoute: ActivatedRoute;
+    private allocateFacade: AllocateFacade;
 
     public listItem: any;
     public listItemNeed: any;
     public wizardConfig: any;
+    public originalPost: any;
+    public groupsArr: any;
     public selectNeedItem: any[] = [];
+    public postFulfillAllocate: any[] = [];
 
-    public listBoxDisplay: string = 'none';
-    public listItemBoxDisplay: string = 'none';
-    public listGeneralBoxDisplay: string = 'none';
+    public indexWizardPage: number = 0;
+    public indexItem: number = 0;
 
-    public textHrader: string = 'จัดการรายการเติมเต็ม';
+    public typePage: string;
 
-    constructor(authenManager: AuthenManager, router: Router,
+    constructor(authenManager: AuthenManager, allocateFacade: AllocateFacade, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.router = router;
         this.dialog = dialog;
         this.activatedRoute = activatedRoute;
-
-        this.listBoxDisplay = "block"
+        this.allocateFacade = allocateFacade;
 
         this.listItem = [
             {
@@ -71,66 +73,29 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             {
                 "active": true,
                 "createdDate": "2020-10-22T04:19:24.469Z",
-                "customItemId": "5f91084ca23f15136bd56350",
-                "fulfillQuantity": 0,
-                "id": "วัตถุดิบ(ปลาหมึก)",
-                "name": "วัตถุดิบ(ปลาหมึก)",
+                "standardItemId": "5f4349d1669c480f8bb67f20",
+                "fulfillQuantity": 10,
+                "id": "ข้าวสาร",
+                "name": "ข้าวสาร",
                 "pageId": "5f8e6b11a554f760422bc347",
                 "pendingQuantity": 0,
                 "post": "5f91084ca23f15136bd5634c",
-                "quantity": 50,
+                "quantity": 10,
+                "amount": 10,
                 "unit": "กิโล",
             },
             {
                 "active": true,
                 "createdDate": "2020-10-22T04:19:24.469Z",
-                "customItemId": "5f91084ca23f15136bd56350",
-                "fulfillQuantity": 0,
-                "id": "วัตถุดิบ(ปลาทู)",
-                "name": "วัตถุดิบ(ปลาทู)",
+                "standardItemId": "5f4349e8669c480f8bb67f23",
+                "fulfillQuantity": 10,
+                "id": "ปลากระป๋อง",
+                "name": "ปลากระป๋อง",
                 "pageId": "5f8e6b11a554f760422bc347",
                 "pendingQuantity": 0,
                 "post": "5f91084ca23f15136bd5634c",
-                "quantity": 50,
-                "unit": "กิโล",
-            },
-            {
-                "active": true,
-                "createdDate": "2020-10-22T04:19:24.469Z",
-                "customItemId": "5f91084ca23f15136bd56350",
-                "fulfillQuantity": 0,
-                "id": "วัตถุดิบ(ไก่)",
-                "name": "วัตถุดิบ(ไก่)",
-                "pageId": "5f8e6b11a554f760422bc347",
-                "pendingQuantity": 0,
-                "post": "5f91084ca23f15136bd5634c",
-                "quantity": 50,
-                "unit": "กิโล",
-            },
-            {
-                "active": true,
-                "createdDate": "2020-10-22T04:19:24.469Z",
-                "customItemId": "5f91084ca23f15136bd56350",
-                "fulfillQuantity": 0,
-                "id": "วัตถุดิบ(นมสด)",
-                "name": "วัตถุดิบ(นมสด)",
-                "pageId": "5f8e6b11a554f760422bc347",
-                "pendingQuantity": 0,
-                "post": "5f91084ca23f15136bd5634c",
-                "quantity": 50,
-                "unit": "กิโล",
-            },
-            {
-                "active": true,
-                "createdDate": "2020-10-22T04:19:24.469Z",
-                "customItemId": "5f91084ca23f15136bd56350",
-                "fulfillQuantity": 0,
-                "id": "วัตถุดิบ(ไข่)",
-                "name": "วัตถุดิบ(ไข่)",
-                "pageId": "5f8e6b11a554f760422bc347",
-                "pendingQuantity": 0,
-                "post": "5f91084ca23f15136bd5634c",
-                "quantity": 50,
+                "quantity": 10,
+                "amount": 10,
                 "unit": "กิโล",
             }
         ]
@@ -138,10 +103,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.wizardConfig = {
             "quantity": 4
         }
-
-        this.activatedRoute.params.subscribe((param) => {
-            this.redirection = param['redirection'];
-        });
 
         for (let arr of this.listItemNeed) {
             arr.isSelect = false
@@ -196,32 +157,71 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public checkedClick(event) {
 
         if (event.type === "AUTO") {
+            this.selectNeedItem = this.listItemNeed
+            this.groupPostByItem(this.selectNeedItem);
+            this.indexWizardPage = 2
 
         } else if (event.type === "MANUAL") {
 
-            this.listBoxDisplay = "none";
-            this.listItemBoxDisplay = "block";
-            this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+            this.indexWizardPage++
 
         } else if (event.type === "MANUALGENERAL") {
+            
+            this.showAlertDevelopDialog();
+
+        }
+
+        this.typePage = event.type
+
+    }
+
+    public back(isAllocate?) {
+
+        if (isAllocate) {
+
+            if (this.indexItem === 0) {
+
+                this.indexWizardPage--
+
+            } else {
+
+                this.indexItem--
+
+            }
+
+        } else {
+
+            if (this.indexWizardPage > 0) {
+                this.indexWizardPage--
+            }
 
         }
 
     }
 
-    public back() {
+    public next(isAllocate?) {
 
-        this.listBoxDisplay = "block";
-        this.listItemBoxDisplay = "none";
-        this.textHrader = 'จัดการรายการเติมเต็ม';
+        if (isAllocate) {
 
-    }
+            if (this.indexItem === (this.selectNeedItem.length - 1)) {
 
-    public next() {
+                this.indexWizardPage++
 
-        this.listBoxDisplay = "none";
-        this.listItemBoxDisplay = "none";
-        this.textHrader = 'เลือกรายการที่ต้องการจัดสรร';
+            } else {
+
+                this.indexItem++
+
+            }
+
+        } else {
+
+            if (this.indexWizardPage < 5) {
+                this.indexWizardPage++
+                if (this.indexWizardPage === 2) {
+                    this.groupPostByItem(this.selectNeedItem);
+                }
+            }
+        }
 
     }
 
@@ -240,5 +240,70 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     }
 
+    public indexItemName(): string {
+        return this.selectNeedItem[this.indexItem].name
+    }
+
+    public indexItemQuantity(): string {
+        return this.selectNeedItem[this.indexItem].quantity
+    }
+
+    public indexItemAllocateQuantity(): string {
+        return this.selectNeedItem[this.indexItem].fulfillQuantity
+    }
+
+    public indexItemUnit(): string {
+        return this.selectNeedItem[this.indexItem].unit
+    }
+
+    public getTypePost(type): string {
+        if (type === "NEEDS") {
+            return "มองหา"
+        } else if (type === "GENERAL") {
+            return "ทั่วไป"
+        } else {
+            return "ไม่ระบุประเภท"
+        }
+    }
+
+    private resetDataPage() {
+        console.log('resetDataPage')
+        this.selectNeedItem = []
+        this.typePage = ''
+    }
+
+    private groupPostByItem(item?) {
+
+        let data: any = [{ pageId: item[0].pageId, items: item }]
+        var groups: any[] = []
+
+        for (let item of this.selectNeedItem) {
+
+            groups.push({ groupName: item.name, posts: [] })
+
+        }
+
+        this.allocateFacade.calculateAllocate(data).then((res: any) => {
+
+            this.originalPost = res
+            for (let post of this.originalPost) {
+
+                for (let group of post.items) {
+                    for (let g of groups) {
+                        if (g.groupName === group.itemName) {
+                            g.posts.push(group)
+                        }
+                    }
+                }
+
+            }
+
+        }).catch((err: any) => {
+            console.log('err', err)
+        })
+
+        this.groupsArr = groups;
+
+    }
 
 }
