@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Body, Req, Post, Authorized, Param, Put, Get } from 'routing-controllers';
+import { JsonController, Res, Body, Req, Post, Authorized, Param, Put, Get, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { UserService } from '../services/UserService';
 import { ObjectID } from 'mongodb';
@@ -68,24 +68,59 @@ export class UserController {
      */
     @Post('/logout')
     @Authorized('user')
-    public async logout(@Res() res: any, @Req() req: any): Promise<any> {
+    public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
 
-        const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
-
-        if (!authenId) {
-            const errorResponse: any = { status: 0, message: 'Invalid token' };
-            return res.status(400).send(errorResponse);
+        let logoutAll = false;
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
         }
 
-        const currentDateTime = moment().toDate();
-        const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
-        if (updateExpireToken) {
-            const successResponse: any = { status: 1, message: 'Successfully Logout' };
-            return res.status(200).send(successResponse);
+        if (mode === 'all') {
+            logoutAll = true;
+        }
+
+        if (logoutAll) {
+            const authenIds: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: uid } });
+
+            if (!authenIds) {
+                const errorResponse: any = { status: 0, message: 'Invalid token' };
+                return res.status(400).send(errorResponse);
+            }
+
+            const successResult = [];
+            const currentDateTime = moment().toDate();
+            for (const authenId of authenIds) {
+                const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
+                if (updateExpireToken) {
+                    successResult.push(authenId.id);
+                }
+            }
+
+            if (successResult.length > 0) {
+                const successResponse: any = { status: 1, message: 'Successfully Logout' };
+                return res.status(200).send(successResponse);
+            } else {
+                const deleteErrorResponse: any = { status: 0, message: 'No account was detact to logout' };
+                return res.status(400).send(deleteErrorResponse);
+            }
         } else {
-            const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
-            return res.status(400).send(deleteErrorResponse);
+            const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
+
+            if (!authenId) {
+                const errorResponse: any = { status: 0, message: 'Invalid token' };
+                return res.status(400).send(errorResponse);
+            }
+
+            const currentDateTime = moment().toDate();
+            const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
+            if (updateExpireToken) {
+                const successResponse: any = { status: 1, message: 'Successfully Logout' };
+                return res.status(200).send(successResponse);
+            } else {
+                const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
+                return res.status(400).send(deleteErrorResponse);
+            }
         }
     }
 
@@ -493,7 +528,7 @@ export class UserController {
     @Post('/uniqueid/check')
     public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any): Promise<any> {
         const uniqueId = user.uniqueId;
-        
+
         const checkValid = await this.checkUniqueIdValid(uniqueId);
         if (checkValid.status === 1) {
             return res.status(200).send(checkValid);

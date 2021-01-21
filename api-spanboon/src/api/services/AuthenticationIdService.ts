@@ -22,6 +22,10 @@ export class AuthenticationIdService {
         return this.authenticationIdRepository.findOne(accessToken);
     }
 
+    public async find(findCondition: any): Promise<AuthenticationId[]> {
+        return await this.authenticationIdRepository.find(findCondition);
+    }
+
     // update token
     public async update(query: any, newValue: any): Promise<any> {
         this.log.info('Update a token');
