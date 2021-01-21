@@ -46,25 +46,29 @@ export class AuthService {
                 let UserId = undefined;
                 // check in fb mode
                 if (mode === 'FB') {
-                    const fbUserObj = await this.facebookService.getFacebookUser(token);
+                    const fbToken = await jwt.verify(token, env.SECRET_KEY);
+                    if (fbToken.token !== undefined) {
+                        const fbUserObj = await this.facebookService.getFacebookUser(fbToken.token);
 
-                    if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
-                        UserId = fbUserObj.user.id;
+                        if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
+                            UserId = fbUserObj.user.id;
+                        }
                     }
-
+                    
                     if (UserId !== undefined) {
                         UserId += ';FB';
                     }
                 } else if (mode === 'TW') {
-                    const twToken = token;
-                    const keyMap = ObjectUtil.parseQueryParamToMap(twToken);
+                    const twToken = await jwt.verify(token, env.SECRET_KEY);
+                    if (twToken.token !== undefined) {
+                        const keyMap = ObjectUtil.parseQueryParamToMap(twToken.token);
 
-                    // ! re implement this when fix bug
-                    if (keyMap['user_id'] !== undefined) {
-                        const twUserObj: any = await this.twitterService.getTwitterUser(keyMap['user_id']);
+                        if (keyMap['user_id'] !== undefined) {
+                            const twUserObj: any = await this.twitterService.getTwitterUser(keyMap['user_id']);
 
-                        if (twUserObj !== undefined && twUserObj.id !== undefined) {
-                            UserId = twUserObj.id;
+                            if (twUserObj !== undefined && twUserObj.id !== undefined) {
+                                UserId = twUserObj.id;
+                            }
                         }
                     }
 

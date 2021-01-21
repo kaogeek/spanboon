@@ -744,7 +744,12 @@ export class GuestController {
             //     return res.status(400).send(errorResponse);
             // }
 
-            const fbUser = await this.facebookService.getFacebookUser(loginParam.token);
+            let fbUser = undefined;
+            try{
+                fbUser = await this.facebookService.getFacebookUser(loginParam.token);
+            }catch(err){
+                console.log(err);
+            }
 
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
@@ -761,10 +766,9 @@ export class GuestController {
 
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    // const successResponse: any = { status: 1, message: 'Loggedin with Facebook successfully', data: updatedAuth };
-                    // return res.status(200).send(successResponse);
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
@@ -804,17 +808,14 @@ export class GuestController {
 
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
-                    // const successResponse: any = { status: 1, message: 'Loggedin with Google successfully', data: updatedAuth };
-                    // return res.status(200).send(successResponse);
-
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
-            const twitterUserId = loginParam.twitterUserId;
 
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
@@ -826,27 +827,19 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
 
-            // ! implement
-            // let twitterUserId = undefined;
-            // try {
-            //     twitterUserId = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
-            // } catch (ex) {
-            //     const errorResponse: any = { status: 0, message: ex };
-            //     return res.status(400).send(errorResponse);
-            // }
+            let twitterUserId = undefined;
+            try {
+                const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                twitterUserId = verifyObject.id_str;
+            } catch (ex) {
+                const errorResponse: any = { status: 0, message: ex };
+                return res.status(400).send(errorResponse);
+            }
 
-            // if (twitterUserId === undefined) {
-            //     const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-            //     return res.status(400).send(errorResponse);
-            // }
-
-            // const expiresAt = checkAccessToken.data.expires_at;
-            // const today = moment().toDate();
-
-            // if (expiresAt < today.getDate()) {
-            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-            //     return res.status(400).send(errorResponse);
-            // }
+            if (twitterUserId === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
 
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
 
@@ -867,6 +860,8 @@ export class GuestController {
 
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    console.log('loginToken', loginToken);
                 }
             }
         }
@@ -1048,7 +1043,13 @@ export class GuestController {
 
         if (isMode !== undefined && isMode === 'FB') {
             try {
-                const fbUser = await this.facebookService.getFacebookUser(tokenParam);
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if(decryptToken.token === undefined){
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+
+                const fbUser = await this.facebookService.getFacebookUser(decryptToken.token);
                 user = fbUser.user;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
@@ -1056,13 +1057,13 @@ export class GuestController {
             }
         } if (isMode !== undefined && isMode === 'TW') {
             try {
-                // ! edit here when fix bug
-                // tw tokenParam is in pattern oauth_token=xxxx;oauth_token_secret=xxx;user_id=xxxx
-                const find = ';';
-                const re = new RegExp(find, 'g');
-                tokenParam = tokenParam.replace(re, '&');
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if(decryptToken.token === undefined){
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
 
-                const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
+                const keyMap = ObjectUtil.parseQueryParamToMap(decryptToken.token);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
