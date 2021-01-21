@@ -162,6 +162,34 @@ export class AllocateController {
                     },
                     {
                         $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'Posts',
                             localField: 'post',
                             foreignField: '_id',
@@ -212,6 +240,34 @@ export class AllocateController {
                             pageId: pageObjId,
                             fullfilled: { $in: [false, null] },
                             $or: needORStmt
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
                         }
                     },
                     {
@@ -503,6 +559,14 @@ export class AllocateController {
         allocateResult.posts = posts;
         allocateResult.fulfillQuantity = needs.fulfillQuantity; // current fulfill qty
         allocateResult.amount = amount; // allocate qty
+
+        if (needs.custItem !== undefined) {
+            allocateResult.imageURL = needs.custItem.imageURL;
+        }
+
+        if (needs.standardItem !== undefined) {
+            allocateResult.imageURL = needs.standardItem.imageURL;
+        }
 
         return allocateResult;
     }
