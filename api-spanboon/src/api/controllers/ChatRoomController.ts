@@ -550,6 +550,7 @@ export class ChatRoomController {
         chatMsg.filePath = filePath;
         chatMsg.videoURL = videoURL;
         chatMsg.deleted = false;
+        chatMsg.isRead = false;
         chatMsg.createdByUsername = req.user.username;
         chatMsg.createdBy = senderObjId;
         chatMsg.message = message.message;
