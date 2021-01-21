@@ -23,7 +23,7 @@ export class TwitterService {
 
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
 
-    public async verifyUserCredentials(userId: string): Promise<string> {
+    public async verifyUserCredentials(userId: string): Promise<any> {
         const user = await this.userService.findOne({ _id: new ObjectID(userId) });
 
         if (user === undefined) {
@@ -49,8 +49,7 @@ export class TwitterService {
         return await this.verifyCredentials(accessToken, tokenSecret);
     }
 
-    public verifyCredentials(accessToken: string, tokenSecret: string): Promise<string> {
-
+    public verifyCredentials(accessToken: string, tokenSecret: string): Promise<any> {
         return new Promise((resolve, reject) => {
             if (accessToken === undefined || accessToken === null || accessToken === '') {
                 reject('accessToken was required');
@@ -165,7 +164,90 @@ export class TwitterService {
     }
 
     // return true if post success, false if not success
-    public async postStatus(userId: string, message: string): Promise<boolean> {
-        return false;
+    public postStatus(userId: string, message: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (userId === undefined || userId === null || userId === '') {
+                reject('userId was required');
+                return;
+            }
+
+            const authenId = await this.authenIdService.findOne({ user: new ObjectID(userId), providerName: PROVIDER.TWITTER });
+            if (authenId === undefined) {
+                reject('Twitter register was not found.');
+                return;
+            }
+
+            if (authenId.properties === undefined || authenId.properties.oauthToken === undefined || authenId.properties.oauthTokenSecret === undefined) {
+                reject('Twitter propertites was not found.');
+                return;
+            }
+
+            if (message === undefined) {
+                message = '';
+            }
+
+            const url: string = TwitterService.ROOT_URL + '/1.1/statuses/update.json?status=status=' + message;
+            // if (message !== '') {
+            //     url = url + '?status=' + message;
+            // }
+
+            const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
+            const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
+            const accessToken = authenId.properties.oauthToken;
+            const tokenSecret = authenId.properties.oauthTokenSecret;
+
+            // generate oauth
+            const parameters = {
+                oauth_consumer_key: twitter_setup.TWITTER_API_KEY,
+                oauth_token: accessToken,
+                oauth_signature_method: 'HMAC-SHA1',
+                oauth_timestamp,
+                oauth_nonce,
+                oauth_version: '1.0'
+            };
+            const options = {};
+
+            let oauth_signature = '';
+            try {
+                oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
+            } catch (error) {
+                reject(error.message);
+                return;
+            }
+
+            const httpOptions: any = {
+                method: 'POST',
+                json: true
+            };
+
+            const req = https.request(url, httpOptions, (res) => {
+                const { statusCode, statusMessage } = res;
+
+                if (statusCode !== 200) {
+                    reject('statusCode ' + statusCode + ' ' + statusMessage);
+                    return;
+                }
+
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        resolve(parsedData);
+                    } catch (e) {
+                        reject(e.message);
+                    }
+                });
+            });
+            const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + accessToken + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
+            req.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+            req.setHeader('Accept', '*/*');
+            req.setHeader('Authorization', auth);
+            req.flushHeaders();
+            req.on('error', (e) => {
+                reject(e);
+            });
+            req.end();
+        });
     }
 }
