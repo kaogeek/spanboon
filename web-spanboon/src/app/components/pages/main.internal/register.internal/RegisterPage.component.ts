@@ -343,7 +343,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       } 
       this.authenManager.registerSocial(register, this.mode).then((value: any) => { 
         if (value.status === 1) {
-          let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
+          let alertMessage: string = 'ลงทะเบียนสำเร็จ';
           let isValid = false;
           if (value.user) {
             isValid = true;
@@ -436,14 +436,13 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
   }
 
-  public getTwitterUser(){
-    this.accessToken
+  public getTwitterUser(){ 
     this.twitterService.accountVerify(this.accessToken.twitterOauthToken, this.accessToken.twitterOauthTokenSecret).then((account: any) => {
       this.data = account;
       this.data.displayName = account.name;
       this.images = account.profile_image_url_https;
       this.data.gender = -1;
-      this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : new Date();
+      this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : undefined;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;
       }).catch(err => {
@@ -481,7 +480,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.firstName = userInfo.first_name;
       this.data.lastName = userInfo.last_name;
       this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
-      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : new Date();
+      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined;
       this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal';
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal&access_token='+this.accessToken.fbtoken;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {

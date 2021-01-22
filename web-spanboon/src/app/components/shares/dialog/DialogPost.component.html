@@ -10,7 +10,7 @@
     </Preload-card>
     <ng-container *ngIf="isFulfill; else elseIsFulfill">
         <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix"
-            [isFulfill]="isFulfill" (createFullfillPost)="createFullfillPost($event)">
+            [isFulfill]="isFulfill" (createFullfillPost)="createFullfillPost($event)" [isFulfillNull]="isFulfillNull">
         </box-post>
     </ng-container>
     <ng-template #elseIsFulfill>

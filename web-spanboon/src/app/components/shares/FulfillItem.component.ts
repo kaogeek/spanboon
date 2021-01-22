@@ -65,6 +65,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isLoading: boolean;
     public isActiveCss: boolean;
     public isPage: boolean;
+    public isUnlimit: boolean;
     public query_conversation: any;
     public isFirst: any;
     public msgError: any;
@@ -87,21 +88,16 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
         this.tabClick = this.dataList[0].id;
 
-        // setTimeout(() => {
-
-        // }, 1000);
-
     }
 
-    public ngOnInit(): void {
+    public ngOnInit(): void { 
         if (this.data && this.data.arrListItem !== undefined && this.data.arrListItem.length > 0) {
             this.arrListItem = this.data.arrListItem;
             this.readdChildSelectMap();
         }
 
         if (this.data && this.data.fulfill !== undefined && this.data.fulfill.length > 0) {
-            this.resFulfill = this.data.fulfill;
-
+            this.resFulfill = this.data.fulfill;  
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
                 this.isPage = this.data.isPage;
@@ -143,6 +139,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public selectedDataItem(fulfillItem: any, isFrom: any) {
+        console.log('fulfillItem ',fulfillItem)
         if (fulfillItem !== null && fulfillItem !== undefined) {
             // this.isListItem = true;
             let isSelected = true;
@@ -201,6 +198,12 @@ export class FulfillItem extends AbstractPage implements OnInit {
                     if (isFrom === 'POST') {
                         pendingQty = fulfillItem.quantity - fulfillItem.fulfillQuantity;
 
+                        if (pendingQty > 0) {
+                            pendingQty = pendingQty
+                        } else {
+                            pendingQty = 1;
+                            this.isUnlimit = true;
+                        }
                         this.arrListItem.push({
                             _id: fulfillItem._id,
                             pageId: fulfillItem.pageId,
@@ -211,7 +214,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             quantity: pendingQty,
                             unit: fulfillItem.unit,
                             category: fulfillItem.category,
-                            imageURL: fulfillItem.imageURL,
+                            imageURL: fulfillItem.imageURL || (fulfillItem.standardItem && fulfillItem.standardItem.imageURL),
                             isFrom
                         });
                     } else if (isFrom === 'FULFILL') {
@@ -219,6 +222,12 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             for (const item of fulfillItem) {
                                 pendingQty = item.quantity - item.fulfillQuantity;
 
+                                if (pendingQty > 0) {
+                                    pendingQty = pendingQty
+                                } else {
+                                    pendingQty = 1;
+                                    this.isUnlimit = true;
+                                }
                                 this.arrListItem.push({
                                     id: item.id,
                                     pageId: item.pageId,
@@ -229,13 +238,18 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                     quantity: pendingQty,
                                     unit: item.unit,
                                     category: item.category,
-                                    imageURL: item.imageURL,
+                                    imageURL: item.imageURL || (item.standardItem && item.standardItem.imageURL),
                                     isFrom
                                 });
                             }
                         } else {
                             pendingQty = fulfillItem.quantity - fulfillItem.fulfillQuantity;
-
+                            if (pendingQty > 0) {
+                                pendingQty = pendingQty
+                            } else {
+                                pendingQty = 1;
+                                this.isUnlimit = true;
+                            }
                             this.arrListItem.push({
                                 id: fulfillItem.id,
                                 pageId: fulfillItem.pageId,
@@ -246,7 +260,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                 customItemId: fulfillItem.customItemId,
                                 unit: fulfillItem.unit,
                                 category: fulfillItem.category,
-                                imageURL: fulfillItem.imageURL,
+                                imageURL: fulfillItem.imageURL || (fulfillItem.standardItem && fulfillItem.standardItem.imageURL),
                                 isFrom
                             });
                         }
@@ -278,18 +292,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
                 this.arrListItem.splice(indexItem, 1);
 
-                if (this.arrListItem.length === 0) {
-                    // this.isListItem = false; 
-                }
-            }
-
-            // if (window.innerWidth <= 1024) {
-            //     var i, tabcontent, tablinks;
-            //     tabcontent = document.getElementsByClassName("fulfill");
-            //     tabcontent[0].style.display = "none";
-            //     tabcontent[1].style.display = "none";
-            //     document.getElementById("defaultOpen2").click();
-            // }
+            } 
         }
         this.onResize();
     }
@@ -386,18 +389,12 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 let bottom = this.bottomConfirm.nativeElement.offsetHeight;
                 let body = this.bodyList.nativeElement.offsetHeight;
                 let x = top + tab + bottom;
-                var chromeH = window.outerHeight - window.innerHeight;
-                // console.log('elementHeight ', elementHeight)
-                if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
-                    // x = x + window.outerHeight;
-                    // console.log('1 ',x)
-                    // x = x + 31;
+                var chromeH = window.outerHeight - window.innerHeight; 
+                if (window.innerHeight <= 1024 && 768 < window.innerHeight) { 
                     x = x + chromeH;
                 } else {
                     if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-                        x = x + chromeH;
-                        // console.log('total ', x)
-                        // x = x + 70;
+                        x = x + chromeH; 
                     }
                 }
                 this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
@@ -413,17 +410,14 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 var data = document.getElementById('centerleft');
                 data.style.display = 'flex';
                 this.isListItem = false;
-                this.tabClick = text;
-
-                // document.getElementById("defaultOpen1").click();
+                this.tabClick = text; 
             } else {
                 $('#defaultOpen1').removeClass('active');
                 $('#defaultOpen2').addClass('active');
                 var data = document.getElementById('centerleft');
                 data.style.display = 'none';
                 this.isListItem = true;
-                this.tabClick = text;
-                // document.getElementById("defaultOpen2").click();
+                this.tabClick = text; 
             }
         }
     }

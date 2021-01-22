@@ -179,7 +179,7 @@ export class ChatRoomController {
     }
 
     /**
-     * @api {post} /api/chatroom/check_status Check Chat Room message
+     * @api {post} /api/chatroom/check_unread Check Chat Room unread message
      * @apiGroup ChatRoom
      * @apiParam (Request body) {String} roomIds roomIds
      * @apiSuccessExample {json} Success
@@ -192,24 +192,33 @@ export class ChatRoomController {
      *     }
      *    "status": "1"
      *  }
-     * @apiSampleRequest /api/chatroom/check_status
+     * @apiSampleRequest /api/chatroom/check_unread
      * @apiErrorExample {json} chat message error
      * HTTP/1.1 500 Internal Server Error
      */
-    @Post('/check_status')
+    @Post('/check_unread')
     @Authorized('user')
     public async checkUnreadChatRoom(@Body({ validate: true }) chatRoomIdsRequest: CheckChatRoomRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        // ! using for check room access next time
-        // const senderObjId = new ObjectID(req.user.id);
+        const senderObjId = new ObjectID(req.user.id);
+        const fetchUserRoom = (chatRoomIdsRequest.fetchUserRoom !== undefined) ? chatRoomIdsRequest.fetchUserRoom : false;
 
-        if (chatRoomIdsRequest.roomIds === undefined || chatRoomIdsRequest.roomIds.length <= 0) {
-            const errorResponse = ResponseUtil.getErrorResponse('roomIds is required.', undefined);
-            return res.status(400).send(errorResponse);
+        if (chatRoomIdsRequest.roomIds === undefined) {
+            chatRoomIdsRequest.roomIds = [];
         }
 
         const roomObjIds = [];
         for (const roomId of chatRoomIdsRequest.roomIds) {
             roomObjIds.push(new ObjectID(roomId));
+        }
+
+        if (roomObjIds.length <= 0 && fetchUserRoom) {
+            // search all room of user
+            const userRooms = await this.chatRoomService.getUserChatRoomList(senderObjId + '');
+            if (userRooms !== undefined) {
+                for (const room of userRooms) {
+                    roomObjIds.push(room.id);
+                }
+            }
         }
 
         const aggregateStmt: any[] = [
@@ -541,6 +550,7 @@ export class ChatRoomController {
         chatMsg.filePath = filePath;
         chatMsg.videoURL = videoURL;
         chatMsg.deleted = false;
+        chatMsg.isRead = false;
         chatMsg.createdByUsername = req.user.username;
         chatMsg.createdBy = senderObjId;
         chatMsg.message = message.message;

@@ -58,6 +58,7 @@ export class GoogleService {
         console.log('auth >>> ', auth);
         if (auth === null || auth === undefined) {
           resolve(undefined);
+          return;
         }
 
         this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {

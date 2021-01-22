@@ -27,6 +27,7 @@ export class FulfillmentListResponse {
     public chatRoom: string;
     public chatMessage: string;
     public chatDate: Date;
+    public chatSender: any; // {name: string, id: string, imageURL: string, type: string}
     public isRead: boolean;
     public status: string;
     public createdDate: Date;

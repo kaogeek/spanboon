@@ -16,7 +16,7 @@ import { BoxPost, DialogReboonTopic } from '../../shares/shares';
 import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
-import { SORT_BY } from '../../../TypePost';
+import { POST_TYPE, SORT_BY } from '../../../TypePost';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { RePost } from '../../../models/RePost';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
@@ -324,7 +324,22 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.startActionCount = Number(text.split('=')[1]);
             } else if (text.includes('endactioncount')) {
               this.endActionCount = Number(text.split('=')[1]);
-            }
+            } else if (text.includes('type')) {
+              const typeCate = text.split('=')[1];
+              if(typeCate.toUpperCase() === POST_TYPE.NEEDS){ 
+                this.type = text.split('=')[1]; 
+                this.activeLink = 'มองหา';
+              } else if(typeCate.toUpperCase() === POST_TYPE.FULFILLMENT){
+                this.type = text.split('=')[1]; 
+                this.activeLink = 'เติมเต็ม';
+              } else if(typeCate.toUpperCase() === POST_TYPE.GENERAL){
+                this.type = text.split('=')[1]; 
+                this.activeLink = 'ทั่วไป';
+              } else {
+                this.type = text.split('=')[1]; 
+                this.activeLink = 'ทั้งหมด';
+              }
+            } 
           }
           // this.searchTrendTag();
           // const splitText = substringPath.split('=');
@@ -358,7 +373,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.heightWindow();
       this.heightWindowLeft();
       var scrollTop = scrollTop.fix;
-      var y = this.feedbodysearch.nativeElement && this.feedbodysearch.nativeElement.offsetHeight;
+      var y = this.feedbodysearch && this.feedbodysearch.nativeElement && this.feedbodysearch.nativeElement.offsetHeight;
       var x = document.getElementsByClassName('header-top')[0].clientHeight;
       let top = x + y;
       if (this.prevOld > scrollTop) {
@@ -368,7 +383,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
         }
       } else {
-        this.feedbodysearch.nativeElement.style.top = - top + 'px';
+        if(this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined){
+          this.feedbodysearch.nativeElement.style.top = - top + 'px';
+        }
       }
       this.prevOld = scrollTop;
     });

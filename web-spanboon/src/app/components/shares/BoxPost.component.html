@@ -174,10 +174,8 @@
                     </ng-container>
                 </div>
             </div>
-        </ng-container>
-        <!-- <input [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}" type="text" id="topic"
-            class="header-story" [class.msg-error-topic]="isMsgNull" placeholder="หัวข้อ" name="topic" #topic
-            [(ngModel)]="dataStroy.topic" (keyup)="onKeyupTopic($event)"> -->
+        </ng-container> 
+        
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
             [class.msg-error-shake]="isMsgNull" placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="80">

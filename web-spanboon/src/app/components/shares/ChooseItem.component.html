@@ -17,14 +17,7 @@
     <div class="tab" #tab>
         <div class="tablinks" matRipple *ngFor="let link of dataList; let index = index"
             [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'" id="{{link.id}}"
-            (click)="clickData($event , link.id)">{{link.name}}</div>
-        <!-- <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
-              id="defaultOpen1">มองหา</div> -->
-        <!-- <div class="tablinks listClick" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
-              id="defaultOpen2">รายการ</div>  -->
-
-        <!-- <div class="tablinks" matRipple [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'"
-            (click)="tabSearch($event , 'centerright')" id="defaultOpen2">รายการ</div> -->
+            (click)="clickData($event , link.id)">{{link.name}}</div> 
     </div>
     <div class="center" #bodyList>
         <ng-container *ngIf="isOpenFolder; else elseIsOpen">
@@ -187,14 +180,8 @@
                                         </ng-template>
                                     </ng-container>
                                 </ng-container>
-                                <ng-template #elseNotFound1>
-                                    <!-- <div class="body-data-category body-empty"
-                                        [class.active]="isListItem || arrListItem.length > 0" (click)="openListItem()">
-                                        <span class="add-item">+</span>
-                                        <span class="label-item">เพิ่มรายการแบบกำหนดเอง</span>
-                                    </div> -->
-                                    <div class="body-data-category empty-data">
-                                        <!-- <span class="add-item">+</span> -->
+                                <ng-template #elseNotFound1> 
+                                    <div class="body-data-category empty-data"> 
                                         <span class="label-item">ไม่พบรายการมองหา</span>
                                     </div>
                                 </ng-template>
@@ -650,9 +637,7 @@
             </div>
         </ng-template>
 
-        <div class="center-right mongha" [class.active]="isListItem" id="centerright">
-            <!-- [ngStyle]="{'display' : isListItem || arrListItem.length > 0 ? 'flex' : 'none' }" -->
-            <!-- <div class="center-right" [ngStyle]="{'display' : isListItem || arrListItem.length > 0 ? 'flex' : 'none' }"> -->
+        <div class="center-right mongha" [class.active]="isListItem" id="centerright"> 
             <div class="doing-items">
                 <div class="label-doing-left">
                     รายการสิ่งที่มองหา
@@ -666,8 +651,7 @@
                     class="list-sorted" id="list1">
                     <ng-container *ngFor="let listItem of arrListItem; let index = index;">
                         <ng-container *ngIf="listItem.isAddItem; else elseisAddItem">
-                            <div class="list-sorted-item" cdkDrag>
-                                <!-- <div class="list-sorted-item" cdkDrag [class.msg-error]="msgError"> -->
+                            <div class="list-sorted-item" cdkDrag> 
                                 <div class="body-list"
                                     [ngStyle]="{'width': 'calc(100% - ' +listItemUnit2.offsetWidth + 'px)'}">
                                     <div class="list-items">
@@ -697,7 +681,7 @@
                                                 </g>
                                             </svg>
                                             <div class="wrapper-category">
-                                                <img class="img-category" src="../../../../assets/img/pic2.svg" alt="">
+                                                <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
                                             </div>
                                         </div>
 
@@ -785,14 +769,13 @@
                                                         src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
                                                 </ng-container>
                                                 <ng-template #elseImage>
-                                                    <img class="img-category" src="../../../../assets/img/pic2.svg"
+                                                    <img class="img-category" src="../../../../assets/img/customize_item.svg"
                                                         alt="">
                                                 </ng-template>
 
                                             </div>
                                         </div>
-                                        <div class="list-data"
-                                            [ngStyle]="{'width': 'calc(100% - ' +listImg.offsetWidth + 'px)'}">
+                                        <div class="list-data" [ngStyle]="{'width': 'calc(100% - ' +listImg.offsetWidth + 'px)'}">
                                             <span class="list-item-name"
                                                 matTooltip="{{listItem.itemName}}">{{listItem.itemName ||
                                                 listItem.name}}</span>

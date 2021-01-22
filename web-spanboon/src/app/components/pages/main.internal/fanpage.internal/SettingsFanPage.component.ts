@@ -103,7 +103,13 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             link: "",
             icon: "person",
             label: "บทบาทในเพจ",
-        }],
+        },
+        {
+            link: "",
+            icon: "security",
+            label: "การเชื่อมต่อ",
+        } ],
+
         linksPost: [{
             link: "",
             icon: "insert_comment",
@@ -147,10 +153,9 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                 this.selected = this.link.label;
             }
         });
-
-        this.routeActivated.params.subscribe(async (params) => {
-            this.pageId = params['id'];
-        });
+ 
+        let id = this.router.getCurrentNavigation().extras.state;
+        this.pageId = id && id.id; 
 
     }
 
@@ -214,9 +219,9 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                             } else {
                                 res.data.imageURL = image.data
                             }
-                            setTimeout(() => {
-                                this.resListPage = res.data
-                            }, 1000);
+                            // setTimeout(() => {
+                                this.resListPage = res.data 
+                            // }, 1000);
                         }
 
                     }).catch((err: any) => {
@@ -228,7 +233,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                 } else {
                     this.resListPage = res.data
                 }
-
+              
             }
         }).catch((err: any) => {
             // if (err.error.status === 0) {

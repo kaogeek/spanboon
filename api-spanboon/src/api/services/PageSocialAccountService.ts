@@ -11,6 +11,8 @@ import { PageSocialAccount } from '../models/PageSocialAccount';
 import { PageSocialAccountRepository } from '../repositories/PageSocialAccountRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { ObjectID } from 'typeorm';
+import { PROVIDER } from '../../constants/LoginProvider';
 
 @Service()
 export class PageSocialAccountService {
@@ -48,7 +50,7 @@ export class PageSocialAccountService {
     }
 
     // Search PageSocialAccount
-    public search(filter: SearchFilter): Promise<any> { 
+    public search(filter: SearchFilter): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
@@ -56,5 +58,13 @@ export class PageSocialAccountService {
         } else {
             return this.pageSocialAccountRepository.find(condition);
         }
+    }
+
+    public async getTwitterPageAccount(pageId: string): Promise<PageSocialAccount> {
+        return await this.pageSocialAccountRepository.findOne({ page: new ObjectID(pageId), providerName: PROVIDER.TWITTER });
+    }
+
+    public async getFacebookPageAccount(pageId: string): Promise<PageSocialAccount> {
+        return await this.pageSocialAccountRepository.findOne({ page: new ObjectID(pageId), providerName: PROVIDER.FACEBOOK });
     }
 }

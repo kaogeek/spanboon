@@ -92,13 +92,15 @@ export class AllocateController {
 
         const standardItemLeftMap: any = {}; // key as standardItemId
         const customItemLeftMap: any = {}; // key as customItemId
+        let allItemZeroAmountCount = 0;
 
         for (const item of items) {
             const stdItemId = item.standardItemId;
             const customItemId = item.customItemId;
-            const amount = item.amount;
+            const amount = (item.amount !== null && item.amount !== undefined) ? item.amount : 0;
 
             if (amount <= 0) {
+                allItemZeroAmountCount += 1;
                 continue;
             }
 
@@ -120,6 +122,10 @@ export class AllocateController {
                     customItemLeftMap[customItemId] = customItemLeftMap[customItemId] + amount;
                 }
             }
+        }
+
+        if (allItemZeroAmountCount === items.length) {
+            return [];
         }
 
         // search need from post
@@ -152,6 +158,34 @@ export class AllocateController {
                             post: postObjId,
                             fullfilled: { $in: [false, null] },
                             $or: needORStmt
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
                         }
                     },
                     {
@@ -210,6 +244,34 @@ export class AllocateController {
                     },
                     {
                         $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'Posts',
                             localField: 'post',
                             foreignField: '_id',
@@ -245,8 +307,8 @@ export class AllocateController {
 
         if (needsList !== null && needsList !== undefined && needsList.length > 0) {
             for (const needs of needsList) {
-                const stdItemId = needs.standardItemId + '';
-                const customItemId = needs.customItemId + '';
+                const stdItemId = (needs.standardItemId !== null && needs.standardItemId !== undefined) ? needs.standardItemId + '' : '';
+                const customItemId = (needs.customItemId !== null && needs.customItemId !== undefined) ? needs.customItemId + '' : '';
 
                 if (stdItemId !== undefined && stdItemId !== null && stdItemId !== '') {
                     if (stdNeedMap[stdItemId] === undefined) {
@@ -470,6 +532,8 @@ export class AllocateController {
         posts.detail = needs.posts.detail;
         posts.emergencyEventTag = needs.posts.emergencyEventTag;
         posts.objectiveTag = needs.posts.objectiveTag;
+        posts.emergencyEvent = needs.posts.emergencyEvent;
+        posts.objective = needs.posts.objective;
 
         const needQty = needs.quantity;
         const needFulfillQty = (needs.fulfillQuantity !== undefined && needs.fulfillQuantity !== null && !isNaN(needs.fulfillQuantity)) ? needs.fulfillQuantity : 0;
@@ -497,6 +561,14 @@ export class AllocateController {
         allocateResult.posts = posts;
         allocateResult.fulfillQuantity = needs.fulfillQuantity; // current fulfill qty
         allocateResult.amount = amount; // allocate qty
+
+        if (needs.custItem !== undefined) {
+            allocateResult.imageURL = needs.custItem.imageURL;
+        }
+
+        if (needs.standardItem !== undefined) {
+            allocateResult.imageURL = needs.standardItem.imageURL;
+        }
 
         return allocateResult;
     }

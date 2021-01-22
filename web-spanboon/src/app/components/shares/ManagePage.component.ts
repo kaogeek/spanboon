@@ -53,10 +53,10 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.userAccessFacade = userAccessFacade;
         this.dialog = dialog;
-        this.observManager.subscribe('authen.createPage', (data: any) => { 
+        this.observManager.subscribe('authen.createPage', (data: any) => {
             this.searchAllPage();
         });
-        this.observManager.subscribe('authen.check', (data: any) => { 
+        this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAllPage();
         });
     }
@@ -65,26 +65,26 @@ export class ManagePage extends AbstractPage implements OnInit {
         return user !== undefined && user !== null;
     }
 
-    public ngOnInit(): void {   
+    public ngOnInit(): void {
         this.searchAllPage();
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-      }
-       
-      isPageDirty(): boolean {
+    }
+
+    isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
         return false;
-      }
-      onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
-      onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
+    }
 
     isActive(): boolean {
         let page = document.getElementsByClassName("list-page");
@@ -93,7 +93,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.drawer.toggle();
-        this.clickSystemDevelopment(); 
+        this.clickSystemDevelopment();
     }
 
     public clickSystemDevelopment(): void {
@@ -155,12 +155,14 @@ export class ManagePage extends AbstractPage implements OnInit {
         }
     }
 
-    public clickSetting(item: any) { 
+    public clickSetting(item: any) {
         if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
-            this.router.navigate(['/page/' + item.page.pageUsername + '/settings', { id : item.page.id }]);
+            this.router.navigateByUrl('/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } });
+            // this.router.navigate(['/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } }]);
         } else {
-            this.router.navigate(['/page/' + item.page.id + '/settings']);
-        } 
+            this.router.navigateByUrl('/page/' + item.page.id + '/settings', { state: { id: item.page.id } });
+            // this.router.navigate(['/page/' + item.page.id + '/settings']);
+        }
     }
 
 }

@@ -101,7 +101,7 @@
             <div class="user-contact">
                 <span class="user">
                     <ng-container *ngIf="asPage; else elseAsPage">
-                        <span class="user-name" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}</span>
+                        <span class="user-name" [ngStyle]="{'padding-right':'5pt'}" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
                     </ng-container>
                     <ng-template #elseAsPage>
                         <span class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
