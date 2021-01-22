@@ -33,7 +33,7 @@
                         </span>
                     </button>
                     <mat-menu #menupage="matMenu">
-                        <div> 
+                        <div>
                             <ng-container *ngFor="let data of accessPage; let index = index">
                                 <button mat-menu-item *ngIf="index === 0" class="page-list"
                                     (click)="changeAccess(data.user,'user')">
@@ -49,8 +49,9 @@
                                     </div>
                                 </button>
 
-                                <ng-container *ngIf="data.page && data.page !== undefined && data.page !== null && data.page !== '' ">
-                                    <button mat-menu-item class="page-list"  (click)="changeAccess(data.page,'page')">
+                                <ng-container
+                                    *ngIf="data.page && data.page !== undefined && data.page !== null && data.page !== '' ">
+                                    <button mat-menu-item class="page-list" (click)="changeAccess(data.page,'page')">
                                         <ng-container
                                             *ngIf="data.page && data.page.imageBase64 !== '' && data.page.imageBase64 !== undefined && data.page.imageBase64 !== null; else elseImageProfile">
                                             <img src="{{data.page.imageBase64}}" alt="" class="profile">
@@ -58,12 +59,12 @@
                                         <ng-template #elseImageProfile>
                                             <div class="donator"> {{data.page && data.page.name | slice: 0:1 }} </div>
                                         </ng-template>
-    
+
                                         <div class="select-name">
                                             {{data.page && data.page.name}}
                                         </div>
                                     </button>
-                                </ng-container> 
+                                </ng-container>
                             </ng-container>
                         </div>
                     </mat-menu>
@@ -113,7 +114,7 @@
                     <ng-container *ngIf="fulfillCase && fulfillCase.length > 0; else elseTemplateFulFill">
                         <div class="user-contact">
                             <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
-                                [showCase]="showCase" [statusColor]="statusColor" [isCaseSelected]="isCaseSelected"
+                                [showCase]="showCase" [isCaseSelected]="isCaseSelected"
                                 [groupName]="fulfill.groupName" [data]="fulfill"
                                 (onContactClick)="getChatRoom($event,asPage)">
                             </collapsible-head>
@@ -124,7 +125,7 @@
                     </ng-template>
                 </div>
             </div>
-        </div> 
+        </div>
         <ng-container *ngIf="canAccessCase && canAccessChatRoom; else elseTemplateChatRoom">
             <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
                 <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
@@ -353,9 +354,6 @@
                                                 close
                                             </span>
                                         </div>
-                                    </div>
-                                    <div>
-
                                     </div>
                                 </ng-template>
 

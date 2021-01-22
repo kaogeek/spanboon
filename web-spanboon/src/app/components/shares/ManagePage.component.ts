@@ -160,7 +160,8 @@ export class ManagePage extends AbstractPage implements OnInit {
             this.router.navigateByUrl('/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } });
             // this.router.navigate(['/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } }]);
         } else {
-            this.router.navigate(['/page/' + item.page.id + '/settings']);
+            this.router.navigateByUrl('/page/' + item.page.id + '/settings', { state: { id: item.page.id } });
+            // this.router.navigate(['/page/' + item.page.id + '/settings']);
         }
     }
 

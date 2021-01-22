@@ -25,15 +25,15 @@ export class CheckMessageManager extends AbstractFacade {
     public static readonly TOKEN_MODE_KEY: string = TOKEN_MODE_KEY;
 
     protected baseURL: string;
-    protected http: HttpClient; 
+    protected http: HttpClient;
     protected user: any;
     protected observManager: ObservableManager;
 
-    public time: number = 10;
+    public time: number = 30;
     public interval;
     public subscribeTimer: any;
 
-    constructor(http: HttpClient, observManager: ObservableManager ,authMgr: AuthenManager) {
+    constructor(http: HttpClient, observManager: ObservableManager, authMgr: AuthenManager) {
         super(http, authMgr);
         this.http = http;
         this.observManager = observManager;
@@ -41,8 +41,8 @@ export class CheckMessageManager extends AbstractFacade {
 
         // create obsvr subject
         this.observManager.createSubject(MESSAGE_SUBJECT);
-     
-        this.startTimer();
+
+        this.startTimer(); 
     }
 
     startTimer() {
@@ -50,26 +50,21 @@ export class CheckMessageManager extends AbstractFacade {
             if (this.time > 0) {
                 this.time--;
             } else {
-                if(this.time === 0){
-                    const id  = this.authMgr.getCurrentUser().id;
+                if (this.time === 0) {
+                    const id = this.authMgr.getCurrentUser().id;
                     let data = {
-                        userId : id
+                        userId: id,
+                        fetchUserRoom: true
                     }
                     this.checkUnreadMessage(data)
                 }
-                this.time = 10;
+                this.time = 30;
             }
             console.log('this.time ', this.time)
         }, 1000);
     }
 
-    public sa(){
-       
-        this.observManager.publish(MESSAGE_SUBJECT,'start');
-    }
-
     public checkUnreadMessage(data: any): Promise<any> {
-        console.log('data ')
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/chatroom/check_unread';
             let body: any = {};
@@ -81,12 +76,14 @@ export class CheckMessageManager extends AbstractFacade {
             let options = this.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
-                console.log('response ',response)
+
+                this.observManager.publish(MESSAGE_SUBJECT, response.data);
+                console.log('response ', response)
                 resolve(response);
             }).catch((error: any) => {
                 reject(error);
             });
         });
-    }; 
- 
+    };
+
 }

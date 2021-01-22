@@ -26,8 +26,7 @@ import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
-const PAGE_SUB_POST: string = 'post'
-// const URL_PATH_ID: string = '/page/futureforwardparty/';
+const PAGE_SUB_POST: string = 'post' 
 const URL_PATH: string = '/page/';
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -139,8 +138,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.showLoading = true;
     this.cacheConfigInfo = cacheConfigInfo;
     this.userImage = {};
-    this.labelStatus = 'ไม่พบเพจ';
-
+    this.labelStatus = 'ไม่พบเพจ'; 
     this.resPost.posts = [];
 
     this.mySubscription = this.router.events.subscribe((event) => {
