@@ -186,10 +186,7 @@ export class TwitterService {
                 message = '';
             }
 
-            const url: string = TwitterService.ROOT_URL + '/1.1/statuses/update.json?status=status=' + message;
-            // if (message !== '') {
-            //     url = url + '?status=' + message;
-            // }
+            const url: string = TwitterService.ROOT_URL + '/1.1/statuses/update.json?status=' + encodeURIComponent(message);
 
             const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
             const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
@@ -203,7 +200,8 @@ export class TwitterService {
                 oauth_signature_method: 'HMAC-SHA1',
                 oauth_timestamp,
                 oauth_nonce,
-                oauth_version: '1.0'
+                oauth_version: '1.0',
+                status: encodeURIComponent(message)
             };
             const options = {};
 

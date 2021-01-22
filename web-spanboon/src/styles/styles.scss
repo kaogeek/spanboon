@@ -59,12 +59,13 @@
   justify-content: center;
   span {
     width: 150pt;
-    color: white;
+    // color: white;
     font-size: 13pt;
-    text-align: center;
+    // text-align: center;
   }
   .createpage-temporary-box {
     border: solid #fd545a 2px;
+    color: white;
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
@@ -111,6 +112,8 @@
             transition: 0.2s;
             width: 80pt;
             padding: 4px;
+            color: white;
+            text-align: center;
             background-color: #fd545a;
             border-radius: 4px;
             display: flex;

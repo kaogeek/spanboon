@@ -19,4 +19,5 @@ export class AllocateResponse {
     public itemUnit: string;
     public standardItemId: string;
     public customItemId: string;
+    public imageURL: string;
 }

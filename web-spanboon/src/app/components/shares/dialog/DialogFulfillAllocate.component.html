@@ -9,21 +9,47 @@
     <div class="fulfill-allocate-box">
         <div class="box-hrader">
             <div class="left">
-                <span>
-                    {{textHrader}}
+                <span *ngIf="indexWizardPage === 0">
+                    จัดการรายการเติมเต็ม
+                </span>
+                <span *ngIf="indexWizardPage === 1">
+                    เลือกรายการที่ต้องการจัดสรร
+                </span>
+                <div *ngIf="indexWizardPage === 2" class="list-item-icon">
+                    <ng-container *ngIf="indexItemImage(); else elsePhoto">
+                        <img class="image" src="{{apiBaseURL+indexItemImage()+'/image'}}" alt="">
+                    </ng-container>
+                    <ng-template #elsePhoto>
+                        <img class="image" src="../../../../assets/img/photo.png" alt=""
+                            style="width: 40%; height: auto;">
+                    </ng-template>
+                </div>
+                <span *ngIf="indexWizardPage === 2">
+                    {{indexItemName()}}
+                </span>
+                <span style="margin-left:10px ;"
+                    [ngStyle]="{'color': indexItemAllocateQuantity() === 0 ? 'red' : '#84b572'}"
+                    *ngIf="indexWizardPage === 2">
+                    {{indexItemAllocateQuantity()}}
+                </span>
+                <span *ngIf="indexWizardPage === 2">
+                    /
+                    {{indexItemQuantity()}}
+                    {{indexItemUnit()}}
                 </span>
             </div>
             <div class="right">
                 <div class="wizard-step">
-                    <span class="step" *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
+                    <span class="step" [class.active]="indexWizardPage === i"
+                        *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
                 </div>
-                <mat-icon>close</mat-icon>
+                <mat-icon class="close">close</mat-icon>
             </div>
         </div>
 
         <div class="box-body">
 
-            <div [ngStyle]="{'display': listBoxDisplay}" class="box-list">
+            <div *ngIf="indexWizardPage === 0" class="box-list">
                 <div class="box-list-hrader">
                     <span>
                         เลือกวิธีการจัดสรร
@@ -32,24 +58,133 @@
                 <div class="box-list-body">
                     <div *ngFor="let item of listItem" (click)="checkedClick(item)" class="list-item">
                         <div class="list-item-icon">
-                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="35"
-                                height="35" viewBox="0 0 22.32 20" class="icon">
-                                <g id="Group_2202" data-name="Group 2202" transform="translate(0 0)">
-                                    <g id="Group_2201" data-name="Group 2201" transform="translate(8.723 8.292)">
-                                        <path id="Path_3477" data-name="Path 3477"
-                                            d="M306.368,183.246a3.717,3.717,0,0,1,3.7,3.7c0,3.735-6.8,7.434-6.8,7.434s-6.8-3.753-6.8-7.434a3.7,3.7,0,0,1,3.7-3.7h0a3.662,3.662,0,0,1,3.1,1.668A3.7,3.7,0,0,1,306.368,183.246Z"
-                                            transform="translate(-296.468 -183.246)" fill="#474747" />
+                            <svg *ngIf="item.type === 'AUTO'" id="Group_2322" data-name="Group 2322"
+                                xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 30.539 30.539"
+                                class="icon">
+                                <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
+                                    <g id="Group_3292" data-name="Group 3292" transform="translate(112.208 94.414)">
+                                        <g id="Group_3290" data-name="Group 3290" transform="translate(2.408 4.898)">
+                                            <path id="Path_3779" data-name="Path 3779"
+                                                d="M187.265,126.544a.653.653,0,0,1-1.115-.461v-2.146a.653.653,0,0,1,1.306,0v2.146A.651.651,0,0,1,187.265,126.544Z"
+                                                transform="translate(-186.15 -123.284)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3291" data-name="Group 3291" transform="translate(0 0)">
+                                            <path id="Path_3780" data-name="Path 3780"
+                                                d="M177.182,99.642a3.063,3.063,0,1,1,0-4.332A3.066,3.066,0,0,1,177.182,99.642Zm-3.408-3.408a1.757,1.757,0,1,0,2.485,0A1.759,1.759,0,0,0,173.775,96.234Z"
+                                                transform="translate(-171.956 -94.414)" fill="#474747" />
+                                        </g>
                                     </g>
-                                    <path id="Path_3478" data-name="Path 3478"
-                                        d="M273.562,168.545h-5.473a1.268,1.268,0,0,1-1.267-1.267V156.424a1.268,1.268,0,0,1,1.267-1.267h10.855a1.268,1.268,0,0,1,1.267,1.267v4.936c.027.039.056.077.082.117a4.8,4.8,0,0,1,1.794-1.621v-3.432a3.146,3.146,0,0,0-3.142-3.143H268.088a3.146,3.146,0,0,0-3.142,3.143v10.855a3.146,3.146,0,0,0,3.142,3.142h7.4A19.37,19.37,0,0,1,273.562,168.545Z"
-                                        transform="translate(-264.946 -153.281)" fill="#474747" />
+                                    <g id="Group_3295" data-name="Group 3295" transform="translate(112.208 116.603)">
+                                        <g id="Group_3293" data-name="Group 3293" transform="translate(2.408)">
+                                            <path id="Path_3781" data-name="Path 3781"
+                                                d="M186.342,225.391a.653.653,0,0,1,1.115.461V228a.653.653,0,1,1-1.306,0v-2.146A.652.652,0,0,1,186.342,225.391Z"
+                                                transform="translate(-186.151 -225.2)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3294" data-name="Group 3294" transform="translate(0 2.227)">
+                                            <path id="Path_3782" data-name="Path 3782"
+                                                d="M172.851,239.221a3.063,3.063,0,1,1,0,4.332A3.066,3.066,0,0,1,172.851,239.221Zm3.408,3.408a1.757,1.757,0,1,0-2.485,0A1.759,1.759,0,0,0,176.259,242.629Z"
+                                                transform="translate(-171.955 -238.326)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3298" data-name="Group 3298" transform="translate(100 106.622)">
+                                        <g id="Group_3296" data-name="Group 3296" transform="translate(4.898 2.408)">
+                                            <path id="Path_3783" data-name="Path 3783"
+                                                d="M132.13,180.756a.653.653,0,0,1-.462,1.115h-2.146a.653.653,0,1,1,0-1.306h2.146A.651.651,0,0,1,132.13,180.756Z"
+                                                transform="translate(-128.869 -180.565)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3297" data-name="Group 3297" transform="translate(0 0)">
+                                            <path id="Path_3784" data-name="Path 3784"
+                                                d="M105.227,167.266a3.063,3.063,0,1,1-4.332,0A3.066,3.066,0,0,1,105.227,167.266Zm-3.408,3.408a1.757,1.757,0,1,0,0-2.485A1.759,1.759,0,0,0,101.819,170.674Z"
+                                                transform="translate(-100 -166.37)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3301" data-name="Group 3301" transform="translate(122.189 106.622)">
+                                        <g id="Group_3299" data-name="Group 3299" transform="translate(0 2.408)">
+                                            <path id="Path_3785" data-name="Path 3785"
+                                                d="M230.977,181.68a.653.653,0,0,1,.462-1.115h2.146a.653.653,0,0,1,0,1.306h-2.146A.651.651,0,0,1,230.977,181.68Z"
+                                                transform="translate(-230.786 -180.565)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3300" data-name="Group 3300" transform="translate(2.227 0)">
+                                            <path id="Path_3786" data-name="Path 3786"
+                                                d="M244.806,171.6a3.063,3.063,0,1,1,4.332,0A3.066,3.066,0,0,1,244.806,171.6Zm3.408-3.408a1.757,1.757,0,1,0,0,2.484A1.759,1.759,0,0,0,248.214,168.189Z"
+                                                transform="translate(-243.911 -166.37)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3304" data-name="Group 3304" transform="translate(104.13 98.594)">
+                                        <g id="Group_3302" data-name="Group 3302" transform="translate(3.246 3.246)">
+                                            <path id="Path_3787" data-name="Path 3787"
+                                                d="M145.716,140.42a.653.653,0,0,1-.923,0l-1.123-1.123a.653.653,0,1,1,.923-.923l1.123,1.123A.653.653,0,0,1,145.716,140.42Z"
+                                                transform="translate(-143.478 -138.182)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3303" data-name="Group 3303" transform="translate(0)">
+                                            <path id="Path_3788" data-name="Path 3788"
+                                                d="M128.508,123.211a2.439,2.439,0,1,1,.714-1.725A2.422,2.422,0,0,1,128.508,123.211Zm-2.526-2.526a1.134,1.134,0,0,0,.8,1.935,1.162,1.162,0,0,0,1.133-1.133,1.134,1.134,0,0,0-1.935-.8Z"
+                                                transform="translate(-124.344 -119.047)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3307" data-name="Group 3307" transform="translate(104.228 115.098)">
+                                        <g id="Group_3305" data-name="Group 3305" transform="translate(3.246 0)">
+                                            <path id="Path_3789" data-name="Path 3789"
+                                                d="M146.293,216.52a.653.653,0,0,1,0,.923l-1.123,1.123a.653.653,0,0,1-.923-.923l1.123-1.123A.652.652,0,0,1,146.293,216.52Z"
+                                                transform="translate(-144.055 -216.329)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3306" data-name="Group 3306" transform="translate(0 0.797)">
+                                            <path id="Path_3790" data-name="Path 3790"
+                                                d="M129.085,221.742a2.439,2.439,0,1,1-1.725-.714A2.423,2.423,0,0,1,129.085,221.742Zm-2.526,2.526a1.134,1.134,0,0,0,1.935-.8,1.161,1.161,0,0,0-1.133-1.133,1.133,1.133,0,0,0-.8,1.935Z"
+                                                transform="translate(-124.921 -221.028)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3310" data-name="Group 3310" transform="translate(120.733 115)">
+                                        <g id="Group_3308" data-name="Group 3308" transform="translate(0 0)">
+                                            <path id="Path_3791" data-name="Path 3791"
+                                                d="M222.394,215.942a.652.652,0,0,1,.923,0l1.123,1.123a.653.653,0,0,1-.923.923l-1.123-1.123A.653.653,0,0,1,222.394,215.942Z"
+                                                transform="translate(-222.203 -215.751)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3309" data-name="Group 3309" transform="translate(0.797 0.797)">
+                                            <path id="Path_3792" data-name="Path 3792"
+                                                d="M227.616,221.165a2.439,2.439,0,1,1-.714,1.725A2.423,2.423,0,0,1,227.616,221.165Zm2.526,2.526a1.134,1.134,0,0,0-.8-1.935,1.162,1.162,0,0,0-1.133,1.133,1.134,1.134,0,0,0,1.935.8Z"
+                                                transform="translate(-226.902 -220.451)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3313" data-name="Group 3313" transform="translate(120.696 98.508)">
+                                        <g id="Group_3311" data-name="Group 3311" transform="translate(0 3.246)">
+                                            <path id="Path_3793" data-name="Path 3793"
+                                                d="M222.178,139.914a.653.653,0,0,1,0-.923l1.123-1.123a.653.653,0,1,1,.923.923l-1.123,1.123A.653.653,0,0,1,222.178,139.914Z"
+                                                transform="translate(-221.987 -137.676)" fill="#474747" />
+                                        </g>
+                                        <g id="Group_3312" data-name="Group 3312" transform="translate(0.797 0)">
+                                            <path id="Path_3794" data-name="Path 3794"
+                                                d="M227.4,122.707a2.439,2.439,0,1,1,1.725.714A2.423,2.423,0,0,1,227.4,122.707Zm2.526-2.526a1.134,1.134,0,0,0-1.935.8,1.162,1.162,0,0,0,1.133,1.133,1.134,1.134,0,0,0,.8-1.935Z"
+                                                transform="translate(-226.686 -118.543)" fill="#474747" />
+                                        </g>
+                                    </g>
+                                    <path id="Path_3795" data-name="Path 3795"
+                                        d="M154.752,153.971a5.829,5.829,0,0,0-.1,1.092,5.9,5.9,0,0,0,.1,1.1l1.3.185a4.675,4.675,0,0,0,.439,1.06l-.79,1.055a5.978,5.978,0,0,0,1.548,1.548l1.055-.79a4.615,4.615,0,0,0,1.06.441l.184,1.3a5.92,5.92,0,0,0,2.191,0l.184-1.3a4.675,4.675,0,0,0,1.062-.441l1.055.79a6.033,6.033,0,0,0,1.546-1.546l-.79-1.057a4.674,4.674,0,0,0,.439-1.06l1.3-.185a5.916,5.916,0,0,0,.1-1.1,5.843,5.843,0,0,0-.1-1.092l-1.3-.187a4.6,4.6,0,0,0-.441-1.057l.793-1.06a6,6,0,0,0-1.546-1.546l-1.057.793a4.609,4.609,0,0,0-1.06-.439l-.184-1.306a5.928,5.928,0,0,0-2.191,0l-.184,1.306a4.615,4.615,0,0,0-1.06.439l-1.055-.793a5.978,5.978,0,0,0-1.548,1.548l.793,1.054a4.661,4.661,0,0,0-.441,1.06Zm5.9-2.114a3.209,3.209,0,1,1-3.209,3.209A3.206,3.206,0,0,1,160.648,151.857Z"
+                                        transform="translate(-45.378 -45.38)" fill="#474747" />
                                 </g>
-                                <rect id="Rectangle_899" data-name="Rectangle 899" width="0.929" height="1.649"
-                                    rx="0.465" transform="translate(3.238 3.909)" fill="#474747" />
-                                <rect id="Rectangle_900" data-name="Rectangle 900" width="0.929" height="2.223"
-                                    rx="0.465" transform="translate(4.811 3.335)" fill="#474747" />
-                                <rect id="Rectangle_901" data-name="Rectangle 901" width="0.929" height="1.649"
-                                    rx="0.465" transform="translate(6.392 3.909)" fill="#474747" />
+
+                            </svg>
+                            <svg *ngIf="item.type === 'MANUAL'" id="Group_2322" data-name="Group 2322"
+                                xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 26.459 26.458"
+                                class="icon">
+                                <g id="Group_3315" data-name="Group 3315" transform="translate(-413 -412.178)">
+                                    <path id="Path_3776" data-name="Path 3776"
+                                        d="M193.458,401.981a2.425,2.425,0,0,1-.249.3l-4,4-.008.008-.008.007c-.24.23-.468.437-.689.633l4.807,4.807a1.312,1.312,0,0,0,1.852,0l3.1-3.1a1.311,1.311,0,0,0,0-1.852Zm4.107,5.96-3.1,3.1a.327.327,0,0,1-.462,0l-1.614-1.614,3.562-3.562,1.615,1.614A.327.327,0,0,1,197.565,407.941Z"
+                                        transform="translate(240.816 26.518)" fill="#474747" />
+                                    <path id="Path_3777" data-name="Path 3777"
+                                        d="M129.429,346.179l4.12-4.12-4.437-4.437-6.165-2.005a.629.629,0,0,0-.793.793l2,6.164,4.075,4.074a.622.622,0,0,0,.214.038A1.548,1.548,0,0,0,129.429,346.179Zm-1.994-7.41a1.992,1.992,0,0,0-.577,1.551,1.989,1.989,0,0,0-1.993,1.247l-1.341-4.124.457-.457,4.124,1.341A1.986,1.986,0,0,0,127.436,338.77Z"
+                                        transform="translate(290.877 76.592)" fill="#474747" />
+                                    <path id="Path_3778" data-name="Path 3778"
+                                        d="M134.624,377.755c1.2-.046,2.444-.093,5.236-2.767l4-4a1.4,1.4,0,0,0,.077-1.929l-.14-.14a1.191,1.191,0,0,0-.638-.321l-.257-.046.062-.254a1.442,1.442,0,0,0-.381-1.374l-.228-.228a1.435,1.435,0,0,0-.823-.408l-.253-.036.045-.251a1.454,1.454,0,0,0-.4-1.284l-.228-.228a1.435,1.435,0,0,0-.834-.41l-.259-.034.05-.256a1.593,1.593,0,0,0-.435-1.405l-.022-.022a1.631,1.631,0,0,0-1.139-.486,1.661,1.661,0,0,0-1.143.486l-4.689,4.689a2.5,2.5,0,0,1-1.677.8,1.762,1.762,0,0,1-1.269-.571,6.916,6.916,0,0,0-.929,4.58l.011.116-3.912,3.912,5.9,5.9,4.018-4.018Z"
+                                        transform="translate(291.544 56.769)" fill="#474747" />
+                                </g>
+                            </svg>
+                            <svg *ngIf="item.type === 'MANUALGENERAL'" id="Group_2322" data-name="Group 2322"
+                                xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 26.459 26.458"
+                                class="icon">
+                                <path id="Path_3775" data-name="Path 3775"
+                                    d="M576.552,572.91H558.311a3.245,3.245,0,0,0-3.245,3.245v13.406a3.246,3.246,0,0,0,3.245,3.245h18.241a3.245,3.245,0,0,0,3.245-3.245V576.155A3.245,3.245,0,0,0,576.552,572.91ZM566.075,576.1h4.373a.717.717,0,1,1,0,1.435h-4.373a.717.717,0,1,1,0-1.435Zm-5.01,4.216a2.693,2.693,0,1,1,2.693-2.693A2.694,2.694,0,0,1,561.065,580.318Zm15.191-.391H566.075a.718.718,0,0,1,0-1.435h10.181a.718.718,0,0,1,0,1.435Z"
+                                    transform="translate(-555.066 -572.91)" fill="#474747" />
                             </svg>
                         </div>
                         <div class="list-item-detail">
@@ -63,27 +198,249 @@
                 </div>
             </div>
 
-            <div [ngStyle]="{'display': listItemBoxDisplay}" class="box-list-item">
+            <div *ngIf="indexWizardPage === 1" class="box-list-item">
                 <div class="box-list-item-hrader">
-                    <div class="list-item-Back">
+                    <div (click)="back()" class="list-item-Back">
                         <span>ย้อนกลับ</span>
                     </div>
-                    <div class="list-item-Next">
+                    <div (click)="next()" [class.active]="selectNeedItem.length > 0" class="list-item-Next">
                         <span>ถัดไป</span>
                     </div>
                 </div>
                 <div class="box-list-item-body">
-                    <div *ngFor="let item of listItemNeed" class="item">
+                    <div (click)="selectItem(i)" *ngFor="let item of listItemNeed;let i = index" class="item">
+                        <svg *ngIf="item.isSelect" style="position: absolute;top: 10px;right: 10px;" height="15px"
+                            viewBox="0 -46 417.81333 417" width="15px" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"
+                                style="fill:#fd545a;" />
+                        </svg>
                         <div class="item-image">
-                            <div class="image">
-                                <img src="../../../../assets/img/photo.png" alt="" style="width: 40%; height: auto;">
-                            </div>
+                            <ng-container
+                                *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                            </ng-container>
+                            <ng-template #elsePhoto>
+                                <img class="image" src="../../../../assets/img/photo.png" alt=""
+                                    style="width: 40%; height: auto;">
+                            </ng-template>
                         </div>
                         <div class="item-name">
                             <span>{{item.name}}</span>
                             <span>{{item.quantity}}{{item.unit}}</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div *ngIf="indexWizardPage === 2" class="box-list-item">
+                <div class="box-list-item-hrader">
+                    <div (click)="back(true)" class="list-item-Back">
+                        <span>ย้อนกลับ</span>
+                    </div>
+
+                    <span style="font-size: 22px;color: black;">จัดสรรรายการลงโพสต์</span>
+
+                    <div (click)="next(true)" [class.active]="activeAdditemNext()" class="list-item-Next">
+
+                        <!-- <div (click)="next(true)" class="list-item-Next"> -->
+                        <span>ถัดไป</span>
+                    </div>
+                </div>
+                <div class="box-list-item-hrader">
+
+                    <div class="left" style="display: flex;">
+                        <div style="margin-right: 7px;" class="sorting">
+                            <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
+                                [disableRipple]="true" class="menu-sorting">
+                                <svg style="margin-right: 7px;" xmlns="http://www.w3.org/2000/svg" width="12.887"
+                                    height="12.982" viewBox="0 0 23 21">
+                                    <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
+                                        <path id="Subtraction_2" data-name="Subtraction 2"
+                                            d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                            transform="translate(7129.611 -573.082)" fill="#747474"
+                                            stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" />
+                                        <path id="Rectangle_572" data-name="Rectangle 572"
+                                            d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                            transform="translate(674.701 434.463)" fill="#747474" />
+                                        <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3" rx="1"
+                                            transform="translate(683.701 415.463)" fill="#747474" />
+                                        <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398" height="3.962"
+                                            rx="0.699" transform="translate(678.115 416.918) rotate(-30)"
+                                            fill="#747474" />
+                                        <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398" height="3.962"
+                                            rx="0.699" transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                            fill="#747474" />
+                                        <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398" height="3.962"
+                                            rx="0.699" transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                            fill="#747474" />
+                                        <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398" height="3.962"
+                                            rx="0.699" transform="translate(689.761 416.304) rotate(31.145)"
+                                            fill="#747474" />
+                                        <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3" rx="0.5"
+                                            transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
+                                        <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3" rx="0.5"
+                                            transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
+                                    </g>
+                                </svg>
+                                #รัฐสภา
+                                <span class="material-icons">
+                                    arrow_drop_down
+                                </span>
+                            </button>
+                            <mat-menu #menusort="matMenu">
+                                <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
+                                    (click)="clickSorting(sort, index)">
+                                    <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                    </div>
+                                </button> -->
+                            </mat-menu>
+                        </div>
+                        <div class="sorting">
+                            <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
+                                [disableRipple]="true" class="menu-sorting">
+                                <svg style="margin-right: 7px;" class="img-objective" xmlns="http://www.w3.org/2000/svg"
+                                    width="12.887" height="12.982" viewBox="0 0 22.899 22.899">
+                                    <g id="mission" transform="translate(0)">
+                                        <path id="Path_3205" data-name="Path 3205"
+                                            d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                            transform="translate(0 -299.903)" fill="#747474" />
+                                        <path id="Path_3206" data-name="Path 3206"
+                                            d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                            transform="translate(-295.877)" fill="#747474" />
+                                        <path id="Path_3207" data-name="Path 3207"
+                                            d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                            transform="translate(-131.312 -333.558)" fill="#747474" />
+                                        <path id="Path_3208" data-name="Path 3208"
+                                            d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                            transform="translate(-248.03 -228.703)" fill="#747474" />
+                                    </g>
+                                </svg>
+                                #พรรคก้าวไกล
+                                <span class="material-icons">
+                                    arrow_drop_down
+                                </span>
+                            </button>
+                            <mat-menu #menusort="matMenu">
+                                <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
+                                    (click)="clickSorting(sort, index)">
+                                    <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                    </div>
+                                </button> -->
+                            </mat-menu>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="sorting">
+                            <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
+                                [disableRipple]="true" class="menu-sorting">
+                                <svg style="margin-right: 7px;" class="icon-sorting-date"
+                                    xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                    viewBox="0 0 12.887 12.982">
+                                    <g id="Group_2429" data-name="Group 2429" transform="translate(-574.479 -149.91)">
+                                        <path id="Path_3479" data-name="Path 3479"
+                                            d="M579.4,160.11H578v-9.967a.225.225,0,0,0-.066-.167.23.23,0,0,0-.169-.065h-1.4a.23.23,0,0,0-.169.065.225.225,0,0,0-.066.167v9.967h-1.4a.217.217,0,0,0-.22.145.221.221,0,0,0,.051.254l2.342,2.318a.268.268,0,0,0,.169.065.25.25,0,0,0,.169-.065l2.334-2.311a.267.267,0,0,0,.074-.173.226.226,0,0,0-.066-.167.229.229,0,0,0-.168-.065Z"
+                                            fill="#474747" fill-rule="evenodd" />
+                                        <path id="Path_3480" data-name="Path 3480"
+                                            d="M609.226,186.519h-3.279a.229.229,0,0,0-.168.064.225.225,0,0,0-.066.167v1.391a.221.221,0,0,0,.066.166.23.23,0,0,0,.168.065h3.279a.229.229,0,0,0,.168-.065.221.221,0,0,0,.066-.166V186.75a.225.225,0,0,0-.066-.167.228.228,0,0,0-.168-.064Z"
+                                            transform="translate(-24.905 -29.19)" fill="#474747" fill-rule="evenodd" />
+                                        <path id="Path_3481" data-name="Path 3481"
+                                            d="M612.2,149.976a.229.229,0,0,0-.168-.065h-6.088a.23.23,0,0,0-.169.065.225.225,0,0,0-.066.167v1.391a.222.222,0,0,0,.066.167.23.23,0,0,0,.169.065h6.088a.23.23,0,0,0,.168-.065.225.225,0,0,0,.066-.167v-1.391a.224.224,0,0,0-.066-.167Z"
+                                            transform="translate(-24.905)" fill="#474747" fill-rule="evenodd" />
+                                        <path id="Path_3482" data-name="Path 3482"
+                                            d="M610.631,168.215h-4.684a.226.226,0,0,0-.168.065.222.222,0,0,0-.066.167v1.39a.225.225,0,0,0,.066.167.23.23,0,0,0,.168.065h4.684A.234.234,0,0,0,610.8,170a.228.228,0,0,0,.066-.167v-1.39a.225.225,0,0,0-.066-.167.233.233,0,0,0-.169-.065Z"
+                                            transform="translate(-24.905 -14.595)" fill="#474747" fill-rule="evenodd" />
+                                    </g>
+                                </svg>
+                                โพสต์เก่าไปใหม่
+                                <span class="material-icons">
+                                    arrow_drop_down
+                                </span>
+                            </button>
+                            <mat-menu #menusort="matMenu">
+                                <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
+                                    (click)="clickSorting(sort, index)">
+                                    <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                    </div>
+                                </button> -->
+                            </mat-menu>
+                        </div>
+                        <div (click)="clearItem()" class="list-item-Next"
+                            [class.dis]="selectNeedItem[indexItem].fulfillQuantity === selectNeedItem[indexItem].quantity">
+                            <span>ยกเลิกรายการ</span>
+                        </div>
+                        <div (click)="autoAllocate(true)" class="list-item-Next"
+                            [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0">
+                            <span>จัดอัตโนมัติ</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="box-list-item-body" [class.list]="true">
+                    <ng-container *ngIf="groupsArr">
+                        <div class="list-post" *ngFor="let item of groupsArr[indexItem].posts">
+                            <div class="detail">
+                                <div class="date">
+                                    <!-- <span>{{getTypePost(item.posts.type)}}</span> -->
+                                    <svg class="icon-time" height="8pt" viewBox="0 0 512 512" style="margin: 0px 4px;"
+                                        width="8pt" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                            fill="#A5A5A6" />
+                                        <path
+                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                            fill="#A5A5A6" />
+                                    </svg>
+                                    <span>{{item.posts.createdDate | dateFormat}}</span>
+                                </div>
+                                <span class="detail-h">{{item.posts.title}}</span>
+                                <span class="detail-d">{{item.posts.detail}}</span>
+                            </div>
+                            <div class="item-list">
+                                <div class="list">
+                                    <div class="item" *ngFor="let item of getItemByPost(item)">
+                                        <div class="item-image" *ngIf="item.amount > 0"
+                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
+                                            <ng-container
+                                                *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                                <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                            </ng-container>
+                                            <ng-template #elsePhoto>
+                                                <img class="image" src="../../../../assets/img/photo.png" alt="">
+                                            </ng-template>
+                                        </div>
+                                        <div *ngIf="item.amount > 0" class="quantity">
+                                            <span
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add-delete">
+                                <div class="box-svg">
+                                    <svg class="delete"
+                                        [class.dis]="selectNeedItem[indexItem].fulfillQuantity === selectNeedItem[indexItem].quantity"
+                                        (click)="allocate(item,false)" height="12pt" width="12pt" version="1.1"
+                                        id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492 492"
+                                        style="enable-background:new 0 0 492 492;" xml:space="preserve">
+                                        <g>
+                                            <g>
+                                                <path d="M465.064,207.562H26.908C12.076,207.562,0,219.698,0,234.53v22.804c0,14.832,12.072,27.104,26.908,27.104h438.156
+                c14.84,0,26.936-12.272,26.936-27.104V234.53C492,219.698,479.904,207.562,465.064,207.562z" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    <svg class="add" (click)="allocate(item,true)"
+                                        [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0" height="12pt"
+                                        viewBox="0 0 448 448" width="12pt" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m408 184h-136c-4.417969 0-8-3.582031-8-8v-136c0-22.089844-17.910156-40-40-40s-40 17.910156-40 40v136c0 4.417969-3.582031 8-8 8h-136c-22.089844 0-40 17.910156-40 40s17.910156 40 40 40h136c4.417969 0 8 3.582031 8 8v136c0 22.089844 17.910156 40 40 40s40-17.910156 40-40v-136c0-4.417969 3.582031-8 8-8h136c22.089844 0 40-17.910156 40-40s-17.910156-40-40-40zm0 0" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
                 </div>
             </div>
         </div>
