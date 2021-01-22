@@ -47,7 +47,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.userImage = {}
 
-        this.observManager.subscribe('authen.check', (data: any) => { 
+        this.observManager.subscribe('authen.check', (data: any) => {
             this.reloadUserImage();
         });
         this.observManager.subscribe('authen.image', (data: any) => {
@@ -84,7 +84,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public getProfileImage(data: any) {
-        let userCloneData = JSON.parse(JSON.stringify(data)); 
+        let userCloneData = JSON.parse(JSON.stringify(data));
         if (data !== undefined && data.imageURL && data.imageURL !== '') {
             this.assetFacade.getPathFile(data.imageURL).then((res: any) => {
                 if (res.status === 1) {
@@ -108,7 +108,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public reloadUserImage() {
-        let user = this.getCurrentUser(); 
+        let user = this.getCurrentUser();
         if (user !== undefined && user !== null) {
             this.getProfileImage(user);
         }
@@ -132,8 +132,11 @@ export class MenuProfile extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 alert(err.error.message);
+                this.authenManager.clearStorage();
+                this.router.navigateByUrl(REDIRECT_PATH);
             })
         });
+
         this.showDialogWithOptions({
             text: "คุณต้องการออกจากระบบ",
             bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
@@ -152,6 +155,8 @@ export class MenuProfile extends AbstractPage implements OnInit {
             this.router.navigateByUrl(REDIRECT_PATH);
         }).catch((err) => {
             alert(err.error.message);
+            this.authenManager.clearStorage();
+            this.router.navigateByUrl(REDIRECT_PATH);
         });
     }
 

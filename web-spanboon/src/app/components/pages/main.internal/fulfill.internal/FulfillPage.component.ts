@@ -10,14 +10,14 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MESSAGE } from '../../../../AlertMessage';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
+import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
 import { DialogPost } from '../../../../components/shares/dialog/DialogPost.component';
 import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
-import { DialogCheckFulfill, DialogConfirmFulfill } from 'src/app/components/shares/shares';
+import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
 
@@ -96,6 +96,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private assetFacade: AssetFacade;
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
+    private chatMessage: CheckMessageManager;
     //
     public isAuthen: boolean;
     public isCaseActive: boolean;
@@ -158,7 +159,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
-        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade,
+        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
         userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
@@ -173,6 +174,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.chatFacade = chatFacade;
         this.chatRoomFacade = chatRoomFacade;
+        this.chatMessage = chatMessage;
         this.isAuthen = false;
         this.isCaseActive = true;
         this.showLoading = true;
@@ -225,6 +227,31 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 console.log('err1 >>>>> ', err);
             });
         });
+
+        this.observManager.subscribe('authen.message', (chat: any) => {
+            console.log('chat ', chat)
+            if (chat && chat.length > 0) {
+                for (let data of chat) {
+                    for (let caseData of this.fulfillCase) { 
+                        // let isRead = caseData.cases.find(read => {
+                        //     return read.isRead === false;
+                        // });
+                        // if (isRead) {
+                            let index = caseData.cases.map(function (e) { return e.chatRoom; }).indexOf(data._id);
+                            if (index !== -1) {
+                                console.log('caseData ', caseData.cases[index].unreadMessageCount)
+                                caseData.cases[index].unreadMessageCount = data.count;
+                                caseData.cases[index].chatMessage = data.message;
+                                caseData.cases[index].isRead = false;
+                            }
+                        // }
+                    }
+
+                }
+                console.log(' this.fulfillCase ', this.fulfillCase)
+            }
+        });
+
     }
 
     ngOnInit(): void {
@@ -272,13 +299,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     public changeAccess(data, type) {
         this.canAccessCase = false;
-
         if (data !== null && data !== undefined) {
             this.accessValue = data;
             if (type === 'page') {
                 this.listAsPage = true;
                 this.asPage = data.id;
-            } else if(type === 'user'){
+            } else if (type === 'user') {
                 this.listAsPage = false;
                 this.asPage = undefined;
             }
@@ -288,11 +314,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public searchAccessPage() {
-        this.accessValue = this.getCurrentUser(); 
-        this.showLoading = true; 
+        this.accessValue = this.getCurrentUser();
+        this.showLoading = true;
+
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
-                for (let data of res) { 
+                for (let data of res) {
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
                             if (image.status === 1) {
@@ -301,9 +328,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 } else {
                                     data.page.imageBase64 = image.data;
                                 }
-                                setTimeout(() => {
-                                    this.accessPage = res;
-                                }, 1000);
+
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
@@ -311,26 +336,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             }
                         });
                     }
+                    setTimeout(() => {
+                        this.accessPage = res;
+                    }, 1000);
                 }
 
-                setTimeout(() => {  
-                    this.accessPage = res; 
-                    let data = {
-                        user: {  
-                            isUser : true,
-                            displayName: this.accessValue.displayName,
-                            id: this.accessValue.id,
-                            imageBase64: this.accessValue.imageBase64,
-                            imageURL: this.accessValue.imageURL,
-                        }
-                    }
-                    this.accessPage.push(data);
-                    this.accessPage.reverse();
+                setTimeout(() => {
                     this.showLoading = false;
                 }, 1000);
             } else {
                 let data = {
-                    user: { 
+                    user: {
                         displayName: this.accessValue.displayName,
                         id: this.accessValue.id,
                         imageBase64: this.accessValue.imageBase64,
@@ -344,13 +360,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
     }
 
-    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number): Promise<any> {
+    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number, caseId?: string, isFirst?: boolean): Promise<any> {
         return new Promise(async (resolve, reject) => {
             this.canAccessCase = false;
             this.canAccessChatRoom = false;
             this.showLoading = true;
 
-            let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset);
+            let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
 
             let fulfillCases: any[] = [];
 
@@ -402,11 +418,20 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 });
                             }
                         }
+                        if (isFirst) {
+                            for (let value of fulfillList) {
+                                for(let cases of value.cases){ 
+                                    this.fulfillCase.push(value)
+                                    this.getChatRoom(cases, this.asPage);
+                                    break;
+                                }
+                            }
+                        } else {
+                            this.fulfillCase = fulfillList;
+                        }
+                        this.fulfillCase.reverse();
                     }
                 }
-
-                this.fulfillCase = fulfillList;
-
                 setTimeout(() => {
                     this.showLoading = false;
                 }, 1000);
@@ -424,10 +449,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
             asPage,
             pageId: this.pageId,
             postId: this.postId,
+            name: this.pageName,
             fulfillRequest: this.reqData,
             isFulfill: true,
             isListPage: false,
             isEdit: false,
+            isFulfillNull: true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {
@@ -443,19 +470,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         window.open('/post/' + result.id, '_blank');
                     });
                 });
-
-                // this.clickChangeTab(FULFILLMENT_STATUS.CONFIRM);
-
+ 
+                this.fulfillmentPost = result.id;
                 this.asPage = asPage;
                 this.isCaseConfirmed = true;
-                this.isCaseHasPost = true;
-                this.statusColor = "green";
-                this.isCaseActive = false;
+                this.isCaseHasPost = true;  
             }
         });
     }
 
-    public getChatRoom(fulfill: any, asPage?: any) {
+    public getChatRoom(fulfill: any, asPage?: any ) {
+        console.log('fulfill >>>> ', fulfill)  
         this.chatData = [];
         this.reqData = [];
 
@@ -516,8 +541,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             } else {
                 this.objective = '';
                 this.linkObjective = '';
-            }
-
+            } 
             this.pageId = fulfill.pageId;
             this.postId = fulfill.postId;
             this.linkPost = (this.mainPostLink + fulfill.postId);
@@ -537,7 +561,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
                     this.chatRoomId = res.chatRoom.id;
                     this.pageName = res.fulfillCase.pageName;
-
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
                         this.canAccessCase = true;
                         this.canAccessChatRoom = true;
@@ -726,7 +749,18 @@ export class FulfillPage extends AbstractPage implements OnInit {
             const confirmEventEmitter = new EventEmitter<any>();
             confirmEventEmitter.subscribe(() => {
                 this.fulFillFacade.confirmFulfillmentCase(fulfillCaseId, asPage).then((res) => {
-                    this.isCaseConfirmed = true;
+                    if(res){ 
+                        this.isCaseConfirmed = true;  
+                        for(let group of this.fulfillCase){
+                            for(let fulfillStatus of group.cases){  
+                                if(res.id === fulfillStatus.fulfillCaseId){  
+                                    fulfillStatus.status = res.status;
+                                    break;
+                                }
+                            } 
+                        }   
+
+                    }
                 }).catch((err) => {
 
                 });
@@ -747,9 +781,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
             let dialog = this.dialog.open(DialogConfirmFulfill, { data });
 
-            dialog.afterClosed().subscribe((res) => {
-                if (res) {
-                    this.statusColor = "#FFB800";
+            dialog.afterClosed().subscribe((res) => { 
+                if (res) { 
                 }
             });
         }
@@ -899,7 +932,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 if (this.fulfillCase !== null && this.fulfillCase !== undefined && this.fulfillCase.length > 0) {
                                     this.fulfillCase.filter((ffResult) => {
                                         ffResult.cases.filter((ffcResult) => {
-
                                             if ((ffcResult.fulfillCaseId === fulfillCaseId) === true) {
                                                 this.getChatRoom(ffcResult, this.asPage);
                                             }
@@ -1016,7 +1048,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
+            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
         }).catch((createError) => {
         });
     }
@@ -1227,5 +1259,33 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 transform: 'rotate(0)'
             });
         }
+    }
+
+    public searchPostNeeds() {
+        return this.router.navigateByUrl('/search?type=NEEDS');
+    }
+
+    public clickDevelop(index, text) {
+        let url = ''
+        if (index === 1) {
+            url += "emergency=#" + text
+        } else if (index === 2) {
+            url += "objective=" + text
+        }
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
+                bottomText2: "ตกลง",
+                bottomText1: "ยกเลิก",
+                bottomColorText2: "black",
+                // btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.router.navigateByUrl('/search?' + url);
+            }
+        });
     }
 }

@@ -5,5 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-export * from './MenuProfile.component';
-export * from './SettingAccount.component'; 
+import { BaseModel } from "./BaseModel"
+
+export class PageSocailTW extends BaseModel{
+    
+    public twitterOauthToken: string;
+    public twitterTokenSecret: string;
+    public twitterUserId: string;
+}

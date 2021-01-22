@@ -83,6 +83,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isFulfill: boolean = false;
   @Input()
+  public isFulfillNull: boolean = false;
+  @Input()
   public modeShowDoing: boolean = false;
   @Input()
   public modeDoIng: boolean = false;
@@ -301,12 +303,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    console.log('this.isFulfillNull ', this.isFulfillNull)
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
       } else {
         this.prefix_button = 'box-file-input';
-      }
+      } 
     }, 0);
     if (this.isListPage && this.content) {
       setTimeout(() => {
@@ -425,10 +428,10 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isLoading = false;
       }, 100);
     } else {
-      if(this.content && this.content.isFulfill){
+      if (this.content && this.content.isFulfill) {
         this.isButtonFulfill = false;
         this.isTypeNeed = false;
-        for(let data of this.content.fulfillRequest){ 
+        for (let data of this.content.fulfillRequest) {
           this.arrListItem.push(data)
         }
       }
@@ -538,7 +541,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public updateText() {
     document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted') {
+      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake') {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
@@ -710,7 +713,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.dataItem.resNeeds = doingItem.resNeeds
         }
         if (this.arrListItem !== undefined) {
-          this.arrListItem = this.arrListItem.slice() 
+          this.arrListItem = this.arrListItem.slice()
         }
       }
       if (doingItem && doingItem.length === 0) {
@@ -1030,8 +1033,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (chars > limit) {
       $('.header-story').addClass('msg-error-shake');
       text = text.substr(0, limit);
-      // var new_text = text.substr(0, limit);
-      // $('.header-story').html(new_text);
     } else if (chars == 0) {
       $('.header-story').removeClass('msg-error-shake');
     } else {
@@ -1039,10 +1040,12 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
 
     this.mStory = event.target.innerText.trim();
-    if (this.mStory === "") {
-      this.isMsgNull = true
-    } else {
-      this.isMsgNull = false
+    if (!this.isFulfillNull) {
+      if (this.mStory === "") {
+        this.isMsgNull = true
+      } else {
+        this.isMsgNull = false
+      }
     }
     if (this.isListPage) {
       this.postFacade.nextMessageTopic(this.mStory);
@@ -1078,10 +1081,12 @@ export class BoxPost extends AbstractPage implements OnInit {
     }, 200);
 
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
-    if (this.mTopic.trim() === "") {
-      this.isMsgError = true
-    } else {
-      this.isMsgError = false
+    if (!this.isFulfillNull) {
+      if (this.mTopic.trim() === "") {
+        this.isMsgError = true
+      } else {
+        this.isMsgError = false
+      }
     }
     this.postFacade.nextMessage(this.mTopic);
 
@@ -1230,48 +1235,50 @@ export class BoxPost extends AbstractPage implements OnInit {
       topic = document.getElementById('topic').innerText;
       storyPostShort = document.getElementById('editableStoryPost').innerText;
     }
+    console.log(' POsy ',this.isFulfillNull)
+    if (!this.isFulfillNull) {
+      if (topic.trim() === "" && this.isRepost) {
+        this.isMsgNull = true;
+        var topicAlert;
+        if (this.isListPage) {
+          topicAlert = document.getElementById(this.prefix.header + 'topic');
+          document.getElementById(this.prefix.header + 'topic').focus();
+        } else {
+          topicAlert = document.getElementById('topic');
+          document.getElementById("topic").focus();
+        }
+        topicAlert.classList.add('msg-error-shake');
 
-    if (topic.trim() === "" && this.isRepost) {
-      this.isMsgNull = true;
-      var topicAlert;
-      if (this.isListPage) {
-        topicAlert = document.getElementById(this.prefix.header + 'topic');
-        document.getElementById(this.prefix.header + 'topic').focus();
-      } else {
-        topicAlert = document.getElementById('topic');
-        document.getElementById("topic").focus();
+        // remove the class after the animation completes
+        setTimeout(function () {
+          topicAlert.classList.remove('msg-error-shake');
+        }, 1000);
+
+        event.preventDefault();
+        return;
       }
-      topicAlert.classList.add('msg-error-shake');
+      if (storyPostShort.trim() === "") {
+        this.isMsgError = true
+        var contentAlert;
+        if (this.isListPage) {
+          topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
+          document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
+        } else {
+          contentAlert = document.getElementById('editableStoryPost');
+          document.getElementById("editableStoryPost").focus();
+        }
+        contentAlert.classList.add('msg-error-shake');
 
-      // remove the class after the animation completes
-      setTimeout(function () {
-        topicAlert.classList.remove('msg-error-shake');
-      }, 1000);
+        // remove the class after the animation completes
+        setTimeout(function () {
+          contentAlert.classList.remove('msg-error-shake');
+        }, 1000);
 
-      event.preventDefault();
-      return;
+        event.preventDefault();
+        return;
+      }
     }
 
-    if (storyPostShort.trim() === "") {
-      this.isMsgError = true
-      var contentAlert;
-      if (this.isListPage) {
-        topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
-        document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
-      } else {
-        contentAlert = document.getElementById('editableStoryPost');
-        document.getElementById("editableStoryPost").focus();
-      }
-      contentAlert.classList.add('msg-error-shake');
-
-      // remove the class after the animation completes
-      setTimeout(function () {
-        contentAlert.classList.remove('msg-error-shake');
-      }, 1000);
-
-      event.preventDefault();
-      return;
-    }
     if (this.typeStroy === POST_TYPE.NEEDS) {
       if (this.arrListItem.length === 0) {
         this.isMsgNeeds = true

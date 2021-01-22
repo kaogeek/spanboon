@@ -20,6 +20,7 @@ import { SearchFilter } from 'src/app/models/models';
 
 const PAGE_NAME: string = 'editcomment';
 const REFRESH_DATA: string = 'refresh_page';
+const STATUS_MESSAGE: string = 'status.message';
 
 @Component({
   selector: 'dialog-post',
@@ -48,6 +49,7 @@ export class DialogPost extends AbstractPage {
   public isEdit: boolean = true;
   public isFulfill: boolean = true;
   public isPreload: boolean = true;
+  public isFulfillNull: boolean = false;
   public snackBar: MatSnackBar;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -67,6 +69,7 @@ export class DialogPost extends AbstractPage {
     this.prefix = {};
 
     this.observManager.createSubject(REFRESH_DATA);
+    this.observManager.createSubject('scroll.fix');
 
     if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
       this.isFulfill = this.data.isFulfill;
@@ -75,9 +78,11 @@ export class DialogPost extends AbstractPage {
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
+
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
+      this.isFulfillNull = this.data.isFulfillNull;
     }
 
     if (this.data && this.data.story && this.data.story !== '' && this.data.story !== undefined && this.data.story !== null) {
@@ -132,26 +137,6 @@ export class DialogPost extends AbstractPage {
         check = (this.data.title !== '' || this.data.detail)
       }
       if (result.type === 'click' && check) {
-        // let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
-        // dialog.afterClosed().subscribe((res) => {
-        //   if (res) {
-        //     if (this.isListPage) {
-        //       if (!this.isEdit) {
-        //         this.data.topic = '';
-        //         this.data.content = '';
-        //         this.postFacade.nextMessageTopic(this.data.topic);
-        //         this.postFacade.nextMessage(this.data.content);
-        //       }
-        //     }
-        //     this.dialogRef.close();
-        //   } else {
-        //     if (!this.isEdit) {
-        //       this.dialog.open(DialogPost, {
-        //         data: this.data
-        //       });
-        //     }
-        //   }
-        // });
 
         this.dialogRef.close();
       }
@@ -195,7 +180,6 @@ export class DialogPost extends AbstractPage {
               this.observManager.publish(REFRESH_DATA, data.type);
               this.boxPost.clearDataAll();
               this.dialogRef.close();
-              // window.location.reload();
             }
           }
         }).catch((err: any) => {
@@ -233,7 +217,12 @@ export class DialogPost extends AbstractPage {
     if (this.isFulfill) {
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
         if (res.status === 1) {
-          if (res.message === 'Create Post of FulfillmentCase Complete') {
+          if (res.message === 'Create Post of FulfillmentCase Complete') { 
+            const result = {
+              caseId: data.fulfillCaseId,
+              status: 'green'
+            }
+            this.observManager.publish(STATUS_MESSAGE, result);
             this.boxPost.clearDataAll();
             this.dialogRef.close(res.data);
           }

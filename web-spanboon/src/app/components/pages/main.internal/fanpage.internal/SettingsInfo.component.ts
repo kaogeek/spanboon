@@ -31,6 +31,8 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     @Input()
     public selectedTab: any; 
     @Input()
+    public data: any; 
+    @Input()
     public dirtyCancelEvent: EventEmitter<any>;
     @Input()
     public dirtyConfirmEvent: EventEmitter<any>;
@@ -73,6 +75,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {  
+        console.log('data >> ',this.data)
     }
 
     public ngOnDestroy(): void {

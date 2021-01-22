@@ -262,14 +262,17 @@ export class PostData {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
+        text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
         bottomText2: "ตกลง",
+        bottomText1: "ยกเลิก",
         bottomColorText2: "black",
-        btDisplay1: "none"
+        // btDisplay1: "none"
       }
     });
     dialog.afterClosed().subscribe((res) => {
-      this.router.navigateByUrl('/search?' + url)
+      if(res){ 
+        this.router.navigateByUrl('/search?' + url);
+      }
     });
   }
 

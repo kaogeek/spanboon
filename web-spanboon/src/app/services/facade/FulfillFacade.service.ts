@@ -25,7 +25,7 @@ export class FulfillFacade extends AbstractFacade {
         this.message.next(message);
     }
 
-    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number): Promise<any> {
+    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number ,caseId? :string): Promise<any> {
         
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/fulfillment_case/list";
@@ -57,6 +57,9 @@ export class FulfillFacade extends AbstractFacade {
 
             if (offset !== null && offset !== undefined) {
                 queryParams += "&offset=" + offset;
+            }
+            if (caseId !== null && caseId !== undefined && caseId !== '') {
+                queryParams += "&caseId=" + caseId;
             }
 
             if (queryParams !== null && queryParams !== undefined && queryParams !== '') {

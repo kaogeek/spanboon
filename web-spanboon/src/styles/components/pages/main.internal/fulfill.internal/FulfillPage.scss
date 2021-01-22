@@ -171,6 +171,13 @@
                             background: $color-warm-red;
                         }
                     }
+                    >.contact-notfound {
+                        display: flex;
+                        justify-content: center;
+                        font-family: "Kanit-500";
+                        align-items: center;
+                        font-size: 22px;
+                    }
                 }
             }
         }
@@ -263,10 +270,11 @@
                                 padding: unset;
                                 > .tag-emergency {
                                     padding: unset;
+                                    margin: 0 10px 0 3px;
                                 }
                                 > .tag-objective {
                                     padding: unset;
-                                    margin: unset;
+                                    margin: 0 5px;
                                 }
                             }
                         }
@@ -592,6 +600,15 @@
             > .fulfill-label {
                 font-family: "Kanit-500";
                 font-size: 26px; 
+            }
+            >.fulfill-search {
+                font-family: "Kanit-500";
+                font-size: 16px; 
+                color: $color-warm-red;
+                @include pointer();
+                &:hover {
+                    text-decoration: underline;
+                }
             }
         }
     }

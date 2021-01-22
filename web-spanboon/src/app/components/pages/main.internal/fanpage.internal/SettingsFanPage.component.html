@@ -39,8 +39,7 @@
                                 [class.active]="selected === link.label">
                                 <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
                                 <span class="settings-title">{{link.label}}</span>
-                            </div>
-
+                            </div> 
                         </ng-container>
                     </ng-container>
 
@@ -58,7 +57,7 @@
                 </div>
             </div>
             <div class="settings-right">
-                <settings-info #settingInfo *ngIf="activeLink === 'จัดการเพจ'" [selectedTab]="selected"  [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-info> 
+                <settings-info #settingInfo *ngIf="activeLink === 'จัดการเพจ'" [selectedTab]="selected" [data]="resListPage && resListPage.id "  [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-info> 
             </div>
         </div> 
 

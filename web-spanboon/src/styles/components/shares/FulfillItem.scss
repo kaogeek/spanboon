@@ -315,6 +315,21 @@
                             color: $koalaGray;
                             text-align: center;
                         }
+
+                        >.limit-fulfill {
+                            display: flex;
+                            position: absolute;
+                            bottom: 5pt;
+                            right: 5pt;
+                            color: $koalaGray;
+                            font-size: 14px;
+
+                            span {
+                               &.active {
+                                color: $color-warm-red;
+                               }
+                            }
+                        }
                     }
                     > .body-empty {
                         border: 3pt dashed blue; 
