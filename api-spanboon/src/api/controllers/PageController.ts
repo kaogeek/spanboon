@@ -512,6 +512,45 @@ export class PageController {
     }
 
     /**
+     * @api {Get} /api/page/:id/social/twitter/check Check if Page Social Twitter binding API
+     * @apiGroup Page
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully Twitter Page Acount found",
+     *      "data": true
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/social/twitter/check
+     * @apiErrorExample {json} Unable Binding Page Social
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id/social/twitter/check')
+    @Authorized('user')
+    public async getPageTwitterAccount(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjId = new ObjectID(pageId);
+        const userId = new ObjectID(req.user.id);
+        const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (pageData) {
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send('You cannot access the page.', undefined);
+            }
+
+            // check if page was registed.
+            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
+            if (pageTwitter !== null && pageTwitter !== undefined) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Twitter Page Acount found.', true));
+            } else {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Acount not found.', false));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+        }
+    }
+
+    /**
      * @api {post} /api/page/:id/objective Get Page PageObjective API
      * @apiGroup Page
      * @apiSuccessExample {json} Success
