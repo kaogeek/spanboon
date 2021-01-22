@@ -164,21 +164,15 @@ export class TwitterService {
     }
 
     // return true if post success, false if not success
-    public postStatus(userId: string, message: string): Promise<any> {
+    public postStatusByToken(accessToken: string, tokenSecret: string, message: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            if (userId === undefined || userId === null || userId === '') {
-                reject('userId was required');
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('accessToken was required');
                 return;
             }
 
-            const authenId = await this.authenIdService.findOne({ user: new ObjectID(userId), providerName: PROVIDER.TWITTER });
-            if (authenId === undefined) {
-                reject('Twitter register was not found.');
-                return;
-            }
-
-            if (authenId.properties === undefined || authenId.properties.oauthToken === undefined || authenId.properties.oauthTokenSecret === undefined) {
-                reject('Twitter propertites was not found.');
+            if (tokenSecret === undefined || tokenSecret === null || tokenSecret === '') {
+                reject('accessToken was required');
                 return;
             }
 
@@ -190,8 +184,6 @@ export class TwitterService {
 
             const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
             const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
-            const accessToken = authenId.properties.oauthToken;
-            const tokenSecret = authenId.properties.oauthTokenSecret;
 
             // generate oauth
             const parameters = {
@@ -246,6 +238,40 @@ export class TwitterService {
                 reject(e);
             });
             req.end();
+        });
+    }
+
+    // return true if post success, false if not success
+    public postStatus(userId: string, message: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (userId === undefined || userId === null || userId === '') {
+                reject('userId was required');
+                return;
+            }
+
+            const authenId = await this.authenIdService.findOne({ user: new ObjectID(userId), providerName: PROVIDER.TWITTER });
+            if (authenId === undefined) {
+                reject('Twitter register was not found.');
+                return;
+            }
+
+            if (authenId.properties === undefined || authenId.properties.oauthToken === undefined || authenId.properties.oauthTokenSecret === undefined) {
+                reject('Twitter propertites was not found.');
+                return;
+            }
+
+            if (message === undefined) {
+                message = '';
+            }
+
+            const accessToken = authenId.properties.oauthToken;
+            const tokenSecret = authenId.properties.oauthTokenSecret;
+            try {
+                const result = await this.postStatusByToken(accessToken, tokenSecret, message);
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 }
