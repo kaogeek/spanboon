@@ -58,7 +58,7 @@ import { PostsGalleryService } from '../services/PostsGalleryService';
 import { NotificationService } from '../services/NotificationService';
 import { FulfillmentService } from '../services/FulfillmentService';
 import { NeedsService } from '../services/NeedsService';
-import { FileUtil } from '../../utils/Utils';
+import { FileUtil, ObjectUtil } from '../../utils/Utils';
 import { InputFormatterUtils } from '../../utils/InputFormatterUtils';
 import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
@@ -344,7 +344,6 @@ export class FulfillmentController {
                                     $expr: {
                                         $and: [
                                             { $eq: ['$room', '$$roomId'] },
-                                            { $eq: ['$sender', '$$requester'] },
                                             { $eq: ['$deleted', false] }
                                         ]
                                     }
@@ -360,6 +359,8 @@ export class FulfillmentController {
             aggregateStmt = searchFulfillStmt.concat(lookupStmt);
 
             const fulfillCases: any[] = await this.fulfillmentCaseService.aggregate(aggregateStmt);
+            const senderUserMap = {};
+            const senderPageMap = {};
 
             if (fulfillCases !== null && fulfillCases !== null && fulfillCases.length > 0) {
                 const fulfillmentCaseResult: FulfillmentListResponse[] = [];
@@ -400,6 +401,43 @@ export class FulfillmentController {
                         fulfilCaseResponse.chatMessage = fulfill.chats[0].message;
                         fulfilCaseResponse.chatDate = fulfill.chats[0].createdDate;
                         fulfilCaseResponse.chatRoom = fulfill.chats[0].room;
+
+                        // fetch sender by type
+                        const senderType = fulfill.chats[0].senderType;
+                        const senderIdString = fulfill.chats[0].sender + '';
+                        if (senderType !== undefined && senderType !== '' && senderIdString !== undefined && senderIdString !== '') {
+                            let senderObject = undefined;
+                            if (senderType === SENDER_TYPE.PAGE) {
+                                let pageObj = senderPageMap[senderIdString];
+                                if (pageObj === undefined) {
+                                    pageObj = await this.pageService.findOne({ _id: new ObjectID(senderIdString) });
+                                    senderPageMap[senderIdString] = pageObj;
+                                }
+
+                                senderObject = {
+                                    id: pageObj.id,
+                                    name: pageObj.name,
+                                    type: SENDER_TYPE.PAGE,
+                                    imageURL: pageObj.imageURL
+                                };
+                            } else if (senderType === SENDER_TYPE.USER) {
+                                let userObj = senderUserMap[senderIdString];
+                                if (userObj === undefined) {
+                                    userObj = await this.userService.findOne({ _id: new ObjectID(senderIdString) });
+                                    senderUserMap[senderIdString] = userObj;
+                                }
+
+                                senderObject = {
+                                    id: userObj.id,
+                                    name: userObj.displayName,
+                                    type: SENDER_TYPE.USER,
+                                    imageURL: userObj.imageURL
+                                };
+                            }
+                            
+                            fulfilCaseResponse.chatSender = senderObject;
+                        }
+                        // end fetch sender
 
                         const chatroomId = fulfill.chats[0]['room'];
                         // count unread
