@@ -11,13 +11,15 @@ import { PageSocialAccount } from '../models/PageSocialAccount';
 import { PageSocialAccountRepository } from '../repositories/PageSocialAccountRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
-import { ObjectID } from 'typeorm';
+import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
+import { TwitterService } from '../services/TwitterService';
 
 @Service()
 export class PageSocialAccountService {
 
-    constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository) { }
+    constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository,
+        private twitterService: TwitterService) { }
 
     // find PageSocialAccount
     public find(findCondition: any): Promise<PageSocialAccount[]> {
@@ -58,6 +60,26 @@ export class PageSocialAccountService {
         } else {
             return this.pageSocialAccountRepository.find(condition);
         }
+    }
+
+    public async shareAllSocialPost(pageId: string, message: string): Promise<boolean> {
+        const twitterAccount = await this.getTwitterPageAccount(pageId);
+        if (twitterAccount !== undefined) {
+            const accessToken = twitterAccount.properties.oauthToken;
+            const tokenSecret = twitterAccount.properties.oauthTokenSecret;
+
+            try {
+                await this.twitterService.postStatusByToken(accessToken, tokenSecret, message);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // const fbAccount = await this.getFacebookPageAccount(pageId);
+        // if (fbAccount !== undefined) {
+        // }
+
+        return true;
     }
 
     public async getTwitterPageAccount(pageId: string): Promise<PageSocialAccount> {

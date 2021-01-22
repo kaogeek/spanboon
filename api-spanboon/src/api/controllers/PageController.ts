@@ -351,11 +351,11 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = fbUser.token;
 
-            const result = await this.pageSocialAccountService.create(pageSocialAccount);
+            await this.pageSocialAccountService.create(pageSocialAccount);
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', result));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
     }
 
@@ -425,9 +425,9 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
 
-            const result = await this.pageSocialAccountService.create(pageSocialAccount);
+            await this.pageSocialAccountService.create(pageSocialAccount);
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', result));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }
@@ -449,7 +449,7 @@ export class PageController {
      */
     @Delete('/:id/social/facebook')
     @Authorized('user')
-    public async unbindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async unbindingPageFacebook(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -460,39 +460,15 @@ export class PageController {
                 return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
-            if (checkAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.error !== undefined) {
-                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.data === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                return res.status(200).send(errorResponse);
-            }
-
-            const expiresAt = checkAccessToken.data.expires_at;
-            const today = moment().toDate();
-
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
-
             const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.FACEBOOK });
             if (!result) {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Facebook Social.', undefined));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Facebook Social.', true));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
     }
 
@@ -512,7 +488,7 @@ export class PageController {
      */
     @Delete('/:id/social/twitter')
     @Authorized('user')
-    public async unbindingPageTwitter(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async unbindingPageTwitter(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -529,9 +505,9 @@ export class PageController {
                 return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', undefined));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
     }
 
