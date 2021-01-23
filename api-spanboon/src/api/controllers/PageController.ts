@@ -460,7 +460,7 @@ export class PageController {
                 return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.FACEBOOK });
+            const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.FACEBOOK });
             if (!result) {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
@@ -499,7 +499,7 @@ export class PageController {
                 return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.TWITTER });
+            const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.TWITTER });
             if (!result) {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
@@ -541,9 +541,9 @@ export class PageController {
             // check if page was registed.
             const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
             if (pageTwitter !== null && pageTwitter !== undefined) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Twitter Page Acount found.', true));
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', true));
             } else {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Acount not found.', false));
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', false));
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
