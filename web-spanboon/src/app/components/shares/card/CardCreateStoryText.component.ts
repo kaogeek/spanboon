@@ -1116,7 +1116,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
                     if (check !== "=") {
                         if (beforeCheck !== ">") {
-                            innerHTML = innerHTML.substring(0, index) + "<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
+                            innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
                             inputText.innerHTML = innerHTML;
                             this.setCaretToEnd(event.target);
                         }
