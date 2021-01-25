@@ -25,7 +25,7 @@
             <card-contact *ngFor="let fulfill of data.cases;let index = index" [title]="fulfill.title" [asPage]="asPage"
                 [statusColor]="fulfill.status === 'CONFIRM' ? '#FFB800' : 'green'" [isCaseSelected]="fulfill.isCaseSelected" [imageURL]="fulfill.userImageURL"
                 [emergencyEvent]="fulfill.emergencyEvent" [objective]="fulfill.objective"
-                [description]="fulfill.description" [name]="fulfill.name" [isRead]="fulfill.isRead"
+                [description]="fulfill.description" [name]="fulfill.chatSender.name" [type]="fulfill.chatSender.type" [isRead]="fulfill.isRead"
                 [chatMessage]="fulfill.chatMessage" [chatDate]="fulfill.chatDate | dateFormat"
                 [fulfillRequestCount]="fulfill.fulfillRequestCount" [unreadMessageCount]="fulfill.unreadMessageCount" [data]="fulfill"
                 (onClick)="getFulfillmentCase(fulfill , index)"></card-contact>

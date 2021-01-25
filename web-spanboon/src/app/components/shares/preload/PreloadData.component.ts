@@ -24,9 +24,7 @@ export class PreloadData  implements OnInit {
   @Input()
   public isShowCard1: boolean = false;
   @Input()
-  public isShowCard2: boolean = false;
-  @Input()
-  public isShowCard3: boolean = false;
+  public isShowCard2: boolean = false; 
 
   constructor() { 
   } 

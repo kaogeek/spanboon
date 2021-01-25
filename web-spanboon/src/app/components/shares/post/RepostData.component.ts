@@ -13,7 +13,7 @@ import { ProfileFacade } from '../../../services/facade/ProfileFacade.service';
 import { SearchFilter } from 'src/app/models/SearchFilter';
 import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
-import { ValidBase64ImageUtil } from 'src/app/utils/ValidBase64ImageUtil';
+import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 
 @Component({
   selector: 'repost-data',

@@ -611,6 +611,7 @@ export class MainPageController {
             }
 
             if (hashTag !== undefined && hashTag !== null && hashTag.length > 0) {
+                /* // open for tag searching in title and detail
                 let matchHashTagTitleStmt: any = {};
                 let matchHashTagTitleStmtResult: any = {};
                 let matchHashTagDetailStmt: any = {};
@@ -637,7 +638,7 @@ export class MainPageController {
 
                 if (matchHashTagStmtResult !== null && matchHashTagStmtResult !== undefined && matchHashTagStmtResult.length > 0) {
                     postStmt.push({ $match: { $or: matchHashTagStmtResult } });
-                }
+                }*/
 
                 const hashTagIdList: ObjectID[] = [];
 
@@ -964,8 +965,6 @@ export class MainPageController {
             ];
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
-
-            console.log('searchPostStmt >>> ', JSON.stringify(searchPostStmt));
 
             const pageMap = {};
             const userMap = {};

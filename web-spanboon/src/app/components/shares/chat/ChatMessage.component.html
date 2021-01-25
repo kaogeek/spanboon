@@ -65,10 +65,10 @@
                                 [messageType]="item.chatMessage.messageType" (submit)="submit.emit()">
                             </chat-fulfill>
                         </ng-template>
-
+ 
                         <a href="{{asPage ? linkPage : linkUser}}" target="_blank">
                             <ng-container
-                                *ngIf="item.senderImage !== null && item.senderImage !== undefined && senderImage !== ''; else elseSenderImage">
+                                *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseSenderImage">
                                 <img src="{{item.senderImage}}" alt="" class="m-profile">
                             </ng-container>
                             <ng-template #elseSenderImage>

@@ -13,7 +13,7 @@ import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFac
 import { AbstractPage } from '../../AbstractPage';
 import { AboutPages } from '../../../../models/AboutPages'; 
 
-const PAGE_NAME: string = 'about-page';
+const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
 const SEARCH_OFFSET: number = 0; 
 
