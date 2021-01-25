@@ -63,12 +63,10 @@
                     </div>
                 </mat-form-field>
             </div>
-            <div *ngIf="isMobilePost" class="mobile-post dropdown-page" (click)="onCloseDialog()">
+            <div *ngIf="isMobilePost" class="mobile-post" (click)="onCloseDialog()">
                 ยกเลิก
             </div>
-
-            <div *ngIf="isMobilePost;" class="dropdown-page"
-                style="border-left: 0.7px solid #e5e5e5;width: calc(75% - 10pt - 0.7px);">
+            <div *ngIf="isListPage && isHeaderPage && isMobilePost" class="dropdown-page mobile-page">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
                         <ng-container

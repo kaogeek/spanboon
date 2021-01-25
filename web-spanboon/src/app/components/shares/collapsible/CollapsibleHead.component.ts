@@ -36,6 +36,8 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   @Input()
   public data: any;
   @Input()
+  public type: any;
+  @Input()
   public showCase: boolean = false;
   @Output()
   public onContactClick: EventEmitter<any> = new EventEmitter();
@@ -61,6 +63,8 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
     setTimeout(() => {
       this.showLoading = false;
     }, 1000);
+ 
+    console.log('asPage ',this.data.cases)
   }
 
   public ngOnDestroy(): void {

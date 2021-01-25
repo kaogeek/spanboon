@@ -39,6 +39,8 @@ export class CardContact {
     public description: string = 'ขอความคอนเทนต์';
     @Input()
     public name: string = 'ชื่อ นามสกุล';
+    // @Input()
+    // public name: string = 'ชื่อ นามสกุล';
     @Input()
     public chatMessage: string = 'ข้อความ';
     @Input()
@@ -47,6 +49,8 @@ export class CardContact {
     public isCaseSelected: boolean;
     @Input()
     public data: any;
+    @Input()
+    public type: any;
     @Output()
     public onClick: EventEmitter<any> = new EventEmitter();
 

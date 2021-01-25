@@ -28,7 +28,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 8%;
+      padding: 40px;
       z-index: 10;
       .background-text-h {
         @include font-size-5-100("Kanit-500");
@@ -42,6 +42,11 @@
         color: rgb(201, 201, 201);
         text-align: center;
         margin-bottom: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
       }
       .line {
         width: 20%;
@@ -207,7 +212,7 @@
 
   .story-footer {
     width: 100%;
-    height: 200pt;
+    height: auto;
     z-index: 0;
     > .swiper-container {
       > .swiper-wrapper {
@@ -266,6 +271,19 @@
     }
   }
 
+  .story-footer-teb {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Kanit-500";
+    font-size: 18px;
+    > .text {
+      margin: 0px 10px;
+    }
+  }
+
   Preload-card {
     position: absolute;
     width: 100%;
@@ -319,7 +337,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 8%;
+      padding: 40px;
       z-index: 10;
       .background-text-h {
         @include font-size-7-100("Kanit-500");
@@ -333,6 +351,11 @@
         color: rgb(201, 201, 201);
         text-align: center;
         margin-bottom: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
       }
       .line {
         width: 20%;

@@ -156,12 +156,10 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public clickSetting(item: any) {
-        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
-            this.router.navigateByUrl('/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } });
-            // this.router.navigate(['/page/' + item.page.pageUsername + '/settings', { state: { id: item.page.id } }]);
-        } else {
-            this.router.navigateByUrl('/page/' + item.page.id + '/settings', { state: { id: item.page.id } });
-            // this.router.navigate(['/page/' + item.page.id + '/settings']);
+        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) { 
+            this.router.navigate(['/page/' + item.page.pageUsername + '/settings']);
+        } else { 
+            this.router.navigate(['/page/' + item.page.id + '/settings']);
         }
     }
 

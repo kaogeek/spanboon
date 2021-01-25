@@ -104,19 +104,23 @@ export class CardItem extends AbstractPage implements OnInit {
         //     this.showAlertDevelopDialog();
         //     return
         // }
-        for (let f of item) {
-            f.isFrom = "FULFILL"
-        }
-        let itemArr: any
-        itemArr = { fulfill: item, isFrom: 'FULFILL', isPage: true, currentPostItem: [] }
-        let dialog = this.dialog.open(DialogFulfill, {
-            width: 'auto',
-            data: itemArr,
-            disableClose: false,
-        });
+        if (!this.isLogin()) {
+            this.showAlertLoginDialog(this.router.url);
+        } else {
+            for (let f of item) {
+                f.isFrom = "FULFILL"
+            }
+            let itemArr: any
+            itemArr = { fulfill: item, isFrom: 'FULFILL', isPage: true, currentPostItem: [] }
+            let dialog = this.dialog.open(DialogFulfill, {
+                width: 'auto',
+                data: itemArr,
+                disableClose: false,
+            });
 
-        dialog.afterClosed().subscribe((res) => {
-        });
+            dialog.afterClosed().subscribe((res) => {
+            });
+        }
     }
 
     public configSlider1: SwiperConfigInterface = {

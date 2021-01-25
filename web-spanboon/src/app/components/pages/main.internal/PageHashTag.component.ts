@@ -377,10 +377,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       var x = document.getElementsByClassName('header-top')[0].clientHeight;
       let top = x + y;
       if (this.prevOld > scrollTop) {
-        if (window.innerWidth < 489) {
-          this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
-        } else {
-          this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
+        if( this.feedbodysearch &&  this.feedbodysearch.nativeElement !== undefined){ 
+          if (window.innerWidth < 489) {
+            this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
+          } else {
+            this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
+          }
         }
       } else {
         if(this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined){
@@ -1373,7 +1375,3 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
   }
 }
-
-
-
-
