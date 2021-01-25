@@ -365,15 +365,40 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public socialGetBindingTwitter(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter/check';
+      let options = this.getDefaultOptions(); 
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+
   public socialBindingTwitter(pageId: string, data: PageSocailTW): Promise<PageSocailTW> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/page/' + pageId + 'social/twitter';
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
       let options = this.getDefaultOptions();
       let body: any = {};
       if (data !== undefined && data !== null) {
         body = Object.assign(data);
       }
       this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+  
+  public socialUnBindingTwitter(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
+      let options = this.getDefaultOptions(); 
+      this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
         reject(error);

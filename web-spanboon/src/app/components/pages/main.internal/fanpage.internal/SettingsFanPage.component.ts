@@ -8,16 +8,17 @@
 import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { PageSocailTW } from '../../../../models/PageSocailTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
 
 const PAGE_NAME: string = 'settings';
-
+const URL_PATH: string = '/page/';
 
 declare var $: any;
 @Component({
@@ -36,10 +37,12 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public redirection: string;
     public isTop: boolean = false;
+    public isPreload: boolean;
     public selected: any;
     public resListPage: any;
     public link: any;
     public linkSetting: any;
+    public bindingSocialTwitter: any;
 
     @Input()
     public dirtyCancelEvent: EventEmitter<any>;
@@ -95,20 +98,20 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     ];
     public arrayLink = {
         links: [{
-            link: "",
+            keyword: "account",
             icon: "edit",
             label: "ข้อมูลเพจ",
         },
         {
-            link: "",
+            keyword: "roles",
             icon: "person",
             label: "บทบาทในเพจ",
         },
         {
-            link: "",
+            keyword: "connect",
             icon: "security",
             label: "การเชื่อมต่อ",
-        } ],
+        }],
 
         linksPost: [{
             link: "",
@@ -136,6 +139,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.pageFacade = pageFacade;
         this.selected = this.links[0].label;
+        this.isPreload = true;
         this.dirtyCancelEvent = new EventEmitter();
         this.dirtyCancelEvent.subscribe(() => {
         });
@@ -153,9 +157,55 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                 this.selected = this.link.label;
             }
         });
- 
-        let id = this.router.getCurrentNavigation().extras.state;
-        this.pageId = id && id.id; 
+
+        this.routeActivated.params.subscribe(async (params) => {
+            this.pageId = params['id'];
+            if (this.pageId !== undefined && this.pageId !== '') {
+                this.getAccessPage();
+            }
+        });
+
+        let resultTwitter = this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras.state;
+        console.log('infofanpage', resultTwitter)
+        if (resultTwitter !== undefined && resultTwitter !== null) {
+            console.log('fanpage ', resultTwitter)
+            const twitter = new PageSocailTW();
+            twitter.twitterOauthToken = resultTwitter.data.token;
+            twitter.twitterTokenSecret = resultTwitter.data.token_secret;
+            twitter.twitterUserId = resultTwitter.data.userId;
+
+            this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
+                console.log('data ', res)
+                this.bindingSocialTwitter = res.data;
+            }).catch((err: any) => {
+                console.log('err ', err)
+                if (err.error.message === 'This page was binding with Twitter Account.') {
+                    this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+                }
+            });
+        }
+
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                const url: string = decodeURI(this.router.url);
+                if (url.indexOf(URL_PATH) >= 0) {
+                    const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
+                    let substringPage = substringPath.replace(URL_PATH, '');
+                    const replaceCommentURL: string = substringPage.replace('/page/', '');
+                    console.log('replaceCommentURL ', replaceCommentURL)
+                    const splitTextId = replaceCommentURL.split('?tab=')[1];
+                    console.log('splitTextId ', splitTextId)
+                    if (splitTextId === 'connect') {
+                        this.selected = 'การเชื่อมต่อ';
+                    } else if (splitTextId === 'account') {
+                        this.selected = 'ข้อมูลเพจ';
+                    } else if (splitTextId === 'roles') {
+                        this.selected = 'บทบาทในเพจ';
+                    } 
+                    this.getAccessPage();
+                }
+            }
+        });
 
     }
 
@@ -201,16 +251,23 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     }
 
     public selecedInformation(link: any) {
-        this.link = link; 
-        const isDirty : boolean = this.settingInfo.checkIsDirty(); 
-        if(!isDirty){
+        this.link = link;
+        const isDirty: boolean = this.settingInfo.checkIsDirty();
+        if (!isDirty) {
+            this.router.navigateByUrl('page/' + this.pageId + '/settings?tab=' + link.keyword);
             this.selected = this.link.label;
-        }   
+            // if (this.selected === 'การเชื่อมต่อ') {
+            //     this.router.navigateByUrl(this.router.url + "?tab" + link.keyword);
+            // } else {
+            //     this.router.navigateByUrl(this.router.url + "?tab" + link.keyword);
+            // }
+        }
     }
 
     public getAccessPage() {
         this.pageFacade.getProfilePage(this.pageId).then((res) => {
             if (res.data) {
+                this.pageId = res.data.id
                 if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
                     this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
                         if (image.status === 1) {
@@ -219,9 +276,10 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                             } else {
                                 res.data.imageURL = image.data
                             }
-                            // setTimeout(() => {
-                                this.resListPage = res.data 
-                            // }, 1000);
+                            setTimeout(() => {
+                                this.isPreload = false;
+                                this.resListPage = res.data;
+                            }, 1000);
                         }
 
                     }).catch((err: any) => {
@@ -231,19 +289,15 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                         }
                     });
                 } else {
-                    this.resListPage = res.data
+                    this.resListPage = res.data;
+                    setTimeout(() => {
+                        this.isPreload = false;
+                    }, 3000);
                 }
-              
+
             }
         }).catch((err: any) => {
-            // if (err.error.status === 0) {
-            //   if (err.error.message === 'Unable got Page') {
-            //     this.msgPageNotFound = true;
-            //   }
-            //   // else if(err.error.message === 'Unable got Asset'){
-            //   //   console.log("1111")
-            //   // }
-            //   this.stopLoading(); 
+            console.log('err',err);
         });
     }
     private validBase64Image(base64Image: string): boolean {

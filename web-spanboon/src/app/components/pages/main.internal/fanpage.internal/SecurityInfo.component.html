@@ -1,4 +1,4 @@
-<div class="security-info">
+<div class="security-info"> 
     <div class="label-info">
         ความปลอดภัยและล็อคอิน
     </div>
@@ -42,12 +42,12 @@
                 </div>
 
                 <div class="lost-connect">
-                    {{connect ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
+                    {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
                 </div>
             </div>
 
-            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('twitter')">
-                {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            <div class="link-connect" [class.active]="connectTwitter" (click)="connectionSocial('twitter' , connectTwitter)">
+                {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
             </div>
         </div>
 
