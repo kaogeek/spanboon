@@ -1098,6 +1098,9 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         var innerText = inputText.innerText
         var target = 'target="_blank"'
         let m;
+
+        console.log('event.key', event.key)
+
         while ((m = regex.exec(innerText)) !== null) {
             // This is necessary to avoid infinite loops with zero-width matches
             if (m.index === regex.lastIndex) {
@@ -1116,12 +1119,28 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
                     if (check !== "=") {
                         if (beforeCheck !== ">") {
-                            innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
+                            innerHTML = innerHTML.substring(0, index) + "<a style=" + "color:blue;" + ">" + innerHTML.substring(index, index + match.length) + "</a>" + innerHTML.substring(index + match.length);
                             inputText.innerHTML = innerHTML;
                             this.setCaretToEnd(event.target);
                         }
                     }
                 }
+
+                if (event.key === "Backspace") {
+                    var index = innerHTML.indexOf(match);
+
+                    var stIndex = (innerHTML.indexOf(match) - 13);
+                    var beforeCheck = innerHTML.substring((index - 1), index)
+
+                    console.log('beforeCheck', beforeCheck);
+                    if (beforeCheck === ">") {
+                        innerHTML = innerHTML.substring(0, (index - 23)) + innerHTML.substring(index, index + match.length) + innerHTML.substring(index + (match.length + 4));
+                        inputText.innerHTML = innerHTML;
+                        this.setCaretToEnd(event.target);
+                    }
+
+                }
+
             });
         }
 

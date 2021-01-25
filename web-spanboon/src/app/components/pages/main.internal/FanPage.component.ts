@@ -1245,7 +1245,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.imgprofile.nativeElement.style.marginTop = '10pt';
           }
         }
-
       }
     } else {
       if(this.imgprofile && this.imgprofile.nativeElement !== undefined){

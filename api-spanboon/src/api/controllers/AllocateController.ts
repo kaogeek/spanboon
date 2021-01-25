@@ -55,6 +55,7 @@ export class AllocateController {
                         postId,
                         items: []
                     });
+                    continue;
                 }
 
                 const calulated: AllocateResponse[] = await this.allocate(pageId, postId, items, params);
@@ -580,8 +581,9 @@ export class AllocateController {
 
         const needQty = allocateItem.quantity;
         const needFulfillQty = (allocateItem.fulfillQuantity !== undefined && allocateItem.fulfillQuantity !== null && !isNaN(allocateItem.fulfillQuantity)) ? allocateItem.fulfillQuantity : 0;
-        const leftQty = needQty - needFulfillQty;
         let amount = allocateItem.amount;
+        const leftQty = needQty - needFulfillQty - amount;
+        
         if (leftQty > 0) {
             if (allocateAmount > leftQty) {
                 amount = amount + leftQty;

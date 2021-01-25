@@ -20,7 +20,7 @@
                         <img class="image" src="{{apiBaseURL+indexItemImage()+'/image'}}" alt="">
                     </ng-container>
                     <ng-template #elsePhoto>
-                        <img class="image" src="../../../../assets/img/photo.png" alt=""
+                        <img class="image" src="../../../../assets/img/customize_item.svg" alt=""
                             style="width: 40%; height: auto;">
                     </ng-template>
                 </div>
@@ -37,13 +37,19 @@
                     {{indexItemQuantity()}}
                     {{indexItemUnit()}}
                 </span>
+                <span *ngIf="indexWizardPage === 3">
+                    สรุปรายการคงเหลือ
+                </span>
+                <span *ngIf="indexWizardPage === 4">
+                    สรุปรายการจัดสรร
+                </span>
             </div>
             <div class="right">
                 <div class="wizard-step">
                     <span class="step" [class.active]="indexWizardPage === i"
                         *ngFor="let item of getQuantity(wizardConfig.quantity);let i = index"></span>
                 </div>
-                <mat-icon class="close">close</mat-icon>
+                <mat-icon (click)="onClose()" class="close">close</mat-icon>
             </div>
         </div>
 
@@ -221,13 +227,13 @@
                                 <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
                             </ng-container>
                             <ng-template #elsePhoto>
-                                <img class="image" src="../../../../assets/img/photo.png" alt=""
+                                <img class="image" src="../../../../assets/img/customize_item.svg" alt=""
                                     style="width: 40%; height: auto;">
                             </ng-template>
                         </div>
                         <div class="item-name">
-                            <span>{{item.name}}</span>
-                            <span>{{item.quantity}}{{item.unit}}</span>
+                            <span class="name">{{item.name}}</span>
+                            <span class="quantity">{{item.quantity}} {{item.unit}}</span>
                         </div>
                     </div>
                 </div>
@@ -406,7 +412,8 @@
                                                 <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
                                             </ng-container>
                                             <ng-template #elsePhoto>
-                                                <img class="image" src="../../../../assets/img/photo.png" alt="">
+                                                <img class="image" src="../../../../assets/img/customize_item.svg"
+                                                    alt="">
                                             </ng-template>
                                         </div>
                                         <div *ngIf="item.amount > 0" class="quantity">
@@ -443,9 +450,182 @@
                     </ng-container>
                 </div>
             </div>
+
+            <div *ngIf="indexWizardPage === 3" class="box-list-item">
+                <div class="box-list-item-hrader">
+                    <div (click)="back()" class="list-item-Back">
+                        <span>ย้อนกลับ</span>
+                    </div>
+                    <div (click)="autoAllocate(false)" [class.active]="selectNeedItem.length > 0"
+                        class="list-item-Next">
+                        <span>จัดสรรอัตโนมัติ</span>
+                    </div>
+                </div>
+                <div class="box-list-item-body">
+                    <div class="box-allocate-item">
+                        <div class="text">
+                            <span>รายการจัดสรรคงเหลือ</span>
+                        </div>
+                        <div class="item-list">
+                            <div (click)="selectItem(i)"
+                                [ngStyle]="{'display': checkFulfillQuantity(item) ? 'none' : 'flex'}"
+                                *ngFor="let item of listItemNeed;let i = index" class="item">
+                                <div class="item-image">
+                                    <ng-container
+                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                        <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                    </ng-container>
+                                    <ng-template #elsePhoto>
+                                        <img class="image" src="../../../../assets/img/customize_item.svg" alt=""
+                                            style="width: 40%; height: auto;">
+                                    </ng-template>
+                                </div>
+                                <div class="item-name">
+                                    <span class="name">{{item.name}}</span>
+                                    <div class="quantity">
+                                        <span
+                                            [ngStyle]="{'color': item.fulfillQuantity === 0 ? 'red' : '#599144'}">{{item.fulfillQuantity}}</span>
+                                        /
+                                        {{item.quantity}} {{item.unit}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-allocate-item">
+                        <div class="text">
+                            <span>รายการที่จัดสรรครบแล้ว</span>
+                        </div>
+                        <div class="item-list">
+                            <div (click)="selectItem(i)" *ngFor="let item of listItemNeed;let i = index"
+                                [ngStyle]="{'display': checkFulfillQuantitys(item) ? 'none' : 'flex'}" class="item">
+                                <div class="item-image">
+                                    <ng-container
+                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                        <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                    </ng-container>
+                                    <ng-template #elsePhoto>
+                                        <img class="image" src="../../../../assets/img/customize_item.svg" alt=""
+                                            style="width: 40%; height: auto;">
+                                    </ng-template>
+                                </div>
+                                <div class="item-name">
+                                    <span class="name">{{item.name}}</span>
+                                    <div class="quantity">
+                                        <span>{{item.fulfillQuantity}}</span> /
+                                        {{item.quantity}} {{item.unit}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="indexWizardPage === 4" class="box-list-item">
+                <div class="box-list-item-hrader">
+                    <div (click)="back()" class="list-item-Back">
+                        <span>ย้อนกลับ</span>
+                    </div>
+
+                    <div (click)="confirmAllocate()" [class.active]="true" class="list-item-Next">
+                        <span>ยืนยัน</span>
+                    </div>
+                </div>
+                <div class="box-list-item-body" style="height: calc(100% - 85px) !important;" [class.list]="true">
+                    <ng-container *ngIf="groupsArr">
+                        <span *ngIf="mnPosts.length !== 0" class="text">โพสต์ที่จัดสรรเอง</span>
+                        <div class="list-post" *ngFor="let item of mnPosts">
+                            <div class="detail">
+                                <div class="date">
+                                    <svg class="icon-time" height="8pt" viewBox="0 0 512 512" style="margin: 0px 4px;"
+                                        width="8pt" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                            fill="#A5A5A6" />
+                                        <path
+                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                            fill="#A5A5A6" />
+                                    </svg>
+                                    <span>{{item.post.createdDate | dateFormat}}</span>
+                                </div>
+                                <span class="detail-h">{{item.post.title}}</span>
+                                <span class="detail-d">{{item.post.detail}}</span>
+                            </div>
+                            <div class="item-list">
+                                <div class="list">
+                                    <div class="item" *ngFor="let item of getItemByPost(item)">
+                                        <div class="item-image" *ngIf="item.amount > 0"
+                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
+                                            <ng-container
+                                                *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                                <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                            </ng-container>
+                                            <ng-template #elsePhoto>
+                                                <img class="image" src="../../../../assets/img/customize_item.svg"
+                                                    alt="">
+                                            </ng-template>
+                                        </div>
+                                        <div *ngIf="item.amount > 0" class="quantity">
+                                            <span
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add-delete">
+                            </div>
+                        </div>
+                        <span *ngIf="autoPosts.length !== 0" class="text">โพสต์ที่ระบบจัดสรรให้</span>
+                        <div class="list-post" *ngFor="let item of autoPosts">
+                            <div class="detail">
+                                <div class="date">
+                                    <!-- <span>{{getTypePost(item.posts.type)}}</span> -->
+                                    <svg class="icon-time" height="8pt" viewBox="0 0 512 512" style="margin: 0px 4px;"
+                                        width="8pt" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                            fill="#A5A5A6" />
+                                        <path
+                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                            fill="#A5A5A6" />
+                                    </svg>
+                                    <span>{{item.post.createdDate | dateFormat}}</span>
+                                </div>
+                                <span class="detail-h">{{item.post.title}}</span>
+                                <span class="detail-d">{{item.post.detail}}</span>
+                            </div>
+                            <div class="item-list">
+                                <div class="list">
+                                    <div class="item" *ngFor="let item of getItemByPost(item)">
+                                        <div class="item-image" *ngIf="item.amount > 0"
+                                            [ngStyle]="{'border': item.isAuto ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
+                                            <ng-container
+                                                *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
+                                                <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                            </ng-container>
+                                            <ng-template #elsePhoto>
+                                                <img class="image" src="../../../../assets/img/customize_item.svg"
+                                                    alt="">
+                                            </ng-template>
+                                        </div>
+                                        <div *ngIf="item.amount > 0" class="quantity">
+                                            <span
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
         </div>
 
-        <div class="box-footer"></div>
+        <div class="box-footer">
+            <span *ngIf="indexWizardPage === 3" class="text">รายการส่วนที่เหลือ จะถูกนำไปจัดสรรให้อัติโนมัติ</span>
+        </div>
     </div>
 
 </div>

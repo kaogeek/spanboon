@@ -54,6 +54,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   protected postFacade: PostFacade;
   private routeActivated: ActivatedRoute;
 
+  public imageURL: "/file/5f8e68d3a554f760422bc339";
   public pageId: string;
   public resDataPage: any;
   public imageCover: any
@@ -488,6 +489,9 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedStory() {
     this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
       this.recommendedStory = res.data
+      for (let c of this.recommendedStory.contents) {
+        c.coverPageUrl = "/file/5f95a82db5184e606cec4517"
+      }
     }).catch((err: any) => {
     })
   }

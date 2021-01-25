@@ -142,6 +142,77 @@
   }
 }
 
+$color-green: #8f6;
+
+$circle-size: 60px;
+
+.circle,
+.circle-border {
+  width: $circle-size;
+  height: $circle-size;
+  border-radius: 50%;
+}
+.circle {
+  z-index: 1;
+  position: relative;
+  background: white;
+  transform: scale(1);
+  animation: success-anim 700ms ease;
+  margin: 0px 20px;
+}
+.circle-border {
+  z-index: 0;
+  position: absolute;
+  background: $color-green;
+  transform: scale(1.2);
+  animation: circle-anim 400ms ease;
+  margin: 0px 20px;
+}
+
+@keyframes success-anim {
+  0% {
+    transform: scale(0);
+  }
+  30% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes circle-anim {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.success::before,
+.success::after {
+  content: "";
+  display: block;
+  height: 4px;
+  background: $color-green;
+  position: absolute;
+}
+
+.success::before {
+  width: 17px;
+  top: 58%;
+  left: 23%;
+  transform: rotateZ(50deg);
+}
+
+.success::after {
+  width: 30px;
+  top: 50%;
+  left: 35%;
+  transform: rotateZ(-50deg);
+}
+
 //test page spanboon
 
 @keyframes AnimationLoad {

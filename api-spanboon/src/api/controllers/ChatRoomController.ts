@@ -559,7 +559,7 @@ export class ChatRoomController {
             chatMsg.messageType = CHAT_MESSAGE_TYPE.INFO;
         }
 
-        const chatMsgResult: any = await this.chatMessageService.create(chatMsg);
+        const chatMsgResult: any = await this.chatMessageService.createChatMessage(chatMsg);
 
         const msgResp = new ChatMessageResponse();
         if (chatMsgResult) {
