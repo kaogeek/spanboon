@@ -81,14 +81,24 @@ export class AllocateController {
         const customItemIdList: ObjectID[] = [];
         const result: AllocateResponse[] = [];
         let needsList: any[] = [];
-        // let mode;
-        let emergencyEvent;
-        let objective;
+        // undefined = search all; non = not search for any one of them; id for fix searching id.
+        let emergencyEvent; // emergency event id
+        let objective; // objective event id
+        let orderBy: string = undefined;
+        let orderByNumber = 1;
 
         if (params !== null && params !== undefined) {
-            // mode = params.mode;
             emergencyEvent = params.emergencyEvent;
             objective = params.objective;
+            orderBy = params.orderBy;
+        }
+
+        if (orderBy === undefined || orderBy === '' || ((orderBy !== 'asc') && (orderBy !== 'desc'))) {
+            orderBy = 'asc';
+        }
+
+        if (orderBy === 'desc') {
+            orderByNumber = -1;
         }
 
         const standardItemLeftMap: any = {}; // key as standardItemId
@@ -146,11 +156,19 @@ export class AllocateController {
                 const matchPost: any = { 'posts.type': POST_TYPE.NEEDS };
                 // inject filter
                 if (emergencyEvent !== undefined && emergencyEvent !== '') {
-                    matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                    if (emergencyEvent !== 'non') {
+                        matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                    } else {
+                        matchPost['posts.emergencyEvent'] = { $ne: '', $exists: false };
+                    }
                 }
 
                 if (objective !== undefined && objective !== '') {
-                    matchPost['posts.objective'] = new ObjectID(objective);
+                    if (objective !== 'non') {
+                        matchPost['posts.objective'] = new ObjectID(objective);
+                    } else {
+                        matchPost['posts.objective'] = { $ne: '', $exists: false };
+                    }
                 }
 
                 const needsAggStmt = [
@@ -204,7 +222,7 @@ export class AllocateController {
                         }
                     },
                     { $match: matchPost },
-                    { $sort: { 'posts.createdDate': 1 } }
+                    { $sort: { 'posts.createdDate': orderByNumber } }
                 ];
 
                 needsList = await this.needsService.aggregate(needsAggStmt);
@@ -228,11 +246,19 @@ export class AllocateController {
                 const matchPost: any = { 'posts.type': POST_TYPE.NEEDS };
                 // inject filter
                 if (emergencyEvent !== undefined && emergencyEvent !== '') {
-                    matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                    if (emergencyEvent !== 'non') {
+                        matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                    } else {
+                        matchPost['posts.emergencyEvent'] = { $ne: '', $exists: false };
+                    }
                 }
 
                 if (objective !== undefined && objective !== '') {
-                    matchPost['posts.objective'] = new ObjectID(objective);
+                    if (objective !== 'non') {
+                        matchPost['posts.objective'] = new ObjectID(objective);
+                    } else {
+                        matchPost['posts.objective'] = { $ne: '', $exists: false };
+                    }
                 }
 
                 const needsAggStmt = [
@@ -286,7 +312,7 @@ export class AllocateController {
                         }
                     },
                     { $match: matchPost },
-                    { $sort: { 'posts.createdDate': 1 } }
+                    { $sort: { 'posts.createdDate': orderByNumber } }
                 ];
 
                 // not search post because we has already search for it;
@@ -583,7 +609,7 @@ export class AllocateController {
         const needFulfillQty = (allocateItem.fulfillQuantity !== undefined && allocateItem.fulfillQuantity !== null && !isNaN(allocateItem.fulfillQuantity)) ? allocateItem.fulfillQuantity : 0;
         let amount = allocateItem.amount;
         const leftQty = needQty - needFulfillQty - amount;
-        
+
         if (leftQty > 0) {
             if (allocateAmount > leftQty) {
                 amount = amount + leftQty;
