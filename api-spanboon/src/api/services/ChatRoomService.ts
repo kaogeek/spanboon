@@ -67,7 +67,7 @@ export class ChatRoomService {
     }
 
     public async findFulfillmentChatRoom(senderId: ObjectID, fulfillmentCaseId: ObjectID, deleted?: boolean): Promise<ChatRoom> {
-        return await this.findOne({ typeId: fulfillmentCaseId, type: CHAT_ROOM_TYPE.FULFILLMENT, participants: { $all: [{sender: senderId, senderType: USER_TYPE.USER}] }, deleted });
+        return await this.findOne({ typeId: fulfillmentCaseId, type: CHAT_ROOM_TYPE.FULFILLMENT, participants: { $all: [{ sender: senderId, senderType: USER_TYPE.USER }] }, deleted });
     }
 
     public async deleteChatRoom(id: string): Promise<any> {
@@ -100,6 +100,10 @@ export class ChatRoomService {
         } else {
             return this.chatRoomRepository.find(condition);
         }
+    }
+
+    public async getUserChatRoomList(userId: string): Promise<ChatRoom[]> {
+        return await this.find({ participants: { $all: [{ sender: new ObjectID(userId), senderType: USER_TYPE.USER }] }, deleted: false });
     }
 
 }

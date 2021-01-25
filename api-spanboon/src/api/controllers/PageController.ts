@@ -57,6 +57,7 @@ import { PageCategory } from '../models/PageCategory';
 import { PageCategoryService } from '../services/PageCategoryService';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { FacebookService } from '../services/FacebookService';
+import { TwitterService } from '../services/TwitterService';
 import { CheckPageNameRequest } from './requests/CheckPageNameRequest';
 import { PageSocialFBBindingRequest } from './requests/PageSocialFBBindingRequest';
 import { PageSocialTWBindingRequest } from './requests/PageSocialTWBindingRequest';
@@ -82,7 +83,8 @@ export class PageController {
         private userService: UserService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
         private pageSocialAccountService: PageSocialAccountService,
-        private facebookService: FacebookService
+        private facebookService: FacebookService,
+        private twitterService: TwitterService
     ) { }
 
     // Find Page API
@@ -297,7 +299,14 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot create page needs.', undefined);
+                return res.status(401).send('You cannot access the page.', undefined);
+            }
+
+            // check if page was registed.
+            const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
+            if (pageFacebook !== null && pageFacebook !== undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'This page was binding with Facebook Account.' };
+                return res.status(400).send(errorUserNameResponse);
             }
 
             const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
@@ -316,13 +325,13 @@ export class PageController {
                 return res.status(200).send(errorResponse);
             }
 
-            const expiresAt = checkAccessToken.data.expires_at;
-            const today = moment().toDate();
+            // const expiresAt = checkAccessToken.data.expires_at;
+            // const today = moment().toDate();
 
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
+            // if (expiresAt < today.getTime()) {
+            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+            //     return res.status(400).send(errorResponse);
+            // }
 
             const fbUser = await this.facebookService.getFacebookUser(socialBinding.accessToken);
 
@@ -342,11 +351,11 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = fbUser.token;
 
-            const result = await this.pageSocialAccountService.create(pageSocialAccount);
+            await this.pageSocialAccountService.create(pageSocialAccount);
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', result));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
     }
 
@@ -374,16 +383,33 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot create page needs.', undefined);
+                return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            // ! implement check with real server
-            // const twUser = await this.twitterService.getTwitterUser(socialBinding.twitterUserId);
+            // check if page was registed.
+            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
+            if (pageTwitter !== null && pageTwitter !== undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'This page was binding with Twitter Account.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
 
-            // if (twUser === null || twUser === undefined) {
-            //     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter User was not found.' };
-            //     return res.status(400).send(errorUserNameResponse);
-            // }
+            let twitterUserId = undefined;
+            try {
+                const validate = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
+                if (validate === null || validate === undefined) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Can not verify twitter token.' };
+                    return res.status(400).send(errorUserNameResponse);
+                }
+
+                twitterUserId = validate.id_str;
+            } catch (error) {
+                console.log(error);
+            }
+
+            if (twitterUserId === undefined || twitterUserId === '') {
+                const errorUserNameResponse: any = { status: 0, message: 'Twitter User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
 
             const storedCredentials = 'oauth_token=' + socialBinding.twitterOauthToken + '&oauth_token_secret=' + socialBinding.twitterTokenSecret + '&user_id=' + socialBinding.twitterUserId;
             const properties = {
@@ -399,9 +425,9 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
 
-            const result = await this.pageSocialAccountService.create(pageSocialAccount);
+            await this.pageSocialAccountService.create(pageSocialAccount);
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', result));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }
@@ -423,7 +449,7 @@ export class PageController {
      */
     @Delete('/:id/social/facebook')
     @Authorized('user')
-    public async unbindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async unbindingPageFacebook(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -431,42 +457,18 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot create page needs.', undefined);
+                return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
-            if (checkAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.error !== undefined) {
-                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.data === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                return res.status(200).send(errorResponse);
-            }
-
-            const expiresAt = checkAccessToken.data.expires_at;
-            const today = moment().toDate();
-
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
-
-            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.FACEBOOK });
+            const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.FACEBOOK });
             if (!result) {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Facebook Social.', undefined));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Facebook Social.', true));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
     }
 
@@ -486,7 +488,7 @@ export class PageController {
      */
     @Delete('/:id/social/twitter')
     @Authorized('user')
-    public async unbindingPageTwitter(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async unbindingPageTwitter(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -494,16 +496,55 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot create page needs.', undefined);
+                return res.status(401).send('You cannot access the page.', undefined);
             }
 
-            const result = await this.pageSocialAccountService.delete({ page: pageData, providerName: PROVIDER.TWITTER });
+            const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.TWITTER });
             if (!result) {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
             }
 
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', undefined));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
+        }
+    }
+
+    /**
+     * @api {Get} /api/page/:id/social/twitter/check Check if Page Social Twitter binding API
+     * @apiGroup Page
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully Twitter Page Acount found",
+     *      "data": true
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/social/twitter/check
+     * @apiErrorExample {json} Unable Binding Page Social
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id/social/twitter/check')
+    @Authorized('user')
+    public async getPageTwitterAccount(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjId = new ObjectID(pageId);
+        const userId = new ObjectID(req.user.id);
+        const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (pageData) {
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send('You cannot access the page.', undefined);
+            }
+
+            // check if page was registed.
+            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
+            if (pageTwitter !== null && pageTwitter !== undefined) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', true));
+            } else {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', false));
+            }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
         }

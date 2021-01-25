@@ -5,10 +5,9 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export class GetFulfillmentCaseResponse {
+export class CheckChatRoomRequest {
 
-    public fulfillCase: any;
-    public chatRoom: any;
-    public chatMessages: any;
-    public unreadMessageCount: number;
+    public roomIds: string[];
+    public fetchUserRoom: boolean;
+
 }

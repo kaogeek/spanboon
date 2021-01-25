@@ -37,6 +37,9 @@ export class FulfillmentRequest extends BaseModel {
     @Column({ name: 'deleted' })
     public deleted: boolean;
 
+    @Column({ name: 'statementId' })
+    public statementId: ObjectID;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

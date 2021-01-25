@@ -24,12 +24,15 @@ export class FulfillmentListResponse {
     public emergencyEvent: any;
     public objective: any;
     public name: string;
+    public chatRoom: string;
     public chatMessage: string;
     public chatDate: Date;
+    public chatSender: any; // {name: string, id: string, imageURL: string, type: string}
     public isRead: boolean;
     public status: string;
     public createdDate: Date;
     public updateDate: Date;
     public updatedByPageDate: Date;
     public updatedByUserDate: Date;
+    public unreadMessageCount: number;
 }

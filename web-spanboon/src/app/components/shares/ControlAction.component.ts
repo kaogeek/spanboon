@@ -6,7 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'control-action',
@@ -78,15 +78,15 @@ export class ControlAction {
   public Allcount: number;
 
   public selectedAccessPage: any
-  public selectedAccessPageimges: any
+  public selectedAccessPageimges: any;
   public isImges: boolean
   public isDis: boolean
   public apiBaseURL = environment.apiBaseURL;
 
   constructor() {
     setTimeout(() => {
-      if (this.accessPage !== undefined && this.accessPage !== null) {
-        if (this.accessPage[0].imageURL !== undefined && this.accessPage[0].imageURL !== null) {
+      if (this.accessPage !== undefined && this.accessPage !== null) {  
+        if (this.accessPage[0].img64 !== undefined && this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
           this.isImges = true
           this.isDis = false
@@ -104,11 +104,11 @@ export class ControlAction {
   }
 
   public selectAccessPage(page: any) {
-    if (page.imageURL !== undefined && page.imageURL !== null && page.imageURL !== '') {
-      this.selectedAccessPageimges = page
+    if (page.img64 !== undefined && page.img64 !== null && page.img64 !== '') {
+      this.selectedAccessPageimges = page 
       this.isImges = true
       this.isDis = false
-      this.emitpage.emit(page);
+      this.emitpage.emit(page); 
     } else {
       this.selectedAccessPageimges = page.displayName || page.name;
       this.isImges = false

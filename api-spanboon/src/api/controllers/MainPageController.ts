@@ -122,18 +122,7 @@ export class MainPageController {
         });
         const userFollowSectionModel = await userFollowProcessor.process();
         userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
-
-        const userFollowProcessor2: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-        userFollowProcessor2.setData({
-            userId
-        });
-        userFollowProcessor2.setConfig({
-            limit: 4,
-            showUserAction: true
-        });
-        const userFollowSectionModel2 = await userFollowProcessor2.process();
-        userFollowSectionModel2.templateType = TEMPLATE_TYPE.MULTIPLE;
-        userFollowSectionModel2.isList = true;
+        userFollowSectionModel.isList = true;
 
         const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
         userPageLookingProcessor.setData({
@@ -145,9 +134,11 @@ export class MainPageController {
         });
         const userPageLookingSectionModel = await userPageLookingProcessor.process();
         userPageLookingSectionModel.templateType = TEMPLATE_TYPE.TWIN;
+        userPageLookingSectionModel.isList = true;
 
         const userPageLookingSectionModel2 = await userPageLookingProcessor.process();
         userPageLookingSectionModel2.templateType = TEMPLATE_TYPE.TWIN;
+        userPageLookingSectionModel2.isList = true;
 
         // open when main icon template show
         const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
@@ -161,17 +152,17 @@ export class MainPageController {
         const lastestObjModel = await lastestObjProcessor.process();
         lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
 
-        const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-        lastestObjProcessor2.setData({
-            userId
-        });
-        lastestObjProcessor2.setConfig({
-            limit: 5,
-            showUserAction: true
-        });
-        const lastestObjModel2 = await lastestObjProcessor2.process();
-        lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
-        lastestObjModel2.isList = true;
+        // const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
+        // lastestObjProcessor2.setData({
+        //     userId
+        // });
+        // lastestObjProcessor2.setConfig({
+        //     limit: 5,
+        //     showUserAction: true
+        // });
+        // const lastestObjModel2 = await lastestObjProcessor2.process();
+        // lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
+        // lastestObjModel2.isList = true;
 
         // const result: any = this.getResponsesData();
         const result: any = {};
@@ -187,18 +178,6 @@ export class MainPageController {
             result.sectionModels.push(userFollowSectionModel);
         }
 
-        if (userFollowSectionModel2.contents.length > 0) {
-            result.sectionModels.push(userFollowSectionModel2);
-        }
-
-        // if (userPageLookingSectionModel.contents.length > 0) {
-        //     result.sectionModels.push(userPageLookingSectionModel);
-        // }
-
-        // if (userPageLookingSectionModel2.contents.length > 0) {
-        //     result.sectionModels.push(userPageLookingSectionModel2);
-        // }
-
         // twin model
         const twinModel = new SectionModel();
         twinModel.title = '';
@@ -209,6 +188,7 @@ export class MainPageController {
         twinModel.contentCount = 0;
         twinModel.templateType = TEMPLATE_TYPE.TWIN;
         twinModel.contents = [];
+        twinModel.isList = true;
 
         result.sectionModels.push(twinModel);
 
@@ -224,9 +204,9 @@ export class MainPageController {
             result.sectionModels.push(lastestObjModel);
         }
 
-        if (lastestObjModel2.contents.length > 0) {
-            result.sectionModels.push(lastestObjModel2);
-        }
+        // if (lastestObjModel2.contents.length > 0) {
+        //     result.sectionModels.push(lastestObjModel2);
+        // }
 
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
@@ -598,7 +578,7 @@ export class MainPageController {
                 sortBy = data.sortBy;
             }
 
-            console.log('keyword >>>> ', keyword);
+            postStmt.push({ $match: { deleted: false } });
 
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};
@@ -631,6 +611,7 @@ export class MainPageController {
             }
 
             if (hashTag !== undefined && hashTag !== null && hashTag.length > 0) {
+                /* // open for tag searching in title and detail
                 let matchHashTagTitleStmt: any = {};
                 let matchHashTagTitleStmtResult: any = {};
                 let matchHashTagDetailStmt: any = {};
@@ -657,7 +638,7 @@ export class MainPageController {
 
                 if (matchHashTagStmtResult !== null && matchHashTagStmtResult !== undefined && matchHashTagStmtResult.length > 0) {
                     postStmt.push({ $match: { $or: matchHashTagStmtResult } });
-                }
+                }*/
 
                 const hashTagIdList: ObjectID[] = [];
 
@@ -984,8 +965,6 @@ export class MainPageController {
             ];
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
-
-            console.log('searchPostStmt >>> ', JSON.stringify(searchPostStmt));
 
             const pageMap = {};
             const userMap = {};

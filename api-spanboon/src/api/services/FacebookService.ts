@@ -102,18 +102,19 @@ export class FacebookService {
     public getFacebookUser(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.getFBUserId(accessToken).then((result: any) => {
-                if (result.error) { reject(result.error); }
+                if (result.error) { reject(result.error); return;}
 
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
                     console.log('auth >>> ', auth);
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
+                        return;
                     }
 
                     this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
                         console.log('authUser >>> ', authUser);
                         if (authUser) {
-                            authUser = this.userService.cleanAdminUserField(authUser);
+                            authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });
                         } else {
                             resolve(undefined);
@@ -178,5 +179,32 @@ export class FacebookService {
                 resolve(response);
             });
         });
+    }
+
+    private cleanFBUserField(user: any): any {
+        if (user !== undefined && user !== null) {
+            if (user !== undefined && user !== null) {
+                const clearItem = {
+                    id: user.id,
+                    username: user.username,
+                    uniqueId: user.uniqueId,
+                    email: user.email,
+                    displayName: user.displayName,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    birthdate: user.birthdate,
+                    gender: user.gender,
+                    customGender: user.customGender,
+                    imageURL: user.imageURL,
+                    coverURL: user.coverURL,
+                    coverPosition: user.coverPosition,
+                    banned: user.banned,
+                    isAdmin: user.isAdmin,
+                    isSubAdmin: user.isSubAdmin
+                };
+                user = clearItem;
+            }
+        }
+        return user;
     }
 }

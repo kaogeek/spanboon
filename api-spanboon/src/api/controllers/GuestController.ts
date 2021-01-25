@@ -35,7 +35,8 @@ import { GenerateUUIDUtil } from '../../utils/GenerateUUIDUtil';
 import { ChangePasswordRequest } from './requests/ChangePasswordRequest';
 import { GoogleService } from '../services/GoogleService';
 import { TwitterService } from '../services/TwitterService';
-import { DEFAULT_USER_EXPIRED_TIME } from '../../constants/Constants';
+import { ConfigService } from '../services/ConfigService';
+import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
 
 @JsonController()
@@ -49,7 +50,8 @@ export class GuestController {
         private assetService: AssetService,
         private userFollowService: UserFollowService,
         private forgotPasswordActivateCodeService: ForgotPasswordActivateCodeService,
-        private twitterService: TwitterService
+        private twitterService: TwitterService,
+        private configService: ConfigService
     ) { }
 
     /**
@@ -159,10 +161,12 @@ export class GuestController {
                         }
                     }
 
-                    let message = '<p> Hello ' + result.firstName + '</p>';
-                    message += '<p> Username : ' + result.email + '</p>';
+                    let message = '<p> สวัสดีคุณ ' + result.firstName + '</p>';
+                    message += '<p> ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม สะพานบุญ </p>';
+                    message += '<p> ข้อมูลสำหรับ Login ของคุณคือ </p>';
+                    message += '<p> ชื่อผู้ใช้ : ' + result.email + '</p>';
 
-                    MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
+                    MAILService.customerLoginMail(message, registerEmail, 'ยินดีต้อนรับสู่สะพานบุญ');
                     result = this.userService.cleanUserField(result);
 
                     const authId = new AuthenticationId();
@@ -210,11 +214,13 @@ export class GuestController {
 
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.FACEBOOK });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.FACEBOOK });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Facebook was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
+
+                const userExrTime = await this.getUserLoginExpireTime();
 
                 userData = this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
@@ -224,6 +230,7 @@ export class GuestController {
                 authenId.providerName = PROVIDER.FACEBOOK;
                 authenId.storedCredentials = fbToken;
                 authenId.properties = properties;
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -295,6 +302,7 @@ export class GuestController {
                         }
                     }
 
+                    const userExrTime = await this.getUserLoginExpireTime();
                     const authenIdCreated: AuthenticationId[] = [];
 
                     for (const provider of providerList) {
@@ -313,6 +321,7 @@ export class GuestController {
                             authenId.providerUserId = fbUserId;
                             authenId.properties = properties;
                             authenId.storedCredentials = users.fbToken;
+                            authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -344,9 +353,11 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
 
+            const userExrTime = await this.getUserLoginExpireTime();
+
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.GOOGLE });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.GOOGLE });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Google was registered.', undefined);
                     return res.status(400).send(errorResponse);
@@ -359,6 +370,7 @@ export class GuestController {
                 authenId.providerUserId = googleUserId;
                 authenId.providerName = PROVIDER.GOOGLE;
                 authenId.storedCredentials = authToken;
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -447,6 +459,7 @@ export class GuestController {
                         } else if (provider === PROVIDER.GOOGLE) {
                             authenId.providerUserId = googleUserId;
                             authenId.storedCredentials = users.fbToken;
+                            authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -484,9 +497,11 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
 
+            const userExrTime = await this.getUserLoginExpireTime();
+
             if (resultUser) {
                 // check if has authenid
-                const currentAuthenId = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER });
+                const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.TWITTER });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Twitter was registered.', undefined);
                     return res.status(400).send(errorResponse);
@@ -505,6 +520,7 @@ export class GuestController {
                     oauthToken: twitterOauthToken,
                     oauthTokenSecret: twitterTokenSecret
                 };
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
 
@@ -599,6 +615,7 @@ export class GuestController {
                                 oauthToken: twitterOauthToken,
                                 oauthTokenSecret: twitterTokenSecret
                             };
+                            authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
@@ -670,6 +687,7 @@ export class GuestController {
                     } else if (token) {
                         const currentDateTime = moment().toDate();
                         // find user
+                        const userExrTime = await this.getUserLoginExpireTime();
                         const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
                         const newToken = new AuthenticationId();
                         newToken.user = userLogin.id;
@@ -677,7 +695,7 @@ export class GuestController {
                         newToken.providerUserId = userObjId;
                         newToken.providerName = PROVIDER.EMAIL;
                         newToken.storedCredentials = token;
-                        newToken.expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
+                        newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                         if (checkAuthen !== null && checkAuthen !== undefined) {
                             const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
@@ -718,32 +736,39 @@ export class GuestController {
 
             const expiresAt = checkAccessToken.data.expires_at;
             const today = moment().toDate();
+            console.log('expiresAt: ', expiresAt);
+            console.log('today: ', today.getTime());
 
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
+            // if (expiresAt < today.getTime()) {
+            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+            //     return res.status(400).send(errorResponse);
+            // }
+
+            let fbUser = undefined;
+            try{
+                fbUser = await this.facebookService.getFacebookUser(loginParam.token);
+            }catch(err){
+                console.log(err);
             }
-
-            const fbUser = await this.facebookService.getFacebookUser(loginParam.token);
 
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
+                const userExrTime = await this.getUserLoginExpireTime();
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
-                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = fbUser.authId.providerUserId;
-                const query = { providerUserId: facebookUserId };
+                const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: updateAuth.id } });
-                    // const successResponse: any = { status: 1, message: 'Loggedin with Facebook successfully', data: updatedAuth };
-                    // return res.status(200).send(successResponse);
-                    loginUser = await this.userService.findOne({ where: { username: updatedAuth.user } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: query });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
@@ -772,27 +797,25 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
+                const userExrTime = await this.getUserLoginExpireTime();
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
-                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const googleUserId = googleUser.userId;
-                const query = { providerUserId: googleUserId };
+                const query = { providerUserId: googleUserId, providerName: PROVIDER.GOOGLE };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: updateAuth.id } });
-                    // const successResponse: any = { status: 1, message: 'Loggedin with Google successfully', data: updatedAuth };
-                    // return res.status(200).send(successResponse);
-
-                    loginUser = await this.userService.findOne({ where: { username: updatedAuth.user } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
-            const twitterUserId = loginParam.twitterUserId;
 
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
@@ -804,27 +827,19 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
 
-            // ! implement
-            // let twitterUserId = undefined;
-            // try {
-            //     twitterUserId = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
-            // } catch (ex) {
-            //     const errorResponse: any = { status: 0, message: ex };
-            //     return res.status(400).send(errorResponse);
-            // }
+            let twitterUserId = undefined;
+            try {
+                const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                twitterUserId = verifyObject.id_str;
+            } catch (ex) {
+                const errorResponse: any = { status: 0, message: ex };
+                return res.status(400).send(errorResponse);
+            }
 
-            // if (twitterUserId === undefined) {
-            //     const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-            //     return res.status(400).send(errorResponse);
-            // }
-
-            // const expiresAt = checkAccessToken.data.expires_at;
-            // const today = moment().toDate();
-
-            // if (expiresAt < today.getDate()) {
-            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-            //     return res.status(400).send(errorResponse);
-            // }
+            if (twitterUserId === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
 
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
 
@@ -832,9 +847,10 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
+                const userExrTime = await this.getUserLoginExpireTime();
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
-                const expirationDate = moment().add(DEFAULT_USER_EXPIRED_TIME, 'days').toDate();
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const query = { _id: twAuthenId.id };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
@@ -844,6 +860,8 @@ export class GuestController {
 
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    console.log('loginToken', loginToken);
                 }
             }
         }
@@ -1025,16 +1043,27 @@ export class GuestController {
 
         if (isMode !== undefined && isMode === 'FB') {
             try {
-                user = await this.facebookService.getFacebookUser(tokenParam);
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if(decryptToken.token === undefined){
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+
+                const fbUser = await this.facebookService.getFacebookUser(decryptToken.token);
+                user = fbUser.user;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
         } if (isMode !== undefined && isMode === 'TW') {
             try {
-                // ! edit here when fix bug
-                // tw tokenParam is in pattern oauth_token=xxxx&oauth_token_secret=xxx&user_id=xxxx
-                const keyMap = ObjectUtil.parseQueryParamToMap(tokenParam);
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if(decryptToken.token === undefined){
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+
+                const keyMap = ObjectUtil.parseQueryParamToMap(decryptToken.token);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
@@ -1073,7 +1102,7 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
 
-            if (expiresAt.getTime() <= today.getTime()) {
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 return response.status(400).send(errorUserNameResponse);
             }
@@ -1095,7 +1124,7 @@ export class GuestController {
         delete user.modifiedBy;
         delete user.modifiedByUsername;
 
-        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user } };
+        const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);
     }
@@ -1126,7 +1155,7 @@ export class GuestController {
     private async sendActivateCode(user: User, email: string, code: string, subject: string): Promise<any> {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
-        message += '<a href="/change_password?code=' + code + '&email=' + email + '"> Reset Password </a>';
+        message += '<a href="https://spanboon.com/forgotpassword?code=' + code + '&email=' + email + '"> Reset Password </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 
@@ -1135,5 +1164,14 @@ export class GuestController {
         } else {
             return ResponseUtil.getErrorResponse('error in sending email', '');
         }
+    }
+
+    private async getUserLoginExpireTime(): Promise<number> {
+        let value = await this.configService.getConfig(USER_EXPIRED_TIME_CONFIG);
+        if (value === undefined || value === null || isNaN(value) || value === '') {
+            value = DEFAULT_USER_EXPIRED_TIME;
+        }
+
+        return value;
     }
 } 
