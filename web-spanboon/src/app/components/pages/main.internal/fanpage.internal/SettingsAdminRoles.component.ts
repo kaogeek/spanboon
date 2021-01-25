@@ -19,7 +19,6 @@ import { Input } from '@angular/core';
 
 const PAGE_NAME: string = 'roles';
 
-
 export interface State {
     img: string;
     name: string;

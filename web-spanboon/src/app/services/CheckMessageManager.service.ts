@@ -29,7 +29,7 @@ export class CheckMessageManager extends AbstractFacade {
     protected user: any;
     protected observManager: ObservableManager;
 
-    public time: number = 30;
+    public time: number = 10;
     public interval;
     public subscribeTimer: any;
 
@@ -58,7 +58,7 @@ export class CheckMessageManager extends AbstractFacade {
                     }
                     this.checkUnreadMessage(data)
                 }
-                this.time = 30;
+                this.time = 10;
             }
             console.log('this.time ', this.time)
         }, 1000);
