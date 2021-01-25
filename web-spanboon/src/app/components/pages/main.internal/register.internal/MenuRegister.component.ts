@@ -183,8 +183,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickLoginTW() {  
-        let callback = "login";
-        this.twitterService.requestToken(callback).then((result: any) => {
+        this.twitterService.requestToken().then((result: any) => {
             this.authorizeLink += '?' + result;
             // this.authenticateLink += '?' + result;
             // console.log('result ', this.authorizeLink) 

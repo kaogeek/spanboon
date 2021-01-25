@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="card-contact" (click)="getFulfillmentCase($event)" [ngStyle]="{'background': isActive ? '#f1f1f1':'#fff'}">
+<div class="card-contact" (click)="getFulfillmentCase($event)" [ngStyle]="{'background': isActive ? '#f1f1f1':'#fff'}"> 
     <div class="card-color" [ngStyle]="{'background-color': statusColor}"></div>
 
     <div class="user-contact">
@@ -22,7 +22,7 @@
                     {{title}}
                 </div>
                 <div class="head-right" *ngIf="unreadMessageCount > 0">
-                    <span class="count-contact-user">{{unreadMessageCount}}</span>
+                    <span class="count-contact-user" >{{unreadMessageCount}}</span>
                     <!-- <span class="material-icons status" [ngStyle]="{'color': statusRead}">
                         lens
                     </span> -->
@@ -88,28 +88,25 @@
                     [ngStyle]="{'margin': objective === '' || emergencyEvent === '' ? '0px 10pt 0px 8px' :  'unset' }">
                     <span class="contact-event"
                         [ngStyle]="{'margin': objective === '' || emergencyEvent === '' ? '0px 10pt 0px 8px' :  'unset' }">
-                        <ng-container
-                            *ngIf="(objective !== null && objective !== undefined && objective !== '') || (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''); else elseTemplate">
+                        <ng-container *ngIf="(objective !== null && objective !== undefined && objective !== '') || (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''); else elseTemplate">
                             <span class="pointer">·</span>
-                            <span class="list-length"> {{fulfillRequestCount}} รายการเติมเต็ม </span>
+                            <span class="list-length">  {{fulfillRequestCount}} รายการเติมเต็ม </span>
                         </ng-container>
-                        <ng-template #elseTemplate>
-                            <span class="list-length"> {{fulfillRequestCount}} รายการเติมเต็ม </span>
+                        <ng-template #elseTemplate> 
+                            <span class="list-length">  {{fulfillRequestCount}} รายการเติมเต็ม </span>
                         </ng-template>
                     </span>
                 </div>
-            </div> 
+            </div>
             <div class="user-contact">
-                <span class="user"> 
-                    <ng-container *ngIf="type === 'PAGE'; else elseAsPage">
-                        <span *ngIf="!asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
-                        <span *ngIf="asPage" class="user-name" [ngStyle]="{'padding-right':'5pt'}">คุณ: </span>
+                <span class="user">
+                    <ng-container *ngIf="asPage; else elseAsPage">
+                        <span class="user-name" [ngStyle]="{'padding-right':'5pt'}" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
                     </ng-container>
                     <ng-template #elseAsPage>
-                        <span  *ngIf="asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
-                        <span *ngIf="!asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
+                        <span class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
-                </span>
+                </span> 
                 <span class="contact-text" matTooltipShowDelay="{{800}}" [ngStyle]="{'color': isRead ? 'grey':''}"
                     matTooltip="{{chatMessage}}">{{chatMessage}}</span>
                 <span class="pointer"
