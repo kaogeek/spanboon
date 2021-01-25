@@ -25,24 +25,6 @@ export class AllocateFacade extends AbstractFacade {
         this.message.next(message);
     }
 
-    // public getFulfillmentCase(caseId: string, asPage?: string): Promise<any> {
-    //     return new Promise((resolve, reject) => {
-    //         let url: string = this.baseURL + "/allocate/calculate";
-
-    //         if (asPage !== null && asPage !== undefined && asPage !== "") {
-    //             url += "?asPage=" + asPage;
-    //         }
-
-    //         let options = this.getDefaultOptions();
-
-    //         this.http.get(url, options).toPromise().then((response: any) => {
-    //             resolve(response.data);
-    //         }).catch((error: any) => {
-    //             reject(error);
-    //         });
-    //     });
-    // }
-
     public async calculateAllocate(data): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/allocate/calculate";
@@ -50,7 +32,6 @@ export class AllocateFacade extends AbstractFacade {
             let options = this.getDefaultOptions();
 
             body = Object.assign(data)
-            console.log('body', body)
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
@@ -58,4 +39,20 @@ export class AllocateFacade extends AbstractFacade {
             });
         });
     }
+
+    public async confirmAllocateFulfillmentCase(caseId, pageId, data): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + "/fulfillment_case/" + caseId + "/allocate_confirm?asPage=" + pageId;
+            let body: any = {};
+            let options = this.getDefaultOptions();
+
+            body = Object.assign(data)
+            this.http.post(url, body, options).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
 }

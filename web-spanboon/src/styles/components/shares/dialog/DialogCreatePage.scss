@@ -388,6 +388,7 @@
                                 font-family: "Kanit-500";
                                 font-size: 42px;
                                 color: $black;
+                                display: flex;
                             }
 
                             > .title {
@@ -697,29 +698,29 @@
 }
 
 .input-shake::-webkit-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake::-ms-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake:-ms-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake::-moz-placeholder {
     opacity: 1;
-    color: red; 
+    color: red;
 }
 
 .input-shake:-moz-placeholder {
     opacity: 1;
-    color: red; 
+    color: red;
 }
 
 .input-shake::placeholder {
-    color: red; 
+    color: red;
 }
 
 @media (max-width: $large) {

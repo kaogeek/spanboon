@@ -17,7 +17,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { DialogPost } from '../../../../components/shares/dialog/DialogPost.component';
 import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
-import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill } from '../../../../components/shares/shares';
+import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill, DialogFulfillAllocate } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
 
@@ -155,7 +155,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
-    public chatDate: any; 
+    public chatDate: any;
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
@@ -232,18 +232,18 @@ export class FulfillPage extends AbstractPage implements OnInit {
             console.log('chat ', chat)
             if (chat && chat.length > 0) {
                 for (let data of chat) {
-                    for (let caseData of this.fulfillCase) { 
+                    for (let caseData of this.fulfillCase) {
                         // let isRead = caseData.cases.find(read => {
                         //     return read.isRead === false;
                         // });
                         // if (isRead) {
-                            let index = caseData.cases.map(function (e) { return e.chatRoom; }).indexOf(data._id);
-                            if (index !== -1) {
-                                console.log('caseData ', caseData.cases[index].unreadMessageCount)
-                                caseData.cases[index].unreadMessageCount = data.count;
-                                caseData.cases[index].chatMessage = data.message;
-                                caseData.cases[index].isRead = false;
-                            }
+                        let index = caseData.cases.map(function (e) { return e.chatRoom; }).indexOf(data._id);
+                        if (index !== -1) {
+                            console.log('caseData ', caseData.cases[index].unreadMessageCount)
+                            caseData.cases[index].unreadMessageCount = data.count;
+                            caseData.cases[index].chatMessage = data.message;
+                            caseData.cases[index].isRead = false;
+                        }
                         // }
                     }
 
@@ -420,7 +420,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         }
                         if (isFirst) {
                             for (let value of fulfillList) {
-                                for(let cases of value.cases){ 
+                                for (let cases of value.cases) {
                                     this.fulfillCase.push(value)
                                     this.getChatRoom(cases, this.asPage);
                                     break;
@@ -470,17 +470,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         window.open('/post/' + result.id, '_blank');
                     });
                 });
- 
+
                 this.fulfillmentPost = result.id;
                 this.asPage = asPage;
                 this.isCaseConfirmed = true;
-                this.isCaseHasPost = true;  
+                this.isCaseHasPost = true;
             }
         });
     }
 
-    public getChatRoom(fulfill: any, asPage?: any ) {
-        console.log('fulfill >>>> ', fulfill)  
+    public getChatRoom(fulfill: any, asPage?: any) {
+        console.log('fulfill >>>> ', fulfill)
         this.chatData = [];
         this.reqData = [];
 
@@ -541,7 +541,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             } else {
                 this.objective = '';
                 this.linkObjective = '';
-            } 
+            }
             this.pageId = fulfill.pageId;
             this.postId = fulfill.postId;
             this.linkPost = (this.mainPostLink + fulfill.postId);
@@ -745,47 +745,71 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public confirmFulfillRequest(fulfillCaseId: string, asPage?: string) {
-        if (fulfillCaseId !== null && fulfillCaseId !== undefined && fulfillCaseId !== '') {
-            const confirmEventEmitter = new EventEmitter<any>();
-            confirmEventEmitter.subscribe(() => {
-                this.fulFillFacade.confirmFulfillmentCase(fulfillCaseId, asPage).then((res) => {
-                    if(res){ 
-                        this.isCaseConfirmed = true;  
-                        for(let group of this.fulfillCase){
-                            for(let fulfillStatus of group.cases){  
-                                if(res.id === fulfillStatus.fulfillCaseId){  
-                                    fulfillStatus.status = res.status;
-                                    break;
+        if (this.postId !== null && this.postId !== undefined && this.postId !== '') {
+            if (fulfillCaseId !== null && fulfillCaseId !== undefined && fulfillCaseId !== '') {
+                const confirmEventEmitter = new EventEmitter<any>();
+                confirmEventEmitter.subscribe(() => {
+                    this.fulFillFacade.confirmFulfillmentCase(fulfillCaseId, asPage).then((res) => {
+                        if (res) {
+                            this.isCaseConfirmed = true;
+                            for (let group of this.fulfillCase) {
+                                for (let fulfillStatus of group.cases) {
+                                    if (res.id === fulfillStatus.fulfillCaseId) {
+                                        fulfillStatus.status = res.status;
+                                        break;
+                                    }
                                 }
-                            } 
-                        }   
+                            }
 
-                    }
-                }).catch((err) => {
+                        }
+                    }).catch((err) => {
 
+                    });
                 });
-            });
 
-            const cancelEventEmitter = new EventEmitter<any>();
-            cancelEventEmitter.subscribe(() => { });
+                const cancelEventEmitter = new EventEmitter<any>();
+                cancelEventEmitter.subscribe(() => { });
+
+                let data = {
+                    disableClose: true,
+                    item: this.reqData,
+                    text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
+                    bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                    bottomColorText2: "black",
+                    confirmClickedEvent: confirmEventEmitter
+                }
+
+                let dialog = this.dialog.open(DialogConfirmFulfill, { data });
+
+                dialog.afterClosed().subscribe((res) => {
+                    if (res) {
+                    }
+                });
+            }
+        } else {
+
 
             let data = {
                 disableClose: true,
                 item: this.reqData,
+                pogeId: this.pageId,
+                fulfillCaseId: this.fulfillCaseId,
                 text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                confirmClickedEvent: confirmEventEmitter
+                bottomColorText2: "black"
             }
 
-            let dialog = this.dialog.open(DialogConfirmFulfill, { data });
+            let dialog = this.dialog.open(DialogFulfillAllocate, { data });
 
-            dialog.afterClosed().subscribe((res) => { 
-                if (res) { 
+            dialog.afterClosed().subscribe((res) => {
+                if (res) {
                 }
             });
+
         }
+
     }
 
     public cancelConfirmFulfillmentCase(fulfillCaseId: string, asPage?: string) {
