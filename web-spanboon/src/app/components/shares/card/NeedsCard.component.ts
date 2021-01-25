@@ -55,18 +55,18 @@ export class NeedsCard extends AbstractPage implements OnInit {
 
   public apiBaseURL = environment.apiBaseURL;
 
-  constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router,observManager: ObservableManager) {
+  constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.dialog = dialog;
     this.router = router;
     this.observManager = observManager;
- 
+
   }
 
-  ngOnChanges(changes: SimpleChanges) {  
+  ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
-      this.getNeeds();  
+      this.getNeeds();
     }, 650);
   }
 
@@ -89,10 +89,10 @@ export class NeedsCard extends AbstractPage implements OnInit {
     return;
   }
 
-  public  getNeeds(close?: boolean) {
+  public getNeeds(close?: boolean) {
     let Data: any[] = []
-    this.originalNeeds = []  
-    if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) { 
+    this.originalNeeds = []
+    if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
         Data.push(needs)
         // if (Data.length === 3) {
@@ -108,16 +108,16 @@ export class NeedsCard extends AbstractPage implements OnInit {
           this.indexNeed--
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
-      }  
-      this.getOffsetHeight(); 
+      }
+      this.getOffsetHeight();
     }
 
     if (this.directiveRef !== undefined && this.directiveRef !== null) {
       this.directiveRef.update();
-    } 
+    }
   }
 
-  public getOffsetHeight() {   
+  public getOffsetHeight() {
     return this.listNeeds && this.listNeeds.nativeElement.offsetHeight;
   }
 
@@ -148,25 +148,30 @@ export class NeedsCard extends AbstractPage implements OnInit {
   }
 
   public fulfillNeeds(item: any) {
-    let needsList: any[] = [];
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog(this.router.url);
+      // this.showAlertLoginDialog('');
+    } else {
+      let needsList: any[] = [];
 
-    for (let needs of this.itemNeeds) {
-      needs.isFrom = 'POST';
-      needsList.push(needs);
+      for (let needs of this.itemNeeds) {
+        needs.isFrom = 'POST';
+        needsList.push(needs);
+      }
+
+      let dialog = this.dialog.open(DialogFulfill, {
+        width: 'auto',
+        data: {
+          isFrom: 'POST',
+          fulfill: needsList,
+          currentPostItem: item
+        },
+        disableClose: false
+      });
+      dialog.afterClosed().subscribe((res) => {
+        needsList = [];
+      });
     }
-
-    let dialog = this.dialog.open(DialogFulfill, {
-      width: 'auto',
-      data: {
-        isFrom: 'POST',
-        fulfill: needsList,
-        currentPostItem: item
-      },
-      disableClose: false
-    });
-    dialog.afterClosed().subscribe((res) => {
-      needsList = [];
-    });
   }
 
   public onClose(item, index: number) {

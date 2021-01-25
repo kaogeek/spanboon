@@ -77,8 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public subPage: string;
   public redirection: string;
   public resNeeds: any;
-  public isLoading: boolean;
-  // public isSpiner: boolean;
+  public isLoading: boolean; 
   public isFiles: boolean;
   public isNotAccess: boolean;
   public isEditCover: boolean;
@@ -92,8 +91,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public imageCoverSize: number;
   public position: number;
   public innerWidth: any;
-  public pageUser: any[];
-  // public type: any;
+  public pageUser: any[]; 
   public userImage: any;
   public commentData: any;
   public postList: any[] = [];
@@ -186,17 +184,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
       this.countScroll = scrollTop.fix;
-      this.setProfile();
-
-      // if (this.isLoading !== true) {
-      //   var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
-
-      //   if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll) {
-      //     this.imgprofile.nativeElement.style.marginTop = '-50pt';
-      //   } else {
-      //     this.imgprofile.nativeElement.style.marginTop = '10pt';
-      //   }
-      // }
+      this.setProfile(); 
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
@@ -737,10 +725,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (err.error.message === 'Unable got Page') {
           this.msgPageNotFound = true;
           this.labelStatus = 'ไม่พบเพจ';
-        }
-        // else if(err.error.message === 'Unable got Asset'){
-        //   console.log("1111")
-        // }
+        } 
         this.stopLoading();
       }
     })
@@ -893,12 +878,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
       this.stopLoading();
     });
-
-    // this.pageFacade.editPost(data.pageId , data._id).then((res)=>{
-    //   console.log('post ', res)
-    // }).catch((err)=>{
-
-    // })
   }
 
   public showDialogGallery(data) {
@@ -1266,10 +1245,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.imgprofile.nativeElement.style.marginTop = '10pt';
           }
         }
-
       }
     } else {
-      this.imgprofile.nativeElement.style.marginTop = '-55pt';
+      if(this.imgprofile && this.imgprofile.nativeElement !== undefined){
+        this.imgprofile.nativeElement.style.marginTop = '-55pt';
+      }
     }
   }
 }

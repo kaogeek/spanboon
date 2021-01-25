@@ -1375,7 +1375,3 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
   }
 }
-
-
-
-

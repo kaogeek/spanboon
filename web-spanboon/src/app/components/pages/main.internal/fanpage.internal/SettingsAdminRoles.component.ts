@@ -17,7 +17,7 @@ import { AccountFacade, AssetFacade, AuthenManager, ObservableManager, PageFacad
 import { AbstractPage } from '../../AbstractPage';
 import { Input } from '@angular/core';
 
-const PAGE_NAME: string = 'admin-roles';
+const PAGE_NAME: string = 'roles';
 
 
 export interface State {
