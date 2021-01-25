@@ -309,7 +309,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.prefix_button = 'box-file-input1';
       } else {
         this.prefix_button = 'box-file-input';
-      } 
+      }
     }, 0);
     if (this.isListPage && this.content) {
       setTimeout(() => {
@@ -1235,7 +1235,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       topic = document.getElementById('topic').innerText;
       storyPostShort = document.getElementById('editableStoryPost').innerText;
     }
-    console.log(' POsy ',this.isFulfillNull)
+    console.log(' POsy ', this.isFulfillNull)
     if (!this.isFulfillNull) {
       if (topic.trim() === "" && this.isRepost) {
         this.isMsgNull = true;
@@ -2419,8 +2419,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.isBox = true;
 
 
-    const dialogRef = this.dialog.open(DialogPost, {
-      width: 'auto',
+    const dialogRef = this.dialog.open(DialogPost, {  
       data: this.data,
       disableClose: false,
     });
