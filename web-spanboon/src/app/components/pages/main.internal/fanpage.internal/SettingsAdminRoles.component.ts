@@ -17,7 +17,7 @@ import { AccountFacade, AssetFacade, AuthenManager, ObservableManager, PageFacad
 import { AbstractPage } from '../../AbstractPage';
 import { Input } from '@angular/core';
 
-const PAGE_NAME: string = 'admin-roles';
+const PAGE_NAME: string = 'roles';
 
 
 export interface State {
@@ -423,7 +423,6 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public clickDelete(access?: any) {
-        console.log('access ', access)
         if (access === undefined) {
             return;
         }

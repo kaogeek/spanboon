@@ -48,7 +48,6 @@ export class MenuProfile extends AbstractPage implements OnInit {
         this.userImage = {}
 
         this.observManager.subscribe('authen.check', (data: any) => {
-            // this.getProfileImage(data);
             this.reloadUserImage();
         });
         this.observManager.subscribe('authen.image', (data: any) => {
@@ -66,7 +65,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public ngOnInit(): void {
         this.reloadUserImage();
     }
-    
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
     }
@@ -133,8 +132,11 @@ export class MenuProfile extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 alert(err.error.message);
+                this.authenManager.clearStorage();
+                this.router.navigateByUrl(REDIRECT_PATH);
             })
         });
+
         this.showDialogWithOptions({
             text: "คุณต้องการออกจากระบบ",
             bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
@@ -153,6 +155,8 @@ export class MenuProfile extends AbstractPage implements OnInit {
             this.router.navigateByUrl(REDIRECT_PATH);
         }).catch((err) => {
             alert(err.error.message);
+            this.authenManager.clearStorage();
+            this.router.navigateByUrl(REDIRECT_PATH);
         });
     }
 
@@ -169,6 +173,14 @@ export class MenuProfile extends AbstractPage implements OnInit {
         this.isActive = true;
         this.router.navigateByUrl("/profile/" + this.getCurrentUserId());
 
+    }
+
+    public settingProfile() {
+        this.showAlertDevelopDialog();
+    }
+
+    public notificationProfile() {
+        this.showAlertDevelopDialog();
     }
 
     onMouseEnterItem(e) {

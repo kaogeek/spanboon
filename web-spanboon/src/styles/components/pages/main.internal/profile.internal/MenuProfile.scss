@@ -117,6 +117,7 @@
                         display: flex;
                         align-items: center;
                         font-size: 16px;
+                        justify-content: center;
 
                         > .following {
                         }
@@ -150,13 +151,13 @@
                     }
 
                     > .icon {
-                        width: 12pt;
+                        width: 13pt;
                     }
 
                     > .name {
                         padding: 5pt 13pt;
                         font-family: "Kanit-500";
-                        font-size: 14px;
+                        font-size: 16px;
                     }
                 }
             }

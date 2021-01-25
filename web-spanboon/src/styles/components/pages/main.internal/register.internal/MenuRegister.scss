@@ -64,6 +64,10 @@
             .button-social {
                 margin-bottom: 10pt;
             }
+            // .button-social-dis {
+            //     margin-bottom: 10pt;
+            //     opacity: 0.5;
+            // }
         }
 
         > .wrapper-footer-login {
@@ -85,7 +89,7 @@
 @media (max-width: $xxlarge) {
     .wrapper-menu-register {
         > .background-menu {
-            opacity: .5;
+            opacity: 0.5;
         }
     }
 }

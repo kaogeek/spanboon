@@ -124,7 +124,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
       obj: 's'
     })
       .subscribe(res => {
-        console.log(res);
       });
   }
 
@@ -145,7 +144,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   }
 
   public onImageLoaded(imageElement: any[]): void {
-    console.log('ALL Loaded!!');
   }
 
 }

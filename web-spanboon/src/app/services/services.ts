@@ -10,4 +10,5 @@ export * from './ObservableManager.service';
 export * from './facade/facades'; 
 export * from './PageUserInfo.service';
 export * from './CacheConfigInfo.service';
-export * from './NotificationManager.service'
+export * from './NotificationManager.service';
+export * from './CheckMessageManager.service';

@@ -79,7 +79,6 @@ export class CardCreateStoryTitleText {
 
     public submits() {
         var unit = (<HTMLInputElement>document.getElementById("text-H")).value;
-        console.log('unit', unit)
         this.submit.emit({ text: unit, textAlign: this.textAlign, textH: this.H });
         parseFloat((<HTMLInputElement>document.getElementById("text-H")).value = null);
     }

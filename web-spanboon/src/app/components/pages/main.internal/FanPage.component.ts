@@ -26,8 +26,7 @@ import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
-const PAGE_SUB_POST: string = 'post'
-// const URL_PATH_ID: string = '/page/futureforwardparty/';
+const PAGE_SUB_POST: string = 'post' 
 const URL_PATH: string = '/page/';
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -78,8 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public subPage: string;
   public redirection: string;
   public resNeeds: any;
-  public isLoading: boolean;
-  // public isSpiner: boolean;
+  public isLoading: boolean; 
   public isFiles: boolean;
   public isNotAccess: boolean;
   public isEditCover: boolean;
@@ -93,8 +91,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public imageCoverSize: number;
   public position: number;
   public innerWidth: any;
-  public pageUser: any[];
-  // public type: any;
+  public pageUser: any[]; 
   public userImage: any;
   public commentData: any;
   public postList: any[] = [];
@@ -139,8 +136,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.showLoading = true;
     this.cacheConfigInfo = cacheConfigInfo;
     this.userImage = {};
-    this.labelStatus = 'ไม่พบเพจ';
-
+    this.labelStatus = 'ไม่พบเพจ'; 
     this.resPost.posts = [];
 
     this.mySubscription = this.router.events.subscribe((event) => {
@@ -188,21 +184,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
       this.countScroll = scrollTop.fix;
-      this.setProfile();
-
-      // if (this.isLoading !== true) {
-      //   var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
-
-      //   if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll) {
-      //     this.imgprofile.nativeElement.style.marginTop = '-50pt';
-      //   } else {
-      //     this.imgprofile.nativeElement.style.marginTop = '10pt';
-      //   }
-      // }
+      this.setProfile(); 
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
-      console.log('type >>> ', type)
       let data = {
         type: type,
         offset: 0
@@ -740,10 +725,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (err.error.message === 'Unable got Page') {
           this.msgPageNotFound = true;
           this.labelStatus = 'ไม่พบเพจ';
-        }
-        // else if(err.error.message === 'Unable got Asset'){
-        //   console.log("1111")
-        // }
+        } 
         this.stopLoading();
       }
     })
@@ -840,27 +822,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public postLike(data: any, index: number) { 
-    if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
-    } else {
-      this.postFacade.like(data.postData._id , data.userAsPage.id).then((res: any) => {
-        if (res.isLike) {
-          if (data.postData._id === res.posts.id) {
-            this.resPost.posts[index].likeCount = res.likeCount;
-            this.resPost.posts[index].isLike = res.isLike;
-          }
-        } else {
-          // unLike 
-          if (data.postData._id === res.posts.id) {
-            this.resPost.posts[index].likeCount = res.likeCount;
-            this.resPost.posts[index].isLike = res.isLike;
-          }
+  public postLike(data: any, index: number) {
+    this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+      if (res.isLike) {
+        if (data.postData._id === res.posts.id) {
+          this.resPost.posts[index].likeCount = res.likeCount;
+          this.resPost.posts[index].isLike = res.isLike;
         }
-      }).catch((err: any) => {
-        console.log(err)
-      });
-    }
+      } else {
+        // unLike 
+        if (data.postData._id === res.posts.id) {
+          this.resPost.posts[index].likeCount = res.likeCount;
+          this.resPost.posts[index].isLike = res.isLike;
+        }
+      }
+    }).catch((err: any) => {
+      console.log(err)
+    });
   }
 
   public deletePost(post: any, index: number) {
@@ -900,12 +878,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
       this.stopLoading();
     });
-
-    // this.pageFacade.editPost(data.pageId , data._id).then((res)=>{
-    //   console.log('post ', res)
-    // }).catch((err)=>{
-
-    // })
   }
 
   public showDialogGallery(data) {
@@ -1008,7 +980,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       if (result !== undefined) {
         this.editImagePage(result)
       }
@@ -1096,10 +1067,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let data: RePost = new RePost();
     let dataPost: any
     let userAsPage: any
-    let search: SearchFilter = new SearchFilter();
-    search.limit = 10;
-    search.count = false;
-    search.whereConditions = { ownerUser: this.userCloneDatas.id };
     if (action.mod === 'REBOON') {
       this.isLoginCh();
       if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
@@ -1108,6 +1075,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         userAsPage = null
       }
       if (action.type === "TOPIC") {
+        let search: SearchFilter = new SearchFilter();
+        search.limit = 10;
+        search.count = false;
+        search.whereConditions = { ownerUser: this.userCloneDatas.id };
         var aw = await this.pageFacade.search(search).then((pages: any) => {
           pageInUser = pages
         }).catch((err: any) => {
@@ -1184,7 +1155,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.isLoginCh();
       this.postLike(action, index);
     } else if (action.mod === 'SHARE') {
-      this.isLoginCh();
     } else if (action.mod === 'COMMENT') {
       this.isLoginCh();
     } else if (action.mod === 'POST') {
@@ -1193,10 +1163,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public getAaaPost(action: any, index: number) {
-    let user = this.authenManager.getCurrentUser() 
+    let user = this.authenManager.getCurrentUser()
     if (action.userPage.id === user.id) {
       action.userPage.id = null
-    } 
+    }
     this.postFacade.getAaaPost(action.postData, action.userPage.id).then((pages: any) => {
       this.resPost.posts[index].isComment = pages.isComment
       this.resPost.posts[index].isLike = pages.isLike
@@ -1223,7 +1193,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           p.img64 = res.data
         }).catch((err: any) => {
         });
-      } 
+      }
     }
   }
 
@@ -1237,7 +1207,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public onImageElementLoadOK(imageElement: any): void {
-    console.log('ok')
   }
 
   public onImageElementLoadError(imageElement: any): void {
@@ -1245,7 +1214,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public onImageLoaded(imageElement: any[]): void {
-    console.log('imageElement ', imageElement)
     setTimeout(() => {
       this.showLoading = false;
     }, 2000);
@@ -1264,19 +1232,25 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.setProfile();
   }
 
-  public setProfile(){
-    if(window.innerWidth > 899){
+  public setProfile() {
+    if (window.innerWidth > 899) {
       if (this.isLoading !== true) {
-        var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
-  
-        if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll  + 150) {
-          this.imgprofile.nativeElement.style.marginTop = '-50pt';
-        } else {
-          this.imgprofile.nativeElement.style.marginTop = '10pt';
+        if (this.fanpagebackground && this.fanpagebackground.nativeElement !== undefined) {
+          var x = this.fanpagebackground.nativeElement.offsetHeight - this.countScroll;
         }
+        if (this.fanpagebackground && this.fanpagebackground.nativeElement !== undefined) {
+          if (this.countScroll <= this.fanpagebackground.nativeElement.offsetHeight - this.countScroll + 150) {
+            this.imgprofile.nativeElement.style.marginTop = '-50pt';
+          } else {
+            this.imgprofile.nativeElement.style.marginTop = '10pt';
+          }
+        }
+
       }
-    } else{
-      this.imgprofile.nativeElement.style.marginTop = '-55pt';
+    } else {
+      if(this.imgprofile && this.imgprofile.nativeElement !== undefined){
+        this.imgprofile.nativeElement.style.marginTop = '-55pt';
+      }
     }
   }
 }

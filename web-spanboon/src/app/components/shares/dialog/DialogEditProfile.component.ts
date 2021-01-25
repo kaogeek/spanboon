@@ -46,8 +46,6 @@ export class DialogEditProfile implements OnInit {
     }
 
     public ngOnInit(): void {
-        console.log("this.data ", this.data)
-        console.log("this.data ", this.dataUser.firstName)
     }
 
     public onClose(): void {

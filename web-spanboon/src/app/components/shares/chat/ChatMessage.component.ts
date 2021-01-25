@@ -49,7 +49,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   @Input()
   public asPage: string = 'asPage';
   @Input()
-  public isConfirm: boolean = false; 
+  public isConfirm: boolean = false;
   @Input()
   public isCaseConfirmed: boolean = false;
   @Input()
@@ -87,6 +87,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public senderName: string = '';
   public senderImage: any;
   public status: any;
+  public cloneMessage: any;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
     chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef) {
@@ -99,36 +100,68 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
     this.showImage = false;
     this.isLoading = false;
+
   }
 
-  public ngOnInit(): void {  
+  public ngOnInit(): void {
+    console.log('this.data message', this.data)
     for (let message of this.data) {
-      this.status = message;    
+      this.status = message;
     }
+
+    this.cloneMessage = JSON.parse(JSON.stringify(this.data));
+    console.log('message ', this.data)
+    console.log('cloneMessage ', this.cloneMessage)
+
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       interval(30000).pipe(
         concatMap(() => {
           return this.chatRoomFacade.getChatMessages(this.chatRoomId, this.asPage); // this will be your http get request
         })
       ).subscribe(async (res) => {
+        console.log('res ', res)
         if (res.data !== null && res.data !== undefined) {
+          // for (let newMessage of res.data) {
+          //   var isMessage = false;
+          //   for (let message of this.cloneMessage) {
+          //     if (newMessage.chatMessage.id === message.chatMessage.id) {
+          //       isMessage = true;
+          //       break;
+          //     }
+          //   }
+          //   if (!isMessage) { 
+          //     if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
+          //       this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
+          //         if (image.status === 1) {
+          //           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+          //             newMessage.senderImage = '';
+          //           } else {
+          //             newMessage.senderImage = image.data;
+          //           }
+          //         } else {
+          //           newMessage.senderImage = '';
+          //         }
+          //       });
+          //     }
+          //     this.data.push(newMessage);
+          //   } 
+          // }
           for (const data of res.data) {
-            if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
-              this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
-                if (image.status === 1) {
-                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    data.senderImage = '';
+              if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
+                this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
+                  if (image.status === 1) {
+                    if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                      data.senderImage = '';
+                    } else {
+                      data.senderImage = image.data;
+                    }
                   } else {
-                    data.senderImage = image.data;
+                    data.senderImage = '';
                   }
-                } else {
-                  data.senderImage = '';
-                }
-              });
+                });
+              }
             }
-          }
         }
-
         this.data = res.data;
         this.scrollChat();
       });
@@ -268,9 +301,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
             res.data.senderImage = '';
           }
         });
-
-        console.log('res >>> ', res.data);
-
         this.data.push(res.data);
       }
     }).catch((error) => {

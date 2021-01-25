@@ -6,8 +6,7 @@
 -->
 
 <div class="chat-fulfill-wrapper" (click)="openItemFulFIll()">
-    <ng-container
-        *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_EDIT' || messageType === 'FULFILLMENT_REQUEST_DELETE';else elseFulfill">
+    <ng-container *ngIf="messageType === 'FULFILLMENT_REQUEST_CREATE' || messageType === 'FULFILLMENT_REQUEST_EDIT' || messageType === 'FULFILLMENT_REQUEST_DELETE';else elseFulfill">
         <div class="chat-requester-name">
             {{sender}}
         </div>

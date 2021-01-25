@@ -371,7 +371,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     this.isLoading = true;
     this.mainPageFacade.getSearchAll(search).then((res: any) => {
       this.resSearch = res.result;
-      console.log('this.resSearch ', this.resSearch)
       event.stopPropagation();
       this.stopIsloading();
       this.checkMenu(event);

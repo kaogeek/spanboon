@@ -1,0 +1,75 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.security-info {
+    > .label-info {
+        font-family: "Kanit-500";
+        font-size: 22px;
+        margin: 15pt 40pt 5pt 40pt;
+        border-bottom: 0.7pt solid $border-color;
+    }
+    > .body-social {
+        > .label-connect {
+            padding: 10pt;
+            margin: 0 30pt;
+            font-family: "Kanit-500";
+            font-size: 16px;
+        }
+        > .box-social {
+            position: relative;
+            display: flex;
+            padding: 10pt;
+            margin: 0 30pt;
+            align-items: center;
+            justify-content: space-between;
+            > .left {
+                display: flex;
+                align-items: center;
+                font-family: "Kanit-500";
+                font-size: 16px;
+
+                > .icon-left {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 5pt;
+                    width: 20pt;
+                    height: 20pt;
+                    margin-right: 7pt;
+
+                    > .icon {
+                        height: 20px;
+                        width: 20px;
+                    }
+                }
+            }
+            > .lost-connect {
+                font-family: "Kanit-500";
+                font-size: 16px;
+                color: $koalaGray;
+                font-family: "Kanit-500";
+                font-size: 16px;
+            }
+
+            > .link-connect {
+                font-family: "Kanit-500";
+                font-size: 16px;
+                color: $koalaGray;
+
+                &:hover {
+                    text-decoration: underline;
+                    color: $color-warm-red;
+                    @include pointer();
+                }
+
+                &.active {
+                    color: $color-warm-red;
+                }
+            }
+        }
+    }
+}

@@ -85,6 +85,7 @@ import {
   SettingsFanPage,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   AboutPage,
   // shares
   DialogImage,
@@ -178,6 +179,7 @@ import {
 
 // remove when finished test
 import { TestComponent } from './components/TestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 
 import {
   // Manager
@@ -186,6 +188,7 @@ import {
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -207,6 +210,7 @@ import {
   EditProfileUserPageFacade,
   AccountFacade,
   ActionLogFacade,
+  AllocateFacade,
   FulfillFacade,
   ChatRoomFacade,
   ChatFacade,
@@ -260,6 +264,7 @@ const COMPONENTS: any[] = [
   AboutPage,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   MainPage,
   MenuRegister,
   FulfillPage,
@@ -356,7 +361,8 @@ const COMPONENTS: any[] = [
   DialogMedia,
   SnackBarFulfill,
   // test
-  TestComponent
+  TestComponent,
+  RegisterPageTestComponent
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -386,8 +392,10 @@ const SERVICE_CLASSES: any[] = [
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // facade 
   PostFacade,
+  AllocateFacade,
   HashTagFacade,
   EmergencyEventFacade,
   ObjectiveFacade,

@@ -111,12 +111,9 @@ export class CardCheckBox {
             }
             if (this.hashtag !== undefined && this.hashtag.length > 0) {
                 if (this.data) {
-                    console.log('this.data ', this.data)
-                    console.log('this.hashtag ', this.hashtag)
                     for (let [index, tag] of this.data.entries()) {
                         for (let hashtag of this.hashtag) {
                             if (tag.value === hashtag) {
-                                console.log('11111111111 ')
                                 Object.assign(this.data[index], { selected: true })
                             }
                         }
@@ -130,7 +127,7 @@ export class CardCheckBox {
         this.checkBoxMutiple(event, item, i)
     }
 
-    public checkBoxvalue(event, item, i) {
+    public checkBoxvalue(event, item, i) { 
         if (typeof (this.index) === 'number') {
             if (this.index !== i) {
                 Object.assign(this.data[this.index], { selected: false });
@@ -143,7 +140,6 @@ export class CardCheckBox {
     }
 
     public checkBoxMutiple(event, item, i) {
-        console.log('item muti', item)
         this.clickMutiple.emit(item);
     }
 

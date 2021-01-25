@@ -8,7 +8,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager } from 'src/app/services/services';
+import { AuthenManager, ObservableManager } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 const PAGE_NAME: string = 'CollapsibleHead';
@@ -36,21 +36,35 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   @Input()
   public data: any;
   @Input()
+  public type: any;
+  @Input()
   public showCase: boolean = false;
   @Output()
   public onContactClick: EventEmitter<any> = new EventEmitter();
 
   public showLoading: boolean = true;
+  public observManager: ObservableManager;
 
-  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
+  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
+    this.observManager = observManager;
+
+    this.observManager.subscribe('status.message', (fulfill) => { 
+      for(let result of this.data.cases){ 
+        if(fulfill.caseId === result.fulfillCaseId){
+          result.status = fulfill.status;
+        }
+      } 
+    });
   }
 
   public ngOnInit(): void {
     setTimeout(() => {
       this.showLoading = false;
     }, 1000);
+ 
+    console.log('asPage ',this.data.cases)
   }
 
   public ngOnDestroy(): void {
@@ -70,7 +84,7 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
     return;
   }
 
-  public getFulfillmentCase(fulfill: any) {
+  public getFulfillmentCase(fulfill: any, index: number) {
     this.onContactClick.emit(fulfill);
   }
 

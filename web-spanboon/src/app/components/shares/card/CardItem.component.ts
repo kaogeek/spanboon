@@ -49,6 +49,9 @@ export class CardItem extends AbstractPage implements OnInit {
     @Input()
     public isShowWidthButton: number;
 
+    @Input()
+    private isDevelop: boolean;
+
     @ViewChild(SwiperComponent, { static: false }) componentRef: SwiperComponent;
     @ViewChild(SwiperDirective, { static: false }) directiveRef: SwiperDirective;
 
@@ -97,19 +100,23 @@ export class CardItem extends AbstractPage implements OnInit {
         this.submit.emit();
     }
     public fulfillNeeds(item: any, index: number) {
-        for (let f of item) {
-            f.isFrom = "FULFILL"
-        }
-        let itemArr: any
-        itemArr = { fulfill: item, isFrom: 'FULFILL', isPage: true, currentPostItem: [] }
-        let dialog = this.dialog.open(DialogFulfill, {
-            width: 'auto',
-            data: itemArr,
-            disableClose: false,
-        });
+        if (!this.isLogin()) {
+            this.showAlertLoginDialog(this.router.url);
+        } else {
+            for (let f of item) {
+                f.isFrom = "FULFILL"
+            }
+            let itemArr: any
+            itemArr = { fulfill: item, isFrom: 'FULFILL', isPage: true, currentPostItem: [] }
+            let dialog = this.dialog.open(DialogFulfill, {
+                width: 'auto',
+                data: itemArr,
+                disableClose: false,
+            });
 
-        dialog.afterClosed().subscribe((res) => {
-        });
+            dialog.afterClosed().subscribe((res) => {
+            });
+        }
     }
 
     public configSlider1: SwiperConfigInterface = {

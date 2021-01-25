@@ -50,6 +50,100 @@
   animation: AnimationLoad 5s ease infinite;
 }
 
+//test page spanboon
+.createpage-temporary {
+  width: 100%;
+  height: calc(100vh - 55pt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span {
+    width: 150pt;
+    // color: white;
+    font-size: 13pt;
+    // text-align: center;
+  }
+  .createpage-temporary-box {
+    border: solid #fd545a 2px;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
+      0px 4px 10px 5px rgb(197 197 197 / 12%);
+    font-family: "Kanit-400";
+    font-size: 16px;
+    .box-icon {
+      width: 500pt;
+      height: 200pt;
+      display: flex;
+      .box-icon-svg {
+        height: 100%;
+        width: 200pt;
+        background-color: #fd545a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .box-from {
+        height: 100%;
+        width: 300pt;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .test-login {
+          display: flex;
+          width: 80%;
+          flex-direction: column;
+          align-items: flex-end;
+          .box-from-text {
+            color: #ff0000;
+            font-size: 12px;
+            width: 105%;
+            text-align: initial;
+          }
+          .input-test {
+            font-family: "Kanit-400";
+            padding: 6px;
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 18px;
+          }
+          .test-login-bt {
+            transition: 0.2s;
+            width: 80pt;
+            padding: 4px;
+            color: white;
+            text-align: center;
+            background-color: #fd545a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+              transition: 0.2s;
+              background-color: #ff4248;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $medium) {
+  .createpage-temporary .createpage-temporary-box .box-icon .box-icon-svg {
+    display: none;
+  }
+  .createpage-temporary .createpage-temporary-box .box-icon .box-from {
+    width: 100%;
+  }
+  .createpage-temporary .createpage-temporary-box .box-icon {
+    width: 90vw;
+  }
+}
+
+//test page spanboon
+
 @keyframes AnimationLoad {
   0% {
     background-position: 0% 50%;

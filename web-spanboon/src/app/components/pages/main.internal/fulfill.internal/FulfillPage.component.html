@@ -15,8 +15,8 @@
                     <button mat-button [matMenuTriggerFor]="menupage" [disableRipple]="true" class="menu-profile">
                         <div class="box-profile">
                             <ng-container
-                                *ngIf="accessValue.imageURL !== '' && accessValue.imageURL !== undefined && accessValue.imageURL !== null ; else elseImage">
-                                <img src="{{accessValue.imageURL || accessValue.imageURL}}" alt="">
+                                *ngIf="accessValue.imageBase64 !== '' && accessValue.imageBase64 !== undefined && accessValue.imageBase64 !== null ; else elseImage">
+                                <img src="{{accessValue.imageBase64 || accessValue.imageBase64}}" alt="">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="donator">
@@ -39,29 +39,32 @@
                                     (click)="changeAccess(data.user,'user')">
                                     <ng-container
                                         *ngIf="data.user && data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile1">
-                                        <img src="{{data.user.imageURL}}" alt="" class="profile">
+                                        <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile">
                                     </ng-container>
                                     <ng-template #elseImageProfile1>
-                                        <div class="donator"> {{data.user.displayName | slice: 0:1 }} </div>
+                                        <div class="donator"> {{ data.user.displayName | slice: 0:1 }} </div>
                                     </ng-template>
                                     <div class="select-name">
-                                        {{data.user.displayName}}
+                                        {{ data.user.displayName}}
                                     </div>
                                 </button>
 
-                                <button mat-menu-item class="page-list" (click)="changeAccess(data.page,'page')">
-                                    <ng-container
-                                        *ngIf="data.page && data.page.imageURL !== '' && data.page.imageURL !== undefined && data.page.imageURL !== null; else elseImageProfile">
-                                        <img src="{{data.page.imageURL}}" alt="" class="profile">
-                                    </ng-container>
-                                    <ng-template #elseImageProfile>
-                                        <div class="donator"> {{data.page.name | slice: 0:1 }} </div>
-                                    </ng-template>
+                                <ng-container
+                                    *ngIf="data.page && data.page !== undefined && data.page !== null && data.page !== '' ">
+                                    <button mat-menu-item class="page-list" (click)="changeAccess(data.page,'page')">
+                                        <ng-container
+                                            *ngIf="data.page && data.page.imageBase64 !== '' && data.page.imageBase64 !== undefined && data.page.imageBase64 !== null; else elseImageProfile">
+                                            <img src="{{data.page.imageBase64}}" alt="" class="profile">
+                                        </ng-container>
+                                        <ng-template #elseImageProfile>
+                                            <div class="donator"> {{data.page && data.page.name | slice: 0:1 }} </div>
+                                        </ng-template>
 
-                                    <div class="select-name">
-                                        {{data.page.name}}
-                                    </div>
-                                </button>
+                                        <div class="select-name">
+                                            {{data.page && data.page.name}}
+                                        </div>
+                                    </button>
+                                </ng-container>
                             </ng-container>
                         </div>
                     </mat-menu>
@@ -108,296 +111,324 @@
                             </mat-menu>
                         </div>
                     </div>
-                    <div class="user-contact">
-                        <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
-                            [showCase]="showCase" [statusColor]="statusColor" [isCaseSelected]="isCaseSelected"
-                            [groupName]="fulfill.groupName" [data]="fulfill"
-                            (onContactClick)="getChatRoom($event,asPage)">
-                        </collapsible-head>
-                    </div>
+                    <ng-container *ngIf="fulfillCase && fulfillCase.length > 0; else elseTemplateFulFill">
+                        <div class="user-contact">
+                            <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
+                                [showCase]="showCase" [isCaseSelected]="isCaseSelected"
+                                [groupName]="fulfill.groupName" [data]="fulfill"
+                                (onContactClick)="getChatRoom($event,asPage)">
+                            </collapsible-head>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplateFulFill>
+                        <div class="user-contact contact-notfound">ไม่พบรายการคำขอเติมเต็ม</div>
+                    </ng-template>
                 </div>
             </div>
         </div>
-        <div class="fulfill-right" *ngIf="canAccessCase && canAccessChatRoom" id="fulfill-right"
-            [class.active]="isActiveClass">   
-            <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop [class.activeTransition]="isTransition"
-                [ngStyle]="{'height': (fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
-                <ng-container *ngIf="!showChatRoom; else elsePreload">
-                    <div class="back" (click)="onBack()" *ngIf="!isListItem">
-                        <svg class="icon-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
-                            style="enable-background:new 0 0 443.52 443.52;" xml:space="preserve">
-                            <g>
+        <ng-container *ngIf="canAccessCase && canAccessChatRoom; else elseTemplateChatRoom">
+            <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
+                <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
+                    [class.activeTransition]="isTransition"
+                    [ngStyle]="{'height': (fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
+                    <ng-container *ngIf="!showChatRoom; else elsePreload">
+                        <div class="back" (click)="onBack()" *ngIf="!isListItem">
+                            <svg class="icon-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
+                                style="enable-background:new 0 0 443.52 443.52;" xml:space="preserve">
                                 <g>
-                                    <path d="M143.492,221.863L336.226,29.129c6.663-6.664,6.663-17.468,0-24.132c-6.665-6.662-17.468-6.662-24.132,0l-204.8,204.8
+                                    <g>
+                                        <path d="M143.492,221.863L336.226,29.129c6.663-6.664,6.663-17.468,0-24.132c-6.665-6.662-17.468-6.662-24.132,0l-204.8,204.8
                                c-6.662,6.664-6.662,17.468,0,24.132l204.8,204.8c6.78,6.548,17.584,6.36,24.132-0.42c6.387-6.614,6.387-17.099,0-23.712
                                L143.492,221.863z" />
+                                    </g>
                                 </g>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="story-left">
-                        <div class="story-category">
-                            <span class="material-icons status"> lens </span>
-                            <span class="lookfor">มองหา</span>
-
-                            <svg class="time" height="512pt" viewBox="0 0 512 512" width="512pt"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                    fill="#A5A5A6"></path>
-                                <path
-                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0"
-                                    fill="#A5A5A6"></path>
                             </svg>
-                            <span class="date">
-                                <a href="{{linkPost}}" target="_blank">
-                                    {{postDate | dateFormat}}
-                                </a>
-                            </span>
                         </div>
-                        <div class="contact-head">
-                            {{title}}
-                        </div>
-                        <div class="contact-hashtag">
-                            <tag-event
-                                [isShowEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
-                                [isNameEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
-                                [isIconEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
-                                [nameEmergency]="emergencyEvent"
-                                [isShowObjective]="objective !== null && objective !== undefined && objective !== ''"
-                                [isNameObjective]="objective !== null && objective !== undefined && objective !== ''"
-                                [isIconObjective]="objective !== null && objective !== undefined && objective !== ''"
-                                [nameObjective]="objective"></tag-event>
+                        <div class="story-left">
+                            <div class="story-category">
+                                <span class="material-icons status"> lens </span>
+                                <span class="lookfor">มองหา</span>
 
-                            <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
-                                <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
+                                <svg class="time" height="512pt" viewBox="0 0 512 512" width="512pt"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                        fill="#A5A5A6"></path>
+                                    <path
+                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0"
+                                        fill="#A5A5A6"></path>
+                                </svg>
+                                <span class="date">
+                                    <a href="{{linkPost}}" target="_blank">
+                                        {{postDate | dateFormat}}
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="contact-head">
+                                {{title}}
+                            </div>
+                            <div class="contact-hashtag">
+                                <tag-event
+                                    [isShowEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
+                                    [isNameEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
+                                    [isIconEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
+                                    [nameEmergency]="emergencyEvent"
+                                    [isShowObjective]="objective !== null && objective !== undefined && objective !== ''"
+                                    [isNameObjective]="objective !== null && objective !== undefined && objective !== ''"
+                                    [isIconObjective]="objective !== null && objective !== undefined && objective !== ''"
+                                    [nameObjective]="objective" (emergencyClick)="clickDevelop($event , emergencyEvent)"
+                                    (objectiveClick)="clickDevelop($event , objective)"></tag-event>
+
+                                <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
+                                    <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
+                                </div>
+                            </div>
+                            <div class="list-item" (click)="showFulFill()">
+                                <span>รายการเติมเต็ม {{reqData.length}} รายการ</span>
                             </div>
                         </div>
-                        <div class="list-item" (click)="showFulFill()">
-                            <span>รายการเติมเต็ม {{reqData.length}} รายการ</span>
-                        </div>
-                    </div>
-                    <div class="story-right" [class.active]="((!isCaseConfirmed && !isCaseHasPost) || (asPage && isCaseConfirmed && !isCaseHasPost)) || (isCaseConfirmed )">
-                        <div class="profile-user">
-                            <div class="profile-contact">
-                                <ng-container *ngIf="asPage; else elseFulfill">
-                                    <div class="joinus">ผู้ร่วมเติมเต็ม</div>
-                                    <span class="user">
-                                        <span class="user-name">
+                        <div class="story-right"
+                            [class.active]="((!isCaseConfirmed && !isCaseHasPost) || (asPage && isCaseConfirmed && !isCaseHasPost)) || (isCaseConfirmed )">
+                            <div class="profile-user">
+                                <div class="profile-contact">
+                                    <ng-container *ngIf="asPage; else elseFulfill">
+                                        <div class="joinus">ผู้ร่วมเติมเต็ม</div>
+                                        <span class="user">
+                                            <span class="user-name">
+                                                <a href="{{linkUser}}" target="_blank">
+                                                    {{name}}
+                                                </a>
+                                            </span>
+                                        </span>
+                                    </ng-container>
+                                    <ng-template #elseFulfill>
+                                        <div class="joinus">เติมเต็มให้กับ</div>
+                                        <span class="user">
+                                            <span class="user-name">
+                                                <a href="{{linkPage}}" target="_blank">
+                                                    {{pageName}}
+                                                </a>
+                                            </span>
+                                        </span>
+                                    </ng-template>
+                                </div>
+                                <ng-container *ngIf="asPage; else elseAsPage">
+                                    <ng-container
+                                        *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
+                                        <img class="img" src="{{userImageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseUserImageURL>
+                                        <div class="donator">
                                             <a href="{{linkUser}}" target="_blank">
-                                                {{name}}
+                                                {{name | slice: 0:1 }}
                                             </a>
-                                        </span>
-                                    </span>
+                                        </div>
+                                    </ng-template>
                                 </ng-container>
-                                <ng-template #elseFulfill>
-                                    <div class="joinus">เติมเต็มให้กับ</div>
-                                    <span class="user">
-                                        <span class="user-name">
+                                <ng-template #elseAsPage>
+                                    <ng-container
+                                        *ngIf="(pageImageURL !== null && pageImageURL !== undefined && pageImageURL !==''); else elseUserImageURL">
+                                        <img class="img" src="{{pageImageURL}}">
+                                    </ng-container>
+                                    <ng-template #elseUserImageURL>
+                                        <div class="donator">
                                             <a href="{{linkPage}}" target="_blank">
-                                                {{pageName}}
+                                                {{pageName | slice: 0:1 }}
                                             </a>
-                                        </span>
-                                    </span>
+                                        </div>
+                                    </ng-template>
                                 </ng-template>
                             </div>
-                            <ng-container *ngIf="asPage; else elseAsPage">
-                                <ng-container *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
-                                    <img class="img" src="{{userImageURL}}">
+                            <div class="confirm">
+                                <ng-container *ngIf="(isCaseHasPost && isCaseConfirmed); else elseFufillmentPost">
+                                    <span class="text-fulfill-close">คำขอเติมเต็มถูกยืนยันแล้ว</span>
+                                    <spanboon-button class="button-view-post" (click)="viewPost(fulfillmentPost)"
+                                        [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'" [bgColor]="'#E02438'"
+                                        [text]="'ไปที่โพสต์'">
+                                    </spanboon-button>
                                 </ng-container>
-                                <ng-template #elseUserImageURL>
-                                    <div class="donator">
-                                        <a href="{{linkUser}}" target="_blank">
-                                            {{name | slice: 0:1 }}
-                                        </a>
-                                    </div>
-                                </ng-template>
-                            </ng-container>
-                            <ng-template #elseAsPage>
-                                <ng-container
-                                    *ngIf="(pageImageURL !== null && pageImageURL !== undefined && pageImageURL !==''); else elseUserImageURL">
-                                    <img class="img" src="{{pageImageURL}}">
-                                </ng-container>
-                                <ng-template #elseUserImageURL>
-                                    <div class="donator">
-                                        <a href="{{linkPage}}" target="_blank">
-                                            {{pageName | slice: 0:1 }}
-                                        </a>
-                                    </div>
-                                </ng-template>
-                            </ng-template>
-                        </div>
-                        <div class="confirm">
-                            <ng-container *ngIf="(isCaseHasPost && isCaseConfirmed); else elseFufillmentPost">
-                                <span class="text-fulfill-close">คำขอเติมเต็มถูกยืนยันแล้ว</span>
-                                <spanboon-button class="button-view-post" (click)="viewPost(fulfillmentPost)"
-                                    [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'" [bgColor]="'#E02438'"
-                                    [text]="'ไปที่โพสต์'">
-                                </spanboon-button>
-                            </ng-container>
-                            <ng-template #elseFufillmentPost>
-                                <ng-container
-                                    *ngIf="isChecKMobile && ((!isCaseConfirmed && !isCaseHasPost) || (asPage && isCaseConfirmed && !isCaseHasPost)); else elseTemplateIsChecKMobile">
-                                    <button mat-stroked-button [matMenuTriggerFor]="menusort" [disableRipple]="true"
-                                        class="butt-fulfill">
-                                        <span class="material-icons button-post"> more_horiz </span> 
-                                    </button>
-                                    <mat-menu #menusort="matMenu" backdropClass="menu-dropdown">
-                                        <ng-container *ngIf="!isCaseConfirmed && !isCaseHasPost;">
-                                            <button mat-menu-item class="list-sort"
-                                                (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
-                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">
-                                                <div class="select-name">
-                                                    ยกเลิกคำขอเติมเต็ม
-                                                </div>
-                                            </button>
-                                        </ng-container>
-                                        <ng-container *ngIf="asPage && isCaseConfirmed && !isCaseHasPost">
-                                            <button mat-menu-item class="list-sort">
-                                                <div class="select-name"
-                                                    (click)="createFulfillPost(fulfillCaseId,asPage)">
-                                                    สร้างโพสต์เติมเต็ม
-                                                </div>
-                                            </button>
-                                            <button mat-menu-item class="list-sort">
-                                                <div class="select-name"
-                                                    (click)="cancelFulfillmentCase(fulfillCaseId,asPage)">
-                                                    ยกเลิกคำขอเติมเต็ม
-                                                </div>
-                                            </button>
-                                        </ng-container>
-                                    </mat-menu>
-                                </ng-container>
-                                <ng-template #elseTemplateIsChecKMobile>
-                                    <button mat-stroked-button class="butt-fulfill"
-                                        *ngIf="!isCaseConfirmed && !isCaseHasPost"
-                                        (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
-                                        [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกคำขอเติมเต็ม</button>
+                                <ng-template #elseFufillmentPost>
+                                    <ng-container
+                                        *ngIf="isChecKMobile && ((!isCaseConfirmed && !isCaseHasPost) || (asPage && isCaseConfirmed && !isCaseHasPost)); else elseTemplateIsChecKMobile">
+                                        <button mat-stroked-button [matMenuTriggerFor]="menusort" [disableRipple]="true"
+                                            class="butt-fulfill">
+                                            <span class="material-icons button-post"> more_horiz </span>
+                                        </button>
+                                        <mat-menu #menusort="matMenu" backdropClass="menu-dropdown">
+                                            <ng-container *ngIf="!isCaseConfirmed && !isCaseHasPost;">
+                                                <button mat-menu-item class="list-sort"
+                                                    (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
+                                                    [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">
+                                                    <div class="select-name">
+                                                        ยกเลิกคำขอเติมเต็ม
+                                                    </div>
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="asPage && isCaseConfirmed && !isCaseHasPost">
+                                                <button mat-menu-item class="list-sort">
+                                                    <div class="select-name"
+                                                        (click)="createFulfillPost(fulfillCaseId,asPage)">
+                                                        สร้างโพสต์เติมเต็ม
+                                                    </div>
+                                                </button>
+                                                <button mat-menu-item class="list-sort">
+                                                    <div class="select-name"
+                                                        (click)="cancelFulfillmentCase(fulfillCaseId,asPage)">
+                                                        ยกเลิกคำขอเติมเต็ม
+                                                    </div>
+                                                </button>
+                                            </ng-container>
+                                        </mat-menu>
+                                    </ng-container>
+                                    <ng-template #elseTemplateIsChecKMobile>
+                                        <button mat-stroked-button class="butt-fulfill"
+                                            *ngIf="!isCaseConfirmed && !isCaseHasPost"
+                                            (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
+                                            [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกคำขอเติมเต็ม</button>
 
-                                    <button mat-stroked-button class="butt-fulfill"
-                                        *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
-                                        [ngStyle]="{'background': '#FD545A' , 'color' : '#FFF'}"
-                                        (click)="createFulfillPost(fulfillCaseId,asPage)">
-                                        <svg class="button-post" height="25" viewBox="10 0 40 30" width="25"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g data-name="button-create-fulfill-post" id="button-create-fulfill-post"
-                                                transform="translate(-4642 -13042.372)">
-                                                <g id="vintage" transform="translate(4652.771 13042.372)">
-                                                    <g data-name="icon-create-fulfill-post"
-                                                        id="icon-create-fulfill-post" transform="translate(0)">
-                                                        <path
-                                                            d="M49.341,0A25.427,25.427,0,0,0,24.054,23.132a79.631,79.631,0,0,1,8.26-9.521.651.651,0,0,1,.93.912c-.507.516-1.021,1.051-1.538,1.593-.3.309-.585.616-.869.918l-.156.169c-4.158,4.452-7.131,8.328-9.289,13.141a.652.652,0,0,0,1.189.534,35.751,35.751,0,0,1,2.664-4.848A25.383,25.383,0,0,0,46.964,12.684a.651.651,0,0,0-.574-.96H43.977L48.3,9.251A.653.653,0,0,0,48.6,8.9a25.311,25.311,0,0,0,1.4-8.247A.652.652,0,0,0,49.341,0Z"
-                                                            data-name="icon-wing" fill="#fff" id="icon-wing"
-                                                            transform="translate(-21.334)"></path>
+                                        <button mat-stroked-button class="butt-fulfill"
+                                            *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
+                                            [ngStyle]="{'background': '#FD545A' , 'color' : '#FFF'}"
+                                            (click)="createFulfillPost(fulfillCaseId,asPage)">
+                                            <svg class="button-post" height="25" viewBox="10 0 40 30" width="25"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <g data-name="button-create-fulfill-post"
+                                                    id="button-create-fulfill-post"
+                                                    transform="translate(-4642 -13042.372)">
+                                                    <g id="vintage" transform="translate(4652.771 13042.372)">
+                                                        <g data-name="icon-create-fulfill-post"
+                                                            id="icon-create-fulfill-post" transform="translate(0)">
+                                                            <path
+                                                                d="M49.341,0A25.427,25.427,0,0,0,24.054,23.132a79.631,79.631,0,0,1,8.26-9.521.651.651,0,0,1,.93.912c-.507.516-1.021,1.051-1.538,1.593-.3.309-.585.616-.869.918l-.156.169c-4.158,4.452-7.131,8.328-9.289,13.141a.652.652,0,0,0,1.189.534,35.751,35.751,0,0,1,2.664-4.848A25.383,25.383,0,0,0,46.964,12.684a.651.651,0,0,0-.574-.96H43.977L48.3,9.251A.653.653,0,0,0,48.6,8.9a25.311,25.311,0,0,0,1.4-8.247A.652.652,0,0,0,49.341,0Z"
+                                                                data-name="icon-wing" fill="#fff" id="icon-wing"
+                                                                transform="translate(-21.334)"></path>
+                                                        </g>
                                                     </g>
                                                 </g>
-                                            </g>
-                                        </svg>
-                                        สร้างโพสต์เติมเต็ม
-                                    </button>
+                                            </svg>
+                                            สร้างโพสต์เติมเต็ม
+                                        </button>
+                                    </ng-template>
                                 </ng-template>
-                            </ng-template>
+                            </div>
                         </div>
-                    </div>
-                </ng-container>
-                <ng-template #elsePreload>
-                    <Preload-card class="preload-head-story" [isShowCard1]="false" [isShowCard2]="false"
-                        [isShowCard3]="true">
-                    </Preload-card>
-                </ng-template>
-            </div>
-            <div class="body-story" [class.active]="isCaseHasPost">
-                <div class="body-story-left" [class.active]="isListItem">
-                    <ng-container *ngIf="!showChatRoom; else elsePreload2">
-                        <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
-                            [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL" 
-                            [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed" [isCaseHasPost]="isCaseHasPost"
-                            [sender]="sender" [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()" (createPost)="createFulfillPost(fulfillCaseId,asPage)"
-                            (expand)="expandMore()" (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
-                        </chat-message>
                     </ng-container>
-                    <ng-template #elsePreload2>
-                        <Preload-card [isShowCard1]="false" [isShowCard2]="true" [isShowCard3]="false"
-                            class="preload-body-story-left">
+                    <ng-template #elsePreload>
+                        <Preload-card class="preload-head-story" [isShowCard1]="false" [isShowCard2]="false"
+                            [isShowCard3]="true">
                         </Preload-card>
                     </ng-template>
                 </div>
-                <div class="body-story-right" id="body-story-right">
-                    <div class="grop-fulfill">
-                        <ng-container *ngIf="!showChatRoom; else elsePreload3">
-                            <ng-container *ngIf="!isListItem; else elseTemplateOnClose">
-                                <div class="header" #header>
-                                    รายการเติมเต็ม
-                                </div>
-                            </ng-container>
-                            <ng-template #elseTemplateOnClose>
-                                <div class="header">
-                                    รายการเติมเต็ม
-                                    <div class="btn-close" (click)="onBack()">
-                                        <span class="material-icons">
-                                            close
-                                        </span>
-                                    </div>
-                                </div>
-                                <div>
-
-                                </div>
-                            </ng-template>
-
-                            <div class="fulfilling">
-                                <fulfill-item-card #fulfillItem *ngFor="let item of reqData; let index = index"
-                                    [pageId]="pageId" [asPage]="asPage" [fulfillCaseId]="fulfillCaseId" [item]="item"
-                                    [canEdit]="canEdit" [isCaseConfirmed]="isCaseConfirmed" [class]="'fulfill-items'"
-                                    [requestId]="item.requestId" [needsId]="item.id" [name]="item.name"
-                                    [unit]="item.unit" [quantity]="item.quantity" [imageURL]="item.imageBase64"
-                                    [chatRoomId]="chatRoomId"
-                                    (onFulfillItemChange)="saveFulfillQuantity($event,item.requestId,item)"
-                                    (onFulfillItemClick)="deleteFulfillRequest(item,index,asPage)">
-                                </fulfill-item-card>
-                                <div class="plus-item" id="plus-item" (click)="clickAddPostNeeds(postId)" matRipple
-                                    [matRippleCentered]="'centered'" *ngIf="!isCaseConfirmed">
-                                    <div class="d-plus">
-                                        <span class="material-icons">
-                                            add
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grop-bottom">
-                                <div class="fulfill-status">
-                                    <div class="fulfill-status-text"
-                                        *ngIf="isCaseConfirmed && (fulfillmentPost === null || fulfillmentPost === undefined || fulfillmentPost === '')">
-                                        คำขอเติมเต็มถูกยืนยันแล้ว
-                                    </div>
-
-                                    <div class="fulfill-action">
-                                        <button mat-stroked-button class="butt-fulfill-bottom"
-                                            *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
-                                            (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)"
-                                            [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกการยืนยัน</button>
-
-                                        <button mat-stroked-button class="butt-fulfill-bottom"
-                                            *ngIf="!isCaseConfirmed && !isCaseHasPost"
-                                            (click)="deleteAllFulfillList(reqData,asPage)"
-                                            [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกรายการทั้งหมด</button>
-
-                                        <button mat-stroked-button class="butt-fulfill-bottom"
-                                            *ngIf="asPage && !isCaseConfirmed && !isCaseHasPost"
-                                            (click)="confirmFulfillRequest(fulfillCaseId,asPage)"
-                                            [ngStyle]="{'background': '#7AAF67' , 'color' : '#FFF' }">ยืนยันรายการเติมเต็ม</button>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="body-story" [class.active]="isCaseHasPost">
+                    <div class="body-story-left" [class.active]="isListItem">
+                        <ng-container *ngIf="!showChatRoom; else elsePreload2">
+                            <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
+                                [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
+                                [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
+                                [isCaseHasPost]="isCaseHasPost" [sender]="sender" [chatRoomId]="chatRoomId"
+                                [asPage]="asPage" (submit)="showFulFill()"
+                                (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
+                                (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
+                            </chat-message>
                         </ng-container>
-                        <ng-template #elsePreload3>
+                        <ng-template #elsePreload2>
                             <Preload-card [isShowCard1]="false" [isShowCard2]="true" [isShowCard3]="false"
                                 class="preload-body-story-left">
                             </Preload-card>
                         </ng-template>
                     </div>
+                    <div class="body-story-right" id="body-story-right">
+                        <div class="grop-fulfill">
+                            <ng-container *ngIf="!showChatRoom; else elsePreload3">
+                                <ng-container *ngIf="!isListItem; else elseTemplateOnClose">
+                                    <div class="header" #header>
+                                        รายการเติมเต็ม
+                                    </div>
+                                </ng-container>
+                                <ng-template #elseTemplateOnClose>
+                                    <div class="header">
+                                        รายการเติมเต็ม
+                                        <div class="btn-close" (click)="onBack()">
+                                            <span class="material-icons">
+                                                close
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+
+                                <div class="fulfilling">
+                                    <fulfill-item-card #fulfillItem *ngFor="let item of reqData; let index = index"
+                                        [pageId]="pageId" [asPage]="asPage" [fulfillCaseId]="fulfillCaseId"
+                                        [item]="item" [canEdit]="canEdit" [isCaseConfirmed]="isCaseConfirmed"
+                                        [class]="'fulfill-items'" [requestId]="item.requestId" [needsId]="item.id"
+                                        [name]="item.name" [unit]="item.unit" [quantity]="item.quantity"
+                                        [imageURL]="item.imageBase64" [chatRoomId]="chatRoomId"
+                                        (onFulfillItemChange)="saveFulfillQuantity($event,item.requestId,item)"
+                                        (onFulfillItemClick)="deleteFulfillRequest(item,index,asPage)">
+                                    </fulfill-item-card>
+                                    <div class="plus-item" id="plus-item" (click)="clickAddPostNeeds(postId)" matRipple
+                                        [matRippleCentered]="'centered'" *ngIf="!isCaseConfirmed">
+                                        <div class="d-plus">
+                                            <span class="material-icons">
+                                                add
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grop-bottom">
+                                    <div class="fulfill-status">
+                                        <div class="fulfill-status-text"
+                                            *ngIf="isCaseConfirmed && (fulfillmentPost === null || fulfillmentPost === undefined || fulfillmentPost === '')">
+                                            คำขอเติมเต็มถูกยืนยันแล้ว
+                                        </div>
+
+                                        <div class="fulfill-action">
+                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                                *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
+                                                (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)"
+                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกการยืนยัน</button>
+
+                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                                *ngIf="!isCaseConfirmed && !isCaseHasPost"
+                                                (click)="deleteAllFulfillList(reqData,asPage)"
+                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกรายการทั้งหมด</button>
+
+                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                                *ngIf="asPage && !isCaseConfirmed && !isCaseHasPost"
+                                                (click)="confirmFulfillRequest(fulfillCaseId,asPage)"
+                                                [ngStyle]="{'background': '#7AAF67' , 'color' : '#FFF' }">ยืนยันรายการเติมเต็ม</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-template #elsePreload3>
+                                <Preload-card [isShowCard1]="false" [isShowCard2]="true" [isShowCard3]="false"
+                                    class="preload-body-story-left">
+                                </Preload-card>
+                            </ng-template>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
+        <ng-template #elseTemplateChatRoom>
+            <div class="fulfill-right fulfill-notfound " id="fulfill-right">
+                <svg id="Group_142" data-name="Group 142" xmlns="http://www.w3.org/2000/svg" width="67.553"
+                    height="33.8" viewBox="0 0 67.553 33.8">
+                    <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(60.047 11.275)" fill="#a2a2a2" />
+                    <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(0 11.275)" fill="#a2a2a2" />
+                    <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
+                        transform="translate(30.024)" fill="#a2a2a2" />
+                    <path id="Path_201" data-name="Path 201"
+                        d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
+                        transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
+                </svg>
+                <span class="fulfill-label">ไม่พบรายการคำขอเติมเต็ม</span>
+                <span class="fulfill-search" (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์กดที่นี่</span>
+            </div>
+        </ng-template>
     </div>
 </div>

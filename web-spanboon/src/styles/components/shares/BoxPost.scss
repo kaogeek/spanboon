@@ -25,6 +25,8 @@
       padding: 0 10pt;
       height: 39pt;
       border-bottom: $width-border solid $border-color;
+      align-items: center;
+      justify-content: space-between;
 
       > .dropdown-page {
         display: flex;
@@ -39,6 +41,28 @@
         font-family: "Kanit-500";
         font-size: 14px;
         @include pointer();
+        text-align: center; 
+      }
+      >.mobile-page {
+        justify-content: center;
+        border-left: 0.7px solid #e5e5e5;
+        >.mat-form-field {
+          >.mat-form-field-wrapper {
+            >.mat-form-field-flex {
+              >.mat-form-field-infix {
+                >.selected-dropdown {
+                  >.mat-select {
+                    >.mat-select-trigger {
+                      >.mat-select-value {
+                        display: none;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
 
       > .box-toggle {

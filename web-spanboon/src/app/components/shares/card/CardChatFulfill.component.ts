@@ -31,7 +31,7 @@ export class CardChatFulfill extends AbstractPage implements OnInit {
     @Input()
     public postId: string = 'postId';
     @Input()
-    public imageURL: string = '../../../../assets/img/pic2.svg';
+    public imageURL: string = '../../../../assets/img/customize_item.svg';
     @Input()
     public sender: string = 'ณัฐพงษ์ เรืองปัญญาวุฒิ';
     @Input()

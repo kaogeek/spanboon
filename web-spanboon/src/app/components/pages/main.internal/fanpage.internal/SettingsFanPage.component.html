@@ -3,11 +3,11 @@
     (c) 2020-2021 KaoGeek. http://kaogeek.dev
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
--->
+--> 
 
-<div class="fanpage-settings">
+<div class="fanpage-settings"> 
     <div class="container">
-        <div class="setting-top">
+        <div class="setting-top"  *ngIf="!isPreload">
             <div class="profile-page-settings">
                 <div class="page">
                     <ng-container *ngIf="resListPage && resListPage.imageURL && resListPage.imageURL !== ''  && resListPage.imageURL !== undefined  && resListPage.imageURL !== null; else elseImage">
@@ -21,7 +21,8 @@
                         {{resListPage && resListPage.name}}
                     </div>
                 </div>
-            </div>
+            </div> 
+
             <nav mat-tab-nav-bar class="setting-nav" [disableRipple]="'true'">
                 <a mat-tab-link *ngFor="let link of navLinks" [disableRipple]="'true'" [routerLink]="link.path"
                     (click)="selectedSetting(link);"
@@ -29,7 +30,11 @@
                 </a>
             </nav>
         </div>
-        <div class="settings-flex">
+        <ng-container  *ngIf="isPreload"> 
+            <preload-data *ngFor="let item of [0]" [isShowCard1]="true" [isShowCard2]="false" class="setting-top"></preload-data>
+        </ng-container>
+        
+        <div class="settings-flex" *ngIf="!isPreload">
             <div class="settings-left">
                 <div class="settings-list"> 
                     <ng-container *ngIf="activeLink === 'จัดการเพจ';">
@@ -39,8 +44,7 @@
                                 [class.active]="selected === link.label">
                                 <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
                                 <span class="settings-title">{{link.label}}</span>
-                            </div>
-
+                            </div> 
                         </ng-container>
                     </ng-container>
 
@@ -53,14 +57,15 @@
                                 <span class="settings-title">{{link.label}}</span>
                             </div>
                         </ng-container>
-                    </ng-container>
- 
+                    </ng-container> 
                 </div>
             </div>
-            <div class="settings-right">
-                <settings-info #settingInfo *ngIf="activeLink === 'จัดการเพจ'" [selectedTab]="selected"  [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-info> 
+            <div class="settings-right"> 
+                <settings-info #settingInfo *ngIf="activeLink === 'จัดการเพจ'" [bindingSocialTwitter]="bindingSocialTwitter" [selectedTab]="selected" [data]="resListPage.id"  [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-info> 
             </div>
-        </div> 
-
+        </div>  
+        <ng-container  *ngIf="isPreload"> 
+            <preload-data *ngFor="let arra of [0]" [isShowCard1]="false" [isShowCard2]="true" class="settings-flex"></preload-data>
+        </ng-container>
     </div>
 </div>

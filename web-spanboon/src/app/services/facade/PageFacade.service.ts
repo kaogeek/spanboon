@@ -8,10 +8,11 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
 import { Page } from '../../models/Page';
 import { Post } from '../../models/Post';
+import { PageSocailTW } from "../../models/PageSocailTW";
 
 @Injectable()
 export class PageFacade extends AbstractFacade {
@@ -343,6 +344,62 @@ export class PageFacade extends AbstractFacade {
 
       this.http.put(url, body, options).toPromise().then((response: any) => {
         resolve(response as Post[]);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public socialBindingFacebook(pageId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + 'social/facebook';
+      let options = this.getDefaultOptions();
+      let body: any = {};
+
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public socialGetBindingTwitter(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter/check';
+      let options = this.getDefaultOptions(); 
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+
+  public socialBindingTwitter(pageId: string, data: PageSocailTW): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
+      let options = this.getDefaultOptions();
+      let body: any = {};
+      if (data !== undefined && data !== null) {
+        body = Object.assign(data);
+      }
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+  
+  public socialUnBindingTwitter(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
+      let options = this.getDefaultOptions(); 
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });

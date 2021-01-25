@@ -55,6 +55,10 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+
+                    &:hover {
+                        color: $color-warm-red;
+                    }
                 }
 
                 &:hover {
@@ -108,7 +112,7 @@
                     align-items: center;
                     width: 30pt;
                     height: 30pt;
-                    margin: 0 10pt;
+                    margin-right: 10pt;
                     border-radius: 50%;
                     box-shadow: 2.5px 0px 0px 0 #ffffff;
                     overflow: hidden;
@@ -192,7 +196,7 @@
                             align-items: center;
                             width: 30pt;
                             height: 30pt;
-                            margin: 0 10pt;
+                            margin-left: 10pt;
                             border-radius: 50%;
                             box-shadow: 2.5px 0px 0px 0 #ffffff;
                             overflow: hidden;
