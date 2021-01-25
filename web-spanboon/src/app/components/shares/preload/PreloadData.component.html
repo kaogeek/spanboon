@@ -5,10 +5,16 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="preload-data">
+<div class="preload-data" >
     <div class="wrapper-preload">
-        <div class="preload-row">
+        <div class="preload-row" *ngIf="isShowCard1">
             <div class="preload-image div-preload"></div> 
+            <div class="preload-top"> 
+                <div class="div-preload" style="width: 100pt;"></div>
+                <div class="div-preload" style="width: 50pt; margin-top: 10pt;"></div>
+            </div>
+        </div>
+        <div class="preload-row" *ngIf="isShowCard2"> 
             <div class="preload-top"> 
                 <div class="div-preload" style="width: 100pt;"></div>
                 <div class="div-preload" style="width: 50pt; margin-top: 10pt;"></div>
