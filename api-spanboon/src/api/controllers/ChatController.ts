@@ -5,14 +5,19 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { JsonController, Delete, Param, Res, Req, Authorized, Body, Post } from 'routing-controllers';
+import { JsonController, Delete, Param, Res, Req, Authorized, Body, Post, QueryParam } from 'routing-controllers';
 import { ChatMessageService } from '../services/ChatMessageService';
+import { PageAccessLevelService } from '../services/PageAccessLevelService';
+import { PageService } from '../services/PageService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
+import { CHAT_ROOM_TYPE } from '../../constants/ChatRoomType';
+import { PageAccessLevel } from '../models/PageAccessLevel';
+import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 
 @JsonController('/chat')
 export class ChatController {
-    constructor(private chatMessageService: ChatMessageService) { }
+    constructor(private chatMessageService: ChatMessageService, private pageService: PageService, private pageAccessLevelService: PageAccessLevelService) { }
 
     /**
      * @api {post} /api/chat/:id Create Chat Message to User room
@@ -73,10 +78,25 @@ export class ChatController {
      */
     @Post('/read')
     @Authorized('user')
-    public async markReadChatMessage(@Body({ validate: true }) chatIds: string[], @Res() res: any, @Req() req: any): Promise<any> {
+    public async markReadChatMessage(@Body({ validate: true }) chatIds: string[], @QueryParam('asPage') asPage: string, @Res() res: any, @Req() req: any): Promise<any> {
         if (chatIds === undefined || chatIds.length <= 0) {
             const successResponse = ResponseUtil.getSuccessResponse('No message to mark read.', undefined);
             return res.status(200).send(successResponse);
+        }
+
+        let pageObjId = undefined;
+        if (asPage !== undefined && asPage !== '') {
+            pageObjId = new ObjectID(asPage);
+        }
+
+        let page = undefined;
+        if (pageObjId !== undefined) {
+            page = await this.pageService.findOne({ _id: pageObjId });
+
+            if (page === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Page was not found.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
 
         // find receiverID
@@ -85,10 +105,41 @@ export class ChatController {
             msgObjIds.push(new ObjectID(chatMsgId));
         }
 
+        let sender = new ObjectID(req.user.id);
+        let senderType = CHAT_ROOM_TYPE.USER;
+
+        if (page !== undefined) {
+            const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(req.user.id, asPage);
+
+            let canAccessPage = false;
+
+            if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
+                for (const access of pageAccess) {
+                    if (access.level === PAGE_ACCESS_LEVEL.OWNER || access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.POST_MODERATOR
+                        || access.level === PAGE_ACCESS_LEVEL.FULFILLMENT_MODERATOR || access.level === PAGE_ACCESS_LEVEL.CHAT_MODERATOR) {
+                        canAccessPage = true;
+                    }
+                }
+            }
+
+            if (!canAccessPage) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
+            }
+
+            sender = pageObjId;
+            senderType = CHAT_ROOM_TYPE.PAGE;
+        }
+
+        const reader = this.getReader(sender, senderType);
+
+        // add reader in array
         await this.chatMessageService.updateMany({ _id: { $in: msgObjIds }, deleted: false },
             {
                 $set: {
                     isRead: true
+                },
+                $addToSet: {
+                    readers: reader
                 }
             }
         );
@@ -101,5 +152,20 @@ export class ChatController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to mark read chat message. Message Not Found.', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    private getReader(senderId: ObjectID, senderType: string): any {
+        if (senderId === undefined || senderId === null || senderId === '') {
+            return undefined;
+        }
+
+        if (senderType === undefined || senderType === null || senderType === '') {
+            return undefined;
+        }
+
+        return {
+            sender: senderId,
+            senderType
+        };
     }
 }
