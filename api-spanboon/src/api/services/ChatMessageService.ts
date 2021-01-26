@@ -69,6 +69,7 @@ export class ChatMessageService {
     }
 
     public async deleteChatMessage(id: string): Promise<any> {
+        // ! do remove noti or someting.
         return await this.update({ _id: new Object(id) }, { $set: { deleted: true } });
     }
 
@@ -95,7 +96,6 @@ export class ChatMessageService {
     }
 
     public async createChatMessage(chatMessage: ChatMessage): Promise<ChatMessage> {
-
         if(chatMessage === undefined || chatMessage === null){
             return Promise.resolve(undefined);
         }
@@ -103,7 +103,7 @@ export class ChatMessageService {
         chatMessage.isRead = false;
         chatMessage.deleted = false;
 
-        // do send notification if implement
+        // ! do send notification if implement
 
         return await this.create(chatMessage);
     }
