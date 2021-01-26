@@ -604,11 +604,13 @@
             >.fulfill-search {
                 font-family: "Kanit-500";
                 font-size: 16px; 
-                color: $color-warm-red;
-                @include pointer();
-                &:hover {
-                    text-decoration: underline;
-                }
+                color: $color-warm-red; 
+                >.hover {
+                    @include pointer();
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }  
             }
         }
     }
