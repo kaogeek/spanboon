@@ -201,6 +201,7 @@ export class ChatRoomController {
     public async checkUnreadChatRoom(@Body({ validate: true }) chatRoomIdsRequest: CheckChatRoomRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const senderObjId = new ObjectID(req.user.id);
         const fetchUserRoom = (chatRoomIdsRequest.fetchUserRoom !== undefined) ? chatRoomIdsRequest.fetchUserRoom : false;
+        const asPage = chatRoomIdsRequest.asPage;
 
         if (chatRoomIdsRequest.roomIds === undefined) {
             chatRoomIdsRequest.roomIds = [];
@@ -221,11 +222,58 @@ export class ChatRoomController {
             }
         }
 
+        let pageObjId = undefined;
+        if (asPage !== undefined && asPage !== '') {
+            pageObjId = new ObjectID(asPage);
+        }
+
+        let page = undefined;
+        if (pageObjId !== undefined) {
+            page = await this.pageService.findOne({ _id: pageObjId });
+
+            if (page === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Page was not found.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
+        let sender = new ObjectID(req.user.id);
+        let senderType = CHAT_ROOM_TYPE.USER;
+
+        if (page !== undefined) {
+            const pageAccess = await this.pageAccessLevelService.getUserAccessByPage(req.user.id, asPage);
+
+            let canAccessPage = false;
+
+            if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
+                for (const access of pageAccess) {
+                    if (access.level === PAGE_ACCESS_LEVEL.OWNER || access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.POST_MODERATOR
+                        || access.level === PAGE_ACCESS_LEVEL.FULFILLMENT_MODERATOR || access.level === PAGE_ACCESS_LEVEL.CHAT_MODERATOR) {
+                        canAccessPage = true;
+                    }
+                }
+            }
+
+            if (!canAccessPage) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
+            }
+
+            sender = pageObjId;
+            senderType = CHAT_ROOM_TYPE.PAGE;
+        }
+
+        const aggregateStmt: any[] = [
+            { $match: { room: { $in: roomObjIds }, deleted: false, readers: { $nin: [{ sender, senderType }] } } },
+            { $sort: { createdDate: -1 } },
+            { $group: { _id: '$room', count: { $sum: 1 }, message: { $first: '$message' } } }
+        ];
+
+        /* // old logic of count unRead.
         const aggregateStmt: any[] = [
             { $match: { room: { $in: roomObjIds }, isRead: false, deleted: false } },
             { $sort: { createdDate: -1 } },
             { $group: { _id: '$room', count: { $sum: 1 }, message: { $first: '$message' } } }
-        ];
+        ];*/
 
         const chatMsgResult: any = await this.chatMessageService.aggregate(aggregateStmt);
 

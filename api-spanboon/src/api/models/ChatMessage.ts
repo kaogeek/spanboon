@@ -55,6 +55,9 @@ export class ChatMessage extends BaseModel {
     @Column({ name: 'deleted' })
     public deleted: boolean;
 
+    @Column({ name: 'readers' })
+    public readers: any[]; // {sender: ObjectID senderType: string}
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

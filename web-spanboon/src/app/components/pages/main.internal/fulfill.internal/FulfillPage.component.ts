@@ -232,23 +232,16 @@ export class FulfillPage extends AbstractPage implements OnInit {
             console.log('chat ', chat)
             if (chat && chat.length > 0) {
                 for (let data of chat) {
-                    for (let caseData of this.fulfillCase) {
-                        // let isRead = caseData.cases.find(read => {
-                        //     return read.isRead === false;
-                        // });
-                        // if (isRead) {
+                    for (let caseData of this.fulfillCase) { 
                         let index = caseData.cases.map(function (e) { return e.chatRoom; }).indexOf(data._id);
-                        if (index !== -1) {
-                            console.log('caseData ', caseData.cases[index].unreadMessageCount)
+                        if (index !== -1) { 
                             caseData.cases[index].unreadMessageCount = data.count;
                             caseData.cases[index].chatMessage = data.message;
                             caseData.cases[index].isRead = false;
-                        }
-                        // }
+                        } 
                     }
 
-                }
-                console.log(' this.fulfillCase ', this.fulfillCase)
+                } 
             }
         });
 
