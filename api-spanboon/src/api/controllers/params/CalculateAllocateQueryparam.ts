@@ -13,4 +13,5 @@ export class CalculateAllocateQueryparam {
     public mode: ALLOCATE_MODE;
     public emergencyEvent: string;
     public objective: string;
+    public orderBy: string;
 }

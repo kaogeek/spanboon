@@ -58,7 +58,7 @@ import { PostsGalleryService } from '../services/PostsGalleryService';
 import { NotificationService } from '../services/NotificationService';
 import { FulfillmentService } from '../services/FulfillmentService';
 import { NeedsService } from '../services/NeedsService';
-import { FileUtil, ObjectUtil } from '../../utils/Utils';
+import { FileUtil } from '../../utils/Utils';
 import { InputFormatterUtils } from '../../utils/InputFormatterUtils';
 import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
@@ -204,6 +204,8 @@ export class FulfillmentController {
                     searchFulfillStmt.push({ $sort: { updatedByPageDate: -1 } });
                 } else if (orderBy === FULFILL_ORDER_BY.UPDATED_BY_USER) {
                     searchFulfillStmt.push({ $sort: { updatedByUserDate: -1 } });
+                } else if (orderBy === FULFILL_ORDER_BY.APPROVE_DATE_TIME) {
+                    searchFulfillStmt.push({ $sort: { approveDateTime: -1 } });
                 }
             } else {
                 searchFulfillStmt.push({ $sort: { updateDate: -1 } });
@@ -1331,7 +1333,7 @@ export class FulfillmentController {
     }
 
     /**
-     * @api {post} /api/fulfillment_case/:caseId/confirm Confirm FulfillmentCase API
+     * @api {post} /api/fulfillment_case/:caseId/confirm Confirm FulfillmentCase API for Post mode
      * @apiGroup Fulfillment Case
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
@@ -1387,7 +1389,11 @@ export class FulfillmentController {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm This FulfillmentCase', undefined));
                     }
 
-                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
+                    if (fulfillCase.postId === undefined || fulfillCase.postId === null) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm Page FulfillmentCase please use /allocate_confirm', undefined));
+                    }
+
+                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM, approveDateTime: moment().toDate(), approveUser: new ObjectID(userId) };
                     if (asPage !== null && asPage !== undefined && asPage !== '') {
                         setObj.updatedByPageDate = moment().toDate();
                     } else {
@@ -1465,7 +1471,7 @@ export class FulfillmentController {
     }
 
     /**
-     * @api {post} /api/fulfillment_case/:caseId/confirm Confirm FulfillmentCase API
+     * @api {post} /api/fulfillment_case/:caseId/allocate_confirm Confirm FulfillmentCase API for page mode
      * @apiGroup Fulfillment Case
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
@@ -1474,7 +1480,7 @@ export class FulfillmentController {
      *      "data":"{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/fulfillment_case/:caseId/confirm
+     * @apiSampleRequest /api/fulfillment_case/:caseId/allocate_confirm
      * @apiErrorExample {json} Confirm FulfillmentCase Failed
      * HTTP/1.1 500 Internal Server Error
      */
@@ -1525,7 +1531,11 @@ export class FulfillmentController {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm This FulfillmentCase', undefined));
                     }
 
-                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
+                    if (fulfillCase.postId !== undefined && fulfillCase.postId !== null) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Confirm Page FulfillmentCase please use /confirm', undefined));
+                    }
+
+                    const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM, approveDateTime: moment().toDate(), approveUser: new ObjectID(userId) };
                     if (asPage !== null && asPage !== undefined && asPage !== '') {
                         setObj.updatedByPageDate = moment().toDate();
                     } else {
@@ -1780,7 +1790,7 @@ export class FulfillmentController {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Cancel This FulfillmentCase', undefined));
                     }
 
-                    const setObj: any = { status: FULFILLMENT_STATUS.INPROGRESS };
+                    const setObj: any = { status: FULFILLMENT_STATUS.INPROGRESS, approveUser: null, approveDateTime: null };
                     if (asPage !== null && asPage !== undefined && asPage !== '') {
                         setObj.updatedByPageDate = moment().toDate();
                     } else {

@@ -79,7 +79,7 @@ export class FulfillmentAllocateStatementService {
         }
 
         if (statement.needsId === undefined || statement.needsId === null || statement.needsId === '') {
-            return Promise.reject('Statement was required.');
+            return Promise.reject('Statement needsId was required.');
         }
 
         if (statement.fulfillmentRequest === undefined || statement.fulfillmentRequest === null || statement.fulfillmentRequest === '') {
