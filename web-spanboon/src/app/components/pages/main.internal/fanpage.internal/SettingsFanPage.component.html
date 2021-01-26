@@ -40,8 +40,7 @@
                 <div class="settings-list">
                     <ng-container *ngIf="activeLink === 'จัดการเพจ';">
                         <ng-container *ngFor="let link of arrayLink.links; let index = index">
-                            <div class="list-item-menu" matRipple matTooltip="{{link.label}}"
-                                [matTooltipPosition]="'right'" (click)="selecedInformation(link)"
+                            <div class="list-item-menu"  (click)="selecedInformation(link)"
                                 [class.active]="selected === link.label">
                                 <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
                                 <span class="settings-title">{{link.label}}</span>
@@ -51,8 +50,7 @@
 
                     <ng-container *ngIf="activeLink === 'โพสต์ของเพจ';">
                         <ng-container *ngFor="let link of arrayLink.linksPost; let index = index">
-                            <div class="list-item-menu" matRipple matTooltip="{{link.label}}"
-                                [matTooltipPosition]="'right'" (click)="selecedInformation(link)"
+                            <div class="list-item-menu" matRipple (click)="selecedInformation(link)"
                                 [class.active]="selected === link.label">
                                 <mat-icon class="settings-icon">{{link.icon}}</mat-icon>
                                 <span class="settings-title">{{link.label}}</span>
