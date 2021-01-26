@@ -40,10 +40,11 @@
                         </div>
                         <div class="needs-data-body">
                             <div class="unit" [class.active]="isFulfill">
-                                <div class="unit-box">
+                                <div class="unit-box"> 
                                     <div class="unit-num">
-                                        <span *ngIf="isFulfillQuantity">
-                                            {{item.fulfillQuantity}} /
+                                        <span *ngIf="isFulfillQuantity"> 
+                                            <!-- <span *ngIf="{'color': '#FD545A' } "> {{item.fulfillQuantity}} / </span> -->
+                                            <span [ngStyle]="{'color': item.fulfillQuantity > item.quantity  ? '#FD545A' : '#000000'} "> {{item.fulfillQuantity}} / </span>
                                         </span>
                                         <span [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
                                             {{item.quantity}}
