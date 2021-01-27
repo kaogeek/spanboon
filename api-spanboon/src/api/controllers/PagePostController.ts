@@ -8,6 +8,7 @@
 import 'reflect-metadata';
 import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
+import { spanboon_web } from '../../env';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { PageService } from '../services/PageService';
@@ -282,11 +283,17 @@ export class PagePostController {
         let createResult: any;
         let needNotiTxt = '';
         let isPostTwitter = false;
+        let isPostFacebook = false;
 
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
-                if('TRUE' === options.twitterPost.toUpperCase()){
+                if ('TRUE' === options.twitterPost.toUpperCase()) {
                     isPostTwitter = true;
+                }
+            }
+            if (options.facebookPost !== undefined && typeof options.facebookPost === 'string') {
+                if ('TRUE' === options.facebookPost.toUpperCase()) {
+                    isPostFacebook = true;
                 }
             }
         }
@@ -659,6 +666,7 @@ export class PagePostController {
             }
 
             if (createResult !== null && createResult !== undefined) {
+                const link = '/post/' + createResult.posts.id;
                 // notify to all userfollow if Post is Needed
                 if (createResult.posts !== undefined && createResult.posts.type === POST_TYPE.NEEDS) {
                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
@@ -667,14 +675,16 @@ export class PagePostController {
                     if (pageObj) {
                         notificationText = '"' + pageObj.name + '"' + needNotiTxt;
                     }
-                    const link = '/post/' + createResult.posts.id;
 
                     await this.pageNotificationService.notifyToUserFollow(pageId, NOTIFICATION_TYPE.NEEDS, notificationText, link);
                 }
 
                 // share to social
                 {
-                    await this.pageSocialAccountService.shareAllSocialPost(pageId, postPage.detail, !isPostTwitter);
+                    const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
+                    const messageForTW = postPage.detail + ' ' + fullLink;
+
+                    await this.pageSocialAccountService.shareAllSocialPost(pageId, messageForTW, !isPostTwitter, !isPostFacebook);
                 }
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create PagePost Success', createResult));

@@ -128,3 +128,8 @@ export const twitter_setup = {
     TWITTER_ACCESS_TOKEN: getOsEnv('TWITTER_ACCESS_TOKEN'),
     TWITTER_TOKEN_SECRET: getOsEnv('TWITTER_TOKEN_SECRET')
 };
+
+// Spanboon Web Setup
+export const spanboon_web = {
+    ROOT_URL: getOsEnv('SPANBOON_ROOT_URL')
+};
