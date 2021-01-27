@@ -396,13 +396,39 @@ export class FulfillmentController {
                     fulfilCaseResponse.updateDate = fulfill.updateDate;
                     fulfilCaseResponse.updatedByPageDate = fulfill.updatedByPageDate;
                     fulfilCaseResponse.updatedByUserDate = fulfill.updatedByUserDate;
+                    fulfilCaseResponse.approveDateTime = fulfill.approveDateTime;
 
                     let unreadCount = 0;
                     if (fulfillChat !== null && fulfillChat !== undefined && fulfillChat.length > 0) {
-                        fulfilCaseResponse.isRead = fulfill.chats[0].isRead;
+                        fulfilCaseResponse.isRead = false;
                         fulfilCaseResponse.chatMessage = fulfill.chats[0].message;
                         fulfilCaseResponse.chatDate = fulfill.chats[0].createdDate;
                         fulfilCaseResponse.chatRoom = fulfill.chats[0].room;
+
+                        // check isRead as a user or page.
+                        if (fulfill.chats[0].readers !== undefined && Array.isArray(fulfill.chats[0].readers)) {
+                            if (asPage !== undefined && asPage !== '') {
+                                let senderIsReadVal = false;
+                                for (const reader of fulfill.chats[0].readers) {
+                                    if (reader.senderType === CHAT_ROOM_TYPE.PAGE &&
+                                        ((reader.sender + '') === (asPage + ''))) {
+                                        senderIsReadVal = true;
+                                        break;
+                                    }
+                                }
+                                fulfilCaseResponse.isRead = senderIsReadVal;
+                            } else if (userId !== undefined && userId !== '') {
+                                let senderIsReadVal = false;
+                                for (const reader of fulfill.chats[0].readers) {
+                                    if (reader.senderType === CHAT_ROOM_TYPE.USER &&
+                                        ((reader.sender + '') === (userId + ''))) {
+                                        senderIsReadVal = true;
+                                        break;
+                                    }
+                                }
+                                fulfilCaseResponse.isRead = senderIsReadVal;
+                            }
+                        }
 
                         // fetch sender by type
                         const senderType = fulfill.chats[0].senderType;
@@ -447,8 +473,8 @@ export class FulfillmentController {
                         unreadMsgFilter.count = true;
                         unreadMsgFilter.whereConditions = {
                             room: chatroomId,
-                            isRead: false,
-                            deleted: false
+                            deleted: false,
+                            readers: { $nin: [{ sender: fulfill.chats[0].sender, senderType }] }
                         };
 
                         unreadCount = await this.chatMessageService.search(unreadMsgFilter);

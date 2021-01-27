@@ -12,4 +12,5 @@ export class ChatMessageResponse {
     public senderName: string;
     public senderType: string;
     public senderImage: string;
+    public senderIsRead: boolean;
 }

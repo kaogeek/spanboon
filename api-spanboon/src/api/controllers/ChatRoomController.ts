@@ -29,6 +29,7 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
 import { CheckChatRoomRequest } from './requests/CheckChatRoomRequest';
+import { read } from 'fs';
 
 @JsonController('/chatroom')
 export class ChatRoomController {
@@ -509,7 +510,7 @@ export class ChatRoomController {
             pageMap[pid] = pg;
         }
 
-        const responseResult: ChatMessageResponse[] = this.createChatMessageResponse(chatMsgResult, userMap, pageMap);
+        const responseResult: ChatMessageResponse[] = this.createChatMessageResponse(chatMsgResult, userMap, pageMap, req.user.id, asPage);
 
         const successResponse = ResponseUtil.getSuccessResponse('Successfully got chats', responseResult);
         return res.status(200).send(successResponse);
@@ -670,7 +671,7 @@ export class ChatRoomController {
         return true;
     }
 
-    private createChatMessageResponse(chatMsgs: ChatMessage[], userMap: any, pageMap: any): ChatMessageResponse[] {
+    private createChatMessageResponse(chatMsgs: ChatMessage[], userMap: any, pageMap: any, userId: string, asPage?: string): ChatMessageResponse[] {
         if (chatMsgs === undefined || chatMsgs.length <= 0) {
             return [];
         }
@@ -710,6 +711,34 @@ export class ChatRoomController {
             msgResp.senderType = senderType;
             msgResp.senderName = senderName;
             msgResp.senderImage = senderImg;
+            msgResp.senderIsRead = false;
+
+            // check isRead as a user or page.
+            if (asPage !== undefined && asPage !== '') {
+                if (msg.readers !== undefined && Array.isArray(msg.readers)) {
+                    let senderIsReadVal = false;
+                    for (const reader of msg.readers) {
+                        if (reader.senderType === CHAT_ROOM_TYPE.PAGE &&
+                            ((reader.sender + '') === (asPage + ''))) {
+                            senderIsReadVal = true;
+                            break;
+                        }
+                    }
+                    msgResp.senderIsRead = senderIsReadVal;
+                }
+            } else if (userId !== undefined && userId !== '') {
+                if (msg.readers !== undefined && Array.isArray(msg.readers)) {
+                    let senderIsReadVal = false;
+                    for (const reader of msg.readers) {
+                        if (reader.senderType === CHAT_ROOM_TYPE.USER &&
+                            ((reader.sender + '') === (userId + ''))) {
+                            senderIsReadVal = true;
+                            break;
+                        }
+                    }
+                    msgResp.senderIsRead = senderIsReadVal;
+                }
+            }
 
             result.push(msgResp);
         }
