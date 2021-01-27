@@ -1952,20 +1952,34 @@ export class FulfillmentController {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot fulfillment case that created a post.', undefined));
                     }
 
-                    // search case post
-                    const casePost = await this.postsService.findOne({ _id: new ObjectID(fulfillCase.postId) });
-                    if (casePost === undefined) {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Post of case was not found.', undefined));
+                    if ((fulfillCase.postId === undefined || fulfillCase.postId === null || fulfillCase.postId === '') &&
+                        (fulfillCase.pageId === undefined || fulfillCase.pageId === null || fulfillCase.pageId === '')) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Post or PageId of case was not found.', undefined));
                     }
 
-                    const pageObjId = new ObjectID(casePost.pageId);
+                    // search case post
+                    let casePost = undefined;
+                    if (fulfillCase.postId !== undefined && fulfillCase.postId !== null && fulfillCase.postId !== '') {
+                        casePost = await this.postsService.findOne({ _id: new ObjectID(fulfillCase.postId) });
+                    }
+
+                    let pageOfPost = undefined;
+                    if (casePost !== undefined && casePost.pageId !== undefined) {
+                        pageOfPost = await this.pageService.findOne({ where: { _id: casePost.pageId } });
+                    }
+
+                    if (pageOfPost === undefined && fulfillCase.pageId !== undefined && fulfillCase.pageId !== null && fulfillCase.pageId !== '') {
+                        pageOfPost = await this.pageService.findOne({ where: { _id: fulfillCase.pageId } });
+                    }
+
+                    const pageObjId = pageOfPost.id;
                     const pageData: Page[] = await this.pageService.find({ where: { _id: pageObjId } });
 
                     if (pageData === undefined || pageData === null || pageData.length <= 0) {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
                     }
 
-                    const createPostPageData = await this.createPostFulfillcaseFromCasePost(pagePost, fulfillCase, casePost, userId, clientId, ipAddress);
+                    const createPostPageData = await this.createPostFulfillcaseFromCasePost(pagePost, fulfillCase, pageOfPost, casePost, userId, clientId, ipAddress);
 
                     // update status of case
                     const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
@@ -1995,7 +2009,7 @@ export class FulfillmentController {
                 return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentCase Not Found', undefined));
             }
         } catch (error) {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Cancel FulfillmentCase Error', error.message));
+            return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentCase Error', error.message));
         }
     }
 
@@ -2762,7 +2776,7 @@ export class FulfillmentController {
         return await this.fulfillmentCaseService.create(fulfillCase);
     }
 
-    private async createPostFulfillcaseFromCasePost(pagePost: FulfillmentPostsRequest, fulfillCase: FulfillmentCase, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
+    private async createPostFulfillcaseFromCasePost(pagePost: FulfillmentPostsRequest, fulfillCase: FulfillmentCase, page: Page, casePost: Posts, userId: string, clientId?: string, ipAddress?: string): Promise<any> {
         if (pagePost === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Post Content was required.', undefined);
             return Promise.reject(errorResponse);
@@ -2773,8 +2787,8 @@ export class FulfillmentController {
             return Promise.reject(errorResponse);
         }
 
-        if (casePost === undefined) {
-            const errorResponse = ResponseUtil.getErrorResponse('Case Post was required.', undefined);
+        if (page === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Post Page was required.', undefined);
             return Promise.reject(errorResponse);
         }
 
@@ -2872,11 +2886,11 @@ export class FulfillmentController {
             postPage.createdDate = createdDate;
             postPage.startDateTime = postDateTime;
             postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
-            postPage.objective = casePost.objective;
-            postPage.objectiveTag = casePost.objectiveTag;
-            postPage.emergencyEvent = casePost.emergencyEvent;
-            postPage.emergencyEventTag = casePost.emergencyEventTag;
-            postPage.pageId = casePost.pageId;
+            postPage.objective = (casePost === undefined) ? undefined : casePost.objective;
+            postPage.objectiveTag = (casePost === undefined) ? undefined : casePost.objectiveTag;
+            postPage.emergencyEvent = (casePost === undefined) ? undefined : casePost.emergencyEvent;
+            postPage.emergencyEventTag = (casePost === undefined) ? undefined : casePost.emergencyEventTag;
+            postPage.pageId = page.id;
             postPage.referencePost = null;
             postPage.rootReferencePost = null;
             postPage.visibility = null;
@@ -3017,10 +3031,12 @@ export class FulfillmentController {
             // create fullfillment
             // search need from post
             const needMap: any = {};
-            const needsList = await this.needsService.findPostNeeds(casePost.id + '', true);
-            for (const need of needsList) {
-                const needIdKey = need.id + '';
-                needMap[needIdKey] = need;
+            if (casePost !== undefined) {
+                const needsList = await this.needsService.findPostNeeds(casePost.id + '', true);
+                for (const need of needsList) {
+                    const needIdKey = need.id + '';
+                    needMap[needIdKey] = need;
+                }
             }
 
             // search case fullfillmentRequest
@@ -3053,7 +3069,7 @@ export class FulfillmentController {
                 fulfil.post = need.post;
                 fulfil.casePost = createPostPageData.id;
                 fulfil.need = request.needsId;
-                fulfil.pageId = casePost.pageId;
+                fulfil.pageId = page.id;
                 fulfil.quantity = request.quantity;
                 fulfil.unit = need.unit;
 
