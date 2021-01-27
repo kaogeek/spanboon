@@ -14,12 +14,13 @@ import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { TwitterService } from '../services/TwitterService';
+import { FacebookService } from '../services/FacebookService';
 
 @Service()
 export class PageSocialAccountService {
 
     constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository,
-        private twitterService: TwitterService) { }
+        private twitterService: TwitterService, private facebookService: FacebookService) { }
 
     // find PageSocialAccount
     public find(findCondition: any): Promise<PageSocialAccount[]> {
@@ -62,22 +63,41 @@ export class PageSocialAccountService {
         }
     }
 
-    public async shareAllSocialPost(pageId: string, message: string): Promise<boolean> {
-        const twitterAccount = await this.getTwitterPageAccount(pageId);
-        if (twitterAccount !== undefined) {
-            const accessToken = twitterAccount.properties.oauthToken;
-            const tokenSecret = twitterAccount.properties.oauthTokenSecret;
-
-            try {
-                await this.twitterService.postStatusByToken(accessToken, tokenSecret, message);
-            } catch (error) {
-                console.log(error);
+    public async shareAllSocialPost(pageId: string, message: string, ignoreTwitter?: any, ignoreFacebook?: any): Promise<boolean> {
+        let twitterPost = true;
+        if (ignoreTwitter !== undefined) {
+            if (ignoreTwitter) {
+                twitterPost = false;
             }
         }
 
-        // const fbAccount = await this.getFacebookPageAccount(pageId);
-        // if (fbAccount !== undefined) {
-        // }
+        if (twitterPost) {
+            const twitterAccount = await this.getTwitterPageAccount(pageId);
+            if (twitterAccount !== undefined) {
+                const accessToken = twitterAccount.properties.oauthToken;
+                const tokenSecret = twitterAccount.properties.oauthTokenSecret;
+
+                try {
+                    await this.twitterService.postStatusByToken(accessToken, tokenSecret, message);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+
+        let postFacebook = true;
+        if (ignoreFacebook !== undefined) {
+            if (ignoreFacebook) {
+                postFacebook = false;
+            }
+        }
+
+        if (postFacebook) {
+            const fbAccount = await this.getFacebookPageAccount(pageId);
+            if (fbAccount !== undefined) {
+                this.facebookService.publishPost(fbAccount.providerPageId, message);
+            }
+        }
 
         return true;
     }

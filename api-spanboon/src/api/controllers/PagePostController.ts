@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
@@ -55,6 +55,7 @@ import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { PageSocialAccountService } from '../services/PageSocialAccountService';
 
 @JsonController('/page')
 export class PagePostController {
@@ -76,7 +77,8 @@ export class PagePostController {
         private pageUsageHistoryService: PageUsageHistoryService,
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
-        private pageAccessLevelService: PageAccessLevelService
+        private pageAccessLevelService: PageAccessLevelService,
+        private pageSocialAccountService: PageSocialAccountService
     ) { }
 
     // PagePost List API
@@ -257,7 +259,7 @@ export class PagePostController {
      */
     @Post('/:pageId/post')
     @Authorized('user')
-    public async createPagePost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async createPagePost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @QueryParams() options: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
@@ -279,6 +281,15 @@ export class PagePostController {
         let pageObjId = null;
         let createResult: any;
         let needNotiTxt = '';
+        let isPostTwitter = false;
+
+        if (options !== undefined) {
+            if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
+                if('TRUE' === options.twitterPost.toUpperCase()){
+                    isPostTwitter = true;
+                }
+            }
+        }
 
         if (pageId === 'null' || pageId === null || pageId === 'undefined' || pageId === undefined) {
             pageData = await this.pageService.find({ where: { pageId: null, ownerUser: userObjId } });
@@ -649,7 +660,6 @@ export class PagePostController {
 
             if (createResult !== null && createResult !== undefined) {
                 // notify to all userfollow if Post is Needed
-
                 if (createResult.posts !== undefined && createResult.posts.type === POST_TYPE.NEEDS) {
                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
                     let notificationText = 'มีคนกำลังต้องการความช่วยเหลือจากคุณ';
@@ -660,6 +670,11 @@ export class PagePostController {
                     const link = '/post/' + createResult.posts.id;
 
                     await this.pageNotificationService.notifyToUserFollow(pageId, NOTIFICATION_TYPE.NEEDS, notificationText, link);
+                }
+
+                // share to social
+                {
+                    await this.pageSocialAccountService.shareAllSocialPost(pageId, postPage.detail, !isPostTwitter);
                 }
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create PagePost Success', createResult));
