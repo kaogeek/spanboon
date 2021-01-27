@@ -193,7 +193,7 @@ export class TwitterService {
                 oauth_timestamp,
                 oauth_nonce,
                 oauth_version: '1.0',
-                status: encodeURIComponent(message)
+                status: message
             };
             const options = {};
 

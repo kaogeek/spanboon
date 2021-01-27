@@ -62,6 +62,9 @@ import { CheckPageNameRequest } from './requests/CheckPageNameRequest';
 import { PageSocialFBBindingRequest } from './requests/PageSocialFBBindingRequest';
 import { PageSocialTWBindingRequest } from './requests/PageSocialTWBindingRequest';
 import { PROVIDER } from '../../constants/LoginProvider';
+import { PageConfigService } from '../services/PageConfigService';
+import { ConfigValueRequest } from './requests/ConfigValueRequest';
+import { PageConfig } from '../models/PageConfig';
 
 @JsonController('/page')
 export class PageController {
@@ -84,7 +87,8 @@ export class PageController {
         private uniqueIdHistoryService: UniqueIdHistoryService,
         private pageSocialAccountService: PageSocialAccountService,
         private facebookService: FacebookService,
-        private twitterService: TwitterService
+        private twitterService: TwitterService,
+        private pageConfigService: PageConfigService
     ) { }
 
     // Find Page API
@@ -299,7 +303,7 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot access the page.', undefined);
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             // check if page was registed.
@@ -383,7 +387,7 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot access the page.', undefined);
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             // check if page was registed.
@@ -457,7 +461,7 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot access the page.', undefined);
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.FACEBOOK });
@@ -496,7 +500,7 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot access the page.', undefined);
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.TWITTER });
@@ -535,7 +539,7 @@ export class PageController {
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
-                return res.status(401).send('You cannot access the page.', undefined);
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             // check if page was registed.
@@ -2076,6 +2080,223 @@ export class PageController {
         }
     }
 
+    /**
+     * @api {get} /api/page/:id/config Get Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Get Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/config
+     * @apiErrorExample {json} Get Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id/config/:name')
+    @Authorized('user')
+    public async getPageConfig(@Param('id') id: string, @Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const config = await this.pageConfigService.findOne({ name, page: pageObjId });
+
+        if (config) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to Get Page Config', undefined));
+        }
+    }
+
+    /**
+     * @api {post} /api/page/:id/config/:name Create Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Create Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/config/:name
+     * @apiErrorExample {json} Create Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/:id/config/:name')
+    @Authorized('user')
+    public async createPageConfig(@Param('id') id: string, @Param('name') name: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        if (configValue.type === undefined || configValue.type === '') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config type is required.', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const currentConfig = await this.pageConfigService.findOne({ name, page: pageObjId });
+        if (currentConfig) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config is duplicate.', undefined));
+        }
+
+        const config = new PageConfig();
+        config.page = pageObjId;
+        config.name = name;
+        config.type = configValue.type;
+        config.value = configValue.value;
+
+        const createConfig = await this.pageConfigService.create(config);
+
+        if (createConfig) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Create Page Config', createConfig));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to Create Page Config', undefined));
+        }
+    }
+
+    /**
+     * @api {put} /api/page/:id/config/:name Edit Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Edit Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/config/:name
+     * @apiErrorExample {json} Edit Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Put('/:id/config/:name')
+    @Authorized('user')
+    public async editPageConfig(@Param('id') id: string, @Param('name') name: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        if (configValue.type === undefined || configValue.type === '') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config type is required.', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        let result = undefined;
+        const query = { name, page: pageObjId };
+        const currentConfig = await this.pageConfigService.findOne(query);
+        if (currentConfig) {
+            result = await this.pageConfigService.update(query, {
+                $set: {
+                    value: configValue.value,
+                    type: configValue.type
+                }
+            });
+        } else {
+            // create if not exists
+            const config = new PageConfig();
+            config.page = pageObjId;
+            config.name = name;
+            config.type = configValue.type;
+            config.value = configValue.value;
+
+            result = await this.pageConfigService.create(config);
+        }
+
+        if (result) {
+            const config = await this.pageConfigService.findOne(query);
+
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully edit Page Config', config));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to edit Page Config', undefined));
+        }
+    }
+
+    /**
+     * @api {delete} /api/page/:id/config/:name Delete Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Delete Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/config/:name
+     * @apiErrorExample {json} Delete Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Delete('/:id/config/:name')
+    @Authorized('user')
+    public async deletePageConfig(@Param('id') id: string, @Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const query = { name, page: pageObjId };
+        const deleteConfig = await this.pageConfigService.delete(query);
+
+        if (deleteConfig) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page Config', name));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete Page Config', undefined));
+        }
+    }
+
     @Post('/name/check')
     public async checkAllPageName(@Body({ validate: true }) pageName: CheckPageNameRequest, @Res() res: any): Promise<any> {
         const name = pageName.name;
@@ -2314,6 +2535,35 @@ export class PageController {
         }
     }
 
+    private async getPageEnagagement(contentId: ObjectID, userId: ObjectID, contentType: string, action: string): Promise<UserEngagement> {
+        return await this.userEngagementService.findOne({ where: { contentId, userId, contentType, action } });
+    }
+
+    private async isUserCanAccessPage(userId: string, asPageId: string): Promise<boolean> {
+        // check accessibility
+        const pageAccess = await this.pageAccessLevelService.getUserAccessByPage(userId, asPageId);
+
+        if (pageAccess) {
+            let isCanAccess = false;
+            for (const access of pageAccess) {
+                if (access.level === PAGE_ACCESS_LEVEL.OWNER ||
+                    access.level === PAGE_ACCESS_LEVEL.ADMIN ||
+                    access.level === PAGE_ACCESS_LEVEL.MODERATOR) {
+                    isCanAccess = true;
+                    break;
+                }
+            }
+
+            if (!isCanAccess) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
     /*
     private async checkUniqueIdValid(id: string, pageUsername: string): Promise<any> {
         let findPageIdQuery;
@@ -2353,35 +2603,6 @@ export class PageController {
             return ResponseUtil.getErrorResponse('Invalid pageId', undefined);
         }
     }*/
-
-    private async getPageEnagagement(contentId: ObjectID, userId: ObjectID, contentType: string, action: string): Promise<UserEngagement> {
-        return await this.userEngagementService.findOne({ where: { contentId, userId, contentType, action } });
-    }
-
-    private async isUserCanAccessPage(userId: string, asPageId: string): Promise<boolean> {
-        // check accessibility
-        const pageAccess = await this.pageAccessLevelService.getUserAccessByPage(userId, asPageId);
-
-        if (pageAccess) {
-            let isCanAccess = false;
-            for (const access of pageAccess) {
-                if (access.level === PAGE_ACCESS_LEVEL.OWNER ||
-                    access.level === PAGE_ACCESS_LEVEL.ADMIN ||
-                    access.level === PAGE_ACCESS_LEVEL.MODERATOR) {
-                    isCanAccess = true;
-                    break;
-                }
-            }
-
-            if (!isCanAccess) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        return true;
-    }
 
     // private async getPageNeedStandardItem(pageId: string, standardItemId: string): Promise<Needs> {
     //     const stmt = {

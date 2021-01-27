@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Body, Req, Post, Authorized, Param, Put, Get, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Body, Req, Post, Authorized, Param, Put, Get, QueryParam, Delete } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { UserService } from '../services/UserService';
 import { ObjectID } from 'mongodb';
@@ -35,7 +35,10 @@ import { UniqueIdHistoryService } from '../services/UniqueIdHistoryService';
 import { Page } from '../models/Page';
 import { User } from '../models/User';
 import { PageService } from '../services/PageService';
+import { UserConfigService } from '../services/UserConfigService';
 import moment from 'moment';
+import { UserConfig } from '../models/UserConfig';
+import { ConfigValueRequest } from './requests/ConfigValueRequest';
 
 @JsonController('/user')
 export class UserController {
@@ -48,7 +51,8 @@ export class UserController {
         private standardItemService: StandardItemService,
         private userProvideItemsService: UserProvideItemsService,
         private customItemService: CustomItemService,
-        private uniqueIdHistoryService: UniqueIdHistoryService
+        private uniqueIdHistoryService: UniqueIdHistoryService,
+        private userConfigService: UserConfigService
     ) { }
 
     // Logout API
@@ -278,6 +282,174 @@ export class UserController {
                 const errorResponse = ResponseUtil.getErrorResponse('Follow User Failed', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+    }
+
+    /**
+     * @api {get} /api/user/config/:name Get User Config API
+     * @apiGroup User
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Get User Config.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/user/config/:name
+     * @apiErrorExample {json} Get User Config Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/config/:name')
+    @Authorized('user')
+    public async getPageConfig(@Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const config = await this.userConfigService.findOne({ name, user: userId });
+
+        if (config) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get User Config', config));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to Get User Config', undefined));
+        }
+    }
+
+    /**
+     * @api {post} /api/user/config/:name Create User Config API
+     * @apiGroup User
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Create User Config.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/user/config/:name
+     * @apiErrorExample {json} Create User Config Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/config/:name')
+    @Authorized('user')
+    public async createPageConfig(@Param('name') name: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+
+        if (configValue.type === undefined || configValue.type === '') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config type is required.', undefined));
+        }
+
+        const currentConfig = await this.userConfigService.findOne({ name, user: userId });
+        if (currentConfig) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config is duplicate.', undefined));
+        }
+
+        const config = new UserConfig();
+        config.user = userId;
+        config.name = name;
+        config.type = configValue.type;
+        config.value = configValue.value;
+
+        const createConfig = await this.userConfigService.create(config);
+
+        if (createConfig) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Create User Config', createConfig));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to Create User Config', undefined));
+        }
+    }
+
+    /**
+     * @api {put} /api/user/config/:name Edit Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Edit Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/user/config/:name
+     * @apiErrorExample {json} Edit Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Put('/config/:name')
+    @Authorized('user')
+    public async editPageConfig(@Param('name') name: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+
+        if (configValue.type === undefined || configValue.type === '') {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Config type is required.', undefined));
+        }
+
+        let result = undefined;
+        const query = { name, user: userId };
+        const currentConfig = await this.userConfigService.findOne(query);
+        if (currentConfig) {
+            result = await this.userConfigService.update(query, {
+                $set: {
+                    value: configValue.value,
+                    type: configValue.type
+                }
+            });
+        } else {
+            // create if not exist.
+            const config = new UserConfig();
+            config.user = userId;
+            config.name = name;
+            config.type = configValue.type;
+            config.value = configValue.value;
+
+            result = await this.userConfigService.create(config);
+        }
+
+        if (result) {
+            const config = await this.userConfigService.findOne(query);
+
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully edit User Config', config));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to edit User Config', undefined));
+        }
+    }
+
+    /**
+     * @api {delete} /api/user/config/:name Delete Page Config API
+     * @apiGroup Page
+     * @apiHeader {String} Authorization
+     * @apiParamExample {json} Input
+     * {
+     *      "id" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     * "message": "Successfully Delete Page.",
+     * "status": "1"
+     * }
+     * @apiSampleRequest /api/user/config/:name
+     * @apiErrorExample {json} Delete Page Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Delete('/config/:name')
+    @Authorized('user')
+    public async deletePageConfig(@Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+
+        const query = { name, user: userId };
+        const deleteConfig = await this.userConfigService.delete(query);
+
+        if (deleteConfig) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete User Config', name));
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete User Config', undefined));
         }
     }
 
