@@ -7,4 +7,4 @@
 
 <about-page #aboutPage *ngIf="selectedTab === 'ข้อมูลเพจ'" ></about-page>
 <settings-admin-roles #adminRole *ngIf="selectedTab === 'บทบาทในเพจ'" [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-admin-roles> 
-<security-info *ngIf="selectedTab === 'การเชื่อมต่อ'"  [data]="data"  [connectTwitter]="bindingSocialTwitter"></security-info>
+<security-info *ngIf="selectedTab === 'การเชื่อมต่อ'"  [pageId]="data"  [connectTwitter]="bindingSocialTwitter"></security-info>

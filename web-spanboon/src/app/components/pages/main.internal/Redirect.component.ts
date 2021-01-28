@@ -68,8 +68,8 @@ export class Redirect implements OnInit {
                     }
                 } else {
                     let doRunAccessToken = false;
-                    if (url !== undefined && url !== '') {
-                        let split = url.split('?');
+                    if (url !== undefined && url !== '') { 
+                        let split = url.split('?'); 
                         if (split.length >= 2) {
                             const queryParam = split[1];
                             if (queryParam.includes('tab=connect')) {
@@ -89,13 +89,18 @@ export class Redirect implements OnInit {
                             const token = spilt[0].split('=')[1];
                             const token_secret = spilt[1].split('=')[1];
                             const userId = spilt[2].split('=')[1];
-
+                            const page = spilt[2].split('/')[1];
+                            console.log('page ',page)
                             let user = {
                                 token: token,
                                 token_secret: token_secret,
                                 userId: userId
-                            }
+                            } 
+
+                            window.close();
+                            window.opener.location = this.page;
                             this.router.navigateByUrl(this.page, { state: { data: user } })
+
                         }).catch((err: any) => [
                             console.log('err ', err)
                         ])
