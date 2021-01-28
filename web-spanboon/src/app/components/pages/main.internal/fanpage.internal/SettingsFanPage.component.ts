@@ -171,7 +171,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         let resultTwitter = this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras.state;
         console.log('infofanpage', resultTwitter)
         if (resultTwitter !== undefined && resultTwitter !== null) {
-            console.log('fanpage ', resultTwitter)
+            console.log('fanpage ', resultTwitter) 
             const twitter = new PageSocailTW();
             twitter.twitterOauthToken = resultTwitter.data.token;
             twitter.twitterTokenSecret = resultTwitter.data.token_secret;
@@ -194,10 +194,8 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
-                    const replaceCommentURL: string = substringPage.replace('/page/', '');
-                    console.log('replaceCommentURL ', replaceCommentURL)
-                    const splitTextId = replaceCommentURL.split('?tab=')[1];
-                    console.log('splitTextId ', splitTextId)
+                    const replaceCommentURL: string = substringPage.replace('/page/', ''); 
+                    const splitTextId = replaceCommentURL.split('?tab=')[1]; 
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
                     } else if (splitTextId === 'account') {
