@@ -602,7 +602,7 @@ export class FulfillmentController {
     }
 
     /**
-     * @api {get} /api/fulfillment_case/list Find Main Page Data API
+     * @api {get} /api/fulfillment_case/:caseId Find Main Page Data API
      * @apiGroup MainPage
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
@@ -611,7 +611,7 @@ export class FulfillmentController {
      *      "data":"{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/fulfillment_case/list
+     * @apiSampleRequest /api/fulfillment_case/:caseId
      * @apiErrorExample {json} Page error
      * HTTP/1.1 500 Internal Server Error
      */
@@ -714,7 +714,8 @@ export class FulfillmentController {
                                 status: fulfill.status,
                                 requester: fulfill.requester,
                                 description: fulfill.description,
-                                createdDate: fulfill.createdDate
+                                createdDate: fulfill.createdDate,
+                                approveDateTime: fulfill.approveDateTime
                             };
 
                             chatRoomResult = {
