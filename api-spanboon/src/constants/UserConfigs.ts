@@ -5,10 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export class CheckChatRoomRequest {
-
-    public roomIds: string[];
-    public fetchUserRoom: boolean;
-    public asPage: string;
-
-}
+export const USER_CONFIGS = {
+    USER_LOGOUT_MODE: 'user.logout.mode',
+    // default
+    DEFAULT_USER_LOGOUT_MODE: 'one' // value as one,all
+};

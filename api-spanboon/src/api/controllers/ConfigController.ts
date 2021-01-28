@@ -12,6 +12,7 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { Config } from '../models/Config';
 
+/* system config */
 @JsonController('/config')
 export class ConfigController {
     constructor(private configService: ConfigService) { }
@@ -35,7 +36,6 @@ export class ConfigController {
      */
     @Get('/:name')
     public async configDetails(@Param('name') cfgName: string, @Res() res: any): Promise<any> {
-        console.log('cfgName >>>> ', cfgName);
         const config: Config = await this.configService.findOne({ where: { name: cfgName } });
 
         if (config) {
