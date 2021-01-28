@@ -26,7 +26,7 @@ import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
-const PAGE_SUB_POST: string = 'post' 
+const PAGE_SUB_POST: string = 'post'
 const URL_PATH: string = '/page/';
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -77,7 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public subPage: string;
   public redirection: string;
   public resNeeds: any;
-  public isLoading: boolean; 
+  public isLoading: boolean;
   public isFiles: boolean;
   public isNotAccess: boolean;
   public isEditCover: boolean;
@@ -91,7 +91,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public imageCoverSize: number;
   public position: number;
   public innerWidth: any;
-  public pageUser: any[]; 
+  public pageUser: any[];
   public userImage: any;
   public commentData: any;
   public postList: any[] = [];
@@ -136,7 +136,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.showLoading = true;
     this.cacheConfigInfo = cacheConfigInfo;
     this.userImage = {};
-    this.labelStatus = 'ไม่พบเพจ'; 
+    this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
 
     this.mySubscription = this.router.events.subscribe((event) => {
@@ -184,7 +184,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
       this.countScroll = scrollTop.fix;
-      this.setProfile(); 
+      this.setProfile();
     });
 
     this.observManager.subscribe('refresh_page', (type) => {
@@ -301,6 +301,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         type: '',
         offset: 0
       }
+      this.searchPostPageType(data, true);
+    } else if (subPage === 'fulfillment') {
+      data = {
+        type: 'FULFILLMENT',
+        offset: 0
+      }
+      this.activeLink = 'เติมเต็ม';
       this.searchPostPageType(data, true);
     } else if (this.splitTpyeClone === 'fulfillment') {
       this.activeLink = 'เติมเต็ม';
@@ -659,12 +666,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline');
     } else {
       this.isLoadingClickTab = true;
-      // if (link.keyword !== this.activeLink) {
-      //   this.isLoadDataPost = true;
-      // } else {
-      //   this.isLoadDataPost = false;
-      // }
-      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword);
+      this.initPage(link.keyword);
     }
   }
 
@@ -725,7 +727,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (err.error.message === 'Unable got Page') {
           this.msgPageNotFound = true;
           this.labelStatus = 'ไม่พบเพจ';
-        } 
+        }
         this.stopLoading();
       }
     })
@@ -1247,7 +1249,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       }
     } else {
-      if(this.imgprofile && this.imgprofile.nativeElement !== undefined){
+      if (this.imgprofile && this.imgprofile.nativeElement !== undefined) {
         this.imgprofile.nativeElement.style.marginTop = '-55pt';
       }
     }
