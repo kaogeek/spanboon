@@ -73,20 +73,20 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         this.listItem = [
             {
-                "label": "จัดการให้อัตโนมัติ",
+                "label": "จัดสรรให้อัตโนมัติ",
                 "detail": "จัดสรรเข้าโพสต์ให้อัตโนมัติ เรียงจากเก่าไปใหม่",
                 "type": "AUTO"
             },
             {
-                "label": "จัดการด้วยตัวคุณเอง",
+                "label": "จัดสรรด้วยตัวคุณเอง",
                 "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง",
                 "type": "MANUAL"
             },
-            {
-                "label": "เข้าโพสต์มองหาทั่วไป",
-                "detail": "จัดสรรเข้าโพสต์ที่ไม่ระบุเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ",
-                "type": "MANUALGENERAL"
-            }
+            // {
+            //     "label": "เข้าโพสต์มองหาทั่วไป",
+            //     "detail": "จัดสรรเข้าโพสต์ที่ไม่ระบุเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ",
+            //     "type": "MANUALGENERAL"
+            // }
         ]
 
         this.wizardConfig = {
@@ -103,8 +103,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
-
-        console.log('this.data', this.data)
         this.getNeedsPage();
 
         // this.checkLoginAndRedirection();
@@ -156,7 +154,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                     if (index > -1) {
 
-                        this.listItemNeed.push({ createdDate: n.createdDate, imageURL: n.imageURL, fulfillQuantity: n.quantity, requestId: this.data.item[index].requestId, customItemId: n.customItemId, name: n.name, quantity: n.quantity, unit: n.unit, standardItemId: n.standardItemId, amount: this.data.item[index].quantity, })
+                        this.listItemNeed.push({ createdDate: n.createdDate, imageURL: n.imageURL, fulfillQuantity: this.data.item[index].quantity, requestId: this.data.item[index].requestId, customItemId: n.customItemId, name: n.name, quantity: this.data.item[index].quantity, unit: n.unit, standardItemId: n.standardItemId, amount: this.data.item[index].quantity, })
 
                     }
                 }
