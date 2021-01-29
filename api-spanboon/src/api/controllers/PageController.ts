@@ -180,6 +180,53 @@ export class PageController {
                 result.pageObjectives = [];
             }
 
+            if (limit !== null || limit !== undefined || limit <= 0) {
+                limit = MAX_SEARCH_ROWS;
+            }
+
+            const pageNeedsStmt = [
+                { $match: { pageId: postPageObjId } },
+                {
+                    $lookup: {
+                        from: 'Posts',
+                        localField: 'post',
+                        foreignField: '_id',
+                        as: 'postObj'
+                    }
+                },
+                { $match: { 'postObj.type': POST_TYPE.NEEDS, 'postObj.deleted': false } },
+                {
+                    $group: {
+                        _id: {
+                            $cond: {
+                                if: { $and: [{ $not: { $eq: ['$standardItemId', null] } }, { $eq: ['$customItemId', null] }] },
+                                then: '$standardItemId',
+                                else: {
+                                    $cond: [{
+                                        $and: [{ $not: { $eq: ['$customItemId', null] } }, { $not: { $eq: ['$standardItemId', null] } }]
+                                    }, '$customItemId', '$name']
+                                }
+                            }
+                        },
+                        result: { $mergeObjects: '$$ROOT' },
+                        quantity: { $sum: '$quantity' },
+                        fulfillQuantity: { $sum: '$fulfillQuantity' },
+                    }
+                },
+                { $replaceRoot: { newRoot: { $mergeObjects: ['$result', '$$ROOT'] } } },
+                { $project: { result: 0 } },
+                { $sort: { quantity: -1, createdDate: -1 } },
+                { $limit: limit }
+            ];
+            const needs: Needs[] = await this.needsService.aggregateEntity(pageNeedsStmt);
+
+            if (needs !== null && needs !== undefined && needs.length > 0) {
+                result.needs = needs;
+            } else {
+                result.needs = [];
+            }
+
+            /* old code
             const posts: Posts[] = await this.postsService.find({ where: { pageId: postPageObjId, type: POST_TYPE.NEEDS } });
 
             if (posts !== null && posts !== undefined && posts.length > 0) {
@@ -228,6 +275,7 @@ export class PageController {
                     result.needs = [];
                 }
             }
+            */
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got Page', result);
             return res.status(200).send(successResponse);

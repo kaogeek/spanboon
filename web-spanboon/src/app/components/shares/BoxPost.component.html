@@ -172,8 +172,8 @@
                     </ng-container>
                 </div>
             </div>
-        </ng-container> 
-        
+        </ng-container>
+
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
             [class.msg-error-shake]="isMsgNull" placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="80">
@@ -200,7 +200,8 @@
             </div>
         </div>
         <needs-card #needsCard style="padding-left: 10pt; padding-right: 10pt; display: block;" [isClose]="true"
-            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill" [isButtonFulfill]="isButtonFulfill"></needs-card>
+            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
+            [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right">
                 <div *ngIf="isRepost && isMobilePost  && isMobileText" class="text-limit"
@@ -535,22 +536,6 @@
             <repost-data [isRepost]="true" [itemPost]="rePote"></repost-data>
         </div>
 
-        <!-- <div class="fulfill-items-wrapper" *ngIf="isFulfill">
-            <div class="fulfill-items-header">
-                <div class="header-left">
-                    <span>รายการเติมเต็ม</span>
-                </div>
-                <div class="header-right">
-                    <span>{{content.fulfillRequest.length}} รายการ</span>
-                </div>
-            </div>
-            <div class="fulfill-items" *ngFor="let item of content.fulfillRequest">
-                <card-fulfill-item [itemName]="item.name" [itemUnit]="item.unit" [itemQuantity]="item.quantity"
-                    [imageURL]='item.imageURL'>
-                </card-fulfill-item>
-            </div>
-        </div> -->
-
         <div class="wrapper-tool-post" #toolBar (window:resize)="onResize()">
             <div class="left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
                 <mat-form-field appearance="none" *ngIf="!isFulfill">
@@ -589,8 +574,9 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="center" style="justify-content: flex-end;">
-                <!-- <img class="btn-action" src="../../../assets/img/vision.png" alt=""> -->
+            <div class="center">
+                <!-- <div class="center" style="justify-content: flex-end;"> -->
+                <img class="btn-action" src="../../../assets/img/vision.png" (click)="preview()" alt="">
                 <div class="wrapper-action">
                     <div class="tag-drop" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuTag"
                         (menuClosed)="focusOutTag()" (click)="clickListTag()">
@@ -730,6 +716,16 @@
                             </div>
                         </ng-template>
                     </div>
+
+                    <!-- <div class="share-social">
+                        <svg class="icon-social" xmlns="http://www.w3.org/2000/svg" width="40.107" height="44.3"
+                            viewBox="0 0 40.107 44.3">
+                            <path id="Path_3670" data-name="Path 3670"
+                                d="M263.26,105.68l-13.01-6.8a7.374,7.374,0,0,0,.12-2.44l13.02-7.75a7.562,7.562,0,1,0-3.16-6.13,7.807,7.807,0,0,0,.18,1.62l-12.48,7.43a7.617,7.617,0,0,0-7.97-1.4h0a7.585,7.585,0,0,0,2.9,14.59,7.506,7.506,0,0,0,2.9-.58,7.619,7.619,0,0,0,1.48-.83l13.13,6.86a7.62,7.62,0,1,0,2.89-4.57Z"
+                                transform="translate(-235.283 -74.98)" fill="#343434" />
+                        </svg>
+                    </div> -->
+
                 </div>
             </div>
             <div class="right">

@@ -29,7 +29,6 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
 import { CheckChatRoomRequest } from './requests/CheckChatRoomRequest';
-import { read } from 'fs';
 
 @JsonController('/chatroom')
 export class ChatRoomController {

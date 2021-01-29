@@ -55,4 +55,19 @@ export class AllocateFacade extends AbstractFacade {
         });
     }
 
+    public async searchAllocate(data): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + "/allocate/calculate";
+            let body: any = {};
+            let options = this.getDefaultOptions();
+
+            body = Object.assign(data)
+            this.http.post(url, body, options).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
 }

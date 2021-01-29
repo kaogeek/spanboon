@@ -14,7 +14,9 @@ import { AllocateRequest } from './requests/allocate/AllocateRequest';
 import { POST_TYPE } from '../../constants/PostType';
 import { AllocateResponse } from './responses/allocate/AllocateResponse';
 import { CalculateAllocateQueryparam } from './params/CalculateAllocateQueryparam';
+import { SearchAllocateQueryparam } from './params/SearchAllocateQueryparam';
 import { Posts } from '../models/Posts';
+import { ALLOCATE_SEARCH_LIMIT_DEFAULT, ALLOCATE_SEARCH_OFFSET_DEFAULT } from '../../constants/Constants';
 
 @JsonController('/allocate')
 export class AllocateController {
@@ -70,6 +72,204 @@ export class AllocateController {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', result));
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Calculate Allocate', undefined));
+            }
+        } catch (error) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Calculate Allocate Error', error.message));
+        }
+    }
+
+    // Search Allocate API
+    /**
+     * @api {post} /api/allocate/search Search Allocate API
+     * @apiGroup Allocate
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully Search Allocate"
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/allocate/search
+     * @apiErrorExample {json} Search Allocate error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/search')
+    public async searchAllocate(@QueryParams() params: SearchAllocateQueryparam, @Body({ validate: true }) allocate: AllocateRequest, @Res() res: any): Promise<any> {
+        try {
+            let emergencyEvent; // emergency event id
+            let objective; // objective event id
+            let orderBy: string = undefined;
+            let orderByNumber = 1;
+            let limit = undefined;
+            let offset = undefined;
+
+            if (params !== null && params !== undefined) {
+                emergencyEvent = params.emergencyEvent;
+                objective = params.objective;
+                orderBy = params.orderBy;
+                limit = params.limit;
+                offset = params.offset;
+
+                if (typeof limit === 'string') {
+                    limit = Number(limit);
+                }
+
+                if (typeof offset === 'string') {
+                    offset = Number(offset);
+                }
+            }
+
+            if (offset === undefined || offset <= -1) {
+                offset = ALLOCATE_SEARCH_OFFSET_DEFAULT;
+            }
+
+            if (limit === undefined || limit <= -1) {
+                limit = ALLOCATE_SEARCH_LIMIT_DEFAULT; // 
+            }
+
+            if (orderBy === undefined || orderBy === '' || ((orderBy !== 'asc') && (orderBy !== 'desc'))) {
+                orderBy = 'asc';
+            }
+
+            if (orderBy === 'desc') {
+                orderByNumber = -1;
+            }
+
+            const pageId = allocate.pageId;
+            const postId = allocate.postId;
+            const items = allocate.items;
+
+            if ((pageId === undefined || pageId === null || pageId === '') && (postId === undefined || postId === null || postId === '')) {
+                // no match for this case
+                return {
+                    pageId,
+                    postId,
+                    items: []
+                };
+            }
+
+            const needORStmt: any[] = [];
+            const stdItemIdList = [];
+            const customItemIdList = [];
+            if (items !== undefined && items !== null && items.length > 0) {
+                for (const item of items) {
+                    const stdItemId = item.standardItemId;
+                    const customItemId = item.customItemId;
+
+                    if (stdItemId !== null && stdItemId !== undefined && stdItemId !== '') {
+                        stdItemIdList.push(new ObjectID(stdItemId));
+                    } else if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
+                        customItemIdList.push(new ObjectID(customItemId));
+                    }
+                }
+            }
+
+            if (stdItemIdList.length > 0) {
+                needORStmt.push({ standardItemId: { $in: stdItemIdList } });
+            }
+
+            if (customItemIdList.length > 0) {
+                needORStmt.push({ customItemId: { $in: customItemIdList } });
+            }
+
+            const matchPost: any = { 'posts.type': POST_TYPE.NEEDS };
+            // inject filter
+            if (emergencyEvent !== undefined && emergencyEvent !== '') {
+                if (emergencyEvent !== 'non') {
+                    matchPost['posts.emergencyEvent'] = new ObjectID(emergencyEvent);
+                } else {
+                    matchPost['posts.emergencyEvent'] = { $ne: '', $exists: false };
+                }
+            }
+
+            if (objective !== undefined && objective !== '') {
+                if (objective !== 'non') {
+                    matchPost['posts.objective'] = new ObjectID(objective);
+                } else {
+                    matchPost['posts.objective'] = { $ne: '', $exists: false };
+                }
+            }
+
+            const needsAggStmt = [
+                {
+                    $match: {
+                        fullfilled: { $in: [false, null] }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'StandardItem',
+                        localField: 'standardItemId',
+                        foreignField: '_id',
+                        as: 'standardItem'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$standardItem',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'CustomItem',
+                        localField: 'customItemId',
+                        foreignField: '_id',
+                        as: 'customItem'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$customItem',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Posts',
+                        localField: 'post',
+                        foreignField: '_id',
+                        as: 'posts'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$posts',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                { $match: matchPost },
+                { $sort: { 'posts.createdDate': orderByNumber } },
+                { $skip: offset },
+                { $limit: limit }
+            ];
+
+            if (postId !== null && postId !== undefined && postId !== '') {
+                const postObjId = new ObjectID(postId);
+                needsAggStmt[0]['$match']['post'] = postObjId;
+            }
+
+            if (pageId !== undefined && pageId !== null && pageId !== '') {
+                const pageObjId = new ObjectID(pageId);
+                needsAggStmt[0]['$match']['pageId'] = pageObjId;
+            }
+
+            if (needORStmt.length > 0) {
+                needsAggStmt[0]['$match']['$or'] = needORStmt;
+            }
+
+            const needResult = await this.needsService.aggregate(needsAggStmt);
+
+            const result = {
+                pageId,
+                postId,
+                items: needResult
+            };
+
+            if (result !== null && result !== undefined) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', result));
+            } else {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', {}));
             }
         } catch (error) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Calculate Allocate Error', error.message));
