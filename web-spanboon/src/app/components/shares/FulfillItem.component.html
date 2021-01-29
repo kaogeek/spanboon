@@ -112,7 +112,7 @@
                                             {{item.name}}
                                         </span>
                                         <div class="limit-fulfill">
-                                            <span [class.active]="isUnlimit"> {{item.fulfillQuantity}} </span> /
+                                            <span [class.active]="item.fulfillQuantity > item.quantity"> {{item.fulfillQuantity}} </span> /
                                             {{item.quantity}}
                                         </div>
                                     </div>

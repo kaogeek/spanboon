@@ -96,9 +96,9 @@
             </ng-container>
 
             <div for="birthday" class="title-label">วันเกิด</div>
-            <mat-form-field>
-                <input #birthday matInput [matDatepicker]="dp3" placeholder="" name="birthday"
-                    [(ngModel)]="data.birthday " [min]="minDate" [max]="maxDate" required>
+            <mat-form-field appearance="none">
+                <input #birthday matInput [matDatepicker]="dp3" placeholder="วว/ดด/ปป" name="birthday" id="birthday"
+                    [(ngModel)]="data.birthday" [min]="minDate" (keyup)="vaidatorDate(birthday.value)" [max]="maxDate" required>
                 <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
                 <mat-datepicker #dp3 disabled="false"></mat-datepicker>
             </mat-form-field>
@@ -123,9 +123,10 @@
                 </div>
             </ng-container>
             <ng-template #btnComfirm>
-                <div class="wrapper-policy">คุณสามารถสมัครสมาชิกสะพานบุญโดยใช้อีเมล facebook twitter google
-                    ได้โดยตั้งค่า "พาสเวิด" <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
-                </div>
+                <div class="wrapper-policy">
+                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์มสะพานบุญ <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
+                </div> 
+                <span class="policy"> นโยบายความเป็นส่วนตัว <span class="click-policy" [routerLink]="'/policy'">กดที่นี่</span></span>
                 <div class="div-btn">
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>

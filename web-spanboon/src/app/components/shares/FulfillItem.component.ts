@@ -64,8 +64,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isName: boolean;
     public isLoading: boolean;
     public isActiveCss: boolean;
-    public isPage: boolean;
-    public isUnlimit: boolean;
+    public isPage: boolean; 
     public query_conversation: any;
     public isFirst: any;
     public msgError: any;
@@ -139,8 +138,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public selectedDataItem(fulfillItem: any, isFrom: any) {
-        console.log('fulfillItem ',fulfillItem)
-        if (fulfillItem !== null && fulfillItem !== undefined) {
+         if (fulfillItem !== null && fulfillItem !== undefined) {
             // this.isListItem = true;
             let isSelected = true;
             let indexItem = 0;
@@ -201,8 +199,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                         if (pendingQty > 0) {
                             pendingQty = pendingQty
                         } else {
-                            pendingQty = 1;
-                            this.isUnlimit = true;
+                            pendingQty = 1; 
                         }
                         this.arrListItem.push({
                             _id: fulfillItem._id,
@@ -225,8 +222,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                 if (pendingQty > 0) {
                                     pendingQty = pendingQty
                                 } else {
-                                    pendingQty = 1;
-                                    this.isUnlimit = true;
+                                    pendingQty = 1; 
                                 }
                                 this.arrListItem.push({
                                     id: item.id,
@@ -247,8 +243,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             if (pendingQty > 0) {
                                 pendingQty = pendingQty
                             } else {
-                                pendingQty = 1;
-                                this.isUnlimit = true;
+                                pendingQty = 1; 
                             }
                             this.arrListItem.push({
                                 id: fulfillItem.id,
