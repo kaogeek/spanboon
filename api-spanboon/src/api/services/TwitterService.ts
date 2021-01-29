@@ -163,8 +163,90 @@ export class TwitterService {
         return await this.userService.findOne({ _id: authenId.user });
     }
 
+    public postImageByToken(accessToken: string, tokenSecret: string, imageBase64: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('accessToken was required');
+                return;
+            }
+
+            if (tokenSecret === undefined || tokenSecret === null || tokenSecret === '') {
+                reject('accessToken was required');
+                return;
+            }
+
+            if (imageBase64 === undefined || imageBase64 === '') {
+                reject('imageBase64 was required');
+                return;
+            }
+
+            const url = 'https://upload.twitter.com/1.1/media/upload.json';
+
+            const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
+            const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
+
+            const writeBody = 'media_data=' + encodeURIComponent(imageBase64);
+
+            // generate oauth
+            const parameters = {
+                oauth_consumer_key: twitter_setup.TWITTER_API_KEY,
+                oauth_token: accessToken,
+                oauth_signature_method: 'HMAC-SHA1',
+                oauth_timestamp,
+                oauth_nonce,
+                oauth_version: '1.0',
+                media_data: imageBase64
+
+            };
+            const options = {};
+
+            let oauth_signature = '';
+            try {
+                oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
+            } catch (error) {
+                reject(error.message);
+                return;
+            }
+
+            const httpOptions: any = {
+                method: 'POST',
+                json: true
+            };
+
+            const req = https.request(url, httpOptions, (res) => {
+                const { statusCode, statusMessage } = res;
+
+                if (statusCode !== 200) {
+                    reject('statusCode ' + statusCode + ' ' + statusMessage);
+                    return;
+                }
+
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        resolve(parsedData);
+                    } catch (e) {
+                        reject(e.message);
+                    }
+                });
+            });
+            const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + accessToken + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
+            req.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+            req.setHeader('Accept', '*/*');
+            req.setHeader('Authorization', auth);
+            req.flushHeaders();
+            req.write(writeBody);
+            req.on('error', (e) => {
+                reject(e);
+            });
+            req.end();
+        });
+    }
+
     // return true if post success, false if not success
-    public postStatusByToken(accessToken: string, tokenSecret: string, message: string): Promise<any> {
+    public postStatusByToken(accessToken: string, tokenSecret: string, message: string, imageIds?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (accessToken === undefined || accessToken === null || accessToken === '') {
                 reject('accessToken was required');
@@ -180,8 +262,23 @@ export class TwitterService {
                 message = '';
             }
 
-            const url: string = TwitterService.ROOT_URL + '/1.1/statuses/update.json?status=' + encodeURIComponent(message);
+            let mediaIdString = '';
+            if (imageIds !== undefined && imageIds !== null && imageIds.length > 0) {
+                for (const mid of imageIds) {
+                    mediaIdString += (mid + ',');
+                }
 
+                if (mediaIdString !== '') {
+                    mediaIdString = mediaIdString.substring(0, mediaIdString.length - 1);
+                }
+            }
+
+            let mediaIdForUrl = '';
+            if (mediaIdString !== '') {
+                mediaIdForUrl = '&media_ids=' + encodeURIComponent(mediaIdString);
+            }
+
+            const url: string = TwitterService.ROOT_URL + '/1.1/statuses/update.json?status=' + encodeURIComponent(message) + mediaIdForUrl;
             const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
             const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
 
@@ -193,7 +290,8 @@ export class TwitterService {
                 oauth_timestamp,
                 oauth_nonce,
                 oauth_version: '1.0',
-                status: message
+                status: message,
+                media_ids: mediaIdString
             };
             const options = {};
 
@@ -268,6 +366,60 @@ export class TwitterService {
             const tokenSecret = authenId.properties.oauthTokenSecret;
             try {
                 const result = await this.postStatusByToken(accessToken, tokenSecret, message);
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    public postStatusWithImage(userId: string, message: string, imageBase64s?: string[]): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (userId === undefined || userId === null || userId === '') {
+                reject('userId was required');
+                return;
+            }
+
+            const authenId = await this.authenIdService.findOne({ user: new ObjectID(userId), providerName: PROVIDER.TWITTER });
+            if (authenId === undefined) {
+                reject('Twitter register was not found.');
+                return;
+            }
+
+            if (authenId.properties === undefined || authenId.properties.oauthToken === undefined || authenId.properties.oauthTokenSecret === undefined) {
+                reject('Twitter propertites was not found.');
+                return;
+            }
+
+            if (message === undefined) {
+                message = '';
+            }
+
+            const accessToken = authenId.properties.oauthToken;
+            const tokenSecret = authenId.properties.oauthTokenSecret;
+            try {
+                const mediaIds: string[] = [];
+                if (imageBase64s !== undefined && imageBase64s !== null && imageBase64s.length > 0) {
+                    for (const imageBase64 of imageBase64s) {
+                        try {
+                            const twMediaIdObj = await this.postImageByToken(accessToken, tokenSecret, imageBase64);
+                            if (twMediaIdObj === undefined) {
+                                continue;
+                            }
+
+                            const mediaId = twMediaIdObj.media_id_string;
+                            if (mediaId === undefined) {
+                                continue;
+                            }
+
+                            mediaIds.push(mediaId);
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                }
+
+                const result = await this.postStatusByToken(accessToken, tokenSecret, message, mediaIds);
                 resolve(result);
             } catch (err) {
                 reject(err);
