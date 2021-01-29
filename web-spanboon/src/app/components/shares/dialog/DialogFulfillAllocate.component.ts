@@ -371,6 +371,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             if (this.indexWizardPage < 5) {
                 this.indexWizardPage++
                 if (this.indexWizardPage === 2) {
+                    for (let d of data[0].items) {
+                        d.amount = 999999;
+                    }
                     this.groupPostByItem(data);
                 }
                 if (this.indexWizardPage === 4) {
@@ -620,12 +623,12 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             console.log('err', err)
         })
 
-        await this.allocateFacade.calculateAllocate(data).then((res: any) => {
+        // await this.allocateFacade.calculateAllocate(data).then((res: any) => {
 
-            console.log('res', res)
+        //     console.log('res', res)
 
-        }).catch((err: any) => {
-        })
+        // }).catch((err: any) => {
+        // })
 
         this.groupsArr = groups;
 

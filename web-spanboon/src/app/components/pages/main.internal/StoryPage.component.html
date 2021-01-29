@@ -166,7 +166,8 @@
 
     <div *ngIf="!isPreload" class="story-footer">
         <div class="text">
-            <span>สตอรี่ของ {{postStoryData ? postStoryData.ownerUser.displayName : ''}}</span>
+            <span>สตอรี่ของ : </span>
+            <a href={{linkPage}} target="_blank">{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</a>
         </div>
 
         <div class="swiper-container" [swiper]="config"
