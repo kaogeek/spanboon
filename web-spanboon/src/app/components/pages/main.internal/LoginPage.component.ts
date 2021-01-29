@@ -15,8 +15,7 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { AbstractPage } from '../AbstractPage';
 // import { LOGIN_FACEBOOK_ENABLE } from '../../../Constants';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../../AlertMessage';
-import * as $ from 'jquery';
+import { MESSAGE } from '../../../AlertMessage'; 
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
 
@@ -53,6 +52,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public redirection: string;
   public isEmailLogin: boolean;
   public isShowFacebook: boolean;
+  public isPreloadTwitter: boolean;
   public googleUser = {};
   public auth2: any;
 
@@ -71,6 +71,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this._ngZone = _ngZone;
     this.observManager = observManager;
     this.isShowFacebook = true;
+    this.isPreloadTwitter = false;
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
 
@@ -190,34 +191,12 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginTwitter() { 
-    let callback = "login";
-    this.twitterService.requestToken(callback).then((result: any) => {
-      this.authorizeLink += '?' + result; 
-      window.open(this.authorizeLink);
-    }).catch((error: any) => {
-      console.log(error);
-    });
+  public clickLoginTwitter() {
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");  
   }
 
   public clickLoginGoogle(): void {
-    // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
-    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => { 
-
-      if (result !== null && result !== undefined) {
-        let googleToken = {
-          googleUserId: result.id,
-          authToken: result.authToken,
-          idToken: result.idToken
-        };
-
-        this.googleToken = googleToken;
-
-        this._ngZone.run(() => this.loginGoogle());
-      }
-    }).catch((error) => {
-      console.log('error >>> ', error);
-    });
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง"); 
   }
 
   private loginGoogle() {
