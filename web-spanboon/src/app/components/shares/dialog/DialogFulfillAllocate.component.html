@@ -21,7 +21,7 @@
                     </ng-container>
                     <ng-template #elsePhoto>
                         <img class="image" src="../../../../assets/img/customize_item.svg" alt=""
-                            style="width: 40%; height: auto;">
+                            style="width: 80%; height: auto;">
                     </ng-template>
                 </div>
                 <span *ngIf="indexWizardPage === 2">
@@ -256,7 +256,7 @@
                 <div class="box-list-item-hrader">
 
                     <div class="left" style="display: flex;">
-                        <div style="margin-right: 7px;" class="sorting">
+                        <div style="margin-right: 7px;margin-left:15px;" class="sorting">
                             <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
                                 [disableRipple]="true" class="menu-sorting">
                                 <svg style="margin-right: 7px;" xmlns="http://www.w3.org/2000/svg" width="12.887"
@@ -371,13 +371,221 @@
                                 </button> -->
                             </mat-menu>
                         </div>
-                        <div (click)="clearItem()" class="list-item-Next"
+                        <div (click)="clearItem()" class="icon"
                             [class.dis]="selectNeedItem[indexItem].fulfillQuantity === selectNeedItem[indexItem].quantity">
-                            <span>ยกเลิกรายการ</span>
+                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="25"
+                                height="25" viewBox="0 0 30.539 30.539">
+                                <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
+                                    <g id="Group_3292" data-name="Group 3292" transform="translate(112.208 94.414)">
+                                        <g id="Group_3290" data-name="Group 3290" transform="translate(2.408 4.898)">
+                                            <path id="Path_3779" data-name="Path 3779"
+                                                d="M187.265,126.544a.653.653,0,0,1-1.115-.461v-2.146a.653.653,0,0,1,1.306,0v2.146A.651.651,0,0,1,187.265,126.544Z"
+                                                transform="translate(-186.15 -123.284)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3291" data-name="Group 3291" transform="translate(0 0)">
+                                            <path id="Path_3780" data-name="Path 3780"
+                                                d="M177.182,99.642a3.063,3.063,0,1,1,0-4.332A3.066,3.066,0,0,1,177.182,99.642Zm-3.408-3.408a1.757,1.757,0,1,0,2.485,0A1.759,1.759,0,0,0,173.775,96.234Z"
+                                                transform="translate(-171.956 -94.414)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3295" data-name="Group 3295" transform="translate(112.208 116.603)">
+                                        <g id="Group_3293" data-name="Group 3293" transform="translate(2.408)">
+                                            <path id="Path_3781" data-name="Path 3781"
+                                                d="M186.342,225.391a.653.653,0,0,1,1.115.461V228a.653.653,0,1,1-1.306,0v-2.146A.652.652,0,0,1,186.342,225.391Z"
+                                                transform="translate(-186.151 -225.2)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3294" data-name="Group 3294" transform="translate(0 2.227)">
+                                            <path id="Path_3782" data-name="Path 3782"
+                                                d="M172.851,239.221a3.063,3.063,0,1,1,0,4.332A3.066,3.066,0,0,1,172.851,239.221Zm3.408,3.408a1.757,1.757,0,1,0-2.485,0A1.759,1.759,0,0,0,176.259,242.629Z"
+                                                transform="translate(-171.955 -238.326)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3298" data-name="Group 3298" transform="translate(100 106.622)">
+                                        <g id="Group_3296" data-name="Group 3296" transform="translate(4.898 2.408)">
+                                            <path id="Path_3783" data-name="Path 3783"
+                                                d="M132.13,180.756a.653.653,0,0,1-.462,1.115h-2.146a.653.653,0,1,1,0-1.306h2.146A.651.651,0,0,1,132.13,180.756Z"
+                                                transform="translate(-128.869 -180.565)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3297" data-name="Group 3297" transform="translate(0 0)">
+                                            <path id="Path_3784" data-name="Path 3784"
+                                                d="M105.227,167.266a3.063,3.063,0,1,1-4.332,0A3.066,3.066,0,0,1,105.227,167.266Zm-3.408,3.408a1.757,1.757,0,1,0,0-2.485A1.759,1.759,0,0,0,101.819,170.674Z"
+                                                transform="translate(-100 -166.37)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3301" data-name="Group 3301" transform="translate(122.189 106.622)">
+                                        <g id="Group_3299" data-name="Group 3299" transform="translate(0 2.408)">
+                                            <path id="Path_3785" data-name="Path 3785"
+                                                d="M230.977,181.68a.653.653,0,0,1,.462-1.115h2.146a.653.653,0,0,1,0,1.306h-2.146A.651.651,0,0,1,230.977,181.68Z"
+                                                transform="translate(-230.786 -180.565)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3300" data-name="Group 3300" transform="translate(2.227 0)">
+                                            <path id="Path_3786" data-name="Path 3786"
+                                                d="M244.806,171.6a3.063,3.063,0,1,1,4.332,0A3.066,3.066,0,0,1,244.806,171.6Zm3.408-3.408a1.757,1.757,0,1,0,0,2.484A1.759,1.759,0,0,0,248.214,168.189Z"
+                                                transform="translate(-243.911 -166.37)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3304" data-name="Group 3304" transform="translate(104.13 98.594)">
+                                        <g id="Group_3302" data-name="Group 3302" transform="translate(3.246 3.246)">
+                                            <path id="Path_3787" data-name="Path 3787"
+                                                d="M145.716,140.42a.653.653,0,0,1-.923,0l-1.123-1.123a.653.653,0,1,1,.923-.923l1.123,1.123A.653.653,0,0,1,145.716,140.42Z"
+                                                transform="translate(-143.478 -138.182)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3303" data-name="Group 3303" transform="translate(0)">
+                                            <path id="Path_3788" data-name="Path 3788"
+                                                d="M128.508,123.211a2.439,2.439,0,1,1,.714-1.725A2.422,2.422,0,0,1,128.508,123.211Zm-2.526-2.526a1.134,1.134,0,0,0,.8,1.935,1.162,1.162,0,0,0,1.133-1.133,1.134,1.134,0,0,0-1.935-.8Z"
+                                                transform="translate(-124.344 -119.047)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3307" data-name="Group 3307" transform="translate(104.228 115.098)">
+                                        <g id="Group_3305" data-name="Group 3305" transform="translate(3.246 0)">
+                                            <path id="Path_3789" data-name="Path 3789"
+                                                d="M146.293,216.52a.653.653,0,0,1,0,.923l-1.123,1.123a.653.653,0,0,1-.923-.923l1.123-1.123A.652.652,0,0,1,146.293,216.52Z"
+                                                transform="translate(-144.055 -216.329)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3306" data-name="Group 3306" transform="translate(0 0.797)">
+                                            <path id="Path_3790" data-name="Path 3790"
+                                                d="M129.085,221.742a2.439,2.439,0,1,1-1.725-.714A2.423,2.423,0,0,1,129.085,221.742Zm-2.526,2.526a1.134,1.134,0,0,0,1.935-.8,1.161,1.161,0,0,0-1.133-1.133,1.133,1.133,0,0,0-.8,1.935Z"
+                                                transform="translate(-124.921 -221.028)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3310" data-name="Group 3310" transform="translate(120.733 115)">
+                                        <g id="Group_3308" data-name="Group 3308" transform="translate(0 0)">
+                                            <path id="Path_3791" data-name="Path 3791"
+                                                d="M222.394,215.942a.652.652,0,0,1,.923,0l1.123,1.123a.653.653,0,0,1-.923.923l-1.123-1.123A.653.653,0,0,1,222.394,215.942Z"
+                                                transform="translate(-222.203 -215.751)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3309" data-name="Group 3309" transform="translate(0.797 0.797)">
+                                            <path id="Path_3792" data-name="Path 3792"
+                                                d="M227.616,221.165a2.439,2.439,0,1,1-.714,1.725A2.423,2.423,0,0,1,227.616,221.165Zm2.526,2.526a1.134,1.134,0,0,0-.8-1.935,1.162,1.162,0,0,0-1.133,1.133,1.134,1.134,0,0,0,1.935.8Z"
+                                                transform="translate(-226.902 -220.451)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3313" data-name="Group 3313" transform="translate(120.696 98.508)">
+                                        <g id="Group_3311" data-name="Group 3311" transform="translate(0 3.246)">
+                                            <path id="Path_3793" data-name="Path 3793"
+                                                d="M222.178,139.914a.653.653,0,0,1,0-.923l1.123-1.123a.653.653,0,1,1,.923.923l-1.123,1.123A.653.653,0,0,1,222.178,139.914Z"
+                                                transform="translate(-221.987 -137.676)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3312" data-name="Group 3312" transform="translate(0.797 0)">
+                                            <path id="Path_3794" data-name="Path 3794"
+                                                d="M227.4,122.707a2.439,2.439,0,1,1,1.725.714A2.423,2.423,0,0,1,227.4,122.707Zm2.526-2.526a1.134,1.134,0,0,0-1.935.8,1.162,1.162,0,0,0,1.133,1.133,1.134,1.134,0,0,0,.8-1.935Z"
+                                                transform="translate(-226.686 -118.543)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <path id="Path_3795" data-name="Path 3795"
+                                        d="M154.752,153.971a5.829,5.829,0,0,0-.1,1.092,5.9,5.9,0,0,0,.1,1.1l1.3.185a4.675,4.675,0,0,0,.439,1.06l-.79,1.055a5.978,5.978,0,0,0,1.548,1.548l1.055-.79a4.615,4.615,0,0,0,1.06.441l.184,1.3a5.92,5.92,0,0,0,2.191,0l.184-1.3a4.675,4.675,0,0,0,1.062-.441l1.055.79a6.033,6.033,0,0,0,1.546-1.546l-.79-1.057a4.674,4.674,0,0,0,.439-1.06l1.3-.185a5.916,5.916,0,0,0,.1-1.1,5.843,5.843,0,0,0-.1-1.092l-1.3-.187a4.6,4.6,0,0,0-.441-1.057l.793-1.06a6,6,0,0,0-1.546-1.546l-1.057.793a4.609,4.609,0,0,0-1.06-.439l-.184-1.306a5.928,5.928,0,0,0-2.191,0l-.184,1.306a4.615,4.615,0,0,0-1.06.439l-1.055-.793a5.978,5.978,0,0,0-1.548,1.548l.793,1.054a4.661,4.661,0,0,0-.441,1.06Zm5.9-2.114a3.209,3.209,0,1,1-3.209,3.209A3.206,3.206,0,0,1,160.648,151.857Z"
+                                        transform="translate(-45.378 -45.38)" class="iconfill" />
+                                </g>
+
+                            </svg>
                         </div>
-                        <div (click)="autoAllocate(true)" class="list-item-Next"
+                        <div (click)="autoAllocate(true)" class="icon"
                             [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0">
-                            <span>จัดอัตโนมัติ</span>
+                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="25"
+                                height="25" viewBox="0 0 30.539 30.539" class="icon">
+                                <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
+                                    <g id="Group_3292" data-name="Group 3292" transform="translate(112.208 94.414)">
+                                        <g id="Group_3290" data-name="Group 3290" transform="translate(2.408 4.898)">
+                                            <path id="Path_3779" data-name="Path 3779"
+                                                d="M187.265,126.544a.653.653,0,0,1-1.115-.461v-2.146a.653.653,0,0,1,1.306,0v2.146A.651.651,0,0,1,187.265,126.544Z"
+                                                transform="translate(-186.15 -123.284)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3291" data-name="Group 3291" transform="translate(0 0)">
+                                            <path id="Path_3780" data-name="Path 3780"
+                                                d="M177.182,99.642a3.063,3.063,0,1,1,0-4.332A3.066,3.066,0,0,1,177.182,99.642Zm-3.408-3.408a1.757,1.757,0,1,0,2.485,0A1.759,1.759,0,0,0,173.775,96.234Z"
+                                                transform="translate(-171.956 -94.414)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3295" data-name="Group 3295" transform="translate(112.208 116.603)">
+                                        <g id="Group_3293" data-name="Group 3293" transform="translate(2.408)">
+                                            <path id="Path_3781" data-name="Path 3781"
+                                                d="M186.342,225.391a.653.653,0,0,1,1.115.461V228a.653.653,0,1,1-1.306,0v-2.146A.652.652,0,0,1,186.342,225.391Z"
+                                                transform="translate(-186.151 -225.2)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3294" data-name="Group 3294" transform="translate(0 2.227)">
+                                            <path id="Path_3782" data-name="Path 3782"
+                                                d="M172.851,239.221a3.063,3.063,0,1,1,0,4.332A3.066,3.066,0,0,1,172.851,239.221Zm3.408,3.408a1.757,1.757,0,1,0-2.485,0A1.759,1.759,0,0,0,176.259,242.629Z"
+                                                transform="translate(-171.955 -238.326)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3298" data-name="Group 3298" transform="translate(100 106.622)">
+                                        <g id="Group_3296" data-name="Group 3296" transform="translate(4.898 2.408)">
+                                            <path id="Path_3783" data-name="Path 3783"
+                                                d="M132.13,180.756a.653.653,0,0,1-.462,1.115h-2.146a.653.653,0,1,1,0-1.306h2.146A.651.651,0,0,1,132.13,180.756Z"
+                                                transform="translate(-128.869 -180.565)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3297" data-name="Group 3297" transform="translate(0 0)">
+                                            <path id="Path_3784" data-name="Path 3784"
+                                                d="M105.227,167.266a3.063,3.063,0,1,1-4.332,0A3.066,3.066,0,0,1,105.227,167.266Zm-3.408,3.408a1.757,1.757,0,1,0,0-2.485A1.759,1.759,0,0,0,101.819,170.674Z"
+                                                transform="translate(-100 -166.37)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3301" data-name="Group 3301" transform="translate(122.189 106.622)">
+                                        <g id="Group_3299" data-name="Group 3299" transform="translate(0 2.408)">
+                                            <path id="Path_3785" data-name="Path 3785"
+                                                d="M230.977,181.68a.653.653,0,0,1,.462-1.115h2.146a.653.653,0,0,1,0,1.306h-2.146A.651.651,0,0,1,230.977,181.68Z"
+                                                transform="translate(-230.786 -180.565)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3300" data-name="Group 3300" transform="translate(2.227 0)">
+                                            <path id="Path_3786" data-name="Path 3786"
+                                                d="M244.806,171.6a3.063,3.063,0,1,1,4.332,0A3.066,3.066,0,0,1,244.806,171.6Zm3.408-3.408a1.757,1.757,0,1,0,0,2.484A1.759,1.759,0,0,0,248.214,168.189Z"
+                                                transform="translate(-243.911 -166.37)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3304" data-name="Group 3304" transform="translate(104.13 98.594)">
+                                        <g id="Group_3302" data-name="Group 3302" transform="translate(3.246 3.246)">
+                                            <path id="Path_3787" data-name="Path 3787"
+                                                d="M145.716,140.42a.653.653,0,0,1-.923,0l-1.123-1.123a.653.653,0,1,1,.923-.923l1.123,1.123A.653.653,0,0,1,145.716,140.42Z"
+                                                transform="translate(-143.478 -138.182)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3303" data-name="Group 3303" transform="translate(0)">
+                                            <path id="Path_3788" data-name="Path 3788"
+                                                d="M128.508,123.211a2.439,2.439,0,1,1,.714-1.725A2.422,2.422,0,0,1,128.508,123.211Zm-2.526-2.526a1.134,1.134,0,0,0,.8,1.935,1.162,1.162,0,0,0,1.133-1.133,1.134,1.134,0,0,0-1.935-.8Z"
+                                                transform="translate(-124.344 -119.047)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3307" data-name="Group 3307" transform="translate(104.228 115.098)">
+                                        <g id="Group_3305" data-name="Group 3305" transform="translate(3.246 0)">
+                                            <path id="Path_3789" data-name="Path 3789"
+                                                d="M146.293,216.52a.653.653,0,0,1,0,.923l-1.123,1.123a.653.653,0,0,1-.923-.923l1.123-1.123A.652.652,0,0,1,146.293,216.52Z"
+                                                transform="translate(-144.055 -216.329)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3306" data-name="Group 3306" transform="translate(0 0.797)">
+                                            <path id="Path_3790" data-name="Path 3790"
+                                                d="M129.085,221.742a2.439,2.439,0,1,1-1.725-.714A2.423,2.423,0,0,1,129.085,221.742Zm-2.526,2.526a1.134,1.134,0,0,0,1.935-.8,1.161,1.161,0,0,0-1.133-1.133,1.133,1.133,0,0,0-.8,1.935Z"
+                                                transform="translate(-124.921 -221.028)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3310" data-name="Group 3310" transform="translate(120.733 115)">
+                                        <g id="Group_3308" data-name="Group 3308" transform="translate(0 0)">
+                                            <path id="Path_3791" data-name="Path 3791"
+                                                d="M222.394,215.942a.652.652,0,0,1,.923,0l1.123,1.123a.653.653,0,0,1-.923.923l-1.123-1.123A.653.653,0,0,1,222.394,215.942Z"
+                                                transform="translate(-222.203 -215.751)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3309" data-name="Group 3309" transform="translate(0.797 0.797)">
+                                            <path id="Path_3792" data-name="Path 3792"
+                                                d="M227.616,221.165a2.439,2.439,0,1,1-.714,1.725A2.423,2.423,0,0,1,227.616,221.165Zm2.526,2.526a1.134,1.134,0,0,0-.8-1.935,1.162,1.162,0,0,0-1.133,1.133,1.134,1.134,0,0,0,1.935.8Z"
+                                                transform="translate(-226.902 -220.451)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <g id="Group_3313" data-name="Group 3313" transform="translate(120.696 98.508)">
+                                        <g id="Group_3311" data-name="Group 3311" transform="translate(0 3.246)">
+                                            <path id="Path_3793" data-name="Path 3793"
+                                                d="M222.178,139.914a.653.653,0,0,1,0-.923l1.123-1.123a.653.653,0,1,1,.923.923l-1.123,1.123A.653.653,0,0,1,222.178,139.914Z"
+                                                transform="translate(-221.987 -137.676)" class="iconfill" />
+                                        </g>
+                                        <g id="Group_3312" data-name="Group 3312" transform="translate(0.797 0)">
+                                            <path id="Path_3794" data-name="Path 3794"
+                                                d="M227.4,122.707a2.439,2.439,0,1,1,1.725.714A2.423,2.423,0,0,1,227.4,122.707Zm2.526-2.526a1.134,1.134,0,0,0-1.935.8,1.162,1.162,0,0,0,1.133,1.133,1.134,1.134,0,0,0,.8-1.935Z"
+                                                transform="translate(-226.686 -118.543)" class="iconfill" />
+                                        </g>
+                                    </g>
+                                    <path id="Path_3795" data-name="Path 3795"
+                                        d="M154.752,153.971a5.829,5.829,0,0,0-.1,1.092,5.9,5.9,0,0,0,.1,1.1l1.3.185a4.675,4.675,0,0,0,.439,1.06l-.79,1.055a5.978,5.978,0,0,0,1.548,1.548l1.055-.79a4.615,4.615,0,0,0,1.06.441l.184,1.3a5.92,5.92,0,0,0,2.191,0l.184-1.3a4.675,4.675,0,0,0,1.062-.441l1.055.79a6.033,6.033,0,0,0,1.546-1.546l-.79-1.057a4.674,4.674,0,0,0,.439-1.06l1.3-.185a5.916,5.916,0,0,0,.1-1.1,5.843,5.843,0,0,0-.1-1.092l-1.3-.187a4.6,4.6,0,0,0-.441-1.057l.793-1.06a6,6,0,0,0-1.546-1.546l-1.057.793a4.609,4.609,0,0,0-1.06-.439l-.184-1.306a5.928,5.928,0,0,0-2.191,0l-.184,1.306a4.615,4.615,0,0,0-1.06.439l-1.055-.793a5.978,5.978,0,0,0-1.548,1.548l.793,1.054a4.661,4.661,0,0,0-.441,1.06Zm5.9-2.114a3.209,3.209,0,1,1-3.209,3.209A3.206,3.206,0,0,1,160.648,151.857Z"
+                                        transform="translate(-45.378 -45.38)" class="iconfill" />
+                                </g>
+
+                            </svg>
                         </div>
                     </div>
 
@@ -404,8 +612,9 @@
                             </div>
                             <div class="item-list">
                                 <div class="list">
-                                    <div class="item" *ngFor="let item of getItemByPost(item)">
-                                        <div class="item-image" *ngIf="item.amount > 0"
+                                    <div class="item" [ngStyle]="{'display': item.amount === 0  ? 'none' : 'flex'}"
+                                        *ngFor="let item of getItemByPost(item)">
+                                        <div class="item-image"
                                             [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
                                             <ng-container
                                                 *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
@@ -416,9 +625,10 @@
                                                     alt="">
                                             </ng-template>
                                         </div>
-                                        <div *ngIf="item.amount > 0" class="quantity">
+                                        <div class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity
+                                            | shortNumber}}
                                         </div>
                                     </div>
                                 </div>
@@ -483,10 +693,10 @@
                                 <div class="item-name">
                                     <span class="name">{{item.name}}</span>
                                     <div class="quantity">
+                                        <span>คงเหลือ : </span>
                                         <span
-                                            [ngStyle]="{'color': item.fulfillQuantity === 0 ? 'red' : '#599144'}">{{item.fulfillQuantity}}</span>
-                                        /
-                                        {{item.quantity}} {{item.unit}}
+                                            [ngStyle]="{'color': item.fulfillQuantity === 0 ? 'red' : '#599144'}">{{item.fulfillQuantity}}
+                                        </span>{{item.unit}}
                                     </div>
                                 </div>
                             </div>
@@ -512,8 +722,8 @@
                                 <div class="item-name">
                                     <span class="name">{{item.name}}</span>
                                     <div class="quantity">
-                                        <span>{{item.fulfillQuantity}}</span> /
-                                        {{item.quantity}} {{item.unit}}
+                                        <span>เหลือ : </span>
+                                        <span>{{item.fulfillQuantity}} </span>{{item.unit}}
                                     </div>
                                 </div>
                             </div>
@@ -568,12 +778,11 @@
                                         </div>
                                         <div *ngIf="item.amount > 0" class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity|
+                                            shortNumber}}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="add-delete">
                             </div>
                         </div>
                         <span *ngIf="autoPosts.length !== 0" class="text">โพสต์ที่ระบบจัดสรรให้</span>
@@ -611,7 +820,8 @@
                                         </div>
                                         <div *ngIf="item.amount > 0" class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity}}
+                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity
+                                            | shortNumber}}
                                         </div>
                                     </div>
                                 </div>
