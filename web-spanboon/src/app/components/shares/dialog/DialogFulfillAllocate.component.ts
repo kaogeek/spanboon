@@ -597,6 +597,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         await this.allocateFacade.calculateAllocate(data).then((res: any) => {
 
+            console.log('res', res)
+
             this.originalPost = res
             for (let post of this.originalPost) {
                 for (let group of post.items) {
@@ -616,6 +618,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         }).catch((err: any) => {
             console.log('err', err)
+        })
+
+        await this.allocateFacade.calculateAllocate(data).then((res: any) => {
+
+            console.log('res', res)
+
+        }).catch((err: any) => {
         })
 
         this.groupsArr = groups;

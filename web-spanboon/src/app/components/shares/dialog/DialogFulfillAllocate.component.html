@@ -612,7 +612,8 @@
                             </div>
                             <div class="item-list">
                                 <div class="list">
-                                    <div class="item" *ngFor="let item of getItemByPost(item)">
+                                    <div class="item" [ngStyle]="{'display': item.amount === 0  ? 'none' : 'flex'}"
+                                        *ngFor="let item of getItemByPost(item)">
                                         <div class="item-image"
                                             [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
                                             <ng-container
