@@ -132,10 +132,10 @@
       font-size: 14px;
       font-family: "Kanit-300";
       padding-top: 5px;
-      >.click-policy {
-        color: $color-warm-red;
-        padding-left: 5px;
-        @include pointer();
+      @include pointer();
+      color: $koalaGray;
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
