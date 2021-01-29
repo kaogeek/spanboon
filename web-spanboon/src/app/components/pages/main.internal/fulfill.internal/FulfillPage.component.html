@@ -121,7 +121,7 @@
                         </div>
                     </ng-container>
                     <ng-template #elseTemplateFulFill>
-                        <div class="user-contact contact-notfound">ไม่พบรายการคำขอเติมเต็ม</div>
+                        <!-- <div class="user-contact contact-notfound">ไม่พบรายการคำขอเติมเต็ม</div> -->
                     </ng-template>
                 </div>
             </div>
@@ -427,7 +427,8 @@
                         transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
                 </svg>
                 <span class="fulfill-label">ไม่พบรายการคำขอเติมเต็ม</span>
-                <span class="fulfill-search" (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์กดที่นี่</span>
+                <span class="fulfill-search hover" *ngIf="fulfillCase && fulfillCase.length === 0" (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์ได้ที่นี่</span>
+                <span class="fulfill-search " *ngIf="fulfillCase && fulfillCase.length > 0"> กรุณาเลือกคำขอเติมเต็ม </span>
             </div>
         </ng-template>
     </div>

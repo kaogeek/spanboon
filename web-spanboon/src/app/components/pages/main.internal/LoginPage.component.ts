@@ -190,13 +190,10 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginTwitter() {
-    // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+  public clickLoginTwitter() { 
     let callback = "login";
     this.twitterService.requestToken(callback).then((result: any) => {
-      this.authorizeLink += '?' + result;
-      // this.authenticateLink += '?' + result;
-      // console.log('result ', this.authorizeLink) 
+      this.authorizeLink += '?' + result; 
       window.open(this.authorizeLink);
     }).catch((error: any) => {
       console.log(error);

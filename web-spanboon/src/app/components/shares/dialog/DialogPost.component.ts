@@ -97,6 +97,8 @@ export class DialogPost extends AbstractPage {
       })
     }
 
+    console.log('this.data', this.data);
+
     setTimeout(() => {
       this.isPreload = false
     }, 1000);
@@ -214,10 +216,12 @@ export class DialogPost extends AbstractPage {
   }
 
   public createFullfillPost(data) {
+    console.log('this.isFulfill', this.isFulfill)
+    console.log('data', data)
     if (this.isFulfill) {
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
         if (res.status === 1) {
-          if (res.message === 'Create Post of FulfillmentCase Complete') { 
+          if (res.message === 'Create Post of FulfillmentCase Complete') {
             const result = {
               caseId: data.fulfillCaseId,
               status: 'green'

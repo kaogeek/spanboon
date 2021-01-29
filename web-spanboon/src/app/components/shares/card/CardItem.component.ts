@@ -100,10 +100,10 @@ export class CardItem extends AbstractPage implements OnInit {
         this.submit.emit();
     }
     public fulfillNeeds(item: any, index: number) {
-        // if (this.isDevelop) {
-        //     this.showAlertDevelopDialog();
-        //     return
-        // }
+        if (this.isDevelop) {
+            this.showAlertDevelopDialog();
+            return
+        }
         if (!this.isLogin()) {
             this.showAlertLoginDialog(this.router.url);
         } else {

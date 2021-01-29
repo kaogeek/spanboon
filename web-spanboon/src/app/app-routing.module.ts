@@ -18,7 +18,7 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, Redirect, SettingAccount,
+  SettingsFanPage, forgotPasswordPage, FulfillPage, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -96,7 +96,21 @@ export const APP_ROUTES: Routes = [
       },
       {
         path: FanPage.PAGE_NAME + "/:id/settings",
-        component: SettingsFanPage,
+        component: SettingsFanPage, 
+        // children: [
+        //   {
+        //     path: 'person',
+        //     component: AboutPage,
+        //   },
+        //   {
+        //     path: 'roles',
+        //     component: SettingsAdminRoles,
+        //   },
+        //   {
+        //     path: 'connect',
+        //     component: SecurityInfo,
+        //   },
+        // ] 
       },
       {
         path: SettingAccount.PAGE_NAME + "/settings",
@@ -173,17 +187,25 @@ export const APP_ROUTES: Routes = [
         component: RegisterPage,
       },
       {
+        path: Policy.PAGE_NAME,
+        component: Policy,
+      },
+      {
         path: FulfillPage.PAGE_NAME,
         component: FulfillPage,
       },
       {
         path: FulfillPage.PAGE_NAME + "/:fulfillId",
         component: FulfillPage
-      },
+      }, 
+      {
+        path: Redirect.PAGE_NAME,
+        component: Redirect,
+      }, 
       {
         path: Redirect.PAGE_NAME + ':id',
         component: Redirect,
-      },
+      },  
     ]
   },
   {

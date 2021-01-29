@@ -13,7 +13,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { PageSocailTW } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
- 
+
 const PAGE_NAME: string = 'connect';
 
 @Component({
@@ -29,7 +29,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     @Input()
     public connectTwitter: boolean = false;
     @Input()
-    public data: any; 
+    public pageId: any;
 
     public router: Router;
     private observManager: ObservableManager;
@@ -43,7 +43,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
     public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
-    constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade,twitterService: TwitterService,
+    constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade, twitterService: TwitterService,
         dialog: MatDialog, pageFacade: PageFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
@@ -55,7 +55,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {
-        console.log('data page ',this.data) 
+        console.log('data page ', this.pageId)
 
     }
     public ngOnDestroy(): void {
@@ -81,32 +81,35 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public connectionSocial(text: string, bind?: boolean) {
         if (text === 'facebook') {
 
-        }  else if (text === 'twitter' && !bind) {
-            CookieUtil.setCookie('page', this.router.url);
+        } else if (text === 'twitter' && !bind) {
+            CookieUtil.setCookie('page', '/page/' + this.pageId + '/settings');
             let callback = "callback";
             this.twitterService.requestToken(callback).then((result: any) => {
-                this.authorizeLink += '?' + result; 
+                this.authorizeLink += '?' + result;
                 window.open(this.authorizeLink);
             }).catch((error: any) => {
                 console.log(error);
             });
 
         } else if (text === 'twitter' && bind) {
-            this.pageFacade.socialUnBindingTwitter(this.data).then((res: any) => {
+            this.pageFacade.socialUnBindingTwitter(this.pageId).then((res: any) => {
                 // if delete true set false
-                if(res.data){ 
+                if (res.data) {
                     this.connectTwitter = false;
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
+                if (err.error.name === 'AccessDeniedError') {
+                    this.authenManager.clearStorage();
+                }
             });
-        }  else if (text === 'google') {
+        } else if (text === 'google') {
 
         }
     }
-    
+
     public socialGetBindingTwitter() {
-        this.pageFacade.socialGetBindingTwitter(this.data).then((res: any) => {
+        this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => {
             this.connectTwitter = res.data;
         }).catch((err: any) => {
             console.log('err ', err)
