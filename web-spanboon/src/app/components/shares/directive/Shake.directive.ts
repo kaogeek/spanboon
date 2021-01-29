@@ -20,45 +20,16 @@ export class Shake implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void { 
-        if (changes && changes.shake && changes.shake.currentValue) {
-            // console.log('currentValue ', changes.shake.currentValue)
-            this._elemRef.nativeElement.classList.add('input-shake');
-            // console.log('this._elemRef ',this._elemRef)
+        if (changes && changes.shake && changes.shake.currentValue) { 
+            this._elemRef.nativeElement.classList.add('input-shake'); 
             this.round = changes.shake.currentValue
-            setTimeout(function () {
-                // changes.shake.currentValue = changes.shake.previousValue
-                // this._elemRef.nativeElement.classList.remove('msg-error-shake');
+            setTimeout(function () { 
             }, 1000);
-        } else {
-            // console.log('currentValfalseue ', changes.shake.currentValue)
+        } else { 
         }
     }
     public ngOnInit() {
 
-    }
-
-    //   @HostListener('keyup') 
-    //   onMouseEnter() {
-    //     const test = (this._elemRef.nativeElement as HTMLInputElement).value;
-    //     if(test && test !== ''){
-    //         this._elemRef.nativeElement.style.backgroundColor = 'red';
-    //     } else {
-    //         this._elemRef.nativeElement.style.backgroundColor = 'white';
-    //     }
-    //   }
-
-    // @HostListener('click', ['$event'])
-    // onChange(event) {
-    //      const test = (this._elemRef.nativeElement as HTMLInputElement);
-    //     console.log('test ', test)
-    //     console.log('data ', this.data)
-    //     if (this.data) {
-    //         this._elemRef.nativeElement.classList.add('msg-error-shake');
-    //         // this._elemRef.nativeElement.style.backgroundColor = 'red';
-    //         setTimeout(function () {
-    //             this._elemRef.nativeElement.classList.remove('msg-error-shake');
-    //         }, 1000);
-    //     }
-    // } 
+    } 
 
 }
