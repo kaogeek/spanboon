@@ -373,6 +373,52 @@ export class TwitterService {
         });
     }
 
+    public postStatusWithImageByToken(accessToken: string, tokenSecret: string, message: string, imageBase64s?: string[]): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('accessToken was required');
+                return;
+            }
+
+            if (tokenSecret === undefined || tokenSecret === null || tokenSecret === '') {
+                reject('tokenSecret was required');
+                return;
+            }
+
+            if (message === undefined) {
+                message = '';
+            }
+
+            try {
+                const mediaIds: string[] = [];
+                if (imageBase64s !== undefined && imageBase64s !== null && imageBase64s.length > 0) {
+                    for (const imageBase64 of imageBase64s) {
+                        try {
+                            const twMediaIdObj = await this.postImageByToken(accessToken, tokenSecret, imageBase64);
+                            if (twMediaIdObj === undefined) {
+                                continue;
+                            }
+
+                            const mediaId = twMediaIdObj.media_id_string;
+                            if (mediaId === undefined) {
+                                continue;
+                            }
+
+                            mediaIds.push(mediaId);
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                }
+
+                const result = await this.postStatusByToken(accessToken, tokenSecret, message, mediaIds);
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
     public postStatusWithImage(userId: string, message: string, imageBase64s?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (userId === undefined || userId === null || userId === '') {
@@ -398,28 +444,7 @@ export class TwitterService {
             const accessToken = authenId.properties.oauthToken;
             const tokenSecret = authenId.properties.oauthTokenSecret;
             try {
-                const mediaIds: string[] = [];
-                if (imageBase64s !== undefined && imageBase64s !== null && imageBase64s.length > 0) {
-                    for (const imageBase64 of imageBase64s) {
-                        try {
-                            const twMediaIdObj = await this.postImageByToken(accessToken, tokenSecret, imageBase64);
-                            if (twMediaIdObj === undefined) {
-                                continue;
-                            }
-
-                            const mediaId = twMediaIdObj.media_id_string;
-                            if (mediaId === undefined) {
-                                continue;
-                            }
-
-                            mediaIds.push(mediaId);
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                }
-
-                const result = await this.postStatusByToken(accessToken, tokenSecret, message, mediaIds);
+                const result = await this.postStatusWithImageByToken(accessToken, tokenSecret, message, imageBase64s);
                 resolve(result);
             } catch (err) {
                 reject(err);
