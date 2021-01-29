@@ -106,4 +106,7 @@ export class ChatRoomService {
         return await this.find({ participants: { $all: [{ sender: new ObjectID(userId), senderType: USER_TYPE.USER }] }, deleted: false });
     }
 
+    public async getPageChatRoomList(pageId: string): Promise<ChatRoom[]> {
+        return await this.find({ participants: { $all: [{ sender: new ObjectID(pageId), senderType: USER_TYPE.PAGE }] }, deleted: false });
+    }
 }
