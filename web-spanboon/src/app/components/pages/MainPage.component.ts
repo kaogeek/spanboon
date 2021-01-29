@@ -325,6 +325,7 @@ export * from './main.internal/StoryPage.component';
 export * from './main.internal/PostPage.component';
 export * from './main.internal/PageHashTag.component';
 export * from './main.internal/PageRecommended.component';
+export * from './main.internal/Policy.component';
 export * from './main.internal/register.internal/MenuRegister.component';
 export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';

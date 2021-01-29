@@ -1,0 +1,54 @@
+.dialog-preview {
+    display: flex;
+    flex-direction: column;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 630pt;
+    height: 435pt;
+    overflow: hidden;
+    font-size: 16px;
+    font-family: "Kanit-400";
+    background: #fff;
+
+    .mat-dialog-title {
+        margin: unset;
+    }
+    > .preview-title {
+        padding: 10pt 15pt;
+        font-size: 22px;
+        font-family: "Kanit-500";
+        border-bottom: 0.7pt solid $border-color;
+    }
+    > .mat-typography {
+        mat-tab-group {
+            > .mat-tab-header {
+                > .mat-tab-label-container {
+                    > .mat-tab-list {
+                        > .mat-tab-labels { 
+                            >.mat-tab-label {
+                                font-family: "Kanit-500";
+                                font-size: 18px;
+                            }
+                            >.mat-tab-label-active {
+                                color: $color-warm-red;
+                                opacity: 1;
+                            }
+                        }
+                        > .mat-ink-bar {
+                            background-color: $brandcolor2;
+                            height: 4pt !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .dialog-review-full-screen .mat-dialog-container {
+        // width:100vw;
+        // height:100vh;
+        // min-height:100vh;
+    }
+}
