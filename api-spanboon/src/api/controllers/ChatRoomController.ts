@@ -202,6 +202,7 @@ export class ChatRoomController {
         const senderObjId = new ObjectID(req.user.id);
         const fetchUserRoom = (chatRoomIdsRequest.fetchUserRoom !== undefined) ? chatRoomIdsRequest.fetchUserRoom : false;
         const asPage = chatRoomIdsRequest.asPage;
+        const fetchPageRoom = (chatRoomIdsRequest.fetchPageRoom !== undefined) ? chatRoomIdsRequest.fetchPageRoom : false;
 
         if (chatRoomIdsRequest.roomIds === undefined) {
             chatRoomIdsRequest.roomIds = [];
@@ -212,16 +213,6 @@ export class ChatRoomController {
             roomObjIds.push(new ObjectID(roomId));
         }
 
-        if (roomObjIds.length <= 0 && fetchUserRoom) {
-            // search all room of user
-            const userRooms = await this.chatRoomService.getUserChatRoomList(senderObjId + '');
-            if (userRooms !== undefined) {
-                for (const room of userRooms) {
-                    roomObjIds.push(room.id);
-                }
-            }
-        }
-
         let pageObjId = undefined;
         if (asPage !== undefined && asPage !== '') {
             pageObjId = new ObjectID(asPage);
@@ -229,11 +220,33 @@ export class ChatRoomController {
 
         let page = undefined;
         if (pageObjId !== undefined) {
+            // page mode
             page = await this.pageService.findOne({ _id: pageObjId });
 
             if (page === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('Page was not found.', undefined);
                 return res.status(400).send(errorResponse);
+            }
+
+            if (roomObjIds.length <= 0 && fetchPageRoom) {
+                // search all room of page
+                const pageRooms = await this.chatRoomService.getPageChatRoomList(asPage);
+                if (pageRooms !== undefined) {
+                    for (const room of pageRooms) {
+                        roomObjIds.push(room.id);
+                    }
+                }
+            }
+        } else {
+            // user mode
+            if (roomObjIds.length <= 0 && fetchUserRoom) {
+                // search all room of user
+                const userRooms = await this.chatRoomService.getUserChatRoomList(senderObjId + '');
+                if (userRooms !== undefined) {
+                    for (const room of userRooms) {
+                        roomObjIds.push(room.id);
+                    }
+                }
             }
         }
 
@@ -278,10 +291,10 @@ export class ChatRoomController {
         const chatMsgResult: any = await this.chatMessageService.aggregate(aggregateStmt);
 
         if (chatMsgResult) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create chatroom', chatMsgResult);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Check Chat Room unread Message', chatMsgResult);
             return res.status(200).send(successResponse);
         } else {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create chatroom', []);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Check Chat Room unread Message', []);
             return res.status(200).send(successResponse);
         }
     }
