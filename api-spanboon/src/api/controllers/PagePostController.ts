@@ -389,6 +389,7 @@ export class PagePostController {
 
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
+        const imageBase64sForTw = [];
 
         if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
             const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
@@ -588,6 +589,16 @@ export class PagePostController {
                         }
 
                         const assetObjId = new ObjectID(item.id);
+                        const assetObj = await this.assetService.findOne({ _id: assetObjId });
+                        if (assetObj === undefined) {
+                            continue;
+                        }
+                        if (assetObj.data !== undefined && assetObj.data !== null) {
+                            if (imageBase64sForTw.length < 4) {
+                                imageBase64sForTw.push(assetObj.data);
+                            }
+                        }
+
                         const postsGallery = new PostsGallery();
                         postsGallery.post = postPageId;
                         postsGallery.fileId = assetObjId;
@@ -684,7 +695,7 @@ export class PagePostController {
                     const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
                     const messageForTW = postPage.detail + ' ' + fullLink;
 
-                    await this.pageSocialAccountService.shareAllSocialPost(pageId, messageForTW, !isPostTwitter, !isPostFacebook);
+                    await this.pageSocialAccountService.shareAllSocialPost(pageId, messageForTW, imageBase64sForTw, !isPostTwitter, !isPostFacebook);
                 }
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create PagePost Success', createResult));

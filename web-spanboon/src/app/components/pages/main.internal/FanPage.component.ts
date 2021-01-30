@@ -666,7 +666,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline');
     } else {
       this.isLoadingClickTab = true;
-      this.initPage(link.keyword);
+      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword);
     }
   }
 

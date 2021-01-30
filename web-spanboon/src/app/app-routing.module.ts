@@ -48,15 +48,15 @@ export const APP_ROUTES: Routes = [
         children: [
           {
             path: 'timeline',
-            component: FanPage,
+            component: ProfilePage,
           },
           {
             path: 'general',
-            component: FanPage,
+            component: ProfilePage,
           },
           {
             path: 'fulfillment',
-            component: FanPage,
+            component: ProfilePage,
           },
         ]
       },

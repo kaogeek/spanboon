@@ -302,9 +302,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-  public linkDataType(link: any) {
+  public linkDataType(link: any) { 
     this.isLoadingClickTab = true;
-    this.initPage(link.keyword); 
+    this.router.navigateByUrl('/profile/' + this.url + "/" + link.keyword) 
   }
 
   filesDropped(files: FileHandle[]): void {

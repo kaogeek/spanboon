@@ -5,22 +5,15 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input, Inject, ViewChild, ElementRef, ɵConsole, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter, MatCalendarCellCssClasses } from '@angular/material';
-import { SearchFilter, Asset } from '../../../models/models';
-import { PageCategoryFacade, PageFacade, AuthenManager, AssetFacade, ObservableManager } from '../../../services/services';
-import { DialogImage } from './dialog';
+import { Component, OnInit, Input, Inject, ViewChild, EventEmitter } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter } from '@angular/material'; 
+import { PageCategoryFacade, PageFacade, AuthenManager, AssetFacade, ObservableManager } from '../../../services/services'; 
 import { AbstractPage } from '../../pages/AbstractPage';
 import { Router } from '@angular/router';
 import { NgxTimepickerFieldComponent } from 'ngx-material-timepicker';
-import * as moment from 'moment';
-import { F } from '@angular/cdk/keycodes';
+import * as moment from 'moment'; 
 
-const PAGE_NAME: string = 'editcomment';
-const SEARCH_LIMIT: number = 10;
-const SEARCH_OFFSET: number = 0;
-
-declare var $: any;
+const PAGE_NAME: string = 'editcomment'; 
 
 @Component({
   selector: 'dialog-setting-datetime',
@@ -49,6 +42,8 @@ export class DialogSettingDateTime extends AbstractPage {
 
     this.dataUser.startDateTime = new Date();
     this.dateAdapter = dateAdapter;
+    this.minDate.setDate(this.minDate.getDate());
+    this.minDate.setFullYear(this.minDate.getFullYear() - 200);
     this.dateAdapter.setLocale('th-TH');
     if (this.data !== undefined && this.data !== null) {
       this.dataUser = this.data;

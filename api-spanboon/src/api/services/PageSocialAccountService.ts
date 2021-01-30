@@ -63,7 +63,7 @@ export class PageSocialAccountService {
         }
     }
 
-    public async shareAllSocialPost(pageId: string, message: string, ignoreTwitter?: any, ignoreFacebook?: any): Promise<boolean> {
+    public async shareAllSocialPost(pageId: string, message: string, imageBase64s: string[], ignoreTwitter?: any, ignoreFacebook?: any): Promise<boolean> {
         let twitterPost = true;
         if (ignoreTwitter !== undefined) {
             if (ignoreTwitter) {
@@ -78,7 +78,7 @@ export class PageSocialAccountService {
                 const tokenSecret = twitterAccount.properties.oauthTokenSecret;
 
                 try {
-                    await this.twitterService.postStatusByToken(accessToken, tokenSecret, message);
+                    await this.twitterService.postStatusWithImageByToken(accessToken, tokenSecret, message, imageBase64s);
                 } catch (error) {
                     console.log(error);
                 }
