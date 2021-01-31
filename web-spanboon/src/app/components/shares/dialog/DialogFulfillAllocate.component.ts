@@ -8,7 +8,7 @@
 import { Component, Inject, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MatDialog, MatPaginator, MatTableDataSource, MAT_DIALOG_DATA } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PageFacade, AuthenManager, AllocateFacade, NeedsFacade } from '../../../services/services';
+import { PageFacade, AuthenManager, AllocateFacade, NeedsFacade, EmergencyEventFacade, ObjectiveFacade } from '../../../services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from '../../../../environments/environment';
 import * as $ from 'jquery';
@@ -31,6 +31,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     private allocateFacade: AllocateFacade;
     private pageFacade: PageFacade;
     private needsFacade: NeedsFacade;
+    private emergencyEventFacade: EmergencyEventFacade;
+    private objectiveFacade: ObjectiveFacade;
 
     public apiBaseURL = environment.apiBaseURL;
 
@@ -44,6 +46,15 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public wizardConfig: any;
     public originalPost: any;
     public groupsArr: any;
+
+    public sortingByDateArr: any;
+    public sortingByEmgArr: any;
+    public sortingByObjArr: any;
+
+
+    public sortingByDate: any;
+    public sortingByEmg: any;
+    public sortingByObj: any;
 
     public autoPosts: any[] = [];
     public mnPosts: any[] = [];
@@ -60,7 +71,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public isAuto: boolean = false;
 
-    constructor(public dialogRef: MatDialogRef<DialogFulfillAllocate>, @Inject(MAT_DIALOG_DATA) public data: any, authenManager: AuthenManager, needsFacade: NeedsFacade, pageFacade: PageFacade, allocateFacade: AllocateFacade, router: Router,
+    constructor(public dialogRef: MatDialogRef<DialogFulfillAllocate>, @Inject(MAT_DIALOG_DATA) public data: any, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, emergencyEventFacade: EmergencyEventFacade, needsFacade: NeedsFacade, pageFacade: PageFacade, allocateFacade: AllocateFacade, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
         super(PAGE_NAME, authenManager, dialog, router);
 
@@ -68,6 +79,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.dialog = dialog;
         this.activatedRoute = activatedRoute;
         this.allocateFacade = allocateFacade;
+        this.emergencyEventFacade = emergencyEventFacade;
+        this.objectiveFacade = objectiveFacade;
         this.pageFacade = pageFacade;
         this.needsFacade = needsFacade;
 
@@ -88,6 +101,23 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             //     "type": "MANUALGENERAL"
             // }
         ]
+
+        this.sortingByDateArr = [
+            {
+                "name": "โพสต์เก่าไปใหม่",
+                "detail": "จัดสรรเข้าโพสต์ให้อัตโนมัติ เรียงจากเก่าไปใหม่"
+            },
+            {
+                "name": "โพสต์ใหม่ไปเก่า",
+                "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง"
+            }
+        ]
+
+
+        this.getEmergencyEvent();
+        this.getObjective();
+
+        this.sortingByDate = this.sortingByDateArr[0];
 
         this.wizardConfig = {
             "quantity": 5
@@ -126,6 +156,48 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
+    }
+
+    public getEmergencyEvent() {
+
+        const keywordFilter: any = {
+            filter: {
+                limit: SEARCH_LIMIT,
+                offset: SEARCH_OFFSET,
+                relation: [],
+                whereConditions: {},
+                count: false,
+                orderBy: {}
+            },
+        };
+
+        this.emergencyEventFacade.searchEmergency(keywordFilter).then((emg: any) => {
+            this.sortingByEmgArr = emg;
+            this.sortingByEmg = this.sortingByEmgArr[0];
+        }).catch((err: any) => {
+            console.log(err)
+        });
+    }
+
+    public getObjective() {
+
+        const keywordFilter: any = {
+            filter: {
+                limit: SEARCH_LIMIT,
+                offset: SEARCH_OFFSET,
+                relation: [],
+                whereConditions: {},
+                count: false,
+                orderBy: {}
+            },
+        };
+
+        this.objectiveFacade.searchObjective(keywordFilter).then((obj: any) => {
+            this.sortingByObjArr = obj.data;
+            this.sortingByObj = this.sortingByObjArr[0];
+        }).catch((err: any) => {
+            console.log(err)
+        });
     }
 
     public getNeedsPage() {
@@ -196,7 +268,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             this.selectNeedItem = this.listItemNeed;
             let data: any = [{ pageId: this.pageId, items: this.selectNeedItem }]
             this.groupPostByItem(data);
-            this.autoAllocate();
+            this.autoAllocate(false);
+            this.isAuto = true
 
         } else if (event.type === "MANUAL") {
 
@@ -215,7 +288,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public autoAllocate(isItme?) {
         let data: any
         let postsList: any[] = []
-        this.isAuto = true
         // {standardItemId: string, amount: number} or {customItemId: string, amount: number}
         if (isItme) {
 
@@ -326,11 +398,20 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public back(isAllocate?) {
 
+        if (this.isAuto) {
+            this.resetDataPage();
+            this.indexWizardPage = 0
+            return
+        }
         if (isAllocate) {
 
             if (this.indexItem === 0) {
 
                 this.indexWizardPage--
+                if (this.indexWizardPage === 1) {
+
+                    this.allocateItemtoPost = []
+                }
 
             } else {
 
@@ -426,6 +507,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             for (let i of this.allocateItemtoPost) {
+
                 if (i.isAuto) {
 
                     autoPosts.push(i)
@@ -582,8 +664,15 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.indexItem = 0
         this.indexWizardPage = 0;
         this.isAuto = false
+        this.confirmArrData = [];
+        this.autoPosts = [];
+        this.originalPost = [];
+        this.mnPosts = [];
+        this.mnPosts = [];
+        this.postFulfillAllocate = [];
         for (let arr of this.listItemNeed) {
-            arr.isSelect = false
+            arr.isSelect = false;
+            arr.fulfillQuantity = arr.quantity;
         }
 
     }
@@ -599,8 +688,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         }
 
         await this.allocateFacade.calculateAllocate(data).then((res: any) => {
-
-            console.log('res', res)
 
             this.originalPost = res
             for (let post of this.originalPost) {
@@ -631,6 +718,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         // })
 
         this.groupsArr = groups;
+        console.log('this.groupsArr', this.groupsArr)
 
         this.setAllocatetoPost();
 

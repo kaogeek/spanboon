@@ -257,8 +257,8 @@
 
                     <div class="left" style="display: flex;">
                         <div style="margin-right: 7px;margin-left:15px;" class="sorting">
-                            <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
-                                [disableRipple]="true" class="menu-sorting">
+                            <button style="display: flex;align-items: center;" mat-button
+                                [matMenuTriggerFor]="menusortEmg" [disableRipple]="true" class="menu-sorting">
                                 <svg style="margin-right: 7px;" xmlns="http://www.w3.org/2000/svg" width="12.887"
                                     height="12.982" viewBox="0 0 23 21">
                                     <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
@@ -289,22 +289,27 @@
                                             transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                                     </g>
                                 </svg>
-                                #รัฐสภา
+                                #{{sortingByEmg.hashTag}}
                                 <span class="material-icons">
                                     arrow_drop_down
                                 </span>
                             </button>
-                            <mat-menu #menusort="matMenu">
+                            <mat-menu #menusortEmg="matMenu">
                                 <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
                                     (click)="clickSorting(sort, index)">
                                     <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
                                     </div>
                                 </button> -->
+                                <button mat-menu-item *ngFor="let sort of sortingByEmgArr; let index = index"
+                                    class="list-sort" (click)="sortingByEmg = sort">
+                                    <div class="select-name"> {{sort.hashTag}}
+                                    </div>
+                                </button>
                             </mat-menu>
                         </div>
                         <div class="sorting">
-                            <button style="display: flex;align-items: center;" mat-button [matMenuTriggerFor]="menusort"
-                                [disableRipple]="true" class="menu-sorting">
+                            <button style="display: flex;align-items: center;" mat-button
+                                [matMenuTriggerFor]="menusortObj" [disableRipple]="true" class="menu-sorting">
                                 <svg style="margin-right: 7px;" class="img-objective" xmlns="http://www.w3.org/2000/svg"
                                     width="12.887" height="12.982" viewBox="0 0 22.899 22.899">
                                     <g id="mission" transform="translate(0)">
@@ -322,17 +327,22 @@
                                             transform="translate(-248.03 -228.703)" fill="#747474" />
                                     </g>
                                 </svg>
-                                #พรรคก้าวไกล
+                                #{{sortingByObj.hashTag}}
                                 <span class="material-icons">
                                     arrow_drop_down
                                 </span>
                             </button>
-                            <mat-menu #menusort="matMenu">
+                            <mat-menu #menusortObj="matMenu">
                                 <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
                                     (click)="clickSorting(sort, index)">
                                     <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
                                     </div>
                                 </button> -->
+                                <button mat-menu-item *ngFor="let sort of sortingByObjArr; let index = index"
+                                    class="list-sort" (click)="sortingByObj = sort">
+                                    <div class="select-name"> {{sort.hashTag}}
+                                    </div>
+                                </button>
                             </mat-menu>
                         </div>
                     </div>
@@ -358,17 +368,17 @@
                                             transform="translate(-24.905 -14.595)" fill="#474747" fill-rule="evenodd" />
                                     </g>
                                 </svg>
-                                โพสต์เก่าไปใหม่
+                                {{sortingByDate.name}}
                                 <span class="material-icons">
                                     arrow_drop_down
                                 </span>
                             </button>
                             <mat-menu #menusort="matMenu">
-                                <!-- <button mat-menu-item *ngFor="let sort of sortingBy; let index = index" class="list-sort"
-                                    (click)="clickSorting(sort, index)">
-                                    <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                <button mat-menu-item *ngFor="let sort of sortingByDateArr; let index = index"
+                                    class="list-sort" (click)="sortingByDate = sort">
+                                    <div class="select-name"> {{sort.name}}
                                     </div>
-                                </button> -->
+                                </button>
                             </mat-menu>
                         </div>
                         <div (click)="clearItem()" class="icon"
@@ -510,6 +520,64 @@
                                 </div>
                                 <span class="detail-h">{{item.posts.title}}</span>
                                 <span class="detail-d">{{item.posts.detail}}</span>
+                                <div class="detail-e">
+                                    <svg *ngIf="item.posts.emergencyEventTag" style="margin-right: 7px;"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 23 21">
+                                        <g id="Group_1312" data-name="Group 1312"
+                                            transform="translate(-672.701 -415.463)">
+                                            <path id="Subtraction_2" data-name="Subtraction 2"
+                                                d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                                transform="translate(7129.611 -573.082)" fill="#747474"
+                                                stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" />
+                                            <path id="Rectangle_572" data-name="Rectangle 572"
+                                                d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                                transform="translate(674.701 434.463)" fill="#747474" />
+                                            <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3"
+                                                rx="1" transform="translate(683.701 415.463)" fill="#747474" />
+                                            <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
+                                            <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
+                                            <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3"
+                                                rx="0.5" transform="translate(672.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3"
+                                                rx="0.5" transform="translate(692.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.posts.emergencyEventTag}}</span>
+                                    <svg *ngIf="item.posts.objectiveTag" style="margin:0px 7px;" class="img-objective"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 22.899 22.899">
+                                        <g id="mission" transform="translate(0)">
+                                            <path id="Path_3205" data-name="Path 3205"
+                                                d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                                transform="translate(0 -299.903)" fill="#747474" />
+                                            <path id="Path_3206" data-name="Path 3206"
+                                                d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                                transform="translate(-295.877)" fill="#747474" />
+                                            <path id="Path_3207" data-name="Path 3207"
+                                                d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                                transform="translate(-131.312 -333.558)" fill="#747474" />
+                                            <path id="Path_3208" data-name="Path 3208"
+                                                d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                                transform="translate(-248.03 -228.703)" fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.posts.objectiveTag}}</span>
+                                </div>
                             </div>
                             <div class="item-list">
                                 <div class="list">
@@ -528,7 +596,7 @@
                                         </div>
                                         <div class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity
+                                                [ngStyle]="{'color': item.itemName === indexItemName() ? '#84b572' : '#747474'}">{{item.amount}}</span>/{{item.quantity
                                             | shortNumber}}
                                         </div>
                                     </div>
@@ -654,7 +722,7 @@
                                     height: 10px;
                                     border-radius: 5px;
                                     margin-right: 5px;"></div>
-                                    <span>{{getTypePost(item.posts.type)}}</span>
+                                    <span>{{getTypePost(item.post.type)}}</span>
                                     <svg class="icon-time" height="8pt" viewBox="0 0 512 512" style="margin: 0px 4px;"
                                         width="8pt" xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -668,6 +736,64 @@
                                 </div>
                                 <span class="detail-h">{{item.post.title}}</span>
                                 <span class="detail-d">{{item.post.detail}}</span>
+                                <div class="detail-e">
+                                    <svg *ngIf="item.post.emergencyEventTag" style="margin-right: 7px;"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 23 21">
+                                        <g id="Group_1312" data-name="Group 1312"
+                                            transform="translate(-672.701 -415.463)">
+                                            <path id="Subtraction_2" data-name="Subtraction 2"
+                                                d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                                transform="translate(7129.611 -573.082)" fill="#747474"
+                                                stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" />
+                                            <path id="Rectangle_572" data-name="Rectangle 572"
+                                                d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                                transform="translate(674.701 434.463)" fill="#747474" />
+                                            <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3"
+                                                rx="1" transform="translate(683.701 415.463)" fill="#747474" />
+                                            <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
+                                            <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
+                                            <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3"
+                                                rx="0.5" transform="translate(672.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3"
+                                                rx="0.5" transform="translate(692.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.post.emergencyEventTag}}</span>
+                                    <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;" class="img-objective"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 22.899 22.899">
+                                        <g id="mission" transform="translate(0)">
+                                            <path id="Path_3205" data-name="Path 3205"
+                                                d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                                transform="translate(0 -299.903)" fill="#747474" />
+                                            <path id="Path_3206" data-name="Path 3206"
+                                                d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                                transform="translate(-295.877)" fill="#747474" />
+                                            <path id="Path_3207" data-name="Path 3207"
+                                                d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                                transform="translate(-131.312 -333.558)" fill="#747474" />
+                                            <path id="Path_3208" data-name="Path 3208"
+                                                d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                                transform="translate(-248.03 -228.703)" fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.post.objectiveTag}}</span>
+                                </div>
                             </div>
                             <div class="item-list">
                                 <div class="list">
@@ -696,7 +822,12 @@
                         <div class="list-post" *ngFor="let item of autoPosts">
                             <div class="detail">
                                 <div class="date">
-                                    <!-- <span>{{getTypePost(item.posts.type)}}</span> -->
+                                    <div style="    background-color: #fd545a;
+                                    width: 10px;
+                                    height: 10px;
+                                    border-radius: 5px;
+                                    margin-right: 5px;"></div>
+                                    <span>{{getTypePost(item.post.type)}}</span>
                                     <svg class="icon-time" height="8pt" viewBox="0 0 512 512" style="margin: 0px 4px;"
                                         width="8pt" xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -710,6 +841,64 @@
                                 </div>
                                 <span class="detail-h">{{item.post.title}}</span>
                                 <span class="detail-d">{{item.post.detail}}</span>
+                                <div class="detail-e">
+                                    <svg *ngIf="item.post.emergencyEventTag" style="margin-right: 7px;"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 23 21">
+                                        <g id="Group_1312" data-name="Group 1312"
+                                            transform="translate(-672.701 -415.463)">
+                                            <path id="Subtraction_2" data-name="Subtraction 2"
+                                                d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                                transform="translate(7129.611 -573.082)" fill="#747474"
+                                                stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" />
+                                            <path id="Rectangle_572" data-name="Rectangle 572"
+                                                d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                                transform="translate(674.701 434.463)" fill="#747474" />
+                                            <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3"
+                                                rx="1" transform="translate(683.701 415.463)" fill="#747474" />
+                                            <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
+                                            <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398"
+                                                height="3.962" rx="0.699"
+                                                transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
+                                            <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3"
+                                                rx="0.5" transform="translate(672.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                            <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3"
+                                                rx="0.5" transform="translate(692.701 427.463) rotate(-90)"
+                                                fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.post.emergencyEventTag}}</span>
+                                    <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;" class="img-objective"
+                                        xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
+                                        viewBox="0 0 22.899 22.899">
+                                        <g id="mission" transform="translate(0)">
+                                            <path id="Path_3205" data-name="Path 3205"
+                                                d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                                transform="translate(0 -299.903)" fill="#747474" />
+                                            <path id="Path_3206" data-name="Path 3206"
+                                                d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                                transform="translate(-295.877)" fill="#747474" />
+                                            <path id="Path_3207" data-name="Path 3207"
+                                                d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                                transform="translate(-131.312 -333.558)" fill="#747474" />
+                                            <path id="Path_3208" data-name="Path 3208"
+                                                d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                                transform="translate(-248.03 -228.703)" fill="#747474" />
+                                        </g>
+                                    </svg>
+                                    <span>{{item.post.objectiveTag}}</span>
+                                </div>
                             </div>
                             <div class="item-list">
                                 <div class="list">
