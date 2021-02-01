@@ -242,11 +242,14 @@
                             </div>
                             <div class="confirm">
                                 <ng-container *ngIf="(isCaseHasPost && isCaseConfirmed); else elseFufillmentPost">
-                                    <span class="text-fulfill-close">คำขอเติมเต็มถูกยืนยันแล้ว</span>
+                                    <span class="text-fulfill-close">คำขอเติมเต็มถูกยืนยันแล้ว
+                                        <div class="date-case-close">{{approveDate}}</div>
+                                    </span>
                                     <spanboon-button class="button-view-post" (click)="viewPost(fulfillmentPost)"
                                         [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'" [bgColor]="'#E02438'"
                                         [text]="'ไปที่โพสต์'">
                                     </spanboon-button>
+                                   
                                 </ng-container>
                                 <ng-template #elseFufillmentPost>
                                     <ng-container
