@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -19,11 +19,10 @@ import { Observable, fromEvent, of } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
-import { NeedsCard } from './card/card';
-import { SimpleChanges } from '@angular/core';
-
+import { NeedsCard } from './card/card'; 
 
 declare var $: any;
+
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 
@@ -303,7 +302,6 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    console.log('this.isFulfillNull ', this.isFulfillNull)
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
@@ -1234,8 +1232,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       topic = document.getElementById('topic').innerText;
       storyPostShort = document.getElementById('editableStoryPost').innerText;
-    }
-    console.log(' POsy ', this.isFulfillNull)
+    } 
     if (!this.isFulfillNull) {
       if (topic.trim() === "" && this.isRepost) {
         this.isMsgNull = true;
@@ -2419,7 +2416,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.isBox = true;
 
 
-    const dialogRef = this.dialog.open(DialogPost, {  
+    const dialogRef = this.dialog.open(DialogPost, {
       data: this.data,
       disableClose: false,
     });
@@ -2446,5 +2443,20 @@ export class BoxPost extends AbstractPage implements OnInit {
       arrList: this.arrListItem
     }
     this.submitResizeClose.emit(body);
+  }
+
+  public preview() {
+    let dataPreview = {
+      title : this.topic.nativeElement.value,
+      detail : this.storyPost.nativeElement.innerText,
+    }
+    const dialogRef = this.dialog.open(DialogPreview, {
+      panelClass: 'dialog-review-full-screen', 
+      data : dataPreview
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }
