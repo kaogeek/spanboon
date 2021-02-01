@@ -57,13 +57,15 @@ export class AssetService {
         }
     }
 
+    /*
     public async createBase64Asset(fileName: string, data: string): Promise<Asset> {
         return new Promise((resolve, reject) => {
             if (!fileName) {
                 reject('ไม่มีชื่อไฟล์');
             }
 
-            resolve();
+            resolve(undefined);
         });
     }
+    */
 }

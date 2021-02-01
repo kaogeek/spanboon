@@ -10,5 +10,6 @@ export class CheckChatRoomRequest {
     public roomIds: string[];
     public fetchUserRoom: boolean;
     public asPage: string;
+    public fetchPageRoom: boolean;
 
 }
