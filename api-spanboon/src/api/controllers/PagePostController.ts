@@ -644,6 +644,8 @@ export class PagePostController {
                     pageUsageHistory.contentType = POST_TYPE.NEEDS;
                     pageUsageHistory.data = createResult;
                     await this.pageUsageHistoryService.create(pageUsageHistory);
+                } else {
+                    createResult = { posts: createPostPageData };
                 }
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Create PagePost Failed', undefined);
@@ -677,7 +679,13 @@ export class PagePostController {
             }
 
             if (createResult !== null && createResult !== undefined) {
-                const link = '/post/' + createResult.posts.id;
+                let link = '';
+
+                if (createResult.posts !== undefined && createResult.posts !== null &&
+                    createResult.posts.id !== undefined && createResult.posts.id !== null) {
+                    link = '/post/' + createResult.posts.id;
+                }
+
                 // notify to all userfollow if Post is Needed
                 if (createResult.posts !== undefined && createResult.posts.type === POST_TYPE.NEEDS) {
                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;

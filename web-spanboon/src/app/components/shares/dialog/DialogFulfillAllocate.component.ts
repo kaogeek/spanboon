@@ -504,7 +504,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         const autoPosts: any[] = []
         const mnPosts: any[] = []
+
         setTimeout(() => {
+
+            console.log('this.allocateItemtoPost', this.allocateItemtoPost);
 
             for (let i of this.allocateItemtoPost) {
 
@@ -728,6 +731,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         const data: any[] = []
 
+        console.log('this.allocateItemtoPost', this.allocateItemtoPost)
+
         for (let item of this.allocateItemtoPost) {
 
             for (let i of item.item) {
@@ -757,16 +762,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         }
 
-        this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
+        // this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
 
-            this.dialogRef.close(res);
+        //     this.dialogRef.close(res);
 
-        }).catch((err: any) => {
+        // }).catch((err: any) => {
 
-            this.dialogRef.close(err);
-            console.log('err', err)
+        //     this.dialogRef.close(err);
+        //     console.log('err', err)
 
-        })
+        // })
 
     }
 

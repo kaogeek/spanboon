@@ -290,9 +290,13 @@ export class TwitterService {
                 oauth_timestamp,
                 oauth_nonce,
                 oauth_version: '1.0',
-                status: message,
-                media_ids: mediaIdString
+                status: message
             };
+
+            if (mediaIdForUrl !== '') {
+                parameters['media_ids'] = mediaIdString;
+            }
+            
             const options = {};
 
             let oauth_signature = '';
