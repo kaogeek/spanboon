@@ -31,12 +31,6 @@ export class DialogCreatePage extends AbstractPage {
 
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
   @ViewChild('urlPage', { static: false }) urlPage: ElementRef;
-  // @ViewChild('mobile', { static: false }) mobile: ElementRef;
-  // @ViewChild('email', { static: false }) email: ElementRef;
-  // @ViewChild('line', { static: false }) line: ElementRef;
-  // @ViewChild('twitter', { static: false }) twitter: ElementRef;
-  // @ViewChild('web', { static: false }) web: ElementRef;
-  // @ViewChild('facebook', { static: false }) facebook: ElementRef;
 
   private pageCategoryFacade: PageCategoryFacade;
   private observManager: ObservableManager;
@@ -74,7 +68,7 @@ export class DialogCreatePage extends AbstractPage {
   public isEmpty: boolean;
   public isChooseCategory: boolean;
   public isCloseDialog: boolean;
-  public checkedCon: boolean = false; 
+  public checkedCon: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<DialogCreatePage>, pageCategoryFacade: PageCategoryFacade, pageFacade: PageFacade,
     dialog: MatDialog, authenManager: AuthenManager, router: Router, assetFacade: AssetFacade, observManager: ObservableManager, userFacade: UserFacade) {
@@ -98,7 +92,7 @@ export class DialogCreatePage extends AbstractPage {
   ngOnInit() {
     currentTab = 0;
     this.searchPageCategory();
-    this.isLoading = true; 
+    this.isLoading = true;
   }
 
   public ngAfterViewInit(): void {
@@ -184,9 +178,7 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   private validBase64Image(base64Image: string, iconURL): boolean {
-    console.log(iconURL)
     const regex = /^data:image\/(?:gif|png|jpeg)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/;
-    console.log(regex.test(base64Image))
     return base64Image && regex.test(base64Image) ? true : false;
   }
 
@@ -208,7 +200,7 @@ export class DialogCreatePage extends AbstractPage {
         asset.fileName = this.resProfilePage.name;
         asset.size = this.resProfilePage.size;
       } else {
-        asset 
+        asset
       }
       let dataPage = {
         name: pageName,
@@ -224,12 +216,12 @@ export class DialogCreatePage extends AbstractPage {
         label: 'หน่วยงาน',
         value: this.organization,
         ordering: 1
-      } 
-      this.pageFacade.create(dataPage).then((value: any) => { 
+      }
+      this.pageFacade.create(dataPage).then((value: any) => {
         if (value.status === 1) {
           this.resProfilePage = value.data;
           this.observManager.publish('authen.createPage', value.data);
-          this.isCloseDialog = true; 
+          this.isCloseDialog = true;
         }
       }).catch((err: any) => {
         let alertMessages: string;
@@ -248,7 +240,7 @@ export class DialogCreatePage extends AbstractPage {
           });
         }
       })
-    } 
+    }
   }
 
   public checkUUID(text: string) {
@@ -282,11 +274,11 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public checkPatternEmail(mail: string) {
-    let pattern = mail.match('[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}'); 
-    if (!pattern) { 
+    let pattern = mail.match('[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}');
+    if (!pattern) {
       this.isNextEmpty = true;
       return $('.checkEmail').addClass('invalid');
-    } else { 
+    } else {
       this.isNextEmpty = false;
       return $('.checkEmail').addClass('correct');
     }
@@ -300,7 +292,6 @@ export class DialogCreatePage extends AbstractPage {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        console.log(result)
         this.resProfilePage = result
       }
       this.stopLoading();
@@ -308,7 +299,8 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public onClose(): void {
-    this.dialogRef.close();
+    // this.dialogRef.close();
+    this.router.navigate(["/home"]);
   }
 
   private stopLoading(): void {
@@ -351,13 +343,13 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public nextPrev(n) {
-    this.isActive = false; 
+    this.isActive = false;
     this.isSkip = false;
     if (this.isCloseDialog) {
       return this.onClose();
     }
-    if(this.isNextEmpty){
-      this.isSkip = true; 
+    if (this.isNextEmpty) {
+      this.isSkip = true;
       return;
     }
 
@@ -373,26 +365,32 @@ export class DialogCreatePage extends AbstractPage {
       // document.getElementById("regForm").submit();
       return false;
     }
-    if(currentTab === 0){ 
+    if (currentTab === 0) {
       this.isNext = false;
     }
-    if(currentTab === 1){ 
+    if (currentTab === 1) {
       this.isNext = true;
-    } 
+      $('.but-conf').removeClass('active');
+    }
 
     if (currentTab === 2) {
-      this.isSkip = true; 
+      this.isSkip = true;
+      $('.but-conf').removeClass('active');
     } else {
       this.isCanCel = false;
     }
- 
+
     if (currentTab === 3) {
-      this.isNext = true; 
-      $('.but-conf').addClass('active'); 
+      this.isNext = true;
+      if (this.checkedCon === true) {
+        $('.but-conf').removeClass('active');
+      } else {
+        $('.but-conf').addClass('active');
+      }
     } else {
-      if(currentTab === 4){
+      if (currentTab === 4) {
         this.isBack = false;
-      } 
+      }
     }
 
     this.tabWizard(currentTab);
@@ -408,7 +406,7 @@ export class DialogCreatePage extends AbstractPage {
     }
 
     for (i = 0; i < y.length; i++) {
-      y = x[currentTab].getElementsByTagName("input"); 
+      y = x[currentTab].getElementsByTagName("input");
       if (this.isChooseCategory) {
         if (y[0].value == "") {
           y[0].classList.add("invalid");

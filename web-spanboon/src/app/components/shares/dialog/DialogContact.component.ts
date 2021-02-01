@@ -68,7 +68,6 @@ export class DialogContact extends AbstractPage {
   }
 
   ngOnInit() {
-    console.log(this.data)
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();

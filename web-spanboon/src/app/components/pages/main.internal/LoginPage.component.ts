@@ -15,10 +15,9 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { AbstractPage } from '../AbstractPage';
 // import { LOGIN_FACEBOOK_ENABLE } from '../../../Constants';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../../AlertMessage';
-import * as $ from 'jquery';
+import { MESSAGE } from '../../../AlertMessage'; 
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
-import { TwitterService } from '../../../services/facade/TwitterService.service'; 
+import { TwitterService } from '../../../services/facade/TwitterService.service';
 
 
 const PAGE_NAME: string = 'login';
@@ -53,8 +52,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   public redirection: string;
   public isEmailLogin: boolean;
   public isShowFacebook: boolean;
+  public isPreloadTwitter: boolean;
   public googleUser = {};
-  public auth2: any; 
+  public auth2: any;
 
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
@@ -71,6 +71,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this._ngZone = _ngZone;
     this.observManager = observManager;
     this.isShowFacebook = true;
+    this.isPreloadTwitter = false;
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
 
@@ -97,7 +98,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       let split = fullURL.split('?');
       if (split.length >= 2) {
         const queryParam = split[1];
-        this.accessTokenLink += '?' + queryParam; 
+        this.accessTokenLink += '?' + queryParam;
         doRunAccessToken = true;
       }
     }
@@ -106,14 +107,14 @@ export class LoginPage extends AbstractPage implements OnInit {
       let httpOptions: any = {
         responseType: 'text'
       };
-      this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => { 
+      this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
         const token_secret = spilt[1].split('=')[1];
         const userId = spilt[2].split('=')[1];
-        const name = spilt[3]; 
+        const name = spilt[3];
         this.loginTwitter(token, token_secret, userId);
-       
+
       }).catch((err: any) => [
         console.log('err ', err)
       ])
@@ -150,14 +151,14 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
   }
 
-  public loginTwitter(token: string, token_secret: string, userId: string) { 
+  public loginTwitter(token: string, token_secret: string, userId: string) {
     let mode = 'TWITTER';
     let twitter = {
-      twitterOauthToken : token,
-      twitterOauthTokenSecret : token_secret,
-      twitterUserId : userId
+      twitterOauthToken: token,
+      twitterOauthTokenSecret: token_secret,
+      twitterUserId: userId
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => { 
+    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -191,33 +192,11 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginTwitter() {
-    this.twitterService.requestToken().then((result: any) => {
-      this.authorizeLink += '?' + result;
-      // this.authenticateLink += '?' + result;
-      // console.log('result ', this.authorizeLink) 
-      window.open(this.authorizeLink);
-    }).catch((error: any) => {
-      console.log(error);
-    });
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");  
   }
 
   public clickLoginGoogle(): void {
-    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => { 
-
-      if (result !== null && result !== undefined) {
-        let googleToken = {
-          googleUserId: result.id,
-          authToken: result.authToken,
-          idToken: result.idToken
-        };
-
-        this.googleToken = googleToken;
-
-        this._ngZone.run(() => this.loginGoogle());
-      }
-    }).catch((error) => {
-      console.log('error >>> ', error);
-    });
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง"); 
   }
 
   private loginGoogle() {
@@ -290,7 +269,8 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-    }, { scope: 'public_profile,email,user_birthday' });
+      // user_birthday
+    }, { scope: 'public_profile,email' });
   }
 
   public emailLogin() {
@@ -360,7 +340,6 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.observManager.publish('authen.check', null);
             this.observManager.publish('authen.profileUser', data.user);
             if (this.redirection) {
-              console.log('login ', this.redirection)
               this.router.navigateByUrl(this.redirection);
             } else {
               this.router.navigate(['home']);

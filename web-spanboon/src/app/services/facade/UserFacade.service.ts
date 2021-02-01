@@ -56,7 +56,6 @@ export class UserFacade extends AbstractFacade {
   }
 
   getItems(filter): Observable<any[]> {
-    console.log('getItems:', filter);
     if (!filter) {
       // if the search term is empty, return an empty array
       return of([]);

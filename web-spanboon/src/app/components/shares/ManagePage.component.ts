@@ -14,6 +14,7 @@ import { SearchFilter } from '../../models/models';
 import { AbstractPage } from '../pages/AbstractPage';
 import { Router } from '@angular/router';
 import { DialogCreatePage } from './dialog/DialogCreatePage.component';
+import { DialogAlert } from './dialog/DialogAlert.component';
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -52,10 +53,10 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.userAccessFacade = userAccessFacade;
         this.dialog = dialog;
-        this.observManager.subscribe('authen.createPage', (data: any) => { 
+        this.observManager.subscribe('authen.createPage', (data: any) => {
             this.searchAllPage();
         });
-        this.observManager.subscribe('authen.check', (data: any) => { 
+        this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAllPage();
         });
     }
@@ -64,26 +65,26 @@ export class ManagePage extends AbstractPage implements OnInit {
         return user !== undefined && user !== null;
     }
 
-    public ngOnInit(): void {   
+    public ngOnInit(): void {
         this.searchAllPage();
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-      }
-       
-      isPageDirty(): boolean {
+    }
+
+    isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
         return false;
-      }
-      onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
-      onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
-      }
+    }
 
     isActive(): boolean {
         let page = document.getElementsByClassName("list-page");
@@ -92,11 +93,20 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.drawer.toggle();
-        const dialogRef = this.dialog.open(DialogCreatePage, {
-            autoFocus: false
+        this.clickSystemDevelopment();
+    }
+
+    public clickSystemDevelopment(): void {
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา",
+                bottomText2: "ตกลง",
+                bottomColorText2: "black",
+                btDisplay1: "none"
+            }
         });
-        dialogRef.afterClosed().subscribe(res => {
-            console.log(res)
+        dialog.afterClosed().subscribe((res) => {
         });
     }
 
@@ -145,12 +155,12 @@ export class ManagePage extends AbstractPage implements OnInit {
         }
     }
 
-    public clickSetting(item: any) { 
-        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
-            this.router.navigate(['/page/' + item.page.pageUsername + '/settings', { id : item.page.id }]);
-        } else {
+    public clickSetting(item: any) {
+        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) { 
+            this.router.navigate(['/page/' + item.page.pageUsername + '/settings']);
+        } else { 
             this.router.navigate(['/page/' + item.page.id + '/settings']);
-        } 
+        }
     }
 
 }

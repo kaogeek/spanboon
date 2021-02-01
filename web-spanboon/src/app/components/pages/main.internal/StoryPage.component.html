@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ct-container" [innerHTML]='postStoryData.story.story | highlight' id="storyBody">
+            <div class="ct-container" [innerHTML]='postStoryData.story | highlight' id="storyBody">
             </div>
             <div class="ct-needs">
                 <card-item [itemData]="dataNeeds"></card-item>
@@ -163,4 +163,61 @@
             </div>
         </div>
     </div>
+
+    <div *ngIf="!isPreload" class="story-footer">
+        <div class="text">
+            <span>สตอรี่ของ : </span>
+            <a href={{linkPage}} target="_blank">{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</a>
+        </div>
+
+        <div class="swiper-container" [swiper]="config"
+            *ngIf="recommendedStory ? recommendedStory.contents.length > 0 : false">
+            <div class="swiper-wrapper">
+                <ng-container *ngFor="let data of recommendedStory.contents;let index = index">
+                    <ng-container *ngIf="index > 0 && index <= 5">
+                        <div class="wp-block-cover has-background-dim"
+                            [ngStyle]="{'background-image': 'url('+ apiBaseURL+data.coverPageUrl+'/image' +')'}">
+                            <div class="background-text">
+                                <span class="background-text-h">{{data.post.title}}</span>
+                                <span class="background-text-h-s">{{data.post.detail}}</span>
+                                <div class="line"></div>
+                                <div class="background-text-score">
+                                    <span class="text-score">60 แสดงความคิดเห็น</span>
+                                    <span class="text-point"> • </span>
+                                    <span class="text-score">3k บอกต่อ</span>
+                                    <span class="text-point"> • </span>
+                                    <span class="text-score">58 ถูกใจ</span>
+                                    <span class="text-point"> • </span>
+                                    <span class="text-score">3 แชร์</span>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div class="swiper-button-prev">
+                <div class="material-icons">
+                    chevron_left
+                </div>
+            </div>
+            <div class="swiper-button-next">
+                <div class="material-icons">
+                    chevron_right
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="story-footer-teb">
+        <span class="text">หน้าหลัก</span>
+        <span>•</span>
+        <span class="text">สมัครงาน</span>
+        <span>•</span>
+        <span class="text">เงื่อนไข</span>
+        <span>•</span>
+        <span class="text">ร้องเรียน</span>
+        <span>•</span>
+        <span class="text">ติดต่อ</span>
+    </div>
+
 </div>

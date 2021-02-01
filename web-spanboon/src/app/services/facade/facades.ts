@@ -5,7 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-export * from './AbstractFacade';  
+export * from './AbstractFacade';
+export * from './AllocateFacade.service';
 export * from './PageContentHasTagFacade.service';
 export * from './EditProfileUserPageFacade.service';
 export * from './ActionLogFacade.service';
@@ -18,8 +19,8 @@ export * from './NeedsFacade.service';
 export * from './MainPageSlideFacade.service';
 export * from './AssetFacade.service';
 export * from './UserFacade.service';
-export * from './ProfileFacade.service'; 
-export * from './PageCategoryFacade.service'; 
+export * from './ProfileFacade.service';
+export * from './PageCategoryFacade.service';
 export * from './PageFacade.service';
 export * from './PostCommentFacade.service';
 export * from './SearchHistoryFacade.service';

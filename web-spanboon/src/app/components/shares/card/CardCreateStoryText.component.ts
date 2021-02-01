@@ -509,7 +509,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                                     console.log('err ', err)
                                 });
                                 this.arrListItem.push(needs);
-                                console.log('this.arrListItem ', this.arrListItem)
                             }
                             index++;
                         }
@@ -751,7 +750,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                 }
                 if (this.arrListItem !== undefined) {
                     this.arrListItem = this.arrListItem.slice()
-                    console.log('slice ', this.arrListItem)
                 }
             }
             if (doingItem && doingItem.length === 0) {
@@ -1042,7 +1040,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     setCaretToEnd(target/*: HTMLDivElement*/, isStart?) {
-        console.log('target', target)
+        10
         const range = document.createRange();
         const sel = window.getSelection();
         const ranges = sel.getRangeAt(0);
@@ -1094,37 +1092,16 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     public onKeyup(event) {
-        // const regex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm;
-        // const str = document.getElementById('editableStory' + this.index).innerHTML;
-        // var inputText = document.getElementById('editableStory' + this.index);
-        // var innerHTML = inputText.innerHTML;
-        // var innerText = inputText.innerText
-        // var target = 'target="_blank"'
-        // let m;
-
-
-
-        // while ((m = regex.exec(str)) !== null) {
-        //     if (m.index === regex.lastIndex) {
-        //         regex.lastIndex++;
-        //     }
-
-        //     m.forEach((match, groupIndex) => {
-        //         var index = innerHTML.indexOf(match);
-        //         var regexs = innerHTML
-        //         var href = "href = https://www." + match + "/"
-        //         innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
-        //         inputText.innerHTML = innerHTML;
-        //         this.setCaretToEnd(event.target);
-        //     });
-        // }
-        const regex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/gm;
+        const regex = /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gm;
         var inputText = document.getElementById('editableStory' + this.index);
         var innerHTML = inputText.innerHTML;
         var innerText = inputText.innerText
         var target = 'target="_blank"'
         let m;
-        while ((m = regex.exec(this.link)) !== null) {
+
+        console.log('event.key', event.key)
+
+        while ((m = regex.exec(innerText)) !== null) {
             // This is necessary to avoid infinite loops with zero-width matches
             if (m.index === regex.lastIndex) {
                 regex.lastIndex++;
@@ -1132,16 +1109,40 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
             // The result can be accessed through the `m`-variable.
             m.forEach((match, groupIndex) => {
-                if (event.key === " " || event.key === undefined) {
+                if (event.key === " ") {
                     var index = innerHTML.indexOf(match);
                     var href = "href = https://www." + match + "/"
-                    innerHTML = innerHTML.substring(0, index) + "&nbsp<a " + href + " " + target + ">" + innerHTML.substring(index, index + match.length) + "</a>&nbsp" + innerHTML.substring(index + match.length);
-                    inputText.innerHTML = innerHTML;
-                    this.setCaretToEnd(event.target);
+
+                    var stIndex = (innerHTML.indexOf(match) - 13);
+                    var check = innerHTML.substring((stIndex - 1), stIndex)
+                    var beforeCheck = innerHTML.substring((index - 1), index)
+
+                    if (check !== "=") {
+                        if (beforeCheck !== ">") {
+                            innerHTML = innerHTML.substring(0, index) + "<a style=" + "color:blue;" + ">" + innerHTML.substring(index, index + match.length) + "</a>" + innerHTML.substring(index + match.length);
+                            inputText.innerHTML = innerHTML;
+                            this.setCaretToEnd(event.target);
+                        }
+                    }
                 }
+
+                if (event.key === "Backspace") {
+                    var index = innerHTML.indexOf(match);
+
+                    var stIndex = (innerHTML.indexOf(match) - 13);
+                    var beforeCheck = innerHTML.substring((index - 1), index)
+
+                    console.log('beforeCheck', beforeCheck);
+                    if (beforeCheck === ">") {
+                        innerHTML = innerHTML.substring(0, (index - 23)) + innerHTML.substring(index, index + match.length) + innerHTML.substring(index + (match.length + 4));
+                        inputText.innerHTML = innerHTML;
+                        this.setCaretToEnd(event.target);
+                    }
+
+                }
+
             });
         }
-        this.link = document.getElementById('editableStory' + this.index).innerText.toString();
 
         clearTimeout(this.setTimeKeyup);
         this.setTimeKeyup = setTimeout(() => {
@@ -2201,7 +2202,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result !== undefined) {
                 this.imageIcon = result;
-                console.log(this.imageIcon)
                 // this.imageIcon.push(result);
             }
             this.stopLoading();
@@ -2279,7 +2279,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
         dialogRef.afterClosed().subscribe(res => {
             if (res !== undefined) {
-                console.log(res);
                 this.imagesTimeline = res;
             }
         });
@@ -2375,8 +2374,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
     public removeNeeds(item) {
         let index = 0;
-        console.log('item ', item)
-        console.log('needs ', this.arrListItem)
         // for (let data of this.arrListItem) {
         //   if (data.standardItemId === item.standardItemId) {
         //     this.arrListItem.splice(index, 1);
@@ -2394,17 +2391,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             let tag = this.tagEvent && this.tagEvent.nativeElement.offsetHeight;
             let toolbar = this.toolBar && this.toolBar.nativeElement.offsetHeight;
             let x = top + topic + tag + toolbar + 1.4;
-            console.log('xxxxxx ', x)
             var chromeH = window.outerHeight - window.innerHeight;
             var needs = this.needsElement && this.needsElement.listNeeds && this.needsElement.listNeeds.nativeElement.offsetHeight;
             if (needs) {
                 x = x + needs;
-                console.log(' needs ', needs)
             }
 
             if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
                 // x = x + 30.5; 
-                console.log('x ', x)
                 x = x + chromeH;
 
             } else {
@@ -2445,7 +2439,6 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             this.isTablet = true;
             setTimeout(() => {
                 let x = this.getHeight();
-                console.log('get h ', x)
                 if (x && x !== undefined) {
                     this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
                 }

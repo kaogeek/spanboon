@@ -53,8 +53,12 @@ export class StoryPage extends AbstractPage implements OnInit {
   protected postCommentFacade: PostCommentFacade;
   protected postFacade: PostFacade;
   private routeActivated: ActivatedRoute;
+  private mainPostLink: string = window.location.origin + '/post/'
+  private mainPageLink: string = window.location.origin + '/page/'
 
+  public imageURL: "/file/5f8e68d3a554f760422bc339";
   public pageId: string;
+
   public resDataPage: any;
   public imageCover: any
   public postStoryData: any;
@@ -73,6 +77,8 @@ export class StoryPage extends AbstractPage implements OnInit {
   public asPage: any
   public recommendedStory: any
   public recommendedStoryHashtag: any
+  public linkPage: any
+
   public loding: boolean;
   public isComment: boolean
   public isPreload: boolean = true;
@@ -182,7 +188,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   constructor(router: Router, postCommentFacade: PostCommentFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute) {
     super(PAGE_NAME, authenManager, dialog, router);
-    // this.dialog = dialog
     this.observManager = observManager;
     this.assetFacade = assetFacade;
     this.pageFacade = pageFacade;
@@ -191,7 +196,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.postFacade = postFacade;
     this.isComment = false
     this.isSearchHashTag = false
-    // this.loding = true
     this.position = "50% 80%"
     this.h = 80
     this.test = [1, 2, 3]
@@ -259,7 +263,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.count = false;
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then((res: any) => {
-      console.log('res', res)
       this.postStoryData = res[0]
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
@@ -304,11 +307,13 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.searchPageInUser(this.user.id)
     }
     this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
+
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
+
 
   private setCardSilder() {
     this.config = {
@@ -374,37 +379,6 @@ export class StoryPage extends AbstractPage implements OnInit {
         },
       },
     }
-
-    // this.config3 = {
-    //   direction: 'horizontal',
-    //   slidesPerView: 6,
-    //   spaceBetween: 10,
-    //   keyboard: false,
-    //   mousewheel: false,
-    //   scrollbar: false,
-    //   navigation: {
-    //     nextEl: '.swiper-button-next',
-    //     prevEl: '.swiper-button-prev',
-    //   },
-    //   breakpoints: {
-    //     479: {
-    //       slidesPerView: 1,
-    //       spaceBetween: 10,
-    //     },
-    //     768: {
-    //       slidesPerView: 3,
-    //       spaceBetween: 10,
-    //     },
-    //     1024: {
-    //       slidesPerView: 3,
-    //       spaceBetween: 10,
-    //     },
-    //     1600: {
-    //       slidesPerView: 4,
-    //       spaceBetween: 10,
-    //     },
-    //   },
-    // }
   }
 
   public isLogin(): boolean {
@@ -489,6 +463,9 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedStory() {
     this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
       this.recommendedStory = res.data
+      for (let c of this.recommendedStory.contents) {
+        c.coverPageUrl = "/file/5f95a82db5184e606cec4517"
+      }
     }).catch((err: any) => {
     })
   }
@@ -613,6 +590,18 @@ export class StoryPage extends AbstractPage implements OnInit {
       }
       scroll = scrolls
     });
+
+    setTimeout(() => {
+      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+        console.log(page)
+        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+          this.linkPage = (this.mainPageLink + page.data.uniqueId)
+        } else if (page.data.id !== undefined && page.data.id !== null) {
+          this.linkPage = (this.mainPageLink + page.data.id)
+        }
+      }).catch((err: any) => {
+      });
+    }, 1000);
   }
 
   private isLoginUser() {

@@ -122,8 +122,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickLoginGoogle(): void {
+        // this.showAlertDevelopDialog("รองรับการสมัครใช้งานผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
         this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
-            console.log('result >>> ', result);
 
             if (result !== null && result !== undefined) {
                 let googleToken = {
@@ -140,6 +140,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
             console.log('error >>> ', error);
         });
     }
+
 
     public loginTwitter(token: string, token_secret: string, userId: string) {
         let mode = 'TWITTER';
@@ -181,11 +182,10 @@ export class MenuRegister extends AbstractPage implements OnInit {
         });
     }
 
-    public clickLoginTW() {
-        this.twitterService.requestToken().then((result: any) => {
-            this.authorizeLink += '?' + result;
-            // this.authenticateLink += '?' + result;
-            // console.log('result ', this.authorizeLink) 
+    public clickLoginTW() {  
+        let callback = "login";
+        this.twitterService.requestToken(callback).then((result: any) => {
+            this.authorizeLink += '?' + result; 
             window.open(this.authorizeLink);
         }).catch((error: any) => {
             console.log(error);
@@ -274,7 +274,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-        }, { scope: 'public_profile,email,user_birthday' });
+            // user_birthday
+        }, { scope: 'public_profile,email' });
     }
 
     private loginFB() {

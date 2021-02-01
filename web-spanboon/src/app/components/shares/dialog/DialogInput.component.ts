@@ -52,12 +52,9 @@ export class DialogInput {
     }
 
     public checkOverFulfillQty(value) {
-        console.log('this.data.quantity >>> ', this.data.quantity);
-        console.log('value >>> ', value);
     }
 
     public selectInput(event?: any) {
-        console.log('event', event);
         const input = $("#quantity");
 
         if (input !== null && input !== undefined) {

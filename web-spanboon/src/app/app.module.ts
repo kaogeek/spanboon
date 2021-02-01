@@ -85,7 +85,9 @@ import {
   SettingsFanPage,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   AboutPage,
+  Policy,
   // shares
   DialogImage,
   DialogAlert,
@@ -100,6 +102,7 @@ import {
   DialogSettingDateTime,
   DialogResetForgotPassword,
   DialogFulfillAllocate,
+  DialogPreview,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -178,6 +181,7 @@ import {
 
 // remove when finished test
 import { TestComponent } from './components/TestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 
 import {
   // Manager
@@ -186,6 +190,7 @@ import {
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -207,6 +212,7 @@ import {
   EditProfileUserPageFacade,
   AccountFacade,
   ActionLogFacade,
+  AllocateFacade,
   FulfillFacade,
   ChatRoomFacade,
   ChatFacade,
@@ -258,8 +264,10 @@ const COMPONENTS: any[] = [
   PostPage,
   SettingsFanPage,
   AboutPage,
+  Policy,
   SettingsInfo,
   SettingsAdminRoles,
+  SecurityInfo,
   MainPage,
   MenuRegister,
   FulfillPage,
@@ -287,6 +295,7 @@ const COMPONENTS: any[] = [
   DialogConfirmFulfill,
   DialogInput,
   DialogFulfillAllocate,
+  DialogPreview,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -356,7 +365,8 @@ const COMPONENTS: any[] = [
   DialogMedia,
   SnackBarFulfill,
   // test
-  TestComponent
+  TestComponent,
+  RegisterPageTestComponent
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -386,8 +396,10 @@ const SERVICE_CLASSES: any[] = [
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
+  CheckMessageManager,
   // facade 
   PostFacade,
+  AllocateFacade,
   HashTagFacade,
   EmergencyEventFacade,
   ObjectiveFacade,

@@ -6,7 +6,8 @@
  */
 
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
-import { FULFILLMENT_STATUS } from 'src/app/FulfillmentStatus';
+import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
+import { ObservableManager } from '../../../services/services';
 
 @Component({
     selector: 'card-contact',
@@ -38,6 +39,8 @@ export class CardContact {
     public description: string = 'ขอความคอนเทนต์';
     @Input()
     public name: string = 'ชื่อ นามสกุล';
+    // @Input()
+    // public name: string = 'ชื่อ นามสกุล';
     @Input()
     public chatMessage: string = 'ข้อความ';
     @Input()
@@ -46,12 +49,12 @@ export class CardContact {
     public isCaseSelected: boolean;
     @Input()
     public data: any;
+    @Input()
+    public type: any;
     @Output()
     public onClick: EventEmitter<any> = new EventEmitter();
 
-    public isActive: boolean = false;
-
-    constructor() { }
+    public isActive: boolean = false; 
 
     ngOnInit(): void { 
         if (this.data.status === FULFILLMENT_STATUS.INPROGRESS && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {
@@ -77,7 +80,7 @@ export class CardContact {
         }
     }
 
-    public getFulfillmentCase(event: any) {
+    public getFulfillmentCase(event: any) { 
         this.onClick.emit(this.data);
     }
 }

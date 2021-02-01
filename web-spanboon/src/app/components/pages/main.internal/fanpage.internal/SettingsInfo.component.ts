@@ -31,6 +31,10 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     @Input()
     public selectedTab: any; 
     @Input()
+    public data: any;  
+    @Input()
+    public bindingSocialTwitter: any; 
+    @Input()
     public dirtyCancelEvent: EventEmitter<any>;
     @Input()
     public dirtyConfirmEvent: EventEmitter<any>;
@@ -68,11 +72,13 @@ export class SettingsInfo extends AbstractPage implements OnInit {
 
         this.routeActivated.params.subscribe(async (params) => {
             this.pageId = params['id'];
+            console.log('this.pageId ',this.pageId)
         });
         this.selected = this.links[0].label; 
     }
 
     public ngOnInit(): void {  
+        console.log('data >> ',this.data)
     }
 
     public ngOnDestroy(): void {

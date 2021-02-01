@@ -10,20 +10,23 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MESSAGE } from '../../../../AlertMessage';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
+import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
 import { DialogPost } from '../../../../components/shares/dialog/DialogPost.component';
 import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
-import { DialogCheckFulfill, DialogConfirmFulfill } from 'src/app/components/shares/shares';
+import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill, DialogFulfillAllocate } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
+import * as moment from 'moment';
 
 const PAGE_NAME: string = 'fulfill';
-const SEARCH_LIMIT: number = 10;
+const SEARCH_LIMIT: number = 100;
 const SEARCH_OFFSET: number = 0;
+const SELECTED_PAGE: string = 'selected.page';
+const CHATROOM_ID: string = 'chatroom.id';
 
 @Component({
     selector: 'fulfill-page',
@@ -69,6 +72,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
         {
             name: 'วันที่เปิดเรื่อง',
             type: FULFILL_ORDER_BY.DATE
+        },
+        {
+            name: 'วันที่ปิดเคส',
+            type: FULFILL_ORDER_BY.APPROVE_DATE_TIME
         }
     ];
     public fulfillStatus = [
@@ -96,6 +103,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private assetFacade: AssetFacade;
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
+    private chatMessage: CheckMessageManager;
     //
     public isAuthen: boolean;
     public isCaseActive: boolean;
@@ -118,6 +126,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public Expand: boolean;
     public isTransition: boolean;
     public isBackArrow: boolean;
+    public isRead: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -154,10 +163,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
+    public approveDate: any;
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
-        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade,
+        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
         userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
@@ -172,6 +182,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.chatFacade = chatFacade;
         this.chatRoomFacade = chatRoomFacade;
+        this.chatMessage = chatMessage;
         this.isAuthen = false;
         this.isCaseActive = true;
         this.showLoading = true;
@@ -203,6 +214,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatData = [];
         this.reqData = [];
         this.Expand = true;
+        this.accessPage = [];
+
+        this.observManager.createSubject(SELECTED_PAGE);
 
         this.activatedRoute.params.subscribe((param) => {
             this.redirection = param['redirection'];
@@ -223,6 +237,24 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 console.log('err1 >>>>> ', err);
             });
         });
+
+        this.observManager.subscribe('authen.message', (chat: any) => {
+            console.log('chat ', chat)
+            if (chat && chat.length > 0) {
+                for (let data of chat) {
+                    for (let caseData of this.fulfillCase) {
+                        let index = caseData.cases.map(function (e) { return e.chatRoom; }).indexOf(data._id);
+                        if (index !== -1) {
+                            caseData.cases[index].unreadMessageCount = data.count;
+                            caseData.cases[index].chatMessage = data.message;
+                            caseData.cases[index].isRead = false;
+                        }
+                    }
+
+                }
+            }
+        });
+
     }
 
     ngOnInit(): void {
@@ -270,16 +302,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     public changeAccess(data, type) {
         this.canAccessCase = false;
-
         if (data !== null && data !== undefined) {
             this.accessValue = data;
-
             if (type === 'page') {
+                console.log('data ',data)
                 this.listAsPage = true;
                 this.asPage = data.id;
+                this.observManager.publish(SELECTED_PAGE,this.asPage);
             } else if (type === 'user') {
                 this.listAsPage = false;
                 this.asPage = undefined;
+                this.observManager.publish(SELECTED_PAGE,'');
             }
 
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
@@ -287,71 +320,61 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public searchAccessPage() {
+        this.accessValue = this.getCurrentUser();
         this.showLoading = true;
+
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
                 for (let data of res) {
-                    if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
-                        this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
-                            if (image.status === 1) {
-                                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                    data.user.imageURL = null;
-                                } else {
-                                    data.user.imageURL = image.data;
-                                }
-                            }
-                        }).catch((err: any) => {
-                            if (err.error.message === "Unable got Asset") {
-                                data.user.imageURL = '';
-                            }
-                        });
-                    }
-
-                    setTimeout(() => {
-                        this.accessValue = data.user;
-                    }, 1000);
-
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
                             if (image.status === 1) {
                                 if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                    data.page.imageURL = null;
+                                    data.page.imageBase64 = null;
                                 } else {
-                                    data.page.imageURL = image.data;
+                                    data.page.imageBase64 = image.data;
                                 }
-                                setTimeout(() => {
-                                    this.accessPage = res;
-                                }, 1000);
+
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
-                                data.page.imageURL = '';
+                                data.page.imageBase64 = '';
                             }
                         });
                     }
+                    setTimeout(() => {
+                        this.accessPage = res;
+                    }, 1000);
                 }
 
                 setTimeout(() => {
-                    this.accessPage = res;
                     this.showLoading = false;
                 }, 1000);
+            } else {
+                let data = {
+                    user: {
+                        displayName: this.accessValue.displayName,
+                        id: this.accessValue.id,
+                        imageBase64: this.accessValue.imageBase64,
+                        imageURL: this.accessValue.imageURL,
+                    }
+                }
+                this.accessPage.push(data);
             }
         }).catch((err: any) => {
             console.log(err);
         });
     }
 
-    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number): Promise<any> {
+    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number, caseId?: string, isFirst?: boolean): Promise<any> {
         return new Promise(async (resolve, reject) => {
             this.canAccessCase = false;
             this.canAccessChatRoom = false;
-            this.showLoading = true;
+            this.showLoading = true; 
+            let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
 
-            let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset);
-
-            let fulfillCases: any[] = [];
-
-            if (fulfillList !== null && fulfillList !== undefined) {
+            let fulfillCases: any[] = []; 
+            if (fulfillList.length > 0 && fulfillList !== null && fulfillList !== undefined) {
                 this.showCase = true;
 
                 for (let data of fulfillList) {
@@ -365,7 +388,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.userImageURL = data.userImageURL;
                             this.pageImageURL = data.pageImageURL;
                             this.name = data.name;
-                            this.postDate = data.postDate;
+                            this.postDate = data.postDate;  
 
                             if (data.userImageURL !== '' && data.userImageURL !== null && data.userImageURL !== undefined) {
                                 this.assetFacade.getPathFile(data.userImageURL).then((image: any) => {
@@ -399,19 +422,27 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 });
                             }
                         }
+                        if (isFirst) {
+                            for (let value of fulfillList) {
+                                for (let cases of value.cases) {
+                                    this.fulfillCase.push(value)
+                                    this.getChatRoom(cases, this.asPage);
+                                    break;
+                                }
+                            }
+                            this.fulfillCase.reverse(); 
+                        } else {
+                            this.fulfillCase = fulfillList;
+                        }
+                       
                     }
                 }
-
-                this.fulfillCase = fulfillList;
-                console.log('this.fulfillCase ', this.fulfillCase)
-
                 setTimeout(() => {
                     this.showLoading = false;
-                }, 1000);
-
+                }, 1000); 
                 resolve(this.fulfillCase);
             } else {
-                reject();
+                this.fulfillCase = [];
             }
         });
     }
@@ -422,12 +453,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
             asPage,
             pageId: this.pageId,
             postId: this.postId,
+            name: this.pageName,
             fulfillRequest: this.reqData,
             isFulfill: true,
             isListPage: false,
             isEdit: false,
+            isFulfillNull: true
         };
-        console.log('data ', data)
 
         const dialogRef = this.dialog.open(DialogPost, {
             width: 'auto',
@@ -437,30 +469,35 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result !== null && result !== undefined) {
+                
                 this.snackBar.open("สร้างโพสต์เติมเต็มสำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
                     this.router.navigate([]).then(() => {
                         window.open('/post/' + result.id, '_blank');
                     });
                 });
 
-                // this.clickChangeTab(FULFILLMENT_STATUS.CONFIRM);
+                this.fulFillFacade.getFulfillmentCase(fulfillCaseId).then((res: any)=>{
+                    if(res){  
+                        this.approveDate =  moment(res.fulfillCase.approveDateTime).format('DD/MM/YYYY');
+                    }
+                }).catch((err: any)=>{
+                    console.log('error ',err)
+                });
 
+                this.fulfillmentPost = result.id;
                 this.asPage = asPage;
                 this.isCaseConfirmed = true;
                 this.isCaseHasPost = true;
-                this.statusColor = "green";
-                this.isCaseActive = false;
             }
         });
     }
 
     public getChatRoom(fulfill: any, asPage?: any) {
+        console.log('fulfill >>>> ', fulfill)
         this.chatData = [];
         this.reqData = [];
 
-        if (fulfill !== null && fulfill !== undefined) {
-            // this.router.navigateByUrl('/fulfill/' + fulfill.fulfillCaseId);
-
+        if (fulfill !== null && fulfill !== undefined) {  
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
             } else {
@@ -478,16 +515,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
 
             if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost === null || fulfill.fulfillmentPost === undefined || fulfill.fulfillmentPost === '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
-                console.log("s1 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
                 this.isCaseHasPost = false;
             } else if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost !== null && fulfill.fulfillmentPost !== undefined && fulfill.fulfillmentPost !== '')) || fulfill.status === FULFILLMENT_STATUS.CANCEL) {
-                console.log("s2 >> ", fulfill.status);
                 this.isCaseConfirmed = true;
                 this.isCaseHasPost = true;
                 this.fulfillmentPost = fulfill.fulfillmentPost;
             } else if ((fulfill.status === FULFILLMENT_STATUS.CONFIRM && (fulfill.fulfillmentPost === null || fulfill.fulfillmentPost === undefined || fulfill.fulfillmentPost === '')) || fulfill.status === FULFILLMENT_STATUS.INPROGRESS) {
-                console.log("s3 >> ", fulfill.status);
                 this.isCaseConfirmed = false;
                 this.isCaseHasPost = false;
             }
@@ -519,7 +553,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.objective = '';
                 this.linkObjective = '';
             }
-
             this.pageId = fulfill.pageId;
             this.postId = fulfill.postId;
             this.linkPost = (this.mainPostLink + fulfill.postId);
@@ -530,14 +563,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.name = fulfill.name;
             this.postDate = fulfill.postDate;
             this.chatDate = fulfill.chatDate;
+            this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
+            fulfill.isRead = true;
+            fulfill.unreadMessageCount = 0;
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
                 if (res !== null && res !== undefined) {
                     this.showChatRoom = true;
 
+                    this.observManager.publish(CHATROOM_ID,this.chatRoomId);
                     this.chatRoomId = res.chatRoom.id;
                     this.pageName = res.fulfillCase.pageName;
-
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
                         this.canAccessCase = true;
                         this.canAccessChatRoom = true;
@@ -547,9 +583,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds).then((readResult) => {
+                                    this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
+                                        console.log('readResult ', readResult)
                                         if (readResult !== null && readResult !== undefined) {
-                                            data.isRead = true;
+                                            data.chatMessage.isRead = true;
+                                            chatIds = [];
                                         }
                                     }).catch((error) => {
                                         console.log('error >>>> ', error);
@@ -587,6 +625,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     });
                                 } else {
                                     this.chatDate = data.chatMessage.createdDate;
+                                    chatIds = [];
                                 }
                             }
                         }
@@ -722,37 +761,71 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public confirmFulfillRequest(fulfillCaseId: string, asPage?: string) {
-        if (fulfillCaseId !== null && fulfillCaseId !== undefined && fulfillCaseId !== '') {
-            const confirmEventEmitter = new EventEmitter<any>();
-            confirmEventEmitter.subscribe(() => {
-                this.fulFillFacade.confirmFulfillmentCase(fulfillCaseId, asPage).then((res) => {
-                    this.isCaseConfirmed = true;
-                }).catch((err) => {
+        if (this.postId !== null && this.postId !== undefined && this.postId !== '') {
+            if (fulfillCaseId !== null && fulfillCaseId !== undefined && fulfillCaseId !== '') {
+                const confirmEventEmitter = new EventEmitter<any>();
+                confirmEventEmitter.subscribe(() => {
+                    this.fulFillFacade.confirmFulfillmentCase(fulfillCaseId, asPage).then((res) => {
+                        if (res) {
+                            this.isCaseConfirmed = true;
+                            for (let group of this.fulfillCase) {
+                                for (let fulfillStatus of group.cases) {
+                                    if (res.id === fulfillStatus.fulfillCaseId) {
+                                        fulfillStatus.status = res.status;
+                                        break;
+                                    }
+                                }
+                            }
 
+                        }
+                    }).catch((err) => {
+
+                    });
                 });
-            });
 
-            const cancelEventEmitter = new EventEmitter<any>();
-            cancelEventEmitter.subscribe(() => { });
+                const cancelEventEmitter = new EventEmitter<any>();
+                cancelEventEmitter.subscribe(() => { });
+
+                let data = {
+                    disableClose: true,
+                    item: this.reqData,
+                    text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
+                    bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                    bottomColorText2: "black",
+                    confirmClickedEvent: confirmEventEmitter
+                }
+
+                let dialog = this.dialog.open(DialogConfirmFulfill, { data });
+
+                dialog.afterClosed().subscribe((res) => {
+                    if (res) {
+                    }
+                });
+            }
+        } else {
+
 
             let data = {
                 disableClose: true,
                 item: this.reqData,
+                pogeId: this.pageId,
+                fulfillCaseId: this.fulfillCaseId,
                 text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                confirmClickedEvent: confirmEventEmitter
+                bottomColorText2: "black"
             }
 
-            let dialog = this.dialog.open(DialogConfirmFulfill, { data });
+            let dialog = this.dialog.open(DialogFulfillAllocate, { data });
 
             dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                    this.statusColor = "#FFB800";
                 }
             });
+
         }
+
     }
 
     public cancelConfirmFulfillmentCase(fulfillCaseId: string, asPage?: string) {
@@ -826,6 +899,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.isCaseActive = true;
         } else if (status === FULFILLMENT_STATUS.CONFIRM) {
             this.isCaseActive = false;
+            this.sorting = this.sortingBy[2].type; 
+            this.sortBy = this.sortingBy[2].name; 
         }
 
         this.fulfullCaseStatus = status;
@@ -867,7 +942,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
-        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];
@@ -900,7 +974,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 if (this.fulfillCase !== null && this.fulfillCase !== undefined && this.fulfillCase.length > 0) {
                                     this.fulfillCase.filter((ffResult) => {
                                         ffResult.cases.filter((ffcResult) => {
-
                                             if ((ffcResult.fulfillCaseId === fulfillCaseId) === true) {
                                                 this.getChatRoom(ffcResult, this.asPage);
                                             }
@@ -1017,10 +1090,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            console.log('createResult', createResult)
-            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
+            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
         }).catch((createError) => {
-            console.log('createError >>> ', createError.message);
         });
     }
 
@@ -1230,5 +1301,33 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 transform: 'rotate(0)'
             });
         }
+    }
+
+    public searchPostNeeds() {
+        return this.router.navigateByUrl('/search?type=NEEDS');
+    }
+
+    public clickDevelop(index, text) {
+        let url = ''
+        if (index === 1) {
+            url += "emergency=#" + text
+        } else if (index === 2) {
+            url += "objective=" + text
+        }
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
+                bottomText2: "ตกลง",
+                bottomText1: "ยกเลิก",
+                bottomColorText2: "black",
+                // btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.router.navigateByUrl('/search?' + url);
+            }
+        });
     }
 }

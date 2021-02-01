@@ -38,6 +38,7 @@
                                     ไทมไลน์
                                 </div>
                             </div>
+                            <!-- <div class="setting" [routerLink]="'/account/settings'"> -->
                             <div class="setting" [routerLink]="'/account/settings'">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                                     viewBox="0 0 16.334 16.773">
@@ -53,7 +54,7 @@
                                     จัดการบัญชี
                                 </div>
                             </div>
-                            <div class="setting">
+                            <div class="setting" (click)="showAlertDevelopDialog()">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="18.722" height="20.424"
                                     viewBox="0 0 18.722 20.424">
                                     <g id="musical-instrument" transform="translate(0 0)">
@@ -298,8 +299,8 @@
                                     {{resProfile && resProfile.displayName ? resProfile.displayName : ''}}
                                 </div>
                                 <div class="fan-page-tag" [phxPreload]="resProfile" [preloadClass]="'fan-page-tag'"
-                                    [preloadPaddIng]="'10'">
-                                    {{resProfile && resProfile.uniqueId ? resProfile.uniqueId : ''}}
+                                    [preloadPaddIng]="'10'" *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
+                                    @{{ resProfile.uniqueId }}
                                 </div>
                             </div>
                         </div>
@@ -330,14 +331,15 @@
                         [profile]="resProfile && resProfile.imageBase64" [isShowTablet]="'true'"
                         [isShowMaxWidth]="'899'" (createPost)="createPost($event)" [dataPage]="name"
                         [modeDoIng]="'true'" style="display: block; padding: 5pt 0;">
-                    </box-post> 
+                    </box-post>
 
                     <ng-container *ngIf="isLoadingClickTab; else elseTemplateLoad">
                         <Preload-card [isShowCard1]="true" [isShowCard2]="true">
                         </Preload-card>
                     </ng-container>
                     <ng-template #elseTemplateLoad>
-                        <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0 && !showLoading; else elsePost ">
+                        <ng-container
+                            *ngIf="resPost && resPost.posts && resPost.posts.length > 0 && !showLoading; else elsePost ">
                             <ng-container *ngFor="let itemPost of resPost.posts; let index = index">
                                 <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
                                     [isUserPage]="false" (action)="actionComment($event,index)" [isShowUser]="true"

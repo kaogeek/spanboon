@@ -6,4 +6,4 @@
  */
 
 export * from './MenuProfile.component';
-export * from './SettingAccount.component';
+export * from './SettingAccount.component'; 

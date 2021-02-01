@@ -23,12 +23,12 @@
         <div class="body-collapsible"
             [ngStyle]="{'visibility':showCase ? 'visible' : 'hidden' , 'height':showCase ? '' : '0px' , 'overflow':showCase ? '' : 'hidden'}">
             <card-contact *ngFor="let fulfill of data.cases;let index = index" [title]="fulfill.title" [asPage]="asPage"
-                [statusColor]="statusColor" [isCaseSelected]="fulfill.isCaseSelected" [imageURL]="fulfill.userImageURL"
+                [statusColor]="fulfill.status === 'CONFIRM' ? '#FFB800' : 'green'" [isCaseSelected]="fulfill.isCaseSelected" [imageURL]="fulfill.userImageURL"
                 [emergencyEvent]="fulfill.emergencyEvent" [objective]="fulfill.objective"
-                [description]="fulfill.description" [name]="fulfill.name" [isRead]="fulfill.isRead"
+                [description]="fulfill.description" [name]="fulfill.chatSender.name" [type]="fulfill.chatSender.type" [isRead]="fulfill.isRead"
                 [chatMessage]="fulfill.chatMessage" [chatDate]="fulfill.chatDate | dateFormat"
                 [fulfillRequestCount]="fulfill.fulfillRequestCount" [unreadMessageCount]="fulfill.unreadMessageCount" [data]="fulfill"
-                (onClick)="getFulfillmentCase(fulfill)"></card-contact>
+                (onClick)="getFulfillmentCase(fulfill , index)"></card-contact>
         </div>
     </div>
 </ng-container>

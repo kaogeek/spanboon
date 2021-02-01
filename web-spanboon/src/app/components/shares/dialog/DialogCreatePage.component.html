@@ -25,7 +25,7 @@
             </div>
             <div class="title">
                 สร้างเพจสะพานบุญให้กับตัวคุณ หรือองค์กรของคุณ เพื่อบอกต่อเรื่องราว และความต้องการที่คุณกำลังมองหา
-                แล้วคุณจะแปลกใจที่รู้ว่ายังมีอีกหลายคนบนโลกใบนี้ที่พร้อมเติมเต็มให้กับคุณผ่านแพลตฟอร์มสะพานบุญเพื่อสร้างสรรค์สิ่งดีๆ 
+                แล้วคุณจะแปลกใจที่รู้ว่ายังมีอีกหลายคนบนโลกใบนี้ที่พร้อมเติมเต็มให้กับคุณผ่านแพลตฟอร์มสะพานบุญเพื่อสร้างสรรค์สิ่งดีๆ
                 ให้เกิดขึ้นบนโลกใบนี้
             </div>
         </div>
@@ -189,8 +189,9 @@
                         <div class="box-input input-detail">
                             <mat-label class="title">อีเมล์</mat-label>
                             <div class="drop-input">
-                                <input #emails id="email" [(ngModel)]="email" type="text" id="email" class="input-page checkEmail"
-                                    placeholder="อีเมล์" (keyup)="checkPatternEmail(emails.value)">
+                                <input #emails id="email" [(ngModel)]="email" type="text" id="email"
+                                    class="input-page checkEmail" placeholder="อีเมล์"
+                                    (keyup)="checkPatternEmail(emails.value)">
                             </div>
                             <div class="label-show-error" *ngIf="isNull">อีเมล์</div>
                         </div>
@@ -345,9 +346,10 @@
                                             </li>
                                         </ul>
                                         <div class="header-agreement">
-                                            <div class="check-true">
-                                                <mat-checkbox [disableRipple]="'true'" [(ngModel)]="checkedCon"></mat-checkbox>
-                                                <span (click)="checkedClick()">ฉันได้อ่านข้อความที่กล่าวมา และยินยอมตามข้อกำหนดของสะพานบุญ</span>
+                                            <div class="check-true" (click)="checkedClick()">
+                                                <mat-checkbox [disableRipple]="'true'" [(ngModel)]="checkedCon">
+                                                </mat-checkbox>
+                                                <span>ฉันได้อ่านข้อความที่กล่าวมา และยินยอมตามข้อกำหนดของสะพานบุญ</span>
                                             </div>
                                         </div>
                                     </div>
@@ -362,7 +364,12 @@
                 <div class="box-center">
                     <div class="page-success">
                         <div class="top">
+                            
                             <div class="header">
+                                <div class="circle-border"></div>
+                                <div class="circle">
+                                    <div class="success"></div>
+                                </div>
                                 สร้างเพจสำเร็จ
                             </div>
                             <div class="title">
@@ -407,7 +414,8 @@
         <div class="right-bottom">
             <div class="bottom-left">
                 <button mat-stroked-button class="but-canc" (click)="onClose()" *ngIf="isCanCel">ยกเลิก</button>
-                <button mat-stroked-button class="but-prev" id="prevBtn" *ngIf="isBack"(click)="nextPrev(-1)">ย้อนกลับ</button>
+                <button mat-stroked-button class="but-prev" id="prevBtn" *ngIf="isBack"
+                    (click)="nextPrev(-1)">ย้อนกลับ</button>
             </div>
             <div class="bottom-center">
                 <div class="wizar">
@@ -420,7 +428,8 @@
             </div>
             <div class="bottom-right">
                 <button mat-stroked-button class="but-skip" id="skipBtn" *ngIf="isSkip" (click)="skip(3)">ข้าม</button>
-                <button mat-stroked-button class="but-conf" *ngIf="isNext" id="nextBtn" (click)="nextPrev(1)">ถัดไป</button>
+                <button mat-stroked-button class="but-conf" *ngIf="isNext" id="nextBtn"
+                    (click)="nextPrev(1)">ถัดไป</button>
             </div>
         </div>
     </div>

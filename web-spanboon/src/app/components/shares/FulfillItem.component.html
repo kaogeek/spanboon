@@ -84,15 +84,26 @@
                                             </ng-container>
                                             <ng-template #elseLoadImg>
                                                 <ng-container
-                                                    *ngIf="item.imageURL && item.imageURL !== null; else elseBase64">
-                                                    <img class="icon-category"
-                                                        src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                    *ngIf="(item.standardItem && item.standardItem.imageURL && item.standardItem.imageURL !== null && item.standardItem.imageURL !== undefined && item.standardItem.imageURL !== '') || (item.imageURL && item.imageURL !== undefined && item.imageURL !== '' && item.imageURL !== null) ; else elseBase64">
+                                                    <ng-container *ngIf="item.standardItem && item.standardItem.imageURL; else elseTemplateIcon">
+                                                        <img class="icon-category"
+                                                            src="{{apiBaseURL+item.standardItem.imageURL+'/image'}}"
+                                                            alt="">
+                                                    </ng-container>
+                                                    <ng-template #elseTemplateIcon>
+                                                        <img class="icon-category"
+                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                    </ng-template>
                                                 </ng-container>
                                                 <ng-template #elseBase64>
                                                     <div class="icon-category image-file-waste">
+                                                        <img src="../../../../assets/img/customize_item.svg" alt=""
+                                                            style="width: 45pt; height: auto;">
+                                                    </div>
+                                                    <!-- <div class="icon-category image-file-waste">
                                                         <img src="../../../../assets/img/photo.png" alt=""
                                                             style="width: 40%; height: auto;">
-                                                    </div>
+                                                    </div> -->
                                                 </ng-template>
                                             </ng-template>
                                         </div>
@@ -100,6 +111,10 @@
                                             [searchTerm]="query_conversation" [caseSensitive]="false">
                                             {{item.name}}
                                         </span>
+                                        <div class="limit-fulfill">
+                                            <span [class.active]="item.fulfillQuantity > item.quantity"> {{item.fulfillQuantity}} </span> /
+                                            {{item.quantity}}
+                                        </div>
                                     </div>
                                 </ng-container>
                             </ng-container>
@@ -158,7 +173,7 @@
                                                     src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
                                             </ng-container>
                                             <ng-template #elseImage>
-                                                <img class="img-category" src="../../../../assets/img/pic2.svg" alt="">
+                                                <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
                                             </ng-template>
 
                                         </div>
@@ -226,7 +241,7 @@
                                             </g>
                                         </svg>
                                         <div class="wrapper-category">
-                                            <img class="img-category" src="../../../../assets/img/pic2.svg" alt="">
+                                            <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
                                         </div>
                                     </div>
                                 </div>

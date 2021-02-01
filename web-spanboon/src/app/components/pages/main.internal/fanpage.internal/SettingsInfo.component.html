@@ -5,6 +5,6 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-
-    <about-page #aboutPage *ngIf="selectedTab === 'ข้อมูลเพจ'" ></about-page>
-    <settings-admin-roles #adminRole *ngIf="selectedTab === 'บทบาทในเพจ'" [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-admin-roles> 
+<about-page #aboutPage *ngIf="selectedTab === 'ข้อมูลเพจ'" ></about-page>
+<settings-admin-roles #adminRole *ngIf="selectedTab === 'บทบาทในเพจ'" [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-admin-roles> 
+<security-info *ngIf="selectedTab === 'การเชื่อมต่อ'"  [pageId]="data"  [connectTwitter]="bindingSocialTwitter"></security-info>

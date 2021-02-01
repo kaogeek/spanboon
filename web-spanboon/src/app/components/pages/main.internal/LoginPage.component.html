@@ -40,6 +40,9 @@
                 [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
                 [color]="'#F8F7F2'" (click)="clickLoginTwitter()" [param]="{mode: 'twitter'}">
             </button-social>
+            <ng-container *ngIf="isPreloadTwitter">
+                <loading></loading>
+            </ng-container>
 
             <button-social class="button-social" [btnName]="'Google'" [height]="'34pt'" [fontSize]="'18px'"
                 [iconSocial]="'../../../../assets/img/google.svg'" [bgColor]="'#F8F7F2'" [imgsize]="'20pt'"
@@ -49,7 +52,8 @@
 
         <div class="wrapper-footer-login">
             มาร่วมเติมเต็มกับเรา <span class="wrapper-register" [routerLinkActive]="['active-link']"
-                [routerLink]="'/register/menu'"> สมัครสมาชิก </span>
+                [routerLink]="'/register/menu'"> สมัครสมาชิก </span> 
         </div>
+        <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
     </div>
 </div>

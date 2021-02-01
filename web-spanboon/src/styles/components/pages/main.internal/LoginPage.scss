@@ -101,6 +101,11 @@
       .button-social {
         margin-bottom: 10pt;
       }
+
+      // .button-social-dis {
+      //   margin-bottom: 10pt;
+      //   opacity: 0.5;
+      // }
     }
 
     > .wrapper-footer-login {
@@ -119,6 +124,18 @@
         &:hover {
           text-decoration: underline;
         }
+      }
+    }
+    > .policy {
+      display: flex;
+      justify-content: center;
+      font-size: 14px;
+      font-family: "Kanit-300";
+      padding-top: 5px;
+      @include pointer();
+      color: $koalaGray;
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

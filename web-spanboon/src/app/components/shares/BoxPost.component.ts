@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -19,11 +19,10 @@ import { Observable, fromEvent, of } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
-import { NeedsCard } from './card/card';
-import { SimpleChanges } from '@angular/core';
-
+import { NeedsCard } from './card/card'; 
 
 declare var $: any;
+
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 
@@ -82,6 +81,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isEdit: boolean = false;
   @Input()
   public isFulfill: boolean = false;
+  @Input()
+  public isFulfillNull: boolean = false;
   @Input()
   public modeShowDoing: boolean = false;
   @Input()
@@ -391,7 +392,6 @@ export class BoxPost extends AbstractPage implements OnInit {
                   console.log('err ', err)
                 });
                 this.arrListItem.push(needs);
-                console.log('this.arrListItem ', this.arrListItem)
               }
               index++;
             }
@@ -426,10 +426,10 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isLoading = false;
       }, 100);
     } else {
-      if(this.content && this.content.isFulfill){
+      if (this.content && this.content.isFulfill) {
         this.isButtonFulfill = false;
         this.isTypeNeed = false;
-        for(let data of this.content.fulfillRequest){ 
+        for (let data of this.content.fulfillRequest) {
           this.arrListItem.push(data)
         }
       }
@@ -539,7 +539,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public updateText() {
     document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted') {
+      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake') {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
@@ -711,7 +711,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.dataItem.resNeeds = doingItem.resNeeds
         }
         if (this.arrListItem !== undefined) {
-          this.arrListItem = this.arrListItem.slice() 
+          this.arrListItem = this.arrListItem.slice()
         }
       }
       if (doingItem && doingItem.length === 0) {
@@ -1031,8 +1031,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (chars > limit) {
       $('.header-story').addClass('msg-error-shake');
       text = text.substr(0, limit);
-      // var new_text = text.substr(0, limit);
-      // $('.header-story').html(new_text);
     } else if (chars == 0) {
       $('.header-story').removeClass('msg-error-shake');
     } else {
@@ -1040,10 +1038,12 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
 
     this.mStory = event.target.innerText.trim();
-    if (this.mStory === "") {
-      this.isMsgNull = true
-    } else {
-      this.isMsgNull = false
+    if (!this.isFulfillNull) {
+      if (this.mStory === "") {
+        this.isMsgNull = true
+      } else {
+        this.isMsgNull = false
+      }
     }
     if (this.isListPage) {
       this.postFacade.nextMessageTopic(this.mStory);
@@ -1079,10 +1079,12 @@ export class BoxPost extends AbstractPage implements OnInit {
     }, 200);
 
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
-    if (this.mTopic.trim() === "") {
-      this.isMsgError = true
-    } else {
-      this.isMsgError = false
+    if (!this.isFulfillNull) {
+      if (this.mTopic.trim() === "") {
+        this.isMsgError = true
+      } else {
+        this.isMsgError = false
+      }
     }
     this.postFacade.nextMessage(this.mTopic);
 
@@ -1230,49 +1232,50 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       topic = document.getElementById('topic').innerText;
       storyPostShort = document.getElementById('editableStoryPost').innerText;
-    }
+    } 
+    if (!this.isFulfillNull) {
+      if (topic.trim() === "" && this.isRepost) {
+        this.isMsgNull = true;
+        var topicAlert;
+        if (this.isListPage) {
+          topicAlert = document.getElementById(this.prefix.header + 'topic');
+          document.getElementById(this.prefix.header + 'topic').focus();
+        } else {
+          topicAlert = document.getElementById('topic');
+          document.getElementById("topic").focus();
+        }
+        topicAlert.classList.add('msg-error-shake');
 
-    if (topic.trim() === "" && this.isRepost) {
-      this.isMsgNull = true;
-      var topicAlert;
-      if (this.isListPage) {
-        topicAlert = document.getElementById(this.prefix.header + 'topic');
-        document.getElementById(this.prefix.header + 'topic').focus();
-      } else {
-        topicAlert = document.getElementById('topic');
-        document.getElementById("topic").focus();
+        // remove the class after the animation completes
+        setTimeout(function () {
+          topicAlert.classList.remove('msg-error-shake');
+        }, 1000);
+
+        event.preventDefault();
+        return;
       }
-      topicAlert.classList.add('msg-error-shake');
+      if (storyPostShort.trim() === "") {
+        this.isMsgError = true
+        var contentAlert;
+        if (this.isListPage) {
+          topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
+          document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
+        } else {
+          contentAlert = document.getElementById('editableStoryPost');
+          document.getElementById("editableStoryPost").focus();
+        }
+        contentAlert.classList.add('msg-error-shake');
 
-      // remove the class after the animation completes
-      setTimeout(function () {
-        topicAlert.classList.remove('msg-error-shake');
-      }, 1000);
+        // remove the class after the animation completes
+        setTimeout(function () {
+          contentAlert.classList.remove('msg-error-shake');
+        }, 1000);
 
-      event.preventDefault();
-      return;
-    }
-
-    if (storyPostShort.trim() === "") {
-      this.isMsgError = true
-      var contentAlert;
-      if (this.isListPage) {
-        topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
-        document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
-      } else {
-        contentAlert = document.getElementById('editableStoryPost');
-        document.getElementById("editableStoryPost").focus();
+        event.preventDefault();
+        return;
       }
-      contentAlert.classList.add('msg-error-shake');
-
-      // remove the class after the animation completes
-      setTimeout(function () {
-        contentAlert.classList.remove('msg-error-shake');
-      }, 1000);
-
-      event.preventDefault();
-      return;
     }
+
     if (this.typeStroy === POST_TYPE.NEEDS) {
       if (this.arrListItem.length === 0) {
         this.isMsgNeeds = true
@@ -1457,7 +1460,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         offset: SEARCH_OFFSET,
         relation: [],
         whereConditions: {
-          pageId: (this.dataPageId && this.dataPageId.id) || this.dataPageId,
+          pageId: (this.dataPageId && this.dataPageId.id) ? (this.dataPageId.id || this.dataPageId) : '',
         },
         count: false,
         orderBy: {
@@ -2127,7 +2130,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.imageIcon = result;
-        console.log(this.imageIcon)
         // this.imageIcon.push(result);
       }
       this.stopLoading();
@@ -2415,7 +2417,6 @@ export class BoxPost extends AbstractPage implements OnInit {
 
 
     const dialogRef = this.dialog.open(DialogPost, {
-      width: 'auto',
       data: this.data,
       disableClose: false,
     });
@@ -2442,5 +2443,20 @@ export class BoxPost extends AbstractPage implements OnInit {
       arrList: this.arrListItem
     }
     this.submitResizeClose.emit(body);
+  }
+
+  public preview() {
+    let dataPreview = {
+      title : this.topic.nativeElement.value,
+      detail : this.storyPost.nativeElement.innerText,
+    }
+    const dialogRef = this.dialog.open(DialogPreview, {
+      panelClass: 'dialog-review-full-screen', 
+      data : dataPreview
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

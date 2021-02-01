@@ -64,6 +64,10 @@
             .button-social {
                 margin-bottom: 10pt;
             }
+            // .button-social-dis {
+            //     margin-bottom: 10pt;
+            //     opacity: 0.5;
+            // }
         }
 
         > .wrapper-footer-login {
@@ -73,6 +77,17 @@
             font-family: "Sarabun-Light";
             font-size: 16px;
         }
+        > .policy {
+            display: flex;
+            justify-content: center;
+            font-size: 14px;
+            font-family: "Kanit-300";
+            padding-top: 5px;
+            color: $koalaGray;
+            &:hover {
+                text-decoration: underline;
+              }
+          }
     }
 
     > .background-menu {
@@ -85,7 +100,7 @@
 @media (max-width: $xxlarge) {
     .wrapper-menu-register {
         > .background-menu {
-            opacity: .5;
+            opacity: 0.5;
         }
     }
 }
