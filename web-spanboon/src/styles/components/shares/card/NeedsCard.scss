@@ -6,7 +6,7 @@
  */
 
 .list-needs-for {
-    padding: 5pt 14pt;
+    padding: 5pt 0;
 
     &.active {
         background: $white;
@@ -46,7 +46,7 @@
 
         > .right {
             flex: 0 0 auto;
-            
+
             > spanboon-button {
                 > .spanboon-button {
                     width: auto !important;
@@ -58,9 +58,11 @@
     }
 
     > .swiper-container {
-        // display: flex;
-        // align-items: center;
         padding: 10pt 1pt 1pt 1pt;
+
+        &.active {
+            padding: 0 1pt 1pt 1pt;
+        }
 
         > .swiper-wrapper {
             > .swiper-slide {
@@ -113,79 +115,132 @@
                     .needs-data {
                         padding: 10pt;
                         background: white;
-                        .needs-data-h {
-                            .text-h {
-                                font-family: "Kanit-500";
-                                font-size: 18px;
-                                line-height: 15px;
-                                color: #717886;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 1;
-                                -webkit-box-orient: vertical;
-                                overflow: hidden;
-                                padding: 5pt 0;
-                            }
-                        }
-
-                        .needs-data-body {
-                            width: 100%;
+                        &.active {
                             display: flex;
-                            align-items: center;
-                            justify-content: space-between;
+                            flex-direction: column;
+                        }
+                        div {
+                            &.active {
+                                display: flex;
+                                justify-content: space-between;
+                            }
+                            .needs-data-h {
+                                .text-h {
+                                    font-family: "Kanit-500";
+                                    // font-size: 18px;
+                                    font-size: 16px;
+                                    line-height: 15px;
+                                    color: #717886;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    padding: 5pt 0;
+                                }
+                            }
 
-                            .unit {
-                                flex: 1 1 0%;
-                                margin-right: 10pt;
+                            .needs-data-body {
+                                width: 100%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
 
                                 &.active {
-                                    margin-right: unset;
-                                    .unit-box {
-                                        display: flex;
-                                        align-items: baseline;
-                                        justify-content: flex-end;
+                                    width: unset;
+                                    flex: 0 0 auto;
+                                }
+                                .unit {
+                                    flex: 1 1 0%;
+                                    margin-right: 10pt;
+
+                                    &.active {
                                         margin-right: unset;
-                                        >.unit-num {
-                                            color: $bg-color4;
+                                        .unit-box {
+                                            display: flex;
+                                            align-items: baseline;
+                                            justify-content: flex-end;
+                                            margin-right: unset;
+                                            > .unit-num {
+                                                color: $bg-color4;
+                                            }
+                                        }
+                                        .unit-sub {
+                                            padding-left: 5pt;
                                         }
                                     }
-                                    .unit-sub {
-                                        padding-left: 5pt;
+                                    .unit-box {
+                                        .unit-num {
+                                            color: $bg-color4;
+                                            font-family: "Kanit-500";
+                                            font-size: 16px;
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 1;
+                                            -webkit-box-orient: vertical;
+                                        }
+
+                                        .unit-sub {
+                                            font-family: "Kanit-500";
+                                            font-size: 14px;
+                                            color: #717886;
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 1;
+                                            -webkit-box-orient: vertical;
+                                        }
                                     }
                                 }
-                                .unit-box {
-                                    .unit-num {
-                                        font-family: "Kanit-500";
-                                        font-size: 16px;
-                                        overflow: hidden;
-                                        text-overflow: ellipsis;
-                                        display: -webkit-box;
-                                        -webkit-line-clamp: 1;
-                                        -webkit-box-orient: vertical;
-                                    }
 
-                                    .unit-sub {
+                                .unit-bt-box {
+                                    flex: 0 0 auto;
+                                    > .limit {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        border-radius: 4px;
+                                        border: 0.7pt solid $border-color;
+                                        width: auto;
+                                        padding: 0 7pt;
+                                        height: 26pt;
+                                        color: $bg-color4;
                                         font-family: "Kanit-500";
                                         font-size: 14px;
-                                        color: #717886;
-                                        overflow: hidden;
-                                        text-overflow: ellipsis;
-                                        display: -webkit-box;
-                                        -webkit-line-clamp: 1;
-                                        -webkit-box-orient: vertical;
+
+                                        > .material-icons {
+                                            font-size: 16px;
+                                            padding-right: 2pt;
+                                        }
+                                    }
+                                    > spanboon-button {
+                                        > .spanboon-button {
+                                            width: auto !important;
+                                            padding: 0 7pt;
+                                            height: 26pt !important;
+                                        }
                                     }
                                 }
                             }
-
-                            .unit-bt-box {
-                                flex: 0 0 auto;
-
-                                > spanboon-button {
-                                    > .spanboon-button {
-                                        width: auto !important;
-                                        padding: 0 7pt;
-                                        height: 26pt !important;
-                                    }
-                                }
+                        }
+                        >.amonut {
+                            display: flex;
+                            align-items: center;
+                            font-size: 14px;
+                            font-family: "Kanit-500";
+                            color: $koalaGray;
+                            >.material-icons {
+                                color : $bg-color4;
+                                font-size: 16px;
+                                padding-right: 5pt;
+                            }
+                            >.quantity {
+                                color: black;
+                                padding-left: 3pt;
+                            }
+                            >.unit {
+                                padding-left: 3pt;
+                                color: black;
                             }
                         }
                     }
