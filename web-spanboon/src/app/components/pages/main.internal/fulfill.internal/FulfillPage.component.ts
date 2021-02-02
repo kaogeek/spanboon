@@ -446,6 +446,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 resolve(this.fulfillCase);
             } else {
                 this.fulfillCase = [];
+                this.isPreloadLoad = false;
             }
         });
     }
