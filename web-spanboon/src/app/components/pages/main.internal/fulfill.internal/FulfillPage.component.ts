@@ -127,6 +127,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public isTransition: boolean;
     public isBackArrow: boolean;
     public isRead: boolean;
+    public isPreloadLoad: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -198,6 +199,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.showCase = false;
         this.isActiveClass = false;
         this.isListItem = false;
+        this.isPreloadLoad = true;
         this.fulfullCaseStatus = this.listByStatus;
         this.statusColor = '#E5E3DD';
         this.asPage = '';
@@ -439,6 +441,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
                 setTimeout(() => {
                     this.showLoading = false;
+                    this.isPreloadLoad = false;
                 }, 1000); 
                 resolve(this.fulfillCase);
             } else {
@@ -1221,7 +1224,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.isChecKMobile = false;
             this.Expand = true;
             var fulfillLeft = document.getElementById("fulfill-left");
-            fulfillLeft.style.display = 'flex';
+            if(fulfillLeft && fulfillLeft.style !== null){ 
+                fulfillLeft.style.display = 'flex';
+            }
             if (window.innerWidth >= 1440) {
                 var itemList = document.getElementById("body-story-right");
                 if (itemList && itemList.style) {
