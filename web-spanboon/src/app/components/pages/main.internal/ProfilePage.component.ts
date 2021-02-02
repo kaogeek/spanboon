@@ -366,7 +366,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/profile/" + this.resProfile.id);
     } else {
-      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
+      this.resPost.posts[index].isLike = true;
+      this.resPost.posts[index].likeCount = 1;
+      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => { 
         this.resPost.posts[index].isLike = res.isLike
         this.resPost.posts[index].likeCount = res.likeCount
       }).catch((err: any) => {
@@ -1071,7 +1073,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public onImageLoaded(imageElement: any[]): void {
     setTimeout(() => {
-      this.showLoading = false
+      this.showLoading = false;
     }, 3000);
   }
 
