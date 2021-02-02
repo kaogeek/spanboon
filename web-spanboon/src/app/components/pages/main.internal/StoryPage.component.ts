@@ -601,7 +601,7 @@ export class StoryPage extends AbstractPage implements OnInit {
         }
       }).catch((err: any) => {
       });
-    }, 1000);
+    }, 2000);
   }
 
   private isLoginUser() {
