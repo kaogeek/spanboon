@@ -49,6 +49,12 @@ export class ChatMessage extends BaseModel {
     @Column({ name: 'videoURL' })
     public videoURL: string;
 
+    @Column({ name: 'itemId' })
+    public itemId: ObjectID;
+
+    @Column({ name: 'itemType' })
+    public itemType: string;
+
     @Column({ name: 'isRead' })
     public isRead: boolean;
 
