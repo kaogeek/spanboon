@@ -44,7 +44,7 @@ import { EditFulfillmentReqFromCaseRequest } from './requests/EditFulfillmentReq
 import { FulfillmentCaseGroupResponse } from './responses/FulfillmentCaseGroupResponse';
 import moment from 'moment';
 import { FULFILL_ORDER_BY, FULFILL_GROUP } from '../../constants/FulfillSort';
-import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
+import { CHAT_MESSAGE_TYPE, CHAT_MESSAGE_ITEM_TYPE } from '../../constants/ChatMessageTypes';
 import { FulfillmentPostsRequest } from './requests/FulfillmentPostsRequest';
 import { ASSET_PATH, ASSET_SCOPE } from '../../constants/AssetScope';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
@@ -1014,6 +1014,30 @@ export class FulfillmentController {
                             return res.status(400).send(ResponseUtil.getErrorResponse('Posts Case require needs.', undefined));
                         }
 
+                        // check isPostNeedsFulfilled in post mode
+                        const nids = [];
+                        for (const nId of needs) {
+                            nids.push(new ObjectID(nId));
+                        }
+                        
+                        const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
+                        if (insertedCheck !== undefined) {
+                            for (const needCheck of insertedCheck) {
+                                if (needCheck.fullfilled !== undefined) {
+                                    if (needCheck.fullfilled) {
+                                        return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                    }
+                                } else {
+                                    const ffQuantity = (needCheck.fulfillQuantity !== undefined && needCheck.fulfillQuantity !== null) ? needCheck.fulfillQuantity : 0;
+                                    const quantity = (needCheck.quantity !== undefined && needCheck.quantity !== null) ? needCheck.quantity : 0;
+
+                                    if (ffQuantity >= quantity) {
+                                        return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                    }
+                                }
+                            }
+                        }
+
                         fulfillCaseCreate = await this.createNewFulfillmentCase(pageObjId, postsObjId, requesterObjId, userObjId, username, today);
 
                         /* // open if you want to check is case is exist
@@ -1146,6 +1170,23 @@ export class FulfillmentController {
                                 chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
                                 chatMsg.room = chatRoomObjId;
 
+                                if (reqNeeds.customItemId !== undefined) {
+                                    chatMsg.itemId = reqNeeds.customItemId;
+                                    chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                    const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
+                                    if (customItem !== undefined) {
+                                        chatMsg.filePath = customItem.imageURL;
+                                    }
+                                }
+                                if (reqNeeds.standardItemId !== undefined) {
+                                    chatMsg.itemId = reqNeeds.standardItemId;
+                                    chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                    const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
+                                    if (stdItem !== undefined) {
+                                        chatMsg.filePath = stdItem.imageURL;
+                                    }
+                                }
+
                                 await this.chatMessageService.createChatMessage(chatMsg);
                             }
                             /* end Create Chat*/
@@ -1180,6 +1221,13 @@ export class FulfillmentController {
                                             chatMsg.message = chatMessage;
                                             chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
                                             chatMsg.room = chatRoomObjId;
+                                            if (fulfillRequest.standardItemId !== undefined) {
+                                                chatMsg.itemId = fulfillRequest.standardItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                                if (stdItem !== undefined) {
+                                                    chatMsg.filePath = stdItem.imageURL;
+                                                }
+                                            }
 
                                             await this.chatMessageService.createChatMessage(chatMsg);
                                         }
@@ -1216,6 +1264,13 @@ export class FulfillmentController {
                                             chatMsg.message = chatMessage;
                                             chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
                                             chatMsg.room = chatRoomObjId;
+                                            if (fulfillRequest.customItemId !== undefined) {
+                                                chatMsg.itemId = fulfillRequest.customItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                                if (customItem !== undefined) {
+                                                    chatMsg.filePath = customItem.imageURL;
+                                                }
+                                            }
 
                                             await this.chatMessageService.createChatMessage(chatMsg);
                                         }
@@ -2077,6 +2132,34 @@ export class FulfillmentController {
                         }
                     }
 
+                    if (needs !== null && needs !== undefined && needs.length > 0) {
+                        const nids = [];
+                        for (const nId of needs) {
+                            nids.push(new ObjectID(nId));
+                        }
+
+                        // check isPostNeedsFulfilled in post mode
+                        if (fulfillCase.postId !== undefined) {
+                            const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
+                            if (insertedCheck !== undefined) {
+                                for (const needCheck of insertedCheck) {
+                                    if (needCheck.fullfilled !== undefined) {
+                                        if (needCheck.fullfilled) {
+                                            return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                        }
+                                    } else {
+                                        const ffQuantity = (needCheck.fulfillQuantity !== undefined && needCheck.fulfillQuantity !== null) ? needCheck.fulfillQuantity : 0;
+                                        const quantity = (needCheck.quantity !== undefined && needCheck.quantity !== null) ? needCheck.quantity : 0;
+
+                                        if (ffQuantity >= quantity) {
+                                            return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     if (fulfillCaseStatus === FULFILLMENT_STATUS.INPROGRESS) {
                         if (needs !== null && needs !== undefined && needs.length > 0) {
                             const createFulfillResult: any[] = [];
@@ -2214,6 +2297,23 @@ export class FulfillmentController {
                                             chatMsg.message = chatMessage;
                                             chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
                                             chatMsg.room = chatRoom.id;
+
+                                            if (needObj.customItemId !== undefined) {
+                                                chatMsg.itemId = needObj.customItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                                const customItem = await this.customItemService.findOne({ _id: needObj.customItemId });
+                                                if (customItem !== undefined) {
+                                                    chatMsg.filePath = customItem.imageURL;
+                                                }
+                                            }
+                                            if (needObj.standardItemId !== undefined) {
+                                                chatMsg.itemId = needObj.standardItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                                const stdItem = await this.stdItemService.findOne({ _id: needObj.standardItemId });
+                                                if (stdItem !== undefined) {
+                                                    chatMsg.filePath = stdItem.imageURL;
+                                                }
+                                            }
 
                                             await this.chatMessageService.createChatMessage(chatMsg);
                                         }
@@ -2385,6 +2485,23 @@ export class FulfillmentController {
                                     chatMsg.message = chatMessage;
                                     chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_EDIT;
                                     chatMsg.room = chatRoom.id;
+
+                                    if (reqNeeds && reqNeeds.customItemId !== undefined) {
+                                        chatMsg.itemId = reqNeeds.customItemId;
+                                        chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                        const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
+                                        if (customItem !== undefined) {
+                                            chatMsg.filePath = customItem.imageURL;
+                                        }
+                                    }
+                                    if (reqNeeds && reqNeeds.standardItemId !== undefined) {
+                                        chatMsg.itemId = reqNeeds.standardItemId;
+                                        chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                        const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
+                                        if (stdItem !== undefined) {
+                                            chatMsg.filePath = stdItem.imageURL;
+                                        }
+                                    }
 
                                     await this.chatMessageService.createChatMessage(chatMsg);
                                 }
@@ -2650,6 +2767,23 @@ export class FulfillmentController {
                                     chatMsg.message = chatMessage;
                                     chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE;
                                     chatMsg.room = chatRoom.id;
+
+                                    if (reqNeeds && reqNeeds.customItemId !== undefined) {
+                                        chatMsg.itemId = reqNeeds.customItemId;
+                                        chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                        const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
+                                        if (customItem !== undefined) {
+                                            chatMsg.filePath = customItem.imageURL;
+                                        }
+                                    }
+                                    if (reqNeeds && reqNeeds.standardItemId !== undefined) {
+                                        chatMsg.itemId = reqNeeds.standardItemId;
+                                        chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                        const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
+                                        if (stdItem !== undefined) {
+                                            chatMsg.filePath = stdItem.imageURL;
+                                        }
+                                    }
 
                                     await this.chatMessageService.createChatMessage(chatMsg);
                                 }

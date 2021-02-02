@@ -77,4 +77,30 @@ export class NeedsService {
     public findPostNeeds(postId: string, active?: boolean): Promise<Needs[]> {
         return this.find({ post: new ObjectID(postId), active });
     }
+
+    public async isPostNeedsFulfilled(postId: string, active?: boolean): Promise<boolean> {
+        const needs: Needs[] = await this.findPostNeeds(postId, active);
+
+        let allFulfilled = true;
+        if (needs !== undefined) {
+            for (const need of needs) {
+                if (need.fullfilled !== undefined) {
+                    if (!need.fullfilled) {
+                        allFulfilled = false;
+                        break;
+                    }
+                } else {
+                    const ffQuantity = (need.fulfillQuantity !== undefined && need.fulfillQuantity !== null) ? need.fulfillQuantity : 0;
+                    const quantity = (need.quantity !== undefined && need.quantity !== null) ? need.quantity : 0;
+
+                    if (ffQuantity < quantity) {
+                        allFulfilled = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return allFulfilled;
+    }
 }
