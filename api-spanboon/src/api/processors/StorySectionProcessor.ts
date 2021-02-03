@@ -58,6 +58,7 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                     isDraft: false,
                     deleted: false,
                     hidden: false,
+                    story: { $exists: true, $ne: null },
                     startDateTime: { $lte: today }
                 };
 
