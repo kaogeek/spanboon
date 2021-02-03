@@ -126,6 +126,9 @@
                     height: calc(100% - 73px);
                     padding: 10px 20px;
                     overflow: overlay;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                     > .list-item {
                         transition: 0.2s;
                         padding: 10px 20px;
@@ -756,7 +759,6 @@
         transition: 0.2s;
         color: $bgcolor-list-item-fulfill-allocate;
     }
-    
 }
 
 @media (max-width: $xxlarge) {
