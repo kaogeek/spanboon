@@ -37,7 +37,8 @@
         <div *ngIf="!isSelectImage" class="create-story-b">
 
             <div class="create-story-b-story" id="story">
-                <div class="background-story" [ngStyle]="{'background-image': 'url(' + image + ')'}">
+                <div class="background-story"
+                    [ngStyle]="{'background-image': image ? 'url(' + image + ')' : 'url(' + '' + ')'}">
                     <div class="text-h">
                         <span style="font-size: 23px;font-weight: 600;">{{textH}}</span>
                         <span style="color: #cecece;">{{textS}}</span>
