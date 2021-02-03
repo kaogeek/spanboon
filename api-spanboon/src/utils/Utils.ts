@@ -13,3 +13,4 @@ export * from './InputFormatterUtils';
 export * from './DecayFunctionUtil';
 export * from './GenerateUUIDUtil';
 export * from './OAuthUtil';
+export * from './TwitterUtils';

@@ -9,10 +9,9 @@ import { Output } from '@angular/core';
 import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { CHAT_MESSAGE_TYPE } from 'src/app/ChatMessageTypes';
-import { AuthenManager } from 'src/app/services/services';
+import { CHAT_MESSAGE_TYPE } from '../../../ChatMessageTypes';
+import { AuthenManager } from '../../../services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
-
 
 const PAGE_NAME: string = 'ChatFulfill';
 

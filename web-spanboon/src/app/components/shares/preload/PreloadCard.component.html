@@ -56,4 +56,40 @@
             </div>
         </div>
     </div>
+
+    <div class="postcard preload-fulfill" *ngIf="isShow" [ngClass]="class">
+        <div class="row-card"> 
+            <div class="preload-left"  *ngIf="isShowCard4" > 
+                <preload-data [isShowCard1]="true"></preload-data>
+                <div class="preload-body-left"> 
+                    <div class="div-preload" style="width: 100%; height: 200pt;"></div>
+                </div>
+            </div>
+            <div class="preload-right"  *ngIf="isShowCard5"> 
+                <div class="preload-top"> 
+                    <div class="div-preload" style="width: 20%;"></div>
+                    <div class="div-preload" style="width: 7%; margin-top: 8pt;"></div>
+                </div>
+                <div class="div-preload" style="width: 10%;"></div>
+                <div class="div-preload" style="width: 5%; margin-top: 8pt;"></div>
+            </div>
+            <div class="preload-center" *ngIf="isShowCard5">
+                <div class="div-preload" style="width: 8%; height: 15pt;"></div>
+            </div>
+        </div>
+        <div style="margin-top: 15pt;" *ngIf="isShowCard5">
+            <preload-data [isShowCard1]="true"></preload-data>
+            <preload-data [isShowCard1]="true"></preload-data>
+        </div>
+        <!-- <div class="postcard-profile">
+            <div class="preload-row" *ngIf="isShowCard1">
+                <div class="preload-image div-preload"></div> 
+                <div class="preload-top"> 
+                    <div class="div-preload" style="width: 100pt;"></div>
+                    <div class="div-preload" style="width: 50pt; margin-top: 10pt;"></div>
+                </div>
+            </div>
+        </div> -->
+       
+    </div>
 </div>
