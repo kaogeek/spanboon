@@ -76,6 +76,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   public user: any
   public asPage: any
   public recommendedStory: any
+  public recommendedStorys: any
   public recommendedStoryHashtag: any
   public linkPage: any
 
@@ -290,8 +291,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       setTimeout(() => {
         this.loding = false
         this.getRecommendedStory();
+        this.getRecommendedStorys();
         this.getRecommendedHashtag();
-        this.setCardSilder()
+        this.setCardSilder();
       }, 1500);
       setTimeout(() => {
         this.isPreload = false
@@ -463,9 +465,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedStory() {
     this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
       this.recommendedStory = res.data
-      for (let c of this.recommendedStory.contents) {
-        c.coverPageUrl = "/file/5f95a82db5184e606cec4517"
-      }
     }).catch((err: any) => {
     })
   }
@@ -473,6 +472,13 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedHashtag() {
     this.postFacade.recommendedHashtag(this.postStoryData._id).then((res: any) => {
       this.recommendedStoryHashtag = res.data
+    }).catch((err: any) => {
+    })
+  }
+
+  public getRecommendedStorys() {
+    this.postFacade.recommendedStorys(this.postStoryData._id, this.postStoryData.pageId).then((res: any) => {
+      this.recommendedStorys = res.data
     }).catch((err: any) => {
     })
   }
