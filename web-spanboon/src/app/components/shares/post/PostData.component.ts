@@ -107,7 +107,7 @@ export class PostData {
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => { 
+    setTimeout(() => {  
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;
@@ -120,7 +120,7 @@ export class PostData {
         }
       }
       if (this.itemPost && this.itemPost.needs !== undefined && this.itemPost.needs !== null) {
-        // this.isFulfill = false;
+        this.isFulfill = false;
         for (let needs of this.itemPost.needs) {
           if (needs.standardItemId !== null && needs.standardItemId !== '' && needs.standardItemId !== undefined) {
             this.needsFacade.getNeeds(needs.standardItemId).then((res: any) => {

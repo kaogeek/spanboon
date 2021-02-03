@@ -62,7 +62,7 @@
                             <ng-container *ngIf="isLoading || resFulfill && resFulfill.length > 0; else elseNotFound">
                                 <ng-container *ngFor="let item of resFulfill; let index = index;">
                                     <div class="body-data-category" matRipple [matRippleCentered]="'centered'"
-                                        [ngStyle]="{'pointer-events': item.disabled ? 'none': 'auto','opacity': item.disabled ? '0.5': '1'}"
+                                        [ngStyle]="{'pointer-events': item.disabled ? 'none': item.fulfillQuantity === item.quantity ? 'none':'auto','opacity': item.disabled ? '0.5': item.fulfillQuantity === item.quantity ? '0.5' :'1'}"
                                         [class.active]="isListItem || arrListItem.length > 0"
                                         (click)="selectedDataItem(item,item.isFrom)">
                                         <ng-container *ngIf="item.checked">
@@ -85,7 +85,8 @@
                                             <ng-template #elseLoadImg>
                                                 <ng-container
                                                     *ngIf="(item.standardItem && item.standardItem.imageURL && item.standardItem.imageURL !== null && item.standardItem.imageURL !== undefined && item.standardItem.imageURL !== '') || (item.imageURL && item.imageURL !== undefined && item.imageURL !== '' && item.imageURL !== null) ; else elseBase64">
-                                                    <ng-container *ngIf="item.standardItem && item.standardItem.imageURL; else elseTemplateIcon">
+                                                    <ng-container
+                                                        *ngIf="item.standardItem && item.standardItem.imageURL; else elseTemplateIcon">
                                                         <img class="icon-category"
                                                             src="{{apiBaseURL+item.standardItem.imageURL+'/image'}}"
                                                             alt="">
@@ -112,7 +113,8 @@
                                             {{item.name}}
                                         </span>
                                         <div class="limit-fulfill">
-                                            <span [class.active]="item.fulfillQuantity > item.quantity"> {{item.fulfillQuantity}} </span> /
+                                            <span [class.active]="item.fulfillQuantity > item.quantity">
+                                                {{item.fulfillQuantity}} </span> /
                                             {{item.quantity}}
                                         </div>
                                     </div>
@@ -173,7 +175,8 @@
                                                     src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
                                             </ng-container>
                                             <ng-template #elseImage>
-                                                <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
+                                                <img class="img-category"
+                                                    src="../../../../assets/img/customize_item.svg" alt="">
                                             </ng-template>
 
                                         </div>
@@ -241,7 +244,8 @@
                                             </g>
                                         </svg>
                                         <div class="wrapper-category">
-                                            <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
+                                            <img class="img-category" src="../../../../assets/img/customize_item.svg"
+                                                alt="">
                                         </div>
                                     </div>
                                 </div>

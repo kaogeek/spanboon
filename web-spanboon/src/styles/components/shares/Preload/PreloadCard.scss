@@ -115,8 +115,12 @@
         flex-direction: column;
         justify-content: flex-start;
 
-        &.card-pad{
+        &.card-pad {
             padding: 5pt 10pt;
+        }
+
+        &.preload-fulfill {
+            border : unset;
         }
 
         > .post-card-top {
@@ -139,6 +143,42 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
+        }
+        > .row-card {
+            // display: flex;
+            > .preload-left { 
+                width: 100%;
+                preload-data {
+                    .preload-data {
+                        > .wrapper-preload {
+                            padding: 15pt 0;
+                        }
+                    }
+                }
+
+                > .preload-body-left {
+                    display: flex;
+                }
+            }
+            > .preload-right {
+                display: flex;
+                flex-direction: column;
+                // border: 0.7pt solid $bg-grey;
+                width: calc(100% - 30pt);
+                // border-radius: 8pt;
+                padding: 16pt 15pt;
+
+                > .preload-top {
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+            }
+            >.preload-center {
+                display: flex;
+                justify-content: center;
+                margin-top: 15pt
+            }
         }
     }
 }

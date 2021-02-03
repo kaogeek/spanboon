@@ -171,7 +171,7 @@
                             background: $color-warm-red;
                         }
                     }
-                    >.contact-notfound {
+                    > .contact-notfound {
                         display: flex;
                         justify-content: center;
                         font-family: "Kanit-500";
@@ -180,7 +180,7 @@
                     }
                 }
             }
-        }
+        } 
 
         > .fulfill-right {
             display: flex;
@@ -407,6 +407,10 @@
                             font-family: "Kanit-500";
                             font-size: 16px;
                             color: $color-warm-red;
+                            > .date-case-close {
+                                text-align: end;
+                                color: $koalaGray;
+                            }
                         }
 
                         > .button-view-post {
@@ -590,6 +594,7 @@
                 }
             }
         }
+
         > .fulfill-notfound {
             justify-content: center;
             align-items: center;
@@ -599,21 +604,21 @@
             }
             > .fulfill-label {
                 font-family: "Kanit-500";
-                font-size: 26px; 
+                font-size: 26px;
             }
-            >.fulfill-search {
+            > .fulfill-search {
                 font-family: "Kanit-500";
-                font-size: 16px; 
-                color: $color-warm-red; 
-                >.hover {
+                font-size: 16px;
+                color: $color-warm-red;
+                > .hover {
                     @include pointer();
                     &:hover {
                         text-decoration: underline;
                     }
-                }  
+                }
             }
-        }
-    }
+        } 
+    } 
 }
 
 .drop-menu-filter {

@@ -28,6 +28,12 @@ export class PreloadCard  implements OnInit {
   public isShowCard2: boolean = false;
   @Input()
   public isShowCard3: boolean = false;
+  @Input()
+  public isShowCard4: boolean = false;
+  @Input()
+  public isShowCard5: boolean = false;
+  @Input()
+  public isShow: boolean = false;
 
   constructor() { 
   }

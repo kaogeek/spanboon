@@ -57,6 +57,7 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
+import { TwitterUtils } from '../../utils/TwitterUtils';
 
 @JsonController('/page')
 export class PagePostController {
@@ -98,8 +99,16 @@ export class PagePostController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/post')
-    public async getPagePost(@Param('id') id: string, @Res() res: any): Promise<any> {
+    public async getPagePost(@Param('id') id: string, @QueryParam('offset') offset: number, @QueryParam('limit') limit: number, @Res() res: any): Promise<any> {
         const pageObjId = new ObjectID(id);
+        if (offset === null || offset === undefined) {
+            offset = 0;
+        }
+
+        if (limit === null || limit === undefined || limit <= 0) {
+            limit = MAX_SEARCH_ROWS;
+        }
+
         // pagePosts = await this.postsService.find({ where: { $and: [{ pageId: pageObjId }, { hidden: false }, { deleted: false }] } });
         const pagePosts: Posts[] = await this.postsService.aggregate(
             [
@@ -173,6 +182,20 @@ export class PagePostController {
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'FulfillmentCase',
+                        localField: '_id',
+                        foreignField: 'fulfillmentPost',
+                        as: 'fulfillmentCase'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$fulfillmentCase',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
                     $project: {
                         'ownerUser._id': 0,
                         'ownerUser.username': 0,
@@ -192,7 +215,9 @@ export class PagePostController {
                     }
                 },
                 { $addFields: { commentCount: { $size: '$comment' } } },
-                { $sort: { startDateTime: -1 } }
+                { $sort: { startDateTime: -1 } },
+                { $skip: offset },
+                { $limit: limit }
             ]
         );
 
@@ -680,10 +705,15 @@ export class PagePostController {
 
             if (createResult !== null && createResult !== undefined) {
                 let link = '';
+                let storyLink = '';
 
                 if (createResult.posts !== undefined && createResult.posts !== null &&
                     createResult.posts.id !== undefined && createResult.posts.id !== null) {
                     link = '/post/' + createResult.posts.id;
+
+                    if (createResult.posts.story !== undefined && createResult.posts.story !== null && createResult.posts.story !== '') {
+                        storyLink = '/story/' + createResult.posts.id;
+                    }
                 }
 
                 // notify to all userfollow if Post is Needed
@@ -701,7 +731,10 @@ export class PagePostController {
                 // share to social
                 {
                     const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
-                    const messageForTW = postPage.detail + ' ' + fullLink;
+                    const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
+                    const postLink = (storyLink !== '') ? fullStoryLink : fullLink;
+
+                    const messageForTW = TwitterUtils.generateTwitterText(postPage.title, postPage.detail, postLink, undefined, postPage.emergencyEventTag, postPage.objectiveTag);
 
                     await this.pageSocialAccountService.shareAllSocialPost(pageId, messageForTW, imageBase64sForTw, !isPostTwitter, !isPostFacebook);
                 }
@@ -852,6 +885,7 @@ export class PagePostController {
             if (page !== null && page !== undefined) {
                 const postPageObjId = new ObjectID(page.id);
                 const today = moment().toDate();
+                const whereCondition = search.whereConditions;
                 let limit = search.limit;
                 let offset = search.offset;
                 let postPageStmt;
@@ -867,6 +901,20 @@ export class PagePostController {
                 const matchStmt: any = { pageId: postPageObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 if (postType !== null && postType !== undefined && postType !== '') {
                     matchStmt.type = postType;
+                }
+                // add some filter
+                const ignoreKey = ['pageId', 'hidden', 'deleted', 'isDraft', 'startDateTime'];
+                if (whereCondition !== undefined && typeof whereCondition === 'object') {
+                    for (const key of Object.keys(whereCondition)) {
+                        if (ignoreKey.indexOf(key) >= 0) {
+                            continue;
+                        }
+                        if (key === '_id') {
+                            matchStmt[key] = new ObjectID(whereCondition[key]);
+                        } else {
+                            matchStmt[key] = whereCondition[key];
+                        }
+                    }
                 }
 
                 postPageStmt = [
