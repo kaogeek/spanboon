@@ -19,7 +19,7 @@ import { Observable, fromEvent, of } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
-import { NeedsCard } from './card/card'; 
+import { NeedsCard } from './card/card';
 
 declare var $: any;
 
@@ -1040,9 +1040,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
       if (this.mStory === "") {
-        this.isMsgNull = true
+        var myselect = $('#topic').attr('contenteditable', 'true');
+        myselect.find("br:last-child").remove(); 
+        $('.header-story').addClass('msg-error-shake'); 
       } else {
-        this.isMsgNull = false
+        $('.header-story').removeClass('msg-error-shake');
       }
     }
     if (this.isListPage) {
@@ -1081,9 +1083,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
     if (!this.isFulfillNull) {
       if (this.mTopic.trim() === "") {
-        this.isMsgError = true
+        var myselect = $('#editableStoryPost').attr('contenteditable', 'true');
+        myselect.find("br:last-child").remove(); 
+        $('.textarea-editor').addClass('msg-error-shake'); 
       } else {
-        this.isMsgError = false
+        $('.textarea-editor').removeClass('msg-error-shake');
       }
     }
     this.postFacade.nextMessage(this.mTopic);
@@ -1232,7 +1236,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       topic = document.getElementById('topic').innerText;
       storyPostShort = document.getElementById('editableStoryPost').innerText;
-    } 
+    }
     if (!this.isFulfillNull) {
       if (topic.trim() === "" && this.isRepost) {
         this.isMsgNull = true;
@@ -2447,12 +2451,12 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public preview() {
     let dataPreview = {
-      title : this.topic.nativeElement.value,
-      detail : this.storyPost.nativeElement.innerText,
+      title: this.topic.nativeElement.value,
+      detail: this.storyPost.nativeElement.innerText,
     }
     const dialogRef = this.dialog.open(DialogPreview, {
-      panelClass: 'dialog-review-full-screen', 
-      data : dataPreview
+      panelClass: 'dialog-review-full-screen',
+      data: dataPreview
     });
 
     dialogRef.afterClosed().subscribe(result => {
