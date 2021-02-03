@@ -594,7 +594,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds).then((readResult) => {
+                                    this.chatFacade.markReadChatMessage(chatIds,asPage).then((readResult) => {
                                         console.log('readResult ', readResult)
                                         if (readResult !== null && readResult !== undefined) {
                                             data.chatMessage.isRead = true;
