@@ -1017,7 +1017,7 @@ export class FulfillmentController {
                         // check isPostNeedsFulfilled in post mode
                         const nids = [];
                         for (const nId of needs) {
-                            nids.push(new ObjectID(nId));
+                            nids.push(new ObjectID(nId.id));
                         }
                         
                         const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
@@ -2135,7 +2135,7 @@ export class FulfillmentController {
                     if (needs !== null && needs !== undefined && needs.length > 0) {
                         const nids = [];
                         for (const nId of needs) {
-                            nids.push(new ObjectID(nId));
+                            nids.push(new ObjectID(nId.id));
                         }
 
                         // check isPostNeedsFulfilled in post mode
