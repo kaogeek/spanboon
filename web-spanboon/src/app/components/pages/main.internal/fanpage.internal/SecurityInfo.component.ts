@@ -97,6 +97,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 // window.open(this.authorizeLink);
                 this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadTwitter = false;
+
                 window.bindTwitter = (resultTwitter) => { 
                     if (resultTwitter !== undefined && resultTwitter !== null) {
                         const twitter = new PageSocailTW();
@@ -106,8 +107,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
                         this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
                             if (res.data) {
-                                this.connectTwitter = res.data;
-                                console.log('this.connectTwitter ', this.connectTwitter)
+                                this.connectTwitter = res.data; 
                             }
 
                         }).catch((err: any) => { 
@@ -120,6 +120,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             }).catch((error: any) => {
                 console.log(error);
                 this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                this.isPreLoadTwitter = false;
             });
 
         } else if (text === 'twitter' && bind) {
@@ -140,7 +141,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public popup(url, title, width, height, scroll) {
-
+ 
         var LeftPosition = (screen.width) ? (screen.width - width) / 2 : 0;
         var TopPosition = (screen.height) ? (screen.height - height) / 2 : 0;
         var settings = 'height=' + height + ',width=' + width + ',top=' + TopPosition + ',left=' + LeftPosition + ',scrollbars=' + scroll + ',resizable'
