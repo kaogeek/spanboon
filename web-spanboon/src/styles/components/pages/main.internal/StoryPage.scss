@@ -21,7 +21,7 @@
     margin: 0 0 1.5em;
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: center;
     .background-text {
       transition: 0.3s;
       width: 550px;
@@ -281,6 +281,10 @@
     font-size: 18px;
     > .text {
       margin: 0px 10px;
+      color: #000;
+      &:hover {
+        text-decoration: underline !important;
+      }
     }
   }
 

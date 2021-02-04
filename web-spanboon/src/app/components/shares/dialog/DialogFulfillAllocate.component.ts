@@ -504,7 +504,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         const autoPosts: any[] = []
         const mnPosts: any[] = []
+
         setTimeout(() => {
+
+            console.log('this.allocateItemtoPost', this.allocateItemtoPost);
 
             for (let i of this.allocateItemtoPost) {
 
@@ -678,6 +681,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     private async groupPostByItem(data?) {
+        const keywordFilter: any = {
+            filter: {
+                limit: SEARCH_LIMIT,
+                offset: SEARCH_OFFSET,
+                relation: [],
+                whereConditions: {},
+                count: false,
+                orderBy: {}
+            },
+        };
 
         var groups: any[] = []
 
@@ -710,12 +723,12 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             console.log('err', err)
         })
 
-        // await this.allocateFacade.calculateAllocate(data).then((res: any) => {
+        await this.allocateFacade.searchAllocate(data[0]).then((post: any) => {
 
-        //     console.log('res', res)
+            console.log('post', post)
 
-        // }).catch((err: any) => {
-        // })
+        }).catch((err: any) => {
+        })
 
         this.groupsArr = groups;
         console.log('this.groupsArr', this.groupsArr)
@@ -751,7 +764,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             for (let i of item.item) {
 
-                data.push({ needsId: i.needsId, amount: i.amount, fulfillmentReqId: i.requestId })
+                if (i.needsId !== undefined && i.needsId !== null) {
+                    data.push({ needsId: i.needsId, amount: i.amount, fulfillmentReqId: i.requestId })
+
+                }
+
 
             }
 

@@ -5,7 +5,10 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="fulfill-page" (window:resize)="onResize()">
+<Preload-card *ngIf="isPreloadLoad" [isShowCard1]="false" [isShowCard2]="false" [isShowCard3]="false"
+    [isShowCard4]="true" [isShowCard5]="false" [isShow]="true">
+</Preload-card>
+<div class="fulfill-page" (window:resize)="onResize()" *ngIf="!isPreloadLoad">
     <div class="fulfill-body">
         <div class="fulfill-left" id="fulfill-left">
             <div class="mobile-fulfill-profile">
@@ -25,7 +28,8 @@
                                 </div>
                             </ng-template>
 
-                            <div class="name-page">{{ accessValue && ( accessValue.name || accessValue.displayName) }}
+                            <div class="name-page">{{ accessValue && ( accessValue.name || accessValue.displayName)
+                                }}
                             </div>
                         </div>
                         <span class="material-icons">
@@ -57,7 +61,8 @@
                                             <img src="{{data.page.imageBase64}}" alt="" class="profile">
                                         </ng-container>
                                         <ng-template #elseImageProfile>
-                                            <div class="donator"> {{data.page && data.page.name | slice: 0:1 }} </div>
+                                            <div class="donator"> {{data.page && data.page.name | slice: 0:1 }}
+                                            </div>
                                         </ng-template>
 
                                         <div class="select-name">
@@ -87,7 +92,8 @@
                                 <div class="drop-menu-filter">
                                     <button mat-menu-item *ngFor="let sort of sortingBy; let index = index"
                                         class="list-sort" (click)="clickSorting(sort)">
-                                        <div class="select-name" [class.active]="sort.name === sortBy"> {{sort.name}}
+                                        <div class="select-name" [class.active]="sort.name === sortBy">
+                                            {{sort.name}}
                                         </div>
                                     </button>
                                 </div>
@@ -114,9 +120,8 @@
                     <ng-container *ngIf="fulfillCase && fulfillCase.length > 0; else elseTemplateFulFill">
                         <div class="user-contact">
                             <collapsible-head *ngFor="let fulfill of fulfillCase;let index = index" [asPage]="asPage"
-                                [showCase]="showCase" [isCaseSelected]="isCaseSelected"
-                                [groupName]="fulfill.groupName" [data]="fulfill"
-                                (onContactClick)="getChatRoom($event,asPage)">
+                                [showCase]="showCase" [isCaseSelected]="isCaseSelected" [groupName]="fulfill.groupName"
+                                [data]="fulfill" (onContactClick)="getChatRoom($event,asPage)">
                             </collapsible-head>
                         </div>
                     </ng-container>
@@ -126,12 +131,18 @@
                 </div>
             </div>
         </div>
-        <ng-container *ngIf="canAccessCase && canAccessChatRoom; else elseTemplateChatRoom">
-            <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
-                <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
-                    [class.activeTransition]="isTransition"
-                    [ngStyle]="{'height': (fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
-                    <ng-container *ngIf="!showChatRoom; else elsePreload">
+
+        <ng-container *ngIf="showChatRoom; else showChatRoom1">
+            <Preload-card class="fulfill-right" [isShowCard1]="false" [isShowCard2]="false" [isShowCard3]="false"
+                [isShowCard4]="false" [isShowCard5]="true" [isShow]="true">
+            </Preload-card>
+        </ng-container>
+        <ng-template #showChatRoom1>
+            <ng-container *ngIf="canAccessCase && canAccessChatRoom ; else elseTemplateChatRoom">
+                <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
+                    <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
+                        [class.activeTransition]="isTransition"
+                        [ngStyle]="{'height': ( fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
                         <div class="back" (click)="onBack()" *ngIf="!isListItem">
                             <svg class="icon-back" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 443.52 443.52"
@@ -139,8 +150,8 @@
                                 <g>
                                     <g>
                                         <path d="M143.492,221.863L336.226,29.129c6.663-6.664,6.663-17.468,0-24.132c-6.665-6.662-17.468-6.662-24.132,0l-204.8,204.8
-                               c-6.662,6.664-6.662,17.468,0,24.132l204.8,204.8c6.78,6.548,17.584,6.36,24.132-0.42c6.387-6.614,6.387-17.099,0-23.712
-                               L143.492,221.863z" />
+                                   c-6.662,6.664-6.662,17.468,0,24.132l204.8,204.8c6.78,6.548,17.584,6.36,24.132-0.42c6.387-6.614,6.387-17.099,0-23.712
+                                   L143.492,221.863z" />
                                     </g>
                                 </g>
                             </svg>
@@ -249,7 +260,7 @@
                                         [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'" [bgColor]="'#E02438'"
                                         [text]="'ไปที่โพสต์'">
                                     </spanboon-button>
-                                   
+
                                 </ng-container>
                                 <ng-template #elseFufillmentPost>
                                     <ng-container
@@ -316,16 +327,9 @@
                                 </ng-template>
                             </div>
                         </div>
-                    </ng-container>
-                    <ng-template #elsePreload>
-                        <Preload-card class="preload-head-story" [isShowCard1]="false" [isShowCard2]="false"
-                            [isShowCard3]="true">
-                        </Preload-card>
-                    </ng-template>
-                </div>
-                <div class="body-story" [class.active]="isCaseHasPost">
-                    <div class="body-story-left" [class.active]="isListItem">
-                        <ng-container *ngIf="!showChatRoom; else elsePreload2">
+                    </div>
+                    <div class="body-story" [class.active]="isCaseHasPost">
+                        <div class="body-story-left" [class.active]="isListItem">
                             <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
                                 [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
                                 [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
@@ -334,16 +338,9 @@
                                 (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
                                 (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
                             </chat-message>
-                        </ng-container>
-                        <ng-template #elsePreload2>
-                            <Preload-card [isShowCard1]="false" [isShowCard2]="true" [isShowCard3]="false"
-                                class="preload-body-story-left">
-                            </Preload-card>
-                        </ng-template>
-                    </div>
-                    <div class="body-story-right" id="body-story-right">
-                        <div class="grop-fulfill">
-                            <ng-container *ngIf="!showChatRoom; else elsePreload3">
+                        </div>
+                        <div class="body-story-right" id="body-story-right">
+                            <div class="grop-fulfill">
                                 <ng-container *ngIf="!isListItem; else elseTemplateOnClose">
                                     <div class="header" #header>
                                         รายการเติมเต็ม
@@ -404,35 +401,33 @@
                                         </div>
                                     </div>
                                 </div>
-                            </ng-container>
-                            <ng-template #elsePreload3>
-                                <Preload-card [isShowCard1]="false" [isShowCard2]="true" [isShowCard3]="false"
-                                    class="preload-body-story-left">
-                                </Preload-card>
-                            </ng-template>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </ng-container>
-        <ng-template #elseTemplateChatRoom>
-            <div class="fulfill-right fulfill-notfound " id="fulfill-right">
-                <svg id="Group_142" data-name="Group 142" xmlns="http://www.w3.org/2000/svg" width="67.553"
-                    height="33.8" viewBox="0 0 67.553 33.8">
-                    <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(60.047 11.275)" fill="#a2a2a2" />
-                    <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(0 11.275)" fill="#a2a2a2" />
-                    <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(30.024)" fill="#a2a2a2" />
-                    <path id="Path_201" data-name="Path 201"
-                        d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
-                        transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
-                </svg>
-                <span class="fulfill-label">ไม่พบรายการคำขอเติมเต็ม</span>
-                <span class="fulfill-search hover" *ngIf="fulfillCase && fulfillCase.length === 0" (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์ได้ที่นี่</span>
-                <span class="fulfill-search " *ngIf="fulfillCase && fulfillCase.length > 0"> กรุณาเลือกคำขอเติมเต็ม </span>
-            </div>
+            </ng-container>
+            <ng-template #elseTemplateChatRoom>
+                <div *ngIf="!showChatRoom" class="fulfill-right fulfill-notfound" id="fulfill-right">
+                    <svg id="Group_142" data-name="Group 142" xmlns="http://www.w3.org/2000/svg" width="67.553"
+                        height="33.8" viewBox="0 0 67.553 33.8">
+                        <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
+                            transform="translate(60.047 11.275)" fill="#a2a2a2" />
+                        <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
+                            transform="translate(0 11.275)" fill="#a2a2a2" />
+                        <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
+                            transform="translate(30.024)" fill="#a2a2a2" />
+                        <path id="Path_201" data-name="Path 201"
+                            d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
+                            transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
+                    </svg>
+                    <span class="fulfill-label" *ngIf="fulfillCase && fulfillCase.length > 0"> กรุณาเลือกคำขอเติมเต็ม
+                    </span>
+                    <span class="fulfill-label"
+                        *ngIf="fulfillCase && fulfillCase.length === 0">ไม่พบรายการคำขอเติมเต็ม</span>
+                    <span class="fulfill-search hover" *ngIf="fulfillCase && fulfillCase.length === 0"
+                        (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์ได้ที่นี่</span>
+                </div>
+            </ng-template>
         </ng-template>
     </div>
 </div>

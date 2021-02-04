@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
-import { Asset } from '../../models/Asset'; 
+import { Asset } from '../../models/Asset';
 import { Post } from '../../models/Post';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
@@ -211,6 +211,20 @@ export class PostFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string
       url = this.baseURL + '/post/' + postId + '/recommended_hashtag';
+
+      let httpOptions = this.getDefaultOptions();
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public recommendedStorys(postId: string, pageId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string
+      url = this.baseURL + '/recommend/story?pageId=' + pageId;
 
       let httpOptions = this.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {

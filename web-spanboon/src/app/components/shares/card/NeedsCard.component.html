@@ -4,23 +4,19 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
-<div class="list-needs-for" [class.active]="isFulfill" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
-    <div class="item" *ngIf="isFulfill">
+<div class="list-needs-for" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
+    <!-- <div class="list-needs-for" [class.active]="isFulfill" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds> -->
+    <!-- <div class="item" *ngIf="isFulfill">
         <div class="left" [class.active]="!isButtonFulfill">
             <span>รายการเติมเต็ม</span>
             <span class="count-fufill"> {{itemNeeds.length}} รายการ</span>
-        </div>
-        <!-- <div class="left" *ngIf="isButtonFulfill">
-            รายการเติมเต็ม 
         </div> 
-        <span class="count-fufill"> {{itemNeeds.length}} รายการ</span> -->
         <div class="right" *ngIf="isButtonFulfill">
             <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'ร่วมเติมเต็ม'" [radius]="'4px'">
             </spanboon-button>
         </div>
-    </div>
-    <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
+    </div> -->
+    <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
         <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let item of needs; let index = index;">
                 <div class="list-needs">
@@ -34,32 +30,55 @@
                             alt="">
                         <img class="img-items" *ngIf="item.imageURL" src="{{apiBaseURL+item.imageURL+'/image'}}">
                     </div>
-                    <div class="needs-data">
-                        <div class="needs-data-h" (click)="next('false', index)">
-                            <div class="text-h">{{item.name || item.itemName}}</div>
-                        </div>
-                        <div class="needs-data-body">
-                            <div class="unit" [class.active]="isFulfill">
-                                <div class="unit-box"> 
-                                    <div class="unit-num">
-                                        <span *ngIf="isFulfillQuantity"> 
-                                            <!-- <span *ngIf="{'color': '#FD545A' } "> {{item.fulfillQuantity}} / </span> -->
-                                            <span [ngStyle]="{'color': item.fulfillQuantity > item.quantity  ? '#FD545A' : '#000000'} "> {{item.fulfillQuantity}} / </span>
-                                        </span>
-                                        <span [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                            {{item.quantity}}
-                                        </span>
-                                    </div>
+                    <div class="needs-data" [class.active]="isFulfill">
+                        <div [class.active]="isFulfill">
+                            <div class="needs-data-h" (click)="next('false', index)">
+                                <div class="text-h">{{item.name || item.itemName}}</div>
+                            </div>
+                            <div class="needs-data-body" [class.active]="isFulfill">
+                                <div class="unit" [class.active]="isFulfill">
+                                    <div class="unit-box">
+                                        <div class="unit-num">
+                                            <span *ngIf="isFulfillQuantity">
+                                                <span
+                                                    [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                    {{item.fulfillQuantity}} </span>
+                                            </span>
+                                            <span *ngIf="!isFulfill"
+                                                [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                / {{item.quantity}}
+                                            </span>
+                                        </div>
 
-                                    <div class="unit-sub">{{item.unit}}</div>
+                                        <div class="unit-sub">{{item.unit}}</div>
+                                    </div>
+                                </div>
+                                <div class="unit-bt-box" *ngIf="!isFulfill">
+                                    <ng-container
+                                        *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
+                                        <div class="limit">
+                                            <span class="material-icons"> done </span>
+                                            ครบแล้ว
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #elseTemplateUnLimit>
+                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
+                                            [radius]="'4px'" (click)="fulfillNeeds(item)">
+                                        </spanboon-button>
+                                    </ng-template>
                                 </div>
                             </div>
-                            <div class="unit-bt-box" *ngIf="!isFulfill">
-                                <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
-                                    [radius]="'4px'" (click)="fulfillNeeds(item)">
-                                </spanboon-button>
-                            </div>
                         </div>
+                        <ng-container *ngIf="isFulfill">
+                            <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity > 0">
+                                ยังขาดอีก <span class="quantity">{{item.quantity - item.fulfillQuantity}} </span><span
+                                    class="unit">{{item.unit}}</span>
+                            </div>
+                            <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity === 0">
+                                <span class="material-icons"> done </span>
+                                ได้รับครบแล้ว
+                            </div>
+                        </ng-container> 
                     </div>
                 </div>
             </div>
@@ -76,32 +95,4 @@
             </div>
         </div>
     </div>
-    <!-- <div class="arrow-next" (click)="next('NEXT',indexNeed+1)" *ngIf="chekNext()">
-        <svg version="1.1" width="18pt" fill="white" xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492.004 492.004"
-            style="enable-background:new 0 0 492.004 492.004;" xml:space="preserve">
-            <g>
-                <g>
-                    <path d="M382.678,226.804L163.73,7.86C158.666,2.792,151.906,0,144.698,0s-13.968,2.792-19.032,7.86l-16.124,16.12
-			c-10.492,10.504-10.492,27.576,0,38.064L293.398,245.9l-184.06,184.06c-5.064,5.068-7.86,11.824-7.86,19.028
-			c0,7.212,2.796,13.968,7.86,19.04l16.124,16.116c5.068,5.068,11.824,7.86,19.032,7.86s13.968-2.792,19.032-7.86L382.678,265
-			c5.076-5.084,7.864-11.872,7.848-19.088C390.542,238.668,387.754,231.884,382.678,226.804z" />
-                </g>
-            </g>
-        </svg>
-    </div>
-    <div class="arrow-back" (click)="next('BACK',indexNeed-1)" *ngIf="chekBack()">
-        <svg version="1.1" width="18pt" fill="white" xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492.004 492.004"
-            style="enable-background:new 0 0 492.004 492.004;" xml:space="preserve">
-            <g>
-                <g>
-                    <path d="M382.678,226.804L163.73,7.86C158.666,2.792,151.906,0,144.698,0s-13.968,2.792-19.032,7.86l-16.124,16.12
-			c-10.492,10.504-10.492,27.576,0,38.064L293.398,245.9l-184.06,184.06c-5.064,5.068-7.86,11.824-7.86,19.028
-			c0,7.212,2.796,13.968,7.86,19.04l16.124,16.116c5.068,5.068,11.824,7.86,19.032,7.86s13.968-2.792,19.032-7.86L382.678,265
-			c5.076-5.084,7.864-11.872,7.848-19.088C390.542,238.668,387.754,231.884,382.678,226.804z" />
-                </g>
-            </g>
-        </svg>
-    </div> -->
 </div>

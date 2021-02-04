@@ -40,6 +40,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
   @Input()
   public isFulfill: boolean = false;
   @Input()
+  public isImage: boolean = false;
+  @Input()
   public isButtonFulfill: boolean = true;
 
   @Output()
@@ -94,11 +96,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.originalNeeds = []
     if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
-        Data.push(needs)
-        // if (Data.length === 3) {
-        //   this.originalNeeds.push({ needs: Data })
-        //   Data = []
-        // }
+        Data.push(needs) 
       }
       if (Data.length > 0) {
         this.originalNeeds.push({ needs: Data });
@@ -149,8 +147,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
 
   public fulfillNeeds(item: any) {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog(this.router.url);
-      // this.showAlertLoginDialog('');
+      this.showAlertLoginDialog(this.router.url); 
     } else {
       let needsList: any[] = [];
 
