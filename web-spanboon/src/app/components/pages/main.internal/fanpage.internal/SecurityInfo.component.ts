@@ -16,6 +16,8 @@ import { CookieUtil } from '../../../../utils/CookieUtil';
 
 const PAGE_NAME: string = 'connect';
 
+declare const window: any;
+
 @Component({
     selector: 'security-info',
     templateUrl: './SecurityInfo.component.html'
@@ -37,6 +39,9 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     private pageFacade: PageFacade;
     private twitterService: TwitterService;
 
+    public bindingSocialTwitter: any;
+    public isPreLoadTwitter: boolean;
+
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
     public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
@@ -52,15 +57,17 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.twitterService = twitterService;
         this.pageFacade = pageFacade;
+        this.isPreLoadTwitter = false;
+
     }
 
     public ngOnInit(): void {
-        console.log('data page ', this.pageId)
-
     }
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
     }
+
 
     isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
@@ -82,13 +89,37 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         if (text === 'facebook') {
 
         } else if (text === 'twitter' && !bind) {
+            this.isPreLoadTwitter = true;
             CookieUtil.setCookie('page', '/page/' + this.pageId + '/settings');
             let callback = "callback";
             this.twitterService.requestToken(callback).then((result: any) => {
                 this.authorizeLink += '?' + result;
-                window.open(this.authorizeLink);
+                // window.open(this.authorizeLink);
+                this.popup(this.authorizeLink, '', 600, 200, 'yes');
+                this.isPreLoadTwitter = false;
+                window.bindTwitter = (resultTwitter) => { 
+                    if (resultTwitter !== undefined && resultTwitter !== null) {
+                        const twitter = new PageSocailTW();
+                        twitter.twitterOauthToken = resultTwitter.token;
+                        twitter.twitterTokenSecret = resultTwitter.token_secret;
+                        twitter.twitterUserId = resultTwitter.userId;
+
+                        this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
+                            if (res.data) {
+                                this.connectTwitter = res.data;
+                                console.log('this.connectTwitter ', this.connectTwitter)
+                            }
+
+                        }).catch((err: any) => { 
+                            if (err.error.message === 'This page was binding with Twitter Account.') {
+                                this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+                            }
+                        });
+                    }
+                } 
             }).catch((error: any) => {
                 console.log(error);
+                this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
             });
 
         } else if (text === 'twitter' && bind) {
@@ -106,6 +137,15 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         } else if (text === 'google') {
 
         }
+    }
+
+    public popup(url, title, width, height, scroll) {
+
+        var LeftPosition = (screen.width) ? (screen.width - width) / 2 : 0;
+        var TopPosition = (screen.height) ? (screen.height - height) / 2 : 0;
+        var settings = 'height=' + height + ',width=' + width + ',top=' + TopPosition + ',left=' + LeftPosition + ',scrollbars=' + scroll + ',resizable'
+
+        return window.open(url, title, settings);
     }
 
     public socialGetBindingTwitter() {
