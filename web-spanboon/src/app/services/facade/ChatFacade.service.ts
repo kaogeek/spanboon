@@ -17,10 +17,13 @@ export class ChatFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
-  public markReadChatMessage(chatIds: string[]): Promise<any> {
+  public markReadChatMessage(chatIds: string[], asPage: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/chat/read';
       let body: any = {};
+      if (asPage !== '' && asPage !== undefined && asPage !== null) {
+        url += "?asPage=" + asPage;
+      }
 
       if (chatIds !== null && chatIds !== undefined && chatIds.length > 0) {
         body = chatIds;

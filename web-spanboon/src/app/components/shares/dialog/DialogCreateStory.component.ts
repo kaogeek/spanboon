@@ -289,6 +289,13 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
 
   public onConfirm(): void {
     let index: number = 0
+
+    if (this.image === undefined || this.image === null) {
+
+      return this.showAlertDevelopDialog("กรุณาอัพโหลดรูปปก");
+
+    }
+
     for (let n of this.ary) {
       if (n.htmlType === "TEXT") {
         n.value = document.getElementById(index.toString()).innerHTML

@@ -225,6 +225,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
+        console.log('this.needsFromState', this.needsFromState)
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -262,10 +263,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
+        console.log('this.authenManager', this.authenManager.getUserToken())
         if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
+
+                console.log('3', result);
                 if (result !== null && result !== undefined) {
                     if (this.needsFromState !== null && this.needsFromState !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
@@ -307,14 +311,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
         if (data !== null && data !== undefined) {
             this.accessValue = data;
             if (type === 'page') {
-                console.log('data ',data)
                 this.listAsPage = true;
                 this.asPage = data.id;
-                this.observManager.publish(SELECTED_PAGE,this.asPage);
+                this.observManager.publish(SELECTED_PAGE, this.asPage);
             } else if (type === 'user') {
                 this.listAsPage = false;
                 this.asPage = undefined;
-                this.observManager.publish(SELECTED_PAGE,'');
+                this.observManager.publish(SELECTED_PAGE, '');
             }
 
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
@@ -372,10 +375,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
         return new Promise(async (resolve, reject) => {
             this.canAccessCase = false;
             this.canAccessChatRoom = false;
-            this.showLoading = true; 
+            this.showLoading = true;
             let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
 
-            let fulfillCases: any[] = []; 
+            console.log('1', fulfillList);
+
+            let fulfillCases: any[] = [];
             if (fulfillList.length > 0 && fulfillList !== null && fulfillList !== undefined) {
                 this.showCase = true;
 
@@ -390,7 +395,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.userImageURL = data.userImageURL;
                             this.pageImageURL = data.pageImageURL;
                             this.name = data.name;
-                            this.postDate = data.postDate;  
+                            this.postDate = data.postDate;
 
                             if (data.userImageURL !== '' && data.userImageURL !== null && data.userImageURL !== undefined) {
                                 this.assetFacade.getPathFile(data.userImageURL).then((image: any) => {
@@ -432,21 +437,23 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     break;
                                 }
                             }
-                            this.fulfillCase.reverse(); 
+                            this.fulfillCase.reverse();
                         } else {
                             this.fulfillCase = fulfillList;
                         }
-                       
+
                     }
                 }
                 setTimeout(() => {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
-                }, 1000); 
+                }, 1000);
                 resolve(this.fulfillCase);
             } else {
+                console.log('2', fulfillList);
                 this.fulfillCase = [];
                 this.isPreloadLoad = false;
+                resolve(this.fulfillCase);
             }
         });
     }
@@ -473,19 +480,19 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result !== null && result !== undefined) {
-                
+
                 this.snackBar.open("สร้างโพสต์เติมเต็มสำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
                     this.router.navigate([]).then(() => {
                         window.open('/post/' + result.id, '_blank');
                     });
                 });
 
-                this.fulFillFacade.getFulfillmentCase(fulfillCaseId).then((res: any)=>{
-                    if(res){  
-                        this.approveDate =  moment(res.fulfillCase.approveDateTime).format('DD/MM/YYYY');
+                this.fulFillFacade.getFulfillmentCase(fulfillCaseId).then((res: any) => {
+                    if (res) {
+                        this.approveDate = moment(res.fulfillCase.approveDateTime).format('DD/MM/YYYY');
                     }
-                }).catch((err: any)=>{
-                    console.log('error ',err)
+                }).catch((err: any) => {
+                    console.log('error ', err)
                 });
 
                 this.fulfillmentPost = result.id;
@@ -501,7 +508,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatData = [];
         this.reqData = [];
 
-        if (fulfill !== null && fulfill !== undefined) {  
+        if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
             } else {
@@ -575,7 +582,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 if (res !== null && res !== undefined) {
                     this.showChatRoom = true;
 
-                    this.observManager.publish(CHATROOM_ID,this.chatRoomId);
+                    this.observManager.publish(CHATROOM_ID, this.chatRoomId);
                     this.chatRoomId = res.chatRoom.id;
                     this.pageName = res.fulfillCase.pageName;
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
@@ -587,7 +594,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
+                                    this.chatFacade.markReadChatMessage(chatIds,asPage).then((readResult) => {
                                         console.log('readResult ', readResult)
                                         if (readResult !== null && readResult !== undefined) {
                                             data.chatMessage.isRead = true;
@@ -903,8 +910,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.isCaseActive = true;
         } else if (status === FULFILLMENT_STATUS.CONFIRM) {
             this.isCaseActive = false;
-            this.sorting = this.sortingBy[2].type; 
-            this.sortBy = this.sortingBy[2].name; 
+            this.sorting = this.sortingBy[2].type;
+            this.sortBy = this.sortingBy[2].name;
         }
 
         this.fulfullCaseStatus = status;
@@ -946,6 +953,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
+        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];
@@ -1225,7 +1233,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.isChecKMobile = false;
             this.Expand = true;
             var fulfillLeft = document.getElementById("fulfill-left");
-            if(fulfillLeft && fulfillLeft.style !== null){ 
+            if (fulfillLeft && fulfillLeft.style !== null) {
                 fulfillLeft.style.display = 'flex';
             }
             if (window.innerWidth >= 1440) {

@@ -557,7 +557,7 @@
                                                 fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>#{{item.posts.emergencyEventTag}}</span>
+                                    <span *ngIf="item.posts.emergencyEventTag">#{{item.posts.emergencyEventTag}}</span>
                                     <svg *ngIf="item.posts.objectiveTag" style="margin:0px 7px;" class="img-objective"
                                         xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
                                         viewBox="0 0 22.899 22.899">
@@ -576,7 +576,7 @@
                                                 transform="translate(-248.03 -228.703)" fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>#{{item.posts.objectiveTag}}</span>
+                                    <span *ngIf="item.posts.objectiveTag">#{{item.posts.objectiveTag}}</span>
                                 </div>
                             </div>
                             <div class="item-list">
@@ -773,7 +773,7 @@
                                                 fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>#{{item.post.emergencyEventTag}}</span>
+                                    <span *ngIf="item.post.emergencyEventTag">#{{item.post.emergencyEventTag}}</span>
                                     <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;" class="img-objective"
                                         xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
                                         viewBox="0 0 22.899 22.899">
@@ -792,7 +792,7 @@
                                                 transform="translate(-248.03 -228.703)" fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>#{{item.post.objectiveTag}}</span>
+                                    <span *ngIf="item.post.objectiveTag">#{{item.post.objectiveTag}}</span>
                                 </div>
                             </div>
                             <div class="item-list">
@@ -878,7 +878,7 @@
                                                 fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>{{item.post.emergencyEventTag}}</span>
+                                    <span *ngIf="item.post.emergencyEventTag">{{item.post.emergencyEventTag}}</span>
                                     <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;" class="img-objective"
                                         xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
                                         viewBox="0 0 22.899 22.899">
@@ -897,7 +897,7 @@
                                                 transform="translate(-248.03 -228.703)" fill="#747474" />
                                         </g>
                                     </svg>
-                                    <span>{{item.post.objectiveTag}}</span>
+                                    <span *ngIf="item.post.objectiveTag">{{item.post.objectiveTag}}</span>
                                 </div>
                             </div>
                             <div class="item-list">

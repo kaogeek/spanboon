@@ -6,14 +6,18 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Req, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Get, Req, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { RecommendResponse } from './responses/RecommendResponse';
 import { UserFollowService } from '../services/UserFollowService';
 import { UserEngagementService } from '../services/UserEngagementService';
+import { PostsService } from '../services/PostsService';
+import { HashTagService } from '../services/HashTagService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { RecommendStoryParam } from './params/RecomendStoryParam';
+import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 
 @JsonController('/recommend')
@@ -21,7 +25,9 @@ export class RecommendController {
 
     constructor(
         private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService
+        private userEngagementService: UserEngagementService,
+        private postsService: PostsService,
+        private hashTagService: HashTagService
     ) { }
 
     // Get Recommend API
@@ -108,5 +114,66 @@ export class RecommendController {
 
         const successResponse = ResponseUtil.getSuccessResponse('Successfully get User Page Access', result);
         return res.status(200).send(successResponse);
+    }
+
+    /**
+     * @api {get} /api/recommend/story Get Page story API
+     * @apiGroup PagePost
+     * @apiParamExample {json} Input
+     * {
+     *      "needs": [""]
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Get PagePost Recommended Story Successful",
+     *      "data": "{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/recommend/story
+     * @apiErrorExample {json} Cannot get PagePost Recommended Story
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/story')
+    public async getRecommendedStory(@QueryParams() param: RecommendStoryParam, @Res() res: any): Promise<any> {
+        let result: any = undefined;
+        const data: any = {
+            postId: param.postId,
+            pageId: param.pageId,
+            hashTag: param.hashTag
+        };
+
+        let limit = undefined;
+        let offset = undefined;
+        if (param.limit !== undefined && param.limit !== null) {
+            if (typeof param.limit === 'string') {
+                limit = Number(param.limit);
+            } else {
+                limit = param.limit;
+            }
+        }
+        if (param.offset !== undefined && param.offset !== null) {
+            if (typeof param.offset === 'string') {
+                offset = Number(param.offset);
+            } else {
+                offset = param.offset;
+            }
+        }
+
+        const config: any = {
+            limit,
+            offset
+        };
+
+        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService);
+        processor.setData(data);
+        processor.setConfig(config);
+        result = await processor.process();
+
+        if (result) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Get Post Recommended Story Success', result));
+        } else {
+            return res.status(200).send(ResponseUtil.getErrorResponse('Get Post Recommended Story Success', {}));
+        }
     }
 }

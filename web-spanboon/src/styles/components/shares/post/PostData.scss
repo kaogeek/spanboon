@@ -387,8 +387,6 @@
       font-family: "Kanit-500";
       font-size: 16px;
       padding-top: 10pt;
-      color: $color-warm-red;
-      
       > a {
         color: $color-warm-red;
       }
@@ -460,12 +458,7 @@
       }
 
       > .input-comment {
-        flex: 1 1 0%;
-        // width: calc(100% - 50pt);
-        // display: flex;
-        // border: 1px solid #f0f0f0;
-        // border-radius: 25px;
-        // overflow: hidden;
+        flex: 1 1 0%; 
 
         > .comment-text {
           border: 1px solid rgb($black, 0.1);
