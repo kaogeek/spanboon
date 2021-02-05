@@ -334,7 +334,7 @@
                                 [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
                                 [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
                                 [isCaseHasPost]="isCaseHasPost" [sender]="sender" [chatRoomId]="chatRoomId"
-                                [asPage]="asPage" (submit)="showFulFill()"
+                                [asPage]="asPage" (submit)="showFulFill()" [fulfillCaseId]="fulfillCaseId"
                                 (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
                                 (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
                             </chat-message>
