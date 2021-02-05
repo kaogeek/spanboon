@@ -191,12 +191,36 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginTwitter() {
-    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");  
+  public clickLoginTwitter() { 
+    this.isPreloadTwitter = true;
+    let callback = "login";
+    this.twitterService.requestToken(callback).then((result: any) => {
+      this.authorizeLink += '?' + result; 
+      window.open(this.authorizeLink);
+      this.isPreloadTwitter = false;
+    }).catch((error: any) => {
+      console.log(error);
+    });
   }
 
   public clickLoginGoogle(): void {
-    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง"); 
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => { 
+
+      if (result !== null && result !== undefined) {
+        let googleToken = {
+          googleUserId: result.id,
+          authToken: result.authToken,
+          idToken: result.idToken
+        };
+
+        this.googleToken = googleToken;
+
+        this._ngZone.run(() => this.loginGoogle());
+      }
+    }).catch((error) => {
+      console.log('error >>> ', error);
+    });
   }
 
   private loginGoogle() {
@@ -241,7 +265,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true,
         xfbml: true,
-        version: 'v3.1'
+        version: 'v9.0'
       });
       window['FB'].AppEvents.logPageView();
     };
@@ -268,9 +292,8 @@ export class LoginPage extends AbstractPage implements OnInit {
         this.accessToken = accessToken;
 
         this._ngZone.run(() => this.loginFB());
-      }
-      // user_birthday
-    }, { scope: 'public_profile,email' });
+      } 
+    }, { scope: 'public_profile,email,user_birthday,user_gender' });
   }
 
   public emailLogin() {
