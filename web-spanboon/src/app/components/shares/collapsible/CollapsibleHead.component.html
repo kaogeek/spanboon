@@ -27,8 +27,8 @@
                 [emergencyEvent]="fulfill.emergencyEvent" [objective]="fulfill.objective"
                 [description]="fulfill.description" [name]="fulfill.chatSender.name" [type]="fulfill.chatSender.type" [isRead]="fulfill.isRead"
                 [chatMessage]="fulfill.chatMessage" [chatDate]="fulfill.chatDate | dateFormat"
-                [fulfillRequestCount]="fulfill.fulfillRequestCount" [unreadMessageCount]="fulfill.unreadMessageCount" [data]="fulfill"
-                (onClick)="getFulfillmentCase(fulfill , index)"></card-contact>
+                [fulfillRequestCount]="fulfill.fulfillRequestCount" [unreadMessageCount]="fulfill.isRead ? 0 : fulfill.unreadMessageCount" [data]="fulfill"
+                (onClick)="getFulfillmentCase(fulfill , index)"></card-contact> 
         </div>
     </div>
 </ng-container>
