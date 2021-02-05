@@ -246,7 +246,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                 appId: environment.facebookAppId,
                 cookie: true,
                 xfbml: true,
-                version: 'v3.1'
+                version: 'v9.0'
             });
             window['FB'].AppEvents.logPageView();
         };
@@ -273,9 +273,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
                 this.accessToken = accessToken;
 
                 this._ngZone.run(() => this.loginFB());
-            }
-            // user_birthday
-        }, { scope: 'public_profile,email' });
+            } 
+        }, { scope: 'public_profile,email,user_birthday,user_gender' });
     }
 
     private loginFB() {
