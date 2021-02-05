@@ -93,6 +93,12 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.drawer.toggle();
+        // const dialogRef = this.dialog.open(DialogCreatePage, {
+        //     autoFocus: false
+        // });
+        // dialogRef.afterClosed().subscribe(res => {
+        //     console.log(res)
+        // });
         this.clickSystemDevelopment();
     }
 
@@ -156,9 +162,9 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public clickSetting(item: any) {
-        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) { 
+        if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
             this.router.navigate(['/page/' + item.page.pageUsername + '/settings']);
-        } else { 
+        } else {
             this.router.navigate(['/page/' + item.page.id + '/settings']);
         }
     }

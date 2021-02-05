@@ -71,14 +71,12 @@ export class SettingsInfo extends AbstractPage implements OnInit {
         this.dirtyCancelEvent = new EventEmitter();  
 
         this.routeActivated.params.subscribe(async (params) => {
-            this.pageId = params['id'];
-            console.log('this.pageId ',this.pageId)
+            this.pageId = params['id']; 
         });
         this.selected = this.links[0].label; 
     }
 
-    public ngOnInit(): void {  
-        console.log('data >> ',this.data)
+    public ngOnInit(): void {   
     }
 
     public ngOnDestroy(): void {

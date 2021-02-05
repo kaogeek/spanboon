@@ -225,6 +225,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
+        console.log('this.needsFromState', this.needsFromState)
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -262,10 +263,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
+        console.log('this.authenManager', this.authenManager.getUserToken())
         if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
+
+                console.log('3', result);
                 if (result !== null && result !== undefined) {
                     if (this.needsFromState !== null && this.needsFromState !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
@@ -307,7 +311,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
         if (data !== null && data !== undefined) {
             this.accessValue = data;
             if (type === 'page') {
-                console.log('data ', data)
                 this.listAsPage = true;
                 this.asPage = data.id;
                 this.observManager.publish(SELECTED_PAGE, this.asPage);
@@ -374,6 +377,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.canAccessChatRoom = false;
             this.showLoading = true;
             let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
+
+            console.log('1', fulfillList);
 
             let fulfillCases: any[] = [];
             if (fulfillList.length > 0 && fulfillList !== null && fulfillList !== undefined) {
@@ -445,8 +450,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }, 1000);
                 resolve(this.fulfillCase);
             } else {
+                console.log('2', fulfillList);
                 this.fulfillCase = [];
                 this.isPreloadLoad = false;
+                resolve(this.fulfillCase);
             }
         });
     }
@@ -587,7 +594,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds).then((readResult) => {
+                                    this.chatFacade.markReadChatMessage(chatIds,asPage).then((readResult) => {
                                         console.log('readResult ', readResult)
                                         if (readResult !== null && readResult !== undefined) {
                                             data.chatMessage.isRead = true;
@@ -946,6 +953,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
+        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];

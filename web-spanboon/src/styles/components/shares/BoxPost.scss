@@ -166,28 +166,21 @@
       width: calc(100% - 40pt);
       padding: 10pt 20pt;
       border: unset;
-      font-family: "Kanit-500";
-      font-size: 18px;
-      font-size: 20px;
-      &.msg-error-shake {
-        position: relative;
-        animation: shake 0.1s linear;
-        animation-iteration-count: 3;
-        color: red;
-      }
+      font-family: "Kanit-500"; 
+      font-size: 20px;  
     }
 
     [contenteditable="true"].header-story:empty:before {
       content: attr(placeholder);
       pointer-events: none;
-      display: block;
+      display: block; /* For Firefox */
       font-family: "Kanit-500";
       font-size: 18px;
     }
 
     [contenteditable="true"].header-story {
       // white-space: nowrap;
-      overflow: hidden;
+      // overflow: hidden; 
     }
 
     [contenteditable="true"].header-story br {
@@ -208,13 +201,6 @@
       word-break: break-word;
       font-family: "Sarabun-Light";
       font-size: 16px;
-
-      &.msg-error-shake {
-        position: relative;
-        animation: shake 0.1s linear;
-        animation-iteration-count: 3;
-        color: red;
-      }
     }
 
     [contenteditable="true"]:empty:before {
@@ -604,7 +590,21 @@
               }
             }
           }
+
+          >.share-social {
+            display: flex;
+            padding-left: 5pt;
+            >.icon-social {
+              display: flex;
+              align-items: center;
+              margin-left: 5pt;
+              width: 15pt;
+              height: 15pt;         
+              @include pointer();
+            }
+          }
         }
+ 
       }
 
       > .right {

@@ -173,18 +173,17 @@
                 </div>
             </div>
         </ng-container>
-
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
-            [class.msg-error-shake]="isMsgNull" placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="80">
+           placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="80">
         </div>
-        <div *ngIf="isRepost" [class.msg-error-shake]="isMsgError" #storyPost
+        <div *ngIf="isRepost" #storyPost
             id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost" class="textarea-editor"
             contentEditable="true" attr.placeholder="เรื่องราวของ {{dataPage}}" (keyup)="onKeyup($event)"
             (click)="onKeyup($event)">
         </div>
 
-        <div *ngIf="!isRepost" [class.msg-error-shake]="isMsgError" #storyPost
+        <div *ngIf="!isRepost" #storyPost
             id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost" class="textarea-editor"
             contentEditable="true" attr.placeholder="ความเห็นของคุณต่อเรื่องราวนี้ {{repostPage}} {{dataPage}}"
             (keyup)="onKeyup($event)" (click)="onKeyup($event)">

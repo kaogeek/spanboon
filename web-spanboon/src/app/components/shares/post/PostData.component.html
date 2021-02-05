@@ -361,7 +361,8 @@
             <div class="fulfill-profile" [class.active]="itemPost.gallery.length === 0 && itemPost.title === '' ">
                 <div class="fufill-name">
                     <div class="left">
-                        <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}" target="_blank">
+                        <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
+                            target="_blank">
                             <div class="profile-left">
                                 <ng-container
                                     *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
@@ -472,8 +473,12 @@
         <div *ngIf="itemPost.detail" class="content" [phxPreload]="itemPost" [preloadClass]="'content'"
             [innerHTML]=" itemPost.detail | highlight ">
         </div>
-        <div class="page-give" *ngIf="isFulfill"> 
-            ร่วมเติมเต็มให้กับ <a target="_blank" href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'https://spanboon.io:4200/post/'+itemPost.casePostId : 'https://spanboon.io:4200/page/'+itemPost.pageId }}"> {{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'https://spanboon.io:4200/post/'+itemPost._id : 'https://spanboon.io:4200/page/'+itemPost.pageId }}</a>
+        <div class="page-give" *ngIf="isFulfill">
+            <span>ร่วมเติมเต็มให้กับ</span>
+            <a target="_blank"
+                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'https://spanboon.io:4200/post/'+itemPost.casePostId : 'https://spanboon.io:4200/page/'+itemPost.pageId }}">
+                {{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ?
+                'https://spanboon.io:4200/post/'+itemPost._id : 'https://spanboon.io:4200/page/'+itemPost.pageId }}</a>
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data [itemPost]="itemPost.referencePostObject"

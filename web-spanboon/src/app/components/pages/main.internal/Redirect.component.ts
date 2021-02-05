@@ -14,7 +14,7 @@ import { CookieUtil } from '../../../utils/CookieUtil';
 
 declare var $: any;
 const PAGE_NAME: string = '';
-const URL_PATH: string = '/@';
+const URL_PATH: string = '/@'; 
 
 @Component({
     selector: 'redirect',
@@ -37,12 +37,13 @@ export class Redirect implements OnInit {
         this.router = router;
         this.mainPage = mainPage;
         this.twitterService = twitterService;
-        this.observManager = observManager;
+        this.observManager = observManager; 
 
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 const url: string = decodeURI(this.router.url);
-                this.page = CookieUtil.getCookie('page');
+                this.page = CookieUtil.getCookie('page'); 
+                
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     const type = substringPath.substring(1);
@@ -66,8 +67,9 @@ export class Redirect implements OnInit {
                             console.log(err)
                         }))
                     }
-                } else {
-                    let doRunAccessToken = false;
+                } else {    
+                    let doRunAccessToken = false;  
+
                     if (url !== undefined && url !== '') { 
                         let split = url.split('?'); 
                         if (split.length >= 2) {
@@ -90,22 +92,20 @@ export class Redirect implements OnInit {
                             const token_secret = spilt[1].split('=')[1];
                             const userId = spilt[2].split('=')[1];
                             const page = spilt[2].split('/')[1];
-                            console.log('page ',page)
                             let user = {
                                 token: token,
                                 token_secret: token_secret,
                                 userId: userId
+                            }  
+                            if (!window.opener.closed) { 
+                                window.opener.bindTwitter(user);
+                                window.close();
                             } 
-
-                            window.close();
-                            window.opener.location = this.page;
-                            this.router.navigateByUrl(this.page, { state: { data: user } })
 
                         }).catch((err: any) => [
                             console.log('err ', err)
                         ])
                     }
-
                 }
             }
         });

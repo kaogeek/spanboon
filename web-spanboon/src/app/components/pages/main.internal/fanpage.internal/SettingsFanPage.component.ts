@@ -8,9 +8,7 @@
 import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import * as $ from 'jquery';
-import { Subscription } from 'rxjs/internal/Subscription';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'; 
 import { PageSocailTW } from '../../../../models/PageSocailTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
@@ -18,7 +16,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
 
 const PAGE_NAME: string = 'settings';
-const URL_PATH: string = '/page/';
+const URL_PATH: string = '/page/'; 
 
 declare var $: any;
 @Component({
@@ -32,6 +30,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     private userAccessFacade: UserAccessFacade;
     private assetFacade: AssetFacade;
     private pageFacade: PageFacade;
+    private observManager: ObservableManager;
 
     @ViewChild('settingInfo', { static: false }) settingInfo: SettingsInfo;
 
@@ -133,12 +132,14 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }]
 
     }
+
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, routeActivated: ActivatedRoute,
         userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, pageFacade: PageFacade, observManager: ObservableManager) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.dialog = dialog;
         this.routeActivated = routeActivated;
         this.userAccessFacade = userAccessFacade;
+        this.observManager = observManager; 
         this.assetFacade = assetFacade;
         this.pageFacade = pageFacade;
         this.isPreload = true;
@@ -166,31 +167,11 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             if (this.pageId !== undefined && this.pageId !== '') {
                 this.getAccessPage();
             }
-        });
-
-        let resultTwitter = this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras.state;
-        console.log('infofanpage', resultTwitter)
-        if (resultTwitter !== undefined && resultTwitter !== null) {
-            console.log('fanpage ', resultTwitter) 
-            const twitter = new PageSocailTW();
-            twitter.twitterOauthToken = resultTwitter.data.token;
-            twitter.twitterTokenSecret = resultTwitter.data.token_secret;
-            twitter.twitterUserId = resultTwitter.data.userId;
-
-            this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
-                console.log('data ', res)
-                this.bindingSocialTwitter = res.data;
-            }).catch((err: any) => {
-                console.log('err ', err)
-                if (err.error.message === 'This page was binding with Twitter Account.') {
-                    this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
-                }
-            });
-        }
+        }); 
 
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
-                const url: string = decodeURI(this.router.url);
+                const url: string = decodeURI(this.router.url); 
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');

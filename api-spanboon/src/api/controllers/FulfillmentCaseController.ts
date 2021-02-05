@@ -531,7 +531,7 @@ export class FulfillmentController {
                         if (containsPageIdx <= -1) {
                             const innerCase: FulfillmentCaseGroupResponse = new FulfillmentCaseGroupResponse();
                             innerCase.groupId = fulfill.postId;
-                            innerCase.groupName = (fulfill.posts ? fulfill.posts.title : 'ไม่มีโพส');
+                            innerCase.groupName = (fulfill.posts ? fulfill.posts.title : 'เติมเต็มผ่านเพจ');
                             innerCase.groupType = FULFILL_GROUP.POST;
                             innerCase.cases = [];
                             innerCase.cases.push(fulfilCaseResponse);
