@@ -177,7 +177,11 @@
                                 </span>
                             </div>
                             <div class="contact-head">
-                                {{title}}
+                                {{title ? title:(name ? name:uniqueId)}}
+                                <span style="opacity: 0.7;"> ต้องการ เติมเต็มลงเพจ </span>
+                            </div>
+                            <div *ngIf="!title" class="contact-head">
+                                {{pageName ? pageName:uniqueId}}
                             </div>
                             <div class="contact-hashtag">
                                 <tag-event

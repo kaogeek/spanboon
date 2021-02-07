@@ -161,6 +161,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDate: any;
     public pageId: string;
     public postId: string;
+    public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
@@ -256,7 +257,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
             }
         });
-        
+
         this.observManager.subscribe('authen.listcase', (caseId: any) => {
             if (caseId !== undefined && caseId !== '') {
                 this.fulFillFacade.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, caseId).then((result) => {
@@ -266,7 +267,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                 for (let old of this.fulfillCase) {
                                     const isMessage = old.cases.find(oldMessage => {
                                         return oldMessage.fulfillCaseId === newMessage.fulfillCaseId;
-                                    }); 
+                                    });
                                     if (isMessage) {
                                         isMessage.chatMessage = newMessage.chatMessage;
                                         break;
@@ -530,6 +531,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatData = [];
         this.reqData = [];
 
+        console.log('fulfill', fulfill)
+
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
@@ -591,10 +594,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.linkPost = (this.mainPostLink + fulfill.postId);
             this.fulfillCaseId = fulfill.fulfillCaseId;
             this.title = fulfill.title;
+            this.uniqueId = fulfill.uniqueId;
             this.userImageURL = fulfill.userImageURL;
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
-            this.postDate = fulfill.postDate;
+            this.postDate = fulfill.createdDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
             fulfill.isRead = true;

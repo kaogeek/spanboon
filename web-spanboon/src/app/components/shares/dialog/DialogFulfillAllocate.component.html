@@ -339,7 +339,7 @@
                                     </div>
                                 </button> -->
                                 <button mat-menu-item *ngFor="let sort of sortingByObjArr; let index = index"
-                                    class="list-sort" (click)="sortingByObj = sort">
+                                    class="list-sort" (click)="sortingByObj = sort;sortingObj();">
                                     <div class="select-name"> {{sort.hashTag}}
                                     </div>
                                 </button>
@@ -375,14 +375,13 @@
                             </button>
                             <mat-menu #menusort="matMenu">
                                 <button mat-menu-item *ngFor="let sort of sortingByDateArr; let index = index"
-                                    class="list-sort" (click)="sortingByDate = sort">
+                                    class="list-sort" (click)="sortingDate();sortingByDate = sort">
                                     <div class="select-name"> {{sort.name}}
                                     </div>
                                 </button>
                             </mat-menu>
                         </div>
-                        <div (click)="clearItem()" class="icon"
-                            [class.dis]="selectNeedItem[indexItem].fulfillQuantity === selectNeedItem[indexItem].quantity">
+                        <div (click)="clearItem()" class="icon">
                             <svg height="25" viewBox="0 0 16 16" width="25" xmlns="http://www.w3.org/2000/svg"
                                 xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <defs>
@@ -393,13 +392,13 @@
                                 <use transform="translate(7.967 14.951)" xlink:href="#path-1" />
                                 <path
                                     d="m1.80474.390524c.390524.390524.390524 1.02369 0 1.41421-.390524.390524-1.02369.390524-1.41421 0-.390524-.390524-.390524-1.02369 0-1.41421.390524-.390524 1.02369-.390524 1.41421 0"
-                                    transform="translate(10.918 13.902)" />
+                                    transform="translate(10.918 13.902)" class="iconfill" />
                                 <path
                                     d="m4.59253 0c-.553711 0-1.0752.244141-1.43018.669922l-3.16235 3.79462c.233032.107178.457825.233765.669189.384582.595642.425293 1.0329.982178 1.3338 1.5954l3.78192-3.15204c.425781-.35498.669922-.876465.669922-1.43018-.0000002-1.02686-.835449-1.8623-1.8623-1.8623z"
-                                    transform="translate(9.561)" />
+                                    transform="translate(9.561)" class="iconfill" />
                                 <path
                                     d="m9.66553.913574v-.0004882c-1.28027-.913086-3.05664-.811035-4.22217.240723-.728027.657227-2.94287 2.65674-5.01807 3.10791l-.425293.0927734s.0317383 1.396.454834 2.02557c.828674-.0925903 1.49951-.263977 1.72986-.494324-.509277.602356-.896667 1.0379-1.19678 1.36371.246826.329895.550781.643066.892212.945068 1.22424-.520874 2.31616-1.42108 2.67242-1.7774-.718018 1.19672-1.30194 2.09552-1.60895 2.55853.683228-.397522 1.51593-.914185 2.29523-1.49292-.291321.291321-.673462 1.20648-.982544 2.25171.344604.16626 1.31354.514587 1.31354.514587 1.48779-.113281 4.07178-3.61816 4.94189-4.95898.937988-1.44482.566406-3.36768-.846191-4.37646z"
-                                    transform="translate(-.016 4.75)" />
+                                    transform="translate(-.016 4.75)" class="iconfill" />
                             </svg>
                         </div>
                         <div (click)="autoAllocate(true)" class="icon"
@@ -515,7 +514,7 @@
                 </div>
                 <div class="box-list-item-body" [class.list]="true">
                     <ng-container *ngIf="groupsArr">
-                        <div class="list-post" *ngFor="let item of groupsArr[indexItem].posts">
+                        <div class="list-post" *ngFor="let item of groupsArr[indexItem].posts ;let i = index ">
                             <div class="detail">
                                 <div class="date">
                                     <div style="    background-color: #fd545a;
@@ -601,7 +600,7 @@
                                     <!-- <div class="item" [ngStyle]="{'display': item.amount === 0  ? 'none' : 'flex'}" -->
                                     <div class="item" *ngFor="let item of getItemByPost(item)">
                                         <div class="item-image"
-                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
+                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)','opacity':item.itemName === indexItemName() ? '1' : '0.6'}">
                                             <ng-container
                                                 *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
                                                 <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
@@ -620,10 +619,17 @@
                                 </div>
                             </div>
                             <div class="add-delete">
+                                <div class="section">
+                                    <section class="example-section">
+                                        <mat-checkbox class="example-margin" [(ngModel)]="item.section"
+                                            (click)="sectionMaxItem(item,i)">
+                                        </mat-checkbox>
+                                    </section>
+                                </div>
                                 <div class="box-svg">
                                     <svg class="delete"
                                         [class.dis]="selectNeedItem[indexItem].fulfillQuantity === selectNeedItem[indexItem].quantity"
-                                        (click)="allocate(item,false)" height="12pt" width="12pt" version="1.1"
+                                        (click)="allocate(item,false,i)" height="12pt" width="12pt" version="1.1"
                                         id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 492 492"
                                         style="enable-background:new 0 0 492 492;" xml:space="preserve">
@@ -634,7 +640,7 @@
                                             </g>
                                         </g>
                                     </svg>
-                                    <svg class="add" (click)="allocate(item,true)"
+                                    <svg class="add" (click)="allocate(item,true,i)"
                                         [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0" height="12pt"
                                         viewBox="0 0 448 448" width="12pt" xmlns="http://www.w3.org/2000/svg">
                                         <path

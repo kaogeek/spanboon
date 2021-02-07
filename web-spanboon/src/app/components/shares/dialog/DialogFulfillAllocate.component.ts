@@ -13,6 +13,7 @@ import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from '../../../../environments/environment';
 import * as $ from 'jquery';
 import { count } from 'rxjs/operators';
+import { L } from '@angular/cdk/keycodes';
 
 const PAGE_NAME: string = 'fulfillallocate';
 const SEARCH_LIMIT: number = 10;
@@ -46,10 +47,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public wizardConfig: any;
     public originalPost: any;
     public groupsArr: any;
+    public originalGroupsArr: any;
 
     public sortingByDateArr: any;
-    public sortingByEmgArr: any;
-    public sortingByObjArr: any;
+    public sortingByEmgArr: any = [];
+    public sortingByObjArr: any = [];
 
 
     public sortingByDate: any;
@@ -105,11 +107,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.sortingByDateArr = [
             {
                 "name": "โพสต์เก่าไปใหม่",
-                "detail": "จัดสรรเข้าโพสต์ให้อัตโนมัติ เรียงจากเก่าไปใหม่"
+                "detail": "OLD"
             },
             {
                 "name": "โพสต์ใหม่ไปเก่า",
-                "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง"
+                "detail": "NEW"
             }
         ]
 
@@ -172,7 +174,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         };
 
         this.emergencyEventFacade.searchEmergency(keywordFilter).then((emg: any) => {
-            this.sortingByEmgArr = emg;
+            this.sortingByEmgArr.push({ hashTag: "ไม่มี", title: "NONE" })
+            for (let i of emg) {
+                this.sortingByEmgArr.push(i)
+            }
             this.sortingByEmg = this.sortingByEmgArr[0];
         }).catch((err: any) => {
             console.log(err)
@@ -193,7 +198,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         };
 
         this.objectiveFacade.searchObjective(keywordFilter).then((obj: any) => {
-            this.sortingByObjArr = obj.data;
+            this.sortingByObjArr.push({ hashTag: "ไม่มี", title: "NONE" })
+            for (let i of obj.data) {
+                this.sortingByObjArr.push(i)
+            }
             this.sortingByObj = this.sortingByObjArr[0];
         }).catch((err: any) => {
             console.log(err)
@@ -623,7 +631,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         }
     }
 
-    public allocate(post?, isAdd?) {
+    public allocate(post?, isAdd?, index?) {
 
         var indexPost = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(post.post);
         var indexItem = this.allocateItemtoPost[indexPost].item.map(function (e) { return e.itemName; }).indexOf(this.selectNeedItem[this.indexItem].name);
@@ -637,6 +645,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 this.allocateItemtoPost[indexPost].item[indexItem].isMn = true;
                 this.selectNeedItem[this.indexItem].fulfillQuantity--
 
+                this.groupsArr[this.indexItem].posts[index].section = true;
+
             }
 
         } else {
@@ -648,10 +658,36 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 if (this.allocateItemtoPost[indexPost].item[indexItem].amount === 0) {
 
                     delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
+                    this.groupsArr[this.indexItem].posts[index].section = false;
 
                 }
 
                 this.selectNeedItem[this.indexItem].fulfillQuantity++
+
+            }
+
+        }
+
+    }
+
+    public sectionMaxItem(item, index) {
+
+        var indexPost = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(item.post);
+        var indexItem = this.allocateItemtoPost[indexPost].item.map(function (e) { return e.itemName; }).indexOf(this.selectNeedItem[this.indexItem].name);
+
+        if (this.groupsArr[this.indexItem].posts[index].section) {
+
+            this.selectNeedItem[this.indexItem].fulfillQuantity = this.allocateItemtoPost[indexPost].item[indexItem].amount;
+            this.allocateItemtoPost[indexPost].item[indexItem].amount = 0;
+            delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
+
+        } else {
+
+            if (this.selectNeedItem[this.indexItem].fulfillQuantity !== 0) {
+
+                this.allocateItemtoPost[indexPost].item[indexItem].amount = this.selectNeedItem[this.indexItem].fulfillQuantity;
+                this.allocateItemtoPost[indexPost].item[indexItem].isMn = true;
+                this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
 
             }
 
@@ -687,7 +723,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         for (let a of this.allocateItemtoPost) {
             for (let item of a.item) {
                 if (item.itemName === this.selectNeedItem[this.indexItem].name) {
-                    item.amount = 0
+                    item.amount = 0;
+                    item.section = false;
+                    delete item.isMn;
+                    delete item.isAuto;
                 }
             }
         }
@@ -740,6 +779,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             this.originalPost = post
             for (let group of post.items) {
                 group.amount = 0;
+                group.section = false;
                 var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(group.postsId)
                 if (index < 0) {
                     this.allocateItemtoPost.push({ post: group.posts, postsId: group.post, item: [] })
@@ -757,6 +797,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         })
 
         this.groupsArr = groups;
+        this.originalGroupsArr = groups;
 
         this.setAllocatetoPost();
 
@@ -852,6 +893,17 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                             if (item.itemName === i.itemName) {
 
+                                for (let p of this.groupsArr[this.indexItem].posts) {
+
+                                    if (p.posts._id === a.postsId) {
+
+                                        p.section = true;
+
+                                    }
+
+
+                                }
+
                                 if (auto) {
 
                                     if (!item.isMn) {
@@ -860,6 +912,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                                     }
 
+
+                                } else {
+
+                                    item.isMn = true;
 
                                 }
 
@@ -932,7 +988,21 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         }
     }
 
+    public sortingDate() {
 
+        this.groupsArr[this.indexItem].posts.reverse();
+
+    }
+
+    public sortingObj() {
+
+        if (this.sortingByObj.title === "NONE") {
+
+        } else {
+
+        }
+
+    }
 
     private isCheckUndefined(value): boolean {
 
