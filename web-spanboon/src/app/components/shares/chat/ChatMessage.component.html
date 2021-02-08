@@ -28,7 +28,7 @@
                 *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
                 <div class="page-message">
                     <div class="talking-m">
-                        <div class="talking-time">
+                        <div class="talking-time"> 
                             <span class="material-icons" *ngIf="item.chatMessage.isRead">
                                 done
                             </span>
