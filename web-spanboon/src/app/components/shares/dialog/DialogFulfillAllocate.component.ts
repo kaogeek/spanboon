@@ -35,6 +35,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     private emergencyEventFacade: EmergencyEventFacade;
     private objectiveFacade: ObjectiveFacade;
 
+    public mainPostLink: string = window.location.origin + '/post/'
+
     public apiBaseURL = environment.apiBaseURL;
 
     public redirection: string;
@@ -43,6 +45,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public pageId: string;
     public caseId: string;
 
+    public linkPost: any
     public listItem: any;
     public wizardConfig: any;
     public originalPost: any;
@@ -136,7 +139,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     ngOnInit(): void {
         this.getNeedsPage();
-
         // this.checkLoginAndRedirection();
 
     }
@@ -158,6 +160,18 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
+    }
+
+    public linkPosts(data) {
+
+        console.log('data', data)
+
+        // if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+        //     this.linkPage = (this.mainPageLink + page.data.uniqueId)
+        // } else if (page.data.id !== undefined && page.data.id !== null) {
+        //     this.linkPage = (this.mainPageLink + page.data.id)
+        // }
+
     }
 
     public getEmergencyEvent() {
@@ -724,11 +738,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             for (let item of a.item) {
                 if (item.itemName === this.selectNeedItem[this.indexItem].name) {
                     item.amount = 0;
-                    item.section = false;
                     delete item.isMn;
                     delete item.isAuto;
                 }
             }
+        }
+
+        for (let post of this.groupsArr[this.indexItem].posts) {
+
+            post.section = false;
+
         }
 
         this.selectNeedItem[this.indexItem].fulfillQuantity = this.selectNeedItem[this.indexItem].quantity

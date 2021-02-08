@@ -304,7 +304,7 @@
                         }
                         > .icon {
                             transition: 0.3s;
-                            padding: 6px 15px;
+                            padding: 10px 15px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -410,11 +410,11 @@
                                 font-size: 12px;
                                 color: #4e4e4e;
                                 font-size: 12px;
-                                color: #4e4e4e;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
                                 margin-bottom: 3px;
+                                cursor: pointer;
                             }
                             > .detail-h {
                                 font-size: 18px;
