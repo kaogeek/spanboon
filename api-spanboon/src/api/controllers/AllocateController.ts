@@ -44,7 +44,22 @@ export class AllocateController {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', []));
             }
 
+            let ignoreAllocatedPost = false;
+            if (params !== null && params !== undefined) {
+                if (params.ignoreAllocatedPost !== undefined) {
+                    if (typeof params.ignoreAllocatedPost === 'boolean') {
+                        ignoreAllocatedPost = params.ignoreAllocatedPost;
+                    } else if (typeof params.ignoreAllocatedPost === 'string') {
+                        const ignoreAllocatedPostString: any = params.ignoreAllocatedPost;
+                        ignoreAllocatedPost = ('TRUE' === ignoreAllocatedPostString.toUpperCase());
+                    }
+                }
+            }
+
+            let postIgnoreArray = [];
+            const pageModeArray = [];
             const result: any[] = [];
+            // post mode
             for (const allocate of allocates) {
                 const pageId = allocate.pageId;
                 const postId = allocate.postId;
@@ -60,7 +75,43 @@ export class AllocateController {
                     continue;
                 }
 
-                const calulated: AllocateResponse[] = await this.allocate(pageId, postId, items, params);
+                if (postId !== undefined && postId !== null && postId !== '') {
+                    const calulated: AllocateResponse[] = await this.allocate(pageId, postId, items, params);
+                    if (calulated.length <= 0) {
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Allocate to post ' + postId, undefined));
+                    }
+
+                    result.push({
+                        pageId,
+                        postId,
+                        items: calulated
+                    });
+
+                    postIgnoreArray.push(postId);
+                } else if (pageId !== undefined && pageId !== null && pageId !== '') {
+                    pageModeArray.push(allocate);
+                }
+            }
+
+            if (!ignoreAllocatedPost) {
+                postIgnoreArray = [];
+            }
+
+            // page mode
+            for (const allocate of pageModeArray) {
+                const pageId = allocate.pageId;
+                const postId = allocate.postId;
+                const items = allocate.items;
+
+                if ((pageId === undefined || pageId === null) && (postId === undefined || postId === null)) {
+                    continue;
+                }
+
+                // only page mode that has ignore mode.
+                const calulated: AllocateResponse[] = await this.allocate(pageId, postId, items, params, postIgnoreArray);
+                if (calulated.length <= 0) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Allocate to page ' + pageId, undefined));
+                }
                 result.push({
                     pageId,
                     postId,
@@ -276,7 +327,7 @@ export class AllocateController {
         }
     }
 
-    private async allocate(pageId: string, postId: string, items: any[], params?: CalculateAllocateQueryparam): Promise<AllocateResponse[]> {
+    private async allocate(pageId: string, postId: string, items: any[], params?: CalculateAllocateQueryparam, ignorePostIds?: string[]): Promise<AllocateResponse[]> {
         const stdItemIdList: ObjectID[] = [];
         const customItemIdList: ObjectID[] = [];
         const result: AllocateResponse[] = [];
@@ -337,6 +388,13 @@ export class AllocateController {
 
         if (allItemZeroAmountCount === items.length) {
             return [];
+        }
+
+        const ignorePostObjIds = [];
+        if (ignorePostIds !== undefined && ignorePostIds !== null && ignorePostIds.length > 0) {
+            for (const ignorePostId of ignorePostIds) {
+                ignorePostObjIds.push(new ObjectID(ignorePostId));
+            }
         }
 
         // search need from post
@@ -518,7 +576,11 @@ export class AllocateController {
                 // not search post because we has already search for it;
                 if (postId !== null && postId !== undefined && postId !== '') {
                     const postObjId = new ObjectID(postId);
-                    needsAggStmt[0]['$match']['post'] = { $ne: postObjId };
+                    ignorePostObjIds.push(postObjId);
+                }
+
+                if (ignorePostObjIds.length > 0) {
+                    needsAggStmt[0]['$match']['post'] = { $nin: ignorePostObjIds };
                 }
 
                 const needResult = await this.needsService.aggregate(needsAggStmt);
