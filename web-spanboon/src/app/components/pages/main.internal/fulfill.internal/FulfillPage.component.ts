@@ -471,7 +471,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
                 }, 1000);
-                resolve(this.fulfillCase);
             } else {
                 console.log('2', fulfillList);
                 this.fulfillCase = [];

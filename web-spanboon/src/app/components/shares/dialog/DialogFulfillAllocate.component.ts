@@ -479,6 +479,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     }
                     this.groupPostByItem(data);
                 }
+                if (this.indexWizardPage === 3) {
+
+                }
                 if (this.indexWizardPage === 4) {
                     this.checkAuto();
                 }
