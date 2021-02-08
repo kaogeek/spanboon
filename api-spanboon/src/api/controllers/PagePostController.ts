@@ -8,7 +8,6 @@
 import 'reflect-metadata';
 import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
-import { spanboon_web } from '../../env';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { PageService } from '../services/PageService';
@@ -57,7 +56,6 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
-import { TwitterUtils } from '../../utils/TwitterUtils';
 
 @JsonController('/page')
 export class PagePostController {
@@ -729,6 +727,10 @@ export class PagePostController {
                         createResult.posts.id !== undefined && createResult.posts.id !== null) {
                         if (isPostTwitter) {
                             await this.pageSocialAccountService.pagePostToTwitter(createResult.posts.id, pageId);
+                        }
+
+                        if (isPostFacebook) {
+                            await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
                         }
                     }
                 }
