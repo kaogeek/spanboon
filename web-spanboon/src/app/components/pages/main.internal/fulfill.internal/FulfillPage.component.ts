@@ -161,6 +161,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDate: any;
     public pageId: string;
     public postId: string;
+    public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
@@ -242,7 +243,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.observManager.subscribe('authen.message', (chat: any) => {
-            console.log('chat ', chat)
             if (chat && chat.length > 0) {
                 for (let data of chat) {
                     for (let caseData of this.fulfillCase) {
@@ -258,12 +258,35 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
         });
 
+        this.observManager.subscribe('authen.listcase', (caseId: any) => {
+            if (caseId !== undefined && caseId !== '') {
+                this.fulFillFacade.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, caseId).then((result) => {
+                    if (result !== null && result !== undefined) {
+                        for (let dataCase of result) {
+                            for (let newMessage of dataCase.cases) {
+                                for (let old of this.fulfillCase) {
+                                    const isMessage = old.cases.find(oldMessage => {
+                                        return oldMessage.fulfillCaseId === newMessage.fulfillCaseId;
+                                    });
+                                    if (isMessage) {
+                                        isMessage.chatMessage = newMessage.chatMessage;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).catch((err) => {
+                    this.showDialogError(err.name, this.router.url);
+                });
+            }
+        });
+
     }
 
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
-        console.log('this.authenManager', this.authenManager.getUserToken())
         if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
             this.searchAccessPage();
             this.getImage();
@@ -493,6 +516,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }
                 }).catch((err: any) => {
                     console.log('error ', err)
+                    this.showDialogError(err.name, this.router.url);
                 });
 
                 this.fulfillmentPost = result.id;
@@ -504,9 +528,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public getChatRoom(fulfill: any, asPage?: any) {
-        console.log('fulfill >>>> ', fulfill)
         this.chatData = [];
         this.reqData = [];
+
+        console.log('fulfill', fulfill)
 
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
@@ -569,10 +594,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.linkPost = (this.mainPostLink + fulfill.postId);
             this.fulfillCaseId = fulfill.fulfillCaseId;
             this.title = fulfill.title;
+            this.uniqueId = fulfill.uniqueId;
             this.userImageURL = fulfill.userImageURL;
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
-            this.postDate = fulfill.postDate;
+            this.postDate = fulfill.createdDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
             fulfill.isRead = true;
@@ -594,8 +620,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds,asPage).then((readResult) => {
-                                        console.log('readResult ', readResult)
+                                    this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
                                         if (readResult !== null && readResult !== undefined) {
                                             data.chatMessage.isRead = true;
                                             chatIds = [];
@@ -660,10 +685,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }, 1000);
                 }
             }).catch((error) => {
+                this.showDialogError(error.name, this.router.url);
                 this.showChatRoom = false;
                 this.canAccessCase = false;
                 this.canAccessChatRoom = false;
-                console.log(error.message);
+                console.log(error.name);
             });
         } else {
             setTimeout(() => {

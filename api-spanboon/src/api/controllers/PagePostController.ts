@@ -705,15 +705,10 @@ export class PagePostController {
 
             if (createResult !== null && createResult !== undefined) {
                 let link = '';
-                let storyLink = '';
 
                 if (createResult.posts !== undefined && createResult.posts !== null &&
                     createResult.posts.id !== undefined && createResult.posts.id !== null) {
                     link = '/post/' + createResult.posts.id;
-
-                    if (createResult.posts.story !== undefined && createResult.posts.story !== null && createResult.posts.story !== '') {
-                        storyLink = '/story/' + createResult.posts.id;
-                    }
                 }
 
                 // notify to all userfollow if Post is Needed
@@ -730,13 +725,12 @@ export class PagePostController {
 
                 // share to social
                 {
-                    const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
-                    const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
-                    const postLink = (storyLink !== '') ? fullStoryLink : fullLink;
-
-                    const messageForTW = TwitterUtils.generateTwitterText(postPage.title, postPage.detail, postLink, undefined, postPage.emergencyEventTag, postPage.objectiveTag);
-
-                    await this.pageSocialAccountService.shareAllSocialPost(pageId, messageForTW, imageBase64sForTw, !isPostTwitter, !isPostFacebook);
+                    if (createResult.posts !== undefined && createResult.posts !== null &&
+                        createResult.posts.id !== undefined && createResult.posts.id !== null) {
+                        if (isPostTwitter) {
+                            await this.pageSocialAccountService.pagePostToTwitter(createResult.posts.id, pageId);
+                        }
+                    }
                 }
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create PagePost Success', createResult));

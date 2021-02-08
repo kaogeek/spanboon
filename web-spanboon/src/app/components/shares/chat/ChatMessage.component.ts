@@ -13,12 +13,13 @@ import { interval, Observable, Subject, Subscription, timer } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
 import { Asset } from '../../../models/models';
-import { AssetFacade, AuthenManager, ChatRoomFacade, ObservableManager } from '../../../services/services';
+import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, ObservableManager } from '../../../services/services';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 const PAGE_NAME: string = 'ChatMessage';
+const REFRESH_LIST_CASE = 'authen.listcase';
 
 @Component({
   selector: 'chat-message',
@@ -49,7 +50,9 @@ export class ChatMessage extends AbstractPage implements OnInit {
   @Input()
   public asPage: string = 'asPage';
   @Input()
-  public isConfirm: boolean = false; 
+  public fulfillCaseId: string = 'fulfillCaseId';
+  @Input()
+  public isConfirm: boolean = false;
   @Input()
   public isCaseConfirmed: boolean = false;
   @Input()
@@ -75,6 +78,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   // Facade
   private chatRoomFacade: ChatRoomFacade;
   private assetFacade: AssetFacade;
+  private chatFacade: ChatFacade;
   //
   public showImage: boolean = false;
   public isLoading: boolean = false;
@@ -90,21 +94,24 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public cloneMessage: any;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
-    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef) {
+    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.observManager = observManager;
     this.chatRoomFacade = chatRoomFacade;
     this.assetFacade = assetFacade;
+    this.chatFacade = chatFacade;
     this.ref = ref;
 
     this.showImage = false;
     this.isLoading = false;
+
+    this.observManager.createSubject(REFRESH_LIST_CASE);
   }
 
-  public ngOnInit(): void {  
+  public ngOnInit(): void {
     for (let message of this.data) {
-      this.status = message;    
+      this.status = message;
     }
     this.cloneMessage = JSON.parse(JSON.stringify(this.data));
     console.log('message ', this.data)
@@ -256,6 +263,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
   private sendChatMessage(chatRoomId: string, data: any) {
     this.chatRoomFacade.sendChatMessage(chatRoomId, data).then((res) => {
+      this.observManager.publish(REFRESH_LIST_CASE, this.fulfillCaseId);
+      this.markRead(res.data.chatMessage.id, '');
       if (res.data && res.data.senderImage !== '' && res.data.senderImage !== null && res.data.senderImage !== undefined) {
         this.assetFacade.getPathFile(res.data.senderImage).then((image: any) => {
           if (image.status === 1) {
@@ -265,12 +274,12 @@ export class ChatMessage extends AbstractPage implements OnInit {
               res.data.senderImage = image.data;
             }
           }
+
         }).catch((err: any) => {
           if (err.error.message === "Unable got Asset") {
             res.data.senderImage = '';
           }
         });
-
         this.data.push(res.data);
       } else {
         this.data.push(res.data);
@@ -298,8 +307,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
             res.data.senderImage = '';
           }
         });
-
-
         this.data.push(res.data);
       }
     }).catch((error) => {
@@ -315,5 +322,23 @@ export class ChatMessage extends AbstractPage implements OnInit {
         talkingDom.scrollTop = talkingDom.scrollHeight;
       }, 1000);
     }
+  }
+
+  public async markRead(chatId, asPage) {
+    let chatIds: string[] = [];
+    chatIds.push(chatId);
+    await this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
+      if (readResult !== null && readResult !== undefined) {
+        for (let chat of this.data) {
+          for (let result of readResult.data) {
+            if (chat.chatMessage.id === result.id) {
+              chat.chatMessage.isRead = result.isRead
+            }
+          }
+        }
+      }
+    }).catch((error) => {
+      console.log('error >>>> ', error);
+    });
   }
 }

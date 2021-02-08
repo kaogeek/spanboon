@@ -131,9 +131,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
-                if (err.error.name === 'AccessDeniedError') {
-                    this.authenManager.clearStorage();
-                }
+                this.showDialogError(err.error.name,this.router.url); 
+                // if (err.error.name === 'AccessDeniedError') {
+                //     this.authenManager.clearStorage();
+                // }
             });
         } else if (text === 'google') {
 
