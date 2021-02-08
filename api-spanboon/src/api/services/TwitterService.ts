@@ -23,6 +23,73 @@ export class TwitterService {
 
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
 
+    public async requestToken(calbackUrl?: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let callback = '';
+            if (calbackUrl !== undefined && calbackUrl !== null && calbackUrl !== '') {
+                callback = '?oauth_callback=' + encodeURIComponent(calbackUrl);
+            }
+
+            const url: string = TwitterService.ROOT_URL + '/oauth/request_token' + callback;
+            const oauth_timestamp = Math.floor((new Date()).getTime() / 1000).toString();
+            const oauth_nonce = OAuthUtil.generateNonce(); // unique token your application should generate for each unique request
+
+            // generate oauth
+            const parameters = {
+                oauth_consumer_key: twitter_setup.TWITTER_API_KEY,
+                oauth_token: twitter_setup.TWITTER_ACCESS_TOKEN,
+                oauth_signature_method: 'HMAC-SHA1',
+                oauth_timestamp,
+                oauth_nonce,
+                oauth_version: '1.0'
+            };
+            if (calbackUrl !== undefined && calbackUrl !== null && calbackUrl !== '') {
+                parameters['oauth_callback'] = calbackUrl;
+            }
+            const options = {};
+
+            let oauth_signature = '';
+            try {
+                oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, twitter_setup.TWITTER_TOKEN_SECRET, options);
+            } catch (error) {
+                reject(error.message);
+                return;
+            }
+
+            const httpOptions: any = {
+                method: 'POST',
+                responseType: 'text'
+            };
+
+            const req = https.request(url, httpOptions, (res) => {
+                const { statusCode, statusMessage } = res;
+
+                if (statusCode !== 200) {
+                    reject('statusCode ' + statusCode + ' ' + statusMessage);
+                    return;
+                }
+
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        resolve(rawData);
+                    } catch (e) {
+                        reject(e.message);
+                    }
+                });
+            });
+            const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + twitter_setup.TWITTER_ACCESS_TOKEN + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
+            req.setHeader('Accept', '*/*');
+            req.setHeader('Authorization', auth);
+            req.flushHeaders();
+            req.on('error', (e) => {
+                reject(e);
+            });
+            req.end();
+        });
+    }
+
     public async verifyUserCredentials(userId: string): Promise<any> {
         const user = await this.userService.findOne({ _id: new ObjectID(userId) });
 
