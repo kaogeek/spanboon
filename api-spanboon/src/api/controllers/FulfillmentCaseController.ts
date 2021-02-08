@@ -363,6 +363,15 @@ export class FulfillmentController {
             const fulfillCases: any[] = await this.fulfillmentCaseService.aggregate(aggregateStmt);
             const senderUserMap = {};
             const senderPageMap = {};
+            let readerSender = undefined;
+            let readerSenderType = undefined;
+            if (asPage !== undefined && asPage !== '') {
+                readerSender = new ObjectID(asPage);
+                readerSenderType = SENDER_TYPE.PAGE;
+            } else if (userId !== undefined && userId !== '') {
+                readerSender = new ObjectID(userId);
+                readerSenderType = SENDER_TYPE.USER;
+            }
 
             if (fulfillCases !== null && fulfillCases !== null && fulfillCases.length > 0) {
                 const fulfillmentCaseResult: FulfillmentListResponse[] = [];
@@ -468,13 +477,12 @@ export class FulfillmentController {
                         // end fetch sender
 
                         const chatroomId = fulfill.chats[0]['room'];
-                        // count unread
                         const unreadMsgFilter = new SearchFilter();
                         unreadMsgFilter.count = true;
                         unreadMsgFilter.whereConditions = {
                             room: chatroomId,
                             deleted: false,
-                            readers: { $nin: [{ sender: fulfill.chats[0].sender, senderType }] }
+                            readers: { $nin: [{ sender: readerSender, senderType: readerSenderType }] }
                         };
 
                         unreadCount = await this.chatMessageService.search(unreadMsgFilter);
@@ -1019,7 +1027,7 @@ export class FulfillmentController {
                         for (const nId of needs) {
                             nids.push(new ObjectID(nId.id));
                         }
-                        
+
                         const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
                         if (insertedCheck !== undefined) {
                             for (const needCheck of insertedCheck) {
@@ -2097,7 +2105,7 @@ export class FulfillmentController {
                 const mergeItem = data.mergeItem;
 
                 const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, requester: userObjId });
-                let requestQuery;
+                // let requestQuery;
 
                 if (fulfillCase !== null && fulfillCase !== undefined) {
                     const fulfillCaseObjId = new ObjectID(fulfillCase.id);
@@ -2112,7 +2120,7 @@ export class FulfillmentController {
                             for (const access of pageAccess) {
                                 if (access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.OWNER) {
                                     if (JSON.stringify(access.page) === JSON.stringify(asPage)) {
-                                        requestQuery = { fulfillmentCase: caseObjId, deleted: false };
+                                        // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
                                         canAccessPage = true;
                                     }
                                 }
@@ -2126,7 +2134,7 @@ export class FulfillmentController {
                         const requester = fulfillCase.requester;
 
                         if (JSON.stringify(requester) === JSON.stringify(userId)) {
-                            requestQuery = { fulfillmentCase: caseObjId, deleted: false };
+                            // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
                         } else {
                             return res.status(400).send(ResponseUtil.getErrorResponse('You Not A Requester', undefined));
                         }
