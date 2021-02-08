@@ -8,8 +8,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import * as $ from 'jquery';
+import { ActivatedRoute, Router } from '@angular/router'; 
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { POST_TYPE, USER_LEVEL } from '../../../../TypePost';

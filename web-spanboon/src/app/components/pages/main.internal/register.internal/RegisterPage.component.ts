@@ -51,7 +51,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public avatar: any;
   public images: any;
   public imagesAvatar: any;
-  public birthdate: any;
+  public birthdate: any; 
   public whereConditions: string[];
   public redirection: string;
 
@@ -185,7 +185,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     register.lastName = formData.lastName === undefined ? "" : formData.lastName;
     register.email = formData.email;
     register.password = formData.password;
-    register.uniqueId = formData.username;
+    register.uniqueId = formData.username; 
     register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
     register.birthdate.setHours(0);
     register.birthdate.setMinutes(0);
@@ -390,20 +390,16 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
-  public vaidatorDate(text: string) { 
+  public vaidatorDate(text: string) {
     const year = Number(text.split('/')[2]) - 543
-    text = text.split('/')[0].toString() +'/'+ text.split('/')[1] +'/'+ year; 
-    const date = moment(text, 'DD/MM/YYYY');
-    this.data.birthday = date.isValid() ? date.toDate() : undefined; 
-
-    if(date.isValid()){ 
-      this.data.birthday =  date.toDate();
-      return document.getElementById('birthday').style.border = "unset"; 
+    text = text.split('/')[0].toString() + '/' + text.split('/')[1] + '/' + year;
+    const date = moment(text, 'DD/MM/YYYY', true).isValid() || moment(text, 'D/MM/YYYY', true).isValid() || moment(text, 'DD/M/YYYY', true).isValid() || moment(text, 'D/M/YYYY', true).isValid();
+    if (date) { 
+      this.data.birthday = moment(text, 'DD/MM/YYYY').toDate();
+      return document.getElementById('birthday').style.border = "unset";
     } else {
-      this.data.birthday =  undefined; 
-      return document.getElementById('birthday').style.border = "1px solid red"; 
-    } 
-    
+      return document.getElementById('birthday').style.border = "1px solid red";
+    }
   }
 
   public checkUUID(event) {

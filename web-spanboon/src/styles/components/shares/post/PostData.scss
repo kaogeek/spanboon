@@ -18,8 +18,8 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 10pt 35pt 10pt 15pt;
-
+    padding: 15pt;
+    // padding: 10pt 35pt 10pt 15pt;
     > .left {
       display: flex;
       align-items: center;
@@ -129,76 +129,80 @@
     display: flex;
     padding: 0 15pt 10pt 15pt;
 
+    &.active {
+      padding: 0 15pt 0 15pt;
+    }
     > .fufill-name {
       display: flex;
       flex-direction: column;
       width: 100%;
 
-      > .topic-name {
-        font-family: "Kanit-400";
-        font-size: 20px;
-      }
-
       > .left {
         display: flex;
-        padding-top: 10pt;
+        > a {
+          text-decoration: none;
+          > .profile-left,
+          > .profile-right {
+            display: flex;
+            align-items: center;
+            @include pointer();
 
-        > .profile-left,
-        > .profile-right {
-          display: flex;
-          align-items: center;
-          // flex: 1 1 0%;
-          // width: 45%;
-          // max-width: 50%;
-          // width: 50%;
-
-          > .post-data-profile {
-            height: 36pt;
-            width: 36pt;
-            border-radius: 50%;
-          }
-
-          > .name-top {
-            flex: 1 1 0%;
-            padding: 0 10pt;
-
-            > .fulfill-name {
-              display: -webkit-box;
-              -webkit-line-clamp: 1;
-              -webkit-box-orient: vertical;
-              overflow: hidden;
-              width: 100%;
-              font-family: "Kanit-500";
-              font-size: 16px;
-              word-break: break-word;
+            > .post-data-profile {
+              height: 36pt;
+              width: 36pt;
+              border-radius: 50%;
             }
 
-            > .text {
-              font-family: "Kanit-500";
-              font-size: 14px;
-              color: $bg-color4;
-              display: -webkit-box;
-              -webkit-line-clamp: 1;
-              -webkit-box-orient: vertical;
-              overflow: hidden;
-              word-break: break-word;
+            > .name-top {
+              flex: 1 1 0%;
+              padding: 0 10pt;
+
+              > .fulfill-name {
+                color: black;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                width: 100%;
+                font-family: "Kanit-500";
+                font-size: 16px;
+                word-break: break-word;
+              }
+
+              > .text {
+                font-family: "Kanit-500";
+                font-size: 14px;
+                color: $bg-color4;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-word;
+              }
+            }
+
+            &:last-child {
+              .text {
+                color: $color-warm-red;
+              }
             }
           }
+        }
+        > a {
+          &:first-child {
+            width: calc(50% - 30pt);
+          }
+          > .profile-left {
+          }
+        }
 
+        > a {
           &:last-child {
-            .text {
-              color: $color-warm-red;
-            }
+            width: calc(50% - 10pt);
+            margin-left: 10pt;
           }
-        }
-
-        > .profile-left {
-          width: calc(50% - 30pt);
-        }
-
-        > .profile-right {
-          width: calc(50% - 10pt);
-          margin-left: 10pt;
+          > .profile-right {
+          }
         }
 
         > .middle {
@@ -213,11 +217,17 @@
       }
     }
   }
+  > .topic-name {
+    display: flex;
+    padding: 10pt 15pt 0 15pt;
+    font-family: "Kanit-400";
+    font-size: 20px;
+  }
 
   > .dropdown {
     position: absolute;
     top: 7pt;
-    right: 10px;
+    right: 14px;
     width: 30px;
     height: 30px;
     line-height: unset;
@@ -319,141 +329,144 @@
   }
 
   > .wrapper-content {
-    // padding: 10pt 15pt 0 15pt;
+    padding: 10pt 15pt 0 15pt;
     word-break: break-word;
 
-    > .description {
-      padding: 0 15pt;
+    > .post-to {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
-      > .post-to {
+      > a {
         display: flex;
         flex-direction: row;
         align-items: center;
 
-        > a {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
+        > .date-time {
+          font-family: "Kanit-500";
+          font-size: 12px;
+          color: $black;
+          margin-right: 7px;
 
-          > .date-time {
-            font-family: "Kanit-500";
-            font-size: 12px;
-            color: $black;
-            margin-right: 7px;
+          > span {
+            cursor: pointer;
+            color: $koalaGray;
 
-            > span {
-              cursor: pointer;
-              color: $koalaGray;
-
-              &:hover {
-                text-decoration: underline;
-              }
+            &:hover {
+              text-decoration: underline;
             }
           }
         }
-
-        > .post-name {
-          font-family: "Kanit-500";
-          font-size: 12px;
-          color: $koalaGray;
-        }
       }
 
-      > .title {
-        font-family: "Kanit-400";
-        font-size: 20px;
-        line-height: 26px;
+      > .post-name {
+        font-family: "Kanit-500";
+        font-size: 12px;
+        color: $koalaGray;
       }
+    }
 
-      > .content {
-        white-space: pre-wrap;
-        color: $color-black;
+    > .title {
+      font-family: "Kanit-400";
+      font-size: 20px;
+      line-height: 26px;
+    }
+
+    > .content {
+      white-space: pre-wrap;
+      color: $color-black;
+      font-family: "Sarabun-Light";
+      font-size: 16px;
+      min-height: unset;
+    }
+    > .page-give {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-family: "Kanit-500";
+      font-size: 16px;
+      padding-top: 10pt;
+      > a {
+        color: $color-warm-red;
+      }
+    }
+
+    > .content-sub {
+      margin-top: 10pt;
+      display: inline-block;
+      cursor: pointer;
+      color: $color-warm-red;
+      font-family: "Kanit-300";
+      font-size: 16px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    > .tag_div {
+      width: 100%;
+      display: inline;
+
+      > .h_tag_list {
+        width: max-content;
         font-family: "Sarabun-Light";
         font-size: 16px;
-        min-height: unset;
-      }
-
-      > .content-sub {
-        margin-top: 10pt;
-        display: inline-block;
-        cursor: pointer;
-        color: $color-warm-red;
-        font-family: "Kanit-300";
-        font-size: 16px;
+        @include pointer();
+        display: inline;
+        margin: 0 7pt 7pt 0;
 
         &:hover {
           text-decoration: underline;
         }
       }
+    }
 
-      > .tag_div {
-        width: 100%;
-        display: inline;
+    > .wrapper-footer-post {
+      display: flex;
+      height: auto;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
+      margin-top: 15px;
+      padding: 8pt 0;
 
-        > .h_tag_list {
-          width: max-content;
-          font-family: "Sarabun-Light";
+      > .left {
+        flex: 1 1 0%;
+        margin-right: 15pt;
+      }
+
+      > .right {
+        display: flex;
+        align-items: center;
+        color: $brandcolor2;
+        flex: 0 0 auto;
+      }
+    }
+
+    > .comment {
+      display: flex;
+      height: auto;
+      align-items: center;
+      border-top: 0.7px solid rgba(229, 229, 229, 0.7);
+      padding: 10pt 0;
+
+      > .comment-img {
+        margin-right: 10pt;
+        flex: 0 0 auto;
+      }
+
+      > .input-comment {
+        flex: 1 1 0%; 
+
+        > .comment-text {
+          border: 1px solid rgb($black, 0.1);
+          width: calc(100% - 24px - 2px - 10pt);
+          border-radius: 25px;
+          padding: 6pt 12pt;
+          font-family: "Sarabun-Medium";
           font-size: 16px;
-          @include pointer();
-          display: inline;
-          margin: 0 7pt 7pt 0;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-
-      > .wrapper-footer-post {
-        display: flex;
-        height: auto;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
-        margin-top: 15px;
-        padding: 8pt 0;
-
-        > .left {
-          flex: 1 1 0%;
-          margin-right: 15pt;
-        }
-
-        > .right {
-          display: flex;
-          align-items: center;
-          color: $brandcolor2;
-          flex: 0 0 auto;
-        }
-      }
-
-      > .comment {
-        display: flex;
-        height: auto;
-        align-items: center;
-        border-top: 0.7px solid rgba(229, 229, 229, 0.7);
-        padding: 10pt 0;
-
-        > .comment-img {
-          margin-right: 10pt;
-          flex: 0 0 auto;
-        }
-
-        > .input-comment {
-          flex: 1 1 0%;
-          // width: calc(100% - 50pt);
-          // display: flex;
-          // border: 1px solid #f0f0f0;
-          // border-radius: 25px;
-          // overflow: hidden;
-
-          > .comment-text {
-            border: 1px solid rgb($black, 0.1);
-            width: calc(100% - 24px - 2px - 10pt);
-            border-radius: 25px;
-            padding: 6pt 12pt;
-            font-family: "Sarabun-Medium";
-            font-size: 16px;
-          }
         }
       }
     }
@@ -761,29 +774,27 @@
 @media (max-width: $medium) {
   .card-feed-post {
     > .wrapper-content {
-      > .description {
-        > .wrapper-footer-post {
-          flex-direction: column;
+      > .wrapper-footer-post {
+        flex-direction: column;
 
-          > .left {
-            width: 100%;
-            margin-right: unset;
+        > .left {
+          width: 100%;
+          margin-right: unset;
 
-            > .group-event {
-              padding-right: unset;
-            }
+          > .group-event {
+            padding-right: unset;
           }
+        }
 
-          > .right {
+        > .right {
+          width: 100%;
+
+          > control-action {
             width: 100%;
 
-            > control-action {
-              width: 100%;
-
-              > .control-action {
-                > .collis {
-                  justify-content: space-around;
-                }
+            > .control-action {
+              > .collis {
+                justify-content: space-around;
               }
             }
           }
@@ -794,11 +805,13 @@
     > .fulfill-profile {
       > .fufill-name {
         > .left {
-          > .profile-left,
-          > .profile-right {
-            > .post-data-profile {
-              width: 34pt;
-              height: 34pt;
+          > a {
+            > .profile-left,
+            > .profile-right {
+              > .post-data-profile {
+                width: 34pt;
+                height: 34pt;
+              }
             }
           }
         }
@@ -810,16 +823,19 @@
 @media (max-width: $small) {
   .card-feed-post {
     > .wrapper-content {
-      > .description {
-        > .wrapper-footer-post {
-          > .right {
-            > control-action {
-              > .control-action {
-                > .collis {
-                  > .wrapper-action {
-                    > .label-count {
-                      display: none;
-                    }
+      > .wrapper-footer-post {
+        > .right {
+          padding: 5pt 0;
+          > control-action {
+            > .control-action {
+              > .collis {
+                > .wrapper-action {
+                  > .label-count {
+                    display: none;
+                  }
+                  > .img-action {
+                    width: 15pt;
+                    height: 15pt;
                   }
                 }
               }
@@ -833,31 +849,32 @@
       > .fufill-name {
         > .left {
           justify-content: space-around;
-          
-          > .profile-left,
-          > .profile-right {
-            width: auto;
+          > a {
+            > .profile-left,
+            > .profile-right {
+              width: auto;
+              justify-content: center;
+              > .post-data-profile {
+                width: 32pt;
+                height: 32pt;
+              }
 
-            > .post-data-profile {
-              width: 32pt;
-              height: 32pt;
-            }
-
-            > .name-top{
-              display: none;
+              > .name-top {
+                display: none;
+              }
             }
           }
 
-          >.profile-left{
-
+          > .profile-left {
           }
 
-          >.middle{
+          > .middle {
             margin: 0 20pt;
           }
-
-          >.profile-right{
-            margin-left: unset;
+          > a {
+            &:last-child {
+              margin-left: unset;
+            }
           }
         }
       }

@@ -187,7 +187,7 @@ export class AssetController {
                 return response.status(400).send(errorResponse);
             }
 
-            return response.status(200).set('Content-Type', asset.mimeType).send(Buffer.from(asset.data, 'base64'));
+            return response.status(200).set('Content-Type', asset.mimeType).set('Cache-Control', 'public').send(Buffer.from(asset.data, 'base64'));
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return response.status(400).send(errorResponse);

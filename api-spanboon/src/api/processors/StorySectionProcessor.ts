@@ -44,11 +44,13 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
+                let pageId: string = undefined;
                 let postId: string = undefined;
                 let hashTag: string[] = undefined;// as a hashtag string not id
                 if (this.data !== undefined && this.data !== null) {
                     hashTag = this.data.hashTag;
                     postId = this.data.postId;
+                    pageId = this.data.pageId;
                 }
 
                 const today = moment().toDate();
@@ -56,8 +58,13 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                     isDraft: false,
                     deleted: false,
                     hidden: false,
+                    story: { $exists: true, $ne: null },
                     startDateTime: { $lte: today }
                 };
+
+                if (pageId !== undefined && pageId !== '') {
+                    matchStmt.pageId = new ObjectID(pageId);
+                }
 
                 if (postId !== undefined && postId !== '') {
                     const referencePost = await this.postsService.findOne({ _id: new ObjectID(postId) });
@@ -92,9 +99,10 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
-                    { $skip: offset },
+                    { $sample: { size: limit } }, // for random
                     { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',

@@ -126,6 +126,9 @@
                     height: calc(100% - 73px);
                     padding: 10px 20px;
                     overflow: overlay;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                     > .list-item {
                         transition: 0.2s;
                         padding: 10px 20px;
@@ -429,6 +432,16 @@
                                 -webkit-line-clamp: 2;
                                 -webkit-box-orient: vertical;
                             }
+                            > .detail-e {
+                                font-size: 16px;
+                                color: #747474;
+                                font-family: unset;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                display: -webkit-box;
+                                -webkit-line-clamp: 1;
+                                -webkit-box-orient: vertical;
+                            }
                         }
                         > .item-list {
                             height: 100%;
@@ -449,6 +462,7 @@
                                     flex-direction: column;
                                     align-items: center;
                                     justify-content: center;
+                                    margin: 0px 5px;
 
                                     > .item-image {
                                         width: 30px;
@@ -622,6 +636,16 @@
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 2;
+                                    -webkit-box-orient: vertical;
+                                }
+                                > .detail-e {
+                                    font-size: 16px;
+                                    color: #747474;
+                                    font-family: unset;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
                                 }
                             }
