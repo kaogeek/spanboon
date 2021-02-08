@@ -532,10 +532,16 @@
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                             fill="#A5A5A6" />
                                     </svg>
-                                    <span>{{item.posts.createdDate | dateFormat}}</span>
+                                    <a style="color: #4e4e4e !important;" href='{{mainPostLink}}{{item.posts._id}}'
+                                        target="_blank">{{item.posts.createdDate |
+                                        dateFormat}}</a>
                                 </div>
-                                <span class="detail-h">{{item.posts.title}}</span>
-                                <span class="detail-d">{{item.posts.detail}}</span>
+                                <span matTooltip={{item.posts.title}} matTooltipClass="example-tooltip-red"
+                                    aria-label="Button that shows a red tooltip"
+                                    class="detail-h">{{item.posts.title}}</span>
+                                <span matTooltip={{item.posts.detail}} matTooltipClass="example-tooltip-red"
+                                    aria-label="Button that shows a red tooltip"
+                                    class="detail-d">{{item.posts.detail}}</span>
                                 <div class="detail-e">
                                     <svg *ngIf="item.posts.emergencyEventTag" style="margin-right: 7px;"
                                         xmlns="http://www.w3.org/2000/svg" width="12.887" height="12.982"
@@ -598,7 +604,9 @@
                             <div class="item-list">
                                 <div class="list">
                                     <!-- <div class="item" [ngStyle]="{'display': item.amount === 0  ? 'none' : 'flex'}" -->
-                                    <div class="item" *ngFor="let item of getItemByPost(item)">
+                                    <div class="item" matTooltip={{item.itemName}} matTooltipClass="example-tooltip-red"
+                                        aria-label="Button that shows a red tooltip"
+                                        *ngFor="let item of getItemByPost(item)">
                                         <div class="item-image"
                                             [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)','opacity':item.itemName === indexItemName() ? '1' : '0.6'}">
                                             <ng-container
@@ -669,8 +677,7 @@
                             <span>รายการจัดสรรคงเหลือ</span>
                         </div>
                         <div class="item-list">
-                            <div (click)="selectItem(i)"
-                                [ngStyle]="{'display': checkFulfillQuantity(item) ? 'none' : 'flex'}"
+                            <div [ngStyle]="{'display': checkFulfillQuantity(item) ? 'none' : 'flex'}"
                                 *ngFor="let item of listItemNeed;let i = index" class="item">
                                 <div class="item-image">
                                     <ng-container
@@ -699,7 +706,7 @@
                             <span>รายการที่จัดสรรครบแล้ว</span>
                         </div>
                         <div class="item-list">
-                            <div (click)="selectItem(i)" *ngFor="let item of listItemNeed;let i = index"
+                            <div *ngFor="let item of listItemNeed;let i = index"
                                 [ngStyle]="{'display': checkFulfillQuantitys(item) ? 'none' : 'flex'}" class="item">
                                 <div class="item-image">
                                     <ng-container
