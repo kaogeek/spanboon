@@ -126,7 +126,7 @@
             <span>สตอรี่ที่คุณอาจสนใจ</span>
         </div>
 
-        <div class="swiper-container" [swiper]="config"
+        <div class="swiper-container" [swiper]="configIcon"
             *ngIf="recommendedStory ? recommendedStory.contents.length > 0 : false">
             <div class="swiper-wrapper">
                 <ng-container *ngFor="let data of recommendedStory.contents;let index = index">
@@ -204,7 +204,7 @@
             <a href={{linkPage}} target="_blank">{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</a>
         </div>
 
-        <div class="swiper-container" [swiper]="config"
+        <div class="swiper-container" [swiper]="configIcon"
             *ngIf="recommendedStorys ? recommendedStorys.contents.length > 0 : false">
             <div class="swiper-wrapper">
                 <ng-container *ngFor="let data of recommendedStorys.contents;let index = index">

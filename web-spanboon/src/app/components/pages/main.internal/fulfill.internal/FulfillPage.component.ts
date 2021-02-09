@@ -161,6 +161,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDate: any;
     public pageId: string;
     public postId: string;
+    public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
@@ -469,7 +470,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
                 }, 1000);
-                resolve(this.fulfillCase);
             } else {
                 console.log('2', fulfillList);
                 this.fulfillCase = [];
@@ -528,6 +528,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public getChatRoom(fulfill: any, asPage?: any) {
         this.chatData = [];
         this.reqData = [];
+
+        console.log('fulfill', fulfill)
 
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
@@ -590,10 +592,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.linkPost = (this.mainPostLink + fulfill.postId);
             this.fulfillCaseId = fulfill.fulfillCaseId;
             this.title = fulfill.title;
+            this.uniqueId = fulfill.uniqueId;
             this.userImageURL = fulfill.userImageURL;
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
-            this.postDate = fulfill.postDate;
+            this.postDate = fulfill.createdDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
 
