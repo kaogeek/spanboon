@@ -51,7 +51,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public avatar: any;
   public images: any;
   public imagesAvatar: any;
-  public birthdate: any; 
+  public birthdate: any;
   public whereConditions: string[];
   public redirection: string;
 
@@ -178,21 +178,42 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
-  public onClickregister(formData) { 
+  public onClickregister(formData) {
     const register = new User();
     register.username = formData.email;
     register.firstName = formData.firstName === undefined ? "" : formData.firstName;
     register.lastName = formData.lastName === undefined ? "" : formData.lastName;
     register.email = formData.email;
     register.password = formData.password;
-    register.uniqueId = formData.username; 
+    // unqueId
+    if (formData.username === undefined || formData.username === '') {
+      this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
+        if (isVaild) {
+          register.uniqueId = formData.displayName;
+        } else {
+          let emailSubstring = formData.email.substring(1, 0);
+          let newUnique = formData.displayName + '.' + emailSubstring;
+          this.generatorUnqueId(newUnique).then((isVaild1: any) => {
+            if (isVaild1) {
+              register.uniqueId = newUnique;
+            }  
+          }).catch((err: any) => {
+            console.log(err)
+          });
+        }
+      }).catch((err: any) => {
+        console.log(err)
+      });
+    } else {
+      register.uniqueId = formData.username;
+    }
     register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
     register.birthdate.setHours(0);
     register.birthdate.setMinutes(0);
     register.birthdate.setSeconds(0);
     register.displayName = formData.displayName;
     register.gender = formData.gender;
-    register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt; 
+    register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
     if (formData.displayName === '' || formData.displayName === undefined) {
       this.active = true;
       document.getElementById('displayName').style.border = "1px solid red";
@@ -390,11 +411,18 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
+  public generatorUnqueId(text: string): Promise<any> {
+    let body = {
+      uniqueId: text
+    }
+    return this.userFacade.checkUniqueId(body);
+  }
+
   public vaidatorDate(text: string) {
     const year = Number(text.split('/')[2]) - 543
     text = text.split('/')[0].toString() + '/' + text.split('/')[1] + '/' + year;
     const date = moment(text, 'DD/MM/YYYY', true).isValid() || moment(text, 'D/MM/YYYY', true).isValid() || moment(text, 'DD/M/YYYY', true).isValid() || moment(text, 'D/M/YYYY', true).isValid();
-    if (date) { 
+    if (date) {
       this.data.birthday = moment(text, 'DD/MM/YYYY').toDate();
       return document.getElementById('birthday').style.border = "unset";
     } else {

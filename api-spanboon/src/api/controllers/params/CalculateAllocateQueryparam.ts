@@ -14,4 +14,5 @@ export class CalculateAllocateQueryparam {
     public emergencyEvent: string;
     public objective: string;
     public orderBy: string;
+    public ignoreAllocatedPost: boolean;
 }
