@@ -13,6 +13,7 @@ import { UserService } from './UserService';
 import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { AuthenticationId } from '../models/AuthenticationId';
+import { User } from '../models/User';
 
 @Service()
 export class FacebookService {
@@ -98,11 +99,10 @@ export class FacebookService {
         });
     }
 
-    // get PageUser
-    public getFacebookUser(accessToken: string): Promise<any> {
+    public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.getFBUserId(accessToken).then((result: any) => {
-                if (result.error) { reject(result.error); return;}
+                if (result.error) { reject(result.error); return; }
 
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
                     console.log('auth >>> ', auth);
@@ -157,25 +157,86 @@ export class FacebookService {
         });
     }
 
-    public publishPost(userId: string, message: string): Promise<any> {
+    public async getFacebookUserAuthenId(facebookUserId: string): Promise<AuthenticationId> {
+        return await this.authenIdService.findOne({ providerName: PROVIDER.FACEBOOK, providerUserId: facebookUserId });
+    }
+
+    public async getFacebookUser(facebookUserId: string): Promise<User> {
+        if (facebookUserId === undefined || facebookUserId === null || facebookUserId === '') {
+            return Promise.resolve(undefined);
+        }
+        const authenId = await this.getFacebookUserAuthenId(facebookUserId);
+        if (authenId === undefined) {
+            return Promise.resolve(undefined);
+        }
+
+        return await this.userService.findOne({ _id: authenId.user });
+    }
+
+    public publishPostByUser(userId: string, message: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
 
-            const spanboonUser = await this.userService.findOne({ _id: new ObjectID(userId) });
+            const spanboonUser = await this.userService.findOne({ _id: new ObjectID(userId), banned: false });
             if (!spanboonUser) {
                 reject('User was not found or was baned.');
+                return;
             }
 
             const userAuthen: AuthenticationId = await this.authenIdService.findOne({ user: spanboonUser.username, providerName: PROVIDER.FACEBOOK });
             if (!userAuthen) {
                 reject('User Auten by facebook was not found.');
+                return;
             }
 
             const fbUserId = userAuthen.providerUserId;
             const accessToken = userAuthen.storedCredentials;
+
+            try {
+                const result = await this.publishPost(fbUserId, accessToken, message);
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    public publishPost(fbUserId: string, accessToken: string, message: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
+                reject('Facebook User id is required.');
+                return;
+            }
+
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('Access token is required.');
+                return;
+            }
+
+            if (message !== undefined && message !== null) {
+                message = encodeURIComponent(message);
+            }
+
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
             facebook.api(fbUserId + '/feed?message=' + message + '&access_token=\'+accessToken+\'', 'post', (response: any) => {
+                resolve(response);
+            });
+        });
+    }
+
+    public getFBPageAccounts(accessToken: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('Access token is required.');
+                return;
+            }
+
+            const facebook = this.createFB();
+            facebook.setAccessToken(accessToken);
+
+            facebook.api('/me/accounts', 'get', (response: any) => {
                 resolve(response);
             });
         });
