@@ -746,7 +746,7 @@ export class GuestController {
 
             let fbUser = undefined;
             try{
-                fbUser = await this.facebookService.getFacebookUser(loginParam.token);
+                fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
             }catch(err){
                 console.log(err);
             }
@@ -1049,7 +1049,7 @@ export class GuestController {
                     return response.status(400).send(errorUserNameResponse);
                 }
 
-                const fbUser = await this.facebookService.getFacebookUser(decryptToken.token);
+                const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
                 user = fbUser.user;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex.message };
