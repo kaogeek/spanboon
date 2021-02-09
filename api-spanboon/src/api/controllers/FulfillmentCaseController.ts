@@ -406,6 +406,7 @@ export class FulfillmentController {
                     fulfilCaseResponse.updatedByPageDate = fulfill.updatedByPageDate;
                     fulfilCaseResponse.updatedByUserDate = fulfill.updatedByUserDate;
                     fulfilCaseResponse.approveDateTime = fulfill.approveDateTime;
+                    fulfilCaseResponse.pageOfficial = fulfill.page.isOfficial;
 
                     let unreadCount = 0;
                     if (fulfillChat !== null && fulfillChat !== undefined && fulfillChat.length > 0) {
