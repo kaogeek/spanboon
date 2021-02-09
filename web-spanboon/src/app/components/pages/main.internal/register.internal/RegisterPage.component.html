@@ -38,7 +38,7 @@
             </div>
             <div class="user">
                 <div class="user-grop">
-                    <input type="text" name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
+                    <input type="text" #displayName name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
                         class="input-text" [(ngModel)]="data.displayName" required shake [shake]="active">
                 </div>
                 <div class="user-grop">
@@ -57,16 +57,7 @@
                     </ng-template>
                     <div class="display-name">www.spanboon.com/@{{data.uniqueId}}</div>
                 </div>
-            </div>
-            <!-- <div class="wrapper-field-upload">
-                <div class="top">
-                    อัพโหลดรูปโปรไฟล์
-                </div>
-                <div class="btn-upload">
-                    <input type="button" value="อัพโหลดรูปภาพ" class="button-social" (click)="showDialogImage()"
-                        matRipple />
-                </div>
-            </div> -->
+            </div> 
         </div>
         <div class="form-register">
             <div class="form-group">

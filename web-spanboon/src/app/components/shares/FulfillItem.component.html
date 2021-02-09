@@ -112,11 +112,18 @@
                                             [searchTerm]="query_conversation" [caseSensitive]="false">
                                             {{item.name}}
                                         </span>
-                                        <div class="limit-fulfill">
-                                            <span [class.active]="item.fulfillQuantity > item.quantity">
-                                                {{item.fulfillQuantity}} </span> /
-                                            {{item.quantity}}
-                                        </div>
+                                        <ng-container *ngIf="item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
+                                            <div class="limit-fulfill">
+                                                <span class="material-icons"> done </span>
+                                                ได้รับครบแล้ว
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseTemplateUnLimit>
+                                            <div class="limit-fulfill">
+                                                <span [class.active]="item.fulfillQuantity > item.quantity">
+                                                    {{item.fulfillQuantity}} </span> / {{item.quantity}}
+                                            </div>
+                                        </ng-template>  
                                     </div>
                                 </ng-container>
                             </ng-container>

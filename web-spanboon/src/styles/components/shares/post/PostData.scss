@@ -332,6 +332,10 @@
     padding: 10pt 15pt 0 15pt;
     word-break: break-word;
 
+    &.active {
+      padding : 0 15pt 0 15pt;
+    }
+
     > .post-to {
       display: flex;
       flex-direction: row;
@@ -385,8 +389,12 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       font-family: "Kanit-500";
-      font-size: 16px;
-      padding-top: 10pt;
+      font-size: 16px; 
+
+      &.active {
+        padding-top: 10pt;
+      }
+      
       > a {
         color: $color-warm-red;
       }

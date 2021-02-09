@@ -225,8 +225,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.redirection = param['redirection'];
         });
 
-        this.needsFromState = this.router.getCurrentNavigation().extras.state;
-        console.log('this.needsFromState', this.needsFromState)
+        this.needsFromState = this.router.getCurrentNavigation().extras.state; 
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -601,8 +600,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.postDate = fulfill.createdDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
-            fulfill.isRead = true;
-            fulfill.unreadMessageCount = 0;
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
                 if (res !== null && res !== undefined) {
@@ -622,8 +619,14 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     chatIds.push(data.chatMessage.id);
                                     this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
                                         if (readResult !== null && readResult !== undefined) {
-                                            data.chatMessage.isRead = true;
-                                            chatIds = [];
+                                            for (let result of readResult.data) {
+                                                if (data.chatMessage.id === result.id) {
+                                                    data.chatMessage.isRead = result.isRead;
+                                                    fulfill.isRead = result.isRead;
+                                                    fulfill.unreadMessageCount = 0;
+                                                    chatIds = []; 
+                                                }
+                                            } 
                                         }
                                     }).catch((error) => {
                                         console.log('error >>>> ', error);
@@ -1130,6 +1133,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
         }).catch((createError) => {
+            if (createError.error.error.message === "Create FulfillmentCase Error") {
+                this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
+            }
         });
     }
 

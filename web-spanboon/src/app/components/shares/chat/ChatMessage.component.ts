@@ -264,7 +264,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   private sendChatMessage(chatRoomId: string, data: any) {
     this.chatRoomFacade.sendChatMessage(chatRoomId, data).then((res) => {
       this.observManager.publish(REFRESH_LIST_CASE, this.fulfillCaseId);
-      this.markRead(res.data.chatMessage.id, '');
+      this.markRead(res.data.chatMessage.id, this.asPage);
       if (res.data && res.data.senderImage !== '' && res.data.senderImage !== null && res.data.senderImage !== undefined) {
         this.assetFacade.getPathFile(res.data.senderImage).then((image: any) => {
           if (image.status === 1) {
