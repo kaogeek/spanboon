@@ -48,7 +48,7 @@ export class AuthService {
                 if (mode === 'FB') {
                     const fbToken = await jwt.verify(token, env.SECRET_KEY);
                     if (fbToken.token !== undefined) {
-                        const fbUserObj = await this.facebookService.getFacebookUser(fbToken.token);
+                        const fbUserObj = await this.facebookService.getFacebookUserFromToken(fbToken.token);
 
                         if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
                             UserId = fbUserObj.user.id;

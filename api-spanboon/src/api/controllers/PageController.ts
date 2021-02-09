@@ -385,7 +385,7 @@ export class PageController {
             //     return res.status(400).send(errorResponse);
             // }
 
-            const fbUser = await this.facebookService.getFacebookUser(socialBinding.accessToken);
+            const fbUser = await this.facebookService.getFacebookUserFromToken(socialBinding.accessToken);
 
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Facebook User was not found.' };

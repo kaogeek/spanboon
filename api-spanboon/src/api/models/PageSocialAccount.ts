@@ -29,7 +29,7 @@ export class PageSocialAccount {
     @Column({ name: 'providerName' })
     public providerName: string;
 
-    @Column({ name: 'providerUserId' })
+    @Column({ name: 'providerPageId' })
     public providerPageId: any;
 
     @Column({ name: 'storedCredentials' })

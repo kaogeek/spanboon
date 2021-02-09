@@ -27,7 +27,7 @@ export class AllocateFacade extends AbstractFacade {
 
     public async calculateAllocate(data): Promise<any> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + "/allocate/calculate";
+            let url: string = this.baseURL + "/allocate/calculate?ignoreAllocatedPost=true";
             let body: any = {};
             let options = this.getDefaultOptions();
 

@@ -180,6 +180,13 @@
               padding: 0;
               border-top: 0;
 
+              > .mat-birthday {
+                border: unset;
+                &.active {
+                  border: 1px solid red;
+                }
+              }
+
               > .mat-input-element {
                 display: flex;
                 border-radius: 25px;
@@ -302,7 +309,7 @@
         color: $koalaGray;
         &:hover {
           text-decoration: underline;
-        } 
+        }
       }
 
       > .div-btn {
