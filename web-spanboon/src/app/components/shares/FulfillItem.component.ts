@@ -9,12 +9,14 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager, FulfillFacade } from 'src/app/services/services';
+import { AuthenManager, FulfillFacade } from '../../services/services';
 import { environment } from 'src/environments/environment';
 import { isArray } from 'util';
 import { AbstractPage } from '../pages/AbstractPage';
 import { DialogFulfill } from './dialog/DialogFulfill.component';
 import * as $ from 'jquery';
+import { DialogConfirmFulfill } from './dialog/DialogConfirmFulfill.component';
+import { MESSAGE } from '../../AlertMessage';
 
 const PAGE_NAME: string = 'fulfill-item';
 const SEARCH_LIMIT: number = 10;
@@ -64,7 +66,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isName: boolean;
     public isLoading: boolean;
     public isActiveCss: boolean;
-    public isPage: boolean; 
+    public isPage: boolean;
     public query_conversation: any;
     public isFirst: any;
     public msgError: any;
@@ -89,14 +91,14 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
     }
 
-    public ngOnInit(): void { 
+    public ngOnInit(): void {
         if (this.data && this.data.arrListItem !== undefined && this.data.arrListItem.length > 0) {
             this.arrListItem = this.data.arrListItem;
             this.readdChildSelectMap();
         }
 
         if (this.data && this.data.fulfill !== undefined && this.data.fulfill.length > 0) {
-            this.resFulfill = this.data.fulfill;  
+            this.resFulfill = this.data.fulfill;
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
                 this.isPage = this.data.isPage;
@@ -138,7 +140,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     }
 
     public selectedDataItem(fulfillItem: any, isFrom: any) {
-         if (fulfillItem !== null && fulfillItem !== undefined) {
+        if (fulfillItem !== null && fulfillItem !== undefined) {
             // this.isListItem = true;
             let isSelected = true;
             let indexItem = 0;
@@ -199,7 +201,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                         if (pendingQty > 0) {
                             pendingQty = pendingQty
                         } else {
-                            pendingQty = 1; 
+                            pendingQty = 1;
                         }
                         this.arrListItem.push({
                             _id: fulfillItem._id,
@@ -222,7 +224,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                                 if (pendingQty > 0) {
                                     pendingQty = pendingQty
                                 } else {
-                                    pendingQty = 1; 
+                                    pendingQty = 1;
                                 }
                                 this.arrListItem.push({
                                     id: item.id,
@@ -243,7 +245,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                             if (pendingQty > 0) {
                                 pendingQty = pendingQty
                             } else {
-                                pendingQty = 1; 
+                                pendingQty = 1;
                             }
                             this.arrListItem.push({
                                 id: fulfillItem.id,
@@ -287,7 +289,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
                 this.arrListItem.splice(indexItem, 1);
 
-            } 
+            }
         }
         this.onResize();
     }
@@ -384,12 +386,12 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 let bottom = this.bottomConfirm.nativeElement.offsetHeight;
                 let body = this.bodyList.nativeElement.offsetHeight;
                 let x = top + tab + bottom;
-                var chromeH = window.outerHeight - window.innerHeight; 
-                if (window.innerHeight <= 1024 && 768 < window.innerHeight) { 
+                var chromeH = window.outerHeight - window.innerHeight;
+                if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
                     x = x + chromeH;
                 } else {
                     if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-                        x = x + chromeH; 
+                        x = x + chromeH;
                     }
                 }
                 this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
@@ -405,14 +407,14 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 var data = document.getElementById('centerleft');
                 data.style.display = 'flex';
                 this.isListItem = false;
-                this.tabClick = text; 
+                this.tabClick = text;
             } else {
                 $('#defaultOpen1').removeClass('active');
                 $('#defaultOpen2').addClass('active');
                 var data = document.getElementById('centerleft');
                 data.style.display = 'none';
                 this.isListItem = true;
-                this.tabClick = text; 
+                this.tabClick = text;
             }
         }
     }
@@ -521,8 +523,19 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
             if (needsResult !== null && needsResult !== undefined && needsResult.length > 0) {
                 if (isFrom === 'POST') {
-                    this.dialogRef.close();
-                    this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
+                    this.dialogRef.close(); 
+                    let needs = {
+                        item : needsResult,
+                        text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
+                        isConfirmFullFill : true
+                    }
+                    let dialog = this.dialog.open(DialogConfirmFulfill, { data: needs });
+
+                    dialog.afterClosed().subscribe((res) => {
+                        if (res) {
+                            this.router.navigateByUrl('/fulfill', { state: { data: needsResult } }); 
+                        }
+                    });
                 } else if (isFrom === 'FULFILL') {
                     if (this.isPage) {
                         this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });

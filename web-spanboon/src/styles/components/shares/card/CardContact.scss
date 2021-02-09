@@ -176,12 +176,16 @@
                 }
 
                 > .contact-text { 
-                    color: $color-warm-red;
+                    color: grey;
                     display: -webkit-box;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     word-break: break-all;
+
+                    &.active {
+                        color: $color-warm-red;
+                    }
                 }
 
                 > .pointer {
