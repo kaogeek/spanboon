@@ -94,8 +94,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             let callback = "callback";
             this.twitterService.requestToken(callback).then((result: any) => {
                 this.authorizeLink += '?' + result;
-                // window.open(this.authorizeLink);
-                this.popup(this.authorizeLink, '', 600, 200, 'yes');
+                window.open(this.authorizeLink);
+                // this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadTwitter = false;
 
                 window.bindTwitter = (resultTwitter) => { 
@@ -131,10 +131,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
-                this.showDialogError(err.error.name,this.router.url); 
-                // if (err.error.name === 'AccessDeniedError') {
-                //     this.authenManager.clearStorage();
-                // }
+                this.showDialogError(err.error.name,this.router.url);  
             });
         } else if (text === 'google') {
 

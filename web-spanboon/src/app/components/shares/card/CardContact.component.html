@@ -108,8 +108,8 @@
                         <span  *ngIf="asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}" matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
                         <span *ngIf="!asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
-                </span> 
-                <span class="contact-text" matTooltipShowDelay="{{800}}" [ngStyle]="{'color': isRead ? 'grey':''}"
+                </span>  
+                <span class="contact-text" matTooltipShowDelay="{{800}}" [class.active]="!isRead"
                     matTooltip="{{chatMessage}}">{{chatMessage}}</span>
                 <span class="pointer"
                     *ngIf="(chatMessage !== null && chatMessage !== undefined && chatMessage !== '') && (chatDate !== null && chatDate !== undefined && chatDate !== '')">·</span>
