@@ -14,6 +14,7 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { User } from '../models/User';
+import { Asset } from '../models/Asset';
 
 @Service()
 export class FacebookService {
@@ -89,11 +90,17 @@ export class FacebookService {
 
     // get FB Id
     public getFBUserId(accessToken: string): Promise<any> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
             facebook.api('me/?fields=id&access_token=\'+accessToken+\'', 'post', (response: any) => {
+                if (!response || response.error) {
+                    console.log(!response ? 'error occurred' : response.error);
+                    reject(response.error);
+                    return;
+                }
+
                 resolve(response);
             });
         });
@@ -149,6 +156,12 @@ export class FacebookService {
                 facebook.setAccessToken(result.token);
 
                 facebook.api('debug_token?input_token=' + inputToken, 'get', (response: any) => {
+                    if (!response || response.error) {
+                        console.log(!response ? 'error occurred' : response.error);
+                        reject(response.error);
+                        return;
+                    }
+
                     resolve(response);
                 });
             }).catch((error: any) => {
@@ -192,7 +205,7 @@ export class FacebookService {
             const accessToken = userAuthen.storedCredentials;
 
             try {
-                const result = await this.publishPost(fbUserId, accessToken, message);
+                const result = await this.publishMessage(fbUserId, accessToken, message);
                 resolve(result);
             } catch (err) {
                 reject(err);
@@ -200,7 +213,65 @@ export class FacebookService {
         });
     }
 
-    public publishPost(fbUserId: string, accessToken: string, message: string): Promise<any> {
+    public publishPostWithImage(fbUserId: string, accessToken: string, imageBase64: string, mimeType: string, filename: string, message?: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
+                reject('Facebook User id is required.');
+                return;
+            }
+
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('Access token is required.');
+                return;
+            }
+
+            if (imageBase64 === undefined || imageBase64 === null || imageBase64 === '') {
+                reject('imageBase64 is required.');
+                return;
+            }
+
+            if (mimeType === undefined || mimeType === null || mimeType === '') {
+                reject('mimeType is required.');
+                return;
+            }
+
+            if (filename === undefined || filename === null || filename === '') {
+                reject('filenameis required.');
+                return;
+            }
+
+            const facebook = this.createFB();
+            facebook.setAccessToken(accessToken);
+
+            let photoBuffer = undefined;
+            try {
+                photoBuffer = Buffer.from(imageBase64, 'base64');
+            } catch (error) {
+                console.log(error);
+            }
+
+            if (photoBuffer === undefined) {
+                reject('Cannot convert image file.');
+                return;
+            }
+
+            const formData: any = { source: { value: photoBuffer, options: { filename, contentType: mimeType } } };
+            if (message !== undefined && message !== null) {
+                formData.message = message;
+            }
+
+            facebook.api(fbUserId + '/photos', 'post', formData, (response: any) => {
+                if (!response || response.error) {
+                    console.log(!response ? 'error occurred' : response.error);
+                    reject(response.error);
+                    return;
+                }
+                resolve(response);
+            });
+        });
+    }
+
+    public publishMessage(fbUserId: string, accessToken: string, message: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
                 reject('Facebook User id is required.');
@@ -220,8 +291,57 @@ export class FacebookService {
             facebook.setAccessToken(accessToken);
 
             facebook.api(fbUserId + '/feed?message=' + message + '&access_token=\'+accessToken+\'', 'post', (response: any) => {
+                if (!response || response.error) {
+                    console.log(!response ? 'error occurred' : response.error);
+                    reject(response.error);
+                    return;
+                }
                 resolve(response);
             });
+        });
+    }
+
+    public publishPost(fbUserId: string, accessToken: string, message: string, asset?: Asset): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
+                reject('Facebook User id is required.');
+                return;
+            }
+
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('Access token is required.');
+                return;
+            }
+
+            let hasMsg = false;
+            if (message !== undefined && message !== null) {
+                hasMsg = true;
+            }
+            let hasImage = false;
+            if (asset !== undefined && asset !== null) {
+                hasImage = true;
+            }
+
+            try {
+                if (hasMsg && !hasImage) {
+                    // only message
+                    const result = await this.publishMessage(fbUserId, accessToken, message);
+                    resolve(result);
+                } else if (!hasMsg && hasImage) {
+                    // only image
+                    const result = await this.publishPostWithImage(fbUserId, accessToken, asset.data, asset.mimeType, asset.fileName);
+                    resolve(result);
+                } else if (hasMsg && hasImage) {
+                    // has both
+                    const result = await this.publishPostWithImage(fbUserId, accessToken, asset.data, asset.mimeType, asset.fileName, message);
+                    resolve(result);
+                } else {
+                    reject('Can not publishPost');
+                    return;
+                }
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -237,6 +357,11 @@ export class FacebookService {
             facebook.setAccessToken(accessToken);
 
             facebook.api('/me/accounts', 'get', (response: any) => {
+                if (!response || response.error) {
+                    console.log(!response ? 'error occurred' : response.error);
+                    reject(response.error);
+                    return;
+                }
                 resolve(response);
             });
         });
