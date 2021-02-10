@@ -670,16 +670,18 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             if (this.selectNeedItem[this.indexItem].fulfillQuantity !== this.selectNeedItem[this.indexItem].quantity) {
 
-                this.allocateItemtoPost[indexPost].item[indexItem].amount--
+                if (this.allocateItemtoPost[indexPost].item[indexItem].amount !== 0) {
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount--
 
-                if (this.allocateItemtoPost[indexPost].item[indexItem].amount === 0) {
+                    if (this.allocateItemtoPost[indexPost].item[indexItem].amount === 0) {
 
-                    delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
-                    this.groupsArr[this.indexItem].posts[index].section = false;
+                        delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
+                        this.groupsArr[this.indexItem].posts[index].section = false;
 
+                    }
+
+                    this.selectNeedItem[this.indexItem].fulfillQuantity++
                 }
-
-                this.selectNeedItem[this.indexItem].fulfillQuantity++
 
             }
 
@@ -694,7 +696,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         if (this.groupsArr[this.indexItem].posts[index].section) {
 
-            this.selectNeedItem[this.indexItem].fulfillQuantity = this.allocateItemtoPost[indexPost].item[indexItem].amount;
+            this.selectNeedItem[this.indexItem].fulfillQuantity = (this.selectNeedItem[this.indexItem].fulfillQuantity + this.allocateItemtoPost[indexPost].item[indexItem].amount);
             this.allocateItemtoPost[indexPost].item[indexItem].amount = 0;
             delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
 
@@ -702,9 +704,22 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             if (this.selectNeedItem[this.indexItem].fulfillQuantity !== 0) {
 
-                this.allocateItemtoPost[indexPost].item[indexItem].amount = this.selectNeedItem[this.indexItem].fulfillQuantity;
+                const num: any = (this.selectNeedItem[this.indexItem].fulfillQuantity - this.allocateItemtoPost[indexPost].item[indexItem].quantity);
+
+                if (num > 0 || num === 0) {
+
+                    const numQuantity: any = (this.selectNeedItem[this.indexItem].fulfillQuantity - num);
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount = numQuantity;
+                    this.selectNeedItem[this.indexItem].fulfillQuantity = num;
+
+                } else {
+
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount = this.selectNeedItem[this.indexItem].fulfillQuantity
+                    this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
+
+                }
+
                 this.allocateItemtoPost[indexPost].item[indexItem].isMn = true;
-                this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
 
             }
 

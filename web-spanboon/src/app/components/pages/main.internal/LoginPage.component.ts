@@ -94,7 +94,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
     let doRunAccessToken = false;
     const fullURL = window.location.href;
-    console.log('fullURL ',fullURL)
+    console.log('fullURL ', fullURL)
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
@@ -107,7 +107,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     if (doRunAccessToken) {
       let httpOptions: any = {
         responseType: 'text'
-      }; 
+      };
       this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
@@ -193,14 +193,14 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginTwitter() {
-    // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
-    let callback = "https://spanboon.io:4200/login";
-    this.twitterService.requestToken(callback).then((result: any) => {
-      this.authorizeLink += '?' + result;
-      window.open(this.authorizeLink);
-    }).catch((error: any) => {
-      console.log(error);
-    });
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+    // let callback = environment.webBaseURL + "/login";
+    // this.twitterService.requestToken(callback).then((result: any) => {
+    //   this.authorizeLink += '?' + result;
+    //   window.open(this.authorizeLink);
+    // }).catch((error: any) => {
+    //   console.log(error);
+    // });
   }
 
   public clickLoginGoogle(): void {
