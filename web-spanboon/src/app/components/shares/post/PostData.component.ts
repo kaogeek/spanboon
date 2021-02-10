@@ -89,6 +89,7 @@ export class PostData {
   private mainPageLink: string = window.location.origin + '/page/';
 
   public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
   public marginPerAction: any;
   public menuProfile: any;
 
@@ -173,9 +174,9 @@ export class PostData {
           }
         }
       }
-    }, 1000);
-
+    }, 1000); 
   }
+  
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
