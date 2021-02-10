@@ -62,14 +62,14 @@
             text-align: center;
 
             img {
-                width: 60pt;
-                height: 60pt;
+                width: 50pt;
+                height: 50pt;
                 object-fit: cover;
                 border-radius: 50%;
             }
 
             > .dialog-input-value {
-                font-size: 18pt;
+                font-size: 18px;
                 padding-top: 5pt;
                 color: #68717f;
             }
@@ -82,7 +82,7 @@
             margin: 0 10px;
 
             > .dialog-input-label {
-                font-size: 14pt;
+                font-size: 16px;
                 color: #68717f;
             }
 
@@ -90,7 +90,7 @@
                 > .input-value {
                     width: 100%;
                     color: $black;
-                    font-size: 14pt;
+                    font-size: 16px;
                     text-align: right;
                     padding-right: 5px;
                     border: #f8f7f8 1px solid;
@@ -131,10 +131,11 @@
             padding: 5px 0px;
             cursor: pointer;
             border: $width-border solid #e0e0e0;
-            text-align: center;
-            @include font-size-9-100("Kanit-500");
+            text-align: center; 
             margin: 0 0.25rem;
             transition: 0.5s;
+            font-family: "Kanit-500";
+            font-size: 14px;
 
             &:hover {
                 transform: scale(1.06);

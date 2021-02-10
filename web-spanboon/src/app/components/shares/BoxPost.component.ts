@@ -10,9 +10,9 @@ import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogS
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
-import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade } from '../../services/services';
+import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { SearchFilter } from '../../models/models';
+import { PageSocailTW, SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -20,11 +20,16 @@ import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
+import { TwitterUtils } from '../../utils/TwitterUtils';
+import { Router } from '@angular/router';
+import { TWITTER_AUTO_POST } from '../../Config';
 
 declare var $: any;
+declare const window: any;
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
+const TEXT_LIMIT: number = 230;
 
 @Component({
   selector: 'box-post',
@@ -132,7 +137,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   private observManager: ObservableManager;
   private hashTagFacade: HashTagFacade;
   private needsFacade: NeedsFacade;
-
+  private pageFacade: PageFacade;
+  private cacheConfigInfo: CacheConfigInfo;
+  
   private masterSelected: boolean;
 
   public httpItems: Observable<any[]>;
@@ -208,7 +215,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   public accessPageImage: any;
   public dataMessage: any;
   public data: any;
-
+  public twitterConection: any;
+  private twitterService: TwitterService;
+  
   keyword = "hashTag";
   selectedIndex: number;
   selectedObjectiveId: string;
@@ -218,6 +227,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   tag: Observable<string[]>;
   filtered: any;
   dataSource = new MatTableDataSource(this.resHashTag);
+
+  public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
   chooseStory: any[] = [
     { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
@@ -237,10 +248,12 @@ export class BoxPost extends AbstractPage implements OnInit {
   selectedValue: string = "เลือกหมวดหมู่";
 
   private apiBaseURL = environment.apiBaseURL;
+  private webBaseURL = environment.webBaseURL;
 
-  constructor(dialog: MatDialog, postFacade: PostFacade, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, authenManager: AuthenManager,
-    objectiveFacade: ObjectiveFacade, assetFacade: AssetFacade, userFacade: UserFacade, observManager: ObservableManager, userAccessFacade: UserAccessFacade, needsFacade: NeedsFacade) {
-    super(null, authenManager, dialog, null);
+  constructor(dialog: MatDialog, postFacade: PostFacade, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, authenManager: AuthenManager, pageFacade: PageFacade,
+    objectiveFacade: ObjectiveFacade, assetFacade: AssetFacade, userFacade: UserFacade, observManager: ObservableManager, userAccessFacade: UserAccessFacade, needsFacade: NeedsFacade,
+    router: Router, twitterService: TwitterService,cacheConfigInfo: CacheConfigInfo) {
+    super(null, authenManager, dialog, router);
     this.isRepost = true
     this.dialog = dialog
     this.postFacade = postFacade
@@ -251,6 +264,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.observManager = observManager;
     this.hashTagFacade = hashTagFacade;
     this.needsFacade = needsFacade;
+    this.pageFacade = pageFacade;
+    this.twitterService = twitterService;
+    this.cacheConfigInfo = cacheConfigInfo;
     this.isLoading = false;
     this.masterSelected = false;
     this.onPost = false;
@@ -272,11 +288,22 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isListPage = false;
     this.isTablet = false;
     this.isButtonFulfill = false;
+    this.router = router;
     this.data = {};
 
     this.observManager.subscribe('authen.check', (data) => {
       this.getImage();
     });
+
+
+    this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
+      console.log('config ',config)
+        if (config.value !== undefined) {
+          // this.isShowFacebook = (config.value.toLowerCase() === 'true');
+        }
+      }).catch((error: any) => {
+        // console.log(error) 
+      });
   }
 
   public ngOnInit(): void {
@@ -285,6 +312,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.checkTabs();
     this.onResize();
     this.setContentStory();
+    this.socialGetBindingTwitter();
     setTimeout(() => {
       this.keyUpSearchEmergencyEvent("", true);
       this.keyUpSearchObjective("");
@@ -543,18 +571,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
-        if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted') {
-          // if (evt.type === "paste") {
-          //   this.textLimit = this.textLimit + text.length;
-          //   if (this.textLimit > 280) {
-          //     text = text.substr(0, 280);
-          //     this.textLimit = text.length;
-          //     event.preventDefault();
-          //   }
-          // } else {
-          //   this.textLimit = text.length;
-          // }
-        }
         document.execCommand('insertText', false, text);
       }
     });
@@ -1041,8 +1057,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (!this.isFulfillNull) {
       if (this.mStory === "") {
         var myselect = $('#topic').attr('contenteditable', 'true');
-        myselect.find("br:last-child").remove(); 
-        $('.header-story').addClass('msg-error-shake'); 
+        myselect.find("br:last-child").remove();
+        $('.header-story').addClass('msg-error-shake');
       } else {
         $('.header-story').removeClass('msg-error-shake');
       }
@@ -1084,8 +1100,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (!this.isFulfillNull) {
       if (this.mTopic.trim() === "") {
         var myselect = $('#editableStoryPost').attr('contenteditable', 'true');
-        myselect.find("br:last-child").remove(); 
-        $('.textarea-editor').addClass('msg-error-shake'); 
+        myselect.find("br:last-child").remove();
+        $('.textarea-editor').addClass('msg-error-shake');
       } else {
         $('.textarea-editor').removeClass('msg-error-shake');
       }
@@ -1226,8 +1242,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onClickGetDataPost(isDraft?: boolean) {
-    if (this.getTextLength() > 280) {
-      return this.showAlertDialogWarming("เนื้อหาโพสต์ของคุณเกิน 280 คำ", "none");
+    if (this.getTextLength() > TEXT_LIMIT) {
+      return this.showAlertDialogWarming("เนื้อหาโพสต์ของคุณเกิน 230 คำ", "none");
     }
     let topic: any, storyPostShort: any;
     if (this.isListPage) {
@@ -1347,14 +1363,14 @@ export class BoxPost extends AbstractPage implements OnInit {
         needs: this.arrListItem,
         emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
         emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
-        // hashTag: this.listTag, 
         story: this.isEmptyObject(this.dataStroy) ? this.dataStroy : undefined,
         userTags: this.userTag,
         postsHashTags: this.hashTag,
         postGallery: this.dataImage,
         isDraft: true,
         pageId: this.selectedPage,
-        coverImage: this.coverImage
+        coverImage: this.coverImage,
+        postSocial: this.twitterConection
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;
@@ -1917,13 +1933,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public clickObjectiveDoing() {
-    // event.stopPropagation();
     this.isUpload = false;
     this.isShowObjective = true;
-
-    // $("#menubottom").css({
-    //   'overflow-y': "hidden"
-    // });
     this.keyUpSearchObjective("");
     let search = $('input[id=searchInputObjective]');
     search.focus();
@@ -2282,17 +2293,35 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getTextLength() {
-    var txt = "";
+    var topic = "";
+    var detail = "";
+
     if (this.isListPage) {
-      txt = $('#' + this.prefix.detail + 'editableStoryPost').text();
-      txt += $('#' + this.prefix.header + 'topic').text();
+      topic = $('#' + this.prefix.header + 'topic').text();
+      detail = $('#' + this.prefix.detail + 'editableStoryPost').text();
     } else {
-      txt = $('#editableStoryPost').text();
-      txt += $('#topic').text()
+      topic = $('#topic').text();
+      detail = $('#editableStoryPost').text();
     }
-    if (txt !== '' && txt !== undefined && txt !== null) {
-      return txt.length;
+    let link = this.webBaseURL + '/post/' + this.getRandom(23, false);
+    let isCount = TwitterUtils.getTwitterValidate(topic, detail, '', '', this.dataAutoComp.hashtag, this.dataObjective.hashTag);
+    if (isCount && isCount.displayRangeEnd !== 0) {
+      return isCount.displayRangeEnd;
     }
+  }
+
+  getRandom(positions, float) {
+    var number = "";
+    var point = -1;
+
+    if (float) point = Math.floor(Math.random() * positions) + 1;
+
+    for (let i = 0; i < positions; i++) {
+      if (i == point) number += ".";
+      number += Math.floor(Math.random() * 10);
+    }
+
+    return number;
   }
 
   public checkActiveList() {
@@ -2462,5 +2491,77 @@ export class BoxPost extends AbstractPage implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
     });
+  }
+
+  public socialGetBindingTwitter() {
+    this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
+      this.twitterConection = res.data; 
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
+  }
+
+  public socialBinding(socialBind: boolean, platform: string) {
+    if (platform === 'twitter') { 
+      if(platform){
+        if(!socialBind){
+          this.unbindTwitter();
+        } else {
+          let callback = "callback";
+          this.twitterService.requestToken(callback).then((result: any) => {
+            // this.authorizeLink += '?' + result;
+            window.open(this.authorizeLink); 
+
+            window.bindTwitter = (resultTwitter) => { 
+                if (resultTwitter !== undefined && resultTwitter !== null) {
+                    const twitter = new PageSocailTW();
+                    twitter.twitterOauthToken = resultTwitter.token;
+                    twitter.twitterTokenSecret = resultTwitter.token_secret;
+                    twitter.twitterUserId = resultTwitter.userId;
+
+                    this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
+                        if (res.data) {
+                            this.twitterConection = res.data; 
+                        }
+
+                    }).catch((err: any) => { 
+                        if (err.error.message === 'This page was binding with Twitter Account.') {
+                            this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+                        }
+                    });
+                }
+            } 
+        }).catch((error: any) => {
+            console.log(error);
+            this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง'); 
+        });
+        }
+      }
+    }
+  }
+
+  public popup(url, title, width, height, scroll) {
+ 
+    var LeftPosition = (screen.width) ? (screen.width - width) / 2 : 0;
+    var TopPosition = (screen.height) ? (screen.height - height) / 2 : 0;
+    var settings = 'height=' + height + ',width=' + width + ',top=' + TopPosition + ',left=' + LeftPosition + ',scrollbars=' + scroll + ',resizable'
+
+    return window.open(url, title, settings);
+}
+
+  public unbindTwitter() {
+    this.pageFacade.socialUnBindingTwitter(this.dataPageId.id).then((res: any) => {
+      // if delete true set false
+      if (res.data) {
+        this.twitterConection = false;
+      }
+    }).catch((err: any) => {
+      console.log('err ', err)
+      this.showDialogError(err.error.name, this.router.url);
+    });
+  }
+
+  public redirectSetting() {
+    this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
   }
 }

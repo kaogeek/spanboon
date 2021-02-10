@@ -26,7 +26,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseIconObject">
-        <div class="header-post">
+        <div class="header-post" [class.active]="itemPost.referencePostObject.ownerUser">
             <div class="left"
                 [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                 <div class="wrapper-profile-page" *ngIf="isShowProfile">
@@ -150,8 +150,7 @@
                     <span>คุณได้บอกต่อเรื่องราว</span>
                 </ng-container>
                 <ng-template #UserPage>
-                    <span
-                        *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
+                    <span *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
                         || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อเรื่องราว</span>
                 </ng-template>
             </div>
@@ -459,26 +458,29 @@
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
     </ng-container>
     <div class="topic-name" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
-        <div class="name">
+        <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>
-
-    <div class="wrapper-content"
-        [ngStyle]="{'padding-top': itemPost.gallery && itemPost.gallery.length > 0 ? '10pt' : 'unset'}">
+    <!-- [class.active]="itemPost.type === 'FULFILLMENT' " -->
+    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0)
+    || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null)">
+    <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
-        </div>
+        </div> 
         <div *ngIf="itemPost.detail" class="content" [phxPreload]="itemPost" [preloadClass]="'content'"
             [innerHTML]=" itemPost.detail | highlight ">
-        </div>
-        <div class="page-give" *ngIf="isFulfill">
-            <span>ร่วมเติมเต็มให้กับ</span>
+        </div> 
+        <div class="page-give" *ngIf="isFulfill" [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
+            <span>ร่วมเติมเต็มให้กับ<span> {{itemPost.casePostId && itemPost.casePostId !== undefined &&
+                    itemPost.casePostId !== '' ?
+                    'โพสต์' : 'เพจ' }} </span></span>
             <a target="_blank"
-                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'https://spanboon.io:4200/post/'+itemPost.casePostId : 'https://spanboon.io:4200/page/'+itemPost.pageId }}">
+                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'webBaseURL+/post/'+itemPost.casePostId : 'webBaseURL+/page/'+itemPost.pageId }}">
                 {{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ?
-                'https://spanboon.io:4200/post/'+itemPost._id : 'https://spanboon.io:4200/page/'+itemPost.pageId }}</a>
+                webBaseURL+itemPost._id : webBaseURL+itemPost.pageId }}</a>
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data [itemPost]="itemPost.referencePostObject"

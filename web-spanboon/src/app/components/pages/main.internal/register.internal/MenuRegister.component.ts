@@ -139,6 +139,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         }).catch((error) => {
             console.log('error >>> ', error);
         });
+
     }
 
 
@@ -182,14 +183,16 @@ export class MenuRegister extends AbstractPage implements OnInit {
         });
     }
 
-    public clickLoginTW() {  
+    public clickLoginTW() {
+        // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
         let callback = "login";
         this.twitterService.requestToken(callback).then((result: any) => {
-            this.authorizeLink += '?' + result; 
-            window.open(this.authorizeLink);
+          this.authorizeLink += '?' + result; 
+          window.open(this.authorizeLink);
         }).catch((error: any) => {
-            console.log(error);
+          console.log(error);
         });
+    
     }
 
     private loginGoogle() {
@@ -246,7 +249,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                 appId: environment.facebookAppId,
                 cookie: true,
                 xfbml: true,
-                version: 'v3.1'
+                version: 'v9.0'
             });
             window['FB'].AppEvents.logPageView();
         };
@@ -274,8 +277,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-            // user_birthday
-        }, { scope: 'public_profile,email' });
+        }, { scope: 'public_profile,email,user_birthday,user_gender' });
     }
 
     private loginFB() {

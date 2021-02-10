@@ -177,7 +177,11 @@
                                 </span>
                             </div>
                             <div class="contact-head">
-                                {{title}}
+                                {{title ? title:(name ? name:uniqueId)}}
+                                <span style="opacity: 0.7;"> ต้องการ เติมเต็มลงเพจ </span>
+                            </div>
+                            <div *ngIf="!title" class="contact-head">
+                                {{pageName ? pageName:uniqueId}}
                             </div>
                             <div class="contact-hashtag">
                                 <tag-event
@@ -334,7 +338,7 @@
                                 [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
                                 [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
                                 [isCaseHasPost]="isCaseHasPost" [sender]="sender" [chatRoomId]="chatRoomId"
-                                [asPage]="asPage" (submit)="showFulFill()"
+                                [asPage]="asPage" (submit)="showFulFill()" [fulfillCaseId]="fulfillCaseId"
                                 (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
                                 (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
                             </chat-message>

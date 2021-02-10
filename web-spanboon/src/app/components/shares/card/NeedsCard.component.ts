@@ -165,7 +165,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
         },
         disableClose: false
       });
-      dialog.afterClosed().subscribe((res) => {
+      dialog.afterClosed().subscribe((res) => { 
         needsList = [];
       });
     }
@@ -267,7 +267,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
         slidesPerView: 1.6,
       },
       360: {
-        slidesPerView: 1.4,
+        slidesPerView: 1.6,
       },
       320: {
         slidesPerView: 1.2,

@@ -41,19 +41,19 @@
         font-family: "Kanit-500";
         font-size: 14px;
         @include pointer();
-        text-align: center; 
+        text-align: center;
       }
-      >.mobile-page {
+      > .mobile-page {
         justify-content: center;
         border-left: 0.7px solid #e5e5e5;
-        >.mat-form-field {
-          >.mat-form-field-wrapper {
-            >.mat-form-field-flex {
-              >.mat-form-field-infix {
-                >.selected-dropdown {
-                  >.mat-select {
-                    >.mat-select-trigger {
-                      >.mat-select-value {
+        > .mat-form-field {
+          > .mat-form-field-wrapper {
+            > .mat-form-field-flex {
+              > .mat-form-field-infix {
+                > .selected-dropdown {
+                  > .mat-select {
+                    > .mat-select-trigger {
+                      > .mat-select-value {
                         display: none;
                       }
                     }
@@ -166,8 +166,8 @@
       width: calc(100% - 40pt);
       padding: 10pt 20pt;
       border: unset;
-      font-family: "Kanit-500"; 
-      font-size: 20px;  
+      font-family: "Kanit-500";
+      font-size: 20px;
     }
 
     [contenteditable="true"].header-story:empty:before {
@@ -180,7 +180,7 @@
 
     [contenteditable="true"].header-story {
       // white-space: nowrap;
-      // overflow: hidden; 
+      // overflow: hidden;
     }
 
     [contenteditable="true"].header-story br {
@@ -591,20 +591,25 @@
             }
           }
 
-          >.share-social {
+          > .share-social {
             display: flex;
             padding-left: 5pt;
-            >.icon-social {
+            > .icon-social {
               display: flex;
               align-items: center;
               margin-left: 5pt;
               width: 15pt;
-              height: 15pt;         
+              height: 15pt;
               @include pointer();
+
+              &.active {
+                path {
+                  fill: #e65857;
+                }
+              }
             }
           }
         }
- 
       }
 
       > .right {
@@ -987,6 +992,76 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+
+          > .menu-social {
+            > .post-other {
+              display: flex;
+              align-items: center;
+              padding: 10pt;
+              min-width: 145pt;
+              > .left {
+                font-family: "Kanit-500";
+                font-size: 16px;
+              }
+            }
+
+            > .body-list {
+              > .checklist {
+                padding: 10pt 15pt;
+                > .item-checkbox {
+                  width: 100%;
+                  > .mat-checkbox-layout {
+                    width: 100%;
+                    > .mat-checkbox-inner-container {
+                      > .mat-checkbox-frame {
+                        border: 2px solid $color-warm-red;
+                      }
+                    }
+                    > .mat-checkbox-label {
+                      display: flex;
+                      width: 100%;
+                      align-items: center;
+
+                      > .icon-social {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 5pt;
+                        width: 16pt;
+                        height: 16pt;
+                        margin-right: 7pt;
+
+                        &.twitter {
+                          background-color: #1da1f3;
+                        }
+                        &.facebook {
+                          background-color: #2851a3;
+                        }
+                        > .icon {
+                          height: 15px;
+                          width: 15px;
+                        }
+                      }
+                      > .middle {
+                        font-family: "Kanit-500";
+                        font-size: 16px;
+                      }
+                    }
+                  }
+                }
+              }
+              > .setting-all {
+                padding: 10pt;
+                font-family: "Kanit-500";
+                font-size: 16px;
+                span {
+                  padding-right: 5pt;
+                  color: $color-warm-red;
+                  @include pointer();
                 }
               }
             }

@@ -15,7 +15,7 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { AbstractPage } from '../AbstractPage';
 // import { LOGIN_FACEBOOK_ENABLE } from '../../../Constants';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../../AlertMessage'; 
+import { MESSAGE } from '../../../AlertMessage';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
 
@@ -94,6 +94,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
     let doRunAccessToken = false;
     const fullURL = window.location.href;
+    console.log('fullURL ', fullURL)
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
@@ -192,11 +193,35 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginTwitter() {
-    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");  
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+    // let callback = environment.webBaseURL + "/login";
+    // this.twitterService.requestToken(callback).then((result: any) => {
+    //   this.authorizeLink += '?' + result;
+    //   window.open(this.authorizeLink);
+    // }).catch((error: any) => {
+    //   console.log(error);
+    // });
   }
 
   public clickLoginGoogle(): void {
-    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง"); 
+    this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+
+      if (result !== null && result !== undefined) {
+        let googleToken = {
+          googleUserId: result.id,
+          authToken: result.authToken,
+          idToken: result.idToken
+        };
+
+        this.googleToken = googleToken;
+
+        this._ngZone.run(() => this.loginGoogle());
+      }
+    }).catch((error) => {
+      console.log('error >>> ', error);
+    });
+
   }
 
   private loginGoogle() {
@@ -241,7 +266,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true,
         xfbml: true,
-        version: 'v3.1'
+        version: 'v9.0'
       });
       window['FB'].AppEvents.logPageView();
     };
@@ -269,8 +294,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-      // user_birthday
-    }, { scope: 'public_profile,email' });
+    }, { scope: 'public_profile,email,user_birthday,user_gender' });
   }
 
   public emailLogin() {
