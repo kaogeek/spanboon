@@ -14,6 +14,22 @@
         margin: 0 auto;
         padding: 0 10px;
 
+        > .setting-back {
+            display: none;
+
+            > .setting-back-left {
+                display: flex;
+                align-items: center;
+                font-family: "Kanit-500";
+
+                > .left {
+                    height: 13pt;
+                    width: 13pt;
+                    padding-right: 5pt;
+                }
+            }
+        }
+
         > .setting-top {
             padding-top: 10pt;
             display: flex;
@@ -36,12 +52,12 @@
                     padding: 5pt 10pt;
                     cursor: pointer;
 
-                    &:hover{
-                        background: rgba($black, .1);
+                    &:hover {
+                        background: rgba($black, 0.1);
                     }
 
-                    &:active{
-                        background: rgba($black, .12);
+                    &:active {
+                        background: rgba($black, 0.12);
                     }
 
                     > img {
@@ -50,7 +66,7 @@
                         border-radius: 50%;
                         user-select: none;
                     }
-                    >.profile-name {
+                    > .profile-name {
                         width: 32pt;
                         height: 32pt;
                         border-radius: 50%;
@@ -61,7 +77,6 @@
                         align-items: center;
                         justify-content: center;
                     }
-
 
                     > .name-page {
                         margin-left: 8pt;
@@ -104,7 +119,7 @@
         > .settings-flex {
             padding: 10pt 0;
             display: flex;
-            flex-direction: row; 
+            flex-direction: row;
 
             > .settings-left {
                 width: 300px;
@@ -157,7 +172,7 @@
                 padding-bottom: 20pt;
                 // padding: 20pt;
             }
-        } 
+        }
     }
 }
 
@@ -181,6 +196,40 @@
     .fanpage-settings {
         .container {
             max-width: 960px;
+            > .setting-top {
+                > .profile-page-settings {
+                    > .page {
+                        > .name-page {
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+            > .settings-flex {
+                > .settings-left {
+                    > .settings-list {
+                        > .list-item-menu {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .fanpage-settings {
+        .container {
+            > .setting-top {
+                > .profile-page-settings {
+                    > .page {
+                        > .name-page {
+                            font-size: 18px;
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -188,7 +237,91 @@
 @media (max-width: $medium) {
     .fanpage-settings {
         .container {
-            max-width: 720px;
+            max-width: 720px;  
+            > .setting-back {
+                &.active {
+                    display: flex;
+                    position: sticky;
+                    top: 55pt;
+                    z-index: 2;
+                    border-radius: 4px 0 0 4px;
+                    border: 1px solid #e5e5e5;
+                    background: #fff;
+                    height: calc(100% - 10pt);
+                    width: calc(100% - 20pt - 2px);
+                    padding: 7pt 10pt;
+                }
+
+                > .setting-back-left {
+                    transition: all 0.5s ease;
+                    @include pointer();
+                    &:hover {
+                        > .left {
+                            path {
+                                fill: $color-warm-red;
+                            }
+                        }
+                        span {
+                            color: $color-warm-red;
+                        }
+                    }
+                }
+            }
+            > .setting-top {
+                > .profile-page-settings {
+                    width: calc(100% - 2px);
+
+                    &.active {
+                        display: none;
+                    }
+
+                    > .page {
+                        > .name-page {
+                            font-size: 18px;
+                        }
+                    }
+                }
+                > .setting-nav {
+                    display: none;
+                    &.active {
+                        display: flex;
+                        height: 40pt;
+                    }
+                    > .mat-tab-link-container {
+                        > .mat-tab-list {
+                            > .mat-tab-links {
+                                > .mat-tab-link {
+                                    font-size: 16px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            > .settings-flex {
+                > .settings-left {
+                    width: 100%;
+                    margin-right: unset;
+                    &.active {
+                        display: none;
+                    }
+                    > .settings-list {
+                        > .list-item-menu {
+                            font-size: 16px;
+                        }
+                    }
+                }
+                > .settings-right {
+                    display: none;
+                    &.active {
+                        display: flex;
+                        width: 100%;
+                    }
+                    settings-info {
+                        width: 100%;
+                    }
+                }
+            }
         }
     }
 }
@@ -196,9 +329,71 @@
 @media (max-width: $small) {
     .fanpage-settings {
         min-height: calc(100vh - 39pt);
-
         .container {
             max-width: 100%;
+            padding: unset;
+
+            > .setting-back {
+                &.active {
+                    top: 39pt;
+                }
+                > .setting-back-left {
+                    @include pointer();
+                    &:hover {
+                        > .left {
+                            path {
+                                fill: $color-warm-red;
+                            }
+                        }
+                        span {
+                            color: $color-warm-red;
+                        }
+                    }
+                }
+            }
+            > .setting-top {
+                > .profile-page-settings {
+                    &.active {
+                        display: none;
+                    }
+
+                    > .page {
+                        > .name-page {
+                            font-size: 20px;
+                        }
+                    }
+                }
+                > .setting-nav {
+                    display: none;
+                    &.active {
+                        display: flex;
+                    }
+                }
+            }
+            > .settings-flex {
+                > .settings-left {
+                    width: 100%;
+                    margin-right: unset;
+                    &.active {
+                        display: none;
+                    }
+                    > .settings-list {
+                        > .list-item-menu {
+                            font-size: 16px;
+                        }
+                    }
+                }
+                > .settings-right {
+                    display: none;
+                    &.active {
+                        display: flex;
+                        width: 100%;
+                    }
+                    settings-info {
+                        width: 100%;
+                    }
+                }
+            }
         }
     }
 }

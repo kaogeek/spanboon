@@ -64,10 +64,10 @@
 }
 
 .fanpage-info {
-    > .info-title { 
-        font-family: 'Kanit-500';
+    > .info-title {
+        font-family: "Kanit-500";
         font-size: 22px;
-        margin: 15pt 50pt 5pt 50pt; 
+        margin: 15pt 50pt 5pt 50pt;
     }
 
     > .card-info {
@@ -127,7 +127,7 @@
                         // align-items: center;
                         // margin: 5pt 0;
 
-                        >.card-date{
+                        > .card-date {
                             display: flex;
                             flex-direction: row;
                             align-items: center;
@@ -136,7 +136,7 @@
                             > .date {
                                 width: 100pt;
                             }
-    
+
                             > .time {
                                 > .to {
                                     font-size: 20pt;
@@ -145,8 +145,9 @@
                                     margin: 0 5pt;
                                 }
                             }
-    
-                            >.add-time , >.remove-time{
+
+                            > .add-time,
+                            > .remove-time {
                                 width: 26pt;
                                 height: 26pt;
                                 display: flex;
@@ -159,12 +160,12 @@
                                 background: $white;
                                 font-size: 16pt;
                                 font-weight: 900;
-    
-                                &::selection{
+
+                                &::selection {
                                     background: rgb(245, 246, 247);
                                 }
-    
-                                &:hover{
+
+                                &:hover {
                                     background: rgb(235, 237, 240);
                                 }
                             }
@@ -210,7 +211,7 @@
                         font-size: 16px;
                         word-break: break-all;
                         padding: 0 13px;
-                      }
+                    }
 
                     > .card-confirm {
                         padding-top: 8pt;
@@ -247,25 +248,26 @@
         }
     }
 
-    .crop-input{
+    .crop-input {
         position: relative;
         display: flex;
         align-items: center;
 
-        >label {
-            position: absolute; 
+        > label {
+            position: absolute;
             left: 9pt;
             font-family: "Kanit-500";
             font-size: 24px;
             bottom: 2pt;
         }
 
-        >.input-data{
+        > .input-data {
             padding-right: 26pt;
         }
 
-        .icon-check , .icon-close{
-        // .icon-check , .icon-close{
+        .icon-check,
+        .icon-close {
+            // .icon-check , .icon-close{
             width: 16pt;
             height: 16pt;
             position: absolute;
@@ -277,18 +279,17 @@
             align-items: center;
             justify-content: center;
 
-            &::selection{
+            &::selection {
                 background: transparent;
             }
         }
 
-        .icon-check{
-         
+        .icon-check {
             // color: $white;
             // background: green;
         }
 
-        .icon-close{
+        .icon-close {
             @include pointer();
             // color: $white;
             // background: red;
@@ -330,7 +331,7 @@
                 }
             }
 
-            >.mat-checkbox-label{
+            > .mat-checkbox-label {
                 @include font-size-9-100("Kanit-500");
             }
         }
@@ -359,5 +360,186 @@
 
     .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
         background-color: $color-warm-red;
+    }
+}
+
+@media (max-width: $large) {
+    .fanpage-info {
+        > .info-title {
+            font-size: 18px;
+        }
+        > .card-info {
+            > .card-left {
+                > .header {
+                    font-size: 14px;
+                }
+            }
+            > .card-right {
+                font-size: 14px;
+                > .card-detail {
+                    > .input-data {
+                        font-size: 14px;
+                    }
+                    //             > .card-bottom {
+                    //                 > .card-title {
+                    //                     font-size: 11px;
+                    //                 }
+                    //                 > .card-confirm {
+                    //                     text-align: end;
+                    //                     > .save-card {
+                    //                         font-size: 12px;
+                    //                     }
+                    //                     > .cancel-card {
+                    //                         font-size: 12px;
+                    //                     }
+                    //                 }
+                    // }
+                    > .div-checkbox {
+                        align-items: center;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .fanpage-info {
+        > .info-title {
+            margin: 15pt 30pt 5pt 30pt;
+            font-size: 18px;
+        }
+        > .card-info {
+            margin: 0 20pt;
+
+            > .card-left {
+                width: 88pt;
+                > .header {
+                    font-size: 14px;
+                }
+            }
+            > .card-right {
+                width: calc(100% - 88pt - 15pt);
+                font-size: 14px;
+                > .card-detail {
+                    > .input-data {
+                        font-size: 14px;
+                    }
+                    //             > .card-bottom {
+                    //                 > .card-title {
+                    //                     font-size: 11px;
+                    //                 }
+                    //                 > .card-confirm {
+                    //                     text-align: end;
+                    //                     > .save-card {
+                    //                         font-size: 12px;
+                    //                     }
+                    //                     > .cancel-card {
+                    //                         font-size: 12px;
+                    //                     }
+                    //                 }
+                    // }
+                    > .div-checkbox {
+                        align-items: center;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .fanpage-info {
+        > .info-title { 
+        }
+        > .card-info { 
+            flex-direction: column;
+
+            > .card-left {
+                > .header {
+                    font-size: 14px;
+                }
+            }
+            > .card-right {
+                width: 100%;
+                padding-top: 8pt;
+                font-size: 16px;
+                > .card-detail {
+                    > .input-data {
+                        font-size: 14px;
+                    }
+                    > .card-bottom {
+                        > .card-title {
+                            font-size: 11px;
+                        }
+                        > .card-confirm {
+                            text-align: end;
+                            > .save-card {
+                                font-size: 12px;
+                            }
+                            > .cancel-card {
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                    > .div-checkbox {
+                        align-items: center;
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .fanpage-info {
+        min-height: calc(100vh - 39pt);
+        > .info-title {
+            margin: 15pt 16pt 5pt 16pt;
+            font-size: 18px;
+        }
+        > .card-info {
+            margin: 0 5pt;
+            flex-direction: column;
+
+            > .card-left {
+                > .header {
+                    font-size: 14px;
+                }
+            }
+            > .card-right {
+                width: 100%;
+                padding-top: 8pt;
+                font-size: 16px;
+                > .card-detail {
+                    > .card-bottom {
+                        > .card-title {
+                            font-size: 11px;
+                        }
+                        > .card-confirm {
+                            text-align: end;
+                            > .save-card {
+                                font-size: 12px;
+                            }
+                            > .cancel-card {
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                    > .div-checkbox {
+                        align-items: center;
+                        font-size: 14px;
+                    }
+                }
+                >.crop-input {
+                    >.input-data {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
     }
 }

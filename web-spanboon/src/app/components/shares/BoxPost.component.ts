@@ -2303,7 +2303,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       topic = $('#topic').text();
       detail = $('#editableStoryPost').text();
     }
-    let link = this.webBaseURL + 'post/' + this.getRandom(23, false);
+    let link = this.webBaseURL + '/post/' + this.getRandom(23, false);
     let isCount = TwitterUtils.getTwitterValidate(topic, detail, '', '', this.dataAutoComp.hashtag, this.dataObjective.hashTag);
     if (isCount && isCount.displayRangeEnd !== 0) {
       return isCount.displayRangeEnd;

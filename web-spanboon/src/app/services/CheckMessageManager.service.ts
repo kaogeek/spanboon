@@ -29,7 +29,7 @@ export class CheckMessageManager extends AbstractFacade {
     protected user: any;
     protected observManager: ObservableManager; 
 
-    public time: number = 10;
+    public time: number = 4;
     public interval;
     public subscribeTimer: any;
     public pageId: any;
@@ -43,12 +43,10 @@ export class CheckMessageManager extends AbstractFacade {
 
         // create obsvr subject
         this.observManager.createSubject(MESSAGE_SUBJECT);
-        this.observManager.subscribe('selected.page', (page: any) => {
-            console.log('page ',page)
+        this.observManager.subscribe('selected.page', (page: any) => { 
             this.pageId = page;
         });
-        this.observManager.subscribe('chatroom.id', (room: any) => {
-            console.log('page ',room)
+        this.observManager.subscribe('chatroom.id', (room: any) => { 
             this.roomId = room;
         });
         this.startTimer();
@@ -72,10 +70,10 @@ export class CheckMessageManager extends AbstractFacade {
                     if(this.roomId !== '' && this.roomId !== undefined){ 
                         Object.assign(data , { roomId: this.roomId})
                     }
-                     
+                     this.checkUnreadMessage(data);
                 }
-                this.time = 10;
-            } 
+                this.time = 4;
+            }  
         }, 1000);
     }
 
@@ -89,13 +87,13 @@ export class CheckMessageManager extends AbstractFacade {
 
             let options = this.getDefaultOptions();
 
-            this.http.post(url, body, options).toPromise().then((response: any) => {
+            this.http.post(url, body, options).toPromise().then((response: any) => { 
                 this.observManager.publish(MESSAGE_SUBJECT, response.data); 
                 resolve(response);
             }).catch((error: any) => {   
                 if (error.error.name === 'AccessDeniedError') {
                     this.authMgr.clearStorage();
-                }
+                }  
                 reject(error);
             });
         });

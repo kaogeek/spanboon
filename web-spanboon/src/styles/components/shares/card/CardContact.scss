@@ -204,6 +204,9 @@
 @media (max-width: $small) {
     .card-contact {
         > .user-contact {
+            >.donator {
+                font-size: 18px;
+            }
             > .card-contact-body {
                 > .contact-head {
                 }
