@@ -19,7 +19,9 @@
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 15pt;
-    // padding: 10pt 35pt 10pt 15pt;
+    &.active {
+      justify-content: unset;
+    }
     > .left {
       display: flex;
       align-items: center;
@@ -333,7 +335,7 @@
     word-break: break-word;
 
     &.active {
-      padding : 0 15pt 0 15pt;
+      padding: 0 15pt 0 15pt;
     }
 
     > .post-to {
@@ -389,12 +391,12 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       font-family: "Kanit-500";
-      font-size: 16px; 
+      font-size: 16px;
 
       &.active {
         padding-top: 10pt;
       }
-      
+
       > a {
         color: $color-warm-red;
       }
@@ -466,7 +468,7 @@
       }
 
       > .input-comment {
-        flex: 1 1 0%; 
+        flex: 1 1 0%;
 
         > .comment-text {
           border: 1px solid rgb($black, 0.1);

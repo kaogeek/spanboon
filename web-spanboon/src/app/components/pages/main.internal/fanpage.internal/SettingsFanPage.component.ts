@@ -8,7 +8,7 @@
 import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'; 
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PageSocailTW } from '../../../../models/PageSocailTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
@@ -16,7 +16,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
 
 const PAGE_NAME: string = 'settings';
-const URL_PATH: string = '/page/'; 
+const URL_PATH: string = '/page/';
 
 declare var $: any;
 @Component({
@@ -41,6 +41,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     public link: any;
     public linkSetting: any;
     public isPreload: boolean;
+    public isMobile: boolean;
     public bindingSocialTwitter: any;
 
     @Input()
@@ -113,7 +114,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             keyword: "connect",
             icon: "security",
             label: "การเชื่อมต่อ",
-        } ],
+        }],
 
         linksPost: [{
             link: "",
@@ -139,10 +140,11 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         this.dialog = dialog;
         this.routeActivated = routeActivated;
         this.userAccessFacade = userAccessFacade;
-        this.observManager = observManager; 
+        this.observManager = observManager;
         this.assetFacade = assetFacade;
         this.pageFacade = pageFacade;
         this.isPreload = true;
+        this.isMobile = false;
         this.selected = this.links[0].label;
         this.dirtyCancelEvent = new EventEmitter();
         this.dirtyCancelEvent.subscribe(() => {
@@ -167,23 +169,23 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             if (this.pageId !== undefined && this.pageId !== '') {
                 this.getAccessPage();
             }
-        }); 
+        });
 
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
-                const url: string = decodeURI(this.router.url); 
+                const url: string = decodeURI(this.router.url);
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
-                    const replaceCommentURL: string = substringPage.replace('/page/', ''); 
-                    const splitTextId = replaceCommentURL.split('?tab=')[1]; 
+                    const replaceCommentURL: string = substringPage.replace('/page/', '');
+                    const splitTextId = replaceCommentURL.split('?tab=')[1];
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
                     } else if (splitTextId === 'account') {
                         this.selected = 'ข้อมูลเพจ';
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
-                    } 
+                    }
                     this.getAccessPage();
                 }
             }
@@ -232,12 +234,13 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     }
 
     public selecedInformation(link: any) {
-        this.link = link; 
-        const isDirty : boolean = this.settingInfo.checkIsDirty(); 
-        if(!isDirty){
+        this.link = link;
+        this.isMobile = true;
+        const isDirty: boolean = this.settingInfo.checkIsDirty();
+        if (!isDirty) {
             this.router.navigateByUrl('page/' + this.pageId + '/settings?tab=' + link.keyword);
             this.selected = this.link.label;
-        }   
+        }
     }
 
     public getAccessPage() {
@@ -269,7 +272,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                         this.isPreload = false;
                     }, 3000);
                 }
-              
+
             }
         }).catch((err: any) => {
             // if (err.error.status === 0) {
@@ -282,8 +285,14 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             //   this.stopLoading(); 
         });
     }
+
     private validBase64Image(base64Image: string): boolean {
         const regex = /^data:image\/(?:gif|png|jpeg)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/;
         return base64Image && regex.test(base64Image) ? true : false;
+    }
+
+    public backSetting() {
+        this.isMobile = false;
+        
     }
 }
