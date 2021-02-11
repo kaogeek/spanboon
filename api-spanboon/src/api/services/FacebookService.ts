@@ -213,7 +213,7 @@ export class FacebookService {
         });
     }
 
-    public publishPostWithImage(fbUserId: string, accessToken: string, imageBase64: string, mimeType: string, filename: string, message?: string): Promise<any> {
+    public publishImage(fbUserId: string, accessToken: string, imageBase64: string, mimeType: string, filename: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
                 reject('Facebook User id is required.');
@@ -256,11 +256,8 @@ export class FacebookService {
             }
 
             const formData: any = { source: { value: photoBuffer, options: { filename, contentType: mimeType } } };
-            if (message !== undefined && message !== null) {
-                formData.message = message;
-            }
 
-            facebook.api(fbUserId + '/photos', 'post', formData, (response: any) => {
+            facebook.api(fbUserId + '/photos?published=false', 'post', formData, (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
@@ -271,7 +268,7 @@ export class FacebookService {
         });
     }
 
-    public publishMessage(fbUserId: string, accessToken: string, message: string): Promise<any> {
+    public publishMessage(fbUserId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
                 reject('Facebook User id is required.');
@@ -283,14 +280,26 @@ export class FacebookService {
                 return;
             }
 
-            if (message !== undefined && message !== null) {
-                message = encodeURIComponent(message);
+            if (message === undefined || message === null) {
+                message = '';
             }
 
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
-            facebook.api(fbUserId + '/feed?message=' + message + '&access_token=\'+accessToken+\'', 'post', (response: any) => {
+            const formData: any = { message };
+            if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
+                for (let i = 0; i < imageIds.length;i++) {
+                    const key = 'attached_media[' + i + ']';
+                    const id = imageIds[i];
+
+                    formData[key] = {
+                        media_fbid: id
+                    };
+                }
+            }
+
+            facebook.api(fbUserId + '/feed', 'post', formData, (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
@@ -301,7 +310,7 @@ export class FacebookService {
         });
     }
 
-    public publishPost(fbUserId: string, accessToken: string, message: string, asset?: Asset): Promise<any> {
+    public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
                 reject('Facebook User id is required.');
@@ -318,7 +327,7 @@ export class FacebookService {
                 hasMsg = true;
             }
             let hasImage = false;
-            if (asset !== undefined && asset !== null) {
+            if (assets !== undefined && assets !== null && assets.length > 0) {
                 hasImage = true;
             }
 
@@ -327,13 +336,20 @@ export class FacebookService {
                     // only message
                     const result = await this.publishMessage(fbUserId, accessToken, message);
                     resolve(result);
-                } else if (!hasMsg && hasImage) {
-                    // only image
-                    const result = await this.publishPostWithImage(fbUserId, accessToken, asset.data, asset.mimeType, asset.fileName);
-                    resolve(result);
-                } else if (hasMsg && hasImage) {
-                    // has both
-                    const result = await this.publishPostWithImage(fbUserId, accessToken, asset.data, asset.mimeType, asset.fileName, message);
+                } else if (hasImage) {
+                    const imagesIds = [];
+                    for (const asset of assets) {
+                        try {
+                            const idObject = await this.publishImage(fbUserId, accessToken, asset.data, asset.mimeType, asset.fileName);
+                            if (idObject.id !== undefined) {
+                                imagesIds.push(idObject.id);
+                            }
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+
+                    const result = await this.publishMessage(fbUserId, accessToken, message, imagesIds);
                     resolve(result);
                 } else {
                     reject('Can not publishPost');
