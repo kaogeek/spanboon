@@ -225,12 +225,7 @@ export class PageSocialAccountService {
             const accessToken = facebookAccount.storedCredentials;
 
             try {
-                let asset = undefined;
-                if (assets !== undefined && assets.length > 0) {
-                    asset = assets[0];
-                }
-                // ! implement for more assets next time 
-                const result = await this.facebookService.publishPost(fbUserId, accessToken, message, asset);
+                const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
 
                 return result;
             } catch (error) {
