@@ -6,6 +6,7 @@
  */
 import * as https from 'https';
 import * as oauthSignature from 'oauth-signature';
+import * as querystring from 'querystring';
 import { Service } from 'typedi';
 import { twitter_setup } from '../../env';
 import { AuthenticationIdService } from './AuthenticationIdService';
@@ -82,6 +83,64 @@ export class TwitterService {
             const auth = 'OAuth oauth_consumer_key="' + twitter_setup.TWITTER_API_KEY + '",oauth_token="' + twitter_setup.TWITTER_ACCESS_TOKEN + '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' + oauth_timestamp + '",oauth_nonce="' + oauth_nonce + '",oauth_version="1.0",oauth_signature="' + oauth_signature + '"';
             req.setHeader('Accept', '*/*');
             req.setHeader('Authorization', auth);
+            req.flushHeaders();
+            req.on('error', (e) => {
+                reject(e);
+            });
+            req.end();
+        });
+    }
+
+    public getAccessToken(oauthToken: string, oauthVerifier: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (oauthToken === undefined || oauthToken === null || oauthToken === '') {
+                reject('oauthToken was required');
+                return;
+            }
+
+            if (oauthVerifier === undefined || oauthVerifier === null || oauthVerifier === '') {
+                reject('oauthVerifier was required');
+                return;
+            }
+
+            const postData = querystring.stringify({
+                oauth_token: oauthToken,
+                oauth_verifier: oauthVerifier
+            });
+
+            let queryParam = postData;
+            if (queryParam !== '') {
+                queryParam = '?' + queryParam;
+            }
+
+            const url: string = TwitterService.ROOT_URL + '/oauth/access_token' + queryParam;
+
+            const httpOptions: any = {
+                method: 'GET',
+                responseType: 'text'
+            };
+
+            const req = https.request(url, httpOptions, (res) => {
+                const { statusCode, statusMessage } = res;
+
+                if (statusCode !== 200) {
+                    console.log('statusMessage: ' + statusMessage);
+                    reject('statusCode ' + statusCode + ' ' + statusMessage);
+                    return;
+                }
+
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        resolve(rawData);
+                    } catch (e) {
+                        reject(e.message);
+                    }
+                });
+            });
+            req.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+            req.setHeader('Accept', '*/*');
             req.flushHeaders();
             req.on('error', (e) => {
                 reject(e);
@@ -363,7 +422,7 @@ export class TwitterService {
             if (mediaIdForUrl !== '') {
                 parameters['media_ids'] = mediaIdString;
             }
-            
+
             const options = {};
 
             let oauth_signature = '';
