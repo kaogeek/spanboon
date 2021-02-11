@@ -3261,8 +3261,8 @@ export class FulfillmentController {
             userPost.emergencyEvent = null;
             userPost.emergencyEventTag = undefined;
             userPost.pageId = null;
-            userPost.referencePost = null;
-            userPost.rootReferencePost = createPostPageData;
+            userPost.referencePost = createPostPageData.id;
+            userPost.rootReferencePost = createPostPageData.id;
             userPost.visibility = null;
             userPost.ranges = null;
 
