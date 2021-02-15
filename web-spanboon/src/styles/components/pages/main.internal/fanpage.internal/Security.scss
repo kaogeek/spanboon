@@ -40,7 +40,15 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
+                    background-color: $koalaGray;
+                    
+                    &.facebook {
+                        background-color : #2851a3;
+                    }
 
+                    &.twitter {
+                        background-color : #1da1f3;
+                    }
                     > .icon {
                         height: 20px;
                         width: 20px;

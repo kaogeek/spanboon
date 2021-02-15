@@ -23,7 +23,7 @@ import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogPost } from '../../shares/shares'; 
+import { DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -227,7 +227,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }, 1000);
       }
-    }); 
+    });
   }
 
   public ngOnDestroy() {
@@ -604,7 +604,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public createPost(value): void {
+  public createPost(value): void { 
     if (value.title) {
       let pageId;
       if (value.id !== '' && value.id !== undefined && value.id !== null) {
@@ -612,7 +612,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else {
         pageId = this.resDataPage.id;
       }
-      this.pageFacade.createPost(pageId, value , value.postSocial).then((res) => {
+      this.pageFacade.createPost(pageId, value, value.postSocial).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
           if (res.message === 'Create PagePost Success') {

@@ -245,7 +245,7 @@
                         <span>ย้อนกลับ</span>
                     </div>
 
-                    <span style="font-size: 22px;color: black;">จัดสรรรายการลงโพสต์</span>
+                    <span class="text">จัดสรรรายการลงโพสต์</span>
 
                     <div (click)="next(true)" [class.active]="activeAdditemNext()" class="list-item-Next">
 
@@ -301,7 +301,7 @@
                                     </div>
                                 </button> -->
                                 <button mat-menu-item *ngFor="let sort of sortingByEmgArr; let index = index"
-                                    class="list-sort" (click)="sortingByEmg = sort">
+                                    class="list-sort" (click)="sortingEmg(sort.hashTag);sortingByEmg = sort">
                                     <div class="select-name"> {{sort.hashTag}}
                                     </div>
                                 </button>
@@ -339,7 +339,7 @@
                                     </div>
                                 </button> -->
                                 <button mat-menu-item *ngFor="let sort of sortingByObjArr; let index = index"
-                                    class="list-sort" (click)="sortingByObj = sort;sortingObj();">
+                                    class="list-sort" (click)="sortingObj(sort.hashTag);sortingByObj = sort;">
                                     <div class="select-name"> {{sort.hashTag}}
                                     </div>
                                 </button>
@@ -375,7 +375,7 @@
                             </button>
                             <mat-menu #menusort="matMenu">
                                 <button mat-menu-item *ngFor="let sort of sortingByDateArr; let index = index"
-                                    class="list-sort" (click)="sortingDate();sortingByDate = sort">
+                                    class="list-sort" (click)="sortingDate(sort.detail);sortingByDate = sort">
                                     <div class="select-name"> {{sort.name}}
                                     </div>
                                 </button>
@@ -512,8 +512,8 @@
                     </div>
 
                 </div>
-                <div class="box-list-item-body" [class.list]="true">
-                    <ng-container *ngIf="groupsArr">
+                <div class="box-list-item-body" *ngIf="groupsArr[indexItem]" [class.list]="true">
+                    <ng-container *ngIf="groupsArr[indexItem].posts.length > 0">
                         <div class="list-post" *ngFor="let item of groupsArr[indexItem].posts ;let i = index ">
                             <div class="detail">
                                 <div class="date">
@@ -658,6 +658,17 @@
                             </div>
                         </div>
                     </ng-container>
+
+                    <ng-container *ngIf="groupsArr[indexItem].posts.length === 0">
+
+                        <div class="text-error">
+                            <span>ไม่พบรายการที่สามารถจัดสรรลงได้</span>
+                            <span class="link">
+                                ไปที่สร้างโพสต์
+                            </span>
+                        </div>
+
+                    </ng-container>
                 </div>
             </div>
 
@@ -673,7 +684,7 @@
                 </div>
                 <div class="box-list-item-body">
                     <div class="box-allocate-item">
-                        <div class="text">
+                        <div [ngStyle]="{'display': isListBalance ? 'none' : 'flex'}" class="text">
                             <span>รายการจัดสรรคงเหลือ</span>
                         </div>
                         <div class="item-list">
@@ -702,7 +713,7 @@
                         </div>
                     </div>
                     <div class="box-allocate-item">
-                        <div class="text">
+                        <div [ngStyle]="{'display': isListNotBalance ? 'none' : 'flex'}" class="text">
                             <span>รายการที่จัดสรรครบแล้ว</span>
                         </div>
                         <div class="item-list">
