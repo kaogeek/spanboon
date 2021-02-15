@@ -25,9 +25,14 @@ export class AllocateFacade extends AbstractFacade {
         this.message.next(message);
     }
 
-    public async calculateAllocate(data): Promise<any> {
+    public async calculateAllocate(data, ignoreAllocatedPost?: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + "/allocate/calculate?ignoreAllocatedPost=true";
+            let url: string = this.baseURL + "/allocate/calculate";
+
+            if (ignoreAllocatedPost) {
+                url = (url + "?ignoreAllocatedPost=true");
+            }
+
             let body: any = {};
             let options = this.getDefaultOptions();
 
@@ -56,8 +61,26 @@ export class AllocateFacade extends AbstractFacade {
     }
 
     public async searchAllocate(data, filter?): Promise<any> {
+        console.log('filter', filter)
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/allocate/search";
+
+            if (filter !== null && filter !== undefined) {
+
+                if (filter.sortingDate !== null && filter.sortingDate !== undefined && filter.sortingDate !== '') {
+                    url = (url + "?orderBy=" + filter.sortingDate)
+                }
+                if (filter.sortingByObj !== null && filter.sortingByObj !== undefined && filter.sortingByObj !== '') {
+                    url = (url + "?objective=" + filter.sortingByObj)
+                }
+                if (filter.sortingByEmg !== null && filter.sortingByEmg !== undefined && filter.sortingByEmg !== '') {
+                    url = (url + "?emergencyEvent=" + filter.sortingByEmg)
+                }
+
+            }
+
+            url = decodeURIComponent(url);
+
             let body: any = {};
             let options = this.getDefaultOptions();
 
