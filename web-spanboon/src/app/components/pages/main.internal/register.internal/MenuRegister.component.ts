@@ -86,11 +86,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }
 
-        if (doRunAccessToken) {
-            let httpOptions: any = {
-                responseType: 'text'
-            };
-            this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
+        if (doRunAccessToken) { 
+            this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
                 let spilt = res.split('&');
                 const token = spilt[0].split('=')[1];
                 const token_secret = spilt[1].split('=')[1];
@@ -183,9 +180,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         });
     }
 
-    public clickLoginTW() {
-        // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
-        let callback = "login";
+    public clickLoginTW() { 
+        let callback = environment.webBaseURL + "/login";
         this.twitterService.requestToken(callback).then((result: any) => {
           this.authorizeLink += '?' + result; 
           window.open(this.authorizeLink);
