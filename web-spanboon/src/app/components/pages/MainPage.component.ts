@@ -47,7 +47,6 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-
   constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
@@ -73,26 +72,7 @@ export class MainPage extends AbstractPage implements OnInit {
         }
       }
     });
-
-    router.events.subscribe(val => {
-      this.indexPage = this.router.url.indexOf("page");
-
-      var prev = 0;
-      if (this.indexPage < 0) {
-        // var spanboonHome = $('#spanboonHome');
-        // spanboonHome.ready(function () {
-        //   spanboonHome.scroll(function () {
-        //     var scrollTop = spanboonHome.scrollTop();
-        //     $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
-        //     $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
-        //     $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
-
-        //     prev = scrollTop;
-        //   });
-        // })
-      } else {
-      }
-    });
+ 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -115,11 +95,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
   public ngOnInit(): void {
-    this.isLogin();
-    // if ((this.router.url === "/login") || (this.router.url === "/register/menu") || (this.router.url === "/register") || (this.router.url === '/register?mode=normal') || (this.router.url === "/forgotpassword")) {
-    //   this.isdivtop = false;
-    //   this.isPost = false;
-    // } 
+    this.isLogin(); 
 
     const dev = sessionStorage.getItem('isDev');
     if(dev){
@@ -261,12 +237,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
-  }
-
-  @HostListener('window:beforeunload')
-  doSomething() {
-    alert('sssx')
-  }
+  } 
 
   public dialogPost() {
     if (this.isLogin()) {
