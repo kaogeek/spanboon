@@ -107,9 +107,10 @@ export class FulfillmentAllocateStatementService {
         const createdStmt = await this.create(statement);
 
         // edit need
+        const needQty = (need.quantity !== undefined && need.quantity !== null && !isNaN(need.quantity)) ? need.quantity : 0;
         const qty = (need.fulfillQuantity !== undefined && need.fulfillQuantity !== null && !isNaN(need.fulfillQuantity)) ? need.fulfillQuantity : 0;
         const newFulfillQty = qty + statement.amount;
-        const newFullfilled = (newFulfillQty >= qty) ? true : false;
+        const newFullfilled = (needQty >= qty) ? true : false;
 
         await this.needsService.update({ _id: need.id }, {
             $set: {
