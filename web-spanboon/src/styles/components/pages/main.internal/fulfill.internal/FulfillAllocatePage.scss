@@ -202,6 +202,10 @@
                             background-color: #f0f0f0;
                         }
                     }
+                    > .text {
+                        font-size: 22px;
+                        color: black;
+                    }
                     > .list-item-Next {
                         pointer-events: none;
                         cursor: pointer;
@@ -465,7 +469,7 @@
                                     flex-direction: column;
                                     align-items: center;
                                     justify-content: center;
-                                    margin: 0px 5px;
+                                    margin: 0px 0px;
 
                                     > .item-image {
                                         width: 30px;
@@ -744,6 +748,19 @@
                             }
                         }
                     }
+                    > .text-error {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 22px;
+                        > .link {
+                            margin: 0px 10px;
+                            color: #fd545a;
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
         }
@@ -785,9 +802,9 @@
 
 @media (max-width: $medium) {
     .fulfill-allocate {
-        height: calc(100vh - 55pt - 40pt);
+        height: calc(100vh);
         > .fulfill-allocate-box {
-            width: 100%;
+            width: 100vw;
             height: 100%;
         }
     }
@@ -808,11 +825,21 @@
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body {
     }
+    .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .right > .wizard-step {
+        display: none;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body {
+        height: auto;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .left {
+        width: calc(100%);
+        padding: 10px;
+    }
 }
 
 @media (max-width: $small) {
     .fulfill-allocate {
-        height: calc(100vh - 39pt - 40pt);
+        height: calc(100vh);
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .right {
         width: calc(20% - 40px);
