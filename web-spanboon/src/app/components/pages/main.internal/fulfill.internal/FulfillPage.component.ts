@@ -225,7 +225,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.redirection = param['redirection'];
         });
 
-        this.needsFromState = this.router.getCurrentNavigation().extras.state; 
+        this.needsFromState = this.router.getCurrentNavigation().extras.state;
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -400,8 +400,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.showLoading = true;
             let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
 
-            console.log('1', fulfillList);
-
             let fulfillCases: any[] = [];
             if (fulfillList.length > 0 && fulfillList !== null && fulfillList !== undefined) {
                 this.showCase = true;
@@ -530,8 +528,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatData = [];
         this.reqData = [];
 
-        console.log('fulfill', fulfill)
-
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
@@ -624,9 +620,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                                     data.chatMessage.isRead = result.isRead;
                                                     fulfill.isRead = result.isRead;
                                                     fulfill.unreadMessageCount = 0;
-                                                    chatIds = []; 
+                                                    chatIds = [];
                                                 }
-                                            } 
+                                            }
                                         }
                                     }).catch((error) => {
                                         console.log('error >>>> ', error);
@@ -845,7 +841,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
         } else {
 
-
             let data = {
                 disableClose: true,
                 item: this.reqData,
@@ -922,7 +917,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         for (const req of res) {
                             this.reqData.push(req);
                         }
-
                         this.getChatMessage();
                     }).catch((err) => {
 
@@ -982,7 +976,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
-        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];
@@ -1062,7 +1055,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                             }
                                         });
 
-                                        let needResult: any = { mergeItem: false, needs: [] };
+                                        // let needResult: any = { mergeItem: false, needs: [] };
                                         let needDuplicateResult: any = { mergeItem: true, needs: [] };
 
                                         for (const needs of needsDuplicate) {
@@ -1070,18 +1063,43 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                             needDuplicateResult.needs.push(needsData);
                                         }
 
-                                        for (const needs of needsList) {
-                                            const needsData = { id: needs.id, quantity: needs.quantity };
-                                            needResult.needs.push(needsData);
-                                        }
+                                        // for (const needs of needsList) {
+                                        //     const needsData = { id: needs.id, quantity: needs.quantity };
+                                        //     needResult.needs.push(needsData);
+                                        // }
 
                                         fulfillResult.push(needDuplicateResult);
-                                        fulfillResult.push(needResult);
-
+                                        // fulfillResult.push(needResult); 
                                         if (fulfillResult !== null && fulfillResult !== undefined && fulfillResult.length > 0) {
                                             for (const fulfill of fulfillResult) {
                                                 this.createFulfillmentRequest(fulfillCaseId, fulfill, this.asPage).then((createRes) => {
+                                                    if (createRes && createRes.length > 0) {
+                                                        for (let newNeeds of createRes) {
+                                                            for (let data of this.reqData) {
+                                                                if (data.needsId === newNeeds.needsId) {
+                                                                    data.quantity = newNeeds.quantity;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                     this.getChatMessage();
+                                                    // let chatIds: string[] = [];
+                                                    // chatIds.push(this.chatRoomId); 
+                                                    // this.chatFacade.markReadChatMessage(chatIds, this.asPage).then((readResult) => {
+                                                    //     console.log('readResult ',readResult)
+                                                    //     if (readResult !== null && readResult !== undefined) {
+                                                    //         for (let result of readResult.data) {
+                                                    //             if (data.chatMessage.id === result.id) {
+                                                    //                 data.chatMessage.isRead = result.isRead;
+                                                    //                 fulfill.isRead = result.isRead;
+                                                    //                 fulfill.unreadMessageCount = 0;
+                                                    //                 chatIds = [];
+                                                    //             }
+                                                    //         }
+                                                    //     }
+                                                    // }).catch((error) => {
+                                                    //     console.log('error >>>> ', error);
+                                                    // });
                                                 });
                                             }
                                         }
