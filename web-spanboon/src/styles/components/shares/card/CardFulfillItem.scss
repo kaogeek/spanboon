@@ -51,6 +51,30 @@
         }
     }
 }
+@media (max-width: $xxlarge) {
+    .card-fulfill-item-wrapper {  
+        > .card-fulfill-item {   
+            > .card-fulfill-item-icon { 
+                width: 40pt;
+                height: 40pt;
+                > .fulfill-item-icon {  
+                }
+            }
+        }
+    
+        > .fulfill-item-footer {  
+            > .fulfill-item-name { 
+            }
+    
+            > .fulfill-item-quantity { 
+    
+                > .item-quantity { 
+                }
+            }
+        }
+    }
+}
+
 
 @media (max-width: $medium) {
     .card-fulfill-item-wrapper {  

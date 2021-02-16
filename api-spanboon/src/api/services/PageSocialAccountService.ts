@@ -24,6 +24,7 @@ import { Posts } from '../models/Posts';
 import { SocialPost } from '../models/SocialPost';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { FacebookUtils } from '../../utils/FacebookUtils';
+import { Asset } from '../models/Asset';
 
 @Service()
 export class PageSocialAccountService {
@@ -216,7 +217,7 @@ export class PageSocialAccountService {
         return await this.pageSocialAccountRepository.findOne({ page: new ObjectID(pageId), providerName: PROVIDER.FACEBOOK });
     }
 
-    public async pagePostMessageToFacebook(pageId: string, message: string, imageBase64s?: string[]): Promise<any> {
+    public async pagePostMessageToFacebook(pageId: string, message: string, assets?: Asset[]): Promise<any> {
         const facebookAccount = await this.getFacebookPageAccount(pageId);
 
         if (facebookAccount !== undefined) {
@@ -224,7 +225,7 @@ export class PageSocialAccountService {
             const accessToken = facebookAccount.storedCredentials;
 
             try {
-                const result = await this.facebookService.publishPost(fbUserId, accessToken, message);
+                const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
 
                 return result;
             } catch (error) {
@@ -259,28 +260,28 @@ export class PageSocialAccountService {
         if (posts.story !== undefined && posts.story !== null && posts.story !== '') {
             storyLink = '/story/' + posts.id;
         }
-        const imageBase64s = [];
-        // // search asset
-        // const assetIds = [];
-        // const gallerys = await this.postsGalleryService.find({ post: new ObjectID(postId) });
-        // if (gallerys !== undefined) {
-        //     for (const gal of gallerys) {
-        //         assetIds.push(gal.fileId);
-        //     }
-        // }
+        const assets = [];
+        // search asset
+        const assetIds = [];
+        const gallerys = await this.postsGalleryService.find({ post: new ObjectID(postId) });
+        if (gallerys !== undefined) {
+            for (const gal of gallerys) {
+                assetIds.push(gal.fileId);
+            }
+        }
 
-        // if (assetIds.length > 0) {
-        //     const assetObjs = await this.assetService.find({ _id: { $in: assetIds } });
-        //     if (assetObjs !== undefined) {
-        //         for (const assetObj of assetObjs) {
-        //             if (assetObj.data !== undefined && assetObj.data !== null) {
-        //                 if (imageBase64s.length < 4) {
-        //                     imageBase64s.push(assetObj.data);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        if (assetIds.length > 0) {
+            const assetObjs = await this.assetService.find({ _id: { $in: assetIds } });
+            if (assetObjs !== undefined) {
+                for (const assetObj of assetObjs) {
+                    if (assetObj.data !== undefined && assetObj.data !== null) {
+                        if (assets.length < 4) {
+                            assets.push(assetObj);
+                        }
+                    }
+                }
+            }
+        }
 
         const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
         const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
@@ -288,7 +289,7 @@ export class PageSocialAccountService {
         const messageForFB = FacebookUtils.generateFacebookText(posts.title, posts.detail, postLink, undefined, posts.emergencyEventTag, posts.objectiveTag);
 
         try {
-            const facebookPost = await this.pagePostMessageToFacebook(postByPageId, messageForFB, imageBase64s);
+            const facebookPost = await this.pagePostMessageToFacebook(postByPageId, messageForFB, assets);
 
             // create social post log
             if (facebookPost !== undefined && facebookPost.error === undefined) {

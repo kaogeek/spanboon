@@ -50,43 +50,6 @@
             <div class="link-connect" [class.active]="connectTwitter" (click)="connectionSocial('twitter',connectTwitter)">
                 {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
             </div>
-        </div>
-
-        <div class="box-social">
-            <div class="left">
-                <div class="icon-left" [ngStyle]="{'background-color': '#F8F7F2'}">
-                    <svg class="icon" id="google" xmlns="http://www.w3.org/2000/svg" width="28.239" height="28.239"
-                        viewBox="0 0 28.239 28.239">
-                        <path id="Path_268" data-name="Path 268"
-                            d="M6.618,108.807a7.455,7.455,0,0,1,1.055-3.832v-4.76H2.913a14.127,14.127,0,0,0,0,17.184h4.76v-4.76A7.455,7.455,0,0,1,6.618,108.807Z"
-                            transform="translate(0 -94.688)" fill="#fbbd00" />
-                        <path id="Path_269" data-name="Path 269"
-                            d="M199.309,374.011,196,377.32l3.309,3.309a14.012,14.012,0,0,0,8.592-2.913v-4.755h-4.755A7.5,7.5,0,0,1,199.309,374.011Z"
-                            transform="translate(-185.19 -352.391)" fill="#0f9d58" />
-                        <path id="Path_270" data-name="Path 270"
-                            d="M57.583,325.477l-4.76,4.76a14.34,14.34,0,0,0,1.222,1.392,14.027,14.027,0,0,0,9.984,4.135v-6.619A7.5,7.5,0,0,1,57.583,325.477Z"
-                            transform="translate(-49.91 -307.526)" fill="#31aa52" />
-                        <path id="Path_271" data-name="Path 271"
-                            d="M270.119,200.56a14.243,14.243,0,0,0-.231-2.558l-.124-.678H256v6.618h6.7a7.467,7.467,0,0,1-2.862,3.069l4.755,4.755a14.344,14.344,0,0,0,1.392-1.222A14.027,14.027,0,0,0,270.119,200.56Z"
-                            transform="translate(-241.881 -186.441)" fill="#3c79e6" />
-                        <path id="Path_272" data-name="Path 272"
-                            d="M204.613,8.815l.585.585,4.68-4.68-.585-.585A14.027,14.027,0,0,0,199.309,0L196,3.309l3.309,3.309A7.452,7.452,0,0,1,204.613,8.815Z"
-                            transform="translate(-185.19 0)" fill="#cf2d48" />
-                        <path id="Path_273" data-name="Path 273"
-                            d="M64.028,6.618V0a14.027,14.027,0,0,0-9.984,4.135,14.333,14.333,0,0,0-1.222,1.392l4.76,4.76A7.5,7.5,0,0,1,64.028,6.618Z"
-                            transform="translate(-49.909 0)" fill="#eb4132" />
-                    </svg>
-                </div>
-
-                <div class="lost-connect">
-                    {{connect ? 'เชื่อมต่อกับ Google' : 'ยังไม่ได้เชื่อมต่อกับ Google'}}
-                </div>
-            </div>
-
-            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('google')">
-                {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
-            </div>
-        </div>
-
+        </div>  
     </div>
 </div>

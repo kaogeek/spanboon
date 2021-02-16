@@ -2896,6 +2896,16 @@ export class FulfillmentController {
             }
         ];
 
+        // overide statement
+        if (requestIds !== undefined && requestIds !== null) {
+            const matchStmt: any = {
+                $match: {
+                    _id: requestIds
+                }
+            };
+            lookupStmt.splice(0, 0, matchStmt);
+        }
+
         const result = await this.fulfillmentRequestService.aggregate(lookupStmt);
 
         return (result && result.length > 0) ? result[0] : undefined;
@@ -3261,8 +3271,8 @@ export class FulfillmentController {
             userPost.emergencyEvent = null;
             userPost.emergencyEventTag = undefined;
             userPost.pageId = null;
-            userPost.referencePost = null;
-            userPost.rootReferencePost = createPostPageData;
+            userPost.referencePost = createPostPageData.id;
+            userPost.rootReferencePost = createPostPageData.id;
             userPost.visibility = null;
             userPost.ranges = null;
 
