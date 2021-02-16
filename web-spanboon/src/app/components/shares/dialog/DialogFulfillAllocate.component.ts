@@ -439,10 +439,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                         let dialog = this.dialog.open(DialogAlertAllocate, {
                             disableClose: true,
                             data: {
-                                text: "ไม่สามารถจัดสรรรายการอัติโนมัติได้ รายการ : " + textAllocate,
-                                bottomText2: "แก้ไข",
-                                bottomColorText2: "black",
-                                btDisplay1: "none"
+                                text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้",
+                                item: "รายการ : " + textAllocate,
+                                bottomText1: "กลับไปจัดสรร",
+                                btDisplay1: "block",
+                                btDisplay2: "none",
                             }
                         });
                         dialog.afterClosed().subscribe(async (res) => {
@@ -567,10 +568,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     let dialog = this.dialog.open(DialogAlert, {
                         disableClose: true,
                         data: {
-                            text: "ยังคงเหลือรายการจัดสรรที่ยังจัดสรรไม่หมด ต้องการจะจัดสรรต่อหรือไม่ ?",
+                            text: "ยังคงเหลือ " + this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit() + " ที่ยังจัดสรรไม่หมด ต้องการไปรายการถัดไป ?",
                             bottomText2: "ถัดไป",
-                            bottomColorText2: "จัดสรรต่อ",
-                            bottomText1: "จัดสรรต่อ",
+                            bottomText1: "ปิด/จัดสรรต่อ",
                             btDisplay1: "block"
                         }
                     });
@@ -618,10 +618,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     let dialog = this.dialog.open(DialogAlert, {
                         disableClose: true,
                         data: {
-                            text: "ยังคงเหลือรายการจัดสรรที่ยังจัดสรรไม่หมด ต้องการจะจัดสรรต่อหรือไม่ ?",
+                            text: "ยังคงเหลือ " + this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit() + " ที่ยังจัดสรรไม่หมด ต้องการไปรายการถัดไป ?",
                             bottomText2: "ถัดไป",
-                            bottomColorText2: "จัดสรรต่อ",
-                            bottomText1: "จัดสรรต่อ",
+                            bottomText1: "ปิด/จัดสรรต่อ",
                             btDisplay1: "block"
                         }
                     });
@@ -646,9 +645,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             if (this.indexWizardPage < 5) {
                 this.indexWizardPage++
                 if (this.indexWizardPage === 2) {
-                    for (let d of data[0].items) {
-                        d.amount = 999999;
-                    }
                     this.groupPostByItem(data, true, this.filter);
                 }
                 if (this.indexWizardPage === 3) {
@@ -1208,10 +1204,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 let dialog = this.dialog.open(DialogAlertAllocate, {
                     disableClose: true,
                     data: {
-                        text: "ไม่สามารถจัดสรรรายการอัติโนมัติได้ ",
-                        bottomText2: "แก้ไข",
-                        bottomColorText2: "black",
-                        btDisplay1: "none"
+                        text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้ ",
+                        bottomText1: "ปิด",
+                        btDisplay1: "block",
+                        btDisplay2: "none",
                     }
                 });
                 dialog.afterClosed().subscribe((res) => {
