@@ -245,6 +245,9 @@
             background-size: cover;
             cursor: move;
             background-position-x: 50%;
+            &.active {
+              background-image: none !important;
+            }
           }
 
           .pre-load {

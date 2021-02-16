@@ -190,6 +190,10 @@
           cursor: move;
           object-fit: cover;
           background-position-x: 50%;
+
+          &.active {
+            background-image: none !important;
+          }
         }
       }
 

@@ -204,7 +204,6 @@ export class BoxPost extends AbstractPage implements OnInit {
   public choiceTag: any = [];
   public user: any = [];
   public onPost: boolean
-  public textLimit: number;
   public searchTag: string = "";
   public cloneTime: any;
   public placeHolder: any;
@@ -218,7 +217,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public twitterConection: any;
   public facebookConection: any;
   public isAutoPostTwitter: any;
-  public isAutoPostFacebook: any;
+  public isAutoPostFacebook: any; 
   private twitterService: TwitterService;
 
   keyword = "hashTag";
@@ -283,7 +282,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.dataStroy = {};
     this.dataAutoComp = {};
     this.arrListItem = [];
-    this.textLimit = 0;
     this.settingsPost = {};
     this.accessPageImage = {};
     this.userAccessFacade = userAccessFacade;
@@ -1063,7 +1061,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         myselect.find("br:last-child").remove();
         $('.header-story').addClass('msg-error-shake');
       } else {
-        $('.header-story').removeClass('msg-error-shake');
+        // $('.header-story').removeClass('msg-error-shake');
       }
     }
     if (this.isListPage) {
@@ -1142,7 +1140,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   optionClicked(event, item: any) {
-    event.stopPropagation(); 
+    event.stopPropagation();
     this.checkCheckBoxvalue(event, item);
   }
 
@@ -1460,7 +1458,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.hashTag = [];
     this.listTag = [];
     this.userTag = [];
-    this.textLimit = 0;
     this.selected = "ทั่วไป";
     this.selected1 = "โพสต์";
     this.isShowImage = false;
@@ -1498,7 +1495,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         let index = 0;
         this.isLoading = true;
         for (let data of this.resObjective) {
-          if(data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null){
+          if (data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null) {
             Object.assign(this.resObjective[index], { isLoadImageIcon: true });
             this.getDataIcon(data.iconURL, index);
           }
@@ -2307,10 +2304,11 @@ export class BoxPost extends AbstractPage implements OnInit {
       topic = $('#topic').text();
       detail = $('#editableStoryPost').text();
     }
+
     let link = this.webBaseURL + '/post/' + this.getRandom(23, false);
     let isCount = TwitterUtils.getTwitterValidate(topic, detail, '', '', this.dataAutoComp.hashtag, this.dataObjective.hashTag);
-    if (isCount && isCount.displayRangeEnd !== 0) {
-      return isCount.displayRangeEnd;
+    if (isCount && isCount.weightedLength !== 0) {
+      return isCount.weightedLength;
     }
   }
 
@@ -2497,7 +2495,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialGetBindingTwitter() {
-    if(this.dataPageId && this.dataPageId.id === undefined){
+    if (this.dataPageId && this.dataPageId.id === undefined) {
       return;
     }
     this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
@@ -2542,10 +2540,10 @@ export class BoxPost extends AbstractPage implements OnInit {
                     dialog.afterClosed().subscribe((res) => {
                       if (res) {
                         this.setAutoPostSocial(true, 'twitter')
-                      } else{
+                      } else {
                         this.isAutoPostTwitter = false;
                       }
-                    }); 
+                    });
                   }
                 }
               }).catch((err: any) => {
@@ -2599,7 +2597,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getConfigFacebook() {
-    if(this.dataPageId && this.dataPageId.id === undefined){
+    if (this.dataPageId && this.dataPageId.id === undefined) {
       return;
     }
     this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
@@ -2610,7 +2608,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getConfigTwitter() {
-    if(this.dataPageId && this.dataPageId.id === undefined){
+    if (this.dataPageId && this.dataPageId.id === undefined) {
       return;
     }
     this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
