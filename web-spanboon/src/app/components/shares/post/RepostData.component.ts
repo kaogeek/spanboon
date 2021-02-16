@@ -13,6 +13,7 @@ import { ProfileFacade } from '../../../services/facade/ProfileFacade.service';
 import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'repost-data',
@@ -33,6 +34,8 @@ export class RepostData {
   @Input()
   public isRepost: boolean
   @Input()
+  public isFulfill: boolean = false;
+  @Input()
   public gallery: any;
   @Input()
   public itemPost: any;
@@ -50,6 +53,8 @@ export class RepostData {
   public storyTeb: any;
   public isNotAccess: any;
 
+  public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
   private mainPostLink: string = window.location.origin + '/post/'
 
   constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade) {
@@ -60,7 +65,7 @@ export class RepostData {
     this.isComment = false
     this.isRepost = false
 
-    setTimeout(() => {
+    setTimeout(() => { 
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
 
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
@@ -79,26 +84,14 @@ export class RepostData {
       if (this.itemPost && this.itemPost.pageId !== undefined && this.itemPost.pageId !== null) {
         this.pageFacade.getProfilePage(this.itemPost.pageId).then((page: any) => {
           this.itemPost.pageId = page.data
-          this.getImgURL(page.data.imageURL, false);
+          if(page.data && page.data.imageURL !== ''  && page.data.imageURL !== undefined  && page.data.imageURL !== null){
+            this.getImgURL(page.data.imageURL, false);
+          }
         }).catch((err: any) => {
         });
       }
     }, 1500);
-  }
-
-  // private searchPost(id): void {
-  //   let search: SearchFilter = new SearchFilter();
-  //   search.limit = 5;
-  //   search.count = false;
-  //   search.whereConditions = { _id: id };
-  //   this.postFacade.search(search).then((res: any) => {
-  //     console.log('res', res)
-  //     if (res.referencePost !== null && res.referencePost !== undefined) {
-  //       this.itemPost.likeMainPost = this.mainPostLink + res.referencePost
-  //     }
-  //   }).catch((err: any) => {
-  //   });
-  // }
+  } 
 
   public getImgURL(url: any, type: boolean) {
     if (type) {

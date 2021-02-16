@@ -145,7 +145,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     }
   }
 
-  public fulfillNeeds(item: any) {
+  public fulfillNeeds(item: any) { 
     if (!this.isLogin()) {
       this.showAlertLoginDialog(this.router.url); 
     } else {

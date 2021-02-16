@@ -26,7 +26,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseIconObject">
-        <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
+        <div class="header-post" [class.active]="itemPost.referencePostObject || (itemPost.referencePostObject && itemPost.referencePostObject.ownerUser)">
             <div class="left"
                 [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                 <div class="wrapper-profile-page" *ngIf="isShowProfile">
@@ -456,8 +456,8 @@
     </ng-template>
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
-    </ng-container>
-    <div class="topic-name" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+    </ng-container>  
+    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
