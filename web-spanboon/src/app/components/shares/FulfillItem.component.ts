@@ -17,6 +17,7 @@ import { DialogFulfill } from './dialog/DialogFulfill.component';
 import * as $ from 'jquery';
 import { DialogConfirmFulfill } from './dialog/DialogConfirmFulfill.component';
 import { MESSAGE } from '../../AlertMessage';
+import { DialogAlert } from './dialog/dialog';
 
 const PAGE_NAME: string = 'fulfill-item';
 const SEARCH_LIMIT: number = 10;
@@ -523,18 +524,20 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
             if (needsResult !== null && needsResult !== undefined && needsResult.length > 0) {
                 if (isFrom === 'POST') {
-                    this.dialogRef.close(); 
+                    // this.dialogRef.close(); 
                     let needs = {
                         item : needsResult,
+                        bottomText1 : "ย้อนกลับ",
                         text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
                         isConfirmFullFill : true
                     }
-                    let dialog = this.dialog.open(DialogConfirmFulfill, { data: needs });
+                    let dialog = this.dialog.open(DialogAlert, { data: needs });
 
                     dialog.afterClosed().subscribe((res) => {
                         if (res) {
+                            this.dialogRef.close(); 
                             this.router.navigateByUrl('/fulfill', { state: { data: needsResult } }); 
-                        }
+                        } 
                     });
                 } else if (isFrom === 'FULFILL') {
                     if (this.isPage) {
