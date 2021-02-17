@@ -835,6 +835,9 @@
         width: calc(100%);
         padding: 10px;
     }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-hrader > .text {
+        display: none;
+    }
 }
 
 @media (max-width: $small) {

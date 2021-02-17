@@ -65,6 +65,7 @@ import { PROVIDER } from '../../constants/LoginProvider';
 import { PageConfigService } from '../services/PageConfigService';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
 import { PageConfig } from '../models/PageConfig';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 
 @JsonController('/page')
 export class PageController {
@@ -88,7 +89,8 @@ export class PageController {
         private pageSocialAccountService: PageSocialAccountService,
         private facebookService: FacebookService,
         private twitterService: TwitterService,
-        private pageConfigService: PageConfigService
+        private pageConfigService: PageConfigService,
+        private authenService: AuthenticationIdService
     ) { }
 
     // Find Page API
@@ -361,47 +363,39 @@ export class PageController {
                 return res.status(400).send(errorUserNameResponse);
             }
 
-            const checkAccessToken = await this.facebookService.checkAccessToken(socialBinding.accessToken);
-            if (checkAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+            // try to register
+            // search for user Authen
+            const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
+
+            let pageAccessToken = undefined;
+            try {
+                /*
+                * check accessible and get page token with extended.
+                * {token: string, expires_in: number as a second to expired, type: string as type of token} 
+                */
+                pageAccessToken = await this.facebookService.extendsPageAccountToken(userFBAccount.storedCredentials, socialBinding.facebookPageId);
+            } catch (err) {
+                return res.status(400).send(err);
+            }
+
+            if (pageAccessToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'You cannot access the pacebook page.' };
                 return res.status(400).send(errorResponse);
             }
 
-            if (checkAccessToken.error !== undefined) {
-                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.data === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                return res.status(200).send(errorResponse);
-            }
-
-            // const expiresAt = checkAccessToken.data.expires_at;
-            // const today = moment().toDate();
-
-            // if (expiresAt < today.getTime()) {
-            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-            //     return res.status(400).send(errorResponse);
-            // }
-
-            const fbUser = await this.facebookService.getFacebookUserFromToken(socialBinding.accessToken);
-
-            if (fbUser === null || fbUser === undefined) {
-                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Facebook User was not found.' };
-                return res.status(400).send(errorUserNameResponse);
-            }
-
-            const fbAccessExpirationTime = socialBinding.fbAccessExpirationTime;
-            const fbSignedRequest = socialBinding.fbSignedRequest;
-            const properties = { fbAccessExpTime: fbAccessExpirationTime, fbSigned: fbSignedRequest };
+            const properties = { 
+                token: pageAccessToken.token, 
+                type: pageAccessToken.type,
+                expires_in: pageAccessToken.expires_in,
+                expires: pageAccessToken.expires
+            };
 
             const pageSocialAccount = new PageSocialAccount();
             pageSocialAccount.page = pageObjId;
             pageSocialAccount.properties = properties;
             pageSocialAccount.providerName = PROVIDER.FACEBOOK;
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
-            pageSocialAccount.storedCredentials = fbUser.token;
+            pageSocialAccount.storedCredentials = pageAccessToken.token;
 
             await this.pageSocialAccountService.create(pageSocialAccount);
 
