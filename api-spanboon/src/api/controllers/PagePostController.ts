@@ -111,6 +111,9 @@ export class PagePostController {
         const pagePosts: Posts[] = await this.postsService.aggregate(
             [
                 { $match: { pageId: pageObjId, isDraft: false, hidden: false, deleted: false } },
+                { $sort: { startDateTime: -1 } },
+                { $skip: offset },
+                { $limit: limit },
                 {
                     $lookup: {
                         from: 'PageObjective',
@@ -156,20 +159,7 @@ export class PagePostController {
                         as: 'postNeeds'
                     }
                 },
-                {
-                    $unwind: {
-                        path: '$postNeeds',
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'Needs',
-                        localField: '_id',
-                        foreignField: 'post',
-                        as: 'needs'
-                    }
-                },
+                { $addFields: { needs: '$postNeeds' } },
                 { $project: { postNeeds: 0 } },
                 {
                     $lookup: {
@@ -194,6 +184,14 @@ export class PagePostController {
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'SocialPost',
+                        localField: '_id',
+                        foreignField: 'postId',
+                        as: 'socialPosts'
+                    }
+                },
+                {
                     $project: {
                         'ownerUser._id': 0,
                         'ownerUser.username': 0,
@@ -209,13 +207,17 @@ export class PagePostController {
                         'ownerUser.isAdmin': 0,
                         'ownerUser.gender': 0,
                         'ownerUser.customGender': 0,
-                        'ownerUser.createdDate': 0
+                        'ownerUser.createdDate': 0,
+                        'socialPosts': {
+                            '_id': 0,
+                            'pageId': 0,
+                            'postId': 0,
+                            'postBy': 0,
+                            'postByType': 0
+                        }
                     }
                 },
-                { $addFields: { commentCount: { $size: '$comment' } } },
-                { $sort: { startDateTime: -1 } },
-                { $skip: offset },
-                { $limit: limit }
+                { $addFields: { commentCount: { $size: '$comment' } } }
             ]
         );
 
@@ -726,11 +728,13 @@ export class PagePostController {
                     if (createResult.posts !== undefined && createResult.posts !== null &&
                         createResult.posts.id !== undefined && createResult.posts.id !== null) {
                         if (isPostTwitter) {
-                            await this.pageSocialAccountService.pagePostToTwitter(createResult.posts.id, pageId);
+                            const isValid = await this.pageSocialAccountService.pagePostToTwitter(createResult.posts.id, pageId);
+                            createResult.twitterValid = isValid;
                         }
 
                         if (isPostFacebook) {
-                            await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
+                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
+                            createResult.twitterValid = isValid;
                         }
                     }
                 }
@@ -1016,6 +1020,14 @@ export class PagePostController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
                         $project: {
                             'case': 0,
                             'requesterId': 0,
@@ -1041,6 +1053,13 @@ export class PagePostController {
                             'fulfillmentPage.banned': 0,
                             'fulfillmentPage.createdDate': 0,
                             'fulfillmentPage.updateDate': 0,
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
+                            }
                         }
                     },
                     {

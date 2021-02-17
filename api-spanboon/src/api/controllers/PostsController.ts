@@ -356,6 +356,14 @@ export class PostsController {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
                         $project: {
                             'case': 0,
                             'requesterId': 0,
@@ -381,6 +389,13 @@ export class PostsController {
                             'fulfillmentPage.banned': 0,
                             'fulfillmentPage.createdDate': 0,
                             'fulfillmentPage.updateDate': 0,
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
+                            }
                         }
                     },
                     {
