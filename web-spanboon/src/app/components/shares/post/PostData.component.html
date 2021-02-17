@@ -26,7 +26,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseIconObject">
-        <div class="header-post" [class.active]="itemPost.referencePostObject.ownerUser">
+        <div class="header-post" [class.active]="itemPost.referencePostObject || (itemPost.referencePostObject && itemPost.referencePostObject.ownerUser)">
             <div class="left"
                 [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                 <div class="wrapper-profile-page" *ngIf="isShowProfile">
@@ -357,7 +357,7 @@
                     </ng-template>
                 </div>
             </div>
-            <div class="fulfill-profile" [class.active]="itemPost.gallery.length === 0 && itemPost.title === '' ">
+            <div class="fulfill-profile" [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
                 <div class="fufill-name">
                     <div class="left">
                         <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
@@ -456,16 +456,14 @@
     </ng-template>
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
-    </ng-container>
-    <div class="topic-name" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+    </ng-container>  
+    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
-    </div>
-    <!-- [class.active]="itemPost.type === 'FULFILLMENT' " -->
-    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0)
-    || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null)">
+    </div>  
+    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== ''&& itemPost.gallery && itemPost.gallery.length === 0)">
     <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
@@ -474,13 +472,12 @@
             [innerHTML]=" itemPost.detail | highlight ">
         </div> 
         <div class="page-give" *ngIf="isFulfill" [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
-            <span>ร่วมเติมเต็มให้กับ<span> {{itemPost.casePostId && itemPost.casePostId !== undefined &&
+            <span>ร่วมเติมเต็มให้กับ</span> 
+                <a  target="_blank" matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
+                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">
+                {{itemPost.casePostId && itemPost.casePostId !== undefined &&
                     itemPost.casePostId !== '' ?
-                    'โพสต์' : 'เพจ' }} </span></span>
-            <a target="_blank"
-                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? 'webBaseURL+/post/'+itemPost.casePostId : 'webBaseURL+/page/'+itemPost.pageId }}">
-                {{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ?
-                webBaseURL+itemPost._id : webBaseURL+itemPost.pageId }}</a>
+                    'โพสต์' : 'เพจ' }} </a>
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data [itemPost]="itemPost.referencePostObject"
@@ -503,7 +500,7 @@
             </div>
         </div>
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
-            [isImage]="itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
+            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <div class="wrapper-footer-post">
             <div class="left">

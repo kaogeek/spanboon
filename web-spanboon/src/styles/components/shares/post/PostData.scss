@@ -221,9 +221,12 @@
   }
   > .topic-name {
     display: flex;
-    padding: 10pt 15pt 0 15pt;
+    padding: 10pt 15pt 10pt 15pt;
     font-family: "Kanit-400";
     font-size: 20px;
+    &.active {
+      display: none;
+    }
   }
 
   > .dropdown {
@@ -844,8 +847,8 @@
                     display: none;
                   }
                   > .img-action {
-                    width: 15pt;
-                    height: 15pt;
+                    width: 14pt !important;
+                    height: 14pt !important;
                   }
                 }
               }
