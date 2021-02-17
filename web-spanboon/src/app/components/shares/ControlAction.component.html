@@ -38,7 +38,7 @@
                     </g>
                 </svg>
             </ng-template>
-        </div>
+        </div> 
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count">{{reboon}}</span>
@@ -143,32 +143,27 @@
                         </div>
                     </div>
                 </mat-option>
-            </ng-container>
-
+            </ng-container> 
         </mat-select>
     </mat-form-field>
 
     <div class="control-slider" *ngIf="isShowtext">
-        <div class="list-items" *ngIf="isShowtextcomment">
-            <!-- <span class="count-aontrol">600K</span> -->
+        <div class="list-items" *ngIf="isShowtextcomment"> 
             <span class="count-aontrol">{{comment}}</span>
             <span class="title-control">ความเห็น</span>
         </div>
         <div class="list-items" *ngIf="isShowtextreboon">
-            <span class="drot">•</span>
-            <!-- <span class="count-aontrol">600K</span> -->
+            <span class="drot">•</span> 
             <span class="count-aontrol">{{reboon}}</span>
             <span class="title-control">บอกต่อ</span>
         </div>
         <div class="list-items" *ngIf="isShowtextlike">
-            <span class="drot">•</span>
-            <!-- <span class="count-aontrol">600K</span> -->
+            <span class="drot">•</span> 
             <span class="count-aontrol">{{like}}</span>
             <span class="title-control">ถูกใจ</span>
         </div>
         <div class="list-items" *ngIf="isShowtextshare">
-            <span class="drot">•</span>
-            <!-- <span class="count-aontrol">600K</span> -->
+            <span class="drot">•</span> 
             <span class="count-aontrol">{{share}}</span>
             <span class="title-control">แชร์</span>
         </div>

@@ -835,7 +835,18 @@
 
 @media (max-width: $small) {
   .card-feed-post {
+    margin: 9pt 0;
+    > .header-post {
+      padding: 15pt 10pt;
+    }
+    > .dropdown {
+      top: 12pt;
+    }
     > .wrapper-content {
+      padding: 15pt 10pt 0 10pt;
+      &.active {
+        padding: 0 10pt 0 10pt;
+      }
       > .wrapper-footer-post {
         > .right {
           padding: 5pt 0;
@@ -891,6 +902,9 @@
           }
         }
       }
+    }
+    > .topic-name {
+      padding: 10pt;
     }
   }
 }
