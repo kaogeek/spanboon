@@ -6,7 +6,7 @@
 -->
 
 <div class="card-feed-post" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
-    <div class="profile-page" *ngIf="itemPost.requester">
+    <div class="profile-page" *ngIf="!itemPost.requester">
         <ng-container *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
             <div class="menu-user" (click)="menuProfile();">
                 <img class="image-profile" src="{{itemPost.pageId.imageURL}}" alt="">

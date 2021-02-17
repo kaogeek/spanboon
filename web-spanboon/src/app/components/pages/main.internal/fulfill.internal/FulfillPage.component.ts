@@ -269,6 +269,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     });
                                     if (isMessage) {
                                         isMessage.chatMessage = newMessage.chatMessage;
+                                        isMessage.chatDate = newMessage.chatDate;
                                         break;
                                     }
                                 }
@@ -489,7 +490,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isFulfill: true,
             isListPage: false,
             isEdit: false,
-            isFulfillNull: true
+            isFulfillNull: true,
+            isShowQty : true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {
@@ -655,7 +657,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                         }
                                     }).catch((err: any) => {
                                         if (err.error.message === "Unable got Asset") {
-                                            data.chatMessage.filePath = '';
+                                            data.chatMessage.filePath = ''; 
                                         }
                                     });
                                 } else {

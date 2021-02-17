@@ -5,11 +5,9 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-.spanboon-button {
-    background-color: $color-7;
+.spanboon-button { 
     font-family: "Kanit-500";
-    font-size: 16px;
-    // box-shadow: 0px 1px 9px 0 #E5E3DD;
+    font-size: 16px; 
     box-shadow: 0px 1px 2px 0 #00000030;
     border-radius: 3pt;
     color: $white;
@@ -51,5 +49,9 @@
 
     &:active {
         transform: scale(0.99, 0.99);
+    }
+
+    &.none-shadow {
+        box-shadow: unset;
     }
 }

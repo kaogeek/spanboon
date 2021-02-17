@@ -477,8 +477,7 @@
         <ng-template #elseIsOpen>
             <div class="center-left mongha" id="centerleft">
                 <!-- <div class="center-left mongha" id="centerleft" [ngStyle]="{'width' : isListItem || arrListItem.length > 0 ? '50%' : '100%' }"> -->
-                <div class="doing-search open-folder">
-                    <!-- <div class="left"> -->
+                <div class="doing-search open-folder"> 
                     <ng-container *ngIf="pathFolder">
                         <div class="label-doing">
                             <div class="active-hover" (click)="folderRoot()">
@@ -492,8 +491,7 @@
                                 <span class="sub">{{index === pathFolder.length -1 ? "" : "/" }}</span>
                             </div>
                         </div>
-                    </ng-container>
-                    <!-- </div> -->
+                    </ng-container> 
                 </div>
                 <div class="body-list-item">
                     <div class="list-search-doing">
@@ -824,7 +822,7 @@
         </div>
     </div>
     <div class="bottom" #bottomConfirm>
-        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [bgColor]="'#F8F7F2'" [width]="'80pt'"
+        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [border]="'0.7pt solid #e5e5e5'" [isShaDow]="false" [width]="'80pt'"
             [color]="'#212721'" (click)="onClose()">
         </spanboon-button>
         <spanboon-button [text]="'ยืนยัน'" [bgColor]="'#FD545A'" [width]="'80pt'" (click)="onConfirm()">

@@ -733,6 +733,28 @@ span:focus {
     }
 }
 
+@media (max-width: $lmedium) {
+    ::-webkit-scrollbar-track {
+        border-radius: 0px;
+        background-color: transparent;
+    }
+
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 0px;
+        background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-button {
+        width: 0px;
+        height: 0px;
+    }
+}
+
 @media (max-width: $medium) {
     .spanboon-main-page {
         &.hidescroll {
@@ -973,7 +995,7 @@ $baby-blue: #f8faff;
     }
 }
 
-@media(max-width: $medium){
+@media (max-width: $medium) {
     .tool-developer {
         > span {
             font-size: 16px;
@@ -985,12 +1007,12 @@ $baby-blue: #f8faff;
     }
 }
 
-@media(max-width: $small){
+@media (max-width: $small) {
     .tool-developer {
         > span {
             font-size: 15px;
         }
-        
+
         > button {
             font-size: 14px;
         }
