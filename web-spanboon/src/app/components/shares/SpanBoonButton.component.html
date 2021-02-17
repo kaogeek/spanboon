@@ -8,7 +8,7 @@
 <ng-container *ngIf="link; else elseLink">
     <ng-container *ngIf="!isNewTab; else elseIsNewTab">
         <a class="spanboon-button" [matRippleColor]="rippleColor" [matRippleDisabled]="'true'" [class.radius]="isRadius"
-            [class.disable]="isDisable"
+            [class.disable]="isDisable" [class.none-shadow]="!isShaDow"
             [ngStyle]="{'background-color': bgColor, 'color': color, 'border':border, 'height' : height ,'width': width, 'font-size' : fontSize, 'border-radius' : radius }"
             [ngClass]="class" matRipple [routerLink]="link" [queryParams]="param">
             {{text}}
@@ -16,7 +16,7 @@
     </ng-container>
     <ng-template #elseIsNewTab>
         <a class="spanboon-button" [matRippleColor]="rippleColor" [matRippleDisabled]="'true'" [class.radius]="isRadius"
-            [class.disable]="isDisable"
+            [class.disable]="isDisable" [class.none-shadow]="!isShaDow"
             [ngStyle]="{'background-color': bgColor, 'color': color, 'border':border, 'height' : height ,'width': width, 'font-size' : fontSize, 'border-radius' : radius }"
             [ngClass]="class" matRipple [routerLink]="link" [queryParams]="param" target="_blank">
             {{text}}
@@ -25,7 +25,7 @@
 </ng-container>
 <ng-template #elseLink>
     <div class="spanboon-button" [matRippleColor]="rippleColor" [matRippleDisabled]="'true'" [class.radius]="isRadius"
-        [class.disable]="isDisable"
+        [class.disable]="isDisable" [class.none-shadow]="!isShaDow"
         [ngStyle]="{'background-color': bgColor, 'color': color, 'border':border, 'height' : height ,'width': width, 'font-size' : fontSize, 'border-radius' : radius }"
         [ngClass]="class" matRipple>
         <svg *ngIf="isPost" class="button-post" xmlns="http://www.w3.org/2000/svg" style="margin: 0px 5px;" width="25px"
