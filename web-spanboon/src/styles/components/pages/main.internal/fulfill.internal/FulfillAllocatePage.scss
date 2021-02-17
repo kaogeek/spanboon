@@ -29,7 +29,6 @@
             flex-grow: 2;
             border-bottom: 0.1px solid rgb(14 14 14 / 15%);
             display: flex;
-            transition: 0.2s;
 
             > .left {
                 width: calc(100% - 20px);
@@ -79,7 +78,6 @@
                     display: flex;
                     justify-content: center;
                     > .step {
-                        transition: 0.2s;
                         height: 15px;
                         width: 15px;
                         margin: 0 2px;
@@ -90,23 +88,19 @@
                         opacity: 0.5;
                         cursor: pointer;
                         &:hover {
-                            transition: 0.2s;
                             background-color: #4e4e4e;
                         }
                         &.active {
                             width: 40px;
                             border-radius: 20px;
                             background-color: #4e4e4e;
-                            transition: 0.2s;
                         }
                     }
                 }
                 > .close {
-                    transition: 0.2s;
                     color: #000;
                     cursor: pointer;
                     &:hover {
-                        transition: 0.2s;
                         color: #fd545a;
                     }
                 }
@@ -133,7 +127,6 @@
                     flex-direction: column;
                     justify-content: center;
                     > .list-item {
-                        transition: 0.2s;
                         padding: 10px 20px;
                         border-radius: 4px;
                         margin: 10px 0px;
@@ -142,10 +135,8 @@
                         cursor: pointer;
                         background-color: $bgcolor-list-item-fulfill-allocate;
                         &:hover {
-                            transition: 0.2s;
                             border: 2px solid $color-warm-red;
                             .pb_arrow_forward {
-                                transition: 0.2s;
                                 color: $color-warm-red;
                             }
                         }
@@ -196,9 +187,8 @@
                         justify-content: center;
                         display: flex;
                         border-right: 0.1px solid rgba(14, 14, 14, 0.15);
-                        transition: 0.2s;
+
                         &:hover {
-                            transition: 0.2s;
                             background-color: #f0f0f0;
                         }
                     }
@@ -216,15 +206,13 @@
                         justify-content: center;
                         display: flex;
                         border-left: 0.1px solid rgba(14, 14, 14, 0.15);
-                        transition: 0.3s;
+
                         &.active {
-                            transition: 0.3s;
                             opacity: 1;
                             pointer-events: unset;
                             color: white;
                             background-color: #84b572;
                             &:hover {
-                                transition: 0.3s;
                                 background-color: #599144;
                             }
                         }
@@ -299,9 +287,8 @@
                             justify-content: center;
                             display: flex;
                             border-left: 0.1px solid rgba(14, 14, 14, 0.15);
-                            transition: 0.3s;
+
                             &:hover {
-                                transition: 0.3s;
                                 background-color: #599144;
                             }
                             &.dis {
@@ -310,20 +297,16 @@
                             }
                         }
                         > .icon {
-                            transition: 0.3s;
                             padding: 10px 15px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             cursor: pointer;
                             .iconfill {
-                                transition: 0.3s;
                                 fill: #474747;
                             }
                             &:hover {
-                                transition: 0.3s;
                                 .iconfill {
-                                    transition: 0.3s;
                                     fill: #599144;
                                 }
                             }
@@ -347,7 +330,6 @@
                         margin: 15px 10px;
                     }
                     > .item {
-                        transition: 0.2s;
                         width: 140px;
                         height: 160px;
                         border-radius: 4px;
@@ -360,7 +342,6 @@
                         cursor: pointer;
 
                         &:hover {
-                            transition: 0.2s;
                             border: 0.1px solid #fd545a;
                         }
 
@@ -404,6 +385,12 @@
                         border: 0.1px solid rgba(14, 14, 14, 0.15);
                         margin-bottom: 4px;
                         > .detail {
+                            font-size: 16px;
+                            font-family: "Kanit-300";
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
                             width: 50%;
                             border-right: 0.1px solid rgba(14, 14, 14, 0.15);
                             display: flex;
@@ -438,6 +425,7 @@
                                 display: -webkit-box;
                                 -webkit-line-clamp: 2;
                                 -webkit-box-orient: vertical;
+                                width: 100%;
                             }
                             > .detail-e {
                                 font-size: 16px;
@@ -515,10 +503,9 @@
                                 justify-content: space-between;
                                 > .add {
                                     cursor: pointer;
-                                    transition: 0.2s;
+
                                     fill: black;
                                     &:hover {
-                                        transition: 0.2s;
                                         fill: #84b572;
                                     }
                                     &.dis {
@@ -528,10 +515,9 @@
                                 }
                                 > .delete {
                                     cursor: pointer;
-                                    transition: 0.2s;
+
                                     fill: black;
                                     &:hover {
-                                        transition: 0.2s;
                                         fill: #fd545a;
                                     }
                                     &.dis {
@@ -557,7 +543,6 @@
                             display: flex;
 
                             > .item {
-                                transition: 0.2s;
                                 width: 140px;
                                 height: 160px;
                                 border-radius: 4px;
@@ -570,7 +555,6 @@
                                 cursor: pointer;
 
                                 &:hover {
-                                    transition: 0.2s;
                                     border: 0.1px solid #fd545a;
                                 }
 
@@ -720,10 +704,9 @@
                                     justify-content: space-between;
                                     > .add {
                                         cursor: pointer;
-                                        transition: 0.2s;
+
                                         fill: black;
                                         &:hover {
-                                            transition: 0.2s;
                                             fill: #84b572;
                                         }
                                         &.dis {
@@ -733,10 +716,9 @@
                                     }
                                     > .delete {
                                         cursor: pointer;
-                                        transition: 0.2s;
+
                                         fill: black;
                                         &:hover {
-                                            transition: 0.2s;
                                             fill: #fd545a;
                                         }
                                         &.dis {
@@ -783,7 +765,6 @@
     // public class in FulfillAllocatePage
 
     .pb_arrow_forward {
-        transition: 0.2s;
         color: $bgcolor-list-item-fulfill-allocate;
     }
 }
