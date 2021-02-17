@@ -62,7 +62,6 @@ export class GoogleService {
         }
 
         this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
-          console.log('authUser >>> ', authUser);
           if (authUser) {
             authUser = this.userService.cleanAdminUserField(authUser);
             resolve({ token: accessToken, authId: auth, user: authUser });
