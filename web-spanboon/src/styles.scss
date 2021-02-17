@@ -4,7 +4,7 @@
  * License: MIT. https://opensource.org/licenses/MIT
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
- 
+
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import "~@angular/material/theming";
@@ -45,9 +45,12 @@ body {
 body {
     margin: 0;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
+    scrollbar-color: $brandcolor $white;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+    background-color: $white;
 }
-
 
 figure {
     img {
@@ -90,7 +93,6 @@ p {
                 // height: 100%;
 
                 > .mat-dialog-container {
-
                 }
             }
         }

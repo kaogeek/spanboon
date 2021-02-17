@@ -64,15 +64,11 @@ span:focus {
 }
 
 .spanboon-main-page {
-    position: fixed;
+    // position: fixed;
     width: 100%;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-color: $brandcolor $white;
-    scrollbar-width: thin;
-    scroll-behavior: smooth;
-    background-color: $white;
+    // overflow-y: auto;
+    // overflow-x: hidden;
 
     .list-looking-for {
         width: 100%;
