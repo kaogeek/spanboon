@@ -608,7 +608,7 @@
                                         aria-label="Button that shows a red tooltip"
                                         *ngFor="let item of getItemByPost(item)">
                                         <div class="item-image"
-                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)','opacity':item.itemName === indexItemName() ? '1' : '0.6'}">
+                                            [ngStyle]="{'border': item.itemName === indexItemName() && item.amount > 0 ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)','opacity':item.itemName === indexItemName() ? '1' : '0.4'}">
                                             <ng-container
                                                 *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
                                                 <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
@@ -620,7 +620,7 @@
                                         </div>
                                         <div class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.itemName === indexItemName() ? '#84b572' : '#747474'}">{{item.amount}}</span>/{{item.quantity
+                                                [ngStyle]="{'color': item.itemName === indexItemName() && item.amount > 0 ? '#84b572' : '#747474'}">{{item.amount}}</span>/{{item.quantity
                                             | shortNumber}}
                                         </div>
                                     </div>
@@ -840,7 +840,7 @@
                                 <div class="list">
                                     <div class="item" *ngFor="let item of getItemByPost(item)">
                                         <div class="item-image" *ngIf="item.isMn"
-                                            [ngStyle]="{'border': item.itemName === indexItemName() ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
+                                            [ngStyle]="{'border': item.isAuto ? 'solid 3px #84b572' : '3px solid rgb(132 181 114 / 0%)'}">
                                             <ng-container
                                                 *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
                                                 <img class="image" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
@@ -852,7 +852,7 @@
                                         </div>
                                         <div *ngIf="item.isMn" class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity|
+                                                [ngStyle]="{'color': item.isAuto ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity|
                                             shortNumber}}
                                         </div>
                                     </div>
@@ -957,7 +957,7 @@
                                         </div>
                                         <div *ngIf="item.isAuto" class="quantity">
                                             <span
-                                                [ngStyle]="{'color': item.amount > item.quantity ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity
+                                                [ngStyle]="{'color': item.isAuto ? 'red' : '#84b572'}">{{item.amount}}</span>/{{item.quantity
                                             | shortNumber}}
                                         </div>
                                     </div>

@@ -15,6 +15,7 @@ import { PROVIDER } from '../../constants/LoginProvider';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { User } from '../models/User';
 import { Asset } from '../models/Asset';
+import moment from 'moment';
 
 @Service()
 export class FacebookService {
@@ -67,10 +68,12 @@ export class FacebookService {
                     return;
                 }
                 const accessToken = res.access_token;
+                const expires = (res.expires_in === undefined) ? undefined : moment().add(res.expires_in, 'seconds').toDate();
                 resolve({
                     token: accessToken,
                     type: res.token_type,
-                    expires: res.expires_in
+                    expires_in: res.expires_in,
+                    expires
                 });
             });
         });
@@ -112,14 +115,12 @@ export class FacebookService {
                 if (result.error) { reject(result.error); return; }
 
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
-                    console.log('auth >>> ', auth);
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
                     }
 
                     this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
-                        console.log('authUser >>> ', authUser);
                         if (authUser) {
                             authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });
@@ -289,7 +290,7 @@ export class FacebookService {
 
             const formData: any = { message };
             if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
-                for (let i = 0; i < imageIds.length;i++) {
+                for (let i = 0; i < imageIds.length; i++) {
                     const key = 'attached_media[' + i + ']';
                     const id = imageIds[i];
 
@@ -380,6 +381,46 @@ export class FacebookService {
                 }
                 resolve(response);
             });
+        });
+    }
+
+    /* 
+    * accessToken is usertoken who can access fbPage
+    */
+    public extendsPageAccountToken(accessToken: string, fbPageId: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            if (accessToken === undefined || accessToken === null || accessToken === '') {
+                reject('Access token is required.');
+                return;
+            }
+
+            if (fbPageId === undefined || fbPageId === null || fbPageId === '') {
+                reject('Facebook pageId is required.');
+                return;
+            }
+
+            try {
+                let pageAccessToken;
+                const pageAccounts = await this.getFBPageAccounts(accessToken);
+                if (pageAccounts !== undefined) {
+                    for (const pageAccount of pageAccounts.data) {
+                        if (pageAccount.id === fbPageId) {
+                            pageAccessToken = pageAccount.access_token;
+                            break;
+                        }
+                    }
+                }
+
+                if (pageAccessToken === undefined) {
+                    reject('You cannot access Facebook page.');
+                    return;
+                }
+
+                const longLiveToken = await this.extendsAccessToken(pageAccessToken);
+                resolve(longLiveToken);
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 

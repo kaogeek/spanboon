@@ -12,11 +12,14 @@ import { ChatMessageRepository } from '../repositories/ChatMessageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { ObjectID } from 'typeorm';
+import { NotificationService } from '../services/NotificationService';
+import { ChatRoomService } from '../services/ChatRoomService';
+import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
 
 @Service()
 export class ChatMessageService {
 
-    constructor(@OrmRepository() private chatMessageRepository: ChatMessageRepository) { }
+    constructor(@OrmRepository() private chatMessageRepository: ChatMessageRepository, private chatRoomService: ChatRoomService, private notificationService: NotificationService) { }
 
     // find ChatMessage
     public async find(findCondition?: any): Promise<ChatMessage[]> {
@@ -96,15 +99,48 @@ export class ChatMessageService {
     }
 
     public async createChatMessage(chatMessage: ChatMessage): Promise<ChatMessage> {
-        if(chatMessage === undefined || chatMessage === null){
+        if (chatMessage === undefined || chatMessage === null) {
             return Promise.resolve(undefined);
         }
 
         chatMessage.isRead = false;
         chatMessage.deleted = false;
 
-        // ! do send notification if implement
+        const result = await this.create(chatMessage);
 
-        return await this.create(chatMessage);
+        // do send notification
+        {
+            try {
+                // find chatroom
+                const chatMsg = (chatMessage.message === undefined) ? '' : chatMessage.message;
+                const mainSender = chatMessage.sender + '';
+                const mainType = chatMessage.senderType;
+                const chatroom = await this.chatRoomService.findOne({ _id: chatMessage.room, deleted: false });
+                if (chatroom !== undefined) {
+                    if (chatroom.participants !== undefined) {
+                        for (const sender of chatroom.participants) {
+                            const senderId = sender.sender + '';
+                            const senderType = sender.senderType;
+                            if (mainType === senderType && mainSender === senderId) {
+                                continue;
+                            }
+
+                            // create notification to every participants
+                            const title = chatMsg;
+                            const toUserId = senderId;
+                            const toUserType = senderType;
+                            const fromUserId = mainSender;
+                            const fromUserType = mainType;
+                            const notificationType = NOTIFICATION_TYPE.CHAT;
+                            await this.notificationService.createNotification(toUserId, toUserType, fromUserId, fromUserType, notificationType, title);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        return result;
     }
 }
