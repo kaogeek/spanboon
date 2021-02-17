@@ -15,5 +15,6 @@ export const NOTIFICATION_TYPE = {
     NEEDS: 'NEEDS',
     REPOST: 'REPOST',
     LIKE: 'LIKE',
-    POST: 'POST'
+    POST: 'POST',
+    CHAT: 'CHAT'
 };
