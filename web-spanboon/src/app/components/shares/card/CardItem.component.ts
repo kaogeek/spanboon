@@ -145,15 +145,15 @@ export class CardItem extends AbstractPage implements OnInit {
                 slidesPerView: 1.6,
             },
             479: {
-                slidesPerView: 2,
-            },
+                slidesPerView: 1.5,
+            }
+            ,
             360: {
                 slidesPerView: 1.6,
             },
             320: {
-                slidesPerView: 1.2,
+                slidesPerView: 1.7,
             },
-
         },
     }
 

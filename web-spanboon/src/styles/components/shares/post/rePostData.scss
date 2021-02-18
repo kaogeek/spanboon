@@ -11,7 +11,7 @@ repost-data {
       padding: unset;
     }
   }
-  > .card-feed-post {
+  > .repost-data-card {
     border: 0.7px solid $border-color;
     background-color: $white;
     margin: 5pt 10pt;
@@ -267,10 +267,12 @@ repost-data {
     }
 
     > .wrapper-content {
-      padding: 0 10pt 10pt 15pt;
+      padding: 10pt 10pt 10pt 15pt;
       // padding: 10pt 15pt;
       word-break: break-all;
-
+      &.active {
+        padding: 0 10pt 10pt 15pt;
+      }
       > .post-to {
         display: flex;
         flex-direction: row;
@@ -310,11 +312,11 @@ repost-data {
         overflow: hidden;
         font-family: "Kanit-500";
         font-size: 16px;
-  
+
         &.active {
           padding-top: 10pt;
         }
-  
+
         > a {
           color: $color-warm-red;
         }
@@ -732,12 +734,12 @@ repost-data {
 }
 
 @media (max-width: $small) {
-  .card-feed-post { 
-    > .header-post { 
+  .repost-data-card {
+    > .header-post {
     }
-    > .dropdown { 
+    > .dropdown {
     }
-    >.topic-name {
+    > .topic-name {
       padding: 8pt 10pt;
     }
     > .wrapper-content {
@@ -748,14 +750,14 @@ repost-data {
       }
       > .wrapper-footer-post {
         > .right {
-          // padding: 5pt 0; 
+          // padding: 5pt 0;
         }
       }
     }
 
     > .fulfill-profile {
       > .fufill-name {
-        > .left { 
+        > .left {
           > a {
             > .profile-left,
             > .profile-right {
@@ -764,18 +766,14 @@ repost-data {
               > .post-data-profile {
                 // width: 32pt;
                 // height: 32pt;
-              }
-
-              > .name-top {
-                display: none;
-              }
+              } 
             }
           }
 
           > .profile-left {
           }
 
-          > .middle { 
+          > .middle {
           }
           > a {
             &:last-child {
@@ -785,7 +783,7 @@ repost-data {
         }
       }
     }
-    > .topic-name { 
+    > .topic-name {
     }
   }
 }

@@ -134,6 +134,20 @@
     font-family: "Kanit-500";
 }
 
+.social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
+    min-height: unset;
+    height: auto;
+    >.mat-menu-content {
+        >.mat-menu-item {
+            font-size: 16px;
+            font-family: "Kanit-500"; 
+            >a {
+                color: black;
+            }
+        }
+    } 
+}
+
 @media (max-width: $xlarge) {
     .control-action {
         > .control-slider {

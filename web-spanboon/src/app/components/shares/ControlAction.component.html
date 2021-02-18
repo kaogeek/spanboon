@@ -4,9 +4,26 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
-<div class="control-action" *ngIf="isAction">
+<div class="control-action">
     <div class="collis">
+        <!-- shared post to facebook or twitter -->
+        <div class="wrapper-action" *ngIf="isPostShareData && isPostShareData.length > 0" [matMenuTriggerFor]="menuSocial"
+            [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
+            <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474" viewBox="0 0 17.474 17.474">
+                <path id="social-media" [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}"
+                    d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
+                    fill="#343434" />
+            </svg> 
+            <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
+                <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of isPostShareData">
+                    <a *ngIf="item.socialType === 'TWITTER' " href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                        ทวิตเตอร์
+                    </a> 
+                </button> 
+            </mat-menu>
+        </div>
+
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{comment}}</span>
@@ -113,7 +130,7 @@
                     transform="translate(-235.283 -0.91)" fill="#9d9d9d" />
             </svg>
         </div>
-        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
+        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="wrapper-action field-profile">
             <div class="div-profile" *ngIf="accessPage">
                 <img *ngIf="isImges" class="icon-images"
                     src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">

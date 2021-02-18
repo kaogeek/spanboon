@@ -108,8 +108,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
           this.indexNeed--
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
-      }
-      console.log('this.needs ',this.needs)
+      } 
       this.getOffsetHeight();
     }
 

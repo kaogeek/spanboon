@@ -66,10 +66,10 @@ export class Notification extends AbstractPage implements OnInit {
             noti.notification.linkPath = (that.mainPostLink + noti.notification.link)
           }
         }
-        that.notiOrigin = that.noti
-      }
+        that.notiOrigin = that.noti;
+        this.notiOrigin = that.noti
+      } 
     }, 31000);
-
   }
 
   public ngOnInit(): void {
@@ -104,5 +104,14 @@ export class Notification extends AbstractPage implements OnInit {
   public markReadNotiAll() {
     // this.notificationFacade.clearAll()
     this.showAlertDevelopDialog();
+  }
+
+  public isOpened(){
+    if(this.notiOrigin.length > 0){
+      for(let msg of this.notiOrigin){
+        this.notificationFacade.markRead(msg.notification.id);
+        this.notiisRead = [];
+      }
+    }
   }
 }

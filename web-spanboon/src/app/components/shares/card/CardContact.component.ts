@@ -65,9 +65,7 @@ export class CardContact {
             this.statusColor = "green";
         } else if (this.data.status === FULFILLMENT_STATUS.CANCEL) {
             this.statusColor = "red";
-        }
-
-        console.log('this.data', this.data)
+        } 
     }
 
     ngOnChanges(changes: SimpleChanges): void {
