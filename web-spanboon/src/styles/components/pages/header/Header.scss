@@ -11,7 +11,8 @@
   padding: 0 40pt;
   height: $height-header-top;
   position: sticky;
-  top: 0;
+  top: 0pt !important;
+  transform: unset;
   z-index: 1000;
   background-color: $white;
   transition: all 0.8s ease-in-out;
