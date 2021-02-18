@@ -38,11 +38,10 @@
                             <div class="needs-data-body" [class.active]="isFulfill">
                                 <div class="unit" [class.active]="isFulfill">
                                     <div class="unit-box">
-                                        <div class="unit-num">
-                                            <ng-container *ngIf="isShowQty; else elseTemplateQty">
+                                        <div class="unit-num"> 
+                                            <ng-container *ngIf="isPendingFulfill; else elseTemplateQty">
                                                 <span *ngIf="isFulfillQuantity">
-                                                    <span
-                                                        [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                    <span [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
                                                         {{item.fulfillQuantity}} / </span>
                                                 </span>
                                                 <span *ngIf="!isFulfill"

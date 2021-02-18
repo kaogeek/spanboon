@@ -491,7 +491,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isListPage: false,
             isEdit: false,
             isFulfillNull: true,
-            isShowQty : true
+            isPendingFulfill : true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {

@@ -129,7 +129,7 @@ repost-data {
           }
           > a {
             &:first-child {
-              width: calc(50% - 30pt);
+              width: calc(50% - 10pt);
             }
             > .profile-left {
             }
@@ -154,6 +154,15 @@ repost-data {
             }
           }
         }
+      }
+    }
+    > .topic-name {
+      display: flex;
+      padding: 10pt 15pt 10pt 15pt;
+      font-family: "Kanit-400";
+      font-size: 20px;
+      &.active {
+        display: none;
       }
     }
 
@@ -258,7 +267,8 @@ repost-data {
     }
 
     > .wrapper-content {
-      padding: 10pt 15pt;
+      padding: 0 10pt 10pt 15pt;
+      // padding: 10pt 15pt;
       word-break: break-all;
 
       > .post-to {
@@ -291,6 +301,23 @@ repost-data {
         color: $color-black;
         font-family: "Sarabun-Light";
         font-size: 16px;
+      }
+
+      > .page-give {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-family: "Kanit-500";
+        font-size: 16px;
+  
+        &.active {
+          padding-top: 10pt;
+        }
+  
+        > a {
+          color: $color-warm-red;
+        }
       }
 
       > .content-sub {
@@ -701,5 +728,64 @@ repost-data {
   .repost-sub-title {
     font-family: "Kanit-200";
     font-size: 16px;
+  }
+}
+
+@media (max-width: $small) {
+  .card-feed-post { 
+    > .header-post { 
+    }
+    > .dropdown { 
+    }
+    >.topic-name {
+      padding: 8pt 10pt;
+    }
+    > .wrapper-content {
+      padding: 0 10pt 5pt 10pt;
+      &.active {
+        // 0 10pt 10pt 15pt
+        // padding: 0 10pt 0 10pt;
+      }
+      > .wrapper-footer-post {
+        > .right {
+          // padding: 5pt 0; 
+        }
+      }
+    }
+
+    > .fulfill-profile {
+      > .fufill-name {
+        > .left { 
+          > a {
+            > .profile-left,
+            > .profile-right {
+              // width: auto;
+              // justify-content: center;
+              > .post-data-profile {
+                // width: 32pt;
+                // height: 32pt;
+              }
+
+              > .name-top {
+                display: none;
+              }
+            }
+          }
+
+          > .profile-left {
+          }
+
+          > .middle { 
+          }
+          > a {
+            &:last-child {
+              // margin-left: unset;
+            }
+          }
+        }
+      }
+    }
+    > .topic-name { 
+    }
   }
 }

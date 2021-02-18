@@ -40,7 +40,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
   @Input()
   public isFulfill: boolean = false;
   @Input()
-  public isShowQty: boolean = false;
+  public isPendingFulfill: boolean = false;
   @Input()
   public isImage: boolean = false;
   @Input()
