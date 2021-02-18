@@ -107,11 +107,13 @@ export class MainPage extends AbstractPage implements OnInit {
 
   ngAfterViewInit(): void {
     var prev = 0;
-    var spanboonHome = $('#menubottom');
-
+    // var spanboonHome = $('#menubottom');
+    var spanboonHome = $(window).scrollTop();
+    // console.log('spanboonHome ',spanboonHome.scrollTop())
     $(window).scroll(() => {
       this.scrollTop('aasdad');
-      var scrollTop = spanboonHome.scrollTop();
+      var scrollTop = $(window).scrollTop(); 
+      // var scrollTop = spanboonHome.scrollTop(); 
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
       $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
@@ -142,6 +144,7 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public scrollTop(event) {
+    console.log('event ',event)
 
     // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
     //   this.observManager.publish('scroll.buttom', null);
