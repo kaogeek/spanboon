@@ -84,6 +84,7 @@ export class PostData {
   public isLoading: Boolean;
   public linkPost: string;
   public isFulfill: boolean = false;
+  public isPendingFulfill: boolean = false;
 
   private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
@@ -122,6 +123,7 @@ export class PostData {
       }
       if (this.itemPost && this.itemPost.needs !== undefined && this.itemPost.needs !== null) {
         this.isFulfill = false;
+        this.isPendingFulfill = true;
         for (let needs of this.itemPost.needs) {
           if (needs.standardItemId !== null && needs.standardItemId !== '' && needs.standardItemId !== undefined) {
             this.needsFacade.getNeeds(needs.standardItemId).then((res: any) => {
@@ -133,6 +135,7 @@ export class PostData {
       }
       if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
         this.isFulfill = true;
+        this.isPendingFulfill = false;
         for (let fulfill of this.itemPost.caseFulfillment) {
           for (let item of this.itemPost.caseNeeds) {
             if (fulfill.need === item._id) {

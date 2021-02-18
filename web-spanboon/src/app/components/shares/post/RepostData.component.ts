@@ -6,7 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { PostCommentFacade, PageFacade } from '../../../services/services';
+import { PostCommentFacade, PageFacade, NeedsFacade } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { ProfileFacade } from '../../../services/facade/ProfileFacade.service'; 
@@ -24,6 +24,7 @@ export class RepostData {
   private assetFacade: AssetFacade;
   private pageFacade: PageFacade;
   private postFacade: PostFacade;
+  private needsFacade: NeedsFacade;
   public dialog: MatDialog;
 
   public commentpost: any[] = []
@@ -57,11 +58,12 @@ export class RepostData {
   public webBaseURL = environment.webBaseURL;
   private mainPostLink: string = window.location.origin + '/post/'
 
-  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade) {
+  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade,needsFacade: NeedsFacade) {
     this.dialog = dialog;
     this.assetFacade = assetFacade
     this.pageFacade = pageFacade
     this.postFacade = postFacade
+    this.needsFacade = needsFacade
     this.isComment = false
     this.isRepost = false
 
@@ -89,6 +91,26 @@ export class RepostData {
           }
         }).catch((err: any) => {
         });
+      }
+      if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
+        this.isFulfill = true;
+        for (let fulfill of this.itemPost.caseFulfillment) {
+          for (let item of this.itemPost.caseNeeds) {
+            if (fulfill.need === item._id) {
+              fulfill.fulfillQuantity = fulfill.quantity
+              fulfill.standardItemId = item.standardItemId
+              fulfill.quantity = item.quantity
+              fulfill.unit = item.unit
+              if (fulfill.standardItemId !== null && fulfill.standardItemId !== '' && fulfill.standardItemId !== undefined) {
+                this.needsFacade.getNeeds(fulfill.standardItemId).then((res: any) => {
+                  fulfill.imageURL = res.imageURL
+                }).catch((err: any) => {
+                });
+              }
+            }
+          }
+          this.itemPost.needs.push(fulfill)
+        }
       }
     }, 1500);
   } 
