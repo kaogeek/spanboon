@@ -65,10 +65,22 @@ spanboon-footer-mobile {
       display: flex;
     }
     .footer-mobile.hidden {
-      transform: translateY(100%); 
+      transform: translateY(100%);
       // -webkit-transform: translateY(100%); //Safari
-      // -moz-transform: translateY(100%); 
+      // -moz-transform: translateY(100%);
       bottom: -44pt !important;
+    }
+  }
+
+  header-top {
+    .header-top {
+      display: flex;
+    }
+    .header-top.hidden {
+      transform: translateY(100%);
+      // -webkit-transform: translateY(100%); //Safari
+      // -moz-transform: translateY(100%);
+      top: -80pt !important;
     }
   }
 }
@@ -77,7 +89,7 @@ spanboon-footer-mobile {
   spanboon-footer {
     .footer {
     }
-  } 
+  }
 }
 
 @media (max-width: $medium) {
