@@ -6,13 +6,14 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { PostCommentFacade, PageFacade } from '../../../services/services';
+import { PostCommentFacade, PageFacade, NeedsFacade } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { ProfileFacade } from '../../../services/facade/ProfileFacade.service'; 
 import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'repost-data',
@@ -23,6 +24,7 @@ export class RepostData {
   private assetFacade: AssetFacade;
   private pageFacade: PageFacade;
   private postFacade: PostFacade;
+  private needsFacade: NeedsFacade;
   public dialog: MatDialog;
 
   public commentpost: any[] = []
@@ -32,6 +34,8 @@ export class RepostData {
 
   @Input()
   public isRepost: boolean
+  @Input()
+  public isFulfill: boolean = false;
   @Input()
   public gallery: any;
   @Input()
@@ -50,19 +54,22 @@ export class RepostData {
   public storyTeb: any;
   public isNotAccess: any;
 
+  public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
   private mainPostLink: string = window.location.origin + '/post/'
 
-  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade) {
+  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade,needsFacade: NeedsFacade) {
     this.dialog = dialog;
     this.assetFacade = assetFacade
     this.pageFacade = pageFacade
     this.postFacade = postFacade
+    this.needsFacade = needsFacade
     this.isComment = false
     this.isRepost = false
 
-    setTimeout(() => {
+    setTimeout(() => { 
+      console.log('this.itemPost ',this.itemPost)
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
-
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
       }
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
@@ -79,26 +86,34 @@ export class RepostData {
       if (this.itemPost && this.itemPost.pageId !== undefined && this.itemPost.pageId !== null) {
         this.pageFacade.getProfilePage(this.itemPost.pageId).then((page: any) => {
           this.itemPost.pageId = page.data
-          this.getImgURL(page.data.imageURL, false);
+          if(page.data && page.data.imageURL !== ''  && page.data.imageURL !== undefined  && page.data.imageURL !== null){
+            this.getImgURL(page.data.imageURL, false);
+          }
         }).catch((err: any) => {
         });
       }
+      if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
+        this.isFulfill = true;
+        for (let fulfill of this.itemPost.caseFulfillment) {
+          for (let item of this.itemPost.caseNeeds) {
+            if (fulfill.need === item._id) {
+              fulfill.fulfillQuantity = fulfill.quantity
+              fulfill.standardItemId = item.standardItemId
+              fulfill.quantity = item.quantity
+              fulfill.unit = item.unit
+              if (fulfill.standardItemId !== null && fulfill.standardItemId !== '' && fulfill.standardItemId !== undefined) {
+                this.needsFacade.getNeeds(fulfill.standardItemId).then((res: any) => {
+                  fulfill.imageURL = res.imageURL
+                }).catch((err: any) => {
+                });
+              }
+            }
+          }
+          this.itemPost.needs.push(fulfill)
+        }
+      }
     }, 1500);
-  }
-
-  // private searchPost(id): void {
-  //   let search: SearchFilter = new SearchFilter();
-  //   search.limit = 5;
-  //   search.count = false;
-  //   search.whereConditions = { _id: id };
-  //   this.postFacade.search(search).then((res: any) => {
-  //     console.log('res', res)
-  //     if (res.referencePost !== null && res.referencePost !== undefined) {
-  //       this.itemPost.likeMainPost = this.mainPostLink + res.referencePost
-  //     }
-  //   }).catch((err: any) => {
-  //   });
-  // }
+  } 
 
   public getImgURL(url: any, type: boolean) {
     if (type) {

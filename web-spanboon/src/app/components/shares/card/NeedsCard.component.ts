@@ -40,6 +40,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
   @Input()
   public isFulfill: boolean = false;
   @Input()
+  public isPendingFulfill: boolean = false;
+  @Input()
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
@@ -107,6 +109,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
       }
+      console.log('this.needs ',this.needs)
       this.getOffsetHeight();
     }
 
@@ -145,7 +148,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     }
   }
 
-  public fulfillNeeds(item: any) {
+  public fulfillNeeds(item: any) { 
     if (!this.isLogin()) {
       this.showAlertLoginDialog(this.router.url); 
     } else {
@@ -261,17 +264,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
         slidesPerView: 2.2,
       },
       479: {
-        slidesPerView: 2,
-      },
-      440: {
-        slidesPerView: 1.6,
-      },
-      360: {
-        slidesPerView: 1.6,
-      },
-      320: {
-        slidesPerView: 1.2,
-      },
+        slidesPerView: 1.8,
+      }, 
     },
   }
 }

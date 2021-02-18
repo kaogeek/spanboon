@@ -1003,9 +1003,18 @@
               align-items: center;
               padding: 10pt;
               min-width: 145pt;
+              justify-content: space-between;
               > .left {
                 font-family: "Kanit-500";
                 font-size: 16px;
+              }
+              > .setting-all { 
+                display: flex;
+                align-items: center;
+                @include pointer();
+                svg { 
+                  color: $color-warm-red;  
+                }
               }
             }
 
@@ -1018,7 +1027,9 @@
                     width: 100%;
                     > .mat-checkbox-inner-container {
                       > .mat-checkbox-frame {
-                        border: 2px solid $color-warm-red;
+                        &.active {
+                          border: 2px solid $color-warm-red;
+                        }
                       }
                     }
                     > .mat-checkbox-label {
@@ -1053,17 +1064,7 @@
                     }
                   }
                 }
-              }
-              > .setting-all {
-                padding: 10pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
-                span {
-                  padding-right: 5pt;
-                  color: $color-warm-red;
-                  @include pointer();
-                }
-              }
+              } 
             }
           }
         }

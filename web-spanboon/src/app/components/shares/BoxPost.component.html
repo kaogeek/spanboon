@@ -175,7 +175,7 @@
         </ng-container>
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
-            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="80">
+            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="75">
         </div>
         <div *ngIf="isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true" attr.placeholder="เรื่องราวของ {{dataPage}}"
@@ -716,7 +716,7 @@
                     </div>
 
                     <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial"> 
-                        <svg class="icon-social" [class.active]="menuTrigger.menuOpen || twitterConection" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
+                        <svg class="icon-social" [class.active]="menuTrigger.menuOpen || isAutoPostTwitter" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
                             viewBox="0 0 17.474 17.474">
                             <path id="social-media"
                                 d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
@@ -729,6 +729,15 @@
                             <div class="post-other">
                                 <div class="left">
                                     โพสต์บนช่องทางอื่น
+                                </div>
+                                <div class="setting-all">
+                                    <svg (click)="redirectSetting()" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773" viewBox="0 0 16.334 16.773">
+                                        <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
+                                          <g id="Group_401" data-name="Group 401" transform="translate(6.71)">
+                                            <path id="Path_265" data-name="Path 265" d="M22.761,10.225,21.219,9.019a6.071,6.071,0,0,0,.036-.633,5.887,5.887,0,0,0-.036-.633l1.543-1.206a.756.756,0,0,0,.182-.963l-1.6-2.774a.743.743,0,0,0-.927-.333l-1.819.73A6.237,6.237,0,0,0,17.5,2.573L17.226.643A.742.742,0,0,0,16.485,0H13.27a.74.74,0,0,0-.739.637l-.277,1.937a6.43,6.43,0,0,0-1.09.634L9.339,2.475a.758.758,0,0,0-.92.328L6.813,5.581a.751.751,0,0,0,.182.968L8.537,7.754a5.53,5.53,0,0,0,0,1.266L6.994,10.226a.756.756,0,0,0-.182.963l1.6,2.774a.742.742,0,0,0,.927.333l1.819-.73a6.292,6.292,0,0,0,1.092.634l.277,1.929a.742.742,0,0,0,.741.644h3.215a.741.741,0,0,0,.74-.637L17.5,14.2a6.46,6.46,0,0,0,1.09-.635l1.824.732a.751.751,0,0,0,.274.052.738.738,0,0,0,.646-.379l1.61-2.789A.754.754,0,0,0,22.761,10.225Zm-7.883.957a2.8,2.8,0,1,1,2.8-2.8A2.8,2.8,0,0,1,14.878,11.182Z" transform="translate(-6.71)"/>
+                                          </g>
+                                        </g>
+                                      </svg>  
                                 </div>
                             </div>
                             <div class="body-list">
@@ -753,8 +762,8 @@
                                     </mat-checkbox>
                                 </div>
                                 <div class="checklist">
-                                    <mat-checkbox [(ngModel)]="twitterConection"  class="item-checkbox" 
-                                    [ngModelOptions]="{standalone: true}" (change)="socialBinding(twitterConection , 'twitter')"
+                                    <mat-checkbox [(ngModel)]="isAutoPostTwitter"  class="item-checkbox" [class.active]="isAutoPostTwitter"
+                                    [ngModelOptions]="{standalone: true}" (change)="socialBinding(isAutoPostTwitter , 'twitter')"
                                     (click)="$event.stopPropagation()">
                                         <div class="icon-social twitter">
                                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962"
@@ -766,11 +775,7 @@
                                         </div>
                                         <div class="middle">Twitter</div>
                                     </mat-checkbox>
-                                </div> 
-                                <div class="setting-all">
-                                    <span (click)="redirectSetting()">ตั้งค่า</span> ช่องทางอื่นๆ
-                                    <!-- <span [routerLink]="'page/'+dataPageId.id+'/settings'">ตั้งค่า</span> ช่องทางอื่นๆ -->
-                                </div>
+                                </div>  
                             </div>
                         </div>
                     </mat-menu>

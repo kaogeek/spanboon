@@ -27,3 +27,4 @@ export * from './DialogCheckFulfill.component';
 export * from './DialogConfirmFulfill.component';
 export * from './DialogFulfillAllocate.component';
 export * from './DialogPreview.component';
+export * from './DialogAlertAllocate.component';

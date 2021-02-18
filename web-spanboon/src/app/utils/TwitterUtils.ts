@@ -18,8 +18,9 @@ export class TwitterUtils {
     public static generateTwitterText(title: string, detail: string, link?: string, storyLink?: string, emerEventHashTag?: string, objectiveHashTag?: string): string {
         let result = '';
         if (title !== undefined && title !== null && title !== '') {
-            result += '[ ' + title + ' ]';
-        }
+            result +=  title ;
+            // result += '[ ' + title + ' ]';
+        } 
 
         if (detail !== undefined && detail !== null && detail !== '') {
             if (result !== '') {

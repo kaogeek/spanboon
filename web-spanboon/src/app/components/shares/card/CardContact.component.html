@@ -20,7 +20,7 @@
             <div class="contact-head">
                 <div class="head-left" matTooltipShowDelay="{{800}}" matTooltip="{{title}}">
                     {{title ? title:data.name}}
-                    <span class="sub-title" *ngIf="!title"> ต้องการเติมเต็มลงเพจ </span>
+                    <span class="sub-title" *ngIf="data.postId === null"> ต้องการเติมเต็มลงเพจ </span>
                 </div>
                 <div class="head-right" *ngIf="unreadMessageCount > 0">
                     <span class="count-contact-user">{{unreadMessageCount}}</span>
@@ -29,7 +29,7 @@
                     </span> -->
                 </div>
             </div>
-            <div *ngIf="!title" class="contact-head">
+            <div *ngIf="data.postId === null" class="contact-head">
                 <div class="head-left" matTooltipShowDelay="{{800}}" matTooltip="{{title}}">
                     {{data.pageName}}
                 </div>
@@ -118,8 +118,9 @@
                         <span *ngIf="!asPage" class="user-name"
                             [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
-                </span>  
-                <span class="contact-text" matTooltipShowDelay="{{800}}" [class.active]="!isRead" matTooltip="{{chatMessage}}">{{chatMessage}}</span>
+                </span>
+                <span class="contact-text" matTooltipShowDelay="{{800}}" [class.active]="!isRead"
+                    matTooltip="{{chatMessage}}">{{chatMessage}}</span>
                 <span class="pointer"
                     *ngIf="(chatMessage !== null && chatMessage !== undefined && chatMessage !== '') && (chatDate !== null && chatDate !== undefined && chatDate !== '')">·</span>
                 <span class="contact-date">{{chatDate}}</span>

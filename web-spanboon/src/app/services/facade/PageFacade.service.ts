@@ -13,6 +13,7 @@ import { SearchFilter } from "../../models/SearchFilter";
 import { Page } from '../../models/Page';
 import { Post } from '../../models/Post';
 import { PageSocailTW } from "../../models/PageSocailTW";
+import { Config } from "src/app/models/Config";
 
 @Injectable()
 export class PageFacade extends AbstractFacade {
@@ -102,12 +103,12 @@ export class PageFacade extends AbstractFacade {
     return httpOptions;
   }
 
-  public createPost(pageId: string, data: Post , postSocial? : any): Promise<any> {
+  public createPost(pageId: string, data: Post, postSocial?: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/post';
 
-      if(postSocial !== undefined && postSocial !== null){ 
+      if (postSocial && postSocial !== undefined && postSocial !== null) {
         url += "?twitterPost=true"
       }
 
@@ -369,6 +370,30 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public socialUnBindingFacebook(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
+      let options = this.getDefaultOptions();
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public socialGetBindingFacebook(pageId: string): Promise<PageSocailTW> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/social/facebook/check';
+      let options = this.getDefaultOptions();
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public socialBindingTwitter(pageId: string, data: PageSocailTW): Promise<PageSocailTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
@@ -388,7 +413,7 @@ export class PageFacade extends AbstractFacade {
   public socialUnBindingTwitter(pageId: string): Promise<PageSocailTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
-      let options = this.getDefaultOptions(); 
+      let options = this.getDefaultOptions();
       this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -400,9 +425,48 @@ export class PageFacade extends AbstractFacade {
   public socialGetBindingTwitter(pageId: string): Promise<PageSocailTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter/check';
-      let options = this.getDefaultOptions(); 
+      let options = this.getDefaultOptions();
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getConfigByPage(pageId: string, configName: string): Promise<Config> {
+    if (configName === null || configName === undefined) {
+      throw new Error("configName is required.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/page/' + pageId + '/config/' + configName;
+      let option = this.getDefaultOptions();
+      this.http.get(url, option).toPromise().then((response: any) => {
+
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getEditConfig(pageId: string, config: any, configName: string): Promise<Config> {
+    if (configName === null || configName === undefined) {
+      throw new Error("configName is required.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/page/' + pageId + '/config/' + configName;
+      let body = {};
+      let option = this.getDefaultOptions();
+      if (config !== undefined && config !== null) {
+        body = Object.assign(config);
+      }
+      this.http.put(url, body, option).toPromise().then((response: any) => { 
+        resolve(response.data);
       }).catch((error: any) => {
         reject(error);
       });

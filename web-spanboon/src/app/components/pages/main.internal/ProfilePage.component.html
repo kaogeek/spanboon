@@ -177,8 +177,11 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="set-cover">
-                                            <div class="btn-save-cover" *ngIf="isFiles" (click)="saveCoverImage()">
+                                        <div class="set-cover" *ngIf="isFiles">
+                                            <div class="btn-cancel-cover" (click)="cancelCoverImage()">
+                                                <span>ยกเลิก</span>
+                                            </div>
+                                            <div class="btn-save-cover" (click)="saveCoverImage()">
                                                 <span>บันทึกรูปภาพ</span>
                                             </div>
                                         </div>
@@ -238,8 +241,9 @@
                                     </div>
                                 </ng-template>
                             </ng-container>
-                        </ng-template>
-                        <img id="image" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
+                        </ng-template> 
+                        <img id="image" [class.active]="!isEditCover"
+                            [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                     </div>
 
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
@@ -299,7 +303,8 @@
                                     {{resProfile && resProfile.displayName ? resProfile.displayName : ''}}
                                 </div>
                                 <div class="fan-page-tag" [phxPreload]="resProfile" [preloadClass]="'fan-page-tag'"
-                                    [preloadPaddIng]="'10'" *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
+                                    [preloadPaddIng]="'10'"
+                                    *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
                                     @{{ resProfile.uniqueId }}
                                 </div>
                             </div>

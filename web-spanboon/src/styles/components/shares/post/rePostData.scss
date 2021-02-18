@@ -64,6 +64,107 @@ repost-data {
         font-size: 14px;
       }
     }
+    > .fulfill-profile {
+      display: flex;
+      padding: 10pt 15pt 10pt 15pt;
+
+      &.active {
+        padding: 10pt 15pt 0 15pt;
+      }
+      > .fufill-name {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        > .left {
+          display: flex;
+          > a {
+            text-decoration: none;
+            > .profile-left,
+            > .profile-right {
+              display: flex;
+              align-items: center;
+              @include pointer();
+
+              > .post-data-profile {
+                height: 36pt;
+                width: 36pt;
+                border-radius: 50%;
+              }
+
+              > .name-top {
+                flex: 1 1 0%;
+                padding: 0 10pt;
+
+                > .fulfill-name {
+                  color: black;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  width: 100%;
+                  font-family: "Kanit-500";
+                  font-size: 16px;
+                  word-break: break-word;
+                }
+
+                > .text {
+                  font-family: "Kanit-500";
+                  font-size: 14px;
+                  color: $bg-color4;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  word-break: break-word;
+                }
+              }
+
+              &:last-child {
+                .text {
+                  color: $color-warm-red;
+                }
+              }
+            }
+          }
+          > a {
+            &:first-child {
+              width: calc(50% - 10pt);
+            }
+            > .profile-left {
+            }
+          }
+
+          > a {
+            &:last-child {
+              width: calc(50% - 10pt);
+              margin-left: 10pt;
+            }
+            > .profile-right {
+            }
+          }
+
+          > .middle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30pt;
+
+            > .icon-fulfill {
+            }
+          }
+        }
+      }
+    }
+    > .topic-name {
+      display: flex;
+      padding: 10pt 15pt 10pt 15pt;
+      font-family: "Kanit-400";
+      font-size: 20px;
+      &.active {
+        display: none;
+      }
+    }
 
     > .dropdown {
       position: absolute;
@@ -166,7 +267,8 @@ repost-data {
     }
 
     > .wrapper-content {
-      padding: 10pt 15pt;
+      padding: 0 10pt 10pt 15pt;
+      // padding: 10pt 15pt;
       word-break: break-all;
 
       > .post-to {
@@ -199,6 +301,23 @@ repost-data {
         color: $color-black;
         font-family: "Sarabun-Light";
         font-size: 16px;
+      }
+
+      > .page-give {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-family: "Kanit-500";
+        font-size: 16px;
+  
+        &.active {
+          padding-top: 10pt;
+        }
+  
+        > a {
+          color: $color-warm-red;
+        }
       }
 
       > .content-sub {
@@ -609,5 +728,64 @@ repost-data {
   .repost-sub-title {
     font-family: "Kanit-200";
     font-size: 16px;
+  }
+}
+
+@media (max-width: $small) {
+  .card-feed-post { 
+    > .header-post { 
+    }
+    > .dropdown { 
+    }
+    >.topic-name {
+      padding: 8pt 10pt;
+    }
+    > .wrapper-content {
+      padding: 0 10pt 5pt 10pt;
+      &.active {
+        // 0 10pt 10pt 15pt
+        // padding: 0 10pt 0 10pt;
+      }
+      > .wrapper-footer-post {
+        > .right {
+          // padding: 5pt 0; 
+        }
+      }
+    }
+
+    > .fulfill-profile {
+      > .fufill-name {
+        > .left { 
+          > a {
+            > .profile-left,
+            > .profile-right {
+              // width: auto;
+              // justify-content: center;
+              > .post-data-profile {
+                // width: 32pt;
+                // height: 32pt;
+              }
+
+              > .name-top {
+                display: none;
+              }
+            }
+          }
+
+          > .profile-left {
+          }
+
+          > .middle { 
+          }
+          > a {
+            &:last-child {
+              // margin-left: unset;
+            }
+          }
+        }
+      }
+    }
+    > .topic-name { 
+    }
   }
 }
