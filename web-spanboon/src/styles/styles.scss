@@ -33,6 +33,16 @@
   }
 }
 
+.svg-icon-color {
+  fill: $svg-icon;
+}
+.svg-icon-color-black {
+  fill: $svg-icon-black;
+}
+.svg-icon-color-activate {
+  fill: $svg-icon-activate;
+}
+
 .TooltipShow {
   width: 1px;
   z-index: 2;
