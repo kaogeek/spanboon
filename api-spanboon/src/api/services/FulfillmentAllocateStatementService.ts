@@ -13,7 +13,7 @@ import { SearchUtil } from '../../utils/SearchUtil';
 import { Needs } from '../models/Needs';
 import { NeedsService } from '../services/NeedsService';
 import { FulfillmentRequestService } from '../services/FulfillmentRequestService';
-import { ObjectID } from 'typeorm';
+import { ObjectID } from 'mongodb';
 
 @Service()
 export class FulfillmentAllocateStatementService {
@@ -70,6 +70,10 @@ export class FulfillmentAllocateStatementService {
         } else {
             return this.fulfillmentAllocateStmtRepository.find(condition);
         }
+    }
+
+    public async getAllocateStatementFromRequest(fulfillmentReqId: string): Promise<FulfillmentAllocateStatement[]> {
+        return this.find({ fulfillmentRequest: new ObjectID(fulfillmentReqId), deleted: false });
     }
 
     public async createFulfillmentAllocateStatement(statement: FulfillmentAllocateStatement): Promise<FulfillmentAllocateStatement> {

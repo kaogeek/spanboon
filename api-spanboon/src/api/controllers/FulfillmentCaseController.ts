@@ -1509,9 +1509,11 @@ export class FulfillmentController {
 
                                 if (stmtObj) {
                                     // update fulfillment request
+                                    const stmtObjIDs = [];
+                                    stmtObjIDs.push(stmtObj.id);
                                     await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
                                         $set: {
-                                            statementId: stmtObj.id
+                                            statementIds: stmtObjIDs
                                         }
                                     });
                                 }
@@ -1735,6 +1737,7 @@ export class FulfillmentController {
                         allocateItems = allocateItems.concat(missingReqAmount);
                     }
 
+                    const caseAlloStmtMap = {};
                     const result: any[] = [];
                     for (const allocate of allocateItems) {
                         const needIdString = allocate.needsId + '';
@@ -1760,15 +1763,24 @@ export class FulfillmentController {
                         const stmtObj = await this.fulfillStmtService.createFulfillmentAllocateStatement(ffStmt);
 
                         if (stmtObj) {
-                            // update fulfillment request
-                            await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
-                                $set: {
-                                    statementId: stmtObj.id
-                                }
-                            });
+                            const key = caseReq.id + '';
+                            if (caseAlloStmtMap[key] === undefined) {
+                                caseAlloStmtMap[key] = [];
+                            }
 
+                            caseAlloStmtMap[key].push(stmtObj.id);
                             result.push(allocate);
                         }
+                    }
+
+                    for (const caseReqId of Object.keys(caseAlloStmtMap)) {
+                        const statementIds = caseAlloStmtMap[caseReqId];
+                        // update fulfillment request
+                        await this.fulfillmentRequestService.update({ _id: new ObjectID(caseReqId) }, {
+                            $set: {
+                                statementIds
+                            }
+                        });
                     }
                     /* End Statement */
 
@@ -1896,20 +1908,21 @@ export class FulfillmentController {
 
                         if (caseReqsList !== undefined && caseReqsList.length > 0) {
                             for (const caseReq of caseReqsList) {
-                                if (caseReq.statementId === undefined || caseReq.statementId === null) {
+                                if (caseReq.statementIds === undefined || caseReq.statementIds === null || caseReq.statementIds.length <= 0) {
                                     continue;
                                 }
 
                                 try {
-                                    const valid = await this.fulfillStmtService.deleteFulfillmentAllocateStatement(caseReq.statementId);
-                                    if (valid) {
-                                        // update fulfillment request
-                                        await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
-                                            $set: {
-                                                statementId: undefined
-                                            }
-                                        });
+                                    for (const caseStmtId of caseReq.statementIds) {
+                                        await this.fulfillStmtService.deleteFulfillmentAllocateStatement(caseStmtId);
                                     }
+
+                                    // update fulfillment request
+                                    await this.fulfillmentRequestService.update({ _id: caseReq.id }, {
+                                        $set: {
+                                            statementIds: undefined
+                                        }
+                                    });
                                 } catch (err) {
                                     console.log(err);
                                 }
