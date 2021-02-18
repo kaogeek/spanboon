@@ -89,7 +89,7 @@ spanboon-footer-mobile {
       display: flex;
     }
     .header-top.hidden {
-      transform: translateY(100%);
+      transform: translateY(-100%);
       // -webkit-transform: translateY(100%); //Safari
       // -moz-transform: translateY(100%);
       top: -80pt !important;

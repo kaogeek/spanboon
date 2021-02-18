@@ -114,12 +114,17 @@ export class MainPage extends AbstractPage implements OnInit {
       this.scrollTop();
       var scrollTop = $(window).scrollTop();
       // var scrollTop = spanboonHome.scrollTop(); 
+      console.log('scrollTop', scrollTop)
+      console.log('prev', prev)
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
       $('.header-top').toggleClass('hidden', scrollTop > prev);
       $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
       $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
       prev = scrollTop;
+      if (scrollTop < 10) {
+        $('.header-top').removeClass('hidden');
+      }
     });
 
   }
