@@ -113,39 +113,39 @@
                     transform="translate(-235.283 -0.91)" fill="#9d9d9d" />
             </svg> 
         </div>
-    </div>
-    <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
-        <div class="div-profile" *ngIf="accessPage">
-            <img *ngIf="isImges" class="icon-images" src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}"
-                alt="">
-            <div *ngIf="isDis" class="donator-contro">
-                <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
+        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
+            <div class="div-profile" *ngIf="accessPage">
+                <img *ngIf="isImges" class="icon-images" src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}"
+                    alt="">
+                <div *ngIf="isDis" class="donator-contro">
+                    <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
+                </div>
             </div>
-        </div>
-        <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
-            <ng-container *ngFor="let data of accessPage; let index = index">
-                <mat-option [value]="data.pageUsername || data.name " (click)="selectAccessPage(data)">
-                    <div class="wrapper-img-access">
-                        <div class="img-access">
-                            <ng-container
-                                *ngIf="data.img64 !== '' && data.img64 !== undefined && data.img64 !== null; else elseImageProfile">
-                                <img class="icon-image" src="{{data && data.img64}}" alt="">
-                            </ng-container>
-                            <ng-template #elseImageProfile>
-                                <div class="donator-contro">
-                                    <span>{{data.Username || data.name || data.displayName || data.firstName | slice:
-                                        0:1 }}</span>
-                                </div>
-                            </ng-template>
+            <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
+                <ng-container *ngFor="let data of accessPage; let index = index">
+                    <mat-option [value]="data.pageUsername || data.name " (click)="selectAccessPage(data)">
+                        <div class="wrapper-img-access">
+                            <div class="img-access">
+                                <ng-container
+                                    *ngIf="data.img64 !== '' && data.img64 !== undefined && data.img64 !== null; else elseImageProfile">
+                                    <img class="icon-image" src="{{data && data.img64}}" alt="">
+                                </ng-container>
+                                <ng-template #elseImageProfile>
+                                    <div class="donator-contro">
+                                        <span>{{data.Username || data.name || data.displayName || data.firstName | slice:
+                                            0:1 }}</span>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="wrapper-body-action">
+                                <div>{{data.Username || data.name || data.displayName || data.firstName}}</div>
+                            </div>
                         </div>
-                        <div class="wrapper-body-action">
-                            <div>{{data.Username || data.name || data.displayName || data.firstName}}</div>
-                        </div>
-                    </div>
-                </mat-option>
-            </ng-container> 
-        </mat-select>
-    </mat-form-field>
+                    </mat-option>
+                </ng-container> 
+            </mat-select>
+        </mat-form-field>
+    </div> 
 
     <div class="control-slider" *ngIf="isShowtext">
         <div class="list-items" *ngIf="isShowtextcomment"> 

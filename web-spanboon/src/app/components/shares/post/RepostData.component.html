@@ -7,7 +7,8 @@
 
 <div class="card-feed-post" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
     <div class="profile-page" *ngIf="!itemPost.requester">
-        <ng-container *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
+        <ng-container
+            *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
             <div class="menu-user" (click)="menuProfile();">
                 <img class="image-profile" src="{{itemPost.pageId.imageURL}}" alt="">
             </div>
@@ -25,9 +26,9 @@
             {{itemPost.pageId.name}}
             <span class="profile-page-name-sub" (click)="postTeb(itemPost)">{{itemPost && itemPost.createdDate |
                 dateFormat}}</span>
-        </div> 
+        </div>
     </div>
-    <div class="fulfill-profile" [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
+    <div class="fulfill-profile" *ngIf="itemPost.requester" [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
             <div class="left">
                 <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
@@ -35,8 +36,8 @@
                     <div class="profile-left">
                         <ng-container
                             *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
-                            <img class="post-data-profile"
-                                src="{{apiBaseURL + itemPost.requester.imageURL+'/image'}}" alt="">
+                            <img class="post-data-profile" src="{{apiBaseURL + itemPost.requester.imageURL+'/image'}}"
+                                alt="">
                         </ng-container>
                         <ng-template #elseTemplateImage>
                             <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
@@ -50,8 +51,8 @@
                 </a>
                 <div class="middle">
                     <svg class="icon-fulfill" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-                        version="1.1" width="20" height="20" x="0" y="0" viewBox="0 0 488.07 488.071"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" version="1.1"
+                        width="20" height="20" x="0" y="0" viewBox="0 0 488.07 488.071"
                         style="enable-background:new 0 0 512 512" xml:space="preserve">
                         <g transform="matrix(1,0,0,1,0,0)">
                             <g xmlns="http://www.w3.org/2000/svg">
@@ -138,46 +139,56 @@
                     <span>ลบ</span>
                 </button>
             </mat-menu>
-        </ng-container>
-
+        </ng-container> 
     </ng-container>
 
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
-    </ng-container>
+    </ng-container> 
+    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+        <div class="name" *ngIf="itemPost.requester">
+            {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
+            {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
+        </div>
+    </div>  
 
     <div class="wrapper-content">
-        <ng-template #elseIconObject>
-            <ng-container *ngIf="itemPost.type === 'NEEDS';">
-                <div class="left">
-                    <div class="icon-feed looking"></div>
-                    <span>
-                        มองหา
-                    </span>
-                    <div class="post-to">
-                        <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                            <span style="cursor: pointer;" (click)="postTeb(itemPost)">{{itemPost &&
-                                itemPost.createdDate | dateFormat}}</span>
-                        </div>
-                        <ng-container *ngIf="isPage">
-                            <!-- <div class="post-name">
+        <ng-container *ngIf="itemPost.type === 'NEEDS';">
+            <div class="left">
+                <div class="icon-feed looking"></div>
+                <span>
+                    มองหา
+                </span>
+                <div class="post-to">
+                    <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
+                        <span style="cursor: pointer;" (click)="postTeb(itemPost)">{{itemPost &&
+                            itemPost.createdDate | dateFormat}}</span>
+                    </div>
+                    <ng-container *ngIf="isPage">
+                        <!-- <div class="post-name">
                                 เผยแพร่โดย :
                                 <span>Natthaphong Ruengpanyawut</span>
                             </div> -->
-                        </ng-container>
-                    </div>
-                    <!-- <control-action [isAction]="'true'" [isBlack]="'true'"
-                        [reboon]="itemPost.repostCount ? itemPost.repostCount : 'You Retweeted'" [isRed]="'true'"
-                        [isComment]=false [isLike]=false [isShare]=false (submit)="postAction($event)">
-                    </control-action> -->
+                    </ng-container>
                 </div>
-            </ng-container>
-        </ng-template>
+            </div>
+        </ng-container>
         <div class="title" [phxPreload]="itemPost" [preloadClass]="'title'">
             {{itemPost && itemPost.title ? itemPost.title : ''}}
         </div>
         <div class="content" [phxPreload]="itemPost" [preloadClass]="'content'" [innerHTML]=" itemPost.detail ">
         </div>
+        <div class="page-give" *ngIf="isFulfill"
+            [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
+            <span>ร่วมเติมเต็มให้กับ</span>
+            <a target="_blank"
+                matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
+                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">
+                {{itemPost.casePostId && itemPost.casePostId !== undefined &&
+                itemPost.casePostId !== '' ?
+                'โพสต์' : 'เพจ' }} </a>
+        </div>
+
         <a href={{itemPost.likeMainPost}} target="_blank">
             <ng-container *ngIf="itemPost.likeMainPost">
                 <div class="content-sub">
@@ -199,18 +210,10 @@
         </div>
 
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
-        [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
+            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <ng-template #elseNullPost>
             <ng-container>
-                <!-- <div style="width: 100%;
-                height: auto;
-                cursor: pointer;
-                border-radius: 4px;
-                overflow: hidden;
-                margin-bottom:10pt;">
-                    <null-data></null-data>
-                </div> -->
                 <null-data></null-data>
             </ng-container>
         </ng-template>

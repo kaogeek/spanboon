@@ -463,7 +463,7 @@
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>  
-    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== ''&& itemPost.gallery && itemPost.gallery.length === 0)">
+    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''))">
     <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
@@ -499,7 +499,7 @@
                     target="_blank">#{{hashTag.name}}</a>
             </div>
         </div>
-        <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
+        <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill" [isPendingFulfill]="isPendingFulfill"
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <div class="wrapper-footer-post">
