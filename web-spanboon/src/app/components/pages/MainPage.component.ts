@@ -111,10 +111,12 @@ export class MainPage extends AbstractPage implements OnInit {
     var spanboonHome = $(window).scrollTop();
     // console.log('spanboonHome ',spanboonHome.scrollTop())
     $(window).scroll(() => {
-      this.scrollTop('aasdad');
-      var scrollTop = $(window).scrollTop(); 
+      this.scrollTop();
+      var scrollTop = $(window).scrollTop();
       // var scrollTop = spanboonHome.scrollTop(); 
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
+      $('.header-top').toggleClass('hidden', scrollTop > prev);
+      $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
       $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
       prev = scrollTop;
@@ -143,8 +145,7 @@ export class MainPage extends AbstractPage implements OnInit {
     return !this.router.url.includes('profile') && !this.router.url.includes('page');
   }
 
-  public scrollTop(event) {
-    console.log('event ',event)
+  public scrollTop(event?) {
 
     // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
     //   this.observManager.publish('scroll.buttom', null);
