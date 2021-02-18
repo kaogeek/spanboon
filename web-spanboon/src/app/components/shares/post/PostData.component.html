@@ -26,7 +26,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseIconObject">
-        <div class="header-post" [class.active]="itemPost.referencePostObject || (itemPost.referencePostObject && itemPost.referencePostObject.ownerUser)">
+        <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
             <div class="left"
                 [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                 <div class="wrapper-profile-page" *ngIf="isShowProfile">
@@ -158,7 +158,7 @@
     </ng-container>
     <ng-template #elseIconObject>
         <ng-container *ngIf="itemPost.type === 'NEEDS';">
-            <div class="header-post">
+            <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
                 <div class="left"
                     [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                     <div class="wrapper-profile-page" *ngIf="isShowProfile">
@@ -258,7 +258,7 @@
             </div>
         </ng-container>
         <ng-container *ngIf="itemPost.type === 'FULFILLMENT';">
-            <div class="header-post">
+            <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
                 <div class="left"
                     [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
                     <div class="wrapper-profile-page">
@@ -463,7 +463,7 @@
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>  
-    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''))">
+    <div class="wrapper-content" [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
     <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
@@ -516,14 +516,14 @@
                     (emergencyClick)="clickDevelop($event , itemPost.emergencyEventTag)"
                     (objectiveClick)="clickDevelop($event , itemPost.objectiveTag)"></tag-event>
             </div>
-            <div class="right">
+            <div class="right"> 
                 <control-action [isAction]="'true'" [comment]="itemPost.commentCount ? itemPost.commentCount : 0 "
                     [reboon]="itemPost.repostCount ? itemPost.repostCount : 0"
                     [like]="itemPost.likeCount ? itemPost.likeCount : 0"
                     [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
                     [userLike]="itemPost.isLike" [userReboon]="itemPost.isRepost" [userComment]="itemPost.isComment"
                     [isPage]="isComments" [accessPage]="pageUser" (emitpage)="pageAction($event)"
-                    (submit)="postAction($event)" [isShowUser]="isShowUser">
+                    (submit)="postAction($event)" [isShowUser]="isShowUser" [isPostShareData]="itemPost.socialPosts">
                 </control-action>
             </div>
         </div>

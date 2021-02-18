@@ -4,9 +4,26 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
-<div class="control-action" *ngIf="isAction">
+<div class="control-action">
     <div class="collis">
+        <!-- shared post to facebook or twitter -->
+        <div class="wrapper-action" *ngIf="isPostShareData && isPostShareData.length > 0" [matMenuTriggerFor]="menuSocial"
+            [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
+            <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474" viewBox="0 0 17.474 17.474">
+                <path id="social-media" [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}"
+                    d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
+                    fill="#343434" />
+            </svg> 
+            <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
+                <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of isPostShareData">
+                    <a *ngIf="item.socialType === 'TWITTER' " href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                        ทวิตเตอร์
+                    </a> 
+                </button> 
+            </mat-menu>
+        </div>
+
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{comment}}</span>
@@ -38,7 +55,7 @@
                     </g>
                 </svg>
             </ng-template>
-        </div> 
+        </div>
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count">{{reboon}}</span>
@@ -104,19 +121,19 @@
         </div>
         <div class="wrapper-action" *ngIf="isShare" (click)="postShare();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count"> {{share}}</span> 
+            <span class="label-count"> {{share}}</span>
             <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                 xmlns="http://www.w3.org/2000/svg" width="40.107" height="44.3" viewBox="0 0 40.107 44.3">
                 <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3664"
                     data-name="Path 3664"
                     d="M263.26,31.61l-13.01-6.8a7.374,7.374,0,0,0,.12-2.44l13.02-7.75a7.562,7.562,0,1,0-3.16-6.13,7.807,7.807,0,0,0,.18,1.62l-12.48,7.43a7.617,7.617,0,0,0-7.97-1.4h0a7.585,7.585,0,0,0,2.9,14.59,7.506,7.506,0,0,0,2.9-.58,7.619,7.619,0,0,0,1.48-.83l13.13,6.86a7.62,7.62,0,1,0,2.89-4.57ZM267.75,4.8a3.44,3.44,0,1,1-3.44,3.44A3.44,3.44,0,0,1,267.75,4.8ZM242.71,26.51a3.44,3.44,0,1,1,3.44-3.44A3.44,3.44,0,0,1,242.71,26.51Zm25.04,14.66a3.44,3.44,0,1,1,3.44-3.44A3.44,3.44,0,0,1,267.75,41.17Z"
                     transform="translate(-235.283 -0.91)" fill="#9d9d9d" />
-            </svg> 
+            </svg>
         </div>
-        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
+        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="wrapper-action field-profile">
             <div class="div-profile" *ngIf="accessPage">
-                <img *ngIf="isImges" class="icon-images" src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}"
-                    alt="">
+                <img *ngIf="isImges" class="icon-images"
+                    src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">
                 <div *ngIf="isDis" class="donator-contro">
                     <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
                 </div>
@@ -132,7 +149,8 @@
                                 </ng-container>
                                 <ng-template #elseImageProfile>
                                     <div class="donator-contro">
-                                        <span>{{data.Username || data.name || data.displayName || data.firstName | slice:
+                                        <span>{{data.Username || data.name || data.displayName || data.firstName |
+                                            slice:
                                             0:1 }}</span>
                                     </div>
                                 </ng-template>
@@ -142,28 +160,28 @@
                             </div>
                         </div>
                     </mat-option>
-                </ng-container> 
+                </ng-container>
             </mat-select>
         </mat-form-field>
-    </div> 
+    </div>
 
     <div class="control-slider" *ngIf="isShowtext">
-        <div class="list-items" *ngIf="isShowtextcomment"> 
+        <div class="list-items" *ngIf="isShowtextcomment">
             <span class="count-aontrol">{{comment}}</span>
             <span class="title-control">ความเห็น</span>
         </div>
         <div class="list-items" *ngIf="isShowtextreboon">
-            <span class="drot">•</span> 
+            <span class="drot">•</span>
             <span class="count-aontrol">{{reboon}}</span>
             <span class="title-control">บอกต่อ</span>
         </div>
         <div class="list-items" *ngIf="isShowtextlike">
-            <span class="drot">•</span> 
+            <span class="drot">•</span>
             <span class="count-aontrol">{{like}}</span>
             <span class="title-control">ถูกใจ</span>
         </div>
         <div class="list-items" *ngIf="isShowtextshare">
-            <span class="drot">•</span> 
+            <span class="drot">•</span>
             <span class="count-aontrol">{{share}}</span>
             <span class="title-control">แชร์</span>
         </div>

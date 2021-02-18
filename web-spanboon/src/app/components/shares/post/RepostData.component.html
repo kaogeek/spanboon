@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="card-feed-post" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
+<div class="repost-data-card" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
     <div class="profile-page" *ngIf="!itemPost.requester">
         <ng-container
             *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
@@ -28,7 +28,8 @@
                 dateFormat}}</span>
         </div>
     </div>
-    <div class="fulfill-profile" *ngIf="itemPost.requester" [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
+    <div class="fulfill-profile" *ngIf="itemPost.requester"
+        [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
             <div class="left">
                 <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
@@ -139,21 +140,23 @@
                     <span>ลบ</span>
                 </button>
             </mat-menu>
-        </ng-container> 
+        </ng-container>
     </ng-container>
 
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
-    </ng-container> 
-    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+    </ng-container>
+    <div class="topic-name" [class.active]="itemPost.referencePostObject"
+        *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
-    </div>  
+    </div>
 
-    <div class="wrapper-content">
-        <ng-container *ngIf="itemPost.type === 'NEEDS';">
+    <div class="wrapper-content"
+        [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === '' || itemPost.detail === ''))">
+        <!-- <ng-container *ngIf="itemPost.type === 'NEEDS';">
             <div class="left">
                 <div class="icon-feed looking"></div>
                 <span>
@@ -165,18 +168,18 @@
                             itemPost.createdDate | dateFormat}}</span>
                     </div>
                     <ng-container *ngIf="isPage">
-                        <!-- <div class="post-name">
+                        <div class="post-name">
                                 เผยแพร่โดย :
                                 <span>Natthaphong Ruengpanyawut</span>
-                            </div> -->
+                            </div>
                     </ng-container>
                 </div>
             </div>
-        </ng-container>
-        <div class="title" [phxPreload]="itemPost" [preloadClass]="'title'">
-            {{itemPost && itemPost.title ? itemPost.title : ''}}
+        </ng-container> -->
+        <div class="title" *ngIf="itemPost && itemPost.title">
+            {{itemPost && itemPost.title}}
         </div>
-        <div class="content" [phxPreload]="itemPost" [preloadClass]="'content'" [innerHTML]=" itemPost.detail ">
+        <div class="content" *ngIf="itemPost && itemPost.detail" [innerHTML]="itemPost && itemPost.detail">
         </div>
         <div class="page-give" *ngIf="isFulfill"
             [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
@@ -189,12 +192,10 @@
                 'โพสต์' : 'เพจ' }} </a>
         </div>
 
-        <a href={{itemPost.likeMainPost}} target="_blank">
-            <ng-container *ngIf="itemPost.likeMainPost">
-                <div class="content-sub">
-                    ไปที่โพสต์ต้นทาง
-                </div>
-            </ng-container>
+        <a *ngIf="itemPost.likeMainPost" href={{itemPost.likeMainPost}} target="_blank">
+            <div class="content-sub">
+                ไปที่โพสต์ต้นทาง
+            </div>
         </a>
 
         <ng-container *ngIf="itemPost.story">
@@ -210,6 +211,7 @@
         </div>
 
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
+            [isPendingFulfill]="isPendingFulfill"
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <ng-template #elseNullPost>
