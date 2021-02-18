@@ -27,8 +27,8 @@
 
         > .dialog-input-header-text {
             font-size: 20px;
-            font-family: "Kanit-500"; 
-            color: #61646b; 
+            font-family: "Kanit-500";
+            color: #61646b;
         }
 
         > .dialog-input-title-right {
@@ -100,7 +100,7 @@
 
                     &::selection {
                         color: white;
-                        background: #fd545a;
+                        background: $color-warm-red;
                     }
 
                     &::-webkit-inner-spin-button {
@@ -131,7 +131,7 @@
             padding: 5px 0px;
             cursor: pointer;
             border: $width-border solid #e0e0e0;
-            text-align: center; 
+            text-align: center;
             margin: 0 0.25rem;
             transition: 0.5s;
             font-family: "Kanit-500";

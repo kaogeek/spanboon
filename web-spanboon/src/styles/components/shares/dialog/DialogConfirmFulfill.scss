@@ -96,7 +96,7 @@
                 > .mat-row {
                     > .mat-cell {
                         justify-content: center;
-                        font-family: "Kanit-400"; 
+                        font-family: "Kanit-400";
                         img {
                             border-radius: 50%;
                         }
@@ -232,7 +232,7 @@
             > .button-cancel,
             .button-edit {
                 background-color: #f8f7f2;
-                color: #212721;
+                color: $color-black;
             }
         }
     }
