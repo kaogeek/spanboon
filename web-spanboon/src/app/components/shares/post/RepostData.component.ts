@@ -66,8 +66,8 @@ export class RepostData {
     this.isRepost = false
 
     setTimeout(() => { 
+      console.log('this.itemPost ',this.itemPost)
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
-
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
       }
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
