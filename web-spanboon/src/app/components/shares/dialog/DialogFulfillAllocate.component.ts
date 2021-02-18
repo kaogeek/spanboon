@@ -250,7 +250,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                 for (let n of items.data.needs) {
 
-                    var index = this.data.item.map(function (e) { return e.name; }).indexOf(n.name)
+                    var index = this.data.item.map(function (e) { return e.name; }).indexOf(n.name);
 
                     if (index > -1) {
 
@@ -259,10 +259,12 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     }
                 }
 
+                this.listItemNeed.sort((a, b) => a.name.localeCompare(b.name));
+
             }, 500);
 
         }).catch((err: any) => {
-            console.log('err', err)
+            console.log('err', err);
         })
 
 
@@ -693,6 +695,31 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         return this.selectNeedItem[this.indexItem].imageURL
     }
 
+    public clickDevelop(index, text) {
+        let url = ''
+        if (index === 1) {
+            url += "emergency=#" + text
+        } else if (index === 2) {
+            url += "objective=" + text
+        }
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
+                bottomText2: "ตกลง",
+                bottomText1: "ยกเลิก",
+                bottomColorText2: "black",
+                // btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.router.navigateByUrl('/search?' + url);
+                this.onClose();
+            }
+        });
+    }
+
     public checkAuto() {
 
         const Posts: any[] = this.allocateItemtoPost;
@@ -904,7 +931,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         }
 
         if (index > -1) {
-            let item: any = this.allocateItemtoPost[index].item
+            let item: any = this.allocateItemtoPost[index].item;
+            item.sort((a, b) => a.itemName.localeCompare(b.itemName))
             return item
         } else {
             return []

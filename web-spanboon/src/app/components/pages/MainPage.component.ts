@@ -72,7 +72,7 @@ export class MainPage extends AbstractPage implements OnInit {
         }
       }
     });
- 
+
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -95,12 +95,12 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
   public ngOnInit(): void {
-    this.isLogin(); 
+    this.isLogin();
 
     const dev = sessionStorage.getItem('isDev');
-    if(dev){
+    if (dev) {
       this.isDev = false;
-    } else{
+    } else {
       this.isDev = true;
     }
   }
@@ -108,15 +108,16 @@ export class MainPage extends AbstractPage implements OnInit {
   ngAfterViewInit(): void {
     var prev = 0;
     var spanboonHome = $('#menubottom');
-    spanboonHome.ready(function () {
-      spanboonHome.scroll(function () {
-        var scrollTop = spanboonHome.scrollTop();
-        $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
-        $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
-        $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev); 
-        prev = scrollTop;
-      });
-    }) 
+
+    $(window).scroll(() => {
+      this.scrollTop('aasdad');
+      var scrollTop = spanboonHome.scrollTop();
+      $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
+      $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
+      $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
+      prev = scrollTop;
+    });
+
   }
 
   public ngOnDestroy(): void {
@@ -142,10 +143,15 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public scrollTop(event) {
 
-    if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
+    // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
+    //   this.observManager.publish('scroll.buttom', null);
+    // }
+    // var scrolltotop = document.getElementById("menubottom");
+
+    if ($(window).scrollTop() + $(window).height() == $(document).height()) {
       this.observManager.publish('scroll.buttom', null);
     }
-    // var scrolltotop = document.getElementById("menubottom");
+
     var scrolltotop = this.mainpage.nativeElement;
     this.observManager.publish('scroll', scrolltotop.scrollTop);
     var postBottom = $(".icon-post-bottom");
@@ -156,7 +162,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isPost = false;
     } else {
       this.isPost = true;
-      if (scrolltotop.scrollTop > 50) {
+      if ($(window).scrollTop() + $(window).height() == $(document).height()) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
           this.isdivtop = true;
@@ -237,7 +243,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
-  } 
+  }
 
   public dialogPost() {
     if (this.isLogin()) {
