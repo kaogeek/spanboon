@@ -275,11 +275,15 @@
             font-size: 14px;
             background-color: $color-warm-red;
             color: $brandcolor;
-            transition: 0.5s;
+            // transition: 0.5s;
 
             &:hover {
-                transform: scale(1.01);
+                // transform: scale(1.01);
             }
+        }
+
+        .mat-button-focus-overlay {
+            opacity: 0 !important;
         }
     }
 }

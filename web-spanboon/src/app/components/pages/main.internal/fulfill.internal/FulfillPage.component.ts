@@ -36,6 +36,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public apiBaseURL = environment.apiBaseURL;
+    public webBaseURL = environment.webBaseURL;
     public accessValue: any = '';
     public sender: any = '';
     public valuePage: any = '';
@@ -292,7 +293,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
 
-                console.log('3', result);
                 if (result !== null && result !== undefined) {
                     if (this.needsFromState !== null && this.needsFromState !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
@@ -413,59 +413,26 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.title = data.title;
                             this.emergencyEvent = data.emergencyEvent;
                             this.objective = data.objective;
-                            this.userImageURL = data.userImageURL;
-                            this.pageImageURL = data.pageImageURL;
+                            this.userImageURL = data.userImageURL !== undefined && data.userImageURL !== '' && data.userImageURL !== null ? data.userImageURL : '';
+                            this.pageImageURL = data.pageImageURL !== undefined && data.pageImageURL !== '' && data.pageImageURL !== null ? data.pageImageURL : '';
                             this.name = data.name;
-                            this.postDate = data.postDate;
-
-                            if (data.userImageURL !== '' && data.userImageURL !== null && data.userImageURL !== undefined) {
-                                this.assetFacade.getPathFile(data.userImageURL).then((image: any) => {
-                                    if (image.status === 1) {
-                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                            data.userImageURL = null;
-                                        } else {
-                                            data.userImageURL = image.data;
-                                        }
-                                    }
-                                }).catch((err: any) => {
-                                    if (err.error.message === "Unable got Asset") {
-                                        data.userImageURL = '';
-                                    }
-                                });
-                            }
-
-                            if (data.pageImageURL !== '' && data.pageImageURL !== null && data.pageImageURL !== undefined) {
-                                this.assetFacade.getPathFile(data.pageImageURL).then((image: any) => {
-                                    if (image.status === 1) {
-                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                            data.pageImageURL = null;
-                                        } else {
-                                            data.pageImageURL = image.data;
-                                        }
-                                    }
-                                }).catch((err: any) => {
-                                    if (err.error.message === "Unable got Asset") {
-                                        data.pageImageURL = '';
-                                    }
-                                });
+                            this.postDate = data.postDate; 
+                        } 
+                    }
+                    if (isFirst) {
+                        for (let value of fulfillList) {
+                            for (let cases of value.cases) {
+                                this.fulfillCase.push(value)
+                                this.getChatRoom(cases, this.asPage);
+                                break;
                             }
                         }
-                        if (isFirst) {
-                            for (let value of fulfillList) {
-                                for (let cases of value.cases) {
-                                    this.fulfillCase.push(value)
-                                    this.getChatRoom(cases, this.asPage);
-                                    break;
-                                }
-                            }
-                            this.fulfillCase.reverse();
-                        } else {
-                            this.fulfillCase = fulfillList;
-                        }
-
+                        this.fulfillCase.reverse();
+                    } else {
+                        this.fulfillCase = fulfillList;
                     }
                 }
-                setTimeout(() => {
+                setTimeout(() => { 
                     this.showLoading = false;
                     this.isPreloadLoad = false;
                 }, 1000);
@@ -491,7 +458,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isListPage: false,
             isEdit: false,
             isFulfillNull: true,
-            isPendingFulfill : true
+            isPendingFulfill: true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {
@@ -657,7 +624,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                         }
                                     }).catch((err: any) => {
                                         if (err.error.message === "Unable got Asset") {
-                                            data.chatMessage.filePath = ''; 
+                                            data.chatMessage.filePath = '';
                                         }
                                     });
                                 } else {

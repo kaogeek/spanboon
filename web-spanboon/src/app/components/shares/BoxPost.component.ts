@@ -105,6 +105,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isShowTablet: boolean = false;
   @Input()
+  public isSharePost: boolean = true;
+  @Input()
   public isShowMaxWidth: number;
   @Input()
   public profile: string = "";
@@ -1370,7 +1372,8 @@ export class BoxPost extends AbstractPage implements OnInit {
         isDraft: true,
         pageId: this.selectedPage,
         coverImage: this.coverImage,
-        postSocial: this.twitterConection && this.isAutoPostTwitter ? true : false
+        postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;
@@ -1951,12 +1954,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public UploadImage() {
-    this.searchObjectivePageCategory();
-
-    // setTimeout(() => {
-    //   this.setTopupload();
-    // }, 0);z 
-
+    this.searchObjectivePageCategory();  
     return this.isUpload = true;
   }
 
@@ -2145,8 +2143,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.imageIcon = result;
-        // this.imageIcon.push(result);
+        this.imageIcon = result; 
       }
       this.stopLoading();
     });

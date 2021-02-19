@@ -113,9 +113,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
     for (let message of this.data) {
       this.status = message;
     }
-    this.cloneMessage = JSON.parse(JSON.stringify(this.data));
-    console.log('message ', this.data)
-    console.log('cloneMessage ', this.cloneMessage)
+    this.cloneMessage = JSON.parse(JSON.stringify(this.data)); 
 
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       interval(30000).pipe(
@@ -123,32 +121,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
           return this.chatRoomFacade.getChatMessages(this.chatRoomId, this.asPage); // this will be your http get request
         })
       ).subscribe(async (res) => {
-        if (res.data !== null && res.data !== undefined) {
-          // for (let newMessage of res.data) {
-          //   var isMessage = false;
-          //   for (let message of this.cloneMessage) {
-          //     if (newMessage.chatMessage.id === message.chatMessage.id) {
-          //       isMessage = true;
-          //       break;
-          //     }
-          //   }
-          //   if (!isMessage) { 
-          //     if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
-          //       this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
-          //         if (image.status === 1) {
-          //           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-          //             newMessage.senderImage = '';
-          //           } else {
-          //             newMessage.senderImage = image.data;
-          //           }
-          //         } else {
-          //           newMessage.senderImage = '';
-          //         }
-          //       });
-          //     }
-          //     this.data.push(newMessage);
-          //   } 
-          // }
+        if (res.data !== null && res.data !== undefined) { 
           for (const data of res.data) {
             if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
               this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
