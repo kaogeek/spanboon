@@ -7,6 +7,26 @@
 
 <div class="control-action" *ngIf="isAction">
     <div class="collis">
+        <!-- shared post to facebook or twitter -->
+        <div class="wrapper-action" *ngIf="isPostShareData && isPostShareData.length > 0"
+            [matMenuTriggerFor]="menuSocial"
+            [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
+            <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474" viewBox="0 0 17.474 17.474">
+                <path id="social-media"
+                    [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}"
+                    d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
+                    fill="#343434" />
+            </svg>
+            <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
+                <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of isPostShareData">
+                    <a *ngIf="item.socialType === 'TWITTER' "
+                        href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                        ทวิตเตอร์
+                    </a>
+                </button>
+            </mat-menu>
+        </div> 
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{comment}}</span>
@@ -38,7 +58,7 @@
         </div>
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count">{{reboon}}</span>
+            <span class="label-count">{{reboon}}</span> 
             <ng-container *ngIf="userReboon; else elseNotReboon">
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
@@ -61,8 +81,7 @@
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.098" height="47.868" viewBox="0 0 56.098 47.868">
-                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3662"
-                        data-name="Path 3662"
+                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3662" data-name="Path 3662"
                         d="M127.39,31.89h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11L106.8,7.01l-2.6-2.57A14.869,14.869,0,0,0,93.84.26h-.3A14.956,14.956,0,0,0,83.16,25.7l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,20.8A8.012,8.012,0,0,1,99.32,9.41l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0V35.49a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                         transform="translate(-78.841 -0.002)" fill="#9d9d9d" />
                 </svg>

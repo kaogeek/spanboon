@@ -12,7 +12,9 @@
 }
 
 .cdk-drop-list {
-   
+    display: flex;
+    width: calc(33.33% - 22px);
+    margin: 0 10px 10px;
 }
 
 .cdk-drag-preview {
@@ -75,8 +77,7 @@
         }
     }
 
-    > .dialog-image-body {
-        position: relative;
+    > .dialog-image-body { 
         height: 250pt;
         padding: 10pt 10pt;
         overflow-x: hidden;
@@ -169,9 +170,10 @@
             }
 
             > .but-cancel {
-                background: $bg-fog-gray;
+                // background: $bg-fog-gray;
                 margin: 0 5pt;
                 color: $color-black;
+                border: 0.3px solid $border-color;
             }
 
             > .but-confirmed {
@@ -183,9 +185,9 @@
 
 .wrapper-image-drag-drop {
     position: relative;
-    display: flex;
-    width: calc(33.33% - 22px);
-    margin: 0 10px 10px;
+    // display: flex;
+    // width: calc(33.33% - 22px);
+    // margin: 0 10px 10px;
     &:hover {
         .img-hover {
             display: initial;

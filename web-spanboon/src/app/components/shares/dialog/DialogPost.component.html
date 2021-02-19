@@ -9,7 +9,7 @@
     <Preload-card *ngIf="isPreload && !isFulfill" [isShowCard1]="true" [isShowCard2]="false">
     </Preload-card>
     <ng-container *ngIf="isFulfill; else elseIsFulfill">
-        <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix"
+        <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix" [isSharePost]="isSharePost"
             [isFulfill]="isFulfill" (createFullfillPost)="createFullfillPost($event)" [isFulfillNull]="isFulfillNull">
         </box-post>
     </ng-container>
@@ -18,7 +18,7 @@
             (submitClose)="onClose($event)" (submitResizeClose)="onResizeClose($event)" [modeDoIng]="data.modeDoIng"
             [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage"
             [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage"
-            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton">
+            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost">
         </box-post>
     </ng-template>
 </div>

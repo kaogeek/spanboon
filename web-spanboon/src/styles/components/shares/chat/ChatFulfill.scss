@@ -7,14 +7,14 @@
 
 .chat-fulfill-wrapper {
     background: #f1f3f5;
-    border-radius: 6px; 
+    border-radius: 6px;
     font-family: "Kanit-400";
     font-size: 16px;
     position: relative;
 
     > .chat-item-action {
         > .item-name {
-            color: #7aaf67;
+            color: $bg-color4;
         }
     }
 }
