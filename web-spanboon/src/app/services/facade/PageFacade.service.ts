@@ -107,12 +107,21 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/post';
+      let queryParams: string = "";
 
       if (postSocialTW && postSocialTW !== undefined && postSocialTW !== null) {
-        url += "?twitterPost=true"
+        queryParams += "&twitterPost=true"
       }
       if (postSocialFB && postSocialFB !== undefined && postSocialFB !== null) {
-        url += "?facebookPost=true"
+        queryParams += "&facebookPost=true"
+      }
+      
+      if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
+        queryParams = queryParams.substring(1, queryParams.length);
+      }
+
+      if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
+        url += "?" + queryParams;
       }
 
       let body: any = {};
@@ -468,7 +477,7 @@ export class PageFacade extends AbstractFacade {
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
-      this.http.put(url, body, option).toPromise().then((response: any) => { 
+      this.http.put(url, body, option).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

@@ -96,9 +96,7 @@ export class DialogPost extends AbstractPage {
       }).catch((err: any) => {
         console.log(err)
       })
-    }
-
-    console.log('this.data', this.data);
+    } 
 
     setTimeout(() => {
       this.isPreload = false
