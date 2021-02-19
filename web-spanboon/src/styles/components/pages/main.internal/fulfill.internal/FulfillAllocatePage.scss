@@ -819,6 +819,9 @@
     .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-hrader > .text {
         display: none;
     }
+    .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .right {
+        width: unset;
+    }
 }
 
 @media (max-width: $small) {

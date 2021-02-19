@@ -9,15 +9,16 @@
     background-color: $white;
     @include font-size-10-100("Kanit-500");
     border-radius: 3pt;
-    color: $white;
-    cursor: pointer; 
+    border: 0.7px solid $color-warm-red !important;
+    color: $color-warm-red;
+    cursor: pointer;
     text-decoration: unset;
     width: 76pt;
     height: 26pt;
     align-items: center;
     display: flex;
     justify-content: center;
-    border : unset;
+    border: unset;
     -webkit-user-select: none;
     /* Safari 3.1+ */
     -moz-user-select: none;
@@ -39,10 +40,10 @@
     &::selection {
         background: transparent;
     }
-    
-    >.mat-ripple-element{
+
+    > .mat-ripple-element {
         display: none;
-      }
+    }
 }
 
 @media (max-width: $xlarge) {
