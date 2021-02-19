@@ -54,7 +54,8 @@
                             <loading></loading>
                         </ng-container>
                         <ng-template #elseTemplate1>
-                            <div class="wrapper-body-trend" (click)="clickDataSearch(item)" *ngFor="let item of dataTrend">
+                            <div class="wrapper-body-trend" (click)="clickDataSearch(item)"
+                                *ngFor="let item of dataTrend">
                                 <div class="trend-title">
                                     ได้รับความนิยม
                                 </div>
@@ -80,7 +81,7 @@
                             <div class="card-follow">
                                 <div class="follow">
                                     <img class="img-user"
-                                    src="https://mymodernmet.com/wp/wp-content/uploads/2020/10/cooper-baby-corgi-dogs-8.jpg"
+                                        src="https://mymodernmet.com/wp/wp-content/uploads/2020/10/cooper-baby-corgi-dogs-8.jpg"
                                         alt="">
                                     <ng-container *ngIf="isIconPage; else elseTemplate2">
                                         <div class="list-follow-name">
@@ -101,7 +102,7 @@
                                             <div class="follow-name-eng"> @corgi
                                             </div>
                                         </div>
-    
+
                                     </ng-container>
                                     <ng-template #elseTemplate2>
                                         <div class="list-follow-name">
@@ -114,15 +115,13 @@
                                     </ng-template>
                                 </div>
                                 <div class="wrapper-btn-follow">
-                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                    <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
                                 </div>
                             </div>
                             <div class="card-follow">
                                 <div class="follow">
                                     <img class="img-user"
-                                    src="https://us-fbcloud.net/wb/data/1106/1106085-img.tbclwu.1.jpg"
-                                        alt="">
+                                        src="https://us-fbcloud.net/wb/data/1106/1106085-img.tbclwu.1.jpg" alt="">
                                     <div class="list-follow-name">
                                         <div class="follow-name"> เด็กยากไร้
                                         </div>
@@ -131,25 +130,23 @@
                                     </div>
                                 </div>
                                 <div class="wrapper-btn-follow">
-                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                    <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
                                 </div>
                             </div>
                             <div class="card-follow">
                                 <div class="follow">
                                     <img class="img-user"
-                                    src="https://www.sarakadee.com/blog/oneton/wp-content/uploads/2017/12/cat-cute-e1533862828469.jpg"
+                                        src="https://www.sarakadee.com/blog/oneton/wp-content/uploads/2017/12/cat-cute-e1533862828469.jpg"
                                         alt="">
                                     <div class="list-follow-name">
                                         <div class="follow-name"> มูลนิธิเพื่อสุนัขและแมว
                                         </div>
-                                        <div class="follow-name-eng"> 
+                                        <div class="follow-name-eng">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="wrapper-btn-follow">
-                                    <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                        [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                    <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
                                 </div>
                             </div>
                         </div>
@@ -160,6 +157,6 @@
                 </div>
             </div>
         </div>
-       
+
     </div>
-</div> 
+</div>

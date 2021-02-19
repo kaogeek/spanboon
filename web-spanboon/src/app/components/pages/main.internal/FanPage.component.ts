@@ -613,7 +613,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else {
         pageId = this.resDataPage.id;
       }
-      this.pageFacade.createPost(pageId, value, value.postSocial).then((res) => {
+      this.pageFacade.createPost(pageId, value, value.postSocialTW , value.postSocialFB).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
           if (res.message === 'Create PagePost Success') {

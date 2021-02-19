@@ -67,7 +67,7 @@ export class Notification extends AbstractPage implements OnInit {
           }
         }
         that.notiOrigin = that.noti;
-        this.notiOrigin = that.noti
+        this.notiOrigin = that.noti 
       } 
     }, 31000);
   }

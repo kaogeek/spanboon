@@ -645,7 +645,7 @@
                 </div>
             </div>
             <div class="body-list-items">
-                <cdk-drop-list [cdkDropListData]="arrListItem" (cdkDropListDropped)="dropToList($event)"
+                <div cdkDropList [cdkDropListData]="arrListItem" (cdkDropListDropped)="dropToList($event)"
                     class="list-sorted" id="list1">
                     <ng-container *ngFor="let listItem of arrListItem; let index = index;">
                         <ng-container *ngIf="listItem.isAddItem; else elseisAddItem">
@@ -817,7 +817,7 @@
                             </div>
                         </ng-template>
                     </ng-container>
-                </cdk-drop-list>
+                </div>
             </div>
         </div>
     </div>

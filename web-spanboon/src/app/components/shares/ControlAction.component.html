@@ -4,33 +4,36 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div class="control-action">
+
+<div class="control-action" *ngIf="isAction">
     <div class="collis">
         <!-- shared post to facebook or twitter -->
-        <div class="wrapper-action" *ngIf="isPostShareData && isPostShareData.length > 0" [matMenuTriggerFor]="menuSocial"
+        <div class="wrapper-action" *ngIf="isPostShareData && isPostShareData.length > 0"
+            [matMenuTriggerFor]="menuSocial"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                 xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474" viewBox="0 0 17.474 17.474">
-                <path id="social-media" [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}"
+                <path id="social-media"
+                    [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}"
                     d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
                     fill="#343434" />
-            </svg> 
+            </svg>
             <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
                 <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of isPostShareData">
-                    <a *ngIf="item.socialType === 'TWITTER' " href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                    <a *ngIf="item.socialType === 'TWITTER' "
+                        href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
                         ทวิตเตอร์
-                    </a> 
-                </button> 
+                    </a>
+                </button>
             </mat-menu>
-        </div>
-
+        </div> 
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{comment}}</span>
             <ng-container *ngIf="userComment; else elseNotComment">
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="53.58" height="50.521" viewBox="0 0 53.58 50.521">
-                    <path [ngStyle]="{'fill': '#FD545A' }" id="Path_3671" data-name="Path 3671"
+                    <path class="svg-icon-color-activate" id="Path_3671" data-name="Path 3671"
                         d="M45.3,74.96H8.25A8.3,8.3,0,0,0,0,83.21v25.53A8.329,8.329,0,0,0,8.3,117h2.49v4.03a4.427,4.427,0,0,0,2.85,4.15,4.429,4.429,0,0,0,4.88-1.15l6.38-7.02H45.33a8.321,8.321,0,0,0,8.25-8.3V83.21A8.3,8.3,0,0,0,45.3,74.96ZM13.68,88.34a2.99,2.99,0,0,1,2.19-2.19H28.18a2.98,2.98,0,0,1,0,5.79H15.87A2.986,2.986,0,0,1,13.68,88.34Zm24.48,15.22H15.43c-1,0-1.83-1.35-1.83-2.99s.82-2.99,1.83-2.99H38.16c1,0,1.83,1.35,1.83,2.99S39.17,103.56,38.16,103.56Z"
                         transform="translate(0 -74.96)" fill="#9d9d9d" />
                 </svg>
@@ -39,17 +42,14 @@
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="53.58" height="50.521" viewBox="0 0 53.58 50.521">
                     <g id="Group_3272" data-name="Group 3272" transform="translate(0 -0.88)"
-                        [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-                        <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3665"
-                            data-name="Path 3665"
+                        [ngClass]="{'svg-icon-color-black': isBlack}">
+                        <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3665" data-name="Path 3665"
                             d="M45.3.88H8.25A8.31,8.31,0,0,0,0,9.13V34.66a8.329,8.329,0,0,0,8.3,8.26h2.49v4.03a4.427,4.427,0,0,0,2.85,4.15,4.429,4.429,0,0,0,4.88-1.15l6.38-7.02H45.33a8.321,8.321,0,0,0,8.25-8.3V9.13A8.31,8.31,0,0,0,45.3.88Zm.94,33.69a1.015,1.015,0,0,1-.95,1H21.66l-3.51,3.87V35.57H8.35a1.006,1.006,0,0,1-.99-.95V9.21a1,1,0,0,1,.94-.98H45.25a1.006,1.006,0,0,1,.99.95Z"
                             fill="#9d9d9d" />
-                        <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3666"
-                            data-name="Path 3666"
+                        <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3666" data-name="Path 3666"
                             d="M15.87,17.86H28.18a2.98,2.98,0,0,0,0-5.79H15.87a2.98,2.98,0,0,0,0,5.79Z"
                             fill="#9d9d9d" />
-                        <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3667"
-                            data-name="Path 3667"
+                        <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3667" data-name="Path 3667"
                             d="M38.16,23.5H15.43c-1.01,0-1.83,1.35-1.83,2.99s.83,2.99,1.83,2.99H38.16c1.01,0,1.83-1.35,1.83-2.99S39.16,23.5,38.16,23.5Z"
                             fill="#9d9d9d" />
                     </g>
@@ -58,12 +58,12 @@
         </div>
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count">{{reboon}}</span>
+            <span class="label-count">{{reboon}}</span> 
             <ng-container *ngIf="userReboon; else elseNotReboon">
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.098" height="47.868" viewBox="0 0 56.098 47.868">
-                    <path [ngStyle]="{'fill': '#FD545A' }" id="Path_3668" data-name="Path 3668"
+                    <path class="svg-icon-color-activate" id="Path_3668" data-name="Path 3668"
                         d="M127.39,105.96h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11l-2.56,2.58-2.6-2.57a14.869,14.869,0,0,0-10.36-4.18h-.3A14.956,14.956,0,0,0,83.16,99.77l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,94.87A8.012,8.012,0,0,1,99.32,83.48l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0v11.45a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                         transform="translate(-78.841 -74.072)" fill="#9d9d9d" />
                 </svg>
@@ -81,8 +81,7 @@
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.098" height="47.868" viewBox="0 0 56.098 47.868">
-                    <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3662"
-                        data-name="Path 3662"
+                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3662" data-name="Path 3662"
                         d="M127.39,31.89h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11L106.8,7.01l-2.6-2.57A14.869,14.869,0,0,0,93.84.26h-.3A14.956,14.956,0,0,0,83.16,25.7l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,20.8A8.012,8.012,0,0,1,99.32,9.41l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0V35.49a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                         transform="translate(-78.841 -0.002)" fill="#9d9d9d" />
                 </svg>
@@ -104,7 +103,7 @@
             <ng-container *ngIf="userLike; else elseNotLike">
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
-                    <path [ngStyle]="{'fill': '#FD545A' }" id="Path_3669" data-name="Path 3669"
+                    <path class="svg-icon-color-activate" id="Path_3669" data-name="Path 3669"
                         d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
                         transform="translate(-157.34 -74.77)" fill="#9d9d9d" />
                 </svg>
@@ -112,8 +111,7 @@
             <ng-template #elseNotLike>
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
-                    <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3663"
-                        data-name="Path 3663"
+                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3663" data-name="Path 3663"
                         d="M196.9.7h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.432,17.432,0,0,0,196.9.7ZM185.77,40c-8.59-5.15-20.36-14.71-20.36-22a9.244,9.244,0,0,1,9.25-9.23h.08a9.03,9.03,0,0,1,7.62,4.14l3.37,5.2,3.4-5.18a9.2,9.2,0,0,1,7.71-4.16h.02A9.32,9.32,0,0,1,206.1,18C206.1,25.41,194.35,34.91,185.77,40Z"
                         transform="translate(-157.34 -0.7)" fill="#9d9d9d" />
                 </svg>
@@ -130,7 +128,7 @@
                     transform="translate(-235.283 -0.91)" fill="#9d9d9d" />
             </svg>
         </div>
-        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="wrapper-action field-profile">
+        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
             <div class="div-profile" *ngIf="accessPage">
                 <img *ngIf="isImges" class="icon-images"
                     src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">

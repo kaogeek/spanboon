@@ -634,16 +634,8 @@ export class ChooseItem extends AbstractPage implements OnInit {
             this.arrListItem.splice(indexItem, 1);
             if (this.arrListItem.length === 0) {
                 this.isListItem = false;
-            }
-
-        }
-        // if (window.innerWidth <= 1024) {
-        //     var i, tabcontent, tablinks;
-        //     tabcontent = document.getElementsByClassName("mongha");
-        //     tabcontent[0].style.display = "none";
-        //     tabcontent[1].style.display = "none";
-        //     document.getElementById("defaultOpen2").click();
-        // }
+            } 
+        } 
     }
 
     public keyUpText(text: string, index: number, type: string) {
@@ -661,16 +653,8 @@ export class ChooseItem extends AbstractPage implements OnInit {
     }
 
     public openListItem() {
-        this.isListItem = !this.isListItem;
-        // this.isActive = true;
-        this.isUnit = false;
-        // if (window.innerWidth <= 1024) {
-        //     var i, tabcontent, tablinks;
-        //     tabcontent = document.getElementsByClassName("mongha");
-        //     tabcontent[0].style.display = "none";
-        //     tabcontent[1].style.display = "none";
-        //     document.getElementById("defaultOpen2").click();
-        // }
+        this.isListItem = !this.isListItem; 
+        this.isUnit = false; 
         this.arrListItem.push({
             isAddItem: true,
             standardItemId: "",
@@ -707,11 +691,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 }
             }
             this.removeCategorySelect(listItem);
-            this.arrListItem.splice(index, 1);
-            if (this.arrListItem.length === 0) {
-                // this.isListItem = false;
-                // this.isActive = false;
-            }
+            this.arrListItem.splice(index, 1); 
         }
     }
 
@@ -824,56 +804,8 @@ export class ChooseItem extends AbstractPage implements OnInit {
             }
 
         }
-    }
-    // public onResize() {
-    //     if (window.innerWidth <= 1024) {
-    //         if (this.isTabClick === 'centerleft') {
-    //             document.getElementById("defaultOpen1").click();
-    //         } else {
-    //             document.getElementById("defaultOpen2").click();
-    //         }
-    //     } else {
+    } 
 
-    //     }
-    //     if (window.innerWidth <= 768) { 
-    //         if (this.tabSelect && this.top && this.bottomConfirm) {
-    //             let tab = this.tabSelect.nativeElement.offsetHeight;
-    //             let tab1 = this.choose.nativeElement.offsetHeight;
-    //             let top = this.top.nativeElement.offsetHeight;
-    //             let bottom = this.bottomConfirm.nativeElement.offsetHeight;
-    //             let body = this.bodyList.nativeElement.offsetHeight;
-    //             let x;
-    //             // let x; 
-    //             if(window.outerHeight === 1024){
-    //                 x = top + tab + bottom;
-    //             } else if(window.outerHeight === 798){
-
-    //             }
-    //             console.log('document.documentElement.clientHeight ',document.documentElement.clientHeight)
-    //             var chromeH = window.outerHeight - window.innerHeight;
-    //             console.log('1 ', window.outerHeight) 
-    //             console.log('2 ', window.innerHeight) 
-    //             console.log('chromeH ', chromeH) 
-    //             var isLandscape = window.innerWidth > window.innerHeight, height; 
-    //             let land = isLandscape ? 32 : 44 ;
-    //             if (window.innerHeight <= 1024 && 768 < window.innerHeight) { 
-
-    //                 x =  chromeH + land ; 
-    //             } else {
-    //                 if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-    //                     // x = x + chromeH;
-    //                     // console.log('total ', x)
-    //                     // x = x + 70;
-    //                     x =   chromeH + land;
-    //                 }
-    //             }
-
-    //             // this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
-    //             this.choose.nativeElement.style.height = "calc(100vh - " + x + "px)";
-    //         }
-
-    //     }
-    // }
     public clickData(event, text) {
         if (event.isTrusted) {
             if (text === 'defaultOpen1') {
@@ -882,16 +814,14 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 var data = document.getElementById('centerleft');
                 data.style.display = 'flex';
                 this.isListItem = false;
-                this.isTabClick = text;
-                // document.getElementById("defaultOpen1").click();
+                this.isTabClick = text; 
             } else {
                 $('#defaultOpen1').removeClass('active');
                 $('#defaultOpen2').addClass('active');
                 var data = document.getElementById('centerleft');
                 data.style.display = 'none';
                 this.isListItem = true;
-                this.isTabClick = text;
-                // document.getElementById("defaultOpen2").click();
+                this.isTabClick = text; 
             }
         }
     }

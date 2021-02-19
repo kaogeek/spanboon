@@ -12,6 +12,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropListGroup, CdkD
 import { ViewportRuler } from '@angular/cdk/overlay';
 import { Asset } from '../../../models/Asset';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
+import { Platform } from '@angular/cdk/platform';
 
 @Component({
   selector: 'dialog-manage-image',
@@ -30,7 +31,7 @@ export class DialogManageImage {
   @ViewChild(CdkDropList, { static: false }) placeholder: CdkDropList;
 
   private postFacade: PostFacade;
-  
+
   public target: CdkDropList;
   public targetIndex: number;
   public source: CdkDropList;
@@ -38,23 +39,24 @@ export class DialogManageImage {
   public dragIndex: number;
   public activeContainer;
   private fileImageOriginal: any[] = [];
- 
+
   constructor(public dialogRef: MatDialogRef<DialogManageImage>, @Inject(MAT_DIALOG_DATA) public fileImage: any[], private viewportRuler: ViewportRuler,
-  postFacade: PostFacade) {
-    this.postFacade = postFacade
+    postFacade: PostFacade, private _platform: Platform) {
+    this.postFacade = postFacade;
+    this._platform = _platform
   }
 
   public ngOnInit(): void {
     this.fileImageOriginal = JSON.parse(JSON.stringify(this.fileImage));
   }
 
-  public onNoClick(): void { 
+  public onNoClick(): void {
     this.dialogRef.close(this.fileImageOriginal);
   }
 
   public onClickImg(): void {
     const inputimage = document.getElementById("inputimage");
-    this.dialogRef.close(this.fileImage); 
+    this.dialogRef.close(this.fileImage);
   }
 
   public deleteImage(index: number) {
@@ -62,19 +64,14 @@ export class DialogManageImage {
   }
 
   public fileChangeListener(event) {
-    let files : any[]= event.target.files;
+    let files: any[] = event.target.files;
     if (files.length === 0) {
       return;
     }
-    if (files) {  
+    if (files) {
       for (let file of files) {
         let reader = new FileReader();
-        reader.onload = (event: any) => {
-          // this.fileImage.push({
-          //   fileName: file.name,
-          //   size: file.size,
-          //   image: event.target.result,   
-          // });
+        reader.onload = (event: any) => { 
           let data = {
             fileName: file.name,
             size: file.size,
@@ -87,19 +84,19 @@ export class DialogManageImage {
     }
   }
 
-  public genImages(images: any): void { 
+  public genImages(images: any): void {
     this.fileImage.push(images);
 
-    const asset = new Asset(); 
+    const asset = new Asset();
     let data = images.image.split(',')[0];
     let typeImage = data.split(':')[1];
     asset.mimeType = typeImage.split(';')[0];
     asset.data = images.image.split(',')[1];
     asset.fileName = images.fileName;
-    asset.size = images.size; 
+    asset.size = images.size;
     let temp = {
       asset
-    } 
+    }
     this.postFacade.upload(temp).then((res: any) => {
       if (res.status === 1) {
         for (let result of this.fileImage) {
@@ -109,12 +106,12 @@ export class DialogManageImage {
             Object.assign(result, { isUpload: true });
           }
         }
-      } 
+      }
 
     }).catch((err: any) => {
       console.log(err)
     })
-  } 
+  }
 
   ngAfterViewInit() {
     let phElement = this.placeholder.element.nativeElement;
@@ -144,7 +141,7 @@ export class DialogManageImage {
     });
   }
 
-  clickSubmit(){}
+  clickSubmit() { }
 
   dropListDropped() {
     if (!this.target)
@@ -205,12 +202,19 @@ export class DialogManageImage {
   getPointerPositionOnPage(event: MouseEvent | TouchEvent) {
     // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
     const point = __isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
-    const scrollPosition = this.viewportRuler.getViewportScrollPosition();
+    const scrollPosition = this.viewportRuler.getViewportScrollPosition(); 
+    if (!this._platform.isBrowser) {
+      return {
+        x: point.pageX - scrollPosition.left,
+        y: point.pageY - scrollPosition.top 
+      };
+    } else {
+      return {
+        x: point.pageX - scrollPosition.left,
+        y: point.pageY - 0
+      };
+    }
 
-    return {
-      x: point.pageX - scrollPosition.left,
-      y: point.pageY - scrollPosition.top
-    };
   }
 }
 
