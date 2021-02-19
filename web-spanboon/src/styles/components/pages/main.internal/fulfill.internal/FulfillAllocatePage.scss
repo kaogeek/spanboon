@@ -101,7 +101,7 @@
                     color: #000;
                     cursor: pointer;
                     &:hover {
-                        color: #fd545a;
+                        color: $color-warm-red;
                     }
                 }
             }
@@ -342,7 +342,7 @@
                         cursor: pointer;
 
                         &:hover {
-                            border: 0.1px solid #fd545a;
+                            border: 0.1px solid $color-warm-red;
                         }
 
                         > .item-image {
@@ -518,7 +518,7 @@
 
                                     fill: black;
                                     &:hover {
-                                        fill: #fd545a;
+                                        fill: $color-warm-red;
                                     }
                                     &.dis {
                                         opacity: 0.5;
@@ -555,7 +555,7 @@
                                 cursor: pointer;
 
                                 &:hover {
-                                    border: 0.1px solid #fd545a;
+                                    border: 0.1px solid $color-warm-red;
                                 }
 
                                 > .item-image {
@@ -719,7 +719,7 @@
 
                                         fill: black;
                                         &:hover {
-                                            fill: #fd545a;
+                                            fill: $color-warm-red;
                                         }
                                         &.dis {
                                             opacity: 0.5;
@@ -739,7 +739,7 @@
                         font-size: 22px;
                         > .link {
                             margin: 0px 10px;
-                            color: #fd545a;
+                            color: $color-warm-red;
                             cursor: pointer;
                         }
                     }

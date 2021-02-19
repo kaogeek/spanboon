@@ -33,6 +33,16 @@
   }
 }
 
+.svg-icon-color {
+  fill: $svg-icon;
+}
+.svg-icon-color-black {
+  fill: $svg-icon-black;
+}
+.svg-icon-color-activate {
+  fill: $svg-icon-activate;
+}
+
 .TooltipShow {
   width: 1px;
   z-index: 2;
@@ -64,7 +74,7 @@
     // text-align: center;
   }
   .createpage-temporary-box {
-    border: solid #fd545a 2px;
+    border: solid $color-warm-red 2px;
     color: white;
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
@@ -78,7 +88,7 @@
       .box-icon-svg {
         height: 100%;
         width: 200pt;
-        background-color: #fd545a;
+        background-color: $color-warm-red;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -114,7 +124,7 @@
             padding: 4px;
             color: white;
             text-align: center;
-            background-color: #fd545a;
+            background-color: $color-warm-red;
             border-radius: 4px;
             display: flex;
             align-items: center;

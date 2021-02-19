@@ -232,7 +232,7 @@
                                         background-color: #ff001624;
                                         color: $brandcolor2 !important;
                                         > .mat-chip-remove {
-                                            color: #c62634 !important;
+                                            color: $brandcolor2 !important;
                                             opacity: 0.7 !important;
                                         }
                                     }
@@ -910,11 +910,11 @@
                                     font-size: 14px;
                                 }
                             }
-                            >.read-more {
+                            > .read-more {
                                 font-size: 14px;
                             }
                         }
-                    } 
+                    }
                 }
             }
         }
@@ -944,7 +944,7 @@
                                     font-size: 14px;
                                 }
                             }
-                            >.read-more {
+                            > .read-more {
                                 font-size: 14px;
                             }
                         }
