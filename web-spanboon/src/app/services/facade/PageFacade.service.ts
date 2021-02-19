@@ -103,13 +103,16 @@ export class PageFacade extends AbstractFacade {
     return httpOptions;
   }
 
-  public createPost(pageId: string, data: Post, postSocial?: any): Promise<any> {
+  public createPost(pageId: string, data: Post, postSocialTW?: any, postSocialFB?: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/post';
 
-      if (postSocial && postSocial !== undefined && postSocial !== null) {
+      if (postSocialTW && postSocialTW !== undefined && postSocialTW !== null) {
         url += "?twitterPost=true"
+      }
+      if (postSocialFB && postSocialFB !== undefined && postSocialFB !== null) {
+        url += "?facebookPost=true"
       }
 
       let body: any = {};

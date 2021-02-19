@@ -278,12 +278,7 @@ export class MainPage extends AbstractPage implements OnInit {
         disableClose: false,
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        // if (result === undefined) { 
-        //   this.data.topic = '';
-        //   this.data.content = '';
-        //   // this.imageIcon.push(result);
-        // }
+      dialogRef.afterClosed().subscribe(result => { 
         this.stopLoading();
       });
     } else {

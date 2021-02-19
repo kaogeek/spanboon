@@ -50,6 +50,7 @@ export class DialogPost extends AbstractPage {
   public isFulfill: boolean = true;
   public isPreload: boolean = true;
   public isFulfillNull: boolean = false;
+  public isSharePost: boolean = false;
   public snackBar: MatSnackBar;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -215,9 +216,7 @@ export class DialogPost extends AbstractPage {
     }
   }
 
-  public createFullfillPost(data) {
-    console.log('this.isFulfill', this.isFulfill)
-    console.log('data', data)
+  public createFullfillPost(data) { 
     if (this.isFulfill) {
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
         if (res.status === 1) {
