@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu">
+<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu" (menuOpened)="isOpened()">
     <div class="notiAlert" [class.active-plus]="notiisRead.length > 9" *ngIf="notiisRead.length > 0">
         <ng-container *ngIf="notiisRead.length > 9; else elseTemplateNoti">
             <span>9+</span>
@@ -43,8 +43,7 @@
                     transform="translate(-1905 3200)" fill="#474747" />
             </g>
         </svg>
-    </ng-template>
-
+    </ng-template> 
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
     <div class="wrapper-header" (click)="$event.stopPropagation();">

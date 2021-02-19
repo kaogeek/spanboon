@@ -53,6 +53,7 @@ export class CheckMessageManager extends AbstractFacade {
     }
 
     startTimer() {
+        clearInterval(this.interval)
         this.interval = setInterval(() => {
             if (this.time > 0) {
                 this.time--;

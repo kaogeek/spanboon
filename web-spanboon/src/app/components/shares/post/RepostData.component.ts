@@ -53,6 +53,7 @@ export class RepostData {
   public isPage: any;
   public storyTeb: any;
   public isNotAccess: any;
+  public isPendingFulfill: boolean = true;
 
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
@@ -67,8 +68,7 @@ export class RepostData {
     this.isComment = false
     this.isRepost = false
 
-    setTimeout(() => { 
-      console.log('this.itemPost ',this.itemPost)
+    setTimeout(() => {  
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
       }
@@ -94,6 +94,7 @@ export class RepostData {
       }
       if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
         this.isFulfill = true;
+        this.isPendingFulfill = false;
         for (let fulfill of this.itemPost.caseFulfillment) {
           for (let item of this.itemPost.caseNeeds) {
             if (fulfill.need === item._id) {

@@ -9,8 +9,8 @@
     <!-- Header - Start -->
     <section class="section-header">
         <ng-container *ngIf="dataMainPage && dataMainPage.emergencyEvents;">
-            <status-bar class="status-header" [topic]="dataMainPage.emergencyEvents.title" [isStausIcon]="'true'"
-                [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
+            <status-bar class="status-header fix-hompage-bar" [topic]="dataMainPage.emergencyEvents.title"
+                [isStausIcon]="'true'" [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
                 [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
             </status-bar>
         </ng-container>
@@ -56,7 +56,7 @@
     <!-- Looking - Start -->
     <section class="section-wrapper-looking-for">
         <div class="wrapper-card-left" *ngIf="dataMainPage && dataMainPage.lastest">
-            <status-bar-looking class="header-card-left" [topic]="dataMainPage.lastest.title"
+            <status-bar-looking class="header-card-left fix-hompage-bar" [topic]="dataMainPage.lastest.title"
                 (submit)="showAlertDialog()" [status]="dataMainPage.lastest.subtitle"
                 [createDate]="dataMainPage.lastest.dateTime | dateFormat " [isStausDate]="'true'"
                 [isStatusIcon]="'true'"></status-bar-looking>
@@ -83,7 +83,7 @@
         </div>
         <ng-container *ngIf="dataMainPage && dataMainPage.looking">
             <div class="wrapper-card-right">
-                <status-bar-looking class="header-card-right" [topic]="dataMainPage.looking.title"
+                <status-bar-looking class="header-card-right fix-hompage-bar" [topic]="dataMainPage.looking.title"
                     (submit)="showAlertDialog()" [count]="dataMainPage.looking.contentCount | shortNumber"
                     [status]="dataMainPage.looking.subtitle" [isStatusIcon]="'true'">
                 </status-bar-looking>
@@ -122,7 +122,7 @@
 
     <!-- Missed - Start -->
     <section class="section-wrapper-missed" *ngIf="dataMainPage && dataMainPage.viewSection;">
-        <status-bar class="missed-head" [topic]="dataMainPage.viewSection.title"
+        <status-bar class="missed-head fix-hompage-bar" [topic]="dataMainPage.viewSection.title"
             [status]="dataMainPage.viewSection.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'"
             [bgColor]="'transparent'"></status-bar>
         <ng-container *ngIf="dataMainPage.viewSection.contents; else elseViewSection">
@@ -182,7 +182,7 @@
                             chevron_right
                         </div>
                     </div>
-                </div> 
+                </div>
             </ng-template>
         </ng-container>
         <ng-template #elseViewSection>
@@ -240,7 +240,7 @@
 
             <!-- MULTIPLE - Start -->
             <section class="section-wrapper-missed2" *ngIf="item.templateType === 'MULTIPLE'">
-                <status-bar class="missed2-heead" [bgColor]="'transparent'" [topic]="item.title"
+                <status-bar class="missed2-heead fix-hompage-bar" [bgColor]="'transparent'" [topic]="item.title"
                     [status]="item.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'" [isImage]="'true'"
                     [images]="item.iconBase64" [dataName]="item"></status-bar>
                 <ng-container *ngIf="item.contents; else elseMutiple">
@@ -308,8 +308,8 @@
 
             <!-- ICON - Start -->
             <section class="section-personal-tag" *ngIf="item.templateType === 'ICON'">
-                <status-bar [topic]="item.title" [status]="item.subtitle" (submit)="showAlertDialog()"
-                    [isSeeAll]="'true'" [bgColor]="'transparent'"></status-bar>
+                <status-bar [topic]="item.title" class="fix-hompage-bar" [status]="item.subtitle"
+                    (submit)="showAlertDialog()" [isSeeAll]="'true'" [bgColor]="'transparent'"></status-bar>
                 <ng-container *ngIf="item.contents; else elseIcon">
                     <ng-container *ngIf="item.isList; else elseTemplateICON">
                         <div class="tag-wrap">
@@ -362,8 +362,8 @@
             <section class="section-footer-twin" *ngIf="item.templateType === 'TWIN'">
                 <ng-container *ngFor="let card of item.contents">
                     <div class="wrapper-footer-header" [class.full-row]="item.contents.length === 1">
-                        <status-bar class="head-footer-twin" [topic]="card.title" [status]="card.subtitle"
-                            [isSeeAll]="'true'" [isImage]="'true'" (submit)="showAlertDialog()"
+                        <status-bar class="head-footer-twin fix-hompage-bar" [topic]="card.title"
+                            [status]="card.subtitle" [isSeeAll]="'true'" [isImage]="'true'" (submit)="showAlertDialog()"
                             [images]="card.iconBase64" [dataName]="card">
                         </status-bar>
                         <div class="wrapper-footer-body">
