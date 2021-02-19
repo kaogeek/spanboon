@@ -231,7 +231,8 @@
 
   > .dropdown {
     position: absolute;
-    top: 7pt;
+    top: 12pt;
+    // top: 7pt;
     right: 14px;
     width: 30px;
     height: 30px;
@@ -336,7 +337,7 @@
   > .wrapper-content {
     padding: 10pt 15pt 0 15pt;
     word-break: break-word;
-
+ 
     &.active {
       padding: 0 15pt 0 15pt;
     }
@@ -848,6 +849,7 @@
         padding: 0 10pt 0 10pt;
       }
       > .wrapper-footer-post {
+        padding : unset;
         > .right {
           padding: 5pt 0;
           > control-action {

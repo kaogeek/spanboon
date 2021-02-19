@@ -478,12 +478,12 @@
                                         <Preload-card [isShowCard1]="true" [isShowCard2]="true">
                                         </Preload-card>
                                     </ng-container>
-                                    <ng-template #elseTemplateLoad>
+                                    <ng-template #elseTemplateLoad> 
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
-                                            <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
+                                            <ng-container *ngFor="let itemPost of resPost.posts;let index = index"> 
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
-                                                    [isShowUser]="true" [isNotAccess]="isNotAccess"
+                                                    [isShowUser]="true" [isNotAccess]="isNotAccess" 
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"

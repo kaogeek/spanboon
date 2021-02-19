@@ -74,6 +74,8 @@ export class ControlAction {
   public isShowtextshare: boolean = true;
   @Input()
   public isShowtextPlusAll: boolean = false;
+  @Input()
+  public isPostShareData: any;
 
   public Allcount: number;
 
@@ -84,7 +86,7 @@ export class ControlAction {
   public apiBaseURL = environment.apiBaseURL;
 
   constructor() {
-    setTimeout(() => {
+    setTimeout(() => { 
       if (this.accessPage !== undefined && this.accessPage !== null) {  
         if (this.accessPage[0].img64 !== undefined && this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
