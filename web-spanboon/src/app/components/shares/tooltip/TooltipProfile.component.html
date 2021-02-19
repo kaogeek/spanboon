@@ -143,9 +143,8 @@
         </div>
     </div>
     <div class="tooltip-bottom">
-        <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'" [bgColor]="'#FFFFFF'"
-            [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'" (click)="clickFollow()"
-            [class.active]="resDataPage && resDataPage.isFollow">
+        <button-follow [bgColor]="'#FFFFFF'" [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
+            (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
         </button-follow>
         <div class="tooltip-bottom-right">
             <button mat-stroked-button class="but-send">

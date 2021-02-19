@@ -134,7 +134,7 @@
 
                     &:nth-child(4) {
                         > .fulfill-quantity {
-                            color: #7aaf67;
+                            color: $bg-color4;
                         }
                     }
 
@@ -217,7 +217,7 @@
             }
 
             > .button-submit {
-                background-color: #7aaf67;
+                background-color: $bg-color4;
                 color: $white;
                 width: 150pt;
             }

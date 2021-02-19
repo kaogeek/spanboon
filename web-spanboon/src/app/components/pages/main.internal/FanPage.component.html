@@ -129,7 +129,8 @@
                             </ng-template>
                         </ng-container>
                     </ng-template>
-                    <img id="images" [class.active]="isEditCover" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
+                    <img id="images" [class.active]="isEditCover"
+                        [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                 </div>
                 <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false"
                     [class]="'preload-profile'">
@@ -188,8 +189,7 @@
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                                <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                    [bgColor]="'#FFFFFF'"
+                                <button-follow [bgColor]="'#FFFFFF'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
                                     (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
@@ -222,7 +222,8 @@
                                 <div class="header-looking-for">
                                     ความเป็นมา
                                 </div>
-                                <span class="material-icons" (click)="showAlertDevelopDialog()" *ngIf="isLogin() && isNotAccess"> edit </span>
+                                <span class="material-icons" (click)="showAlertDevelopDialog()"
+                                    *ngIf="isLogin() && isNotAccess"> edit </span>
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
                                 *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
@@ -478,12 +479,12 @@
                                         <Preload-card [isShowCard1]="true" [isShowCard2]="true">
                                         </Preload-card>
                                     </ng-container>
-                                    <ng-template #elseTemplateLoad> 
+                                    <ng-template #elseTemplateLoad>
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
-                                            <ng-container *ngFor="let itemPost of resPost.posts;let index = index"> 
+                                            <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
-                                                    [isShowUser]="true" [isNotAccess]="isNotAccess" 
+                                                    [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"

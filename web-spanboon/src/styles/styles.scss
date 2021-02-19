@@ -88,10 +88,12 @@
       .box-icon-svg {
         height: 100%;
         width: 200pt;
-        background-color: $color-warm-red;
+        background-color: #dfdfdf;
         display: flex;
         flex-direction: column;
         align-items: center;
+        color: #fd545a;
+        text-align: center;
         justify-content: center;
       }
       .box-from {
