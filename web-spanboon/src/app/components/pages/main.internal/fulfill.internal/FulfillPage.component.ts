@@ -416,8 +416,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.userImageURL = data.userImageURL !== undefined && data.userImageURL !== '' && data.userImageURL !== null ? data.userImageURL : '';
                             this.pageImageURL = data.pageImageURL !== undefined && data.pageImageURL !== '' && data.pageImageURL !== null ? data.pageImageURL : '';
                             this.name = data.name;
-                            this.postDate = data.postDate; 
-                        } 
+                            this.postDate = data.postDate;
+                        }
                     }
                     if (isFirst) {
                         for (let value of fulfillList) {
@@ -432,7 +432,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         this.fulfillCase = fulfillList;
                     }
                 }
-                setTimeout(() => { 
+                setTimeout(() => {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
                 }, 1000);
