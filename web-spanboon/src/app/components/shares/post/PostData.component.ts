@@ -69,6 +69,8 @@ export class PostData {
   public userImage: any;
   @Input()
   public commentPost: any;
+  @Input()
+  public isPostShareData: any;
   @Output()
   public comment: EventEmitter<any> = new EventEmitter();
   @Output()
@@ -84,11 +86,13 @@ export class PostData {
   public isLoading: Boolean;
   public linkPost: string;
   public isFulfill: boolean = false;
+  public isPendingFulfill: boolean = false; 
 
   private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
 
   public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
   public marginPerAction: any;
   public menuProfile: any;
 
@@ -107,7 +111,7 @@ export class PostData {
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => {  
+    setTimeout(() => {    
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;
@@ -121,6 +125,7 @@ export class PostData {
       }
       if (this.itemPost && this.itemPost.needs !== undefined && this.itemPost.needs !== null) {
         this.isFulfill = false;
+        this.isPendingFulfill = true;
         for (let needs of this.itemPost.needs) {
           if (needs.standardItemId !== null && needs.standardItemId !== '' && needs.standardItemId !== undefined) {
             this.needsFacade.getNeeds(needs.standardItemId).then((res: any) => {
@@ -132,6 +137,7 @@ export class PostData {
       }
       if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
         this.isFulfill = true;
+        this.isPendingFulfill = false;
         for (let fulfill of this.itemPost.caseFulfillment) {
           for (let item of this.itemPost.caseNeeds) {
             if (fulfill.need === item._id) {
@@ -173,9 +179,9 @@ export class PostData {
           }
         }
       }
-    }, 1000);
-
+    }, 1000); 
   }
+  
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;

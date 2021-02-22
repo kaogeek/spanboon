@@ -126,7 +126,7 @@
             <span>สตอรี่ที่คุณอาจสนใจ</span>
         </div>
 
-        <div class="swiper-container" [swiper]="config"
+        <div class="swiper-container" [swiper]="configIcon"
             *ngIf="recommendedStory ? recommendedStory.contents.length > 0 : false">
             <div class="swiper-wrapper">
                 <ng-container *ngFor="let data of recommendedStory.contents;let index = index">
@@ -148,25 +148,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div *ngIf="!data.coverPageUrl" style="background-color: #eeeeee;"
+                        <div *ngIf="!data.coverPageUrl" style="background-color: #deafaf;"
                             class="wp-block-cover has-background-dim">
-                            <svg class="icon-spanboon" id="Group_227" data-name="Group 227"
-                                xmlns="http://www.w3.org/2000/svg" style="position: absolute;top: 40%;" width="160"
-                                height="80" viewBox="0 0 59.073 29.556">
-                                <g id="Group_133" data-name="Group 133" transform="translate(0 0)">
-                                    <g id="Group_132" data-name="Group 132">
-                                        <circle id="Ellipse_83" data-name="Ellipse 83" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(52.509 9.86)" fill="#FD545A" />
-                                        <circle id="Ellipse_84" data-name="Ellipse 84" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(0 9.86)" fill="#FD545A" />
-                                        <circle id="Ellipse_85" data-name="Ellipse 85" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(26.255)" fill="#FD545A" />
-                                        <path id="Path_192" data-name="Path 192"
-                                            d="M1489.264,704.882c-.007-11.48-13.228-20.785-29.536-20.785s-29.53,9.3-29.536,20.785h2.929a3.281,3.281,0,0,1,6.563,0h5.824V694.631a5.47,5.47,0,0,1,10.94,0v10.251H1463V694.631a5.47,5.47,0,1,1,10.939,0v10.251h5.779v-.006a3.282,3.282,0,0,1,6.564,0v.006Z"
-                                            transform="translate(-1430.191 -675.326)" fill="#FD545A" />
-                                    </g>
-                                </g>
-                            </svg>
+                            <img style="width: 50%;position: absolute;" src="../../../../assets/img/logo/logo.svg"
+                                alt="">
                             <div class="background-text">
                                 <span class="background-text-h">{{data.post.title}}</span>
                                 <span class="background-text-h-s">{{data.post.detail}}</span>
@@ -204,7 +189,7 @@
             <a href={{linkPage}} target="_blank">{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</a>
         </div>
 
-        <div class="swiper-container" [swiper]="config"
+        <div class="swiper-container" [swiper]="configIcon"
             *ngIf="recommendedStorys ? recommendedStorys.contents.length > 0 : false">
             <div class="swiper-wrapper">
                 <ng-container *ngFor="let data of recommendedStorys.contents;let index = index">
@@ -226,25 +211,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div *ngIf="!data.coverPageUrl" style="background-color: #eeeeee;"
+                        <div *ngIf="!data.coverPageUrl" style="background-color: #deafaf;"
                             class="wp-block-cover has-background-dim">
-                            <svg class="icon-spanboon" id="Group_227" data-name="Group 227"
-                                xmlns="http://www.w3.org/2000/svg" style="position: absolute;top: 40%;" width="160"
-                                height="80" viewBox="0 0 59.073 29.556">
-                                <g id="Group_133" data-name="Group 133" transform="translate(0 0)">
-                                    <g id="Group_132" data-name="Group 132">
-                                        <circle id="Ellipse_83" data-name="Ellipse 83" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(52.509 9.86)" fill="#FD545A" />
-                                        <circle id="Ellipse_84" data-name="Ellipse 84" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(0 9.86)" fill="#FD545A" />
-                                        <circle id="Ellipse_85" data-name="Ellipse 85" cx="3.282" cy="3.282" r="3.282"
-                                            transform="translate(26.255)" fill="#FD545A" />
-                                        <path id="Path_192" data-name="Path 192"
-                                            d="M1489.264,704.882c-.007-11.48-13.228-20.785-29.536-20.785s-29.53,9.3-29.536,20.785h2.929a3.281,3.281,0,0,1,6.563,0h5.824V694.631a5.47,5.47,0,0,1,10.94,0v10.251H1463V694.631a5.47,5.47,0,1,1,10.939,0v10.251h5.779v-.006a3.282,3.282,0,0,1,6.564,0v.006Z"
-                                            transform="translate(-1430.191 -675.326)" fill="#FD545A" />
-                                    </g>
-                                </g>
-                            </svg>
+                            <img style="width: 50%;position: absolute;" src="../../../../assets/img/logo/logo.svg"
+                                alt="">
                             <div class="background-text">
                                 <span class="background-text-h" style="color: black;">{{data.post.title}}</span>
                                 <span class="background-text-h-s" style="color: black;">{{data.post.detail}}</span>

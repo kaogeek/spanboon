@@ -8,15 +8,7 @@ import { IsNotEmpty } from 'class-validator';
 
 export class PageSocialFBBindingRequest {
 
-    @IsNotEmpty({ message: 'accessToken is required' })
-    public accessToken: string;
-
     @IsNotEmpty({ message: 'facebookPageId is required' })
     public facebookPageId: string;
-
-    @IsNotEmpty({ message: 'fbAccessExpirationTime is required' })
-    public fbAccessExpirationTime: string;
-
-    @IsNotEmpty({ message: 'fbSignedRequest is required' })
-    public fbSignedRequest: string;
+    
 }

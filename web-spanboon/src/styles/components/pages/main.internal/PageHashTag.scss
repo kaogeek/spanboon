@@ -139,7 +139,7 @@
                                             border-radius: 25px;
                                             background-color: #fff;
                                             height: 25pt;
-                                            color: #212721;
+                                            color: $color-black;
                                             padding: 2pt 10pt 2pt 13pt;
                                             font-family: "Kanit-500";
                                             font-size: 14px;
@@ -317,9 +317,9 @@
                     min-width: 243pt;
                     width: 100%;
 
-                    > .feed-body-search { 
+                    > .feed-body-search {
                         position: sticky;
-                        top: 55pt; 
+                        top: 55pt;
                         margin-bottom: 5pt;
                         z-index: 2;
                         border-left: $width-border solid $border-color;
@@ -462,7 +462,7 @@
                                         background-color: #ff001624;
                                         color: $brandcolor2 !important;
                                         > .mat-chip-remove {
-                                            color: #c62634 !important;
+                                            color: $brandcolor2 !important;
                                             opacity: 0.7 !important;
                                         }
                                     }
@@ -537,14 +537,14 @@
                                 }
                             }
                         }
-                    } 
+                    }
 
                     > .wrapper-feed-card {
                         position: relative;
                         z-index: 1;
                         background-color: white;
                         border-left: $width-border solid $border-color;
-                        border-right: $width-border solid $border-color; 
+                        border-right: $width-border solid $border-color;
 
                         > .feed-post-card {
                             display: flex;
@@ -639,7 +639,7 @@
                     > .feed-none-post {
                         text-align: center;
                         padding: 20pt 0;
-                        @include font-size-7-100("Kanit-500"); 
+                        @include font-size-7-100("Kanit-500");
                     }
 
                     > .wrapper-body-middle {
@@ -1182,7 +1182,7 @@ page-hashtag {
                 > .body-recommended {
                     > .recommended-left {
                         // width: calc(100% - 250pt - 5pt);
-                        > .feed-body-search { 
+                        > .feed-body-search {
                             > .footer-bar {
                                 > .sorting {
                                     > .menu-sorting {
@@ -1312,7 +1312,7 @@ page-hashtag {
                 > .body-recommended {
                     > .recommended-left {
                         // width: 100%;
-                        > .feed-body-search {  
+                        > .feed-body-search {
                             //   width: 438pt;
                             > .footer-bar {
                                 > .nav-bar-tab {
@@ -1343,8 +1343,8 @@ page-hashtag {
                     width: 100%;
                     > .recommended-left {
                         margin-right: unset;
-                        >.feed-body-search {
-                            // width: 412pt; 
+                        > .feed-body-search {
+                            // width: 412pt;
                         }
                     }
                 }
@@ -1448,7 +1448,7 @@ page-hashtag {
                 }
                 > .body-recommended {
                     > .recommended-left {
-                        > .feed-body-search { 
+                        > .feed-body-search {
                             top: 39pt;
                             transition: all 0.8s ease-in-out;
                             -webkit-transition: all 0.8s ease-in-out;
@@ -1483,7 +1483,7 @@ page-hashtag {
                                     }
                                 }
                             }
-                        } 
+                        }
 
                         > .wrapper-body-middle {
                             > .header-top-name {

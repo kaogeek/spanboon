@@ -61,7 +61,7 @@
         padding: 10pt 1pt 1pt 1pt;
 
         &.active {
-            padding: 0 1pt 1pt 1pt;
+            // padding: 0 1pt 1pt 1pt;
         }
 
         > .swiper-wrapper {
@@ -135,7 +135,7 @@
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
                                     overflow: hidden;
-                                    padding: 5pt 0;
+                                    margin: 5pt 0;
                                 }
                             }
 

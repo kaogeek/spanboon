@@ -19,7 +19,9 @@
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 15pt;
-    // padding: 10pt 35pt 10pt 15pt;
+    &.active {
+      justify-content: unset;
+    }
     > .left {
       display: flex;
       align-items: center;
@@ -219,14 +221,18 @@
   }
   > .topic-name {
     display: flex;
-    padding: 10pt 15pt 0 15pt;
+    padding: 10pt 15pt 10pt 15pt;
     font-family: "Kanit-400";
     font-size: 20px;
+    &.active {
+      display: none;
+    }
   }
 
   > .dropdown {
     position: absolute;
-    top: 7pt;
+    top: 12pt;
+    // top: 7pt;
     right: 14px;
     width: 30px;
     height: 30px;
@@ -331,6 +337,10 @@
   > .wrapper-content {
     padding: 10pt 15pt 0 15pt;
     word-break: break-word;
+ 
+    &.active {
+      padding: 0 15pt 0 15pt;
+    }
 
     > .post-to {
       display: flex;
@@ -386,7 +396,11 @@
       overflow: hidden;
       font-family: "Kanit-500";
       font-size: 16px;
-      padding-top: 10pt;
+
+      &.active {
+        padding-top: 10pt;
+      }
+
       > a {
         color: $color-warm-red;
       }
@@ -458,7 +472,7 @@
       }
 
       > .input-comment {
-        flex: 1 1 0%; 
+        flex: 1 1 0%;
 
         > .comment-text {
           border: 1px solid rgb($black, 0.1);
@@ -822,8 +836,20 @@
 
 @media (max-width: $small) {
   .card-feed-post {
+    margin: 9pt 0;
+    > .header-post {
+      padding: 15pt 10pt;
+    }
+    > .dropdown {
+      top: 12pt;
+    }
     > .wrapper-content {
+      padding: 15pt 10pt 0 10pt;
+      &.active {
+        padding: 0 10pt 0 10pt;
+      }
       > .wrapper-footer-post {
+        padding : unset;
         > .right {
           padding: 5pt 0;
           > control-action {
@@ -834,8 +860,8 @@
                     display: none;
                   }
                   > .img-action {
-                    width: 15pt;
-                    height: 15pt;
+                    width: 14pt !important;
+                    height: 14pt !important;
                   }
                 }
               }
@@ -878,6 +904,9 @@
           }
         }
       }
+    }
+    > .topic-name {
+      padding: 10pt;
     }
   }
 }

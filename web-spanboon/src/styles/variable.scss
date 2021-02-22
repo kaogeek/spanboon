@@ -54,36 +54,42 @@ $color-9: rgb(243, 243, 243);
 $color-10: rgba(255, 255, 255, 1);
 $color-11: #8e8e8e;
 $color-12: #1e7bf3;
-
-//
-$padding-page-side: 45pt;
-
-$color-warm-red: #fd545a;
+$color-13: #f8f7f2;
+$color-14: #f3f3f3;
+$color-15: #7aaf67;
 $color-black: #212721;
 
-$brandcolor: #f8f7f2;
-$brandcolor2: #c62634;
+$padding-page-side: 45pt;
+$color-warm-red: rgb(253, 84, 84);
+
+//SVG social icon
+
+$svg-icon: $color-13;
+$svg-icon-black: $color-black;
+$svg-icon-activate: $color-warm-red;
+
+$brandcolor: $color-13;
+$brandcolor2: $color-warm-red;
 $koalaGray: #a5a5a6;
-$bg-fog-gray: #e5e3dd;
-$bg-fog-gray2: #f5f5f5;
 $border-color: #e5e5e5;
-$bg-grey: #f1f1f1;
 $border-separator: #efefef;
 $font-color-none: #c5c4c4;
 //
-$bg-color1: #f3f3f3;
-$bg-color2: rgb(27, 27, 27);
-$bg-color3: rgb(255, 101, 101);
-$bg-color4: #7aaf67;
-
-$blur: #00000070;
-$background-hover: #f1f1f1d9;
-
+$bg-color1: $color-14;
+$bg-color2: $color-black;
+$bg-color3: $color-warm-red;
+$bg-color4: $color-15;
+$bg-grey: #f1f1f1;
+$bg-fog-gray: #e5e3dd;
+$bg-fog-gray2: #f5f5f5;
+$bgcolor-list-item-fulfill-allocate: #fcfcfd;
 $shadow-vote-vard: #d3d3d4;
-$shadow-vote-vard-hover: #adadb0;
 $shwdow-cards: #c2c2cc;
 
-$bgcolor-list-item-fulfill-allocate: #fcfcfd;
+$blur: #00000070;
+
+$background-hover: #f1f1f1d9;
+$shadow-vote-vard-hover: #adadb0;
 
 // 3.font size
 $font-size-1: 72px;
@@ -175,4 +181,11 @@ $border-radius-4px: 4px;
 }
 
 @media (max-width: $small) {
+}
+
+// function
+
+@function invert($color, $amount: 100%) {
+  $inverse: change-color($color, $hue: hue($color) + 180);
+  @return mix($inverse, $color, $amount);
 }

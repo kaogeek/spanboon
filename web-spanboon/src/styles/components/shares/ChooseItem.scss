@@ -427,7 +427,7 @@
     flex-direction: column;
     width: 100%;
     white-space: normal;
-
+    margin: unset;
     &.msg-error {
         width: calc(100% - 1.4pt);
     }

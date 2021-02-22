@@ -1,8 +1,8 @@
-<loading *ngIf="isPreLoadTwitter"></loading>
+<loading *ngIf="isPreLoadIng"></loading>
 
-<div class="security-info" *ngIf="!isPreLoadTwitter">
+<div class="security-info" *ngIf="!isPreLoadIng">
     <div class="label-info">
-        ความปลอดภัยและล็อคอิน
+        เชื่อมต่อแฟลตฟอร์ม
     </div>
     <div class="body-social">
         <div class="label-connect">
@@ -10,7 +10,7 @@
         </div>
         <div class="box-social">
             <div class="left">
-                <div class="icon-left" [ngStyle]="{'background-color': '#2851a3'}">
+                <div class="icon-left" [class.facebook]="connect">
                     <svg class="icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
                         style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
@@ -28,13 +28,66 @@
                     {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}
                 </div>
             </div>
-            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('fackbook')">
+            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('facebook',connect)">
                 {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
             </div>
         </div>
         <div class="box-social">
             <div class="left">
-                <div class="icon-left" [ngStyle]="{'background-color':  '#1da1f3'}">
+                <div class="icon-left" [class.twitter]="connectTwitter">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962" height="30.845"
+                        viewBox="0 0 37.962 30.845">
+                        <path id="brands-and-logotypes"
+                            d="M37.962,51.652a16.226,16.226,0,0,1-4.484,1.229,7.739,7.739,0,0,0,3.424-4.3,15.553,15.553,0,0,1-4.935,1.884A7.782,7.782,0,0,0,18.5,55.785a8.014,8.014,0,0,0,.18,1.775A22.029,22.029,0,0,1,2.643,49.419a7.785,7.785,0,0,0,2.392,10.4,7.686,7.686,0,0,1-3.516-.959v.085a7.818,7.818,0,0,0,6.235,7.647,7.767,7.767,0,0,1-2.04.256,6.881,6.881,0,0,1-1.473-.133,7.857,7.857,0,0,0,7.272,5.421,15.638,15.638,0,0,1-9.65,3.319A14.579,14.579,0,0,1,0,75.352a21.91,21.91,0,0,0,11.939,3.493C26.26,78.844,34.09,66.981,34.09,56.7c0-.344-.012-.676-.028-1.006A15.526,15.526,0,0,0,37.962,51.652Z"
+                            transform="translate(0 -48)" fill="#F8F7F2" />
+                    </svg>
+                </div>
+                <div class="lost-connect">
+                    {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
+                </div>
+            </div>
+
+            <div class="link-connect" [class.active]="connectTwitter"
+                (click)="connectionSocial('twitter',connectTwitter)">
+                {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            </div>
+        </div>
+    </div>
+    <div class="label-info">
+        แชร์โพสต์อัตโนมัติ
+    </div>
+    <div class="body-social">
+        <div class="label-connect">
+            การตั้งค่าเริ่มต้นสำหรับการแชร์โพสต์สำหรับ facebook และ twitter
+        </div>
+        <div class="box-social">
+            <div class="left">
+                <div class="icon-left" [class.facebook]="autoPostFacebook">
+                    <svg class="icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
+                        style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+                        <g>
+                            <path fill="#F8F7F2"
+                                d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+		c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+		c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+		c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+                        </g>
+                    </svg>
+
+                </div>
+                <div class="lost-connect">
+                    {{autoPostFacebook ? 'แชร์โพสต์ไปยัง Facebook' : 'ยังไม่ได้เชื่อมต่อแชร์โพสต์ไปยัง Facebook'}}
+                </div>
+            </div>
+            <div class="link-connect" [class.active]="autoPostFacebook">  
+                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostFacebook"
+                    (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
+            </div>
+        </div>
+        <div class="box-social">
+            <div class="left">
+                <div class="icon-left" [class.twitter]="autoPostTwitter">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962" height="30.845"
                         viewBox="0 0 37.962 30.845">
                         <path id="brands-and-logotypes"
@@ -43,50 +96,14 @@
                     </svg>
                 </div> 
                 <div class="lost-connect">
-                    {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
+                    {{autoPostTwitter ? 'แชร์โพสต์ไปยัง Twitter' : 'ยังไม่ได้เชื่อมต่อแชร์โพสต์ไปยัง Twitter'}}
                 </div>
             </div>
 
-            <div class="link-connect" [class.active]="connectTwitter" (click)="connectionSocial('twitter',connectTwitter)">
-                {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            <div class="link-connect" [class.active]="autoPostTwitter" >
+                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
+                    (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
         </div>
-
-        <div class="box-social">
-            <div class="left">
-                <div class="icon-left" [ngStyle]="{'background-color': '#F8F7F2'}">
-                    <svg class="icon" id="google" xmlns="http://www.w3.org/2000/svg" width="28.239" height="28.239"
-                        viewBox="0 0 28.239 28.239">
-                        <path id="Path_268" data-name="Path 268"
-                            d="M6.618,108.807a7.455,7.455,0,0,1,1.055-3.832v-4.76H2.913a14.127,14.127,0,0,0,0,17.184h4.76v-4.76A7.455,7.455,0,0,1,6.618,108.807Z"
-                            transform="translate(0 -94.688)" fill="#fbbd00" />
-                        <path id="Path_269" data-name="Path 269"
-                            d="M199.309,374.011,196,377.32l3.309,3.309a14.012,14.012,0,0,0,8.592-2.913v-4.755h-4.755A7.5,7.5,0,0,1,199.309,374.011Z"
-                            transform="translate(-185.19 -352.391)" fill="#0f9d58" />
-                        <path id="Path_270" data-name="Path 270"
-                            d="M57.583,325.477l-4.76,4.76a14.34,14.34,0,0,0,1.222,1.392,14.027,14.027,0,0,0,9.984,4.135v-6.619A7.5,7.5,0,0,1,57.583,325.477Z"
-                            transform="translate(-49.91 -307.526)" fill="#31aa52" />
-                        <path id="Path_271" data-name="Path 271"
-                            d="M270.119,200.56a14.243,14.243,0,0,0-.231-2.558l-.124-.678H256v6.618h6.7a7.467,7.467,0,0,1-2.862,3.069l4.755,4.755a14.344,14.344,0,0,0,1.392-1.222A14.027,14.027,0,0,0,270.119,200.56Z"
-                            transform="translate(-241.881 -186.441)" fill="#3c79e6" />
-                        <path id="Path_272" data-name="Path 272"
-                            d="M204.613,8.815l.585.585,4.68-4.68-.585-.585A14.027,14.027,0,0,0,199.309,0L196,3.309l3.309,3.309A7.452,7.452,0,0,1,204.613,8.815Z"
-                            transform="translate(-185.19 0)" fill="#cf2d48" />
-                        <path id="Path_273" data-name="Path 273"
-                            d="M64.028,6.618V0a14.027,14.027,0,0,0-9.984,4.135,14.333,14.333,0,0,0-1.222,1.392l4.76,4.76A7.5,7.5,0,0,1,64.028,6.618Z"
-                            transform="translate(-49.909 0)" fill="#eb4132" />
-                    </svg>
-                </div>
-
-                <div class="lost-connect">
-                    {{connect ? 'เชื่อมต่อกับ Google' : 'ยังไม่ได้เชื่อมต่อกับ Google'}}
-                </div>
-            </div>
-
-            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('google')">
-                {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
-            </div>
-        </div>
-
     </div>
 </div>

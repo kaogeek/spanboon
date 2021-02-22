@@ -86,11 +86,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }
 
-        if (doRunAccessToken) {
-            let httpOptions: any = {
-                responseType: 'text'
-            };
-            this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
+        if (doRunAccessToken) { 
+            this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
                 let spilt = res.split('&');
                 const token = spilt[0].split('=')[1];
                 const token_secret = spilt[1].split('=')[1];
@@ -139,6 +136,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         }).catch((error) => {
             console.log('error >>> ', error);
         });
+
     }
 
 
@@ -182,14 +180,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
         });
     }
 
-    public clickLoginTW() {  
-        let callback = "login";
+    public clickLoginTW() { 
+        let callback = environment.webBaseURL + "/login";
         this.twitterService.requestToken(callback).then((result: any) => {
-            this.authorizeLink += '?' + result; 
-            window.open(this.authorizeLink);
+          this.authorizeLink += '?' + result; 
+          window.open(this.authorizeLink);
         }).catch((error: any) => {
-            console.log(error);
+          console.log(error);
         });
+    
     }
 
     private loginGoogle() {
@@ -273,7 +272,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                 this.accessToken = accessToken;
 
                 this._ngZone.run(() => this.loginFB());
-            } 
+            }
         }, { scope: 'public_profile,email,user_birthday,user_gender' });
     }
 

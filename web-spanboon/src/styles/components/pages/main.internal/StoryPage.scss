@@ -334,7 +334,7 @@
     margin: 10px;
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items: center;
     .background-text {
       transition: 0.3s;
       width: 550px;
@@ -511,11 +511,10 @@
         }
         .control {
           .even {
-            width: 40%;
+            width: 25%;
           }
           .controls {
-            width: 60%;
-            transform: scale(0.6);
+            width: 75%;
           }
         }
         .comment {
@@ -551,7 +550,8 @@
     }
     .dis-container {
       transition: 0.6s;
-      width: 90%;
+      width: 100%;
+      padding: 0;
       .dis-sub-name-page {
       }
       .ct-container {

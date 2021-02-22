@@ -11,9 +11,14 @@
   padding: 0 40pt;
   height: $height-header-top;
   position: sticky;
-  top: 0;
+  top: 0pt !important;
+  transform: unset;
   z-index: 1000;
   background-color: $white;
+  transition: all 0.8s ease-in-out;
+  -webkit-transition: all 0.8s ease-in-out;
+  -moz-transition: all 0.8s ease-in-out;
+  -ms-transition: all 0.8s ease-in-out;
   > .wrapper-logo {
     flex: 0 0 auto;
     display: flex;
@@ -198,7 +203,7 @@
   .header-top {
     padding: 0 15pt;
 
-    >.middle { 
+    > .middle {
       display: none;
 
       > .wrapper-home {
@@ -234,6 +239,7 @@
   .header-top {
     height: 39pt;
     padding: 0 0 0 10pt;
+    border-bottom: 0.7px solid $border-color;
 
     > .wrapper-logo {
       > .icon-spanboon {

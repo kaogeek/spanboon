@@ -36,6 +36,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public apiBaseURL = environment.apiBaseURL;
+    public webBaseURL = environment.webBaseURL;
     public accessValue: any = '';
     public sender: any = '';
     public valuePage: any = '';
@@ -161,6 +162,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDate: any;
     public pageId: string;
     public postId: string;
+    public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
@@ -225,7 +227,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
-        console.log('this.needsFromState', this.needsFromState)
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -242,7 +243,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.observManager.subscribe('authen.message', (chat: any) => {
-            console.log('chat ', chat)
             if (chat && chat.length > 0) {
                 for (let data of chat) {
                     for (let caseData of this.fulfillCase) {
@@ -258,18 +258,41 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
         });
 
+        this.observManager.subscribe('authen.listcase', (caseId: any) => {
+            if (caseId !== undefined && caseId !== '') {
+                this.fulFillFacade.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, caseId).then((result) => {
+                    if (result !== null && result !== undefined) {
+                        for (let dataCase of result) {
+                            for (let newMessage of dataCase.cases) {
+                                for (let old of this.fulfillCase) {
+                                    const isMessage = old.cases.find(oldMessage => {
+                                        return oldMessage.fulfillCaseId === newMessage.fulfillCaseId;
+                                    });
+                                    if (isMessage) {
+                                        isMessage.chatMessage = newMessage.chatMessage;
+                                        isMessage.chatDate = newMessage.chatDate;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).catch((err) => {
+                    this.showDialogError(err.name, this.router.url);
+                });
+            }
+        });
+
     }
 
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
-        console.log('this.authenManager', this.authenManager.getUserToken())
         if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
 
-                console.log('3', result);
                 if (result !== null && result !== undefined) {
                     if (this.needsFromState !== null && this.needsFromState !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
@@ -378,8 +401,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.showLoading = true;
             let fulfillList = await this.fulFillFacade.listFulfillmentCase(status, asPage, orderBy, groupBy, filterType, limit, offset, caseId);
 
-            console.log('1', fulfillList);
-
             let fulfillCases: any[] = [];
             if (fulfillList.length > 0 && fulfillList !== null && fulfillList !== undefined) {
                 this.showCase = true;
@@ -392,56 +413,23 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.title = data.title;
                             this.emergencyEvent = data.emergencyEvent;
                             this.objective = data.objective;
-                            this.userImageURL = data.userImageURL;
-                            this.pageImageURL = data.pageImageURL;
+                            this.userImageURL = data.userImageURL !== undefined && data.userImageURL !== '' && data.userImageURL !== null ? data.userImageURL : '';
+                            this.pageImageURL = data.pageImageURL !== undefined && data.pageImageURL !== '' && data.pageImageURL !== null ? data.pageImageURL : '';
                             this.name = data.name;
                             this.postDate = data.postDate;
-
-                            if (data.userImageURL !== '' && data.userImageURL !== null && data.userImageURL !== undefined) {
-                                this.assetFacade.getPathFile(data.userImageURL).then((image: any) => {
-                                    if (image.status === 1) {
-                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                            data.userImageURL = null;
-                                        } else {
-                                            data.userImageURL = image.data;
-                                        }
-                                    }
-                                }).catch((err: any) => {
-                                    if (err.error.message === "Unable got Asset") {
-                                        data.userImageURL = '';
-                                    }
-                                });
-                            }
-
-                            if (data.pageImageURL !== '' && data.pageImageURL !== null && data.pageImageURL !== undefined) {
-                                this.assetFacade.getPathFile(data.pageImageURL).then((image: any) => {
-                                    if (image.status === 1) {
-                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                                            data.pageImageURL = null;
-                                        } else {
-                                            data.pageImageURL = image.data;
-                                        }
-                                    }
-                                }).catch((err: any) => {
-                                    if (err.error.message === "Unable got Asset") {
-                                        data.pageImageURL = '';
-                                    }
-                                });
+                        }
+                    }
+                    if (isFirst) {
+                        for (let value of fulfillList) {
+                            for (let cases of value.cases) {
+                                this.fulfillCase.push(value)
+                                this.getChatRoom(cases, this.asPage);
+                                break;
                             }
                         }
-                        if (isFirst) {
-                            for (let value of fulfillList) {
-                                for (let cases of value.cases) {
-                                    this.fulfillCase.push(value)
-                                    this.getChatRoom(cases, this.asPage);
-                                    break;
-                                }
-                            }
-                            this.fulfillCase.reverse();
-                        } else {
-                            this.fulfillCase = fulfillList;
-                        }
-
+                        this.fulfillCase.reverse();
+                    } else {
+                        this.fulfillCase = fulfillList;
                     }
                 }
                 setTimeout(() => {
@@ -469,7 +457,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
             isFulfill: true,
             isListPage: false,
             isEdit: false,
-            isFulfillNull: true
+            isFulfillNull: true,
+            isPendingFulfill: true
         };
 
         const dialogRef = this.dialog.open(DialogPost, {
@@ -493,6 +482,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }
                 }).catch((err: any) => {
                     console.log('error ', err)
+                    this.showDialogError(err.name, this.router.url);
                 });
 
                 this.fulfillmentPost = result.id;
@@ -504,7 +494,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public getChatRoom(fulfill: any, asPage?: any) {
-        console.log('fulfill >>>> ', fulfill)
         this.chatData = [];
         this.reqData = [];
 
@@ -569,14 +558,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.linkPost = (this.mainPostLink + fulfill.postId);
             this.fulfillCaseId = fulfill.fulfillCaseId;
             this.title = fulfill.title;
+            this.uniqueId = fulfill.uniqueId;
             this.userImageURL = fulfill.userImageURL;
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
-            this.postDate = fulfill.postDate;
+            this.postDate = fulfill.createdDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
-            fulfill.isRead = true;
-            fulfill.unreadMessageCount = 0;
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
                 if (res !== null && res !== undefined) {
@@ -594,11 +582,16 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             if (data !== null && data !== undefined) {
                                 if (data.chatMessage !== '' && data.chatMessage !== null && data.chatMessage !== undefined) {
                                     chatIds.push(data.chatMessage.id);
-                                    this.chatFacade.markReadChatMessage(chatIds,asPage).then((readResult) => {
-                                        console.log('readResult ', readResult)
+                                    this.chatFacade.markReadChatMessage(chatIds, asPage).then((readResult) => {
                                         if (readResult !== null && readResult !== undefined) {
-                                            data.chatMessage.isRead = true;
-                                            chatIds = [];
+                                            for (let result of readResult.data) {
+                                                if (data.chatMessage.id === result.id) {
+                                                    data.chatMessage.isRead = result.isRead;
+                                                    fulfill.isRead = result.isRead;
+                                                    fulfill.unreadMessageCount = 0;
+                                                    chatIds = [];
+                                                }
+                                            }
                                         }
                                     }).catch((error) => {
                                         console.log('error >>>> ', error);
@@ -660,10 +653,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }, 1000);
                 }
             }).catch((error) => {
+                this.showDialogError(error.name, this.router.url);
                 this.showChatRoom = false;
                 this.canAccessCase = false;
                 this.canAccessChatRoom = false;
-                console.log(error.message);
+                console.log(error.name);
             });
         } else {
             setTimeout(() => {
@@ -816,7 +810,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
         } else {
 
-
             let data = {
                 disableClose: true,
                 item: this.reqData,
@@ -893,7 +886,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         for (const req of res) {
                             this.reqData.push(req);
                         }
-
                         this.getChatMessage();
                     }).catch((err) => {
 
@@ -953,7 +945,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private createFulfillCaseFromPost(result: any) {
-        console.log('result', result)
         if (Object.keys(result).length > 0 && result !== null && result !== undefined) {
             const data = result.data;
             let needsResult: any[] = [];
@@ -1033,7 +1024,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                             }
                                         });
 
-                                        let needResult: any = { mergeItem: false, needs: [] };
+                                        // let needResult: any = { mergeItem: false, needs: [] };
                                         let needDuplicateResult: any = { mergeItem: true, needs: [] };
 
                                         for (const needs of needsDuplicate) {
@@ -1041,18 +1032,43 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                             needDuplicateResult.needs.push(needsData);
                                         }
 
-                                        for (const needs of needsList) {
-                                            const needsData = { id: needs.id, quantity: needs.quantity };
-                                            needResult.needs.push(needsData);
-                                        }
+                                        // for (const needs of needsList) {
+                                        //     const needsData = { id: needs.id, quantity: needs.quantity };
+                                        //     needResult.needs.push(needsData);
+                                        // }
 
                                         fulfillResult.push(needDuplicateResult);
-                                        fulfillResult.push(needResult);
-
+                                        // fulfillResult.push(needResult); 
                                         if (fulfillResult !== null && fulfillResult !== undefined && fulfillResult.length > 0) {
                                             for (const fulfill of fulfillResult) {
                                                 this.createFulfillmentRequest(fulfillCaseId, fulfill, this.asPage).then((createRes) => {
+                                                    if (createRes && createRes.length > 0) {
+                                                        for (let newNeeds of createRes) {
+                                                            for (let data of this.reqData) {
+                                                                if (data.needsId === newNeeds.needsId) {
+                                                                    data.quantity = newNeeds.quantity;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                     this.getChatMessage();
+                                                    // let chatIds: string[] = [];
+                                                    // chatIds.push(this.chatRoomId); 
+                                                    // this.chatFacade.markReadChatMessage(chatIds, this.asPage).then((readResult) => {
+                                                    //     console.log('readResult ',readResult)
+                                                    //     if (readResult !== null && readResult !== undefined) {
+                                                    //         for (let result of readResult.data) {
+                                                    //             if (data.chatMessage.id === result.id) {
+                                                    //                 data.chatMessage.isRead = result.isRead;
+                                                    //                 fulfill.isRead = result.isRead;
+                                                    //                 fulfill.unreadMessageCount = 0;
+                                                    //                 chatIds = [];
+                                                    //             }
+                                                    //         }
+                                                    //     }
+                                                    // }).catch((error) => {
+                                                    //     console.log('error >>>> ', error);
+                                                    // });
                                                 });
                                             }
                                         }
@@ -1104,6 +1120,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
         }).catch((createError) => {
+            if (createError.error.error.message === "Create FulfillmentCase Error") {
+                this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
+            }
         });
     }
 

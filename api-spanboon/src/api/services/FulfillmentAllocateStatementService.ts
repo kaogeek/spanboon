@@ -13,7 +13,7 @@ import { SearchUtil } from '../../utils/SearchUtil';
 import { Needs } from '../models/Needs';
 import { NeedsService } from '../services/NeedsService';
 import { FulfillmentRequestService } from '../services/FulfillmentRequestService';
-import { ObjectID } from 'typeorm';
+import { ObjectID } from 'mongodb';
 
 @Service()
 export class FulfillmentAllocateStatementService {
@@ -72,6 +72,10 @@ export class FulfillmentAllocateStatementService {
         }
     }
 
+    public async getAllocateStatementFromRequest(fulfillmentReqId: string): Promise<FulfillmentAllocateStatement[]> {
+        return this.find({ fulfillmentRequest: new ObjectID(fulfillmentReqId), deleted: false });
+    }
+
     public async createFulfillmentAllocateStatement(statement: FulfillmentAllocateStatement): Promise<FulfillmentAllocateStatement> {
         // create allocate and +/- need
         if (statement === undefined || statement === null) {
@@ -107,9 +111,10 @@ export class FulfillmentAllocateStatementService {
         const createdStmt = await this.create(statement);
 
         // edit need
+        const needQty = (need.quantity !== undefined && need.quantity !== null && !isNaN(need.quantity)) ? need.quantity : 0;
         const qty = (need.fulfillQuantity !== undefined && need.fulfillQuantity !== null && !isNaN(need.fulfillQuantity)) ? need.fulfillQuantity : 0;
         const newFulfillQty = qty + statement.amount;
-        const newFullfilled = (newFulfillQty >= qty) ? true : false;
+        const newFullfilled = (newFulfillQty >= needQty) ? true : false;
 
         await this.needsService.update({ _id: need.id }, {
             $set: {

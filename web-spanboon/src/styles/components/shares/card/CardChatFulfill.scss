@@ -119,6 +119,20 @@
         justify-content: flex-end;
     }
 }
+@media (max-width: $xxlarge) {
+    .card-chat-fulfill-wrapper {
+        > .chat-fulfill-item-wrapper {
+            > .chat-fulfill-item {
+                > .chat-fulfill-item-icon {
+                    width: 40pt;
+                    height: 40pt;
+                    > .fulfill-item-icon {
+                    }
+                }
+            }
+        }
+    }
+}
 
 @media (max-width: $medium) {
     .card-chat-fulfill-wrapper {
@@ -131,7 +145,6 @@
                     width: 35pt;
                     height: 35pt;
                     > .fulfill-item-icon {
-                     
                     }
                 }
             }

@@ -13,6 +13,7 @@ export class FulfillmentListResponse {
     public pageId: string;
     public pageName: string;
     public pageUsername: string;
+    public pageOfficial: string;
     public postId: string;
     public fulfillmentPost: string;
     public postDate: Date;

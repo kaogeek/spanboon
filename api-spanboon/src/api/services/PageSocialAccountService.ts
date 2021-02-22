@@ -12,15 +12,26 @@ import { PageSocialAccountRepository } from '../repositories/PageSocialAccountRe
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { ObjectID } from 'mongodb';
+import { spanboon_web } from '../../env';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { TwitterService } from '../services/TwitterService';
 import { FacebookService } from '../services/FacebookService';
+import { SocialPostService } from '../services/SocialPostService';
+import { PostsService } from '../services/PostsService';
+import { AssetService } from '../services/AssetService';
+import { PostsGalleryService } from '../services/PostsGalleryService';
+import { Posts } from '../models/Posts';
+import { SocialPost } from '../models/SocialPost';
+import { TwitterUtils } from '../../utils/TwitterUtils';
+import { FacebookUtils } from '../../utils/FacebookUtils';
+import { Asset } from '../models/Asset';
 
 @Service()
 export class PageSocialAccountService {
 
     constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository,
-        private twitterService: TwitterService, private facebookService: FacebookService) { }
+        private twitterService: TwitterService, private facebookService: FacebookService, private socialPostService: SocialPostService,
+        private postsService: PostsService, private postsGalleryService: PostsGalleryService, private assetService: AssetService) { }
 
     // find PageSocialAccount
     public find(findCondition: any): Promise<PageSocialAccount[]> {
@@ -63,6 +74,100 @@ export class PageSocialAccountService {
         }
     }
 
+    public async pagePostToTwitter(postId: string, postByPageId?: string): Promise<boolean> {
+        if (postId === undefined || postId === null || postId === '') {
+            return false;
+        }
+
+        const posts: Posts = await this.postsService.findOne({ _id: new ObjectID(postId) });
+
+        if (posts === undefined) {
+            return false;
+        }
+
+        if (postByPageId === undefined) {
+            postByPageId = posts.pageId;
+        }
+
+        if (postByPageId === undefined || postByPageId === '') {
+            return false;
+        }
+
+        const link = '/post/' + posts.id;
+        let storyLink = '';
+        if (posts.story !== undefined && posts.story !== null && posts.story !== '') {
+            storyLink = '/story/' + posts.id;
+        }
+        const imageBase64s = [];
+        // search asset
+        const assetIds = [];
+        const gallerys = await this.postsGalleryService.find({ post: new ObjectID(postId) });
+        if (gallerys !== undefined) {
+            for (const gal of gallerys) {
+                assetIds.push(gal.fileId);
+            }
+        }
+
+        if (assetIds.length > 0) {
+            const assetObjs = await this.assetService.find({ _id: { $in: assetIds } });
+            if (assetObjs !== undefined) {
+                for (const assetObj of assetObjs) {
+                    if (assetObj.data !== undefined && assetObj.data !== null) {
+                        if (imageBase64s.length < 4) {
+                            imageBase64s.push(assetObj.data);
+                        }
+                    }
+                }
+            }
+        }
+
+        const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
+        const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
+        const postLink = (storyLink !== '') ? fullStoryLink : fullLink;
+        const messageForTW = TwitterUtils.generateTwitterText(posts.title, posts.detail, postLink, undefined, posts.emergencyEventTag, posts.objectiveTag);
+
+        try {
+            const twitterPost = await this.pagePostMessageToTwitter(postByPageId, messageForTW, imageBase64s);
+
+            // create social post log
+            if (twitterPost !== undefined) {
+                const socialPost = new SocialPost();
+                socialPost.pageId = posts.pageId;
+                socialPost.postId = posts.id;
+                socialPost.postBy = new ObjectID(postByPageId);
+                socialPost.postByType = 'PAGE';
+                socialPost.socialId = twitterPost.id_str;
+                socialPost.socialType = PROVIDER.TWITTER;
+
+                await this.socialPostService.create(socialPost);
+            }
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+
+        return true;
+    }
+
+    public async pagePostMessageToTwitter(pageId: string, message: string, imageBase64s: string[]): Promise<any> {
+        const twitterAccount = await this.getTwitterPageAccount(pageId);
+
+        if (twitterAccount !== undefined) {
+            const accessToken = twitterAccount.properties.oauthToken;
+            const tokenSecret = twitterAccount.properties.oauthTokenSecret;
+
+            try {
+                const result = await this.twitterService.postStatusWithImageByToken(accessToken, tokenSecret, message, imageBase64s);
+
+                return result;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        return undefined;
+    }
+
     public async shareAllSocialPost(pageId: string, message: string, imageBase64s: string[], ignoreTwitter?: any, ignoreFacebook?: any): Promise<boolean> {
         let twitterPost = true;
         if (ignoreTwitter !== undefined) {
@@ -95,7 +200,9 @@ export class PageSocialAccountService {
         if (postFacebook) {
             const fbAccount = await this.getFacebookPageAccount(pageId);
             if (fbAccount !== undefined) {
-                this.facebookService.publishPost(fbAccount.providerPageId, message);
+                const fbUserId = fbAccount.providerPageId;
+                const accessToken = fbAccount.storedCredentials;
+                this.facebookService.publishPost(fbUserId, accessToken, message);
             }
         }
 
@@ -108,5 +215,99 @@ export class PageSocialAccountService {
 
     public async getFacebookPageAccount(pageId: string): Promise<PageSocialAccount> {
         return await this.pageSocialAccountRepository.findOne({ page: new ObjectID(pageId), providerName: PROVIDER.FACEBOOK });
+    }
+
+    public async pagePostMessageToFacebook(pageId: string, message: string, assets?: Asset[]): Promise<any> {
+        const facebookAccount = await this.getFacebookPageAccount(pageId);
+
+        if (facebookAccount !== undefined) {
+            const fbUserId = facebookAccount.providerPageId;
+            const accessToken = facebookAccount.storedCredentials;
+
+            try {
+                const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
+
+                return result;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        return undefined;
+    }
+
+    public async pagePostToFacebook(postId: string, postByPageId?: string): Promise<boolean> {
+        if (postId === undefined || postId === null || postId === '') {
+            return false;
+        }
+
+        const posts: Posts = await this.postsService.findOne({ _id: new ObjectID(postId) });
+
+        if (posts === undefined) {
+            return false;
+        }
+
+        if (postByPageId === undefined) {
+            postByPageId = posts.pageId;
+        }
+
+        if (postByPageId === undefined || postByPageId === '') {
+            return false;
+        }
+
+        const link = '/post/' + posts.id;
+        let storyLink = '';
+        if (posts.story !== undefined && posts.story !== null && posts.story !== '') {
+            storyLink = '/story/' + posts.id;
+        }
+        const assets = [];
+        // search asset
+        const assetIds = [];
+        const gallerys = await this.postsGalleryService.find({ post: new ObjectID(postId) });
+        if (gallerys !== undefined) {
+            for (const gal of gallerys) {
+                assetIds.push(gal.fileId);
+            }
+        }
+
+        if (assetIds.length > 0) {
+            const assetObjs = await this.assetService.find({ _id: { $in: assetIds } });
+            if (assetObjs !== undefined) {
+                for (const assetObj of assetObjs) {
+                    if (assetObj.data !== undefined && assetObj.data !== null) {
+                        if (assets.length < 4) {
+                            assets.push(assetObj);
+                        }
+                    }
+                }
+            }
+        }
+
+        const fullLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + link;
+        const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
+        const postLink = (storyLink !== '') ? fullStoryLink : fullLink;
+        const messageForFB = FacebookUtils.generateFacebookText(posts.title, posts.detail, postLink, undefined, posts.emergencyEventTag, posts.objectiveTag);
+
+        try {
+            const facebookPost = await this.pagePostMessageToFacebook(postByPageId, messageForFB, assets);
+
+            // create social post log
+            if (facebookPost !== undefined && facebookPost.error === undefined) {
+                const socialPost = new SocialPost();
+                socialPost.pageId = posts.pageId;
+                socialPost.postId = posts.id;
+                socialPost.postBy = new ObjectID(postByPageId);
+                socialPost.postByType = 'PAGE';
+                socialPost.socialId = facebookPost.id;
+                socialPost.socialType = PROVIDER.FACEBOOK;
+
+                await this.socialPostService.create(socialPost);
+            }
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+
+        return true;
     }
 }

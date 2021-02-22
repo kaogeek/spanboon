@@ -180,7 +180,7 @@
                     }
                 }
             }
-        } 
+        }
 
         > .fulfill-right {
             display: flex;
@@ -255,6 +255,12 @@
                         -webkit-line-clamp: 1;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
+                        > a {
+                            color: $black;
+                            &:hover {
+                                text-decoration: underline !important;
+                            }
+                        }
                     }
 
                     > .contact-hashtag {
@@ -570,7 +576,7 @@
                                 > .fulfill-status-text {
                                     font-family: "Kanit-500";
                                     font-size: 12pt;
-                                    color: #7aaf67;
+                                    color: $bg-color4;
                                 }
 
                                 > .fulfill-action {
@@ -617,8 +623,8 @@
                     }
                 }
             }
-        } 
-    } 
+        }
+    }
 }
 
 .drop-menu-filter {

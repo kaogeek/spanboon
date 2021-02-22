@@ -29,7 +29,7 @@ export class Redirect implements OnInit {
     private mainPage: MainPageSlideFacade
     private observManager: ObservableManager;
     private twitterService: TwitterService;
-    public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+    public accessTokenLink = '';
 
     public page: any;
 
@@ -82,11 +82,8 @@ export class Redirect implements OnInit {
                         }
                     }
 
-                    if (doRunAccessToken) {
-                        let httpOptions: any = {
-                            responseType: 'text'
-                        };
-                        this.twitterService.getAcessToKen(this.accessTokenLink, httpOptions).then((res: any) => {
+                    if (doRunAccessToken) {  
+                        this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
                             let spilt = res.split('&');
                             const token = spilt[0].split('=')[1];
                             const token_secret = spilt[1].split('=')[1];

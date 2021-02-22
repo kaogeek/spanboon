@@ -40,7 +40,15 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
+                    background-color: $koalaGray;
+                    
+                    &.facebook {
+                        background-color : #2851a3;
+                    }
 
+                    &.twitter {
+                        background-color : #1da1f3;
+                    }
                     > .icon {
                         height: 20px;
                         width: 20px;
@@ -69,6 +77,38 @@
                 &.active {
                     color: $color-warm-red;
                 }
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .security-info {
+        > .label-info {
+            margin: 15pt 30pt 5pt 30pt;
+        }
+        > .body-social {
+            > .label-connect {
+                margin: 0 20pt;
+            }
+            >.box-social {
+                margin: 0 20pt;
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .security-info {
+        > .label-info {
+            margin: 10pt 10pt 5pt 16pt;
+        }
+        > .body-social {
+            > .label-connect {
+                margin: 0 10pt;
+            }
+            >.box-social {
+                margin: 0 10pt;
             }
         }
     }

@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
-import { MatDatepicker } from '@angular/material';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,12 +28,16 @@ const PAGE_NAME: string = 'register';
   templateUrl: './RegisterPage.component.html'
 })
 export class RegisterPage extends AbstractPage implements OnInit {
-  @ViewChild(MatDatepicker, { static: true }) datapicker: MatDatepicker<Date>;
+
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
+  @ViewChild(MatDatepicker, { static: true }) datapicker: MatDatepicker<Date>;
   @ViewChild("birthday", { static: false }) private datapickerBirthday: any;
   @ViewChild('register', { static: false }) private registerForm: any;
   @ViewChild('birthday', { static: false }) private birthdayForm: ElementRef;
+
+  @Output()
+  public dateChange: EventEmitter<MatDatepickerInputEvent<any>>;
 
   private accessToken: any;
   private activatedRoute: ActivatedRoute;
@@ -51,7 +55,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public avatar: any;
   public images: any;
   public imagesAvatar: any;
-  public birthdate: any; 
+  public birthdate: any;
   public whereConditions: string[];
   public redirection: string;
 
@@ -77,6 +81,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public genderTxt: string;
   public account_twitter: any;
+  public isCheckDate: any;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -108,6 +113,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     this.activeEmail = false;
     this.activeRePass = false;
     this.activePass = false;
+    this.isCheckDate = true;
     // this.gender = 0;
     this.imagesAvatar = {};
     // this.data.birthday = new Date();
@@ -178,21 +184,42 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
-  public onClickregister(formData) { 
+  public onClickregister(formData) {
     const register = new User();
     register.username = formData.email;
     register.firstName = formData.firstName === undefined ? "" : formData.firstName;
     register.lastName = formData.lastName === undefined ? "" : formData.lastName;
     register.email = formData.email;
     register.password = formData.password;
-    register.uniqueId = formData.username; 
+    // unqueId
+    if (formData.username === undefined || formData.username === '') {
+      this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
+        if (isVaild) {
+          register.uniqueId = formData.displayName;
+        } else {
+          let emailSubstring = formData.email.substring(1, 0);
+          let newUnique = formData.displayName + '.' + emailSubstring;
+          this.generatorUnqueId(newUnique).then((isVaild1: any) => {
+            if (isVaild1) {
+              register.uniqueId = newUnique;
+            }
+          }).catch((err: any) => {
+            console.log(err)
+          });
+        }
+      }).catch((err: any) => {
+        console.log(err)
+      });
+    } else {
+      register.uniqueId = formData.username;
+    }
     register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
     register.birthdate.setHours(0);
     register.birthdate.setMinutes(0);
     register.birthdate.setSeconds(0);
     register.displayName = formData.displayName;
     register.gender = formData.gender;
-    register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt; 
+    register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
     if (formData.displayName === '' || formData.displayName === undefined) {
       this.active = true;
       document.getElementById('displayName').style.border = "1px solid red";
@@ -390,16 +417,25 @@ export class RegisterPage extends AbstractPage implements OnInit {
     }
   }
 
+  public generatorUnqueId(text: string): Promise<any> {
+    let body = {
+      uniqueId: text
+    }
+    return this.userFacade.checkUniqueId(body);
+  }
+
+  public orgValueChange(date : any){ 
+    this.vaidatorDate(date);
+  }
+
   public vaidatorDate(text: string) {
     const year = Number(text.split('/')[2]) - 543
     text = text.split('/')[0].toString() + '/' + text.split('/')[1] + '/' + year;
-    const date = moment(text, 'DD/MM/YYYY', true).isValid() || moment(text, 'D/MM/YYYY', true).isValid() || moment(text, 'DD/M/YYYY', true).isValid() || moment(text, 'D/M/YYYY', true).isValid();
-    if (date) { 
+    this.isCheckDate = moment(text, 'DD/MM/YYYY', true).isValid() || moment(text, 'D/MM/YYYY', true).isValid() || moment(text, 'DD/M/YYYY', true).isValid() || moment(text, 'D/M/YYYY', true).isValid();
+    if (this.isCheckDate) {
       this.data.birthday = moment(text, 'DD/MM/YYYY').toDate();
-      return document.getElementById('birthday').style.border = "unset";
-    } else {
-      return document.getElementById('birthday').style.border = "1px solid red";
-    }
+      return;
+    }  
   }
 
   public checkUUID(event) {

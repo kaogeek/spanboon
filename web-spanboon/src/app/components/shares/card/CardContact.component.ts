@@ -7,6 +7,7 @@
 
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
+import { environment } from '../../../../environments/environment';
 import { ObservableManager } from '../../../services/services';
 
 @Component({
@@ -54,9 +55,10 @@ export class CardContact {
     @Output()
     public onClick: EventEmitter<any> = new EventEmitter();
 
-    public isActive: boolean = false; 
+    public isActive: boolean = false;
+    public apiBaseURL = environment.apiBaseURL;
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
         if (this.data.status === FULFILLMENT_STATUS.INPROGRESS && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {
             this.statusColor = "#E5E3DD";
         } else if (this.data.status === FULFILLMENT_STATUS.CONFIRM && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {
@@ -80,7 +82,7 @@ export class CardContact {
         }
     }
 
-    public getFulfillmentCase(event: any) { 
+    public getFulfillmentCase(event: any) {
         this.onClick.emit(this.data);
     }
 }

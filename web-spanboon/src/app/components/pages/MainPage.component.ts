@@ -47,7 +47,6 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-
   constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
@@ -74,25 +73,6 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    router.events.subscribe(val => {
-      this.indexPage = this.router.url.indexOf("page");
-
-      var prev = 0;
-      if (this.indexPage < 0) {
-        // var spanboonHome = $('#spanboonHome');
-        // spanboonHome.ready(function () {
-        //   spanboonHome.scroll(function () {
-        //     var scrollTop = spanboonHome.scrollTop();
-        //     $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
-        //     $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
-        //     $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
-
-        //     prev = scrollTop;
-        //   });
-        // })
-      } else {
-      }
-    });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -116,31 +96,36 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     this.isLogin();
-    // if ((this.router.url === "/login") || (this.router.url === "/register/menu") || (this.router.url === "/register") || (this.router.url === '/register?mode=normal') || (this.router.url === "/forgotpassword")) {
-    //   this.isdivtop = false;
-    //   this.isPost = false;
-    // } 
 
     const dev = sessionStorage.getItem('isDev');
-    if(dev){
+    if (dev) {
       this.isDev = false;
-    } else{
+    } else {
       this.isDev = true;
     }
   }
 
   ngAfterViewInit(): void {
     var prev = 0;
-    var spanboonHome = $('#menubottom');
-    spanboonHome.ready(function () {
-      spanboonHome.scroll(function () {
-        var scrollTop = spanboonHome.scrollTop();
-        $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
-        $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
-        $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev); 
-        prev = scrollTop;
-      });
-    }) 
+    // var spanboonHome = $('#menubottom');
+    var spanboonHome = $(window).scrollTop();
+    // console.log('spanboonHome ',spanboonHome.scrollTop())
+    $(window).scroll(() => {
+      this.scrollTop();
+      var scrollTop = $(window).scrollTop();
+      // var scrollTop = spanboonHome.scrollTop();  
+      $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
+      $('.header-top').toggleClass('hidden', scrollTop > prev);
+      $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
+      // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
+      $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
+      prev = scrollTop;
+      if (scrollTop < 10) {
+        $('.header-top').removeClass('hidden');
+        $('.footer-mobile').removeClass('hidden');
+      }
+    });
+
   }
 
   public ngOnDestroy(): void {
@@ -164,12 +149,17 @@ export class MainPage extends AbstractPage implements OnInit {
     return !this.router.url.includes('profile') && !this.router.url.includes('page');
   }
 
-  public scrollTop(event) {
+  public scrollTop(event?) {
 
-    if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
+    // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
+    //   this.observManager.publish('scroll.buttom', null);
+    // }
+    // var scrolltotop = document.getElementById("menubottom");
+
+    if ($(window).scrollTop() + $(window).height() == $(document).height()) {
       this.observManager.publish('scroll.buttom', null);
     }
-    // var scrolltotop = document.getElementById("menubottom");
+
     var scrolltotop = this.mainpage.nativeElement;
     this.observManager.publish('scroll', scrolltotop.scrollTop);
     var postBottom = $(".icon-post-bottom");
@@ -180,7 +170,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isPost = false;
     } else {
       this.isPost = true;
-      if (scrolltotop.scrollTop > 50) {
+      if ($(window).scrollTop() + $(window).height() == $(document).height()) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
           this.isdivtop = true;
@@ -263,11 +253,6 @@ export class MainPage extends AbstractPage implements OnInit {
     return this.user !== undefined && this.user !== null;
   }
 
-  @HostListener('window:beforeunload')
-  doSomething() {
-    alert('sssx')
-  }
-
   public dialogPost() {
     if (this.isLogin()) {
       let dataName;
@@ -293,12 +278,7 @@ export class MainPage extends AbstractPage implements OnInit {
         disableClose: false,
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        // if (result === undefined) { 
-        //   this.data.topic = '';
-        //   this.data.content = '';
-        //   // this.imageIcon.push(result);
-        // }
+      dialogRef.afterClosed().subscribe(result => { 
         this.stopLoading();
       });
     } else {

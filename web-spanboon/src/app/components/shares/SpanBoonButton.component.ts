@@ -24,7 +24,7 @@ export class SpanBoonButton {
   public rippleColor: string = "#1d1c1c26";
   // public rippleColor: string = "#ffffff38";
   @Input()
-  public bgColor: string = "#313f40";
+  public bgColor: string;
   @Input()
   public border: string = "#FD545A";
   @Input()
@@ -49,6 +49,8 @@ export class SpanBoonButton {
   public class: string | [string];
   @Input()
   public param: string | [string];
+  @Input()
+  public isShaDow: boolean = true;
 
   constructor() {
     if (this.link === undefined || this.link === 'undefined') {

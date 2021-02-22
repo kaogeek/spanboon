@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <!-- <div class="setting" [routerLink]="'/account/settings'"> -->
-                            <div class="setting" [routerLink]="'/account/settings'">
+                            <div class="setting" (click)="showAlertDevelopDialog()">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                                     viewBox="0 0 16.334 16.773">
                                     <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -177,8 +177,11 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="set-cover">
-                                            <div class="btn-save-cover" *ngIf="isFiles" (click)="saveCoverImage()">
+                                        <div class="set-cover" *ngIf="isFiles">
+                                            <div class="btn-cancel-cover" (click)="cancelCoverImage()">
+                                                <span>ยกเลิก</span>
+                                            </div>
+                                            <div class="btn-save-cover" (click)="saveCoverImage()">
                                                 <span>บันทึกรูปภาพ</span>
                                             </div>
                                         </div>
@@ -239,7 +242,8 @@
                                 </ng-template>
                             </ng-container>
                         </ng-template>
-                        <img id="image" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
+                        <img id="image" [class.active]="!isEditCover"
+                            [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                     </div>
 
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
@@ -280,14 +284,13 @@
                         <div class="ur_ed_z">
                             <ng-container *ngIf="isLogin() && isNotAccess; else elseBtn">
                                 <div class="wrapper-btn-edit-profile">
-                                    <spanboon-button [bgColor]="'#FD545A'" [height]="'30pt'" [text]="'แก้ไขโปรไฟล์'"
-                                        (click)="editProfile()">
+                                    <spanboon-button [height]="'30pt'" [text]="'แก้ไขโปรไฟล์'" (click)="editProfile()">
                                     </spanboon-button>
                                 </div>
                             </ng-container>
                             <ng-template #elseBtn>
                                 <div class="wrapper-btn-edit-profile">
-                                    <spanboon-button [bgColor]="'#FD545A'" [height]="'30pt'"
+                                    <spanboon-button [height]="'30pt'"
                                         [text]="resProfile && resProfile.isFollow ? 'กำลังติดตาม' : 'ติดตาม' "
                                         (click)="clickFollowUser()">
                                     </spanboon-button>
@@ -299,7 +302,8 @@
                                     {{resProfile && resProfile.displayName ? resProfile.displayName : ''}}
                                 </div>
                                 <div class="fan-page-tag" [phxPreload]="resProfile" [preloadClass]="'fan-page-tag'"
-                                    [preloadPaddIng]="'10'" *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
+                                    [preloadPaddIng]="'10'"
+                                    *ngIf="resProfile && resProfile.uniqueId !== '' && resProfile.uniqueId !== null && resProfile.uniqueId !== undefined">
                                     @{{ resProfile.uniqueId }}
                                 </div>
                             </div>

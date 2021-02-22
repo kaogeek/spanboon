@@ -9,10 +9,13 @@ import { Component, Inject, ElementRef, EventEmitter, OnInit, ViewChild } from '
 import { MatDialogRef, MatDialog, MatPaginator, MatTableDataSource, MAT_DIALOG_DATA } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageFacade, AuthenManager, AllocateFacade, NeedsFacade, EmergencyEventFacade, ObjectiveFacade } from '../../../services/services';
+import { DialogAlertAllocate } from '../../shares/dialog/DialogAlertAllocate.component';
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from '../../../../environments/environment';
 import * as $ from 'jquery';
 import { count } from 'rxjs/operators';
+import { E, L } from '@angular/cdk/keycodes';
 
 const PAGE_NAME: string = 'fulfillallocate';
 const SEARCH_LIMIT: number = 10;
@@ -34,6 +37,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     private emergencyEventFacade: EmergencyEventFacade;
     private objectiveFacade: ObjectiveFacade;
 
+    public mainPostLink: string = window.location.origin + '/post/'
+
     public apiBaseURL = environment.apiBaseURL;
 
     public redirection: string;
@@ -42,20 +47,20 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public pageId: string;
     public caseId: string;
 
+    public linkPost: any
     public listItem: any;
     public wizardConfig: any;
     public originalPost: any;
-    public groupsArr: any;
-
-    public sortingByDateArr: any;
-    public sortingByEmgArr: any;
-    public sortingByObjArr: any;
-
-
+    public originalGroupsArr: any;
     public sortingByDate: any;
     public sortingByEmg: any;
     public sortingByObj: any;
 
+    public sortingByDateArr: any;
+    public sortingByEmgArr: any = [];
+    public sortingByObjArr: any = [];
+    public groupsArr: any[] = [];
+    public errCalculateAllocate: any[] = [];
     public autoPosts: any[] = [];
     public mnPosts: any[] = [];
     public allocateItemtoPost: any[] = [];
@@ -70,6 +75,14 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
 
     public isAuto: boolean = false;
+    public isListBalance: boolean = false;
+    public isListNotBalance: boolean = false;
+
+    public filter: any = {
+        sortingDate: null,
+        sortingByObj: null,
+        sortingByEmg: null,
+    };
 
     constructor(public dialogRef: MatDialogRef<DialogFulfillAllocate>, @Inject(MAT_DIALOG_DATA) public data: any, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, emergencyEventFacade: EmergencyEventFacade, needsFacade: NeedsFacade, pageFacade: PageFacade, allocateFacade: AllocateFacade, router: Router,
         dialog: MatDialog, activatedRoute: ActivatedRoute,) {
@@ -105,11 +118,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.sortingByDateArr = [
             {
                 "name": "โพสต์เก่าไปใหม่",
-                "detail": "จัดสรรเข้าโพสต์ให้อัตโนมัติ เรียงจากเก่าไปใหม่"
+                "detail": "asc"
             },
             {
                 "name": "โพสต์ใหม่ไปเก่า",
-                "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง"
+                "detail": "desc"
             }
         ]
 
@@ -134,7 +147,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     ngOnInit(): void {
         this.getNeedsPage();
-
         // this.checkLoginAndRedirection();
 
     }
@@ -158,6 +170,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         return;
     }
 
+    public linkPosts(data) {
+
+        // if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+        //     this.linkPage = (this.mainPageLink + page.data.uniqueId)
+        // } else if (page.data.id !== undefined && page.data.id !== null) {
+        //     this.linkPage = (this.mainPageLink + page.data.id)
+        // }
+
+    }
+
     public getEmergencyEvent() {
 
         const keywordFilter: any = {
@@ -172,7 +194,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         };
 
         this.emergencyEventFacade.searchEmergency(keywordFilter).then((emg: any) => {
-            this.sortingByEmgArr = emg;
+            this.sortingByEmgArr.push({ hashTag: "ไม่มี", title: "NONE" })
+            for (let i of emg) {
+                this.sortingByEmgArr.push(i)
+            }
             this.sortingByEmg = this.sortingByEmgArr[0];
         }).catch((err: any) => {
             console.log(err)
@@ -193,7 +218,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         };
 
         this.objectiveFacade.searchObjective(keywordFilter).then((obj: any) => {
-            this.sortingByObjArr = obj.data;
+            this.sortingByObjArr.push({ hashTag: "ไม่มี", title: "NONE" })
+            for (let i of obj.data) {
+                this.sortingByObjArr.push(i)
+            }
             this.sortingByObj = this.sortingByObjArr[0];
         }).catch((err: any) => {
             console.log(err)
@@ -222,7 +250,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                 for (let n of items.data.needs) {
 
-                    var index = this.data.item.map(function (e) { return e.name; }).indexOf(n.name)
+                    var index = this.data.item.map(function (e) { return e.name; }).indexOf(n.name);
 
                     if (index > -1) {
 
@@ -231,10 +259,12 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     }
                 }
 
+                this.listItemNeed.sort((a, b) => a.name.localeCompare(b.name));
+
             }, 500);
 
         }).catch((err: any) => {
-            console.log('err', err)
+            console.log('err', err);
         })
 
 
@@ -267,7 +297,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             this.indexWizardPage = 3;
             this.selectNeedItem = this.listItemNeed;
             let data: any = [{ pageId: this.pageId, items: this.selectNeedItem }]
-            this.groupPostByItem(data);
+            this.groupPostByItem(data, true, this.filter);
             this.autoAllocate(false);
             this.isAuto = true
 
@@ -285,7 +315,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     }
 
-    public autoAllocate(isItme?) {
+    public async autoAllocate(isItme?) {
         let data: any
         let postsList: any[] = []
         // {standardItemId: string, amount: number} or {customItemId: string, amount: number}
@@ -323,16 +353,27 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
 
-            this.calculateAllocatePostByItem(postsList);
-
-            this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
+            this.calculateAllocatePostByItem(postsList, false, true);
 
         } else {
             const itemNeeds: any[] = [];
             const allocateItems: any[] = [];
             const postsList: any[] = []
 
-            for (let item of this.selectNeedItem) {
+
+
+            if (this.listItemNeed.length !== this.selectNeedItem.length) {
+
+                this.groupsArr = [];
+                this.originalGroupsArr = [];
+
+                this.selectNeedItem = this.listItemNeed;
+                let dataPost: any = [{ pageId: this.pageId, items: this.listItemNeed }];
+                this.groupPostByItem(dataPost, false, this.filter);
+
+            }
+
+            for (let item of this.listItemNeed) {
 
                 if (item.fulfillQuantity !== 0) {
 
@@ -378,20 +419,65 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
 
+            var indexForItem: number = 0;
+            var textAllocate: string = '';
+
             for (let post of postsList) {
 
-                this.calculateAllocatePostByItem(post, true);
+                await this.calculateAllocatePostByItem(post, true, true);
+
+                if (indexForItem === (postsList.length - 1)) {
+
+                    if (this.errCalculateAllocate.length === 0) {
+
+                        this.next();
+
+                    } else {
+
+                        for (let text of this.errCalculateAllocate) {
+                            textAllocate = (textAllocate + ' ' + text.itemName);
+                        }
+
+                        let dialog = this.dialog.open(DialogAlertAllocate, {
+                            disableClose: true,
+                            data: {
+                                text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้",
+                                item: "รายการ : " + textAllocate,
+                                bottomText1: "กลับไปจัดสรร",
+                                btDisplay1: "block",
+                                btDisplay2: "none",
+                            }
+                        });
+                        dialog.afterClosed().subscribe(async (res) => {
+
+                            if (res.type === "ISAUTO") {
+
+                                for (let post of postsList) {
+
+                                    await this.calculateAllocatePostByItem(post, true, false);
+                                }
+
+                                this.errCalculateAllocate = [];
+
+                                this.next();
+
+                            } else {
+
+                                var index = this.selectNeedItem.map(function (e) { return e.name; }).indexOf(this.errCalculateAllocate[0].itemName);
+                                this.indexItem = index;
+                                this.indexWizardPage = 2;
+
+                                this.errCalculateAllocate = [];
+                            }
+
+                        });
+
+                    }
+                }
+
+                indexForItem++
 
             }
-
-
-            for (let item of this.selectNeedItem) {
-
-                item.fulfillQuantity = 0;
-
-            }
-
-            this.next();
 
         }
     }
@@ -410,7 +496,15 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 this.indexWizardPage--
                 if (this.indexWizardPage === 1) {
 
-                    this.allocateItemtoPost = []
+                    this.filter = {
+                        sortingDate: null,
+                        sortingByObj: null,
+                        sortingByEmg: null,
+                    };
+
+                    this.sortingByEmg = this.sortingByEmgArr[0];
+                    this.sortingByObj = this.sortingByObjArr[0];
+
                 }
 
             } else {
@@ -432,18 +526,121 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     }
 
+    public checkListBalance() {
+        for (let item of this.listItemNeed) {
+
+            if (item.fulfillQuantity !== 0) {
+
+                this.isListBalance = false
+
+            } else {
+
+                this.isListBalance = true
+
+            }
+        }
+
+    }
+
+    public checkNotListBalance() {
+        for (let item of this.listItemNeed) {
+
+            if (item.fulfillQuantity !== 0) {
+
+                this.isListNotBalance = true
+
+            } else {
+
+                this.isListNotBalance = false
+
+            }
+        }
+
+    }
+
     public next(isAllocate?) {
         let data: any = [{ pageId: this.pageId, items: this.selectNeedItem }]
 
         if (isAllocate) {
 
             if (this.indexItem === (this.selectNeedItem.length - 1)) {
+                let indexItems: number = 0;
+                if (this.indexItemAllocateQuantity() !== 0) {
 
-                this.indexWizardPage++
+                    let dialog = this.dialog.open(DialogAlertAllocate, {
+                        disableClose: true,
+                        data: {
+                            text: this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit(),
+                            allo: true,
+                            bottomText2: "ถัดไป",
+                            bottomText1: "ปิด/จัดสรรต่อ",
+                            btDisplay1: "block",
+                        }
+                    });
+                    dialog.afterClosed().subscribe(async (res) => {
+
+                        if (res) {
+
+                            this.indexWizardPage++
+
+                        }
+
+                    });
+                } else {
+
+
+                    this.indexWizardPage++
+                }
+
+                this.checkListBalance();
+                this.checkNotListBalance();
+
+
+                for (let i of this.listItemNeed) {
+
+                    if (i.fulfillQuantity !== 0) {
+
+                        break
+
+                    }
+
+                    if (indexItems === (this.listItemNeed.length - 1)) {
+
+                        this.next();
+
+                    }
+
+                    indexItems++
+                }
 
             } else {
 
-                this.indexItem++
+
+                if (this.indexItemAllocateQuantity() !== 0) {
+
+                    let dialog = this.dialog.open(DialogAlertAllocate, {
+                        disableClose: true,
+                        data: {
+                            text: this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit(),
+                            allo: true,
+                            bottomText2: "ถัดไป",
+                            bottomText1: "ปิด/จัดสรรต่อ",
+                            btDisplay1: "block",
+                        }
+                    });
+                    dialog.afterClosed().subscribe(async (res) => {
+
+                        if (res) {
+                            this.indexItem++
+
+                        }
+
+                    });
+                } else {
+
+                    this.indexItem++
+                }
+
 
             }
 
@@ -452,10 +649,10 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
             if (this.indexWizardPage < 5) {
                 this.indexWizardPage++
                 if (this.indexWizardPage === 2) {
-                    for (let d of data[0].items) {
-                        d.amount = 999999;
-                    }
-                    this.groupPostByItem(data);
+                    this.groupPostByItem(data, true, this.filter);
+                }
+                if (this.indexWizardPage === 3) {
+
                 }
                 if (this.indexWizardPage === 4) {
                     this.checkAuto();
@@ -500,33 +697,80 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         return this.selectNeedItem[this.indexItem].imageURL
     }
 
+    public clickDevelop(index, text) {
+        let url = ''
+        if (index === 1) {
+            url += "emergency=#" + text
+        } else if (index === 2) {
+            url += "objective=" + text
+        }
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
+                bottomText2: "ตกลง",
+                bottomText1: "ยกเลิก",
+                bottomColorText2: "black",
+                // btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.router.navigateByUrl('/search?' + url);
+                this.onClose();
+            }
+        });
+    }
+
     public checkAuto() {
 
-        const autoPosts: any[] = []
-        const mnPosts: any[] = []
+        const Posts: any[] = this.allocateItemtoPost;
+        const autoPosts: any[] = [];
+        const mnPosts: any[] = [];
+        var index: number = 0;
 
         setTimeout(() => {
 
-            console.log('this.allocateItemtoPost', this.allocateItemtoPost);
+            for (let i of Posts) {
 
-            for (let i of this.allocateItemtoPost) {
+                if (i.item.length > 0) {
 
-                if (i.isAuto) {
+                    for (let item of i.item) {
 
-                    autoPosts.push(i)
+                        if (item.isAuto && item.amount > 0) {
 
-                } else {
+                            var indexPost = autoPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
-                    mnPosts.push(i)
+                            if (indexPost < 0) {
+
+                                autoPosts.push({ post: i.post, item: [], postsId: i.postsId });
+
+                            }
+
+                        } else if (!item.isAuto && item.amount > 0) {
+
+                            var indexPost = mnPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
+
+                            if (indexPost < 0) {
+
+                                mnPosts.push({ post: i.post, item: [], postsId: i.postsId });
+
+                            }
+
+                        }
+
+
+                    }
 
                 }
 
+                index++
             }
 
             this.autoPosts = autoPosts
             this.mnPosts = mnPosts
 
-        }, 500);
+        }, 500);;
 
     }
 
@@ -601,17 +845,21 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         }
     }
 
-    public allocate(post?, isAdd?) {
+    public allocate(post?, isAdd?, index?) {
 
-        var indexPost = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(post.postsId);
+        var indexPost = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(post.post);
         var indexItem = this.allocateItemtoPost[indexPost].item.map(function (e) { return e.itemName; }).indexOf(this.selectNeedItem[this.indexItem].name);
+
 
         if (isAdd) {
 
             if (this.selectNeedItem[this.indexItem].fulfillQuantity > 0) {
 
-                this.allocateItemtoPost[indexPost].item[indexItem].amount++
+                this.allocateItemtoPost[indexPost].item[indexItem].amount++;
+                this.allocateItemtoPost[indexPost].item[indexItem].isMn = true;
                 this.selectNeedItem[this.indexItem].fulfillQuantity--
+
+                this.groupsArr[this.indexItem].posts[index].section = true;
 
             }
 
@@ -619,8 +867,56 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             if (this.selectNeedItem[this.indexItem].fulfillQuantity !== this.selectNeedItem[this.indexItem].quantity) {
 
-                this.allocateItemtoPost[indexPost].item[indexItem].amount--
-                this.selectNeedItem[this.indexItem].fulfillQuantity++
+                if (this.allocateItemtoPost[indexPost].item[indexItem].amount !== 0) {
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount--
+
+                    if (this.allocateItemtoPost[indexPost].item[indexItem].amount === 0) {
+
+                        delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
+                        this.groupsArr[this.indexItem].posts[index].section = false;
+
+                    }
+
+                    this.selectNeedItem[this.indexItem].fulfillQuantity++
+                }
+
+            }
+
+        }
+
+    }
+
+    public sectionMaxItem(item, index) {
+
+        var indexPost = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(item.post);
+        var indexItem = this.allocateItemtoPost[indexPost].item.map(function (e) { return e.itemName; }).indexOf(this.selectNeedItem[this.indexItem].name);
+
+        if (this.groupsArr[this.indexItem].posts[index].section) {
+
+            this.selectNeedItem[this.indexItem].fulfillQuantity = (this.selectNeedItem[this.indexItem].fulfillQuantity + this.allocateItemtoPost[indexPost].item[indexItem].amount);
+            this.allocateItemtoPost[indexPost].item[indexItem].amount = 0;
+            delete this.allocateItemtoPost[indexPost].item[indexItem].isMn;
+
+        } else {
+
+            if (this.selectNeedItem[this.indexItem].fulfillQuantity !== 0) {
+
+                const num: any = (this.selectNeedItem[this.indexItem].fulfillQuantity - this.allocateItemtoPost[indexPost].item[indexItem].quantity);
+
+                if (num > 0 || num === 0) {
+
+                    const numQuantity: any = (this.selectNeedItem[this.indexItem].fulfillQuantity - num);
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount = numQuantity;
+                    this.selectNeedItem[this.indexItem].fulfillQuantity = num;
+
+                } else {
+
+                    this.allocateItemtoPost[indexPost].item[indexItem].amount = this.selectNeedItem[this.indexItem].fulfillQuantity
+                    this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
+
+                }
+
+                this.allocateItemtoPost[indexPost].item[indexItem].isMn = true;
 
             }
 
@@ -630,10 +926,15 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public getItemByPost(data): any {
 
-        var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(data.postsId)
+        if (typeof data.post !== 'object' && data.post !== undefined) {
+            var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(data.post)
+        } else {
+            var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(data.postsId)
+        }
 
         if (index > -1) {
-            let item: any = this.allocateItemtoPost[index].item
+            let item: any = this.allocateItemtoPost[index].item;
+            item.sort((a, b) => a.itemName.localeCompare(b.itemName))
             return item
         } else {
             return []
@@ -652,9 +953,17 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         for (let a of this.allocateItemtoPost) {
             for (let item of a.item) {
                 if (item.itemName === this.selectNeedItem[this.indexItem].name) {
-                    item.amount = 0
+                    item.amount = 0;
+                    delete item.isMn;
+                    delete item.isAuto;
                 }
             }
+        }
+
+        for (let post of this.groupsArr[this.indexItem].posts) {
+
+            post.section = false;
+
         }
 
         this.selectNeedItem[this.indexItem].fulfillQuantity = this.selectNeedItem[this.indexItem].quantity
@@ -680,17 +989,14 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     }
 
-    private async groupPostByItem(data?) {
+    private async groupPostByItem(data?, isSetAllocatetoPost?: boolean, filter?: any) {
         const keywordFilter: any = {
-            filter: {
-                limit: SEARCH_LIMIT,
-                offset: SEARCH_OFFSET,
-                relation: [],
-                whereConditions: {},
-                count: false,
-                orderBy: {}
-            },
+            sortingDate: filter.sortingDate,
+            sortingByObj: filter.sortingByObj,
+            sortingByEmg: filter.sortingByEmg,
+
         };
+
 
         var groups: any[] = []
 
@@ -700,44 +1006,76 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         }
 
-        await this.allocateFacade.calculateAllocate(data).then((res: any) => {
 
-            this.originalPost = res
-            for (let post of this.originalPost) {
+        await this.allocateFacade.searchAllocate(data[0], keywordFilter).then((post: any) => {
+
+            this.originalPost = post
+            if (post.items.length !== 0) {
+
                 for (let group of post.items) {
                     group.amount = 0;
-                    var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(group.postsId)
-                    if (index < 0) {
-                        this.allocateItemtoPost.push({ post: group.posts, postsId: group.postsId, item: [] })
+                    group.section = false;
+                    var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(group.post)
+                    if (index === -1) {
+                        this.allocateItemtoPost.push({ post: group.posts, postsId: group.post, item: [] })
                     }
                     for (let g of groups) {
-                        if (g.groupName === group.itemName) {
+                        if (g.groupName === group.name) {
                             g.posts.push(group)
                         }
                     }
                 }
 
+            } else {
+
+                this.groupsArr[this.indexItem].posts = []
+
             }
+
 
         }).catch((err: any) => {
             console.log('err', err)
+            this.groupsArr[this.indexItem].posts = []
         })
 
-        await this.allocateFacade.searchAllocate(data[0]).then((post: any) => {
+        if (this.groupsArr.length === 0) {
 
-            console.log('post', post)
+            this.groupsArr = groups;
 
-        }).catch((err: any) => {
-        })
+        } else {
 
-        this.groupsArr = groups;
-        console.log('this.groupsArr', this.groupsArr)
+            for (let g of groups) {
+
+                var index = this.groupsArr.map(function (e) { return e.groupName; }).indexOf(g.groupName)
+
+                for (let post of g.posts) {
+
+                    if (index !== -1) {
+
+                        var indexPostid = this.groupsArr[index].posts.map(function (e) { return e.post; }).indexOf(post.post)
+                        var postsNew: any[] = this.groupsArr[index].posts
+                        if (indexPostid === -1) {
+
+                            postsNew.push(post)
+
+                        }
+
+                        this.groupsArr[index].posts = postsNew;
+
+                    }
+                }
+
+            }
+
+        }
+
+        this.originalGroupsArr = groups;
 
         this.setAllocatetoPost();
 
     }
 
-    public confirmAllocate() {
+    public async confirmAllocate() {
 
         const data: any[] = []
 
@@ -774,7 +1112,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         }
 
-        this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
+        await this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
 
             this.dialogRef.close(res);
 
@@ -791,11 +1129,12 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         this.dialogRef.close(false);
     }
 
-    private async calculateAllocatePostByItem(data?, auto?) {
+    private async calculateAllocatePostByItem(data?, auto?, ignoreAllocatedPost?) {
 
-        await this.allocateFacade.calculateAllocate(data).then((res: any) => {
+        await this.allocateFacade.calculateAllocate(data, ignoreAllocatedPost).then((res: any) => {
 
             let itemNeeds: any[] = []
+            let dataItem: any = data
 
             for (let r of res) {
 
@@ -805,7 +1144,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                     if (index > -1) {
 
-                        itemNeeds[index].amount = (itemNeeds[index].amount + item.amount)
+                        itemNeeds[index].amount = (itemNeeds[index].amount + item.amount);
 
                     } else {
 
@@ -826,9 +1165,29 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                             if (item.itemName === i.itemName) {
 
+                                for (let p of this.groupsArr[this.indexItem].posts) {
+
+                                    if (p.posts._id === a.postsId) {
+
+                                        p.section = true;
+
+                                    }
+
+
+                                }
+
                                 if (auto) {
 
-                                    item.isAuto = true;
+                                    if (!item.isMn) {
+
+                                        item.isAuto = true;
+
+                                    }
+
+
+                                } else {
+
+                                    item.isMn = true;
 
                                 }
 
@@ -846,35 +1205,147 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                             }
 
                         }
-
-                        if (auto) {
-
-                            a.isAuto = true;
-
-                        }
                     }
 
                 }
 
             }
 
+            if (auto) {
+
+
+                var index = this.listItemNeed.map(function (e) { return e.name; }).indexOf(data[0].itemName);
+                this.listItemNeed[index].fulfillQuantity = 0;
+
+            } else {
+
+                this.selectNeedItem[this.indexItem].fulfillQuantity = 0;
+
+            }
+
         }).catch((err: any) => {
-            console.log('err', err)
+
+            if (auto) {
+
+                this.errCalculateAllocate.push(data[0])
+
+            } else {
+
+                let dialog = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้ ",
+                        bottomText1: "ปิด",
+                        btDisplay1: "block",
+                        btDisplay2: "none",
+                    }
+                });
+                dialog.afterClosed().subscribe((res) => {
+
+                    if (res.type === "ISAUTO") {
+
+                        this.calculateAllocatePostByItem(data, false, false);
+
+                    } else {
+
+                    }
+
+
+                });
+
+            }
         })
 
     }
 
     private setAllocatetoPost() {
 
-        for (let post of this.originalPost[0].items) {
+        for (let post of this.originalPost.items) {
 
-            var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(post.postsId)
+
+            var index = this.allocateItemtoPost.map(function (e) { return e.postsId; }).indexOf(post.post);
+
 
             if (index > -1) {
-                this.allocateItemtoPost[index].item.push({ amount: post.amount, itemName: post.itemName, itemUnit: post.itemUnit, quantity: post.quantity, customItemId: post.customItemId, imageURL: post.imageURL, standardItemId: post.standardItemId })
+
+                if (post.standardItemId !== null && post.standardItemId !== undefined) {
+                    const itemData: any = {
+                        amount: post.amount,
+                        itemName: post.name,
+                        itemUnit: post.unit,
+                        quantity: post.quantity,
+                        customItemId: null,
+                        imageURL: post.standardItem.imageURL,
+                        standardItemId: post.standardItemId
+                    };
+
+                    var indexItem = this.allocateItemtoPost[index].item.map(function (e) { return e.standardItemId; }).indexOf(post.standardItemId);
+
+                    if (indexItem < 0) {
+
+                        this.allocateItemtoPost[index].item.push(itemData);
+
+                    }
+
+
+                } else if (post.customItemId !== null && post.customItemId !== undefined) {
+                    const itemData: any = {
+                        amount: post.amount,
+                        itemName: post.name,
+                        itemUnit: post.unit,
+                        quantity: post.quantity,
+                        customItemId: post.customItemId,
+                        imageURL: post.customItem.imageURL,
+                        standardItemId: null
+                    };
+
+                    var indexItem = this.allocateItemtoPost[index].item.map(function (e) { return e.customItemId; }).indexOf(post.customItemId);
+
+                    if (indexItem < 0) {
+
+                        this.allocateItemtoPost[index].item.push(itemData)
+
+                    }
+
+
+                }
+
             }
 
         }
+    }
+
+    public sortingDate(type: string) {
+        let data: any = [{ pageId: this.pageId, items: [this.selectNeedItem[this.indexItem]] }]
+        this.filter.sortingDate = type;
+        this.groupPostByItem(data, false, this.filter);
+
+        this.groupsArr[this.indexItem].posts.reverse();
+
+    }
+
+    public sortingObj(obj: string) {
+        let data: any = [{ pageId: this.pageId, items: [this.selectNeedItem[this.indexItem]] }]
+
+        if (obj === "ไม่มี") {
+            this.filter.sortingByObj = null;
+        } else {
+            this.filter.sortingByObj = obj.toString();
+        }
+        this.groupPostByItem(data, false, this.filter);
+
+    }
+
+    public sortingEmg(emg: string) {
+        let data: any = [{ pageId: this.pageId, items: [this.selectNeedItem[this.indexItem]] }]
+
+        if (emg === "ไม่มี") {
+            this.filter.sortingByEmg = null;
+        } else {
+            this.filter.sortingByEmg = emg.toString();
+        }
+
+        this.groupPostByItem(data, false, this.filter);
 
     }
 

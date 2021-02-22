@@ -49,6 +49,10 @@ export function authorizationChecker(connection: Connection): (action: Action, r
             }
         } else {
             console.log('validate admin');
+            const splitId: string[] = userId.split(';');
+            if(splitId.length >= 2){
+                userId = splitId[0];
+            }
             action.request.user = await authService.validateAdmin(userId);
             if (action.request.user === undefined) {
                 log.warn('Invalid credentials given');
