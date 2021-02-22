@@ -384,145 +384,152 @@
                         display: flex;
                         border: 0.1px solid rgba(14, 14, 14, 0.15);
                         margin-bottom: 4px;
-                        > .detail {
-                            font-size: 16px;
-                            font-family: "Kanit-300";
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            -webkit-line-clamp: 2;
-                            -webkit-box-orient: vertical;
-                            width: 50%;
-                            border-right: 0.1px solid rgba(14, 14, 14, 0.15);
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-start;
-                            justify-content: center;
-                            padding: 10px;
-                            > .date {
-                                font-size: 12px;
-                                color: #4e4e4e;
-                                font-size: 12px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin-bottom: 3px;
-                                cursor: pointer;
-                            }
-                            > .detail-h {
-                                font-size: 18px;
-                                font-family: "Kanit-500";
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 1;
-                                -webkit-box-orient: vertical;
-                            }
-                            > .detail-d {
+                        > .left {
+                            width: 40%;
+                            > .detail {
                                 font-size: 16px;
                                 font-family: "Kanit-300";
                                 overflow: hidden;
                                 text-overflow: ellipsis;
-                                display: -webkit-box;
                                 -webkit-line-clamp: 2;
                                 -webkit-box-orient: vertical;
                                 width: 100%;
-                            }
-                            > .detail-e {
-                                font-size: 16px;
-                                color: #747474;
-                                font-family: unset;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                display: -webkit-box;
-                                -webkit-line-clamp: 1;
-                                -webkit-box-orient: vertical;
-                                margin-top: 3px;
-                            }
-                        }
-                        > .item-list {
-                            width: 35%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            > .list {
-                                width: 80%;
-                                height: 80%;
-                                display: inline-flex;
-                                flex-wrap: wrap;
-                                overflow-x: auto;
-                                align-items: center;
+                                border-right: 0.1px solid rgba(14, 14, 14, 0.15);
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
                                 justify-content: center;
-                                > .item {
+                                padding: 10px;
+                                > .date {
+                                    font-size: 12px;
+                                    color: #4e4e4e;
+                                    font-size: 12px;
                                     display: flex;
-                                    flex-direction: column;
                                     align-items: center;
                                     justify-content: center;
-                                    margin: 0px 0px;
-
-                                    > .item-image {
-                                        width: 30px;
-                                        height: 30px;
-                                        border-radius: 55px;
-                                        margin: 0px 10px;
-                                        background-color: #e2e2e2;
-                                        > .image {
-                                            width: 30px;
-                                            height: 30px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            background-color: #f1f1f1;
-                                            border-radius: 50px;
-                                        }
-                                    }
-                                    > .quantity {
-                                        display: flex;
-                                    }
+                                    margin-bottom: 3px;
+                                    cursor: pointer;
+                                }
+                                > .detail-h {
+                                    font-size: 18px;
+                                    font-family: "Kanit-500";
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                }
+                                > .detail-d {
+                                    font-size: 16px;
+                                    font-family: "Kanit-300";
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 2;
+                                    -webkit-box-orient: vertical;
+                                    width: 100%;
+                                }
+                                > .detail-e {
+                                    font-size: 16px;
+                                    color: #747474;
+                                    font-family: unset;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical;
+                                    margin-top: 3px;
                                 }
                             }
                         }
-                        > .add-delete {
-                            position: relative;
-                            width: 15%;
-                            border-left: 0.1px solid rgba(14, 14, 14, 0.15);
+                        > .right {
+                            width: 60%;
                             display: flex;
-                            align-items: center;
-                            justify-content: center;
-
-                            > .section {
-                                position: absolute;
-                                top: 0px;
-                                right: 5px;
-                                opacity: 0.8;
-                            }
-
-                            > .box-svg {
-                                width: 40%;
+                            > .item-list {
+                                width: 70%;
                                 display: flex;
                                 align-items: center;
-                                justify-content: space-between;
-                                > .add {
-                                    cursor: pointer;
+                                justify-content: center;
+                                > .list {
+                                    width: 80%;
+                                    height: 80%;
+                                    display: inline-flex;
+                                    flex-wrap: wrap;
+                                    overflow-x: auto;
+                                    align-items: center;
+                                    justify-content: center;
+                                    > .item {
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        justify-content: center;
+                                        margin: 0px 0px;
 
-                                    fill: black;
-                                    &:hover {
-                                        fill: #84b572;
-                                    }
-                                    &.dis {
-                                        opacity: 0.5;
-                                        pointer-events: none;
+                                        > .item-image {
+                                            width: 30px;
+                                            height: 30px;
+                                            border-radius: 55px;
+                                            margin: 0px 10px;
+                                            background-color: #e2e2e2;
+                                            > .image {
+                                                width: 30px;
+                                                height: 30px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                background-color: #f1f1f1;
+                                                border-radius: 50px;
+                                            }
+                                        }
+                                        > .quantity {
+                                            display: flex;
+                                        }
                                     }
                                 }
-                                > .delete {
-                                    cursor: pointer;
+                            }
+                            > .add-delete {
+                                position: relative;
+                                width: 30%;
+                                border-left: 0.1px solid rgba(14, 14, 14, 0.15);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
 
-                                    fill: black;
-                                    &:hover {
-                                        fill: $color-warm-red;
+                                > .section {
+                                    position: absolute;
+                                    top: 0px;
+                                    right: 5px;
+                                    opacity: 0.8;
+                                }
+
+                                > .box-svg {
+                                    width: 40%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    > .add {
+                                        cursor: pointer;
+
+                                        fill: black;
+                                        &:hover {
+                                            fill: #84b572;
+                                        }
+                                        &.dis {
+                                            opacity: 0.5;
+                                            pointer-events: none;
+                                        }
                                     }
-                                    &.dis {
-                                        opacity: 0.5;
-                                        pointer-events: none;
+                                    > .delete {
+                                        cursor: pointer;
+
+                                        fill: black;
+                                        &:hover {
+                                            fill: $color-warm-red;
+                                        }
+                                        &.dis {
+                                            opacity: 0.5;
+                                            pointer-events: none;
+                                        }
                                     }
                                 }
                             }
@@ -811,6 +818,7 @@
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body {
         height: auto;
+        justify-content: center;
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .left {
         width: calc(100%);
@@ -821,6 +829,60 @@
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .right {
         width: unset;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body > .list-post {
+        flex-direction: column;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body > .list-post > .left {
+        width: 100%;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-body > .list-post > .right {
+        width: 100%;
+        border-top: 0.1px solid rgba(14, 14, 14, 0.15);
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list-item
+        > .box-list-item-body
+        > .list-post
+        > .right
+        > .item-list
+        > .list {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list-item
+        > .box-list-item-body
+        > .list-post
+        > .right
+        > .add-delete {
+        border-left: unset;
+        width: 200px;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-hrader > .left {
+        display: none !important;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-hrader > .right {
+        justify-content: flex-end;
+        width: 100%;
+    }
+    .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list-item > .box-list-item-hrader > .right > .sorting {
+        display: none;
+    }
+    .fulfill-allocate
+        > .fulfill-allocate-box
+        > .box-body
+        > .box-list-item
+        > .box-list-item-body
+        > .list-post
+        > .right
+        > .item-list {
+        width: 100%;
     }
 }
 

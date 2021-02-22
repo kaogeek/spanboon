@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="newcon-alert-dialog">
+<div *ngIf="!data.allo" class="newcon-alert-dialog">
     <div class="edit-h">
         <span class="edit-head-one">{{data.title}}</span>
         <div class="dialog-image-title-right">
@@ -26,5 +26,30 @@
             (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
         <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay3 }" style="width: 135pt;" appDebounceClick
             (debounceClick)="onConfirm(true) ">{{data.bottomText3 ? data.bottomText3 : "ยืนยันจัดสรรอัตโนมัติ"}}</div>
+    </div>
+</div>
+
+<div *ngIf="data.allo" class="newcon-alert-dialog">
+    <div class="edit-h">
+        <span class="edit-head-one">{{data.title}}</span>
+        <div class="dialog-image-title-right">
+            <i class="material-icons" (click)="onClose()">
+                clear
+            </i>
+        </div>
+    </div>
+    <div class="edit-input">
+        <div>
+            <span>ยังคงเหลือ</span>
+            <span class="text-item"> {{data.text}} </span>
+            <span>ที่ยังจัดสรรไม่หมด ต้องการทำรายการถัดไป ?</span>
+        </div>
+        <span style="font-size: 17px;opacity: 0.5;">*รายการจัดสรรคงเหลือจะถูกจัดสรรอัตโนมัติในหน้าสรุปรายการ</span>
+    </div>
+    <div class="dialog-footer">
+        <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+            {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+        <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+            (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
     </div>
 </div>

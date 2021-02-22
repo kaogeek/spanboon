@@ -24,7 +24,7 @@ export class SpanBoonButton {
   public rippleColor: string = "#1d1c1c26";
   // public rippleColor: string = "#ffffff38";
   @Input()
-  public bgColor: string = "#ffffff";
+  public bgColor: string;
   @Input()
   public border: string = "#FD545A";
   @Input()

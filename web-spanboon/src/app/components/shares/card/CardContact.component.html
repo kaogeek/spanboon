@@ -10,7 +10,7 @@
 
     <div class="user-contact">
         <ng-container *ngIf="imageURL !== '' && imageURL !== undefined && imageURL !== null ; else elseImage">
-            <img class="img" src="{{imageURL}}" alt="">
+            <img class="img" src="{{apiBaseURL+imageURL+'/image'}}" alt="">
         </ng-container>
         <ng-template #elseImage>
             <div class="donator"> {{name | slice: 0:1 }}</div>

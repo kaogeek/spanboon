@@ -241,7 +241,7 @@
                                     </div>
                                 </ng-template>
                             </ng-container>
-                        </ng-template> 
+                        </ng-template>
                         <img id="image" [class.active]="!isEditCover"
                             [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                     </div>
@@ -284,14 +284,13 @@
                         <div class="ur_ed_z">
                             <ng-container *ngIf="isLogin() && isNotAccess; else elseBtn">
                                 <div class="wrapper-btn-edit-profile">
-                                    <spanboon-button [bgColor]="'#FD545A'" [height]="'30pt'" [text]="'แก้ไขโปรไฟล์'"
-                                        (click)="editProfile()">
+                                    <spanboon-button [height]="'30pt'" [text]="'แก้ไขโปรไฟล์'" (click)="editProfile()">
                                     </spanboon-button>
                                 </div>
                             </ng-container>
                             <ng-template #elseBtn>
                                 <div class="wrapper-btn-edit-profile">
-                                    <spanboon-button [bgColor]="'#FD545A'" [height]="'30pt'"
+                                    <spanboon-button [height]="'30pt'"
                                         [text]="resProfile && resProfile.isFollow ? 'กำลังติดตาม' : 'ติดตาม' "
                                         (click)="clickFollowUser()">
                                     </spanboon-button>
