@@ -353,7 +353,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
 
-            this.calculateAllocatePostByItem(postsList, false, true);
+            await this.calculateAllocatePostByItem(postsList, false, true);
 
         } else {
             const itemNeeds: any[] = [];
@@ -1240,11 +1240,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                         btDisplay2: "none",
                     }
                 });
-                dialog.afterClosed().subscribe((res) => {
+                dialog.afterClosed().subscribe(async (res) => {
 
                     if (res.type === "ISAUTO") {
 
-                        this.calculateAllocatePostByItem(data, false, false);
+                        await this.calculateAllocatePostByItem(data, false, false);
 
                     } else {
 
