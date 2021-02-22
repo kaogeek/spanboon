@@ -12,7 +12,7 @@ import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { PageSocailTW, SearchFilter } from '../../models/models';
+import { PageSocialTW, SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -2513,7 +2513,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           window.open(this.authorizeLink);
           window.bindTwitter = (resultTwitter) => {
             if (resultTwitter !== undefined && resultTwitter !== null) {
-              const twitter = new PageSocailTW();
+              const twitter = new PageSocialTW();
               twitter.twitterOauthToken = resultTwitter.token;
               twitter.twitterTokenSecret = resultTwitter.token_secret;
               twitter.twitterUserId = resultTwitter.userId;
