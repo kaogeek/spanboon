@@ -68,9 +68,7 @@ export class PostData {
   @Input()
   public userImage: any;
   @Input()
-  public commentPost: any;
-  @Input()
-  public isPostShareData: any;
+  public commentPost: any; 
   @Output()
   public comment: EventEmitter<any> = new EventEmitter();
   @Output()
