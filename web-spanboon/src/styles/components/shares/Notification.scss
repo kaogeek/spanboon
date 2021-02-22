@@ -109,8 +109,7 @@
             justify-content: space-between;
             padding: 10pt;
             align-items: center;
-            cursor: pointer;
-            // margin-bottom: 69pt;
+            cursor: pointer; 
             border-bottom: $width-border solid $border-separator;
 
             &:hover {
@@ -140,6 +139,15 @@
                             height: 34pt;
                             border-radius: 50%;
                             object-fit: cover;
+                        }
+                        > .none-image {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: $color-warm-red;
+                            color: $white;
+                            font-family: "Kanit-500";
+                            font-size: 16px;
                         }
                     }
 

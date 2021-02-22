@@ -53,23 +53,33 @@ export class Notification extends AbstractPage implements OnInit {
     this.assetFacade = assetFacade;
     this.notificationFacade = notificationFacade;
     var that = this;
+    
     var myVar = setInterval(function () {
-      if (that.notiOrigin.length !== that.noti && that.noti !== undefined && that.noti !== null && that.noti.length) {
+      if (that.notiOrigin && that.notiOrigin.length !== that.noti && that.noti !== undefined && that.noti !== null && that.noti.length) {
         that.notiisRead = []
         for (let noti of that.noti) {
-          that.assetFacade.getPathFile(noti.sender.imageURL).then((res: any) => {
-            noti.sender.avatarURL = res.data
-          }).catch((err: any) => {
-          });
+          if (noti.sender && noti.sender.imageURL !== '' && noti.sender.imageURL !== undefined && noti.sender.imageURL !== null) {
+            that.assetFacade.getPathFile(noti.sender.imageURL).then((res: any) => {
+              noti.sender.avatarURL = res.data
+            }).catch((err: any) => {
+            });
+          }
+
           if (!noti.notification.isRead) {
-            that.notiisRead.push(noti)
+            that.notiisRead.push(noti) 
             noti.notification.linkPath = (that.mainPostLink + noti.notification.link)
           }
         }
         that.notiOrigin = that.noti;
-        this.notiOrigin = that.noti 
-      } 
+        this.notiOrigin = that.noti
+      }
     }, 31000);
+  }
+
+  public ngAfterViewInit(): void { 
+    setTimeout(() => {  
+      this.notiOrigin = this.noti
+    }, 1000);
   }
 
   public ngOnInit(): void {
@@ -106,9 +116,9 @@ export class Notification extends AbstractPage implements OnInit {
     this.showAlertDevelopDialog();
   }
 
-  public isOpened(){
-    if(this.notiOrigin.length > 0){
-      for(let msg of this.notiOrigin){
+  public isOpened() {
+    if (this.notiOrigin.length > 0) {
+      for (let msg of this.notiOrigin) {
         this.notificationFacade.markRead(msg.notification.id);
         this.notiisRead = [];
       }
