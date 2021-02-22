@@ -9,7 +9,7 @@ import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { PageSocailTW } from '../../../../models/PageSocailTW';
+import { PageSocialTW } from '../../../../models/PageSocialTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
