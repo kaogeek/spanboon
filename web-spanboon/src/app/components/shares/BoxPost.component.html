@@ -746,7 +746,7 @@
                                     </div>
                                 </div>
                                 <div class="body-list">
-                                    <div class="checklist">
+                                    <div class="checklist" *ngIf="facebookConection">
                                         <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()">
                                             <div class="icon-social facebook">
                                                 <svg class="icon" version="1.1" id="Capa_1"
@@ -766,7 +766,7 @@
                                             <div class="middle">Facebook</div>
                                         </mat-checkbox>
                                     </div>
-                                    <div class="checklist">
+                                    <div class="checklist" *ngIf="twitterConection">
                                         <mat-checkbox [(ngModel)]="isAutoPostTwitter" class="item-checkbox"
                                             [class.active]="isAutoPostTwitter" [ngModelOptions]="{standalone: true}"
                                             (change)="socialBinding(isAutoPostTwitter , 'twitter')"
