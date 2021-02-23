@@ -208,11 +208,11 @@
                 display: flex;
 
                 &:hover {
-                    transform: scale(1.06);
-                    -webkit-transform: scale(1.06);
-                    -moz-transform: scale(1.06);
-                    -ms-transform: scale(1.06);
-                    -o-transform: scale(1.06);
+                    // transform: scale(1.06);
+                    // -webkit-transform: scale(1.06);
+                    // -moz-transform: scale(1.06);
+                    // -ms-transform: scale(1.06);
+                    // -o-transform: scale(1.06);
                 }
             }
 
@@ -230,8 +230,8 @@
             }
 
             > .button-cancel,
-            .button-edit {
-                background-color: #f8f7f2;
+            .button-edit { 
+                border: 0.3px solid $border-color;
                 color: $color-black;
             }
         }

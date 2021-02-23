@@ -154,7 +154,7 @@
     </div>
     <div class="typing" #typing [class.active]="isCaseConfirmed">
         <ng-container *ngIf="imageURL !== '' && imageURL !== undefined && imageURL !== null ; else elseImage">
-            <img class="img-profile" src="{{imageURL}}" alt="">
+            <img class="img-profile" src="{{apiBaseURL+imageURL+'/image'}}" alt="">
         </ng-container>
         <ng-template #elseImage>  
             <div class="donator"> {{sender | slice: 0:1 }} </div>

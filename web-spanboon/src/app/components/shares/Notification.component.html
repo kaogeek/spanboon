@@ -43,7 +43,7 @@
                     transform="translate(-1905 3200)" fill="#474747" />
             </g>
         </svg>
-    </ng-template> 
+    </ng-template>
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
     <div class="wrapper-header" (click)="$event.stopPropagation();">
@@ -59,9 +59,17 @@
             <div (click)="markReadNoti(item.notification.id);" *ngFor="let item of notiOrigin" class="wrapper-list">
                 <a href={{item.notification.linkPath}}>
                     <div class="wrapper-list-div">
-                        <div class="user-noti">
-                            <img class="img" src={{item.sender.avatarURL}} alt="">
-                        </div>
+                        <ng-container
+                            *ngIf="item.sender.avatarURL !== '' && item.sender.avatarURL !== undefined && item.sender.avatarURL !== null; else elseTemplateAvatar">
+                            <div class="user-noti">
+                                <img class="img" src={{item.sender.avatarURL}} alt="">
+                            </div>
+                        </ng-container>
+                        <ng-template #elseTemplateAvatar>
+                            <div class="user-noti">
+                                <div class="img none-image">{{item.sender.displayName | slice: 0: 1}}</div>
+                            </div>
+                        </ng-template>
                         <div class="wrapper-message">
                             <div class="top">
                                 {{item.notification.title}}
@@ -98,7 +106,8 @@
             </div>
         </ng-container>
         <ng-template #elseTemplateLoad>
-            <preload-data *ngFor="let item of [0 , 1 , 2 , 3]" [isShowCard1]="true" [isShowCard2]="false" class="wrapper-list preload"></preload-data>
+            <preload-data *ngFor="let item of [0 , 1 , 2 , 3]" [isShowCard1]="true" [isShowCard2]="false"
+                class="wrapper-list preload"></preload-data>
         </ng-template>
 
 

@@ -49,9 +49,20 @@
                     &.twitter {
                         background-color : #1da1f3;
                     }
+
+                    &.share-page {
+                        border-radius: 50%;
+                        background-color: $color-warm-red;
+                        color: $white;
+                        width: 35pt;
+                        height: 35pt;
+                    }
                     > .icon {
                         height: 20px;
                         width: 20px;
+                    }
+                    >.display-name {
+
                     }
                 }
             }
@@ -76,6 +87,12 @@
 
                 &.active {
                     color: $color-warm-red;
+                }
+
+                >.preload-spinner {
+                    svg { 
+                        float: right;
+                    }
                 }
             }
         }

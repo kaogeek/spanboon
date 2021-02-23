@@ -41,4 +41,5 @@ export * from './FulfillmentRequest';
 export * from './Storycomponent';
 export * from './AboutPages';
 export * from './TextStoryFont';
-export * from './PageSocailTW';
+export * from './PageSocialTW';
+export * from './PageSocialFB';

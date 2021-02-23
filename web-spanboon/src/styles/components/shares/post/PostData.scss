@@ -337,9 +337,51 @@
   > .wrapper-content {
     padding: 10pt 15pt 0 15pt;
     word-break: break-word;
- 
+
     &.active {
       padding: 0 15pt 0 15pt;
+    }
+
+    > .social-share {
+      display: flex;
+      align-items: center;
+      padding-top: 5pt;
+
+      span  {
+        font-family: "Kanit-400";
+        font-size: 16px;
+        padding: 0 5pt; 
+        color: $koalaGray;
+      }
+      a {
+        font-family: "Kanit-400";
+        font-size: 16px;
+        color: $black;
+        &:hover {
+          color: $color-warm-red;
+        }
+      }
+      .wrapper-action {
+        span {
+          font-family: "Kanit-500";
+          font-size: 16px;
+          color: $black; 
+        }
+         
+        .social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
+          min-height: unset;
+          height: auto;
+          > .mat-menu-content {
+            > .mat-menu-item {
+              font-size: 16px;
+              font-family: "Kanit-500";
+              > a {
+                color: black;
+              }
+            }
+          }
+        }
+      }
     }
 
     > .post-to {
@@ -848,8 +890,9 @@
       &.active {
         padding: 0 10pt 0 10pt;
       }
+
       > .wrapper-footer-post {
-        padding : unset;
+        padding: unset;
         > .right {
           padding: 5pt 0;
           > control-action {

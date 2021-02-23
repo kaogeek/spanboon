@@ -7,9 +7,10 @@
 
 import { BaseModel } from "./BaseModel"
 
-export class PageSocailTW extends BaseModel{
+export class PageSocialTW extends BaseModel{
     
     public twitterOauthToken: string;
     public twitterTokenSecret: string;
     public twitterUserId: string;
+    
 }

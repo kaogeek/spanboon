@@ -12,8 +12,9 @@ import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
 import { Page } from '../../models/Page';
 import { Post } from '../../models/Post';
-import { PageSocailTW } from "../../models/PageSocailTW";
+import { PageSocialTW } from "../../models/PageSocialTW";
 import { Config } from "src/app/models/Config";
+import { PageSoialFB } from "src/app/models/PageSocialFB";
 
 @Injectable()
 export class PageFacade extends AbstractFacade {
@@ -367,13 +368,14 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialBindingFacebook(pageId: string): Promise<any> {
+  public socialBindingFacebook(pageId: string , facebookPageId: PageSoialFB): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/page/' + pageId + 'social/facebook';
+      let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
       let options = this.getDefaultOptions();
       let body: any = {};
-
-
+      if(facebookPageId !== undefined && facebookPageId !== null){
+        body = Object.assign(facebookPageId);
+      } 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -382,7 +384,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialUnBindingFacebook(pageId: string): Promise<PageSocailTW> {
+  public socialUnBindingFacebook(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
       let options = this.getDefaultOptions();
@@ -394,7 +396,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialGetBindingFacebook(pageId: string): Promise<PageSocailTW> {
+  public socialGetBindingFacebook(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook/check';
       let options = this.getDefaultOptions();
@@ -406,7 +408,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialBindingTwitter(pageId: string, data: PageSocailTW): Promise<PageSocailTW> {
+  public socialBindingTwitter(pageId: string, data: PageSocialTW): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
       let options = this.getDefaultOptions();
@@ -422,7 +424,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialUnBindingTwitter(pageId: string): Promise<PageSocailTW> {
+  public socialUnBindingTwitter(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
       let options = this.getDefaultOptions();
@@ -434,7 +436,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialGetBindingTwitter(pageId: string): Promise<PageSocailTW> {
+  public socialGetBindingTwitter(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter/check';
       let options = this.getDefaultOptions();

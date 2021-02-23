@@ -10,12 +10,10 @@ import { MatAutocompleteTrigger, MatInput, MatDialog, MatSlideToggleChange } fro
 import { NavigationExtras, Router } from '@angular/router';
 import { AuthenManager, ObservableManager, AssetFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
-import { PageSocailTW } from '../../../../models/models';
+import { PageSocialTW, PageSoialFB } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
 import { environment } from '../../../../../environments/environment';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';
-import { MESSAGE } from 'src/app/AlertMessage';
-import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';  
 
 const PAGE_NAME: string = 'connect';
 
@@ -50,8 +48,11 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
     public bindingSocialTwitter: any;
     public isPreLoadIng: boolean;
+    public isLoading: boolean;
     private accessToken: any;
+    public responseFacabook: any;
     public redirection: string;
+    public index: number;
 
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
@@ -71,6 +72,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         this.pageFacade = pageFacade;
         this.cacheConfigInfo = cacheConfigInfo;
         this.isPreLoadIng = false;
+        this.isLoading = true;
 
     }
 
@@ -98,10 +100,12 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
     public ngAfterViewInit(): void {
         this.socialGetBindingTwitter();
+        this.socialGetBindingFacebook();
     }
 
     public connectionSocial(text: string, bind?: boolean) {
         if (text === 'facebook' && !bind) {
+            this.isLoading = true;
             this.clickLoginFB();
         } else if (text === 'facebook' && bind) {
             this.pageFacade.socialUnBindingFacebook(this.pageId).then((res: any) => {
@@ -119,6 +123,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             });
         } else if (text === 'twitter' && !bind) {
             this.isPreLoadIng = true;
+            this.isLoading = true;
             CookieUtil.setCookie('page', '/page/' + this.pageId + '/settings');
             let callback = environment.webBaseURL + "/callback";
             this.twitterService.requestToken(callback).then((result: any) => {
@@ -129,7 +134,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
                 window.bindTwitter = (resultTwitter) => {
                     if (resultTwitter !== undefined && resultTwitter !== null) {
-                        const twitter = new PageSocailTW();
+                        const twitter = new PageSocialTW();
                         twitter.twitterOauthToken = resultTwitter.token;
                         twitter.twitterTokenSecret = resultTwitter.token_secret;
                         twitter.twitterUserId = resultTwitter.userId;
@@ -137,6 +142,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
                             if (res.data) {
                                 this.connectTwitter = res.data;
+                                this.isLoading = false;
                             }
 
                         }).catch((err: any) => {
@@ -181,6 +187,16 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public socialGetBindingTwitter() {
         this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => {
             this.connectTwitter = res.data;
+            this.isLoading = false;
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    public socialGetBindingFacebook() {
+        this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => {
+            this.connect = res.data;
+            this.isLoading = false;
         }).catch((err: any) => {
             console.log('err ', err)
         });
@@ -208,8 +224,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             autopost = FACEBOOK_AUTO_POST;
         } else if (social === 'twitter') {
             autopost = TWITTER_AUTO_POST;
-        }
-        console.log('event un ', event)
+        } 
         let config = {
             value: event.checked,
             type: "boolean"
@@ -226,7 +241,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public onChangeSlide(event: any, social: string) {
- 
+
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
@@ -239,7 +254,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.autoPostFacebook = undefined;
                 return this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
             }
-        } 
+        }
 
         let autopost: string = '';
         if (social === 'facebook') {
@@ -294,41 +309,53 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 }
                 this.accessToken = accessToken;
 
-                this._ngZone.run(() => this.loginFB());
+                this._ngZone.run(() => this.listPageFacebook());
             }
-        }, { scope: 'public_profile,email,user_birthday,user_gender' });
+        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list' });
     }
-    private loginFB() {
-        let mode = 'FACEBOOK'
-        this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
-            // login success redirect to main page
-            this.observManager.publish('authen.check', null);
-            if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
-            } else {
-                this.router.navigate(['home']);
-            }
-        }).catch((err) => {
-            const statusMsg = err.error.message;
-            if (statusMsg === "User was not found.") {
-                let navigationExtras: NavigationExtras = {
-                    state: {
-                        accessToken: this.accessToken,
-                        redirection: this.redirection
-                    },
-                    queryParams: { mode: 'facebook' }
+
+    public listPageFacebook() {
+        this.isLoading = false;
+        window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
+            if (response && !response.error) {
+                /* handle the result */
+                this.responseFacabook = response; 
+                if(this.responseFacabook !== undefined){ 
+                    Object.assign(this.responseFacabook.data[0] , {selected : true });  
+                    this.checkBoxBindingPageFacebook(this.responseFacabook.data[0])
                 }
-                this.router.navigate(['/register'], navigationExtras);
-            } else if (err.error.message === 'Baned PageUser.') {
-                this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                        text: MESSAGE.TEXT_LOGIN_BANED,
-                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                        bottomColorText2: "black",
-                        btDisplay1: "none"
-                    }
-                });
+            }
+        }
+        );
+    }
+
+    public checkBoxBindingPageFacebook(text: any, i?: number) {
+        // if (typeof (this.index) === 'number') {
+        //     if (this.index !== i) {
+        //         Object.assign(this.responseFacabook[this.index], { selected: false });
+        //         this.index = i
+        //     }
+        // } else {
+        //     this.index = i
+        // }
+
+        const facebook = new PageSoialFB();
+        facebook.facebookPageId = text.id;
+
+        this.pageFacade.socialBindingFacebook(this.pageId, facebook).then((res: any) => {
+            console.log('res facebook ',res )
+            if (res.data) {
+                this.connect = res.data;
+                this.isLoading = false;
+            }
+
+        }).catch((err: any) => {
+            if (err.error.message === 'This page was binding with Facebook Account.') {
+                this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ facebook แล้ว');
+            } else if (err.error.message === 'You cannot access the page.') {
+                this.showAlertDialog('คุณไม่มีสิทธื์ในการเข้าถึงเพจได้');
+            } else if (err.error.message === 'You cannot access the facebook page.') {
+                this.showAlertDialog('คุณไม่มีสิทธื์ในการเข้าถึง facebook ได้');
             }
         });
     }

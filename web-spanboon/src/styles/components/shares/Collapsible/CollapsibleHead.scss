@@ -72,9 +72,26 @@
                 margin-left: 5px;
             }
         }
+    }
+    > .body-collapsible {
+    }
+    > .load-more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10pt;
+        @include pointer();
+        font-family: "Kanit-500";
+        font-size: 16px;
+        border-bottom: 1px solid $border-color;
+        border-right: 1px solid $border-color;
 
-        > .body-collapsible {
+        &:hover {
+            color: $color-warm-red;
+            text-decoration: underline;
         }
+    }
+    >.preload-card { 
     }
 }
 
@@ -83,7 +100,7 @@
         > .header {
             padding: 8pt 10pt 8pt 20pt;
         }
-        > .body-collapsible { 
+        > .body-collapsible {
         }
     }
 }
