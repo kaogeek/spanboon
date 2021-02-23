@@ -48,7 +48,7 @@ export class AssetController {
         if (asset) {
             const url = 'data:' + asset.mimeType + ';base64,' + asset.data;
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got Asset', url);
-            return res.status(200).send(successResponse);
+            return res.status(200).set('Cache-Control', 'public').send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return res.status(400).send(errorResponse);
