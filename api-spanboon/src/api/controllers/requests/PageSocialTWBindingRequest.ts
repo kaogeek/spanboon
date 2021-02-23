@@ -14,4 +14,6 @@ export class PageSocialTWBindingRequest {
     public twitterOauthToken: string;
     @IsNotEmpty({ message: 'twitterTokenSecret is required' })
     public twitterTokenSecret: string;
+    @IsNotEmpty({ message: 'twitterPageName is required' })
+    public twitterPageName: string;
 }
