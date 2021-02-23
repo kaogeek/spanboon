@@ -62,18 +62,21 @@ export class ChatFulfill extends AbstractPage implements OnInit {
     public fulfillItemCurrentQuantity: string;
     public fulfillItemNewQuantity: string;
     public fulfillItemUnit: string;
+    public fulfillItemImage: string;
 
     constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.authenManager = authenManager;
 
         this.fulfillItemName = '';
+        this.fulfillItemImage = '';
         this.fulfillItemCurrentQuantity = '';
         this.fulfillItemNewQuantity = '';
         this.fulfillItemUnit = '';
     }
 
     public ngOnInit(): void {
+
         const messages: string[] = this.message.split(" ");
 
         if (this.messageType === CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE || this.messageType === CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE) {
@@ -104,7 +107,7 @@ export class ChatFulfill extends AbstractPage implements OnInit {
         return;
     }
 
-    public openItemFulFIll(){
+    public openItemFulFIll() {
         this.submit.emit();
     }
 }

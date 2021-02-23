@@ -87,10 +87,14 @@ export class CardChatFulfill extends AbstractPage implements OnInit {
         return;
     }
 
-    public viewPost(postId: string) {
+    public viewPost(postId?: string) {
         if (postId !== null && postId !== undefined && postId !== '') {
             this.router.navigate([]).then(() => {
                 window.open('/post/' + postId, '_blank');
+            });
+        } else {
+            this.router.navigate([]).then(() => {
+                window.open('/page/' + this.pageId, '_blank');
             });
         }
     }
