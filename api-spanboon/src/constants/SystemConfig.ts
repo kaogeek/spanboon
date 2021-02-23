@@ -15,3 +15,5 @@ export const DEFAULT_ASSET_CONFIG_VALUE = {
 
 export const USER_EXPIRED_TIME_CONFIG = 'user.expiration.time';
 export const DEFAULT_USER_EXPIRED_TIME = 30; // as day
+export const JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 'job.beforeTokenExpire.minute';
+export const DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 2880; // 2 days
