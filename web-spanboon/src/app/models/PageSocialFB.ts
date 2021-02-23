@@ -7,9 +7,9 @@
 
 import { BaseModel } from "./BaseModel"
 
-export class PageSocailTW extends BaseModel{
+export class PageSoialFB extends BaseModel{
     
-    public twitterOauthToken: string;
-    public twitterTokenSecret: string;
-    public twitterUserId: string;
+    public facebookPageId: string; 
+    public userAccessToken: string; 
+    public facebookPageName: string; 
 }

@@ -53,10 +53,12 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.userAccessFacade = userAccessFacade;
         this.dialog = dialog;
-        this.observManager.subscribe('authen.createPage', (data: any) => {
+
+        this.observManager.subscribe('authen.createPage', (data: any) => { 
             this.searchAllPage();
         });
-        this.observManager.subscribe('authen.check', (data: any) => {
+        
+        this.observManager.subscribe('authen.check', (data: any) => { 
             this.searchAllPage();
         });
     }
@@ -65,7 +67,7 @@ export class ManagePage extends AbstractPage implements OnInit {
         return user !== undefined && user !== null;
     }
 
-    public ngOnInit(): void {
+    public ngOnInit(): void { 
         this.searchAllPage();
     }
 
