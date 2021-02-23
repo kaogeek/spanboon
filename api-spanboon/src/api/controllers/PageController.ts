@@ -364,16 +364,26 @@ export class PageController {
             }
 
             // try to register
-            // search for user Authen
-            const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
+            let registPageAccessToken = undefined;
             let pageAccessToken = undefined;
-            try {
+            // search for user Authen
+            if(socialBinding.userAccessToken !== undefined && socialBinding.userAccessToken !== ''){
+                registPageAccessToken = socialBinding.userAccessToken;
+            } else {
+                // user mode
+                const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
                 if (userFBAccount !== undefined) {
+                    registPageAccessToken = userFBAccount.storedCredentials;
+                }
+            }
+            
+            try {
+                if (registPageAccessToken !== undefined) {
                     /*
                     * check accessible and get page token with extended.
                     * {token: string, expires_in: number as a second to expired, type: string as type of token} 
                     */
-                    pageAccessToken = await this.facebookService.extendsPageAccountToken(userFBAccount.storedCredentials, socialBinding.facebookPageId);
+                    pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
                 }
             } catch (err) {
                 return res.status(400).send(err);

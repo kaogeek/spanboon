@@ -10,5 +10,6 @@ export class PageSocialFBBindingRequest {
 
     @IsNotEmpty({ message: 'facebookPageId is required' })
     public facebookPageId: string;
-    
+
+    public userAccessToken: string;
 }
