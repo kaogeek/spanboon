@@ -784,7 +784,10 @@
                                                 d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                                 fill="#A5A5A6" />
                                         </svg>
-                                        <span>{{item.post.createdDate | dateFormat}}</span>
+                                        <a style="color: #4e4e4e !important;cursor: pointer;"
+                                            href='{{mainPostLink}}{{item.post._id}}'
+                                            target="_blank">{{item.post.createdDate |
+                                            dateFormat}}</a>
                                     </div>
                                     <span class="detail-h">{{item.post.title}}</span>
                                     <span class="detail-d">{{item.post.detail}}</span>
@@ -826,8 +829,8 @@
                                                     fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span
-                                            *ngIf="item.post.emergencyEventTag">#{{item.post.emergencyEventTag}}</span>
+                                        <span *ngIf="item.post.emergencyEventTag"
+                                            (click)="clickDevelop(1,item.post.emergencyEventTag)">#{{item.post.emergencyEventTag}}</span>
                                         <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;"
                                             class="img-objective" xmlns="http://www.w3.org/2000/svg" width="12.887"
                                             height="12.982" viewBox="0 0 22.899 22.899">
@@ -846,7 +849,8 @@
                                                     transform="translate(-248.03 -228.703)" fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.objectiveTag">#{{item.post.objectiveTag}}</span>
+                                        <span *ngIf="item.post.objectiveTag"
+                                            (click)="clickDevelop(2,item.post.objectiveTag)">#{{item.post.objectiveTag}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -896,7 +900,10 @@
                                                 d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                                 fill="#A5A5A6" />
                                         </svg>
-                                        <span>{{item.post.createdDate | dateFormat}}</span>
+                                        <a style="color: #4e4e4e !important;cursor: pointer;"
+                                            href='{{mainPostLink}}{{item.post._id}}'
+                                            target="_blank">{{item.post.createdDate |
+                                            dateFormat}}</a>
                                     </div>
                                     <span class="detail-h">{{item.post.title}}</span>
                                     <span class="detail-d">{{item.post.detail}}</span>
@@ -938,7 +945,8 @@
                                                     fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.emergencyEventTag">{{item.post.emergencyEventTag}}</span>
+                                        <span *ngIf="item.post.emergencyEventTag"
+                                            (click)="clickDevelop(1,item.post.emergencyEventTag)">{{item.post.emergencyEventTag}}</span>
                                         <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;"
                                             class="img-objective" xmlns="http://www.w3.org/2000/svg" width="12.887"
                                             height="12.982" viewBox="0 0 22.899 22.899">
@@ -957,7 +965,8 @@
                                                     transform="translate(-248.03 -228.703)" fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.objectiveTag">{{item.post.objectiveTag}}</span>
+                                        <span *ngIf="item.post.objectiveTag"
+                                            (click)="clickDevelop(2,item.post.objectiveTag)">{{item.post.objectiveTag}}</span>
                                     </div>
                                 </div>
                             </div>
