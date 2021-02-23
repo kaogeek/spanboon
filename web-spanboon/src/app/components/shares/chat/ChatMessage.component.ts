@@ -120,55 +120,56 @@ export class ChatMessage extends AbstractPage implements OnInit {
         concatMap(() => {
           return this.chatRoomFacade.getChatMessages(this.chatRoomId, this.asPage); // this will be your http get request
         })
-      ).subscribe(async (res) => {
-        console.log('res.data ', res.data)
-        // if (res.data !== null && res.data !== undefined) {
-        //   for (let newMessage of res.data) {
-        //     var isMessage = false;
-        //     for (let message of this.cloneMessage) {
-        //       if (newMessage.chatMessage.id === message.chatMessage.id) {
-        //         isMessage = true;
-        //         break;
-        //       }
-        //     }
-        //     if (!isMessage) {
-        //       if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
-        //         this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
-        //           if (image.status === 1) {
-        //             if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-        //               newMessage.senderImage = '';
-        //             } else {
-        //               newMessage.senderImage = image.data;
-        //             }
-        //           } else {
-        //             newMessage.senderImage = '';
-        //           }
-        //         });
-        //       }
-        //       this.data.push(newMessage);
-        //     }
-        //   }
-        // }
-
-        if (res.data !== null && res.data !== undefined) { 
-          for (const data of res.data) {
-            if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
-              this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
-                if (image.status === 1) {
-                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    data.senderImage = '';
+      ).subscribe(async (res) => { 
+        console.log('res.data ',res.data)
+        if (res.data !== null && res.data !== undefined) {
+          for (let newMessage of res.data) {
+            var isMessage = false;
+            for (let message of this.cloneMessage) {
+              if (newMessage.chatMessage.id === message.chatMessage.id) {
+                isMessage = true;
+                break;
+              }
+            }
+            if (!isMessage) {
+              if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
+                this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
+                  if (image.status === 1) {
+                    if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                      newMessage.senderImage = '';
+                    } else {
+                      newMessage.senderImage = image.data;
+                    }
                   } else {
-                    data.senderImage = image.data;
+                    newMessage.senderImage = '';
                   }
-                } else {
-                  data.senderImage = '';
-                }
-              });
+                });
+              }
+              console.log('newMessage ',newMessage)
+              // this.data.push(newMessage);
             }
           }
         }
 
-        this.data = res.data;
+        // if (res.data !== null && res.data !== undefined) { 
+        //   for (const data of res.data) {
+        //     if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
+        //       this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
+        //         if (image.status === 1) {
+        //           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+        //             data.senderImage = '';
+        //           } else {
+        //             data.senderImage = image.data;
+        //           }
+        //         } else {
+        //           data.senderImage = '';
+        //         }
+        //       });
+        //     }
+        //   }
+        // }
+
+        // this.data = res.data;
         this.scrollChat();
       });
     }

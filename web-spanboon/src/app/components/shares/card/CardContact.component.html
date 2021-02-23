@@ -106,8 +106,8 @@
                 </div>
             </div>
             <div class="user-contact">
-                <span class="user">
-                    <ng-container *ngIf="type === 'PAGE'; else elseAsPage"> 
+                <span class="user"> 
+                    <ng-container *ngIf="type === 'PAGE'; else elseAsPage">  
                         <span *ngIf="asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}"
                             matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span> 
                     </ng-container>

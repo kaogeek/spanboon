@@ -56,7 +56,7 @@
     </div>
     <div class="noti-sc">
         <ng-container *ngIf="notiOrigin && notiOrigin.length > 0 && notiOrigin !== undefined; else elseTemplateLoad">
-            <div (click)="markReadNoti(item.notification.id);" *ngFor="let item of notiOrigin" class="wrapper-list">
+            <div (click)="markReadNoti(item.notification.id);" *ngFor="let item of notiOrigin" class="wrapper-list" [class.active]="!item.notification.isRead">
                 <a href={{item.notification.linkPath}}>
                     <div class="wrapper-list-div">
                         <ng-container
