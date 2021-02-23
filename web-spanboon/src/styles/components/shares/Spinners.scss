@@ -1,0 +1,41 @@
+.spinners {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.pure-css-advance {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .spinner3 {
+        display: flex;
+        .circles {
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: $color-warm-red;
+            border-radius: 50%;
+            margin: 0.1rem;
+            animation: up 0.3s linear 0s infinite alternate;
+            &.one {
+                animation-delay: 0s;
+            }
+            &.two {
+                animation-delay: 0.2s;
+            }
+            &.three {
+                animation-delay: 0.4s;
+            }
+        }
+    }
+}
+@keyframes up {
+    from {
+        transform: translatey(0.5rem);
+    }
+    to {
+        transform: translatey(0);
+    }
+}
