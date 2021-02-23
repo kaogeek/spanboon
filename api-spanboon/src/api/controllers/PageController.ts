@@ -367,7 +367,7 @@ export class PageController {
             let registPageAccessToken = undefined;
             let pageAccessToken = undefined;
             // search for user Authen
-            if(socialBinding.userAccessToken !== undefined && socialBinding.userAccessToken !== ''){
+            if (socialBinding.userAccessToken !== undefined && socialBinding.userAccessToken !== '') {
                 registPageAccessToken = socialBinding.userAccessToken;
             } else {
                 // user mode
@@ -376,7 +376,7 @@ export class PageController {
                     registPageAccessToken = userFBAccount.storedCredentials;
                 }
             }
-            
+
             try {
                 if (registPageAccessToken !== undefined) {
                     /*
@@ -407,6 +407,7 @@ export class PageController {
             pageSocialAccount.providerName = PROVIDER.FACEBOOK;
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
+            pageSocialAccount.providerPageName = socialBinding.facebookPageName;
 
             await this.pageSocialAccountService.create(pageSocialAccount);
 
@@ -481,6 +482,7 @@ export class PageController {
             pageSocialAccount.providerName = PROVIDER.TWITTER;
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
+            pageSocialAccount.providerPageName = socialBinding.twitterPageName;
 
             await this.pageSocialAccountService.create(pageSocialAccount);
 
@@ -598,9 +600,13 @@ export class PageController {
             // check if page was registed.
             const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
             if (pageTwitter !== null && pageTwitter !== undefined) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', true));
+                const result = this.createCheckSocialBindingObj(pageTwitter, true);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', result));
             } else {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', false));
+                const result = {
+                    data: false
+                };
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', result));
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
@@ -637,9 +643,13 @@ export class PageController {
             // check if page was registed.
             const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
             if (pageFacebook !== null && pageFacebook !== undefined) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account found.', true));
+                const result = this.createCheckSocialBindingObj(pageFacebook, true);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account found.', result));
             } else {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account not found.', false));
+                const result = {
+                    data: false
+                };
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account not found.', result));
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
@@ -2656,75 +2666,17 @@ export class PageController {
         return true;
     }
 
-    /*
-    private async checkUniqueIdValid(id: string, pageUsername: string): Promise<any> {
-        let findPageIdQuery;
-        let findOtherPageQuery;
-
-        if (id !== null && id !== undefined && id !== '') {
-            const objectid = new ObjectID(id);
-            findPageIdQuery = { where: { _id: objectid } };
-            const checkPageId: Page = await this.pageService.findOne(findPageIdQuery);
-
-            if (checkPageId) {
-                if (pageUsername !== null && pageUsername !== undefined && pageUsername !== '') {
-                    if (pageUsername.match(/\s/g)) {
-                        return ResponseUtil.getErrorResponse('Spacebar is not allowed', undefined);
-                    }
-                    if (checkPageId.pageUsername === pageUsername) {
-                        return ResponseUtil.getSuccessResponse('Own pageUsername', true);
-                    }
-
-                    const checkUniqueIdUserQuey = { where: { uniqueId: pageUsername } };
-                    const checkUniqueIdUser: User = await this.userService.findOne(checkUniqueIdUserQuey);
-
-                    findOtherPageQuery = { where: { _id: { $ne: objectid }, pageUsername } };
-                    const checkOtherPage: Page = await this.pageService.findOne(findOtherPageQuery);
-                    if ((checkOtherPage !== null && checkOtherPage !== undefined) || (checkUniqueIdUser !== null && checkUniqueIdUser !== undefined)) {
-                        return ResponseUtil.getSuccessResponse('pageUsername can not use', false);
-                    } else {
-                        return ResponseUtil.getSuccessResponse('pageUsername can use', true);
-                    }
-                } else {
-                    return ResponseUtil.getErrorResponse('pageUsername is required', undefined);
-                }
-            } else {
-                return ResponseUtil.getErrorResponse('Page not found', undefined);
-            }
-        } else {
-            return ResponseUtil.getErrorResponse('Invalid pageId', undefined);
+    private createCheckSocialBindingObj(socialAccount: PageSocialAccount, isValid: boolean): any {
+        if (socialAccount === undefined) {
+            return undefined;
         }
-    }*/
 
-    // private async getPageNeedStandardItem(pageId: string, standardItemId: string): Promise<Needs> {
-    //     const stmt = {
-    //         pageId: new ObjectID(pageId),
-    //         post: { $exists: false },
-    //         standardItemId: new ObjectID(standardItemId)
-    //     };
-
-    //     return await this.needsService.findOne(stmt);
-    // }
-
-    // private async getPageNeedCustomItemByName(pageId: string, customItemName: string): Promise<Needs> {
-    //     const stmt = {
-    //         pageId: new ObjectID(pageId),
-    //         post: { $exists: false },
-    //         customItemId: { $exists: true },
-    //         name: customItemName
-    //     };
-
-    //     return await this.needsService.findOne(stmt);
-    // }
-
-    /*
-    private async getPageNeedCustomItem(pageId: string, customItemId: string): Promise<Needs> {
-        const stmt = {
-            pageId: new ObjectID(pageId),
-            post: { $exists: false },
-            customItemId: new ObjectID(customItemId)
+        const result = {
+            providerPageId: socialAccount.providerPageId,
+            providerPageName: socialAccount.providerPageName,
+            data: isValid
         };
 
-        return await this.needsService.findOne(stmt);
-    }*/
+        return result;
+    }
 }
