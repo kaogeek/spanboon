@@ -364,27 +364,38 @@ export class PageController {
             }
 
             // try to register
-            // search for user Authen
-            const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
-
+            let registPageAccessToken = undefined;
             let pageAccessToken = undefined;
+            // search for user Authen
+            if(socialBinding.userAccessToken !== undefined && socialBinding.userAccessToken !== ''){
+                registPageAccessToken = socialBinding.userAccessToken;
+            } else {
+                // user mode
+                const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
+                if (userFBAccount !== undefined) {
+                    registPageAccessToken = userFBAccount.storedCredentials;
+                }
+            }
+            
             try {
-                /*
-                * check accessible and get page token with extended.
-                * {token: string, expires_in: number as a second to expired, type: string as type of token} 
-                */
-                pageAccessToken = await this.facebookService.extendsPageAccountToken(userFBAccount.storedCredentials, socialBinding.facebookPageId);
+                if (registPageAccessToken !== undefined) {
+                    /*
+                    * check accessible and get page token with extended.
+                    * {token: string, expires_in: number as a second to expired, type: string as type of token} 
+                    */
+                    pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
+                }
             } catch (err) {
                 return res.status(400).send(err);
             }
 
             if (pageAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'You cannot access the pacebook page.' };
+                const errorResponse: any = { status: 0, message: 'You cannot access the facebook page.' };
                 return res.status(400).send(errorResponse);
             }
 
-            const properties = { 
-                token: pageAccessToken.token, 
+            const properties = {
+                token: pageAccessToken.token,
                 type: pageAccessToken.type,
                 expires_in: pageAccessToken.expires_in,
                 expires: pageAccessToken.expires

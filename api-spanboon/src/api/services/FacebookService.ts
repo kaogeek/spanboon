@@ -387,9 +387,9 @@ export class FacebookService {
     /* 
     * accessToken is usertoken who can access fbPage
     */
-    public extendsPageAccountToken(accessToken: string, fbPageId: string): Promise<any> {
+    public extendsPageAccountToken(userAccessToken: string, fbPageId: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            if (accessToken === undefined || accessToken === null || accessToken === '') {
+            if (userAccessToken === undefined || userAccessToken === null || userAccessToken === '') {
                 reject('Access token is required.');
                 return;
             }
@@ -401,7 +401,7 @@ export class FacebookService {
 
             try {
                 let pageAccessToken;
-                const pageAccounts = await this.getFBPageAccounts(accessToken);
+                const pageAccounts = await this.getFBPageAccounts(userAccessToken);
                 if (pageAccounts !== undefined) {
                     for (const pageAccount of pageAccounts.data) {
                         if (pageAccount.id === fbPageId) {
