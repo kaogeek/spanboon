@@ -332,7 +332,7 @@ repost-data {
         font-size: 16px;
 
         &:hover {
-          text-decoration: underline;
+          color: rgba($color-warm-red, 0.95);
         }
       }
 
@@ -347,7 +347,7 @@ repost-data {
           font-size: 16px;
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($color-warm-red, 0.95);
           }
         }
       }
@@ -365,7 +365,7 @@ repost-data {
           margin: 0 7pt 7pt 0;
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($color-warm-red, 0.95);
           }
         }
       }

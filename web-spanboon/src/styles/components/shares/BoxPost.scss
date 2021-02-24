@@ -386,14 +386,14 @@
           font-size: 14px;
           @include pointer();
           &:hover {
-            text-decoration: underline;
+            color: rgba($color-warm-red, 0.95);
             color: $color-warm-red;
           }
           > .edit-story {
           }
           > .label-needs {
             &:hover {
-              text-decoration: underline;
+              color: rgba($color-warm-red, 0.95);
               color: $color-warm-red;
             }
           }

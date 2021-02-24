@@ -597,7 +597,7 @@
 
                                             > .page-user {
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($color-warm-red, 0.95);
                                                 }
                                             }
 
@@ -605,14 +605,14 @@
                                                 padding: 0 5pt;
                                                 color: $koalaGray;
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($color-warm-red, 0.95);
                                                 }
                                             }
                                         }
 
                                         > .feed-date-time {
                                             &:hover {
-                                                text-decoration: underline;
+                                                color: rgba($color-warm-red, 0.95);
                                             }
                                         }
                                     }
@@ -1429,7 +1429,7 @@ page-hashtag {
                             color: $color-warm-red;
                             @include pointer();
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
                     }

@@ -241,7 +241,7 @@
                                 color: #a5a5a6;
 
                                 &:hover {
-                                    text-decoration: underline !important;
+                                    color: rgba($color-warm-red, 0.95);
                                 }
                             }
                         }
@@ -258,7 +258,7 @@
                         > a {
                             color: $black;
                             &:hover {
-                                text-decoration: underline !important;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
                     }
@@ -268,10 +268,23 @@
                         flex-direction: row;
                         flex-wrap: wrap;
                         padding: 3pt 0;
+                        > .date {
+                            font-family: "Kanit-500";
+                            font-size: 16px;
+                            color: rgb($black, 0.5);
+                            margin-left: 5px;
 
+                            a {
+                                color: #a5a5a6;
+
+                                &:hover {
+                                    color: rgba($color-warm-red, 0.95);
+                                }
+                            }
+                        }
                         tag-event {
                             display: block;
-                            width: 100%;
+                            width: 18%;
                             > .tag-event {
                                 padding: unset;
                                 > .tag-emergency {
@@ -281,6 +294,7 @@
                                 > .tag-objective {
                                     padding: unset;
                                     margin: 0 5px;
+                                    max-width: unset;
                                 }
                             }
                         }
@@ -296,7 +310,7 @@
                             a {
                                 &:hover {
                                     opacity: 0.7;
-                                    text-decoration: underline !important;
+                                    color: rgba($color-warm-red, 0.95);
                                 }
 
                                 > .contact-event {
@@ -365,7 +379,7 @@
                                     color: #a5a5a6;
 
                                     &:hover {
-                                        text-decoration: underline !important;
+                                        color: rgba($color-warm-red, 0.95);
                                     }
                                 }
                             }
@@ -619,7 +633,7 @@
                 > .hover {
                     @include pointer();
                     &:hover {
-                        text-decoration: underline;
+                        color: rgba($color-warm-red, 0.95);
                     }
                 }
             }
@@ -755,7 +769,7 @@
                             @include pointer();
                             padding-top: 4pt;
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
                     }
@@ -847,7 +861,7 @@
                             padding-top: 4pt;
                             @include pointer();
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
                     }

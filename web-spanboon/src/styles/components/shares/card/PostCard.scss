@@ -35,7 +35,7 @@
 
                 &:hover {
                     > span {
-                        text-decoration: underline;
+                        color: rgba($color-warm-red, 0.95);
                     }
                 }
 
@@ -64,7 +64,7 @@
                 @include pointer();
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($color-warm-red, 0.95);
                 }
             }
         }
@@ -164,7 +164,7 @@
                     font-family: "Kanit-300";
 
                     &:hover {
-                        text-decoration: underline;
+                        color: rgba($color-warm-red, 0.95);
                     }
                 }
             }
@@ -218,7 +218,7 @@
                                 z-index: 5;
 
                                 &:hover {
-                                    text-decoration: underline;
+                                    color: rgba($color-warm-red, 0.95);
                                 }
                             }
                         }

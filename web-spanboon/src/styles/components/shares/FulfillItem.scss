@@ -93,7 +93,7 @@
                         &:hover {
                             > .folder-sub {
                                 color: $color-warm-red;
-                                text-decoration: underline;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
 
