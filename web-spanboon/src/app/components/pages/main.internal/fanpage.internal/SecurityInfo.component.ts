@@ -13,7 +13,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { PageSocialTW, PageSoialFB } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
 import { environment } from '../../../../../environments/environment';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';  
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';
 
 const PAGE_NAME: string = 'connect';
 
@@ -51,6 +51,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public isLoading: boolean;
     private accessToken: any;
     public responseFacabook: any;
+    public dataBinding: any;
     public redirection: string;
     public index: number;
 
@@ -138,6 +139,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         twitter.twitterOauthToken = resultTwitter.token;
                         twitter.twitterTokenSecret = resultTwitter.token_secret;
                         twitter.twitterUserId = resultTwitter.userId;
+                        twitter.twitterPageName = resultTwitter.name;
 
                         this.pageFacade.socialBindingTwitter(this.pageId, twitter).then((res: any) => {
                             if (res.data) {
@@ -187,6 +189,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public socialGetBindingTwitter() {
         this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => {
             this.connectTwitter = res.data;
+            this.dataBinding = res.data;
+            console.log('this.dataBinding ',this.dataBinding)
             this.isLoading = false;
         }).catch((err: any) => {
             console.log('err ', err)
@@ -195,7 +199,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
     public socialGetBindingFacebook() {
         this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => {
-            this.connect = res.data;
+            this.connect = res.data.data; 
             this.isLoading = false;
         }).catch((err: any) => {
             console.log('err ', err)
@@ -224,7 +228,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             autopost = FACEBOOK_AUTO_POST;
         } else if (social === 'twitter') {
             autopost = TWITTER_AUTO_POST;
-        } 
+        }
         let config = {
             value: event.checked,
             type: "boolean"
@@ -311,25 +315,39 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.listPageFacebook());
             }
-        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list' });
+        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement' });
     }
 
     public listPageFacebook() {
         this.isLoading = false;
+        let pageUserId: string = "";
         window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
             if (response && !response.error) {
+                console.log('response ', response)
                 /* handle the result */
-                this.responseFacabook = response; 
-                if(this.responseFacabook !== undefined){ 
-                    Object.assign(this.responseFacabook.data[0] , {selected : true });  
-                    this.checkBoxBindingPageFacebook(this.responseFacabook.data[0])
+                this.responseFacabook = response;
+                if (this.responseFacabook !== undefined) {
+                    this.checkBoxBindingPageFacebook(this.responseFacabook.data[0]);
+                    // for (let facebook of this.responseFacabook.data) {
+                    //     pageUserId = facebook.id 
+                    //     this.getImagePageProfile(pageUserId);
+                    // } 
                 }
             }
-        }
-        );
+        }); 
     }
 
-    public checkBoxBindingPageFacebook(text: any, i?: number) {
+    public getImagePageProfile(pageUserId){
+        window['FB'].api("/" + pageUserId + "/picture?redirect=0&access_token=" + this.accessToken.fbtoken, (picture) => {
+            if (picture && !picture.error) {
+                console.log('picture ', picture)
+                /* handle the result */
+
+            }
+        })
+    }
+
+    public checkBoxBindingPageFacebook(access: any, i?: number) {
         // if (typeof (this.index) === 'number') {
         //     if (this.index !== i) {
         //         Object.assign(this.responseFacabook[this.index], { selected: false });
@@ -338,14 +356,18 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         // } else {
         //     this.index = i
         // }
+        console.log('text ',access)
 
         const facebook = new PageSoialFB();
-        facebook.facebookPageId = text.id;
+        facebook.facebookPageId = access.id;
+        facebook.userAccessToken = access.access_token;
+        facebook.facebookPageName = access.name;
 
         this.pageFacade.socialBindingFacebook(this.pageId, facebook).then((res: any) => {
-            console.log('res facebook ',res )
+            console.log('res facebook ', res)
             if (res.data) {
-                this.connect = res.data;
+                Object.assign(access, { selected: true });
+                this.connect = res.data.data;
                 this.isLoading = false;
             }
 

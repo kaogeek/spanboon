@@ -12,5 +12,6 @@ export class PageSocialTW extends BaseModel{
     public twitterOauthToken: string;
     public twitterTokenSecret: string;
     public twitterUserId: string;
+    public twitterPageName: string;
     
 }

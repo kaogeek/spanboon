@@ -28,7 +28,7 @@
                     {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}
                 </div> 
             </div>
-            <div class="link-connect" [class.active]="connect" (click)="connectionSocial('facebook',connect)">
+            <div class="link-connect" [class.hide]="isLoading" [class.active]="connect" (click)="connectionSocial('facebook',connect)">
                 {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}  
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
@@ -62,7 +62,7 @@
             เพจเฟสบุ๊คของคุณ
         </div>
         <ng-container *ngIf="responseFacabook && responseFacabook.data">
-            <div class="box-social" *ngFor="let data of responseFacabook.data; let index = index">
+            <!-- <div class="box-social" *ngFor="let data of responseFacabook.data; let index = index">
                 <div class="left">
                     <div class="icon-left share-page">
                         <div class="display-name">
@@ -70,13 +70,28 @@
                         </div>
                     </div>
                     <div class="lost-connect">
-                        {{data.name}}
-                        <!-- {{autoPostFacebook ? 'แชร์โพสต์ไปยัง Facebook' : 'ยังไม่ได้เชื่อมต่อแชร์โพสต์ไปยัง Facebook'}} -->
+                        {{data.name}} 
                     </div>
                 </div>
                 <div class="link-connect" [class.active]="autoPostFacebook">
                     <mat-checkbox #checkboxPage [disableRipple]="'true'" [(ngModel)]="data.selected" (click)="$event.stopPropagation()" 
                      (change)="checkBoxBindingPageFacebook(data,index)" ></mat-checkbox>
+                </div>
+            </div> -->
+            <div class="box-social" *ngIf="dataBinding">
+                <div class="left">
+                    <div class="icon-left share-page">
+                        <div class="display-name">
+                            {{dataBinding.providerPageName | slice: 0:1 }}
+                        </div>
+                    </div>
+                    <div class="lost-connect">
+                        {{dataBinding.providerPageName}} 
+                    </div>
+                </div>
+                <div class="link-connect" [class.active]="autoPostFacebook">
+                    <!-- <mat-checkbox #checkboxPage [disableRipple]="'true'" [(ngModel)]="data.selected" (click)="$event.stopPropagation()" 
+                     (change)="checkBoxBindingPageFacebook(data,index)" ></mat-checkbox> -->
                 </div>
             </div>
         </ng-container>

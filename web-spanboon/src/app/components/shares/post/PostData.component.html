@@ -528,12 +528,12 @@
                     <span>โพสต์นี้ถูกแชร์ไปยัง</span>
                     <ng-container *ngFor="let item of itemPost.socialPosts">
                         <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocial">
-                            <a href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                            <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
                             ทวิตเตอร์
                         </a>
                         </ng-container>
                         <ng-template #elseTemplateShareSocial>
-                            <a href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                            <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
                                 เฟสบุ๊ค 
                             </a> 
                         </ng-template> 
@@ -544,13 +544,13 @@
                         <span>ช่องทาง</span>
                         <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
                             <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of itemPost.socialPosts">
-                                <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocialMenu">
-                                    <a href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                                <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocialMenu"> 
+                                    <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
                                     ทวิตเตอร์
                                 </a>
                                 </ng-container>
                                 <ng-template #elseTemplateShareSocialMenu>
-                                    <a href="https://twitter.com/absolutepgm/status/{{item.socialId}}">
+                                    <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
                                         เฟสบุ๊ค 
                                     </a> 
                                 </ng-template> 
