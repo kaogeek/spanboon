@@ -834,7 +834,7 @@
                     font-size: 14px;
 
                     &:hover {
-                      text-decoration: underline;
+                      color: rgba($color-warm-red, 0.95);
                     }
                   }
 
@@ -851,7 +851,7 @@
                       margin: 0 7pt 7pt 0;
 
                       &:hover {
-                        text-decoration: underline;
+                        color: rgba($color-warm-red, 0.95);
                       }
                     }
                   }

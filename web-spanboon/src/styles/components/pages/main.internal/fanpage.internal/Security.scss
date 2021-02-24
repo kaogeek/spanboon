@@ -81,7 +81,7 @@
                 color: $koalaGray;
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($color-warm-red, 0.95);
                     color: $color-warm-red;
                     @include pointer();
                 }

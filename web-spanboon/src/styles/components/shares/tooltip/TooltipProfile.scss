@@ -92,7 +92,7 @@
                 word-break: break-word;
 
                 &:hover {
-                    text-decoration: underline !important;
+                    color: rgba($color-warm-red, 0.95);
                 }
             }
 

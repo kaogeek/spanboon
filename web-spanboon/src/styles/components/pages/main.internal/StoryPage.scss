@@ -283,7 +283,7 @@
       margin: 0px 10px;
       color: #000;
       &:hover {
-        text-decoration: underline !important;
+        color: rgba($color-warm-red, 0.95);
       }
     }
   }

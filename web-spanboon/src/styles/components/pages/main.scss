@@ -183,7 +183,7 @@ span:focus {
         font-size: 14px;
 
         &:hover {
-            text-decoration: underline;
+            color: rgba($color-warm-red, 0.95);
         }
     }
 
@@ -196,7 +196,7 @@ span:focus {
             color: $color-7;
 
             &:hover {
-                text-decoration: underline;
+                color: rgba($color-warm-red, 0.95);
             }
         }
 
@@ -268,7 +268,7 @@ span:focus {
         transition: all 0.3s ease;
 
         &:hover {
-            background: rgba($color-warm-red, 0.95);
+            color: rgba($color-warm-red, 0.95);
         }
 
         > .button-post {
@@ -479,7 +479,7 @@ span:focus {
         color: rgb(27, 149, 224);
 
         &:hover {
-            text-decoration: underline !important;
+            color: rgba($color-warm-red, 0.95);
         }
     }
 

@@ -48,7 +48,7 @@
                 font-size: 24px;
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($color-warm-red, 0.95);
                 }
             }
         }
@@ -86,7 +86,7 @@
                             overflow: hidden;
                             color: $green;
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($color-warm-red, 0.95);
                             }
                         }
                     }

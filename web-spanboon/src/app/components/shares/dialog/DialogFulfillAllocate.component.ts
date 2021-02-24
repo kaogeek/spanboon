@@ -738,7 +738,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                     for (let item of i.item) {
 
-                        if (item.isAuto && item.amount > 0) {
+                        if (item.isAuto && !item.isMn && item.amount > 0) {
 
                             var indexPost = autoPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -748,7 +748,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                             }
 
-                        } else if (!item.isAuto && item.amount > 0) {
+                        } else if (!item.isAuto || (item.isMn && item.isAuto) && item.amount > 0) {
 
                             var indexPost = mnPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -1150,6 +1150,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     if (index > -1) {
 
                         itemNeeds[index].amount = (itemNeeds[index].amount + item.amount);
+                        itemNeeds[index].isAuto = true;
 
                     } else {
 
@@ -1182,6 +1183,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                                 }
 
                                 if (auto) {
+
+                                    if (i.isAuto) {
+
+                                        item.isAuto = true;
+
+                                    }
+
 
                                     if (!item.isMn) {
 

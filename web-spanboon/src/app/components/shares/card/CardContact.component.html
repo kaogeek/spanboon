@@ -17,10 +17,9 @@
         </ng-template>
 
         <div class="card-contact-body">
-            <div class="contact-head">
+            <div *ngIf="data.postId !== null" class="contact-head">
                 <div class="head-left" matTooltipShowDelay="{{800}}" matTooltip="{{title}}">
                     {{title ? title:data.name}}
-                    <span class="sub-title" *ngIf="data.postId === null"> ต้องการเติมเต็มลงเพจ </span>
                 </div>
                 <div class="head-right" *ngIf="unreadMessageCount > 0">
                     <span class="count-contact-user">{{unreadMessageCount}}</span>
@@ -106,12 +105,12 @@
                 </div>
             </div>
             <div class="user-contact">
-                <span class="user"> 
-                    <ng-container *ngIf="type === 'PAGE'; else elseAsPage">  
+                <span class="user">
+                    <ng-container *ngIf="type === 'PAGE'; else elseAsPage">
                         <span *ngIf="asPage" class="user-name" [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}"
-                            matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span> 
+                            matTooltipShowDelay="{{800}}" matTooltip="{{name}}">{{name}}: </span>
                     </ng-container>
-                    <ng-template #elseAsPage> 
+                    <ng-template #elseAsPage>
                         <span *ngIf="!asPage" class="user-name"
                             [ngStyle]="{'color': '#7d8494','padding-right':'5pt'}">คุณ: </span>
                     </ng-template>
