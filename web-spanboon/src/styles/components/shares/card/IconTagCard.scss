@@ -48,7 +48,7 @@
                 font-size: 24px;
 
                 &:hover {
-                    color: rgba($color-warm-red, 0.95);
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -84,9 +84,9 @@
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
                             overflow: hidden;
-                            color: $green;
+                            color: $text-svg-home-color;
                             &:hover {
-                                color: rgba($color-warm-red, 0.95);
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }

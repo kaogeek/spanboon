@@ -294,7 +294,7 @@
           cursor: pointer;
 
           &:hover {
-            color: rgba($color-warm-red, 0.95);
+            color: rgba($brandcolor2, 0.95);
           }
         }
       }
@@ -308,7 +308,7 @@
         @include pointer();
         color: $koalaGray;
         &:hover {
-          color: rgba($color-warm-red, 0.95);
+          color: rgba($brandcolor2, 0.95);
         }
       }
 

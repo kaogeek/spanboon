@@ -36,7 +36,7 @@
           align-items: center;
 
           &:hover {
-            color: rgba($color-warm-red, 0.95);
+            color: rgba($brandcolor2, 0.95);
           }
 
           > .icon-img {
@@ -75,11 +75,11 @@
       > .btn-read-more {
         position: relative;
         z-index: 4;
-        color: $color-warm-red;
+        color: $brandcolor2;
         @include pointer();
 
         &:hover {
-          color: rgba($color-warm-red, 0.95);
+          color: rgba($brandcolor2, 0.95);
         }
       }
     }
@@ -126,7 +126,7 @@
 
           > a {
             > .new-cards-pageName {
-              color: $green;
+              color: $text-svg-home-color;
               cursor: pointer;
               z-index: 5;
               flex: 1 1 0%;
@@ -137,7 +137,7 @@
               position: relative;
 
               &:hover {
-                color: rgba($color-warm-red, 0.95);
+                color: rgba($brandcolor2, 0.95);
               }
             }
           }

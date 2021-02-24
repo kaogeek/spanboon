@@ -46,14 +46,14 @@
 
             > a {
                 > .topic-type {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     font-family: "Kanit-500";
                     font-size: 16px;
                     margin-left: 5pt;
                     @include pointer();
 
                     &:hover {
-                        color: rgba($color-warm-red, 0.95);
+                        color: rgba($brandcolor2, 0.95);
                     }
                 }
             }
@@ -80,14 +80,14 @@
 
             > a {
                 > .topic-type {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     font-family: "Kanit-500";
                     font-size: 16px;
                     margin-left: 5pt;
                     @include pointer();
 
                     &:hover {
-                        color: rgba($color-warm-red, 0.95);
+                        color: rgba($brandcolor2, 0.95);
                     }
                 }
             }

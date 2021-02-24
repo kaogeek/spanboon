@@ -87,7 +87,7 @@
                         @include pointer();
 
                         &:hover {
-                            fill: $color-warm-red;
+                            fill: $brandcolor2;
                         }
 
                         > .icon-clear {
@@ -265,7 +265,7 @@
         //     width: 26pt;
         //     height: 26pt;
         //     border-radius: 50%;
-        //     background: $color-warm-red;
+        //     background: $brandcolor2;
         //     border: 0.7px solid rgb($black, 0.2);
 
         //     &.swiper-button-disabled {
@@ -273,7 +273,7 @@
         //     }
 
         //     &:hover {
-        //         background: rgb($color-warm-red, 0.9);
+        //         background: rgb($brandcolor2, 0.9);
         //     }
 
         //     > .material-icons {

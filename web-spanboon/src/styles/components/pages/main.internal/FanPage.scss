@@ -25,7 +25,7 @@
         > .wrapper-cover-image {
           width: calc(100% - 4px);
           height: calc(#{$height-cover-img-fanpage} - 4px);
-          border: 2px dashed $color-warm-red;
+          border: 2px dashed $brandcolor2;
 
           &:hover {
             @include pointer();
@@ -71,7 +71,7 @@
               > .browse {
                 padding: 5pt 10pt;
                 border-radius: 25px;
-                border: 3px solid $color-warm-red;
+                border: 3px solid $brandcolor2;
                 @include pointer();
               }
             }
@@ -267,7 +267,7 @@
             > .fan-page-name {
               display: flex;
               width: 100%;
-              color: $color-warm-red;
+              color: $brandcolor2;
               font-family: "Kanit-500";
               font-size: 20px;
               margin-bottom: 5pt;
@@ -338,7 +338,7 @@
               > button-follow {
                 > .button-follow {
                   &:hover {
-                    background-color: rgba($color-warm-red, 0.1) !important;
+                    background-color: rgba($brandcolor2, 0.1) !important;
                   }
 
                   > .mat-ripple-element {
@@ -348,11 +348,11 @@
 
                 &.active {
                   > .button-follow {
-                    background-color: $color-warm-red !important;
+                    background-color: $brandcolor2 !important;
                     color: $white !important;
 
                     &:hover {
-                      background-color: rgba($color-warm-red, 0.95) !important;
+                      background-color: rgba($brandcolor2, 0.95) !important;
                     }
                   }
                 }
@@ -569,7 +569,7 @@
               > .btn-donate-top {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                color: $color-warm-red;
+                color: $brandcolor2;
               }
 
               > .btn-donate-bottom {
@@ -618,13 +618,13 @@
                       opacity: 1;
 
                       &:hover {
-                        color: $color-warm-red;
-                        background: rgba($color-warm-red, 0.1);
+                        color: $brandcolor2;
+                        background: rgba($brandcolor2, 0.1);
                       }
                     }
 
                     > .mat-tab-label-active {
-                      color: $color-warm-red;
+                      color: $brandcolor2;
                     }
                   }
                 }
@@ -829,12 +829,12 @@
                     display: inline-block;
                     margin-bottom: 10pt;
                     cursor: pointer;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     font-family: "Sarabun-Light";
                     font-size: 14px;
 
                     &:hover {
-                      color: rgba($color-warm-red, 0.95);
+                      color: rgba($brandcolor2, 0.95);
                     }
                   }
 
@@ -851,7 +851,7 @@
                       margin: 0 7pt 7pt 0;
 
                       &:hover {
-                        color: rgba($color-warm-red, 0.95);
+                        color: rgba($brandcolor2, 0.95);
                       }
                     }
                   }
@@ -917,7 +917,7 @@
                   > .group-event {
                     display: flex;
                     align-items: center;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     @include pointer();
 
                     > .event-tag,
@@ -964,7 +964,7 @@
                       }
 
                       > .fulfill {
-                        background-color: $green;
+                        background-color: $text-svg-home-color;
                       }
 
                       span {
@@ -1046,7 +1046,7 @@
                   > .content-all {
                     padding: 8pt 15pt;
                     text-align: center;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     @include pointer();
                     font-family: "Kanit-500";
                     font-size: 16px;
@@ -1105,7 +1105,7 @@
                   width: calc(100% - 30pt);
                   padding: 8pt 15pt;
                   text-align: center;
-                  color: $color-warm-red;
+                  color: $brandcolor2;
                   @include pointer();
                   font-family: "Kanit-500";
                   font-size: 16px;

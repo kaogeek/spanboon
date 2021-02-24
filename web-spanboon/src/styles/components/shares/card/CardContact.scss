@@ -40,7 +40,7 @@
             box-shadow: 2.5px 0px 0px 0 #ffffff;
             overflow: hidden;
             color: $brandcolor;
-            background: $color-warm-red;
+            background: $brandcolor2;
             @include font-size-8-100("Kanit-500");
         }
 
@@ -87,7 +87,7 @@
                     > .count-contact-user {
                         font-family: "Kanit-500";
                         font-size: 16px;
-                        background: $color-warm-red;
+                        background: $brandcolor2;
                         color: $white;
                         border-radius: 10px;
                         padding: 0 10px;
@@ -97,7 +97,7 @@
                     > .status {
                         width: 24px;
                         font-size: 10pt;
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                         text-align: center;
                         margin-left: 5px;
                     }
@@ -184,7 +184,7 @@
                     word-break: break-all;
 
                     &.active {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                     }
                 }
 

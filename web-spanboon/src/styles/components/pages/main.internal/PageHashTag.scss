@@ -60,8 +60,8 @@
 
                     &:hover {
                         > .list-item {
-                            color: $color-warm-red;
-                            background: rgba($color-warm-red, 0.1);
+                            color: $brandcolor2;
+                            background: rgba($brandcolor2, 0.1);
 
                             > .icon-setting {
                             }
@@ -70,7 +70,7 @@
 
                     &.active {
                         > .list-item {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
 
                             > .icon-setting {
                             }
@@ -181,7 +181,7 @@
                             width: 50pt;
                             flex: 0 0 auto;
                             &:hover {
-                                color: $color-warm-red;
+                                color: $brandcolor2;
                             }
                         }
 
@@ -235,14 +235,14 @@
                         .ng5-slider {
                             > .ng5-slider-span {
                                 > .ng5-slider-selection {
-                                    background-color: $color-warm-red;
+                                    background-color: $brandcolor2;
                                 }
                                 > .ng5-slider[disabled] .ng5-slider-bar {
                                     background-color: #c4c4c4;
                                 }
                             }
                             .ng5-slider-pointer {
-                                background-color: $color-warm-red;
+                                background-color: $brandcolor2;
                                 width: 12px;
                                 height: 12px;
                                 top: -5px;
@@ -279,7 +279,7 @@
                     > .follow-all {
                         padding: 8pt 15pt;
                         text-align: center;
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                         @include pointer();
                         font-family: "Kanit-500";
                         font-size: 16px;
@@ -496,13 +496,13 @@
                                                     opacity: 1;
 
                                                     &:hover {
-                                                        color: $color-warm-red;
-                                                        background: rgba($color-warm-red, 0.1);
+                                                        color: $brandcolor2;
+                                                        background: rgba($brandcolor2, 0.1);
                                                     }
                                                 }
 
                                                 > .mat-tab-label-active {
-                                                    color: $color-warm-red;
+                                                    color: $brandcolor2;
                                                 }
                                             }
                                         }
@@ -517,12 +517,12 @@
                                     font-family: "Kanit-400";
                                     font-size: 16px;
                                     &:hover {
-                                        color: $color-warm-red;
-                                        background: rgba($color-warm-red, 0.1);
+                                        color: $brandcolor2;
+                                        background: rgba($brandcolor2, 0.1);
                                         svg,
                                         g,
                                         path {
-                                            fill: $color-warm-red;
+                                            fill: $brandcolor2;
                                         }
                                     }
                                     > .mat-button-wrapper {
@@ -597,7 +597,7 @@
 
                                             > .page-user {
                                                 &:hover {
-                                                    color: rgba($color-warm-red, 0.95);
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
 
@@ -605,14 +605,14 @@
                                                 padding: 0 5pt;
                                                 color: $koalaGray;
                                                 &:hover {
-                                                    color: rgba($color-warm-red, 0.95);
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
                                         }
 
                                         > .feed-date-time {
                                             &:hover {
-                                                color: rgba($color-warm-red, 0.95);
+                                                color: rgba($brandcolor2, 0.95);
                                             }
                                         }
                                     }
@@ -832,7 +832,7 @@
                                         width: 50pt;
                                         flex: 0 0 auto;
                                         &:hover {
-                                            color: $color-warm-red;
+                                            color: $brandcolor2;
                                         }
                                     }
                                 }
@@ -857,7 +857,7 @@
                                             display: flex;
                                             align-items: center;
                                             justify-content: center;
-                                            background-color: $color-warm-red;
+                                            background-color: $brandcolor2;
                                             font-family: "Kanit-500";
                                             font-size: 14px;
                                             color: $white;
@@ -935,7 +935,7 @@
                                 align-items: center;
                                 padding: 8pt 15pt;
                                 text-align: center;
-                                color: $color-warm-red;
+                                color: $brandcolor2;
                                 min-height: 26pt;
                                 border-top: $width-border solid $border-color;
                                 @include pointer();
@@ -955,7 +955,7 @@
                                 font-family: "Kanit-500";
                             }
                             > .item-all {
-                                color: $color-warm-red;
+                                color: $brandcolor2;
                                 padding: 10pt;
                                 text-align: center;
                                 font-family: "Kanit-500";
@@ -1081,7 +1081,7 @@
                     > .follow-all {
                         padding: 8pt 15pt;
                         text-align: center;
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                         @include pointer();
                         font-family: "Kanit-500";
                         font-size: 16px;
@@ -1122,7 +1122,7 @@ page-hashtag {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background-color: $color-warm-red;
+                    background-color: $brandcolor2;
                     font-family: "Kanit-500";
                     font-size: 14px;
                     color: $white;
@@ -1155,7 +1155,7 @@ page-hashtag {
             padding: 0 18pt;
             > .select-name {
                 &.active {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                 }
             }
         }
@@ -1426,10 +1426,10 @@ page-hashtag {
                             }
                         }
                         > .text {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             @include pointer();
                             &:hover {
-                                color: rgba($color-warm-red, 0.95);
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }
