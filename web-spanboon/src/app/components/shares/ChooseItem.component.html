@@ -3,10 +3,10 @@
     (c) 2020-2021 KaoGeek. http://kaogeek.dev
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
--->
+--> 
 
 <div #choose class="choose-item" id="control-height" (window:resize)="onResize()">
-    <div class="top" #top>
+    <div class="top" #top mat-dialog-title>
         <div class="header">
             {{statusLabel}}
         </div>
@@ -19,7 +19,7 @@
             [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'" id="{{link.id}}"
             (click)="clickData($event , link.id)">{{link.name}}</div> 
     </div>
-    <div class="center" #bodyList>
+    <div mat-dialog-content class="center" #bodyList>
         <ng-container *ngIf="isOpenFolder; else elseIsOpen">
             <div class="center-left mongha" [class.active]="isActiveCss" id="centerleft">
                 <div class="doing-search">
@@ -821,8 +821,8 @@
             </div>
         </div>
     </div>
-    <div class="bottom" #bottomConfirm>
-        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [border]="'0.7pt solid #e5e5e5'" [isShaDow]="false" [width]="'80pt'"
+    <div mat-dialog-actions align="end" class="bottom" #bottomConfirm>
+        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [bgColor]="'#FFF'" [border]="'0.7pt solid #e5e5e5'" [isShaDow]="false" [width]="'80pt'"
             [color]="'#212721'" (click)="onClose()">
         </spanboon-button>
         <spanboon-button [text]="'ยืนยัน'" [bgColor]="'#FD545A'" [width]="'80pt'" (click)="onConfirm()">

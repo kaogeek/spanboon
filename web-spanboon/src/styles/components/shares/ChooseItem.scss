@@ -9,7 +9,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    // height: 75vh;
 
     > .top {
         flex: 0 0 auto;
@@ -58,12 +58,17 @@
             }
         }
     }
+    > .mat-dialog-content {
+        margin: unset;
+        padding: unset;
+    }
 
     > .center {
         flex: 1 1 0%;
         display: flex;
         overflow: hidden;
         border-top: 0.7pt solid $border-color;
+        min-height: 500px;
 
         > .center-left {
             // width: 50%;
@@ -178,12 +183,12 @@
                             width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
                         }
                         &.folder {
-                            justify-content: unset; 
+                            justify-content: unset;
                         }
 
                         > .icon-back {
                             width: 40pt;
-                            height: 40pt; 
+                            height: 40pt;
                             border-radius: 50%;
                             padding: 5pt;
                         }
@@ -328,7 +333,7 @@
                         width: calc(25% - 8pt - 8pt - 2.8pt - 10pt - 6pt);
                         > .add-item {
                             color: $koalaGray;
-                            // padding-left: 5pt; 
+                            // padding-left: 5pt;
                             @include pointer();
                         }
                         > .label-item {
@@ -375,9 +380,7 @@
         flex: 0 0 auto;
         position: relative;
         display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding: 10pt 20pt;
+        align-items: center;  
 
         > .close-dialog {
             margin-right: 5pt;
@@ -386,6 +389,10 @@
                 pointer-events: none;
             }
         }
+    }
+    > .mat-dialog-actions {
+        padding: 8px 20px;
+        margin-bottom: unset;
     }
 }
 
@@ -396,25 +403,25 @@
 }
 
 .input-shake::-webkit-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake::-ms-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake:-ms-input-placeholder {
-    color: red; 
+    color: red;
 }
 
 .input-shake::-moz-placeholder {
     opacity: 1;
-    color: red; 
+    color: red;
 }
 
 .input-shake:-moz-placeholder {
     opacity: 1;
-    color: red; 
+    color: red;
 }
 
 .input-shake::placeholder {
@@ -641,10 +648,10 @@
                 > .body-list-item {
                     .list-search-doing {
                         > .body-data-category {
-                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
 
                             &.active {
-                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                                width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                         > .empty-data {
@@ -659,7 +666,7 @@
 
 @media (max-width: $large) {
     .choose-item {
-        height: 100vh;
+        // height: 100vh;
         > .tab {
             display: flex;
 
@@ -709,10 +716,10 @@
                     height: calc(100vh - 20pt);
                     .list-search-doing {
                         > .body-data-category {
-                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
 
                             &.active {
-                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                         > .empty-data {
@@ -726,11 +733,9 @@
 }
 
 @media (max-width: $medium) {
-    .choose-item {
-        // height: 100%;
-        height: 100vh;
+    .choose-item { 
         > .center {
-            flex: unset;
+            // flex: unset;
             > .center-left {
                 > .open-folder {
                     font-family: "Kanit-500";
@@ -740,10 +745,10 @@
                 > .body-list-item {
                     .list-search-doing {
                         > .body-data-category {
-                            width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
+                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
 
                             &.active {
-                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
+                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                         > .empty-data {
@@ -791,6 +796,7 @@
                 }
             }
             > .center-right {
+                display: none;
                 > .body-list-items {
                     > .list-sorted {
                         > .list-sorted-item {
@@ -828,8 +834,8 @@
                 }
             }
         }
-        > .bottom {
-            justify-content: center;
+        > .mat-dialog-actions {
+            justify-content: center !important;
         }
     }
 }
