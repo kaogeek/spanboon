@@ -219,7 +219,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public twitterConection: any;
   public facebookConection: any;
   public isAutoPostTwitter: any;
-  public isAutoPostFacebook: any; 
+  public isAutoPostFacebook: any;
   private twitterService: TwitterService;
 
   keyword = "hashTag";
@@ -314,13 +314,13 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.checkTabs();
     this.onResize();
     this.setContentStory();
-    this.socialGetBindingTwitter();
     this.getConfigTwitter();
     setTimeout(() => {
       this.keyUpSearchEmergencyEvent("", true);
       this.keyUpSearchObjective("");
       this.keyUpSearchHashTag("", false);
       this.searchObjectivePageCategory();
+      this.socialGetBindingTwitter();
     }, 500);
   }
 
@@ -720,6 +720,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     const dialogRef = this.dialog.open(DialogDoIng, {
       width: 'auto',
       data: this.dataItem,
+      panelClass: 'customize-dialog',
       disableClose: true,
     });
     dialogRef.afterClosed().subscribe(doingItem => {
@@ -1954,7 +1955,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public UploadImage() {
-    this.searchObjectivePageCategory();  
+    this.searchObjectivePageCategory();
     return this.isUpload = true;
   }
 
@@ -2143,7 +2144,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.imageIcon = result; 
+        this.imageIcon = result;
       }
       this.stopLoading();
     });
@@ -2378,6 +2379,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (window.innerWidth <= 479) {
       this.isMobilePost = true;
       this.isMobileText = true;
+      this.isTablet = false;
       var postion = $('.wrapper-tool-post');
       postion.addClass("m-tool-post");
 
@@ -2389,36 +2391,18 @@ export class BoxPost extends AbstractPage implements OnInit {
 
       var postion3 = $('.right');
       postion3.addClass("m-right");
-      let x = this.getHeight();
-      if (x && x !== null) {
-        this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
-      }
-    } else if (window.innerWidth > 768) {
+    } else if (window.innerWidth > 899) {
       this.isMobilePost = false;
       this.isMobileText = false;
-      let x = this.getHeight();
-      if (x && x !== null) {
-        this.storyPost.nativeElement.style.height = "unset";
-      }
     }
 
-    if (window.innerWidth <= 768 && 479 < window.innerWidth) {
+    if (window.innerWidth <= 899 && 479 < window.innerWidth) {
       this.isMobilePost = true;
       this.isMobileText = false;
       this.isTablet = true;
-      setTimeout(() => {
-        let x = this.getHeight();
-        if (x && x !== undefined) {
-          this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
-        }
-      }, 20);
-    } else if (window.innerWidth > 768) {
+    } else if (window.innerWidth > 899) {
       this.isMobilePost = false;
-      let x = this.getHeight();
-      if (x && x !== undefined) {
-        this.storyPost.nativeElement.style.height = "unset";
-        this.onResizeCloseDialog();
-      }
+      this.onResizeCloseDialog();
     }
   }
 
@@ -2445,10 +2429,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.isFulfill = false;
     this.data.id = this.user.id;
     this.data.modeShowDoing = true;
-    this.data.isBox = true;
+    // this.data.isBox = true;
 
     const dialogRef = this.dialog.open(DialogPost, {
       data: this.data,
+      panelClass: 'customize-dialog',
       disableClose: false,
     });
 
@@ -2492,14 +2477,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialGetBindingTwitter() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
+        this.twitterConection = res.data;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
     }
-    this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
-      this.twitterConection = res.data;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
   }
 
   public socialBinding(socialBind: boolean, platform: string) {
@@ -2594,25 +2578,23 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getConfigFacebook() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
+        this.isAutoPostFacebook = res.value;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      })
     }
-    this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
-      this.isAutoPostFacebook = res.value;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    })
   }
 
   public getConfigTwitter() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
+        this.isAutoPostTwitter = res.value;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
     }
-    this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
-      this.isAutoPostTwitter = res.value;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
   }
 
   public setAutoPostSocial(checked: boolean, social: string) {
