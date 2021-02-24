@@ -42,6 +42,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     public linkSetting: any;
     public isPreload: boolean;
     public isMobile: boolean;
+    public isLoadImage: boolean;
     public bindingSocialTwitter: any;
 
     @Input()
@@ -75,26 +76,6 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             icon: "person",
             label: "บทบาทในเพจ",
         },
-        // {
-        //     link: "",
-        //     icon: "insert_comment",
-        //     label: "โพสต์ทั้งหมด",
-        // },
-        // {
-        //     link: "",
-        //     icon: "speaker_notes",
-        //     label: "โพสต์ฉบับร่าง",
-        // },
-        // {
-        //     link: "",
-        //     icon: "access_time",
-        //     label: "โพสต์ตั้งเวลา",
-        // },
-        // {
-        //     link: "",
-        //     icon: "favorite",
-        //     label: "เติมเต็ม",
-        // }
     ];
     public arrayLink = {
         links: [{
@@ -144,6 +125,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.pageFacade = pageFacade;
         this.isPreload = true;
+        this.isLoadImage = true;
         this.isMobile = false;
         this.selected = this.links[0].label;
         this.dirtyCancelEvent = new EventEmitter();
@@ -162,14 +144,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             } else {
                 this.selected = this.link.label;
             }
-        });
-
-        this.routeActivated.params.subscribe(async (params) => {
-            this.pageId = params['id'];
-            if (this.pageId !== undefined && this.pageId !== '') {
-                this.getAccessPage();
-            }
-        });
+        }); 
 
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
@@ -178,6 +153,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
                     const replaceCommentURL: string = substringPage.replace('/page/', '');
+                    this.pageId = replaceCommentURL.split('/')[0];
                     const splitTextId = replaceCommentURL.split('?tab=')[1];
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
@@ -186,18 +162,18 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
                     }
-                    this.getAccessPage();
+                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) {
+                        this.getAccessPage();
+                    }
                 }
             }
         });
     }
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
         if (!this.isLogin()) {
             this.router.navigateByUrl("/home");
-        } else {
-            this.getAccessPage();
-        }
+        } 
     }
 
     public ngOnDestroy(): void {
@@ -243,46 +219,37 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getAccessPage() {
+    public getAccessPage() { 
+        this.isLoadImage = false;
         this.pageFacade.getProfilePage(this.pageId).then((res) => {
-            if (res.data) {
-                if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
-                    this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
-                        if (image.status === 1) {
-                            if (!this.validBase64Image(image.data)) {
-                                res.data.imageURL = null
-                            } else {
-                                res.data.imageURL = image.data
-                            }
-                            this.resListPage = res.data;
-                            setTimeout(() => {
-                                this.isPreload = false;
-                            }, 1000);
+            if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
+                this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
+                    if (image.status === 1) { 
+                        if (!this.validBase64Image(image.data)) {
+                            res.data.imageURL = null
+                        } else {
+                            res.data.imageURL = image.data
                         }
+                        this.resListPage = res.data;
+                        setTimeout(() => {
+                            this.isPreload = false;
+                        }, 1000);
+                    }
 
-                    }).catch((err: any) => {
-                        if (err.error.message === "Unable got Asset") {
-                            res.data.imageURL = ''
-                            this.resListPage = res.data
-                        }
-                    });
-                } else {
-                    this.resListPage = res.data;
-                    setTimeout(() => {
-                        this.isPreload = false;
-                    }, 3000);
-                }
-
+                }).catch((err: any) => {
+                    if (err.error.message === "Unable got Asset") {
+                        res.data.imageURL = ''
+                        this.resListPage = res.data
+                    }
+                });
+            } else {
+                this.resListPage = res.data;
+                setTimeout(() => {
+                    this.isPreload = false;
+                }, 3000);
             }
         }).catch((err: any) => {
-            // if (err.error.status === 0) {
-            //   if (err.error.message === 'Unable got Page') {
-            //     this.msgPageNotFound = true;
-            //   }
-            //   // else if(err.error.message === 'Unable got Asset'){
-            //   //   console.log("1111")
-            //   // }
-            //   this.stopLoading(); 
+            console.log('err ', err)
         });
     }
 
@@ -293,6 +260,6 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public backSetting() {
         this.isMobile = false;
-        
+
     }
 }

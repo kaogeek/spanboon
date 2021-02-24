@@ -110,7 +110,7 @@
             padding: 10pt;
             align-items: center;
             cursor: pointer; 
-            border-bottom: $width-border solid $border-separator;
+            border-bottom: $width-border solid $border-separator; 
 
             &:hover {
                 transition: 0.5s;
@@ -118,7 +118,8 @@
             }
 
             &.active {
-                background-color: rgb(243, 243, 243);
+                // background-color: rgb(243, 243, 243);
+                background: rgb(243, 243, 243, 1);
             }
 
             > a {

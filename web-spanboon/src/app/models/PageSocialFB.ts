@@ -10,4 +10,6 @@ import { BaseModel } from "./BaseModel"
 export class PageSoialFB extends BaseModel{
     
     public facebookPageId: string; 
+    public userAccessToken: string; 
+    public facebookPageName: string; 
 }

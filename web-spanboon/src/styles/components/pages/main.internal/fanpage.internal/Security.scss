@@ -11,6 +11,7 @@
         font-size: 22px;
         margin: 15pt 40pt 5pt 40pt;
         border-bottom: 0.7pt solid $border-color;
+        height: 30pt;
     }
     > .body-social {
         > .label-connect {
@@ -87,6 +88,10 @@
 
                 &.active {
                     color: $color-warm-red;
+                }
+
+                &.hide {
+                    display: none;
                 }
 
                 >.preload-spinner {

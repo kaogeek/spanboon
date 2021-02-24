@@ -97,20 +97,20 @@ export const APP_ROUTES: Routes = [
       {
         path: FanPage.PAGE_NAME + "/:id/settings",
         component: SettingsFanPage, 
-        // children: [
-        //   {
-        //     path: 'person',
-        //     component: AboutPage,
-        //   },
-        //   {
-        //     path: 'roles',
-        //     component: SettingsAdminRoles,
-        //   },
-        //   {
-        //     path: 'connect',
-        //     component: SecurityInfo,
-        //   },
-        // ] 
+        children: [
+          {
+            path: 'account',
+            component: AboutPage,
+          },
+          {
+            path: 'roles',
+            component: SettingsAdminRoles,
+          },
+          {
+            path: 'connect',
+            component: SecurityInfo,
+          },
+        ] 
       },
       {
         path: SettingAccount.PAGE_NAME + "/settings",

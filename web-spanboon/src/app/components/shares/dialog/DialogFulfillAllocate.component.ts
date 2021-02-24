@@ -77,6 +77,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public isAuto: boolean = false;
     public isListBalance: boolean = false;
     public isListNotBalance: boolean = false;
+    public isSpinner: boolean = false;
 
     public filter: any = {
         sortingDate: null,
@@ -1076,6 +1077,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     public async confirmAllocate() {
+        this.isSpinner = false;
 
         const data: any[] = []
 
@@ -1115,11 +1117,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         await this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
 
             this.dialogRef.close(res);
+            this.isSpinner = false;
 
         }).catch((err: any) => {
 
-            this.dialogRef.close(err);
+            this.isSpinner = false;
             console.log('err', err)
+            this.dialogRef.close(err);
 
         })
 
@@ -1130,6 +1134,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     private async calculateAllocatePostByItem(data?, auto?, ignoreAllocatedPost?) {
+        this.isSpinner = true;
 
         await this.allocateFacade.calculateAllocate(data, ignoreAllocatedPost).then((res: any) => {
 
@@ -1255,6 +1260,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
         })
+
+
+        setTimeout(() => {
+            this.isSpinner = false;
+        }, 1000);
 
     }
 
