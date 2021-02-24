@@ -403,8 +403,10 @@
                         </div>
                         <div (click)="autoAllocate(true)" class="icon"
                             [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0">
-                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="25"
-                                height="25" viewBox="0 0 30.539 30.539" class="icon">
+                            <spinners *ngIf="isSpinner"></spinners>
+                            <svg *ngIf="!isSpinner" id="Group_2322" data-name="Group 2322"
+                                xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 30.539 30.539"
+                                class="icon">
                                 <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
                                     <g id="Group_3292" data-name="Group 3292" transform="translate(112.208 94.414)">
                                         <g id="Group_3290" data-name="Group 3290" transform="translate(2.408 4.898)">
@@ -689,7 +691,8 @@
                     </div>
                     <div (click)="autoAllocate(false)" [class.active]="selectNeedItem.length > 0"
                         class="list-item-Next">
-                        <span>จัดสรรอัตโนมัติ</span>
+                        <spinners [color]="'white'" [height]="'24px'" [size]="'10px'" *ngIf="isSpinner"></spinners>
+                        <span *ngIf="!isSpinner">จัดสรรอัตโนมัติ</span>
                     </div>
                 </div>
                 <div class="box-list-item-body">
@@ -759,7 +762,8 @@
                     </div>
 
                     <div (click)="confirmAllocate()" [class.active]="true" class="list-item-Next">
-                        <span>ยืนยัน</span>
+                        <spinners [color]="'white'" [height]="'24px'" [size]="'10px'" *ngIf="isSpinner"></spinners>
+                        <span *ngIf="!isSpinner">ยืนยัน</span>
                     </div>
                 </div>
                 <div class="box-list-item-body" style="height: calc(100% - 85px) !important;" [class.list]="true">

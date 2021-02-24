@@ -4,11 +4,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { MatChipInputEvent } from '@angular/material';
 import { TooltipProfile } from './components';
 import { AbstractPageImageLoader } from './pages/AbstractPageImageLoader';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 declare var atwho: any;
 declare var $: any;
@@ -56,6 +56,21 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
   }
   ngOnInit(): void {
+
+    ClassicEditor
+      .create(document.querySelector('#editor'), {
+        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+        heading: {
+          options: [
+            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+          ]
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   public ngOnDestroy(): void {
