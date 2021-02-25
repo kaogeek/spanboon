@@ -384,6 +384,8 @@ export class PageController {
                     * {token: string, expires_in: number as a second to expired, type: string as type of token} 
                     */
                     pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
+                } else if(pageAccessToken !== undefined){
+                    pageAccessToken = await this.facebookService.extendsAccessToken(pageAccessToken);
                 }
             } catch (err) {
                 return res.status(400).send(err);

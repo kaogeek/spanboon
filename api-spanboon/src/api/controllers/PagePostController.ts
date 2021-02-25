@@ -734,7 +734,7 @@ export class PagePostController {
 
                         if (isPostFacebook) {
                             const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
-                            createResult.twitterValid = isValid;
+                            createResult.facebookValid = isValid;
                         }
                     }
                 }
