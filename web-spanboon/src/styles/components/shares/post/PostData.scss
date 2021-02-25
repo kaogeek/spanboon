@@ -67,7 +67,7 @@
       }
 
       .fulfill {
-        background-color: $green;
+        background-color: $text-svg-home-color;
       }
 
       span {
@@ -97,7 +97,7 @@
               color: $koalaGray;
 
               &:hover {
-                color: rgba($color-warm-red, 0.95);
+                color: rgba($brandcolor2, 0.95);
               }
             }
           }
@@ -185,7 +185,7 @@
 
             &:last-child {
               .text {
-                color: $color-warm-red;
+                color: $brandcolor2;
               }
             }
           }
@@ -358,7 +358,7 @@
         font-size: 16px;
         color: $black;
         &:hover {
-          color: $color-warm-red;
+          color: $brandcolor2;
         }
       }
       .wrapper-action {
@@ -396,7 +396,7 @@
             color: $koalaGray;
 
             &:hover {
-              color: rgba($color-warm-red, 0.95);
+              color: rgba($brandcolor2, 0.95);
             }
           }
         }
@@ -435,7 +435,7 @@
       }
 
       > a {
-        color: $color-warm-red;
+        color: $brandcolor2;
       }
     }
 
@@ -443,12 +443,12 @@
       margin-top: 10pt;
       display: inline-block;
       cursor: pointer;
-      color: $color-warm-red;
+      color: $brandcolor2;
       font-family: "Kanit-300";
       font-size: 16px;
 
       &:hover {
-        color: rgba($color-warm-red, 0.95);
+        color: rgba($brandcolor2, 0.95);
       }
     }
 
@@ -465,7 +465,7 @@
         margin: 0 7pt 7pt 0;
 
         &:hover {
-          color: rgba($color-warm-red, 0.95);
+          color: rgba($brandcolor2, 0.95);
         }
       }
     }
@@ -701,7 +701,7 @@
     > .group-event {
       display: flex;
       align-items: center;
-      color: $color-warm-red;
+      color: $brandcolor2;
       @include pointer();
 
       > .event-tag,
@@ -746,7 +746,7 @@
               color: $koalaGray;
 
               &:hover {
-                color: rgba($color-warm-red, 0.95);
+                color: rgba($brandcolor2, 0.95);
               }
             }
           }
@@ -768,7 +768,7 @@
       }
 
       > .fulfill {
-        background-color: $green;
+        background-color: $text-svg-home-color;
       }
 
       span {
@@ -814,7 +814,7 @@
   line-height: unset;
 
   &:hover {
-    color: rgba($color-warm-red, 0.95);
+    color: rgba($brandcolor2, 0.95);
   }
 }
 

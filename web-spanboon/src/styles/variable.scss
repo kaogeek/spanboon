@@ -24,7 +24,6 @@ $pink: #e83e8c;
 $red: #dc3545;
 $orange: #fd7e14;
 $yellow: #ffc107;
-$green: #28a745;
 $teal: #20c997;
 $cyan: #17a2b8;
 $white: #fff;
@@ -32,7 +31,6 @@ $gray: #6c757d;
 $gray-dark: #343a40;
 $primary: #007bff;
 $secondary: #6c757d;
-$success: #28a745;
 $info: #17a2b8;
 $warning: #ffc107;
 $danger: #dc3545;
@@ -59,26 +57,23 @@ $color-14: #f3f3f3;
 $color-15: #7aaf67;
 $color-black: #212721;
 
-$padding-page-side: 45pt;
-$color-warm-red: rgb(253, 84, 84);
+//Brand color
 
-//SVG social icon
-
-$svg-icon: $color-13;
-$svg-icon-black: $color-black;
-$svg-icon-activate: $color-warm-red;
-
-$brandcolor: $color-13;
-$brandcolor2: $color-warm-red;
+$brandcolor: #f8f7f2;
+$brandcolor2: rgb(253, 84, 84);
 $brandcolor3: #c62634;
 $koalaGray: #a5a5a6;
+
+//
+$text-svg-home-color:#28a745;
+
 $border-color: #e5e5e5;
 $border-separator: #efefef;
 $font-color-none: #c5c4c4;
-//
+
 $bg-color1: $color-14;
 $bg-color2: $color-black;
-$bg-color3: $color-warm-red;
+$bg-color3: $brandcolor2;
 $bg-color4: $color-15;
 $bg-grey: #f1f1f1;
 $bg-fog-gray: #e5e3dd;
@@ -92,7 +87,16 @@ $blur: #00000070;
 $background-hover: #f1f1f1d9;
 $shadow-vote-vard-hover: #adadb0;
 
+//SVG social icon
+
+$svg-icon: $color-13;
+$svg-icon-black: $color-black;
+$svg-icon-activate: $brandcolor2;
+
+$padding-page-side: 45pt;
+
 // 3.font size
+
 $font-size-1: 72px;
 $font-size-2: 68px;
 $font-size-3: 62px;

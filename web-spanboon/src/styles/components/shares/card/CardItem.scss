@@ -114,7 +114,7 @@
             width: calc(100% - 30pt);
             padding: 8pt 15pt;
             text-align: center;
-            color: $color-warm-red;
+            color: $brandcolor2;
             @include pointer();
             font-family: "Kanit-500";
             font-size: 16px;
@@ -192,7 +192,7 @@
             //     width: 30pt;
             //     height: 30pt;
             //     border-radius: 50%;
-            //     background: $color-warm-red;
+            //     background: $brandcolor2;
             //     border: 0.7px solid rgb($black, 0.2);
 
             //     &.swiper-button-disabled {
@@ -200,7 +200,7 @@
             //     }
 
             //     &:hover {
-            //         background: rgb($color-warm-red, 0.9);
+            //         background: rgb($brandcolor2, 0.9);
             //     }
 
             //     > .material-icons {
@@ -375,7 +375,7 @@
             //     width: 26pt;
             //     height: 26pt;
             //     border-radius: 50%;
-            //     background: $color-warm-red;
+            //     background: $brandcolor2;
             //     border: 0.7px solid rgb($black, 0.2);
 
             //     &.swiper-button-disabled {
@@ -383,7 +383,7 @@
             //     }
 
             //     &:hover {
-            //         background: rgb($color-warm-red, 0.9);
+            //         background: rgb($brandcolor2, 0.9);
             //     }
 
             //     > .material-icons {
@@ -422,7 +422,7 @@
         > .btn-donate-top {
             font-family: "Kanit-500";
             font-size: 16px;
-            color: $color-warm-red;
+            color: $brandcolor2;
         }
 
         > .btn-donate-bottom {

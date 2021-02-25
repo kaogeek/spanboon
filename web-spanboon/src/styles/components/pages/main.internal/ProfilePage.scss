@@ -50,15 +50,15 @@
           }
 
           &:hover {
-            background: rgb($color-warm-red, 0.2);
-            color: $color-warm-red;
+            background: rgb($brandcolor2, 0.2);
+            color: $brandcolor2;
 
             svg,
             circle,
             path,
             g {
               opacity: 1;
-              fill: $color-warm-red;
+              fill: $brandcolor2;
             }
           }
         }
@@ -71,13 +71,13 @@
           align-items: center;
           @include pointer();
           height: 32pt;
-          background: $color-warm-red;
+          background: $brandcolor2;
           color: $white;
           border-radius: 30pt;
           padding: 0 15pt;
 
           &:hover {
-            background: rgb($color-warm-red, 0.95);
+            background: rgb($brandcolor2, 0.95);
           }
 
           > svg {
@@ -109,7 +109,7 @@
           > .wrapper-cover-image {
             width: calc(100% - 4px);
             height: 219pt;
-            border: 2px dashed $color-warm-red;
+            border: 2px dashed $brandcolor2;
 
             &:hover {
               cursor: pointer;
@@ -143,7 +143,7 @@
                   .browse-file {
                     padding: 5pt;
                     border-radius: 25px;
-                    border: 3px solid $color-warm-red;
+                    border: 3px solid $brandcolor2;
                     @include pointer();
                   }
                 }
@@ -322,7 +322,7 @@
               padding: 0 10pt 20pt 10pt;
 
               > .fan-page-name {
-                color: $color-warm-red;
+                color: $brandcolor2;
                 margin: 0 10pt;
                 font-family: "Kanit-500";
                 font-size: 22px;
@@ -347,7 +347,7 @@
         //   background: $white;
 
         //   > .fan-page-name {
-        //     color: $color-warm-red;
+        //     color: $brandcolor2;
         //     margin-left: 10pt;
         //     font-family: "Kanit-500";
         //     font-size: 20px;
@@ -403,13 +403,13 @@
                     opacity: 1;
 
                     &:hover {
-                      color: $color-warm-red;
-                      background: rgba($color-warm-red, 0.1);
+                      color: $brandcolor2;
+                      background: rgba($brandcolor2, 0.1);
                     }
                   }
 
                   > .mat-tab-label-active {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                   }
                 }
               }
@@ -441,7 +441,7 @@
               }
 
               > .fulfill {
-                background-color: $green;
+                background-color: $text-svg-home-color;
               }
 
               > .message {
@@ -627,7 +627,7 @@
               align-items: center;
               padding: 8pt 15pt;
               text-align: center;
-              color: $color-warm-red;
+              color: $brandcolor2;
               min-height: 26pt;
               border-top: $width-border solid $border-color;
               @include pointer();
@@ -650,7 +650,7 @@
             }
 
             > .item-all {
-              color: $color-warm-red;
+              color: $brandcolor2;
               padding: 10pt;
               text-align: center;
               font-family: "Kanit-500";

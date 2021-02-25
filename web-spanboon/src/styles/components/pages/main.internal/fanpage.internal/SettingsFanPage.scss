@@ -71,7 +71,7 @@
                         height: 32pt;
                         border-radius: 50%;
                         user-select: none;
-                        background-color: $color-warm-red;
+                        background-color: $brandcolor2;
                         color: $white;
                         display: flex;
                         align-items: center;
@@ -110,7 +110,7 @@
                     opacity: 1;
 
                     &:hover {
-                        background: rgba($color-warm-red, 0.1);
+                        background: rgba($brandcolor2, 0.1);
                     }
                 }
             }
@@ -155,7 +155,7 @@
 
                         > .settings-icon {
                             margin-right: 8pt;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                         }
 
                         > .settings-title {
@@ -258,11 +258,11 @@
                     &:hover {
                         > .left {
                             path {
-                                fill: $color-warm-red;
+                                fill: $brandcolor2;
                             }
                         }
                         span {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                         }
                     }
                 }
@@ -342,11 +342,11 @@
                     &:hover {
                         > .left {
                             path {
-                                fill: $color-warm-red;
+                                fill: $brandcolor2;
                             }
                         }
                         span {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                         }
                     }
                 }

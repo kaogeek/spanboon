@@ -65,7 +65,7 @@
                                     box-shadow: 2.5px 0px 0px 0 #ffffff;
                                     overflow: hidden;
                                     color: $brandcolor;
-                                    background: $color-warm-red;
+                                    background: $brandcolor2;
                                     font-family: "Kanit-500";
                                     font-size: 16px;
                                 }
@@ -164,11 +164,11 @@
                         }
 
                         &::-webkit-scrollbar-thumb {
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                         }
 
                         &::-webkit-scrollbar-thumb:hover {
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                         }
                     }
                     > .contact-notfound {
@@ -216,7 +216,7 @@
 
                         > .status {
                             font-size: 10pt;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                         }
 
                         > .lookfor {
@@ -241,7 +241,7 @@
                                 color: #a5a5a6;
 
                                 &:hover {
-                                    color: rgba($color-warm-red, 0.95);
+                                    color: rgba($brandcolor2, 0.95);
                                 }
                             }
                         }
@@ -258,7 +258,7 @@
                         > a {
                             color: $black;
                             &:hover {
-                                color: rgba($color-warm-red, 0.95);
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }
@@ -278,7 +278,7 @@
                                 color: #a5a5a6;
 
                                 &:hover {
-                                    color: rgba($color-warm-red, 0.95);
+                                    color: rgba($brandcolor2, 0.95);
                                 }
                             }
                         }
@@ -310,14 +310,14 @@
                             a {
                                 &:hover {
                                     opacity: 0.7;
-                                    color: rgba($color-warm-red, 0.95);
+                                    color: rgba($brandcolor2, 0.95);
                                 }
 
                                 > .contact-event {
                                     margin: 0 10pt 0 8px;
                                     font-family: "Kanit-500";
                                     font-size: 14px;
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
@@ -331,7 +331,7 @@
 
                                 g,
                                 path {
-                                    fill: $color-warm-red;
+                                    fill: $brandcolor2;
                                 }
                             }
 
@@ -379,7 +379,7 @@
                                     color: #a5a5a6;
 
                                     &:hover {
-                                        color: rgba($color-warm-red, 0.95);
+                                        color: rgba($brandcolor2, 0.95);
                                     }
                                 }
                             }
@@ -404,7 +404,7 @@
                             box-shadow: 2.5px 0px 0px 0 #ffffff;
                             overflow: hidden;
                             color: $brandcolor;
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                             font-family: "Kanit-500";
                             font-size: 16px;
 
@@ -426,7 +426,7 @@
                         > .text-fulfill-close {
                             font-family: "Kanit-500";
                             font-size: 16px;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             > .date-case-close {
                                 text-align: end;
                                 color: $koalaGray;
@@ -527,11 +527,11 @@
                             }
 
                             &::-webkit-scrollbar-thumb {
-                                background: $color-warm-red;
+                                background: $brandcolor2;
                             }
 
                             &::-webkit-scrollbar-thumb:hover {
-                                background: $color-warm-red;
+                                background: $brandcolor2;
                             }
 
                             fulfill-item-card {
@@ -629,11 +629,11 @@
             > .fulfill-search {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                color: $color-warm-red;
+                color: $brandcolor2;
                 > .hover {
                     @include pointer();
                     &:hover {
-                        color: rgba($color-warm-red, 0.95);
+                        color: rgba($brandcolor2, 0.95);
                     }
                 }
             }
@@ -691,7 +691,7 @@
         box-shadow: 2.5px 0px 0px 0 #ffffff;
         overflow: hidden;
         color: $brandcolor;
-        background: $color-warm-red;
+        background: $brandcolor2;
         font-family: "Kanit-500";
         font-size: 16px;
     }
@@ -769,7 +769,7 @@
                             @include pointer();
                             padding-top: 4pt;
                             &:hover {
-                                color: rgba($color-warm-red, 0.95);
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }
@@ -861,7 +861,7 @@
                             padding-top: 4pt;
                             @include pointer();
                             &:hover {
-                                color: rgba($color-warm-red, 0.95);
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }

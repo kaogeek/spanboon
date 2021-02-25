@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>
  */
 
-import { JsonController, Res, Post, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { ConfigService } from '../services/ConfigService';

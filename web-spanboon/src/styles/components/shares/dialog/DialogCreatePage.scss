@@ -33,7 +33,7 @@
     > .create-left {
         width: 300pt;
         height: 100%;
-        background: $color-warm-red;
+        background: $brandcolor2;
         flex: 0 0 auto;
         display: flex;
         align-items: center;
@@ -83,10 +83,10 @@
                 font-family: "Kanit-500";
                 font-size: 16px;
                 @include pointer();
-                color: $color-warm-red;
+                color: $brandcolor2;
 
                 &:hover {
-                    color: rgba($color-warm-red, 0.95);
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -142,7 +142,7 @@
                         @include pointer();
 
                         &.active {
-                            border: 2px solid $color-warm-red;
+                            border: 2px solid $brandcolor2;
                         }
 
                         &:first-child {
@@ -217,7 +217,7 @@
 
                                 > .material-icons {
                                     font-weight: 700;
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                 }
                             }
                         }
@@ -427,14 +427,14 @@
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                background-color: $color-warm-red;
+                                background-color: $brandcolor2;
                                 font-family: "Kanit-500";
                                 font-size: 24px;
                                 color: $white;
                             }
 
                             > .username {
-                                color: $color-warm-red;
+                                color: $brandcolor2;
                                 font-family: "Kanit-500";
                                 font-size: 24px;
                             }
@@ -502,7 +502,7 @@
                                                 > p {
                                                     font-family: "Kanit-300";
                                                     font-size: 18px;
-                                                    color: $color-warm-red;
+                                                    color: $brandcolor2;
                                                 }
                                             }
                                         }
@@ -584,7 +584,7 @@
                 > .but-conf {
                     margin-left: 15pt;
                     color: $white;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     &.active {
                         opacity: 0.7;
                         pointer-events: none;

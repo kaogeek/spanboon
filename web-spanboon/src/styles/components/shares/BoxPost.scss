@@ -11,7 +11,6 @@
   position: relative;
   background-color: $bg-fog-gray2;
 
-
   > .mat-dialog-content {
     margin: unset;
     padding: unset;
@@ -23,7 +22,7 @@
     // height: $height-box-post;
     border: 0.7px solid $border-color;
     background-color: $color-10;
-    border-radius: $border-radius-4px; 
+    border-radius: $border-radius-4px;
 
     > .box-story {
       display: flex;
@@ -43,7 +42,7 @@
       }
       > .mobile-post {
         border-right: unset;
-        color: $color-warm-red;
+        color: $brandcolor2;
         font-family: "Kanit-500";
         font-size: 14px;
         @include pointer();
@@ -319,7 +318,7 @@
                 g {
                   path,
                   rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                   }
                 }
               }
@@ -358,7 +357,7 @@
                 g {
                   path,
                   rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                   }
                 }
               }
@@ -392,15 +391,15 @@
           font-size: 14px;
           @include pointer();
           &:hover {
-            color: rgba($color-warm-red, 0.95);
-            color: $color-warm-red;
+            color: rgba($brandcolor2, 0.95);
+            color: $brandcolor2;
           }
           > .edit-story {
           }
           > .label-needs {
             &:hover {
-              color: rgba($color-warm-red, 0.95);
-              color: $color-warm-red;
+              color: rgba($brandcolor2, 0.95);
+              color: $brandcolor2;
             }
           }
         }
@@ -489,7 +488,7 @@
             }
 
             .active-click path {
-              fill: $color-warm-red;
+              fill: $brandcolor2;
             }
 
             > .search-field {
@@ -597,7 +596,7 @@
 
               &.active-click {
                 path {
-                  fill: $color-warm-red;
+                  fill: $brandcolor2;
                 }
               }
             }
@@ -636,7 +635,7 @@
 
         .mat-option {
           width: 2000pt !important;
-          color: $color-warm-red !important;
+          color: $brandcolor2 !important;
         }
 
         .div-gatdata-post {
@@ -750,7 +749,7 @@
       }
 
       > .fulfill {
-        background-color: $green;
+        background-color: $text-svg-home-color;
       }
     }
   }
@@ -818,7 +817,7 @@
             margin-right: 5pt;
             border-radius: 50%;
             box-shadow: 2.5px 0px 0px 0 #ffffff;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
             overflow: hidden;
             color: $brandcolor;
             font-family: "Kanit-500";
@@ -918,12 +917,12 @@
                         opacity: 1;
 
                         &:hover {
-                          color: $color-warm-red;
-                          background: rgba($color-warm-red, 0.1);
+                          color: $brandcolor2;
+                          background: rgba($brandcolor2, 0.1);
                         }
 
                         &.mat-tab-label-active {
-                          color: $color-warm-red;
+                          color: $brandcolor2;
                         }
                       }
                     }
@@ -942,7 +941,7 @@
               overflow-y: auto;
 
               > .mat-uncheck {
-                color: $color-warm-red;
+                color: $brandcolor2;
               }
 
               > .list {
@@ -1025,7 +1024,7 @@
                 align-items: center;
                 @include pointer();
                 svg {
-                  color: $color-warm-red;
+                  color: $brandcolor2;
                 }
               }
             }
@@ -1040,7 +1039,7 @@
                     > .mat-checkbox-inner-container {
                       > .mat-checkbox-frame {
                         &.active {
-                          border: 2px solid $color-warm-red;
+                          border: 2px solid $brandcolor2;
                         }
                       }
                     }
@@ -1122,14 +1121,14 @@
   //   }
   // }
   .box-post {
-    >.mat-dialog-content {
-      max-height : unset;
+    > .mat-dialog-content {
+      max-height: unset;
     }
     > .box {
       display: flex;
       flex-direction: column;
       height: 100vh;
-      
+
       > .mat-dialog-actions {
         padding: unset;
         flex-wrap: unset;
@@ -1233,7 +1232,7 @@
         width: calc(100% - 30pt) !important;
         border-left: unset !important;
         border-top: 0.7px solid #e5e5e5;
-        color: $color-warm-red !important;
+        color: $brandcolor2 !important;
         padding: 15pt 15pt !important;
         > .div-gatdata-post {
           width: 100%;
@@ -1243,7 +1242,7 @@
             border-radius: 25pt;
             border: 0.7px solid;
             padding: 8pt 8pt;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
           }
           > .mat-form-field-wrapper {
             > .mat-form-field-flex {

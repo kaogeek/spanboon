@@ -104,7 +104,7 @@
             width: 50pt;
             flex: 0 0 auto;
             &:hover {
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
 
@@ -158,14 +158,14 @@
         .ng5-slider {
             > .ng5-slider-span {
                 > .ng5-slider-selection {
-                    background-color: $color-warm-red;
+                    background-color: $brandcolor2;
                 }
                 > .ng5-slider[disabled] .ng5-slider-bar {
                     background-color: #c4c4c4;
                 }
             }
             .ng5-slider-pointer {
-                background-color: $color-warm-red;
+                background-color: $brandcolor2;
                 width: 12px;
                 height: 12px;
                 top: -5px;
@@ -202,7 +202,7 @@
     > .follow-all {
         padding: 8pt 15pt;
         text-align: center;
-        color: $color-warm-red;
+        color: $brandcolor2;
         @include pointer();
         @include font-size-9-100("Kanit-500");
         min-height: 26pt;
