@@ -112,7 +112,7 @@ p {
 
 @media only screen and (max-width: $medium) {
     .cdk-global-overlay-wrapper {
-        align-items: flex-start !important;
+        // align-items: flex-start !important;
     }
     .customize-dialog {
         max-width: 100vw !important;

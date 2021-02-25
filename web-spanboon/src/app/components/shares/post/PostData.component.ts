@@ -68,7 +68,7 @@ export class PostData {
   @Input()
   public userImage: any;
   @Input()
-  public commentPost: any; 
+  public commentPost: any;
   @Output()
   public comment: EventEmitter<any> = new EventEmitter();
   @Output()
@@ -84,7 +84,7 @@ export class PostData {
   public isLoading: Boolean;
   public linkPost: string;
   public isFulfill: boolean = false;
-  public isPendingFulfill: boolean = false; 
+  public isPendingFulfill: boolean = false;
 
   private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
@@ -109,7 +109,7 @@ export class PostData {
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => {    
+    setTimeout(() => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           let galleryIndex = 0;
@@ -177,9 +177,9 @@ export class PostData {
           }
         }
       }
-    }, 1000); 
+    }, 1000);
   }
-  
+
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
@@ -274,7 +274,7 @@ export class PostData {
       }
     });
     dialog.afterClosed().subscribe((res) => {
-      if(res){ 
+      if (res) {
         this.router.navigateByUrl('/search?' + url);
       }
     });
@@ -391,6 +391,12 @@ export class PostData {
       // });
     } else if (data.action === 'CANCEL') {
       this.commentpost[data.index].isEdit = false;
+    }
+  }
+
+  public substringData(settingname: string) {
+    if(settingname.length > 0){ 
+      return settingname.split('_');
     }
   }
 

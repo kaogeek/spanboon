@@ -117,6 +117,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         checked: false
                     }
                     this.unBindingSharePost(slider, 'facebook');
+                    this.socialGetBindingFacebook();
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
@@ -187,20 +188,24 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public socialGetBindingTwitter() {
-        this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => {
-            this.connectTwitter = res.data;
-            this.dataBinding = res.data;
-            console.log('this.dataBinding ',this.dataBinding)
-            this.isLoading = false;
+        this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => { 
+            if(Object.keys(res.data).length > 0){
+                this.connectTwitter = res.data.data; 
+                this.isLoading = false;
+            }
+           
         }).catch((err: any) => {
             console.log('err ', err)
         });
     }
 
     public socialGetBindingFacebook() {
-        this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => {
-            this.connect = res.data.data; 
-            this.isLoading = false;
+        this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => { 
+            if(Object.keys(res.data).length > 0){
+                this.connect = res.data.data; 
+                this.isLoading = false;
+                this.dataBinding = res.data; 
+            } 
         }).catch((err: any) => {
             console.log('err ', err)
         });
@@ -315,23 +320,22 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.listPageFacebook());
             }
-        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement' });
+        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement,pages_manage_posts,publish_to_groups' });
     }
 
     public listPageFacebook() {
         this.isLoading = false;
         let pageUserId: string = "";
         window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
-            if (response && !response.error) {
-                console.log('response ', response)
+            if (response && !response.error) { 
                 /* handle the result */
                 this.responseFacabook = response;
                 if (this.responseFacabook !== undefined) {
                     this.checkBoxBindingPageFacebook(this.responseFacabook.data[0]);
-                    // for (let facebook of this.responseFacabook.data) {
-                    //     pageUserId = facebook.id 
-                    //     this.getImagePageProfile(pageUserId);
-                    // } 
+                    for (let facebook of this.responseFacabook.data) {
+                        pageUserId = facebook.id 
+                        this.getImagePageProfile(pageUserId);
+                    } 
                 }
             }
         }); 
@@ -340,7 +344,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public getImagePageProfile(pageUserId){
         window['FB'].api("/" + pageUserId + "/picture?redirect=0&access_token=" + this.accessToken.fbtoken, (picture) => {
             if (picture && !picture.error) {
-                console.log('picture ', picture)
+                // console.log('picture ', picture)
                 /* handle the result */
 
             }
@@ -355,19 +359,18 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         //     }
         // } else {
         //     this.index = i
-        // }
-        console.log('text ',access)
+        // } 
 
         const facebook = new PageSoialFB();
         facebook.facebookPageId = access.id;
-        facebook.userAccessToken = access.access_token;
+        facebook.pageAccessToken = access.access_token;
         facebook.facebookPageName = access.name;
 
         this.pageFacade.socialBindingFacebook(this.pageId, facebook).then((res: any) => {
-            console.log('res facebook ', res)
+           
             if (res.data) {
+                this.connect = res.data;
                 Object.assign(access, { selected: true });
-                this.connect = res.data.data;
                 this.isLoading = false;
             }
 
