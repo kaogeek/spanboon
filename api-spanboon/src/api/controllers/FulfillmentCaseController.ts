@@ -1057,7 +1057,7 @@ export class FulfillmentController {
                         }
                         */
                     } else {
-                        return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Allow Only Posts needs', undefined));
+                        return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentCase Allow Only Posts needs', undefined));
                     }
                 } else {
                     // PAGE MODE implement as a case with no Post.
