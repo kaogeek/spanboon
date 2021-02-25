@@ -403,10 +403,9 @@
                         </div>
                         <div (click)="autoAllocate(true)" class="icon"
                             [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0">
-                            <spinners *ngIf="isSpinner"></spinners>
-                            <svg *ngIf="!isSpinner" id="Group_2322" data-name="Group 2322"
-                                xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 30.539 30.539"
-                                class="icon">
+                            <loading *ngIf="isSpinner"></loading>
+                            <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="25"
+                                height="25" viewBox="0 0 30.539 30.539" class="icon">
                                 <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
                                     <g id="Group_3292" data-name="Group 3292" transform="translate(112.208 94.414)">
                                         <g id="Group_3290" data-name="Group 3290" transform="translate(2.408 4.898)">
@@ -528,7 +527,7 @@
                                         <span>{{getTypePost(item.posts.type)}}</span>
                                         <svg class="icon-time" height="8pt" viewBox="0 0 512 512"
                                             style="margin: 0px 4px;" width="8pt" xmlns="http://www.w3.org/2000/svg">
-                                            <path
+                                            <path 
                                                 d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
                                                 fill="#A5A5A6" />
                                             <path
@@ -691,8 +690,8 @@
                     </div>
                     <div (click)="autoAllocate(false)" [class.active]="selectNeedItem.length > 0"
                         class="list-item-Next">
-                        <spinners [color]="'white'" [height]="'24px'" [size]="'10px'" *ngIf="isSpinner"></spinners>
-                        <span *ngIf="!isSpinner">จัดสรรอัตโนมัติ</span>
+                        <loading *ngIf="isSpinner"></loading>
+                        <span>จัดสรรอัตโนมัติ</span>
                     </div>
                 </div>
                 <div class="box-list-item-body">
@@ -762,8 +761,8 @@
                     </div>
 
                     <div (click)="confirmAllocate()" [class.active]="true" class="list-item-Next">
-                        <spinners [color]="'white'" [height]="'24px'" [size]="'10px'" *ngIf="isSpinner"></spinners>
-                        <span *ngIf="!isSpinner">ยืนยัน</span>
+                        <loading *ngIf="isSpinner"></loading>
+                        <span>ยืนยัน</span>
                     </div>
                 </div>
                 <div class="box-list-item-body" style="height: calc(100% - 85px) !important;" [class.list]="true">
@@ -773,7 +772,7 @@
                             <div class="left">
                                 <div class="detail">
                                     <div class="date">
-                                        <div style="    background-color: #fd545a;
+                                        <div style="background-color: #fd545a;
                                     width: 10px;
                                     height: 10px;
                                     border-radius: 5px;
@@ -876,7 +875,7 @@
                                             </div>
                                             <div *ngIf="item.isMn" class="quantity">
                                                 <span
-                                                    [ngStyle]="{'color': item.isAuto ? 'red' : 'gray'}">{{item.amount}}</span>/{{item.quantity|
+                                                    [ngStyle]="{'color': item.isAuto ? '#84b572' : 'gray'}">{{item.amount}}</span>/{{item.quantity|
                                                 shortNumber}}
                                             </div>
                                         </div>

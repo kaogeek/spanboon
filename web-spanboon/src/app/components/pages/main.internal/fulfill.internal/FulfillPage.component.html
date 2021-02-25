@@ -172,23 +172,28 @@
                                 </svg>
                                 <span class="date">
                                     <a href="{{linkPost}}" target="_blank">
-                                        {{postDate | dateFormat}}
+                                        {{postDates | dateFormat}}
                                     </a>
+                                </span>
+                                <span class="date">
+                                    {{name ? name:uniqueId}} ต้องการเติมเต็มให้กับ
                                 </span>
                             </div>
                             <div class="contact-head">
                                 <a href="{{linkUser}}" target="_blank">
                                     {{title ? title:(name ? name:uniqueId)}}
                                 </a>
-                                <span *ngIf="!title" style="opacity: 0.7;"> ต้องการ เติมเต็มลงเพจ </span>
+                                <span *ngIf="!title" style="opacity: 0.7;"> ต้องการเติมเต็มให้กับ </span>
                             </div>
-                            <div *ngIf="!title" class="contact-head">
+                            <div #pageNameDiv style="position: relative;"
+                                (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
+                                (mouseover)="Tooltip(showTooltip , ProfilePage)" *ngIf="!title" class="contact-head">
                                 <a href="{{linkPage}}" target="_blank">
-                                    {{pageName ? pageName:uniqueId}}
+                                    เพจ {{pageName ? pageName:uniqueId}}
                                 </a>
                             </div>
                             <div class="contact-hashtag">
-                                <tag-event
+                                <tag-event *ngIf="objective || emergencyEvent "
                                     [isShowEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
                                     [isNameEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
                                     [isIconEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
@@ -199,6 +204,11 @@
                                     [nameObjective]="objective" (emergencyClick)="clickDevelop($event , emergencyEvent)"
                                     (objectiveClick)="clickDevelop($event , objective)"></tag-event>
 
+                                <span class="date">
+                                    <a href="{{linkPost}}" target="_blank">
+                                        ( เมื่อ {{postDate | dateFormat}} )
+                                    </a>
+                                </span>
                                 <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
                                     <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
                                 </div>

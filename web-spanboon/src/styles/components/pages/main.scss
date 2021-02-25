@@ -47,7 +47,7 @@ span:focus {
 }
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: $color-warm-red;
+    background-color: $brandcolor2;
 }
 
 ::-webkit-scrollbar-button {
@@ -156,7 +156,7 @@ span:focus {
         }
 
         > .looking {
-            background-color: $brandcolor2;
+            background-color: $brandcolor3;
         }
 
         > .lookingWhite {
@@ -165,7 +165,7 @@ span:focus {
         }
 
         > .fulfill {
-            background-color: $green;
+            background-color: $text-svg-home-color;
         }
 
         span {
@@ -183,7 +183,7 @@ span:focus {
         font-size: 14px;
 
         &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
         }
     }
 
@@ -196,7 +196,7 @@ span:focus {
             color: $color-7;
 
             &:hover {
-                text-decoration: underline;
+                color: rgba($brandcolor2, 0.95);
             }
         }
 
@@ -233,7 +233,7 @@ span:focus {
 
         &:hover {
             transform: scale3d(1.1, 1.1, 1.1);
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         > .to-top {
@@ -257,7 +257,7 @@ span:focus {
         justify-content: center;
         width: 40pt;
         height: 40pt;
-        background: $color-warm-red;
+        background: $brandcolor2;
         right: 11px;
         bottom: 10pt;
         border-radius: 50%;
@@ -268,7 +268,7 @@ span:focus {
         transition: all 0.3s ease;
 
         &:hover {
-            background: rgba($color-warm-red, 0.95);
+            color: rgba($brandcolor2, 0.95);
         }
 
         > .button-post {
@@ -395,7 +395,7 @@ span:focus {
     }
 
     .tribute-container {
-        color: $color-warm-red;
+        color: $brandcolor2;
         padding: 3pt 5pt;
         border-radius: 25px;
     }
@@ -479,7 +479,7 @@ span:focus {
         color: rgb(27, 149, 224);
 
         &:hover {
-            text-decoration: underline !important;
+            color: rgba($brandcolor2, 0.95);
         }
     }
 
@@ -848,7 +848,7 @@ span:focus {
     color: $color-11;
 }
 
-$fuschia: $color-warm-red;
+$fuschia: $brandcolor2;
 $button-bg: $fuschia;
 $button-text-color: $white;
 $baby-blue: #f8faff;

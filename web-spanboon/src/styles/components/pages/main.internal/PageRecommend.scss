@@ -59,8 +59,8 @@
 
                     &:hover {
                         > .list-item {
-                            color: $color-warm-red;
-                            background: rgba($color-warm-red, 0.1);
+                            color: $brandcolor2;
+                            background: rgba($brandcolor2, 0.1);
 
                             > .icon-setting {
                             }
@@ -69,7 +69,7 @@
 
                     &.active {
                         > .list-item {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
 
                             > .icon-setting {
                             }
@@ -268,13 +268,13 @@
                                                     opacity: 1;
 
                                                     &:hover {
-                                                        color: $color-warm-red;
-                                                        background: rgba($color-warm-red, 0.1);
+                                                        color: $brandcolor2;
+                                                        background: rgba($brandcolor2, 0.1);
                                                     }
                                                 }
 
                                                 > .mat-tab-label-active {
-                                                    color: $color-warm-red;
+                                                    color: $brandcolor2;
                                                 }
                                             }
                                         }
@@ -289,12 +289,12 @@
                                     font-family: "Kanit-400";
                                     font-size: 16px;
                                     &:hover {
-                                        color: $color-warm-red;
-                                        background: rgba($color-warm-red, 0.1);
+                                        color: $brandcolor2;
+                                        background: rgba($brandcolor2, 0.1);
                                         svg,
                                         g,
                                         path {
-                                            fill: $color-warm-red;
+                                            fill: $brandcolor2;
                                         }
                                     }
                                     > .mat-button-wrapper {
@@ -369,7 +369,7 @@
 
                                             > .page-user {
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
 
@@ -377,14 +377,14 @@
                                                 padding: 0 5pt;
                                                 color: $koalaGray;
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
                                         }
 
                                         > .feed-date-time {
                                             &:hover {
-                                                text-decoration: underline;
+                                                color: rgba($brandcolor2, 0.95);
                                             }
                                         }
                                     }
@@ -595,7 +595,7 @@
                                             width: 50pt;
                                             flex: 0 0 auto;
                                             &:hover {
-                                                color: $color-warm-red;
+                                                color: $brandcolor2;
                                             }
                                         }
                                     }
@@ -620,7 +620,7 @@
                                                 display: flex;
                                                 align-items: center;
                                                 justify-content: center;
-                                                background-color: $color-warm-red;
+                                                background-color: $brandcolor2;
                                                 font-family: "Kanit-500";
                                                 font-size: 14px;
                                                 color: $white;
@@ -698,7 +698,7 @@
                                     align-items: center;
                                     padding: 8pt 15pt;
                                     text-align: center;
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     min-height: 26pt;
                                     border-top: $width-border solid $border-color;
                                     @include pointer();
@@ -717,7 +717,7 @@
                                     @include font-size-8-100("Kanit-500");
                                 }
                                 > .item-all {
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     padding: 10pt;
                                     text-align: center;
                                     // @include font-size-9-100("Kanit-500");
@@ -838,7 +838,7 @@
                         > .follow-all {
                             padding: 8pt 15pt;
                             text-align: center;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             @include pointer();
                             @include font-size-9-100("Kanit-500");
                             min-height: 26pt;

@@ -31,13 +31,13 @@
             margin-right: 5pt;
 
             &.active {
-                fill: $color-warm-red;
+                fill: $brandcolor2;
 
                 g,
                 path,
                 path,
                 rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                 }
             }
         }
@@ -63,7 +63,7 @@
             overflow: hidden;
 
             &.active {
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
     }

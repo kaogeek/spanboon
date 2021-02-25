@@ -53,7 +53,7 @@
 
                     &.share-page {
                         border-radius: 50%;
-                        background-color: $color-warm-red;
+                        background-color: $brandcolor2;
                         color: $white;
                         width: 35pt;
                         height: 35pt;
@@ -81,13 +81,13 @@
                 color: $koalaGray;
 
                 &:hover {
-                    text-decoration: underline;
-                    color: $color-warm-red;
+                    color: rgba($brandcolor2, 0.95);
+                    color: $brandcolor2;
                     @include pointer();
                 }
 
                 &.active {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                 }
 
                 &.hide {

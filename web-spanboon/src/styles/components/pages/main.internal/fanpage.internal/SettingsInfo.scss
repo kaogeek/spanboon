@@ -44,7 +44,7 @@
 
                 > .settings-icon {
                     margin-right: 8pt;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                 }
 
                 > .settings-title {
@@ -219,7 +219,7 @@
 
                         > .save-card {
                             color: $white;
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                             opacity: 0.7;
                             @include font-size-10-100("Kanit-500");
 
@@ -233,13 +233,13 @@
                         }
 
                         > .cancel-card {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             background: transparent;
                             @include font-size-10-100("Kanit-500");
 
                             &:hover {
                                 > .mat-button-wrapper {
-                                    text-decoration: underline;
+                                    color: rgba($brandcolor2, 0.95);
                                 }
                             }
                         }
@@ -340,27 +340,27 @@
 
     .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
     .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
-        background: $color-warm-red;
+        background: $brandcolor2;
     }
 
     .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
     .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-        background: $color-warm-red;
+        background: $brandcolor2;
     }
 
     // --------------
 
     .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-        border-color: $color-warm-red;
+        border-color: $brandcolor2;
     }
 
     .mat-radio-button.mat-accent .mat-radio-inner-circle {
-        color: $color-warm-red;
-        background-color: $color-warm-red;
+        color: $brandcolor2;
+        background-color: $brandcolor2;
     }
 
     .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
     }
 }
 

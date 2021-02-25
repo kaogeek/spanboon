@@ -69,6 +69,10 @@ export class DialogPost extends AbstractPage {
     this.fulfillFacade = fulfillFacade;
     this.prefix = {};
 
+    setTimeout(() => {
+      this.isPreload = false
+    }, 1000);
+
     this.observManager.createSubject(REFRESH_DATA);
     this.observManager.createSubject('scroll.fix');
 
@@ -79,7 +83,6 @@ export class DialogPost extends AbstractPage {
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
-
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
@@ -98,9 +101,7 @@ export class DialogPost extends AbstractPage {
       })
     } 
 
-    setTimeout(() => {
-      this.isPreload = false
-    }, 1000);
+   
   }
 
   public ngOnInit() {

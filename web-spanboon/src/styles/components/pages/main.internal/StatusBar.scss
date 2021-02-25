@@ -33,7 +33,7 @@
         }
 
         > .icon {
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -104,7 +104,7 @@
             }
 
             > .topic-see-all {
-                color: $color-warm-red;
+                color: $brandcolor2;
                 font-family: "Kanit-500";
                 font-size: 18px;
                 margin-left: 5pt;
@@ -112,7 +112,7 @@
                 @include pointer();
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }

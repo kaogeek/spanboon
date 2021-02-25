@@ -101,7 +101,7 @@
                     color: #000;
                     cursor: pointer;
                     &:hover {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                     }
                 }
             }
@@ -135,9 +135,9 @@
                         cursor: pointer;
                         background-color: $bgcolor-list-item-fulfill-allocate;
                         &:hover {
-                            border: 2px solid $color-warm-red;
+                            border: 2px solid $brandcolor2;
                             .pb_arrow_forward {
-                                color: $color-warm-red;
+                                color: $brandcolor2;
                             }
                         }
 
@@ -227,12 +227,12 @@
                                 font-family: "Kanit-400";
                                 font-size: 16px;
                                 &:hover {
-                                    color: $color-warm-red;
-                                    background: rgba($color-warm-red, 0.1);
+                                    color: $brandcolor2;
+                                    background: rgba($brandcolor2, 0.1);
                                     svg,
                                     g,
                                     path {
-                                        fill: $color-warm-red;
+                                        fill: $brandcolor2;
                                     }
                                 }
                                 > .mat-button-wrapper {
@@ -260,12 +260,12 @@
                                 font-family: "Kanit-400";
                                 font-size: 16px;
                                 &:hover {
-                                    color: $color-warm-red;
-                                    background: rgba($color-warm-red, 0.1);
+                                    color: $brandcolor2;
+                                    background: rgba($brandcolor2, 0.1);
                                     svg,
                                     g,
                                     path {
-                                        fill: $color-warm-red;
+                                        fill: $brandcolor2;
                                     }
                                 }
                                 > .mat-button-wrapper {
@@ -343,7 +343,7 @@
                         cursor: pointer;
 
                         &:hover {
-                            border: 0.1px solid $color-warm-red;
+                            border: 0.1px solid $brandcolor2;
                         }
 
                         > .item-image {
@@ -384,7 +384,7 @@
                         width: 100%;
                         display: flex;
                         border: 0.1px solid rgba(14, 14, 14, 0.15);
-                        margin-bottom: 4px;
+                        margin-bottom: 15px;
                         > .left {
                             width: 50%;
                             > .detail {
@@ -525,7 +525,7 @@
 
                                         fill: black;
                                         &:hover {
-                                            fill: $color-warm-red;
+                                            fill: $brandcolor2;
                                         }
                                         &.dis {
                                             opacity: 0.5;
@@ -563,7 +563,7 @@
                                 cursor: pointer;
 
                                 &:hover {
-                                    border: 0.1px solid $color-warm-red;
+                                    border: 0.1px solid $brandcolor2;
                                 }
 
                                 > .item-image {
@@ -607,7 +607,7 @@
                             height: 160px;
                             display: flex;
                             border: 0.1px solid rgba(14, 14, 14, 0.15);
-                            margin-bottom: 4px;
+                            margin-bottom: 15px;
                             > .detail {
                                 height: calc(100% - 30px) !important;
                                 width: 60%;
@@ -727,7 +727,7 @@
 
                                         fill: black;
                                         &:hover {
-                                            fill: $color-warm-red;
+                                            fill: $brandcolor2;
                                         }
                                         &.dis {
                                             opacity: 0.5;
@@ -747,7 +747,7 @@
                         font-size: 22px;
                         > .link {
                             margin: 0px 10px;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             cursor: pointer;
                         }
                     }

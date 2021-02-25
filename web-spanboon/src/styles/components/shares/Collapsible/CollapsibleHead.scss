@@ -57,7 +57,7 @@
             > .count-contact-user {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                background: $color-warm-red;
+                background: $brandcolor2;
                 color: $white;
                 border-radius: 10px;
                 padding: 0 10px;
@@ -67,7 +67,7 @@
             > .status {
                 width: 24px;
                 text-align: center;
-                color: $color-warm-red;
+                color: $brandcolor2;
                 transition: 0.3s all ease;
                 margin-left: 5px;
             }
@@ -87,8 +87,8 @@
         border-right: 1px solid $border-color;
 
         &:hover {
-            color: $color-warm-red;
-            text-decoration: underline;
+            color: $brandcolor2;
+            color: rgba($brandcolor2, 0.95);
         }
     }
     >.preload-card { 

@@ -37,7 +37,7 @@
 
                 &:hover {
                     border-radius: 5pt;
-                    background-color: #ffd3d38a;
+                    background-color: rgb($brandcolor2, 50%);
                 }
             }
 
@@ -122,7 +122,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $color-warm-red;
+    background-color: $brandcolor2;
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -132,7 +132,7 @@
     @include pointer();
     font-size: 16px;
     font-family: "Kanit-500";
-} 
+}
 
 @media (max-width: $xlarge) {
     .control-action {

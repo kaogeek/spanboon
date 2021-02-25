@@ -5,15 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-.wrapper-body-objective {
-  // position: absolute;
+.wrapper-body-objective { 
   width: 50vw;
   background-color: $white;
-  box-shadow: 0px 1px 9px 0 #e5e3dd;
-  // top: 23pt;
-  // left: 0;
-  // bottom: auto;
-  // z-index: 10000;
+  box-shadow: 0px 1px 9px 0 #e5e3dd; 
   min-width: 250pt;
   max-width: 550pt;
 
@@ -21,7 +16,7 @@
     top: auto;
     bottom: 0;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
   > .search-header-objective {
@@ -117,7 +112,7 @@
         }
 
         &.active-click-doing {
-          background-color: $color-warm-red;
+          background-color: $brandcolor2;
 
           > .name-objective,
           > .div-objective {

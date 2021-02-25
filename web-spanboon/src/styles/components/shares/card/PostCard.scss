@@ -35,7 +35,7 @@
 
                 &:hover {
                     > span {
-                        text-decoration: underline;
+                        color: rgba($brandcolor2, 0.95);
                     }
                 }
 
@@ -64,7 +64,7 @@
                 @include pointer();
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -159,12 +159,12 @@
                 > .btn-read-more {
                     position: relative;
                     z-index: 4;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     @include pointer();
                     font-family: "Kanit-300";
 
                     &:hover {
-                        text-decoration: underline;
+                        color: rgba($brandcolor2, 0.95);
                     }
                 }
             }
@@ -212,13 +212,13 @@
                             flex: 1 1 0;
 
                             > .post-card-page-name {
-                                color: $green;
+                                color: $text-svg-home-color;
                                 cursor: pointer;
                                 position: relative;
                                 z-index: 5;
 
                                 &:hover {
-                                    text-decoration: underline;
+                                    color: rgba($brandcolor2, 0.95);
                                 }
                             }
                         }

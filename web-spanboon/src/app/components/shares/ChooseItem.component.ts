@@ -781,27 +781,27 @@ export class ChooseItem extends AbstractPage implements OnInit {
             }
         }
         if (window.innerWidth <= 768) {
-            if (this.tabSelect && this.top && this.bottomConfirm) {
-                let tab = this.tabSelect.nativeElement.offsetHeight;
-                let top = this.top.nativeElement.offsetHeight;
-                let bottom = this.bottomConfirm.nativeElement.offsetHeight;
-                let body = this.bodyList.nativeElement.offsetHeight;
-                let x = top + tab + bottom;
-                var chromeH = window.outerHeight - window.innerHeight;
-                var isLandscape = window.innerWidth > window.innerHeight, height;
-                let land = isLandscape ? 32 : 44;
-                if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
-                    x = x + chromeH;
-                } else {
-                    if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-                        // x = x + land - chromeH;
-                        x = x + chromeH;
-                        // console.log('total ', x)
-                        // x = x + 70;
-                    }
-                }
-                this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
-            }
+            // if (this.tabSelect && this.top && this.bottomConfirm) {
+            //     let tab = this.tabSelect.nativeElement.offsetHeight;
+            //     let top = this.top.nativeElement.offsetHeight;
+            //     let bottom = this.bottomConfirm.nativeElement.offsetHeight;
+            //     let body = this.bodyList.nativeElement.offsetHeight;
+            //     let x = top + tab + bottom;
+            //     var chromeH = window.outerHeight - window.innerHeight;
+            //     var isLandscape = window.innerWidth > window.innerHeight, height;
+            //     let land = isLandscape ? 32 : 44;
+            //     if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
+            //         x = x + chromeH;
+            //     } else {
+            //         if (window.innerHeight <= 768 && 479 < window.innerHeight) {
+            //             // x = x + land - chromeH;
+            //             x = x + chromeH;
+            //             // console.log('total ', x)
+            //             // x = x + 70;
+            //         }
+            //     }
+            //     this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
+            // }
 
         }
     } 

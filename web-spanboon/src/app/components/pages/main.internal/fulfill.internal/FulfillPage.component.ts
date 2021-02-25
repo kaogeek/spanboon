@@ -5,12 +5,12 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MESSAGE } from '../../../../AlertMessage';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
+import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
@@ -19,6 +19,7 @@ import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
 import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill, DialogFulfillAllocate } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
+import { TooltipProfile } from '../../../shares/tooltip/TooltipProfile.component';
 import * as $ from 'jquery';
 import * as moment from 'moment';
 
@@ -102,6 +103,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private fulFillFacade: FulfillFacade;
     private userAccessFacade: UserAccessFacade;
     private assetFacade: AssetFacade;
+    private pageFacade: PageFacade;
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
     private chatMessage: CheckMessageManager;
@@ -160,6 +162,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public name: string;
     public title: string;
     public postDate: any;
+    public postDates: any
     public pageId: string;
     public postId: string;
     public uniqueId: string;
@@ -167,11 +170,14 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public chatRoomId: string;
     public chatDate: any;
     public approveDate: any;
+    public ProfilePage: any;
+    public ganY: any;
+    public ganX: any;
 
     constructor(authenManager: AuthenManager, router: Router,
         activatedRoute: ActivatedRoute, observManager: ObservableManager,
-        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
-        userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
+        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, pageFacade: PageFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
+        userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.observManager = observManager;
@@ -180,6 +186,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.dialog = dialog;
         this.snackBar = snackBar;
         this.postFacade = postFacade;
+        this.pageFacade = pageFacade;
         this.fulFillFacade = fulFillFacade;
         this.userAccessFacade = userAccessFacade;
         this.assetFacade = assetFacade;
@@ -494,6 +501,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public getChatRoom(fulfill: any, asPage?: any) {
+        console.log('fulfill', fulfill);
         this.chatData = [];
         this.reqData = [];
 
@@ -563,10 +571,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
             this.postDate = fulfill.createdDate;
+            this.postDates = fulfill.postDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
+                console.log('ressssssss s======>', res)
                 if (res !== null && res !== undefined) {
                     this.showChatRoom = true;
 
@@ -667,8 +677,18 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }, 1000);
         }
         setTimeout(() => {
+            this.getPageByFulfillmentCase();
             this.clickActiveCss();
         }, 0);
+    }
+
+    public getPageByFulfillmentCase() {
+        this.pageFacade.getProfilePage(this.pageId).then((res) => {
+            this.ProfilePage = { owner: res.data };
+        }).catch((error) => {
+            console.log('error >>>> ', error.mesage);
+        });
+
     }
 
     public cancelFulfillmentCase(caseId: string, asPage?: string) {
@@ -1362,5 +1382,19 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.router.navigateByUrl('/search?' + url);
             }
         });
+    }
+
+    onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {
+        const bounds = outerDiv.getBoundingClientRect();
+        this.ganX = (event.clientX - bounds.left + 'px');
+        this.ganY = (event.clientY - bounds.top + 'px');
+    }
+
+    public Tooltip(origin: any, data) {
+        this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+            data: data,
+        })
+            .subscribe(res => {
+            });
     }
 }

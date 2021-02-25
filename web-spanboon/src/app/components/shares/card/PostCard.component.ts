@@ -77,7 +77,6 @@ export class PostCard {
   public showLoading: boolean = false;
   @Input()
   public butNeeds: boolean = false;
-  
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
@@ -134,12 +133,6 @@ export class PostCard {
 
   }
 
-  onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {
-    const bounds = outerDiv.getBoundingClientRect();
-    this.ganX = (event.clientX - bounds.left + 'px');
-    this.ganY = (event.clientY - bounds.top + 'px');
-  }
-
   public action(even) {
     if (this.data.post._id !== undefined && this.data.post._id !== null) {
       this.submit.emit({ mod: even.mod, postId: this.data.post._id });
@@ -148,11 +141,17 @@ export class PostCard {
     }
   }
 
+  onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {
+    const bounds = outerDiv.getBoundingClientRect();
+    this.ganX = (event.clientX - bounds.left + 'px');
+    this.ganY = (event.clientY - bounds.top + 'px');
+  }
+
   public Tooltip(origin: any, data) {
     this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
       data: data,
     })
       .subscribe(res => {
-    });
+      });
   }
 }

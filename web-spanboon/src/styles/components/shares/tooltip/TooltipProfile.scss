@@ -92,7 +92,7 @@
                 word-break: break-word;
 
                 &:hover {
-                    text-decoration: underline !important;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
 
@@ -192,7 +192,7 @@
                     font-size: 14px;
                     font-family: "Kanit-500";
                     margin-left: -6pt;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     color: $white;
                     @include pointer();
 
@@ -262,13 +262,13 @@
                 font-size: 16px !important;
 
                 &:hover {
-                    background: rgb($color-warm-red, 0.1) !important;
+                    background: rgb($brandcolor2, 0.1) !important;
                 }
             }
 
             &.active {
                 > .button-follow {
-                    background-color: $color-warm-red !important;
+                    background-color: $brandcolor2 !important;
                     color: $white !important;
                 }
             }

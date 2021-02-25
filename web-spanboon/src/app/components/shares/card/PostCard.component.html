@@ -13,16 +13,16 @@
                     <svg class="icon-time" xmlns="http://www.w3.org/2000/svg" width="31.551" height="22.29"
                         viewBox="0 0 31.551 22.29">
                         <g id="Group_711" data-name="Group 711" transform="translate(-1533.751 -2071.08)">
-                            <circle id="Ellipse_248" data-name="Ellipse 248" cx="2.701" cy="2.701" r="2.701"
-                                transform="translate(1547.034 2071.08)" fill="#FD545A" />
-                            <circle id="Ellipse_249" data-name="Ellipse 249" cx="2.701" cy="2.701" r="2.701"
-                                transform="translate(1533.751 2074.156)" fill="#FD545A" />
-                            <circle id="Ellipse_250" data-name="Ellipse 250" cx="2.701" cy="2.701" r="2.701"
-                                transform="translate(1559.899 2073.946)" fill="#FD545A" />
-                            <path id="Rectangle_406" data-name="Rectangle 406"
+                            <circle class="svg-icon-color-activate" id="Ellipse_248" data-name="Ellipse 248" cx="2.701"
+                                cy="2.701" r="2.701" transform="translate(1547.034 2071.08)" fill="#FD545A" />
+                            <circle class="svg-icon-color-activate" id="Ellipse_249" data-name="Ellipse 249" cx="2.701"
+                                cy="2.701" r="2.701" transform="translate(1533.751 2074.156)" fill="#FD545A" />
+                            <circle class="svg-icon-color-activate" id="Ellipse_250" data-name="Ellipse 250" cx="2.701"
+                                cy="2.701" r="2.701" transform="translate(1559.899 2073.946)" fill="#FD545A" />
+                            <path class="svg-icon-color-activate" id="Rectangle_406" data-name="Rectangle 406"
                                 d="M0,0H21.094a0,0,0,0,1,0,0V0A3.454,3.454,0,0,1,17.64,3.454H3.454A3.454,3.454,0,0,1,0,0V0A0,0,0,0,1,0,0Z"
                                 transform="translate(1539.172 2089.916)" fill="#FD545A" />
-                            <path id="Path_544" data-name="Path 544"
+                            <path class="svg-icon-color-activate" id="Path_544" data-name="Path 544"
                                 d="M1615.843,2164.343l-2.11,1.241a1.7,1.7,0,0,1-2.1-.294l-1.849-1.945a4.312,4.312,0,0,0-3.056-1.339h-.057a4.312,4.312,0,0,0-3.056,1.339l-1.849,1.945a1.7,1.7,0,0,1-2.1.294l-2.11-1.241a1.7,1.7,0,0,0-2.533,1.787l1.263,6.571h2.842v-.893a2.524,2.524,0,1,1,5.049,0v.893h5.035v-.893a2.524,2.524,0,1,1,5.049,0v.893h2.843l1.263-6.571A1.7,1.7,0,0,0,1615.843,2164.343Z"
                                 transform="translate(-56.967 -84.568)" fill="#FD545A" />
                         </g>
@@ -80,18 +80,18 @@
                     <div class="right" #pageNameDiv style="position: relative;"
                         (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
                         (mouseover)="Tooltip(showTooltip , data)">
-                        <div matTooltipShowDelay="{{800}}" matTooltip="{{pageName}}" class="TooltipShow"
+                        <!-- <div matTooltipShowDelay="{{800}}" matTooltip="{{pageName}}" class="TooltipShow"
                             [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
-                        </div>
+                        </div> -->
                         <svg class="icon-offical-post-card" id="shield" xmlns="http://www.w3.org/2000/svg"
                             width="43.383" height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isOfficial">
                             <g id="Group_88" data-name="Group 88" transform="translate(0)">
                                 <path id="Path_141" data-name="Path 141"
                                     d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
-                                    transform="translate(-36.867)" fill="#28a745" />
+                                    transform="translate(-36.867)" class="svg-icon-home-color" />
                                 <path id="Path_142" data-name="Path 142"
                                     d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
-                                    transform="translate(-259.715 -289.198)" fill="#28a745" />
+                                    transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
                             </g>
                         </svg>
                         <a href={{linkPage}} target="_blank">
