@@ -367,8 +367,8 @@ export class PageController {
             let registPageAccessToken = undefined;
             let pageAccessToken = undefined;
             // search for user Authen
-            if (socialBinding.userAccessToken !== undefined && socialBinding.userAccessToken !== '') {
-                registPageAccessToken = socialBinding.userAccessToken;
+            if (socialBinding.pageAccessToken !== undefined && socialBinding.pageAccessToken !== '') {
+                pageAccessToken = socialBinding.pageAccessToken;
             } else {
                 // user mode
                 const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
