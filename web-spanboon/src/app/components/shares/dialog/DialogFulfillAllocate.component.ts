@@ -77,6 +77,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public isAuto: boolean = false;
     public isListBalance: boolean = false;
     public isListNotBalance: boolean = false;
+    public isSpinner: boolean = false;
 
     public filter: any = {
         sortingDate: null,
@@ -737,7 +738,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                     for (let item of i.item) {
 
-                        if (item.isAuto && item.amount > 0) {
+                        if (item.isAuto && !item.isMn && item.amount > 0) {
 
                             var indexPost = autoPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -747,7 +748,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                             }
 
-                        } else if (!item.isAuto && item.amount > 0) {
+                        } else if (!item.isAuto || (item.isMn && item.isAuto) && item.amount > 0) {
 
                             var indexPost = mnPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -1076,6 +1077,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     public async confirmAllocate() {
+        this.isSpinner = false;
 
         const data: any[] = []
 
@@ -1115,11 +1117,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         await this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
 
             this.dialogRef.close(res);
+            this.isSpinner = false;
 
         }).catch((err: any) => {
 
-            this.dialogRef.close(err);
+            this.isSpinner = false;
             console.log('err', err)
+            this.dialogRef.close(err);
 
         })
 
@@ -1130,6 +1134,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     private async calculateAllocatePostByItem(data?, auto?, ignoreAllocatedPost?) {
+        this.isSpinner = true;
 
         await this.allocateFacade.calculateAllocate(data, ignoreAllocatedPost).then((res: any) => {
 
@@ -1145,6 +1150,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     if (index > -1) {
 
                         itemNeeds[index].amount = (itemNeeds[index].amount + item.amount);
+                        itemNeeds[index].isAuto = true;
 
                     } else {
 
@@ -1177,6 +1183,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                                 }
 
                                 if (auto) {
+
+                                    if (i.isAuto) {
+
+                                        item.isAuto = true;
+
+                                    }
+
 
                                     if (!item.isMn) {
 
@@ -1255,6 +1268,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
         })
+
+
+        setTimeout(() => {
+            this.isSpinner = false;
+        }, 1000);
 
     }
 

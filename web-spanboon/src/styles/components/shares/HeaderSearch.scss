@@ -172,13 +172,13 @@
                     border-bottom: 3pt solid transparent;
 
                     &:hover {
-                        background: rgba($color-warm-red, 0.1);
-                        color: $color-warm-red;
+                        background: rgba($brandcolor2, 0.1);
+                        color: $brandcolor2;
                     }
 
                     &.active {
-                        color: $color-warm-red;
-                        border-bottom: 3pt solid $color-warm-red;
+                        color: $brandcolor2;
+                        border-bottom: 3pt solid $brandcolor2;
                     }
                 }
             }
@@ -367,7 +367,7 @@
                                 }
 
                                 > .fanpage-name {
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     font-family: "Kanit-500";
                                     font-size: 16px;
                                     display: -webkit-box;

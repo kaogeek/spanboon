@@ -42,6 +42,10 @@
 .svg-icon-color-activate {
   fill: $svg-icon-activate;
 }
+.svg-icon-home-color {
+  fill: $text-svg-home-color;
+  color: $text-svg-home-color;
+}
 
 .TooltipShow {
   width: 1px;
@@ -68,14 +72,14 @@
   align-items: center;
   justify-content: center;
   span {
-    width: 150pt;
+    // width: 150pt;
     // color: white;
     font-size: 13pt;
     // text-align: center;
   }
 
   .createpage-temporary-box {
-    border: solid $color-warm-red 2px;
+    border: solid $brandcolor2 2px;
     color: white;
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
@@ -127,7 +131,7 @@
             padding: 4px;
             color: white;
             text-align: center;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -140,48 +144,6 @@
         }
       }
     }
-  }
-}
-
-.spinners {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.pure-css-advance {
-  width: 70px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .spinner3 {
-    display: flex;
-    .circle {
-      width: 1rem;
-      height: 1rem;
-      background-color: $color-warm-red;
-      border-radius: 50%;
-      margin: 0.1rem;
-      animation: up 0.3s linear 0s infinite alternate;
-      &.one {
-        animation-delay: 0s;
-      }
-      &.two {
-        animation-delay: 0.2s;
-      }
-      &.three {
-        animation-delay: 0.4s;
-      }
-    }
-  }
-}
-@keyframes up {
-  from {
-    transform: translatey(0.5rem);
-  }
-  to {
-    transform: translatey(0);
   }
 }
 
@@ -290,33 +252,33 @@ a {
 
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
   color: $white;
-  background: $color-warm-red;
+  background: $brandcolor2;
 }
 
 .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
-  background: rgba($color-warm-red, 0.5);
+  background: rgba($brandcolor2, 0.5);
 }
 
 .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
-  background: $color-warm-red;
+  background: $brandcolor2;
 }
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-  background-color: $color-warm-red;
+  background-color: $brandcolor2;
 }
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: $color-warm-red;
+  background-color: $brandcolor2;
 }
 
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
-  background: $color-warm-red;
+  background: $brandcolor2;
 }
 
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
-  color: $color-warm-red;
+  color: $brandcolor2;
 }
 
 .mat-form-field.mat-focused .mat-form-field-ripple {
@@ -324,7 +286,7 @@ a {
 }
 
 .mat-select-arrow {
-  color: $color-warm-red;
+  color: $brandcolor2;
 }
 
 .dis {

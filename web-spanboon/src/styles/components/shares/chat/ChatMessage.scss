@@ -57,12 +57,12 @@
                     overflow: hidden;
 
                     &:hover {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                     }
                 }
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -87,11 +87,11 @@
         }
 
         &::-webkit-scrollbar-thumb {
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         > .talking-y {
@@ -117,7 +117,7 @@
                     box-shadow: 2.5px 0px 0px 0 #ffffff;
                     overflow: hidden;
                     color: $brandcolor;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     font-family: "Kanit-500";
                     font-size: 16px;
                 }
@@ -168,7 +168,7 @@
                 margin-left: 8px;
 
                 > .material-icons {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     font-weight: 900;
                     font-size: 20px;
                 }
@@ -204,7 +204,7 @@
                             box-shadow: 2.5px 0px 0px 0 #ffffff;
                             overflow: hidden;
                             color: $brandcolor;
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                             font-family: "Kanit-500";
                             font-size: 16px;
                         }
@@ -222,7 +222,7 @@
                         margin-right: 8px;
 
                         > .material-icons {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             font-weight: 900;
                             font-size: 20px;
                         }
@@ -309,7 +309,7 @@
                     padding: 0 10pt;
 
                     > .click-post {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                         padding-left: 5pt;
                         @include pointer();
                     }
@@ -342,7 +342,7 @@
             box-shadow: 2.5px 0px 0px 0 #ffffff;
             overflow: hidden;
             color: $brandcolor;
-            background: $color-warm-red;
+            background: $brandcolor2;
             font-family: "Kanit-500";
             font-size: 16px;
         }
@@ -424,7 +424,7 @@
 
             .material-icons {
                 font-size: 20pt;
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
     }

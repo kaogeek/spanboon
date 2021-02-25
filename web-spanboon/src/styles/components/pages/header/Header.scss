@@ -24,7 +24,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: $color-warm-red;
+    color: $brandcolor2;
     font-family: "Kanit-500";
     font-size: 1.5em;
     @include pointer();
@@ -70,14 +70,14 @@
         &:hover {
           background-color: $background-hover;
           border-radius: 8pt;
-          color: $color-warm-red;
+          color: $brandcolor2;
 
           svg,
           circle,
           path,
           g {
             opacity: 1;
-            fill: $color-warm-red;
+            fill: $brandcolor2;
           }
         }
 

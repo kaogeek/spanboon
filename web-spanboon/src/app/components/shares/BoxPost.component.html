@@ -5,9 +5,9 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="box-post" (window:resize)="onResize()" [ngClass]="class">
-    <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet">
-        <div *ngIf="isRepost" class="box-story" #headerTop>
+<div class="box-post" (window:resize)="onResize()" [ngClass]="class" >
+    <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet" mat-dialog-content>
+        <div *ngIf="isRepost" class="box-story" #headerTop >
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
@@ -201,8 +201,8 @@
             [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
             [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
-            <div class="wrapper-right">
-                <div *ngIf="isRepost && isMobilePost  && isMobileText" class="text-limit"
+            <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText" > 
+                <div class="text-limit"
                     [class.validate]="getTextLength() > 230" [class.active]="isMobilePost  && isMobileText">
                     {{getTextLength() ? getTextLength() : 0 }} <span>/230</span>
                 </div>
@@ -521,7 +521,7 @@
                         {{getTextLength() ? getTextLength() : 0 }}/230
                     </div>
                 </ng-container>
-                <ng-template #elseTemplateisTablet>
+                <ng-template #elseTemplateisTablet> 
                     <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
                         [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
@@ -534,7 +534,7 @@
             <repost-data [isRepost]="true" [itemPost]="rePote"></repost-data>
         </div>
 
-        <div class="wrapper-tool-post" #toolBar (window:resize)="onResize()">
+        <div class="wrapper-tool-post" mat-dialog-actions (window:resize)="onResize()">
             <div class="left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
                 <mat-form-field appearance="none" *ngIf="!isFulfill">
                     <mat-select *ngIf="isRepost;" #matSelect [(ngModel)]="selected"

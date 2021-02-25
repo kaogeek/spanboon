@@ -52,16 +52,16 @@
             }
 
             &.footer-active-link {
-                color: $color-warm-red;
+                color: $brandcolor2;
                 opacity: 1;
 
                 > .icon-menu-m {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
 
                     path,
                     g,
                     circle {
-                        fill: $color-warm-red;
+                        fill: $brandcolor2;
                     }
                 }
             }

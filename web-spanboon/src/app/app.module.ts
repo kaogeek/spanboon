@@ -119,6 +119,7 @@ import {
   ButtonSocial,
   ButtonFollow,
   Slider,
+  Spinners,
   //
   NewConButtonSave,
   NewConButtonLoadMore,
@@ -313,6 +314,7 @@ const COMPONENTS: any[] = [
   ButtonSocial,
   ButtonFollow,
   Slider,
+  Spinners,
   //
   NewConButtonSave,
   NewConButtonLoadMore,

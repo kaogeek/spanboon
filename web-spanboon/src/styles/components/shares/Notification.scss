@@ -36,7 +36,7 @@
         padding: 1px;
         border-radius: 10px;
         color: white;
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
         position: absolute;
         display: flex;
         align-items: center;
@@ -145,7 +145,7 @@
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            background-color: $color-warm-red;
+                            background-color: $brandcolor2;
                             color: $white;
                             font-family: "Kanit-500";
                             font-size: 16px;
@@ -173,7 +173,7 @@
                             font-size: 12px;
 
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($brandcolor2, 0.95);
                             }
 
                             svg {

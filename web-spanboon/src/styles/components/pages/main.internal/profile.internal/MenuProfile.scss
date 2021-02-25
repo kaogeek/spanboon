@@ -44,7 +44,7 @@
     }
 
     &.displayName {
-        background: $color-warm-red;
+        background: $brandcolor2;
         box-shadow: 2.5px 0px 0px 0 $white;
         color: $brandcolor;
 
@@ -86,7 +86,7 @@
                     user-select: none;
                     width: 70px;
                     height: 70px;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     border: rgb($black, 0.1);
                     color: $brandcolor;
                     border-radius: 50%;
