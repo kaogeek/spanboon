@@ -22,8 +22,8 @@
         </div>
         <span id="expand" class="material-icons expand" (click)="expand.emit()"> expand_more </span>
     </div>
-    <div class="talking" id="talking" #talking>
-        <div class="talking-y" *ngFor="let item of data">
+    <div class="talking" id="talking" #talking> 
+        <div class="talking-y" *ngFor="let item of data"> 
             <ng-container
                 *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
                 <div class="page-message">

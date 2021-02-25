@@ -315,12 +315,14 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.onResize();
     this.setContentStory();
     this.getConfigTwitter();
+    this.getConfigFacebook();
     setTimeout(() => {
       this.keyUpSearchEmergencyEvent("", true);
       this.keyUpSearchObjective("");
       this.keyUpSearchHashTag("", false);
       this.searchObjectivePageCategory();
       this.socialGetBindingTwitter();
+      this.socialGetBindingFacebook();
     }, 500);
   }
 
@@ -1375,6 +1377,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         coverImage: this.coverImage,
         postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
         postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+        // postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;
@@ -2486,6 +2489,16 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
   }
 
+  public socialGetBindingFacebook() {
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
+        this.facebookConection = res.data;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
+    }
+  }
+
   public socialBinding(socialBind: boolean, platform: string) {
     if (platform === 'twitter' && !this.twitterConection) {
       if (!socialBind) {
@@ -2579,7 +2592,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public getConfigFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
-      this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
+      this.pageFacade.getConfigByPage(this.dataPageId.id, FACEBOOK_AUTO_POST).then((res: any) => {
         this.isAutoPostFacebook = res.value;
       }).catch((err: any) => {
         console.log('err ', err)
