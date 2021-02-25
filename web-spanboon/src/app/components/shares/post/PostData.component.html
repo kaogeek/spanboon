@@ -529,31 +529,33 @@
                     <ng-container *ngFor="let item of itemPost.socialPosts">
                         <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocial">
                             <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
-                            ทวิตเตอร์
-                        </a>
+                                ทวิตเตอร์
+                            </a>
                         </ng-container>
-                        <ng-template #elseTemplateShareSocial>
-                            <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
-                                เฟสบุ๊ค 
-                            </a> 
-                        </ng-template> 
+                        <ng-template #elseTemplateShareSocial> 
+                            <a target="_blank"
+                                href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
+                                เฟสบุ๊ค
+                            </a>
+                        </ng-template>
                     </ng-container>
                 </ng-container>
                 <ng-template #elseTemplateSocialPost>
-                    <div class="wrapper-action" [matMenuTriggerFor]="menuSocial" *ngIf="itemPost.socialPosts.length === 2">
-                        <span>ช่องทาง</span>
+                    <div class="wrapper-action" [matMenuTriggerFor]="menuSocial"
+                        *ngIf="itemPost.socialPosts.length === 2">
+                        <span class="other-social">ช่องทาง</span>
                         <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
                             <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of itemPost.socialPosts">
-                                <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocialMenu"> 
+                                <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocialMenu">
                                     <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
-                                    ทวิตเตอร์
-                                </a>
+                                        ทวิตเตอร์
+                                    </a>
                                 </ng-container>
                                 <ng-template #elseTemplateShareSocialMenu>
-                                    <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
-                                        เฟสบุ๊ค 
-                                    </a> 
-                                </ng-template> 
+                                    <a target="_blank" href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
+                                        เฟสบุ๊ค
+                                    </a>
+                                </ng-template>
                             </button>
                         </mat-menu>
                     </div>

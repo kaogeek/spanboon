@@ -347,10 +347,10 @@
       align-items: center;
       padding-top: 5pt;
 
-      span  {
+      span {
         font-family: "Kanit-400";
         font-size: 16px;
-        padding: 0 5pt; 
+        padding: 0 5pt;
         color: $koalaGray;
       }
       a {
@@ -362,25 +362,16 @@
         }
       }
       .wrapper-action {
-        span {
+        > .other-social {
           font-family: "Kanit-500";
           font-size: 16px;
-          color: $black; 
-        }
-         
-        .social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
-          min-height: unset;
-          height: auto;
-          > .mat-menu-content {
-            > .mat-menu-item {
-              font-size: 16px;
-              font-family: "Kanit-500";
-              > a {
-                color: black;
-              }
-            }
+          color: $black;
+          @include pointer();
+
+          &:hover {
+            color: $color-warm-red;
           }
-        }
+        } 
       }
     }
 
@@ -824,6 +815,20 @@
 
   &:hover {
     color: rgba($color-warm-red, 0.95);
+  }
+}
+
+.social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
+  min-height: unset;
+  height: auto;
+  > .mat-menu-content {
+    > .mat-menu-item {
+      font-size: 16px;
+      font-family: "Kanit-500";
+      > a {
+        color: black;
+      }
+    }
   }
 }
 

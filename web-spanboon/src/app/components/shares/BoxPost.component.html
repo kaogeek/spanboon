@@ -717,7 +717,7 @@
                     </div>
                     <ng-container *ngIf="isSharePost"> 
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
-                            <svg class="icon-social" [class.active]="menuTrigger.menuOpen || isAutoPostTwitter"
+                            <svg class="icon-social" [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
                                 xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
                                 viewBox="0 0 17.474 17.474">
                                 <path id="social-media"
@@ -747,7 +747,8 @@
                                 </div>
                                 <div class="body-list">
                                     <div class="checklist" *ngIf="facebookConection">
-                                        <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()">
+                                        <mat-checkbox #checkbox [(ngModel)]="isAutoPostFacebook"  [class.active]="isAutoPostFacebook" [ngModelOptions]="{standalone: true}"
+                                         class="item-checkbox" (click)="$event.stopPropagation()" (change)="socialBinding(isAutoPostTwitter , 'facebook')">
                                             <div class="icon-social facebook">
                                                 <svg class="icon" version="1.1" id="Capa_1"
                                                     xmlns="http://www.w3.org/2000/svg"

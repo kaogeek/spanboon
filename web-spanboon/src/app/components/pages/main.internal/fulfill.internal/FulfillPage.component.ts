@@ -257,7 +257,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         if (index !== -1) {
                             caseData.cases[index].unreadMessageCount = data.count;
                             caseData.cases[index].chatMessage = data.message;
-                            caseData.cases[index].isRead = false;
+                            caseData.cases[index].isRead = false;  
+                            this.observManager.createSubject('chat_message');
+                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) { 
+                                caseData.cases[index].isRead = true;  
+                                caseData.cases[index].unreadMessageCount = 0
+                                this.observManager.publish('chat_message', caseData.cases[index].chatRoom)
+                            }
                         }
                     }
 
@@ -576,7 +582,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
-                console.log('ressssssss s======>', res)
+
                 if (res !== null && res !== undefined) {
                     this.showChatRoom = true;
 
@@ -1138,8 +1144,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
+            console.log('>>> createResult',createResult)
+            console.log('>>> data',data)
+            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
         }).catch((createError) => {
+            console.log('createError ',createError)
             if (createError.error.error.message === "Create FulfillmentCase Error") {
                 this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
             }

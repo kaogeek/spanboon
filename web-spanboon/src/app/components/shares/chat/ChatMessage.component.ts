@@ -91,7 +91,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public senderName: string = '';
   public senderImage: any;
   public status: any;
-  public cloneMessage: any;
+  public cloneMessage: any; 
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
     chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
@@ -113,66 +113,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
     for (let message of this.data) {
       this.status = message;
     }
-    this.cloneMessage = JSON.parse(JSON.stringify(this.data));
-
-    if (!this.isCaseConfirmed && !this.isCaseHasPost) {
-      interval(30000).pipe(
-        concatMap(() => {
-          return this.chatRoomFacade.getChatMessages(this.chatRoomId, this.asPage); // this will be your http get request
-        })
-      ).subscribe(async (res) => { 
-        console.log('res.data ',res.data)
-        if (res.data !== null && res.data !== undefined) {
-          for (let newMessage of res.data) {
-            var isMessage = false;
-            for (let message of this.cloneMessage) {
-              if (newMessage.chatMessage.id === message.chatMessage.id) {
-                isMessage = true;
-                break;
-              }
-            }
-            if (!isMessage) {
-              if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
-                this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
-                  if (image.status === 1) {
-                    if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                      newMessage.senderImage = '';
-                    } else {
-                      newMessage.senderImage = image.data;
-                    }
-                  } else {
-                    newMessage.senderImage = '';
-                  }
-                });
-              }
-              console.log('newMessage ',newMessage)
-              // this.data.push(newMessage);
-            }
-          }
-        }
-
-        // if (res.data !== null && res.data !== undefined) { 
-        //   for (const data of res.data) {
-        //     if (data.senderImage !== null && data.senderImage !== undefined && data.senderImage !== '') {
-        //       this.assetFacade.getPathFile(data.senderImage).then((image: any) => {
-        //         if (image.status === 1) {
-        //           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-        //             data.senderImage = '';
-        //           } else {
-        //             data.senderImage = image.data;
-        //           }
-        //         } else {
-        //           data.senderImage = '';
-        //         }
-        //       });
-        //     }
-        //   }
-        // }
-
-        // this.data = res.data;
-        this.scrollChat();
-      });
-    }
+    this.cloneMessage = JSON.parse(JSON.stringify(this.data)); 
   }
 
   public ngOnDestroy(): void {
@@ -193,11 +134,52 @@ export class ChatMessage extends AbstractPage implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.getChatObserv();
     setTimeout(() => {
       this.getRoomChatMessage(this.chatRoomId, this.asPage);
     }, 1000);
 
     this.scrollChat();
+  }
+
+  public getChatObserv() {
+    if (!this.isCaseConfirmed && !this.isCaseHasPost) {
+      this.observManager.subscribe('chat_message', (roomId: any) => {
+        // this will be your http get request 
+        this.chatRoomFacade.getChatMessages(roomId, this.asPage).subscribe(async (res) => { 
+            if (res.data !== null && res.data !== undefined) { 
+              for (let newMessage of res.data) {
+                var isMessage = false;
+                for (let message of this.cloneMessage) {
+                  if (newMessage.chatMessage.id === message.chatMessage.id) {
+                    isMessage = true;
+                    break;
+                  }
+                }
+                if (!isMessage) {
+                  this.markRead(newMessage.chatMessage.id, this.asPage);
+                  if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
+                    this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
+                      if (image.status === 1) {
+                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                          newMessage.senderImage = '';
+                        } else {
+                          newMessage.senderImage = image.data;
+                        }
+                      } else {
+                        newMessage.senderImage = '';
+                      }
+                    });
+                  }  
+                  this.data.push(newMessage); 
+                  this.cloneMessage = JSON.parse(JSON.stringify(this.data));
+                }
+              } 
+            this.scrollChat();
+          }
+        });
+      }); 
+    }
   }
 
   public onChatSend(chatMessage: any) {
