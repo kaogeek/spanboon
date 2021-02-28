@@ -185,11 +185,13 @@
                                 </a>
                                 <span *ngIf="!title" style="opacity: 0.7;"> ต้องการเติมเต็มให้กับ </span>
                             </div>
-                            <div #pageNameDiv style="position: relative;"
-                                (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
-                                (mouseover)="Tooltip(showTooltip , ProfilePage)" *ngIf="!title" class="contact-head">
-                                <a href="{{linkPage}}" target="_blank">
-                                    เพจ {{pageName ? pageName:uniqueId}}
+                            <div *ngIf="!title" class="contact-head">
+                                <a style="pointer-events: none;">เพจ</a>
+                                <a #pageNameDiv style="position: relative;"
+                                    (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
+                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" href="{{linkPage}}"
+                                    target="_blank">
+                                    {{pageName ? pageName:uniqueId}}
                                 </a>
                             </div>
                             <div class="contact-hashtag">
@@ -205,8 +207,7 @@
                                     (objectiveClick)="clickDevelop($event , objective)"></tag-event>
 
                                 <span class="date">
-                                    <a href="{{linkPost}}" target="_blank">
-                                        ( เมื่อ {{postDate | dateFormat}} )
+                                    <a href="{{linkPost}}" target="_blank">( เมื่อ {{postDate | dateFormat}} )
                                     </a>
                                 </span>
                                 <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
@@ -235,7 +236,10 @@
                                         <div class="joinus">เติมเต็มให้กับ</div>
                                         <span class="user">
                                             <span class="user-name">
-                                                <a href="{{linkPage}}" target="_blank">
+                                                <a #pageNameDiv style="position: relative;"
+                                                    (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
+                                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" href="{{linkPage}}"
+                                                    target="_blank">
                                                     {{pageName}}
                                                 </a>
                                             </span>
@@ -348,13 +352,14 @@
                     </div>
                     <div class="body-story" [class.active]="isCaseHasPost">
                         <div class="body-story-left" [class.active]="isListItem">
-                            <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
-                                [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
-                                [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
-                                [isCaseHasPost]="isCaseHasPost" [sender]="sender" [chatRoomId]="chatRoomId"
-                                [asPage]="asPage" (submit)="showFulFill()" [fulfillCaseId]="fulfillCaseId"
-                                (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
-                                (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
+                            <chat-message [ProfilePage]="ProfilePage" [data]="chatData" [pageId]="pageId"
+                                [postId]="postId" [linkUser]="linkUser" [linkPage]="linkPage"
+                                [imageURL]="asPage ? pageImageURL : userImageURL" [pageName]="pageName"
+                                [isCaseConfirmed]="isCaseConfirmed" [isCaseHasPost]="isCaseHasPost" [sender]="sender"
+                                [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()"
+                                [fulfillCaseId]="fulfillCaseId" (createPost)="createFulfillPost(fulfillCaseId,asPage)"
+                                (expand)="expandMore()" (back)="onBack()" [isBackArrow]="isBackArrow"
+                                (clickPost)="viewPost(fulfillmentPost)">
                             </chat-message>
                         </div>
                         <div class="body-story-right" id="body-story-right">
