@@ -312,6 +312,22 @@
                                 }
                             }
                         }
+                        > .icon-delete {
+                            padding: 10px 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 25px;
+                            cursor: pointer;
+                            .iconfill {
+                                fill: #000000;
+                            }
+                            &:hover {
+                                .iconfill {
+                                    fill: #b32b2b;
+                                }
+                            }
+                        }
                     }
                 }
                 > .box-list-item-body {
