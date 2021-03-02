@@ -52,15 +52,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
         }
     }
 }
 
 .menu-set {
     margin: 5pt 0 0 0;
-    width: 320px !important; 
+    width: 320px !important;
     overflow-y: auto !important;
     max-height: calc(100vh - 48px - 20pt) !important;
 
@@ -109,14 +108,14 @@
                     }
 
                     > .profile-name-eng {
-                        color: $koalaGray;
-                        font-size: 16px;
+                        color: $color-gray;
+                        @include font-size-9-100("Kanit-500");
                     }
 
                     > .header-follow {
                         display: flex;
                         align-items: center;
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                         justify-content: center;
                         padding-top: 10px;
 
@@ -133,7 +132,7 @@
                         }
 
                         span {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                     }
                 }
@@ -157,8 +156,7 @@
 
                     > .name {
                         padding: 5pt 13pt;
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                     }
                 }
             }
@@ -166,8 +164,8 @@
     }
 }
 
-@media (max-width: $small) { 
-    .profile-sub-menu+* .cdk-overlay-pane{
+@media (max-width: $small) {
+    .profile-sub-menu + * .cdk-overlay-pane {
         right: 0 !important;
         top: 39pt !important;
     }

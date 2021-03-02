@@ -6,8 +6,7 @@
  */
 
 .spanboon-button {
-    font-family: "Kanit-500";
-    font-size: 16px;
+    @include font-size-10-100("Kanit-500");
     box-shadow: 0px 1px 2px 0 #00000030;
     border-radius: 3pt;
     color: $white;

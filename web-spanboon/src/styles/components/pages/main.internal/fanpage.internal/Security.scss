@@ -17,8 +17,7 @@
         > .label-connect {
             padding: 10pt;
             margin: 0 30pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
         }
         > .box-social {
             position: relative;
@@ -30,8 +29,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
 
                 > .icon-left {
                     display: flex;
@@ -41,7 +39,7 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
-                    background-color: $koalaGray;
+                    background-color: $color-gray;
                     
                     &.facebook {
                         background-color : #2851a3;
@@ -68,17 +66,14 @@
                 }
             }
             > .lost-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                color: $koalaGray;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
+                color: $color-gray;
+                @include font-size-9-100("Kanit-500");
             }
 
             > .link-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                color: $koalaGray;
+                @include font-size-9-100("Kanit-500");
+                color: $color-gray;
 
                 &:hover {
                     color: rgba($brandcolor2, 0.95);

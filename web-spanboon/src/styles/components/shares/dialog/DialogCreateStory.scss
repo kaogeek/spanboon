@@ -52,7 +52,7 @@
       .box-create-story-editbackground-sub {
         margin-bottom: 10px;
         color: white;
-        font-size: 16px;
+        @include font-size-10-100("Kanit-500");
         padding: 5px 10px;
         border-radius: 40px;
         border: solid 1px #e0e0e06b;
@@ -196,11 +196,11 @@
                 margin-right: 10px;
               }
               .type {
-                font-size: 14px;
+                @include font-size-10-100("Kanit-400");
                 margin-right: 15px;
               }
               .date {
-                font-size: 12px;
+                @include font-size-11-100("Kanit-400");
                 color: gray;
               }
             }
@@ -310,7 +310,6 @@
             @include font-size-9-100("Kanit-400");
             border-bottom: 1px solid #eaeaea;
             line-height: 24px;
-            font-size: 12px;
           }
           &.active {
             transition: 0.3s;
@@ -373,7 +372,6 @@
             @include font-size-9-100("Kanit-400");
             border-bottom: 1px solid #eaeaea;
             line-height: 24px;
-            font-size: 12px;
           }
           &.active {
             transition: 0.3s;
@@ -467,14 +465,14 @@
           width: calc(100% - 40px);
           height: auto;
           padding: 20px;
-          font-size: 12px;
+          @include font-size-11-100("Kanit-400");
 
           &.active {
             border: dashed 1px gray;
           }
 
           .textarea-story-editor {
-            font-size: 16px;
+            @include font-size-10-100("Kanit-400");
           }
           .box-create-add-com {
             cursor: pointer;
@@ -510,7 +508,7 @@
               display: none;
             }
             .ct-background-text {
-              font-size: 16px;
+              @include font-size-10-100("Kanit-500");
             }
             .ct-background-image {
             }
@@ -601,7 +599,7 @@
           position: relative;
           background-color: rgb(168, 168, 168);
           .text-h {
-            font-size: 16px;
+            @include font-size-10-100("Kanit-500");
             width: 40%;
             display: flex;
             color: white;
@@ -1120,7 +1118,7 @@ a.palette-item {
 
 @media (max-width: $xlarge) {
   .dialog-create-story .create-story .create-story-b .create-story-b-story .background-story .text-h {
-    font-size: 14px;
+    @include font-size-10-100("Kanit-500");
     width: 80%;
   }
   .dialog-create-story .create-story .create-story-b .create-story-b-story .box-create-user {

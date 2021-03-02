@@ -204,8 +204,7 @@
                 }
 
                 > .detail {
-                    font-family: "Kanit-400";
-                    font-size: 16px;
+                    @include font-size-10-100("Kanit-400");
                     color: rgb($black, 0.5);
 
                     > span {
@@ -368,7 +367,7 @@
                     }
 
                     > .detail {
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
 
                         > span {
                             display: inline;

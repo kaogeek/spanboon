@@ -85,8 +85,7 @@
                     align-items: center;
 
                     > .count-contact-user {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-10-100("Kanit-500");
                         background: $brandcolor2;
                         color: $white;
                         border-radius: 10px;
@@ -123,8 +122,7 @@
 
                     > .contact-event {
                         margin: 0 10pt 0 8px;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                         color: rgb($black, 0.7);
                         display: -webkit-box;
                         -webkit-line-clamp: 1;
@@ -132,8 +130,7 @@
                         overflow: hidden;
 
                         > .pointer {
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            @include font-size-10-100("Kanit-500");
                             margin: 0 5px;
                         }
                         > .list-length {
@@ -143,8 +140,7 @@
                     }
 
                     > .event-cos {
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                         color: rgb($black, 0.5);
                         display: -webkit-box;
                         -webkit-line-clamp: 1;
@@ -155,8 +151,7 @@
             }
 
             > .user-contact {
-                font-family: "Kanit-300";
-                font-size: 16px;
+                @include font-size-10-100("Kanit-300");
                 display: flex;
                 flex-direction: row;
                 align-items: center;

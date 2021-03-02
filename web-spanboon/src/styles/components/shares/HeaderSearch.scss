@@ -82,8 +82,7 @@
                     cursor: auto;
                     padding: 0 50px 0 42px;
                     // box-shadow: 0 0 5px rgba(109, 207, 246, 0.5);
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10-100("Kanit-500");
                 }
 
                 & > input[type="search"]:hover {
@@ -98,10 +97,10 @@
                     color: transparent;
                 }
                 & > input[type="search"].filled:-moz-placeholder {
-                    color: $koalaGray;
+                    color: $color-gray;
                 }
                 & > input[type="search"].filled::-webkit-input-placeholder {
-                    color: $koalaGray;
+                    color: $color-gray;
                 }
 
                 > .icon-search {
@@ -212,8 +211,7 @@
                         }
 
                         span {
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            @include font-size-10-100("Kanit-500");
                         }
                     }
 
@@ -221,9 +219,8 @@
                         flex: 0 0 auto;
                         text-align: right;
                         width: 70pt;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
-                        color: $koalaGray;
+                        @include font-size-10-100("Kanit-500");
+                        color: $color-gray;
                     }
                 }
 
@@ -240,8 +237,7 @@
                         padding: 15pt 30pt 15pt 50pt;
                         border-bottom: $width-border solid $border-separator;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
 
                         &:hover {
                             background-color: $background-hover;
@@ -273,8 +269,7 @@
                         background-color: $bg-fog-gray2;
                         border-bottom: $width-border solid $border-separator;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
             }
@@ -305,8 +300,7 @@
                     }
 
                     > .label {
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
 
@@ -368,8 +362,7 @@
 
                                 > .fanpage-name {
                                     color: $brandcolor2;
-                                    font-family: "Kanit-500";
-                                    font-size: 16px;
+                                    @include font-size-10-100("Kanit-500");
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
@@ -380,23 +373,20 @@
                             }
 
                             > .fanpage-subline {
-                                font-family: "Kanit-500";
-                                font-size: 12px;
+                                @include font-size-11-100("Kanit-500");
                                 margin-bottom: 5pt;
                             }
 
                             > .fanpage-tag {
-                                font-family: "Kanit-500";
-                                font-size: 12px;
-                                color: $koalaGray;
+                                @include font-size-11-100("Kanit-500");
+                                color: $color-gray;
                             }
                         }
                     }
 
                     > .page-recent {
                         justify-content: center;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
 
                     > .list-search {
@@ -418,8 +408,7 @@
                             }
 
                             > .item-name {
-                                font-family: "Kanit-500";
-                                font-size: 14px;
+                                @include font-size-10-100("Kanit-500");
                                 font-weight: bold;
                                 display: -webkit-box;
                                 -webkit-line-clamp: 1;
@@ -432,9 +421,8 @@
 
                             > .date-time {
                                 flex: 0 0 auto;
-                                color: $koalaGray;
-                                font-family: "Kanit-500";
-                                font-size: 12px;
+                                color: $color-gray;
+                                @include font-size-11-100("Kanit-500");
                             }
                         }
                     }
@@ -446,8 +434,7 @@
                         background-color: $bg-fog-gray2;
                         height: 46pt;
                         border-bottom: $width-border solid $border-separator;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                         @include pointer();
                     }
                 }
@@ -457,8 +444,7 @@
                 width: 100%;
                 background-color: $white;
                 overflow-y: auto;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-10-100("Kanit-500");
 
                 > .item-search {
                     display: flex;
@@ -532,7 +518,7 @@
             > .wrapper-body-tag {
                 > .tab {
                     > .tablinks {
-                        font-size: 16px;
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
 
@@ -649,7 +635,6 @@
 
                 > .tab {
                     > .tablinks {
-                        // font-size: 13px;
                     }
                 }
             }
@@ -661,12 +646,10 @@
     .header-search {
         > .search {
             > .wrapper-body-tag {
-                // max-height: calc(100vh - 52pt);
                 max-height: calc(100vh - 130pt);
 
                 > .tab {
                     > .tablinks {
-                        // font-size: 12px;
                     }
                 }
 

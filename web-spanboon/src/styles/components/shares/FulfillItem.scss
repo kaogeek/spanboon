@@ -21,8 +21,8 @@
         }
 
         > .title {
-            color: $koalaGray;
-            font-size: 16px;
+            color: $color-gray;
+            @include font-size-9-100("Kanit-500");
         }
     }
 
@@ -34,7 +34,7 @@
         display: none;
         height: 40pt;
 
-        > .tablinks{
+        > .tablinks {
             width: 50%;
             padding: 0 10pt;
             display: flex;
@@ -88,7 +88,7 @@
                     > .active-hover {
                         @include pointer();
                         > .non-active {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                         &:hover {
                             > .folder-sub {
@@ -123,8 +123,7 @@
                         border: 0.7pt solid #e5e5e5;
                         border-radius: 5pt;
                         padding: 5pt 25pt;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
 
                     > .icon-clear {
@@ -171,8 +170,7 @@
                         border: 0.7pt solid $border-color;
                         border-radius: 5pt;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
 
                         &.active {
                             width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
@@ -279,7 +277,7 @@
                         }
                         > .path-name {
                             color: #a5a5a6;
-                            font-size: 14px;
+                            @include font-size-10-100("Kanit-500");
                         }
 
                         > .icon-folder {
@@ -310,43 +308,43 @@
                             position: absolute;
                             top: 5pt;
                             right: 5pt;
-                        } 
+                        }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
 
-                        >.limit-fulfill {
+                        > .limit-fulfill {
                             display: flex;
                             position: absolute;
                             bottom: 5pt;
                             right: 5pt;
-                            color: $koalaGray;
-                            font-size: 14px;  
+                            color: $color-gray;
+                            @include font-size-10-100("Kanit-500");
                             align-items: center;
-                            >.material-icons {
-                                color : $bg-color4;
-                                font-size: 16px;
+                            > .material-icons {
+                                color: $bg-color4;
+                                @include font-size-9-100("Kanit-500");
                                 padding-right: 5pt;
                             }
 
                             span {
                                 padding-right: 2pt;
-                               &.active {
-                                color: $brandcolor2; 
-                               }
+                                &.active {
+                                    color: $brandcolor2;
+                                }
                             }
                         }
                     }
                     > .body-empty {
-                        border: 3pt dashed blue; 
+                        border: 3pt dashed blue;
                         > .add-item {
-                            color: $koalaGray; 
+                            color: $color-gray;
                             font-size: 42px;
                             @include pointer();
                         }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
                     }
@@ -368,8 +366,7 @@
                 align-items: center;
                 padding: 0 20pt;
                 height: 50pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
 
                 > .label-fulfill-left {
                 }
@@ -381,13 +378,12 @@
                 flex: 1 1 0%;
                 overflow-y: auto;
 
-                >.empty-data {
+                > .empty-data {
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     height: 100%;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9-100("Kanit-500");
                 }
             }
         }
@@ -413,20 +409,17 @@
 }
 
 @media (max-width: $xxlarge) {
-    
 }
-
 
 @media (max-width: $xlarge) {
     .fulfill-item {
         > .center {
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
                                 width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
-     
                             }
                         }
                     }
@@ -449,10 +442,10 @@
             > .center-left {
                 width: 100%;
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                     }
@@ -460,7 +453,7 @@
             }
 
             > .center-right {
-                display: none;   
+                display: none;
                 width: 100%;
                 &.active {
                     display: flex;
@@ -480,10 +473,10 @@
             > .center-left {
                 > .body-list-item {
                     height: calc(100% - 20pt - 0.7pt);
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                             > .empty-data {
                                 width: 100%;
@@ -492,27 +485,27 @@
                     }
                 }
             }
-            > .center-right { 
-                display: none; 
+            > .center-right {
+                display: none;
             }
         }
     }
 }
 
 @media (max-width: $medium) {
-    .fulfill-item { 
+    .fulfill-item {
         height: 100vh;
         width: 100vw;
-        > .center { 
+        > .center {
             flex: unset;
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
                                 &.active {
-                                    width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);  
+                                    width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
                                 }
                             }
                         }
@@ -533,16 +526,16 @@
             }
         }
         > .center {
-            flex: unset;  
+            flex: unset;
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             justify-content: stretch;
                             > .body-data-category {
-                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
                                 &.active {
-                                    width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);   
+                                    width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
                                 }
                             }
                         }
@@ -590,8 +583,7 @@
                             }
                         }
                     }
-                    >.empty-data {
-
+                    > .empty-data {
                     }
                 }
             }

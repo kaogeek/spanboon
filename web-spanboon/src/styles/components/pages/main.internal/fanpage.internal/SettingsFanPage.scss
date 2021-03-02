@@ -209,7 +209,7 @@
                 > .settings-left {
                     > .settings-list {
                         > .list-item-menu {
-                            font-size: 14px;
+                            @include font-size-10-100("Kanit-500");
                         }
                     }
                 }
@@ -291,7 +291,7 @@
                         > .mat-tab-list {
                             > .mat-tab-links {
                                 > .mat-tab-link {
-                                    font-size: 16px;
+                                    @include font-size-9-100("Kanit-500");
                                 }
                             }
                         }
@@ -307,7 +307,7 @@
                     }
                     > .settings-list {
                         > .list-item-menu {
-                            font-size: 16px;
+                            @include font-size-9-100("Kanit-500");
                         }
                     }
                 }
@@ -379,7 +379,7 @@
                     }
                     > .settings-list {
                         > .list-item-menu {
-                            font-size: 16px;
+                            @include font-size-9-100("Kanit-500");
                         }
                     }
                 }
