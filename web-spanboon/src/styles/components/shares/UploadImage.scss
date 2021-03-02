@@ -6,12 +6,12 @@
  */
 
 .upload-image-doing {
-    position: absolute;
+    // position: absolute;
     width: 520px;
     background-color: $white;
     box-shadow: 0px 1px 9px 0 #e5e3dd;
-    left: 0;
-    z-index: 10000;
+    // left: 0;
+    // z-index: 10000;
 
     &.active {
         top: auto;
