@@ -257,10 +257,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         if (index !== -1) {
                             caseData.cases[index].unreadMessageCount = data.count;
                             caseData.cases[index].chatMessage = data.message;
-                            caseData.cases[index].isRead = false;  
+                            caseData.cases[index].isRead = false;
                             this.observManager.createSubject('chat_message');
-                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) { 
-                                caseData.cases[index].isRead = true;  
+                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) {
+                                caseData.cases[index].isRead = true;
                                 caseData.cases[index].unreadMessageCount = 0
                                 this.observManager.publish('chat_message', caseData.cases[index].chatRoom)
                             }
@@ -1144,11 +1144,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            console.log('>>> createResult',createResult)
-            console.log('>>> data',data)
+            console.log('>>> createResult', createResult)
+            console.log('>>> data', data)
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
         }).catch((createError) => {
-            console.log('createError ',createError)
+            console.log('createError ', createError)
             if (createError.error.error.message === "Create FulfillmentCase Error") {
                 this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
             }
@@ -1400,6 +1400,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
+        data.owner = Object.assign(data.owner, { type: "PAGE" });
         this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
             data: data,
         })

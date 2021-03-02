@@ -275,6 +275,7 @@ export class MainPage extends AbstractPage implements OnInit {
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
         data: this.data,
+        panelClass: 'customize-dialog',
         disableClose: false,
       });
 
