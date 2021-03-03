@@ -256,7 +256,7 @@
                                         search
                                     </span>
                                     <input type="text" name="autocompleteEmergency" matInput id="autocompleteEmergency"
-                                        #autocompleteEmergency placeholder="ค้นหา" #autocompleteEmergency
+                                        #autocompleteEmergency placeholder="ค้นหา"
                                         (keyup)="keyUpSearchEmergencyEvent(autocompleteEmergency.value, true)">
                                 </div>
                             </div>
@@ -315,7 +315,7 @@
                         </ng-template>
                     </div>
                     <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
-                        (keydown)="$event.stopPropagation()">
+                    (keydown)="$event.stopPropagation()">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
                                 <div class="create-doing">
@@ -403,7 +403,7 @@
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
-                            <div class="wrapper-body-objective">
+                            <div class="wrapper-body-objective" >
                                 <div class="search-header-objective">
                                     <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
                                         height="20.682" viewBox="0 0 20.276 20.682">
@@ -413,9 +413,9 @@
                                                 transform="translate(26.891 0)" fill="#474747" />
                                         </g>
                                     </svg>
-                                    <mat-form-field class="form-search-field" appearance="none">
-                                        <input matInput placeholder="ค้นหา" #searchInputObjective
-                                            id="searchInputObjective"
+                                    <mat-form-field class="form-search-field" appearance="none" (click)="$event.stopPropagation()"
+                                    (keydown)="$event.stopPropagation()">
+                                        <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective"
                                             (keyup)="keyUpSearchObjective(searchInputObjective.value)">
                                     </mat-form-field>
                                 </div>
