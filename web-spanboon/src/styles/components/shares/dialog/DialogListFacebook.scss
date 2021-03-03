@@ -55,7 +55,7 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
-                    background-color: $koalaGray;
+                    background-color: $color-gray;
 
                     &.facebook {
                         background-color: #2851a3;
@@ -84,7 +84,7 @@
             .link-connect {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                color: $koalaGray;
+                color: $color-gray;
 
                 &:hover {
                     color: rgba($brandcolor2, 0.95);

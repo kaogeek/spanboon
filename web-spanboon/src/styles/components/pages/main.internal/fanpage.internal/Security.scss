@@ -43,7 +43,7 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
-                    background-color: $koalaGray;
+                    background-color: $color-gray;
                     
                     &.facebook {
                         background-color : #2851a3;
@@ -72,7 +72,7 @@
             > .lost-connect {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                color: $koalaGray;
+                color: $color-gray;
                 font-family: "Kanit-500";
                 font-size: 16px;
             }
@@ -86,7 +86,7 @@
                     font-family: "Kanit-300";
                     font-size: 16px;
                     padding-right: 5pt;
-                    color: $koalaGray;
+                    color: $color-gray;
                     @include pointer();
 
                     &:hover{
@@ -98,7 +98,7 @@
             .link-connect {
                 font-family: "Kanit-500";
                 font-size: 16px;
-                color: $koalaGray;
+                color: $color-gray;
 
                 &:hover {
                     color: rgba($brandcolor2, 0.95);
