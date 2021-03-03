@@ -8,6 +8,7 @@
 @import "mixins";
 @import "~rfs/scss";
 @import "variable";
+@import "../custom/theme.scss";
 @import "components/components";
 
 .phx-preload {
@@ -336,6 +337,13 @@ a {
   fill: $svg-color-gray-icon;
 }
 
+.svg-home-color {
+  fill: $svg-clock-icon-color;
+}
+.svg-home-crown-color {
+  fill: $svg-crown-icon-color;
+}
+
 .svg-icon-color {
   fill: $svg-icon;
 }
@@ -348,4 +356,8 @@ a {
 .svg-icon-home-color {
   fill: $home-page-activate-color;
   color: $home-page-activate-color;
+}
+
+.svg-social-icon-color {
+  fill: $svg-social-icon-color;
 }

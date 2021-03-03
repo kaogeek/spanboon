@@ -1703,7 +1703,7 @@
     > .section-personal-tag {
       padding: 10pt 0;
 
-      >status-bar{
+      > status-bar {
         display: block;
         padding: 0 10pt;
       }
@@ -2246,5 +2246,9 @@
         display: block;
       }
     }
+  }
+
+  .svg-color-gray {
+    fill: #0000bd;
   }
 }

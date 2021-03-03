@@ -255,12 +255,12 @@
                             @include pointer();
                             z-index: 2;
 
-                            &:nth-child(2){
+                            &:nth-child(2) {
                                 margin-left: -6pt;
                                 z-index: 1;
                             }
 
-                            &:nth-child(3){
+                            &:nth-child(3) {
                                 margin-left: -6pt;
                                 z-index: 0;
                             }
@@ -278,6 +278,11 @@
                     }
 
                     > a {
+                        spanboon-button {
+                            .spanboon-button {
+                                background-color: $button-home-card !important;
+                            }
+                        }
                         > .btn-donate {
                         }
                     }
@@ -301,7 +306,7 @@
                     @include font-size-10($font-family-kanit500);
                 }
 
-                >.content-post{
+                > .content-post {
                     @include font-size-10($font-family-kanit500);
                 }
             }
