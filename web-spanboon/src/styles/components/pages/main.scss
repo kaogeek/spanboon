@@ -89,14 +89,12 @@ span:focus {
             .top {
                 display: flex;
                 flex-direction: column;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10-100("Kanit-500");
             }
 
             .bottom {
-                font-family: "Kanit-500";
-                font-size: 14px;
-                color: $koalaGray;
+                @include font-size-10-100("Kanit-500");
+                color: $color-gray;
             }
 
             span {
@@ -135,14 +133,14 @@ span:focus {
     .wrapper-icon {
         display: flex;
         align-items: center;
-        color: $koalaGray;
+        color: $color-gray;
 
         > .icon-active {
             flex: 0 0 auto;
             width: 8pt;
             height: 8pt;
             border-radius: 50%;
-            background-color: $koalaGray;
+            background-color: $color-gray;
 
             &.new-card {
                 width: 7pt;
@@ -156,7 +154,7 @@ span:focus {
         }
 
         > .looking {
-            background-color: $brandcolor3;
+            background-color: $status-post-need;
         }
 
         > .lookingWhite {
@@ -165,7 +163,7 @@ span:focus {
         }
 
         > .fulfill {
-            background-color: $text-svg-home-color;
+            background-color: $home-page-activate-color;
         }
 
         span {
@@ -179,8 +177,7 @@ span:focus {
         display: flex;
         color: $bg-fog-gray;
         align-items: center;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-500");
 
         &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -332,8 +329,7 @@ span:focus {
             padding: 20pt;
 
             > .top {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 color: $bg-color2;
                 text-align: left;
             }
@@ -348,8 +344,7 @@ span:focus {
                     vertical-align: middle;
                     background-size: 18px;
                     box-shadow: 0px 1px 9px 0 #e5e3dd;
-                    font-family: "Kanit-500";
-                    font-size: 14px;
+                    @include font-size-10-100("Kanit-500");
                     border: unset;
                     color: $color-black;
                     border-radius: 25pt;
@@ -983,8 +978,7 @@ $baby-blue: #f8faff;
 
     > button {
         flex: 0 0 auto;
-        font-family: "Kanit-400";
-        font-size: 16px;
+        @include font-size-9-100("Kanit-500");
         // padding: 2pt 15pt;
         background: $white;
         color: $black;
@@ -994,7 +988,7 @@ $baby-blue: #f8faff;
 @media (max-width: $medium) {
     .tool-developer {
         > span {
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
         }
 
         > button {
@@ -1010,7 +1004,7 @@ $baby-blue: #f8faff;
         }
 
         > button {
-            font-size: 14px;
+            @include font-size-10-100("Kanit-500");
         }
     }
 }

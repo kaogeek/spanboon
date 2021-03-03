@@ -32,6 +32,8 @@
                 align-items: center;
                 font-family: "Kanit-500";
                 font-size: 16px;
+                flex: 1 1 0%;
+                margin-right: 10pt;
 
                 > .icon-left {
                     display: flex;
@@ -65,7 +67,7 @@
                     >.display-name {
 
                     }
-                }
+                } 
             }
             > .lost-connect {
                 font-family: "Kanit-500";
@@ -75,7 +77,25 @@
                 font-size: 16px;
             }
 
-            > .link-connect {
+            >.social-name {
+                display: flex;
+                align-items: center;
+                flex: 0 0 auto;
+
+                a {
+                    font-family: "Kanit-300";
+                    font-size: 16px;
+                    padding-right: 5pt;
+                    color: $koalaGray;
+                    @include pointer();
+
+                    &:hover{
+                        color: $brandcolor2;
+                    }
+                }
+            }
+
+            .link-connect {
                 font-family: "Kanit-500";
                 font-size: 16px;
                 color: $koalaGray;

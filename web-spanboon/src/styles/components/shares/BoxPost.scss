@@ -43,8 +43,7 @@
       > .mobile-post {
         border-right: unset;
         color: $brandcolor2;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-500");
         @include pointer();
         text-align: center;
       }
@@ -75,8 +74,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-500");
       }
 
       .mat-slide-toggle {
@@ -204,24 +202,21 @@
       overflow-y: auto;
       overflow-x: hidden;
       word-break: break-word;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9-100("Sarabun-Light");
     }
 
     [contenteditable="true"]:empty:before {
       content: attr(placeholder);
       pointer-events: none;
       display: block;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9-100("Sarabun-Light");
     }
 
     > .wrapper-selector-tag {
       display: flex;
       flex-wrap: wrap;
       padding: 0 20pt;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9-100("Sarabun-Light");
 
       > .keyword-tag {
         display: flex;
@@ -275,8 +270,7 @@
             border-top: unset !important;
 
             > .mat-select {
-              font-family: "Kanit-500";
-              font-size: 16px;
+              @include font-size-9-100("Kanit-500");
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -309,8 +303,7 @@
             display: flex;
             padding: 0 10pt;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
             @include pointer();
 
             &.active-tag1 {
@@ -348,8 +341,7 @@
           > .objective-doing {
             display: flex;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
             @include pointer();
 
             &.active-tag {
@@ -387,8 +379,7 @@
           display: flex;
           align-items: center;
           padding: 0 0 0 10pt;
-          font-family: "Kanit-500";
-          font-size: 14px;
+          @include font-size-10-100("Kanit-500");
           @include pointer();
           &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -408,8 +399,7 @@
         > .text-limit {
           padding: 0 10pt;
           @include pointer();
-          font-family: "Kanit-500";
-          font-size: 14px;
+          @include font-size-10-100("Kanit-500");
 
           &.validate {
             color: $brandcolor2;
@@ -474,7 +464,7 @@
         > .wrapper-action {
           position: relative;
           display: flex;
-          align-items: center; 
+          align-items: center;
 
           > .wrapper-toolbar-action {
             display: flex;
@@ -532,13 +522,11 @@
                     padding: 10pt;
                     align-items: center;
                     border-bottom: $width-border solid $border-color;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9-100("Kanit-500");
 
                     > .list-checkBox {
                       > .name-tag {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                       }
                     }
 
@@ -711,8 +699,7 @@
       border-radius: 30pt;
       @include pointer();
       padding: 0 10pt;
-      font-family: "Kanit-400";
-      font-size: 16px;
+      @include font-size-9-100("Kanit-400");
 
       &:hover {
         background: rgb($bg-grey, 0.7);
@@ -723,8 +710,7 @@
 
 .mat-option {
   > .mat-option-text {
-    font-family: "Kanit-500";
-    font-size: 16px;
+    @include font-size-9-100("Kanit-500");
 
     > .wrapper-body-action {
       display: flex;
@@ -736,7 +722,7 @@
         border-radius: 50%;
         margin: 0 5pt;
         border: 1px solid $white;
-        background-color: $koalaGray;
+        background-color: $color-gray;
       }
 
       > .looking {
@@ -749,7 +735,7 @@
       }
 
       > .fulfill {
-        background-color: $text-svg-home-color;
+        background-color: $home-page-activate-color;
       }
     }
   }
@@ -780,8 +766,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0 10pt;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-500");
       }
     }
   }
@@ -792,8 +777,7 @@
     > .mat-form-field-flex {
       > .mat-form-field-infix {
         .mat-select {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9-100("Kanit-500");
         }
 
         > .selected-dropdown {
@@ -820,8 +804,7 @@
             background-color: $brandcolor2;
             overflow: hidden;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10-100("Kanit-500");
           }
         }
       }
@@ -912,8 +895,7 @@
                       > .mat-tab-link {
                         color: $color-black;
                         @include pointer();
-                        font-family: "Kanit-400";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-400");
                         opacity: 1;
 
                         &:hover {
@@ -954,16 +936,14 @@
                     align-items: center;
                     justify-content: space-between;
                     padding: 0 10pt;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9-100("Kanit-500");
                   }
 
                   > .list-checkbox {
                     > .mat-checkbox {
                       display: block;
                       padding: 0 10pt;
-                      font-family: "Kanit-500";
-                      font-size: 16px;
+                      @include font-size-9-100("Kanit-500");
 
                       > .mat-checkbox-layout {
                         width: 100%;
@@ -1016,8 +996,7 @@
               min-width: 145pt;
               justify-content: space-between;
               > .left {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
               }
               > .setting-all {
                 display: flex;
@@ -1069,8 +1048,7 @@
                         }
                       }
                       > .middle {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                       }
                     }
                   }
@@ -1083,43 +1061,7 @@
     }
   }
 }
-
-// @media (max-width: $large) {
-//   .box-post {
-//     > .box {
-//       > .box-story {
-//         > .box-toggle {
-//           font-family: "Kanit-500";
-// font-size: 16px;
-//         }
-//       }
-
-//       > .wrapper-event-tag {
-//         > .wrapper-left {
-//           > .search-tag-emergency {
-//             > .event-tag {
-//               font-family: "Kanit-500";
-// font-size: 16px;
-//             }
-//           }
-
-//           > .search-objective {
-//             > .objective-doing {
-//               font-family: "Kanit-500";
-// font-size: 16px;
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
 @media (max-width: $lmedium) {
-  // .box-post {
-  //   > .box {
-  //     min-height: 780px;
-  //   }
-  // }
   .box-post {
     > .mat-dialog-content {
       max-height: unset;
@@ -1181,16 +1123,14 @@
         }
 
         > .wrapper-right {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9-100("Kanit-500");
         }
 
         > .wrapper-middle {
           padding-top: 5pt;
           > .wrapper-edit-story {
             padding: 0 0 0 15pt;
-            font-size: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
           }
         }
 

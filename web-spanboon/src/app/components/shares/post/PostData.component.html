@@ -525,7 +525,7 @@
                 </svg>
 
                 <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length === 1; else elseTemplateSocialPost">
-                    <span>โพสต์นี้ถูกแชร์ไปยัง</span>
+                    <span>โพสต์นี้ถูกเผยแพร่ไปยัง</span>
                     <ng-container *ngFor="let item of itemPost.socialPosts">
                         <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocial">
                             <a target="_blank" href="https://twitter.com/i/web/status/{{item.socialId}}">
@@ -543,7 +543,7 @@
                 <ng-template #elseTemplateSocialPost>
                     <div class="wrapper-action" [matMenuTriggerFor]="menuSocial"
                         *ngIf="itemPost.socialPosts.length === 2">
-                        <span class="other-social">ช่องทาง</span>
+                        <span class="other-social"> 2 ช่องทาง</span>
                         <mat-menu #menuSocial="matMenu" xPosition="before" backdropClass="social-dropdown">
                             <button mat-menu-item [disableRipple]="'true'" *ngFor="let item of itemPost.socialPosts">
                                 <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocialMenu">

@@ -7,20 +7,18 @@
 
 .tag-event {
     display: flex;
-    align-items: center;
-    align-items: center;
+    align-items: center; 
 
-    // &.active{
-    //     padding: 5pt 0;
-    // }
+    &.mobileActive{
+       padding-top: 5pt;
+    }
 
     > .tag-emergency,
     > .tag-objective {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10-100("Kanit-500");
         @include pointer();
         padding: 0 3px;
         margin: 0 3px;

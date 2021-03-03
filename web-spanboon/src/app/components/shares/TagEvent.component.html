@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="tag-event" [ngClass]="class" [class.active]="isShowEmergency === true || isShowObjective === true">
+<div class="tag-event" [ngClass]="class" [class.active]="isShowEmergency === true || isShowObjective === true" [class.mobileActive]="onResize()" (window:resize)="onResize()">
     <div class="tag-emergency" *ngIf="isShowEmergency">
         <svg class="img-emergency" [class.active]="isIconEmergency === true" height="21" viewBox="0 0 23 21" width="23"
             xmlns="http://www.w3.org/2000/svg">
