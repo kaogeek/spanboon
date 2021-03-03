@@ -1,0 +1,41 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog dialog-list-facebook" #dialog>
+    <div class="dialog-facebook" mat-dialog-title>
+        <div class="facebook-header-top" (click)="onClose()">
+            <span></span>
+            <i class="material-icons"> clear </i>
+        </div>
+    </div>
+    <mat-dialog-content>
+        <span> รายการเพจทั้งหมด</span>
+        <ng-container *ngIf="data && data.data && data.data.length > 0">
+            <div class="box-social" *ngFor="let data of data.data; let index = index">
+                <div class="left">
+                    <div class="icon-left share-page">
+                        <div class="display-name">
+                            {{data.name | slice: 0:1 }}
+                        </div>
+                    </div>
+                    <div class="lost-connect">
+                        {{data.name}}
+                    </div>
+                </div>
+                <div class="link-connect">
+                    <mat-checkbox #checkboxPage [disableRipple]="'true'" [(ngModel)]="data.selected"
+                        (click)="$event.stopPropagation()" (change)="checkBoxBindingPageFacebook(data , index)">
+                    </mat-checkbox>
+                </div>
+            </div>
+        </ng-container>  
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close (click)="onClose()">ยกเลิก</button> 
+        <button mat-button [mat-dialog-close]="true" (click)="onConfirm()">ตกลง</button>
+    </mat-dialog-actions>
+</div>

@@ -1225,11 +1225,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
-      this.isShowEmergency = true;
-      setTimeout(() => {
-        let search = $('input[id=autocompleteEmergency]');
-        search.focus();
-      }, 30);
+      this.isShowEmergency = true; 
     }
   }
 
@@ -1943,9 +1939,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public clickObjectiveDoing() {
     this.isUpload = false;
     this.isShowObjective = true;
-    this.keyUpSearchObjective("");
-    let search = $('input[id=searchInputObjective]');
-    search.focus();
+    this.keyUpSearchObjective(""); 
     setTimeout(() => {
       const element = document.querySelector('.active-click-doing');
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
