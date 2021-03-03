@@ -26,281 +26,61 @@
 @mixin font-size-11-100($font-family) {
     font-size: $font-size-based;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based - 12px;
-    }
 }
 
 @mixin font-size-10-100($font-family) {
     font-size: $font-size-based + 2px;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 2px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 2px - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 2px - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 2px - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 2px - 12px;
-    }
 }
 
 @mixin font-size-9-100($font-family) {
     font-size: $font-size-based + 4px;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 4px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 4px - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 4px - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 4px - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 4px - 12px;
-    }
 }
 
 @mixin font-size-8-100($font-family) {
     font-size: $font-size-based + 6px;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 6px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 6px - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 6px - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 6px - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 6px - 12px;
-    }
 }
 
 @mixin font-size-7-100($font-family) {
     font-size: $font-size-based + 12px;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 12px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 12px - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 12px - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 12px - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 12px - 12px;
-    }
 }
 
 @mixin font-size-6-100($font-family) {
     font-size: $font-size-based + 24px;
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 24px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 24px - 4px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 24px - 6px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 24px - 8px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 24px - 12px;
-    }
 }
 
 @mixin font-size-5-100($font-family) {
     font-size: $font-size-based + 32px;
 
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 32px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 32px - 3px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 32px - 4px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 32px - 5px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 32px - 7px;
-    }
 }
 
 @mixin font-size-4-100($font-family) {
     font-size: $font-size-based + 42px;
 
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 42px - 2px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 42px - 3px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 42px - 4px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 42px - 5px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 42px - 6px;
-    }
 }
 
 @mixin font-size-3-100($font-family) {
     font-size: $font-size-based + 50px;
 
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 50px - 1px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 50px - 2px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 50px - 3px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 50px - 4px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 50px - 5px;
-    }
 }
 
 @mixin font-size-2-100($font-family) {
     font-size: $font-size-based + 56px;
 
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 56px - 1px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 56px - 2px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 56px - 3px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 56px - 4px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 56px - 5px;
-    }
 }
 
 @mixin font-size-1-100($font-family) {
     font-size: $font-size-based + 60px;
 
     font-family: $font-family;
-
-    @media (max-width: $xxlarge) {
-        font-size: $font-size-based + 60px - 1px;
-    }
-
-    @media (max-width: $xlarge) {
-        font-size: $font-size-based + 60px - 2px;
-    }
-
-    @media (max-width: $large) {
-        font-size: $font-size-based + 60px - 3px;
-    }
-
-    @media (max-width: $medium) {
-        font-size: $font-size-based + 60px - 4px;
-    }
-
-    @media (max-width: $small) {
-        font-size: $font-size-based + 60px - 5px;
-    }
 }
 
 @mixin newcon-container($newcon-container-height: 500pt, $newcon-container-bg-color: $bg-color1) {

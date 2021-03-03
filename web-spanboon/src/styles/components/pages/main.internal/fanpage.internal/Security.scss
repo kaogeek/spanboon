@@ -17,8 +17,7 @@
         > .label-connect {
             padding: 10pt;
             margin: 0 30pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
         }
         > .box-social {
             position: relative;
@@ -30,8 +29,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 flex: 1 1 0%;
                 margin-right: 10pt;
 
@@ -44,13 +42,13 @@
                     height: 20pt;
                     margin-right: 7pt;
                     background-color: $color-gray;
-                    
+
                     &.facebook {
-                        background-color : #2851a3;
+                        background-color: #2851a3;
                     }
 
                     &.twitter {
-                        background-color : #1da1f3;
+                        background-color: #1da1f3;
                     }
 
                     &.share-page {
@@ -64,40 +62,34 @@
                         height: 20px;
                         width: 20px;
                     }
-                    >.display-name {
-
+                    > .display-name {
                     }
-                } 
+                }
             }
             > .lost-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 color: $color-gray;
-                font-family: "Kanit-500";
-                font-size: 16px;
             }
 
-            >.social-name {
+            > .social-name {
                 display: flex;
                 align-items: center;
                 flex: 0 0 auto;
 
                 a {
-                    font-family: "Kanit-300";
-                    font-size: 16px;
+                    @include font-size-9-100("Kanit-500");
                     padding-right: 5pt;
                     color: $color-gray;
                     @include pointer();
 
-                    &:hover{
+                    &:hover {
                         color: $brandcolor2;
                     }
                 }
             }
 
             .link-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 color: $color-gray;
 
                 &:hover {
@@ -114,8 +106,8 @@
                     display: none;
                 }
 
-                >.preload-spinner {
-                    svg { 
+                > .preload-spinner {
+                    svg {
                         float: right;
                     }
                 }
@@ -133,7 +125,7 @@
             > .label-connect {
                 margin: 0 20pt;
             }
-            >.box-social {
+            > .box-social {
                 margin: 0 20pt;
             }
         }
@@ -149,7 +141,7 @@
             > .label-connect {
                 margin: 0 10pt;
             }
-            >.box-social {
+            > .box-social {
                 margin: 0 10pt;
             }
         }

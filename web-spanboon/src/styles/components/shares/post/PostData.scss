@@ -66,7 +66,7 @@
       }
 
       .fulfill {
-        background-color: $home-page-activate-color
+        background-color: $home-page-activate-color;
       }
 
       span {
@@ -407,15 +407,14 @@
     }
 
     > .title {
-      @include font-size-10-100("Sarabun-Light");
+      @include font-size-8-100("Kanit-500");
       line-height: 26px;
     }
 
     > .content {
       white-space: pre-wrap;
       color: $color-black;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9-100("Sarabun-Light");
       min-height: unset;
     }
     > .page-give {
@@ -659,8 +658,7 @@
                 flex-direction: column;
 
                 > .unit-num {
-                  font-family: "Kanit-500";
-                  font-size: 16px;
+                  @include font-size-9-100("Kanit-500");
                   overflow: hidden;
                   text-overflow: ellipsis;
                   display: -webkit-box;
@@ -706,8 +704,7 @@
         }
 
         > span {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9-100("Kanit-500");
         }
       }
     }
@@ -758,7 +755,7 @@
       }
 
       > .fulfill {
-        background-color: $home-page-activate-color
+        background-color: $home-page-activate-color;
       }
 
       span {
@@ -791,15 +788,13 @@
 }
 
 .repost-sub-title {
-  font-family: "Kanit-200";
-  font-size: 16px;
+  @include font-size-9-100("Kanit-200");
 }
 
 .more-comment {
   width: 100%;
   height: 30pt;
-  font-family: "Kanit-400";
-  font-size: 16px;
+  @include font-size-9-100("Kanit-400");
   cursor: pointer;
   line-height: unset;
 
@@ -813,8 +808,7 @@
   height: auto;
   > .mat-menu-content {
     > .mat-menu-item {
-      font-size: 16px;
-      font-family: "Kanit-500";
+      @include font-size-9-100("Kanit-500");
       > a {
         color: black;
       }
