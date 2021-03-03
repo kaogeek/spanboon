@@ -88,7 +88,7 @@
         }
     
         > .fulfill-item-footer { 
-            @include font-size-10-100("Kanit-400");
+            @include font-size-10($font-family-kanit400);
             padding: 0 10pt 5pt 10pt;
             > .fulfill-item-name { 
             }
@@ -118,7 +118,7 @@
         }
     
         > .fulfill-item-footer { 
-            @include font-size-10-100("Kanit-400");
+            @include font-size-10($font-family-kanit400);
             padding: 0 10pt 5pt 10pt;
             > .fulfill-item-name { 
             }

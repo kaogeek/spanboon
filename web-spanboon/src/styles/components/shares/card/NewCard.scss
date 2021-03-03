@@ -36,7 +36,7 @@
             display: flex;
             color: $brandcolor;
             align-items: center;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
 
             &:hover {
               color: rgba($brandcolor2, 0.95);
@@ -96,7 +96,7 @@
         justify-content: space-between;
         padding: 18pt 0 0 0;
         border-top: $width-border solid $brandcolor;
-        @include font-size-10-100("Kanit-500");
+        @include font-size-10($font-family-kanit500);
 
         > .wrapper-page {
           display: flex;
@@ -304,7 +304,7 @@
         > .new-card-status {
           > .wrapper-icon {
             > span {
-              @include font-size-10-100("Kanit-500");
+              @include font-size-10($font-family-kanit500);
             }
           }
 
@@ -317,7 +317,7 @@
         }
 
         > .new-card-content {
-          @include font-size-10-100("Kanit-500");
+          @include font-size-10($font-family-kanit500);
         }
       }
 
@@ -330,7 +330,7 @@
             }
 
             > .new-card-createdBy{
-              @include font-size-10-100("Kanit-500");
+              @include font-size-10($font-family-kanit500);
             }
           }
 
@@ -340,7 +340,7 @@
                 > .spanboon-button {
                   height: 30pt !important;
                   width: 74pt !important;
-                  @include font-size-10-100("Kanit-500");
+                  @include font-size-10($font-family-kanit500);
                 }
               }
             }
@@ -381,7 +381,7 @@
             
             > .new-card-createdBy{
               margin: 5pt;
-              @include font-size-10-100("Kanit-500");
+              @include font-size-10($font-family-kanit500);
             }
           }
 

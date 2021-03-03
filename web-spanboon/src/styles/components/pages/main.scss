@@ -89,11 +89,11 @@ span:focus {
             .top {
                 display: flex;
                 flex-direction: column;
-                @include font-size-10-100("Kanit-500");
+                @include font-size-10($font-family-kanit500);
             }
 
             .bottom {
-                @include font-size-10-100("Kanit-500");
+                @include font-size-10($font-family-kanit500);
                 color: $color-gray;
             }
 
@@ -177,7 +177,7 @@ span:focus {
         display: flex;
         color: $bg-fog-gray;
         align-items: center;
-        @include font-size-10-100("Kanit-500");
+        @include font-size-10($font-family-kanit500);
 
         &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -329,7 +329,7 @@ span:focus {
             padding: 20pt;
 
             > .top {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
                 color: $bg-color2;
                 text-align: left;
             }
@@ -344,7 +344,7 @@ span:focus {
                     vertical-align: middle;
                     background-size: 18px;
                     box-shadow: 0px 1px 9px 0 #e5e3dd;
-                    @include font-size-10-100("Kanit-500");
+                    @include font-size-10($font-family-kanit500);
                     border: unset;
                     color: $color-black;
                     border-radius: 25pt;
@@ -978,7 +978,7 @@ $baby-blue: #f8faff;
 
     > button {
         flex: 0 0 auto;
-        @include font-size-9-100("Kanit-500");
+        @include font-size-9($font-family-kanit500);
         // padding: 2pt 15pt;
         background: $white;
         color: $black;
@@ -988,7 +988,7 @@ $baby-blue: #f8faff;
 @media (max-width: $medium) {
     .tool-developer {
         > span {
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
         }
 
         > button {
@@ -1004,7 +1004,7 @@ $baby-blue: #f8faff;
         }
 
         > button {
-            @include font-size-10-100("Kanit-500");
+            @include font-size-10($font-family-kanit500);
         }
     }
 }

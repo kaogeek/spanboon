@@ -42,8 +42,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
                 flex: 1 1 0%;
                 margin-right: 10pt;
 
@@ -82,8 +81,7 @@
             }
 
             .link-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
                 color: $color-gray;
 
                 &:hover {
@@ -117,16 +115,14 @@
             color: $white;
             background-color: $brandcolor2;
             > .mat-button-wrapper {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
             }
         }
         > .mat-button:first-child {
             border: 0.3px solid $border-color;
             margin-right: 5pt;
             > .mat-button-wrapper {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
             }
         }
     }

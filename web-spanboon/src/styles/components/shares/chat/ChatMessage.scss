@@ -118,7 +118,7 @@
                     overflow: hidden;
                     color: $brandcolor;
                     background: $brandcolor2;
-                    @include font-size-10-100("Kanit-500");
+                    @include font-size-10($font-family-kanit500);
                 }
                 > .sender {
                     margin-right: 10pt;
@@ -140,7 +140,7 @@
                 background: $bg-grey;
                 border-radius: 6px;
                 padding: 10px 15px;
-                @include font-size-10-100("Kanit-400");
+                @include font-size-10($font-family-kanit400);
                 position: relative;
                 color: $black;
                 max-width: 100%;
@@ -173,7 +173,7 @@
 
                 > .time {
                     margin-top: -4px;
-                    @include font-size-10-100("Kanit-400");
+                    @include font-size-10($font-family-kanit400);
                     color: rgb($black, 0.7);
                 }
             }
@@ -202,7 +202,7 @@
                             overflow: hidden;
                             color: $brandcolor;
                             background: $brandcolor2;
-                            @include font-size-10-100("Kanit-500");
+                            @include font-size-10($font-family-kanit500);
                         }
                         > .user {
                             margin-left: 10pt;
@@ -225,7 +225,7 @@
 
                         > .time {
                             margin-top: -4px;
-                            @include font-size-10-100("Kanit-400");
+                            @include font-size-10($font-family-kanit400);
                             color: rgb($black, 0.7);
                         }
                     }
@@ -235,7 +235,7 @@
                             background: $bg-grey;
                             border-radius: 6px;
                             padding: 15px;
-                            @include font-size-10-100("Kanit-400");
+                            @include font-size-10($font-family-kanit400);
                             position: relative;
 
                             &::before {
@@ -255,7 +255,7 @@
                         background: rgb($blue, 0.8);
                         border-radius: 6px;
                         padding: 10px 15px;
-                        @include font-size-10-100("Kanit-400");
+                        @include font-size-10($font-family-kanit400);
                         position: relative;
                         color: $white;
                         max-width: 55%;
@@ -289,7 +289,7 @@
         > .case-confirm {
             display: flex;
             justify-content: center;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
             padding: 10pt 0;
             > .case-div {
                 > .confirm-text {
@@ -335,7 +335,7 @@
             overflow: hidden;
             color: $brandcolor;
             background: $brandcolor2;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
         }
 
         > .img-profile {
@@ -361,14 +361,14 @@
                 border-radius: 25px;
                 border: 1px solid $border-color;
                 padding: 0 60pt 0 12pt;
-                @include font-size-10-100("Sarabun-Medium");
+                @include font-size-10($font-family-anakotmai-medium);
                 height: calc(100% - 2px);
 
                 div,
                 &::-webkit-input-placeholder,
                 &:-ms-input-placeholder,
                 &::placeholder {
-                    @include font-size-10-100("Sarabun-Medium");
+                    @include font-size-10($font-family-anakotmai-medium);
                 }
             }
 
