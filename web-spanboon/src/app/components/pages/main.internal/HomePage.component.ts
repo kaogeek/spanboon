@@ -15,7 +15,7 @@ import {
 } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
-import { PostFacade } from '../../../services/facade/PostFacade.service'; 
+import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { Router } from '@angular/router';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../../shares/dialog/dialog';
@@ -67,6 +67,7 @@ export class HomePage extends AbstractPage implements OnInit {
   public isMobile: boolean;
   public isLoading: boolean;
   public showLoading: boolean;
+  public isLoadingImage: boolean;
   public dataMainPage: any;
   public dataLastest: any;
   public innerWidth: any;
@@ -208,7 +209,8 @@ export class HomePage extends AbstractPage implements OnInit {
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
     this.isLoading = false;
-    this.showLoading = true
+    this.showLoading = true;
+    this.isLoadingImage = true;
 
     setTimeout(() => {
       this.showLoading = false
@@ -488,6 +490,7 @@ export class HomePage extends AbstractPage implements OnInit {
         this.dataMainPage.emergencyEvents.contents[contentsIndex].isLoadingCover = true;
         if (image.coverPageUrl && image.coverPageUrl !== null && image.coverPageUrl !== "" && image.coverPageUrl !== undefined) {
           this.getDataIcon(image.coverPageUrl, "cover", contentsIndex);
+          this.isLoadingImage = false;
           contentsIndex++;
         }
       }
@@ -520,7 +523,7 @@ export class HomePage extends AbstractPage implements OnInit {
               } else {
                 Object.assign(image, { coverBase64: null });
               }
-            } 
+            }
           }).catch((err: any) => {
             if (err.error.status === 0) {
               if (err.error.message === 'Unable got Asset') {
@@ -807,6 +810,7 @@ export class HomePage extends AbstractPage implements OnInit {
           }
         } else if (myType === "cover") {
           this.dataMainPage.emergencyEvents.contents[index].isLoadingCover = false;
+          this.isLoadingImage = false;
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
             Object.assign(this.dataMainPage.emergencyEvents.contents[index], { coverBase64: res.data });
           } else {

@@ -13,13 +13,13 @@
                 [isStausIcon]="'true'" [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
                 [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
             </status-bar>
-        </ng-container>
+        </ng-container> 
         <div class="swiper-container" [swiper]="config"
             *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
             <div class="swiper-wrapper">
                 <ng-container *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
-                    <ng-container *ngIf="index > 0 && index <= 5">
-                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="showLoading"
+                    <ng-container *ngIf="index === 0 || index <= 5"> 
+                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="isLoadingImage"
                             [data]="dataEmergency" [hashTag]="dataEmergency.title" [name]="dataEmergency.owner"
                             [isWhite]="true" [countFacebook]="dataEmergency.facebookCount  | shortNumber"
                             [countTwitter]="dataEmergency.twitterCount  | shortNumber"
