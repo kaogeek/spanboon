@@ -8,8 +8,7 @@
 .choose-item {
     overflow: hidden;
     display: flex;
-    flex-direction: column;
-    // height: 75vh;
+    flex-direction: column; 
 
     > .top {
         flex: 0 0 auto;
@@ -60,7 +59,7 @@
     }
     > .mat-dialog-content {
         margin: unset;
-        padding: unset;
+        padding: unset; 
     }
 
     > .center {
@@ -68,7 +67,7 @@
         display: flex;
         overflow: hidden;
         border-top: 0.7pt solid $border-color;
-        min-height: 636px;
+        min-height: 500px; 
 
         > .center-left {
             // width: 50%;
@@ -735,8 +734,7 @@
 
 @media (max-width: $medium) {
     .choose-item {
-        > .center {
-            // flex: unset;
+        > .center { 
             > .center-left {
                 > .open-folder {
                     font-family: "Kanit-500";
@@ -763,11 +761,14 @@
 }
 
 @media (max-width: $small) {
-    .choose-item {
+    .choose-item { 
+        > .mat-dialog-content { 
+            max-height: 59vh;
+        }
         > .center {
-            min-height: 500px;
-            // min-height: 470px; 
-            // min-height: 500px;
+            min-height: unset;
+            flex: unset; 
+            height: calc(100vh - 20pt);
             > .center-left {
                 > .doing-search {
                     height: 40pt;

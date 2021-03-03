@@ -345,33 +345,40 @@
     > .social-share {
       display: flex;
       align-items: center;
-      padding-top: 5pt;
+      padding-top: 10pt;
+
+      > .img-action {
+        height: 10pt;
+        width: 10pt;
+      }
 
       span {
         font-family: "Kanit-400";
-        font-size: 16px;
+        font-size: 14px;
         padding: 0 5pt;
         color: $koalaGray;
       }
+
       a {
         font-family: "Kanit-400";
-        font-size: 16px;
+        font-size: 14px;
         color: $black;
         &:hover {
           color: $brandcolor2;
         }
       }
+
       .wrapper-action {
         > .other-social {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          font-family: "Kanit-300";
+          font-size: 14px;
           color: $black;
           @include pointer();
 
           &:hover {
             color: $brandcolor2;
           }
-        } 
+        }
       }
     }
 
@@ -905,7 +912,7 @@
               > .collis {
                 > .wrapper-action {
                   > .label-count {
-                    display: none;
+                    // display: none;
                   }
                   > .img-action {
                     width: 14pt !important;
