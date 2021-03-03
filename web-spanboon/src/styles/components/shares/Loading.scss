@@ -24,7 +24,7 @@
     z-index: 999;
     left: 0;
     top: 0;
-    @include font-size-8-100("Kanit-400");
+    @include font-size-8($font-family-kanit400);
 }
 
 mat-spinner {

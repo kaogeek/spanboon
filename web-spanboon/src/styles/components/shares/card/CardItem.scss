@@ -10,7 +10,7 @@
     border: $width-border solid $border-color;
     border-radius: $border-radius-4px;
     margin-top: 5pt;
-    @include font-size-10-100("Kanit-500");
+    @include font-size-10($font-family-kanit500);
 
     > .wrapper-header {
         display: flex;
@@ -36,7 +36,7 @@
             }
 
             > .subline-looking-for {
-                @include font-size-10-100("Kanit-500");
+                @include font-size-10($font-family-kanit500);
                 color: $color-gray;
             }
         }
@@ -63,7 +63,7 @@
             // overflow: hidden;
             // word-break: break-all;
             padding: 10pt 15pt;
-            @include font-size-10-100("Kanit-500");
+            @include font-size-10($font-family-kanit500);
             // color: rgba($black, 0.6);
         }
 
@@ -113,7 +113,7 @@
             text-align: center;
             color: $brandcolor2;
             @include pointer();
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
             min-height: 26pt;
             display: flex;
             justify-content: center;
@@ -163,7 +163,7 @@
                             -webkit-box-orient: vertical;
                             overflow: hidden;
                             word-break: break-all;
-                            @include font-size-10-100("Kanit-500");
+                            @include font-size-10($font-family-kanit500);
                             color: rgb($black, 0.6);
                         }
                     }
@@ -306,7 +306,7 @@
                                 -webkit-box-orient: vertical;
                                 overflow: hidden;
                                 word-break: break-all;
-                                @include font-size-10-100("Kanit-500");
+                                @include font-size-10($font-family-kanit500);
                                 color: rgb($black, 0.6);
                             }
 
@@ -318,13 +318,13 @@
                                 width: 100%;
 
                                 > .ob-top {
-                                    @include font-size-10-100("Kanit-500");
+                                    @include font-size-10($font-family-kanit500);
                                     color: $bg-color4;
                                 }
 
                                 > .ob-bottom {
                                     margin-left: 5pt;
-                                    @include font-size-10-100("Kanit-500");
+                                    @include font-size-10($font-family-kanit500);
                                     color: rgb($black, 0.6);
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
@@ -402,7 +402,7 @@
 
         > .btn-fulfill {
             padding: 3pt 9pt;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
             @include pointer();
             color: $white;
             background-color: #84b572;
@@ -411,12 +411,12 @@
         }
 
         > .btn-donate-top {
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
             color: $brandcolor2;
         }
 
         > .btn-donate-bottom {
-            @include font-size-10-100("Kanit-500");
+            @include font-size-10($font-family-kanit500);
             color: $color-gray;
         }
     }

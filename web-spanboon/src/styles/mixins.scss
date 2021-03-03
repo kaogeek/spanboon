@@ -23,65 +23,62 @@
 }
 
 // 1.font
-@mixin font-size-11-100($font-family) {
+@mixin font-size-11($font-family) {
     font-size: $font-size-based;
     font-family: $font-family;
 }
 
-@mixin font-size-10-100($font-family) {
+@mixin font-size-10($font-family) {
     font-size: $font-size-based + 2px;
     font-family: $font-family;
 }
 
-@mixin font-size-9-100($font-family) {
+@mixin font-size-9($font-family) {
     font-size: $font-size-based + 4px;
     font-family: $font-family;
 }
 
-@mixin font-size-8-100($font-family) {
+@mixin font-size-8($font-family) {
     font-size: $font-size-based + 6px;
     font-family: $font-family;
 }
 
-@mixin font-size-7-100($font-family) {
+@mixin font-size-7($font-family) {
     font-size: $font-size-based + 12px;
     font-family: $font-family;
 }
 
-@mixin font-size-6-100($font-family) {
+@mixin font-size-6($font-family) {
     font-size: $font-size-based + 24px;
     font-family: $font-family;
 }
 
-@mixin font-size-5-100($font-family) {
+@mixin font-size-5($font-family) {
     font-size: $font-size-based + 32px;
-
     font-family: $font-family;
 }
 
-@mixin font-size-4-100($font-family) {
+@mixin font-size-4($font-family) {
     font-size: $font-size-based + 42px;
-
     font-family: $font-family;
 }
 
-@mixin font-size-3-100($font-family) {
+@mixin font-size-3($font-family) {
     font-size: $font-size-based + 50px;
-
     font-family: $font-family;
 }
 
-@mixin font-size-2-100($font-family) {
+@mixin font-size-2($font-family) {
     font-size: $font-size-based + 56px;
-
     font-family: $font-family;
 }
 
-@mixin font-size-1-100($font-family) {
+@mixin font-size-1($font-family) {
     font-size: $font-size-based + 60px;
-
     font-family: $font-family;
 }
+
+
 
 @mixin newcon-container($newcon-container-height: 500pt, $newcon-container-bg-color: $bg-color1) {
     background-color: $newcon-container-bg-color;

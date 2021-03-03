@@ -17,7 +17,7 @@
         > .label-connect {
             padding: 10pt;
             margin: 0 30pt;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
         }
         > .box-social {
             position: relative;
@@ -29,7 +29,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
                 flex: 1 1 0%;
                 margin-right: 10pt;
 
@@ -67,7 +67,7 @@
                 }
             }
             > .lost-connect {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
                 color: $color-gray;
             }
 
@@ -77,7 +77,7 @@
                 flex: 0 0 auto;
 
                 a {
-                    @include font-size-9-100("Kanit-500");
+                    @include font-size-9($font-family-kanit500);
                     padding-right: 5pt;
                     color: $color-gray;
                     @include pointer();
@@ -89,7 +89,7 @@
             }
 
             .link-connect {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
                 color: $color-gray;
 
                 &:hover {
