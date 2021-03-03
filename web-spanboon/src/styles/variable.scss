@@ -17,6 +17,7 @@
 // ---------
 
 // ----- root color -----
+@import "../custom/theme.scss";
 
 $blue: #007bff;
 $white: #fff;
@@ -31,35 +32,23 @@ $color-11: #8e8e8e;
 $color-black: #212721;
 $color-gray: #a5a5a6;
 
-//Brand color
-
-$brandcolor: #f8f7f2;
-$brandcolor2: rgb(253, 84, 84);
-$brandcolor3: #c62634;
-
 //Web
 
-$status-post-need: #c62634;
-$status-post-general: #a5a5a6;
+$bg-color1: rgb(243, 243, 243);
+$bg-grey: rgb(241, 241, 241);
+$bg-fog-gray: rgb(229, 227, 221);
+$bg-fog-gray2: $brandcolor;
+$bg-color2: rgb(33, 39, 33);
+$bg-color4: rgb(16, 17, 16);
 
 //SVG icon fill
 
-$svg-color-gray-icon: #ff0707;
+$svg-color-gray-icon: #a5a5a6;
 $svg-icon: #f8f7f2;
 $svg-icon-black: #212721;
 $svg-icon-activate: rgb(253, 84, 84);
 
 // Home page color
-
-$home-follow-users-color: #c62634;
-$home-page-activate-color: #28a745;
-
-$bg-color1: #f3f3f3;
-$bg-color2: $color-black;
-$bg-color4: #101110;
-$bg-grey: #f1f1f1;
-$bg-fog-gray: #e5e3dd;
-$bg-fog-gray2: #f5f5f5;
 
 $border-color: #e5e5e5;
 $border-separator: #efefef;
@@ -77,32 +66,6 @@ $shadow-vote-vard-hover: #adadb0;
 $padding-page-side: 45pt;
 
 // 3.font size
-
-// $font-size-1: 72px;
-// $font-size-2: 68px;
-// $font-size-3: 62px;
-// $font-size-4: 54px;
-// $font-size-5: 44px;
-// $font-size-6: 36px;
-// $font-size-7: 24px;
-// $font-size-8: 18px;
-// $font-size-9: 16px;
-// $font-size-10: 14px;
-// $font-size-11: 12px;
-
-$font-family-kanit600: "Kanit-600";
-$font-family-kanit500: "Kanit-500";
-$font-family-kanit400: "Kanit-400";
-$font-family-kanit300: "Kanit-300";
-$font-family-kanit200: "Kanit-200";
-$font-family-kanit100: "Kanit-100";
-
-$font-family-sarabun-light: "Sarabun-Light";
-$font-family-sarabun-medium: "Sarabun-Medium";
-
-$font-family-anakotmai-medium: "Anakotmai-Medium";
-
-$font-size-based: 12px;
 
 // @media (max-width: )
 
