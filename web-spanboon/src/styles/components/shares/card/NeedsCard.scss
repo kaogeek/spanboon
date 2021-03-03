@@ -23,8 +23,7 @@
         padding: 0;
 
         > .left {
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9-100("Kanit-500");
 
             &.active {
                 display: flex;
@@ -126,9 +125,7 @@
                             }
                             .needs-data-h {
                                 .text-h {
-                                    font-family: "Kanit-500";
-                                    // font-size: 18px;
-                                    font-size: 16px;
+                                    @include font-size-10-100("Kanit-500");
                                     line-height: 15px;
                                     color: #717886;
                                     display: -webkit-box;
@@ -171,8 +168,7 @@
                                     .unit-box {
                                         .unit-num {
                                             color: $bg-color4;
-                                            font-family: "Kanit-500";
-                                            font-size: 16px;
+                                            @include font-size-10-100("Kanit-500");
                                             overflow: hidden;
                                             text-overflow: ellipsis;
                                             display: -webkit-box;
@@ -181,8 +177,7 @@
                                         }
 
                                         .unit-sub {
-                                            font-family: "Kanit-500";
-                                            font-size: 14px;
+                                            @include font-size-10-100("Kanit-500");
                                             color: #717886;
                                             overflow: hidden;
                                             text-overflow: ellipsis;
@@ -205,11 +200,10 @@
                                         padding: 0 7pt;
                                         height: 26pt;
                                         color: $bg-color4;
-                                        font-family: "Kanit-500";
-                                        font-size: 14px;
+                                        @include font-size-10-100("Kanit-500");
 
                                         > .material-icons {
-                                            font-size: 16px;
+                                            @include font-size-10-100("Kanit-500");
                                             padding-right: 2pt;
                                         }
                                     }
@@ -226,12 +220,11 @@
                         >.amonut {
                             display: flex;
                             align-items: center;
-                            font-size: 14px;
-                            font-family: "Kanit-500";
-                            color: $koalaGray;
+                            @include font-size-10-100("Kanit-500");
+                            color: $color-gray;
                             >.material-icons {
                                 color : $bg-color4;
-                                font-size: 16px;
+                                @include font-size-10-100("Kanit-500");
                                 padding-right: 5pt;
                             }
                             >.quantity {

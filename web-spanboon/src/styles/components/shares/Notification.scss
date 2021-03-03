@@ -43,8 +43,7 @@
         justify-content: center;
         top: -6px;
         right: -5px;
-        font-family: "Kanit-300";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-300");
 
         &.active-plus {
             padding: 1px 5px;
@@ -89,8 +88,7 @@
         height: 40pt;
         padding: 0 15pt;
         border-bottom: $width-border solid $border-separator;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10-100("Kanit-500");
 
         > .wrapper-noti {
         }
@@ -109,8 +107,8 @@
             justify-content: space-between;
             padding: 10pt;
             align-items: center;
-            cursor: pointer; 
-            border-bottom: $width-border solid $border-separator; 
+            cursor: pointer;
+            border-bottom: $width-border solid $border-separator;
 
             &:hover {
                 transition: 0.5s;
@@ -147,14 +145,12 @@
                             justify-content: center;
                             background-color: $brandcolor2;
                             color: $white;
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            @include font-size-10-100("Kanit-500");
                         }
                     }
 
                     > .wrapper-message {
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
 
                         > .top {
                             color: $black;
@@ -168,9 +164,8 @@
                         > .wrapper-time {
                             display: flex;
                             align-items: center;
-                            color: $koalaGray;
-                            font-family: "Kanit-400";
-                            font-size: 12px;
+                            color: $color-gray;
+                            @include font-size-11-100("Kanit-400");
 
                             &:hover {
                                 color: rgba($brandcolor2, 0.95);
@@ -202,8 +197,7 @@
         height: 40pt;
         background-color: $bg-grey;
         @include pointer();
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10-100("Kanit-500");
         user-select: none;
     }
 }
@@ -245,7 +239,7 @@
         .notiAlert {
             min-width: 16px;
             height: 16px;
-            font-size: 12px;
+            @include font-size-11-100("Kanit-300");
             top: -2px;
             right: -3px;
 

@@ -20,8 +20,8 @@
         }
 
         > .title {
-            color: $koalaGray;
-            font-size: 16px;
+            color: $color-gray;
+            @include font-size-9-100("Kanit-500");
         }
     }
 
@@ -92,7 +92,7 @@
                     > .active-hover {
                         @include pointer();
                         > .non-active {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                         &:hover {
                             > .folder-sub {
@@ -127,8 +127,7 @@
                         border: 0.7pt solid #e5e5e5;
                         border-radius: 5pt;
                         padding: 5pt 25pt;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
 
                     > .icon-clear {
@@ -174,8 +173,7 @@
                         border: 0.7pt solid $border-color;
                         border-radius: 5pt;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                         align-self: stretch;
 
                         &.active {
@@ -286,7 +284,7 @@
                         }
                         > .path-name {
                             color: #a5a5a6;
-                            font-size: 14px;
+                            @include font-size-10-100("Kanit-500");
                             display: -webkit-box;
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
@@ -331,12 +329,12 @@
                         border: 3pt dashed #1288ce;
                         width: calc(25% - 8pt - 8pt - 2.8pt - 10pt - 6pt) !important;
                         > .add-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             // padding-left: 5pt;
                             @include pointer();
                         }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
                     }
@@ -358,8 +356,7 @@
                 align-items: center;
                 padding: 0 20pt;
                 height: 50pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
 
                 > .label-doing-left {
                 }
@@ -448,8 +445,7 @@
     padding: 20px 10px;
     justify-content: space-between;
     border: 0.7pt solid $border-color;
-    font-family: "Kanit-400";
-    font-size: 16px;
+    @include font-size-10-100("Kanit-500");
     @include pointer();
 
     &:hover {
@@ -525,8 +521,7 @@
                     text-align: left;
                     border: unset;
                     box-shadow: 0 2px 9px 0 #e5e3dd;
-                    font-family: "Kanit-300";
-                    font-size: 16px;
+                    @include font-size-9-100("Kanit-300");
                 }
 
                 > .list-category {
@@ -546,8 +541,7 @@
                             border-radius: 20pt;
                             text-align: right;
                             border: unset;
-                            font-family: "Kanit-400";
-                            font-size: 16px;
+                            @include font-size-9-100("Kanit-400");
                             border: 1px solid rgb($black, 0.1);
                         }
 
@@ -560,8 +554,7 @@
                             border-radius: 20pt;
                             text-align: center;
                             border: unset;
-                            font-family: "Kanit-300";
-                            font-size: 16px;
+                            @include font-size-9-100("Kanit-300");
                             border: 1px solid rgb($black, 0.1);
                         }
                     }
@@ -737,8 +730,7 @@
         > .center { 
             > .center-left {
                 > .open-folder {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                     @include font-size-9-100("Kanit-500");
                 }
 
                 > .body-list-item {
@@ -774,8 +766,7 @@
                     height: 40pt;
                 }
                 > .open-folder {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                     @include font-size-9-100("Kanit-500");
                 }
                 > .body-list-item {
                     .list-search-doing {
@@ -790,8 +781,7 @@
                                 font-size: 33px;
                             }
                             > .label-item {
-                                font-family: "Kanit-500";
-                                font-size: 14px;
+                                @include font-size-10-100("Kanit-500");
                             }
                         }
                         > .body-empty {

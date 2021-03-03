@@ -33,20 +33,6 @@
   }
 }
 
-.svg-icon-color {
-  fill: $svg-icon;
-}
-.svg-icon-color-black {
-  fill: $svg-icon-black;
-}
-.svg-icon-color-activate {
-  fill: $svg-icon-activate;
-}
-.svg-icon-home-color {
-  fill: $text-svg-home-color;
-  color: $text-svg-home-color;
-}
-
 .TooltipShow {
   width: 1px;
   z-index: 2;
@@ -84,8 +70,7 @@
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
-    font-family: "Kanit-400";
-    font-size: 16px;
+    @include font-size-10-100("Kanit-500");
     .box-icon {
       width: 500pt;
       height: 200pt;
@@ -114,7 +99,7 @@
           align-items: flex-end;
           .box-from-text {
             color: #ff0000;
-            font-size: 12px;
+            @include font-size-4-100("Kanit-400");
             width: 105%;
             text-align: initial;
           }
@@ -250,6 +235,60 @@ a {
   text-decoration: none !important;
 }
 
+.dis {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+// drag-drop
+
+.example-list {
+  width: 500px;
+  max-width: 100%;
+  border: solid 1px #ccc;
+  min-height: 60px;
+  display: block;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  @include font-size-10-100("Kanit-500");
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-custom-placeholder {
+  background: rgb(151, 43, 43);
+  border: dotted 3px #999;
+  min-height: 60px;
+  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
   color: $white;
   background: $brandcolor2;
@@ -289,56 +328,24 @@ a {
   color: $brandcolor2;
 }
 
-.dis {
-  opacity: 0.5;
-  pointer-events: none;
+.follow-users-color {
+  background-color: $home-follow-users-color !important;
 }
 
-// drag-drop
-
-.example-list {
-  width: 500px;
-  max-width: 100%;
-  border: solid 1px #ccc;
-  min-height: 60px;
-  display: block;
-  background: white;
-  border-radius: 4px;
-  overflow: hidden;
+.svg-color-gray {
+  fill: $svg-color-gray-icon;
 }
 
-.example-box {
-  padding: 20px 10px;
-  border-bottom: solid 1px #ccc;
-  color: rgba(0, 0, 0, 0.87);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  cursor: move;
-  background: white;
-  font-size: 14px;
+.svg-icon-color {
+  fill: $svg-icon;
 }
-
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 4px;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+.svg-icon-color-black {
+  fill: $svg-icon-black;
 }
-
-.cdk-drag-animating {
-  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+.svg-icon-color-activate {
+  fill: $svg-icon-activate;
 }
-
-.example-box:last-child {
-  border: none;
-}
-
-.example-custom-placeholder {
-  background: rgb(151, 43, 43);
-  border: dotted 3px #999;
-  min-height: 60px;
-  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+.svg-icon-home-color {
+  fill: $home-page-activate-color;
+  color: $home-page-activate-color;
 }

@@ -63,8 +63,7 @@
 
             > .form-label-error {
                 color: red;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10-100("Kanit-500");
             }
 
             > .form-group-div {
@@ -92,8 +91,7 @@
                             background-color: $white;
                             background-clip: padding-box;
                             border-radius: 25px;
-                            font-family: "Kanit-500";
-                            font-size: 14px;
+                            @include font-size-10-100("Kanit-500");
                             border: 0.7px solid rgb($black, 0.3);
                             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
@@ -110,8 +108,7 @@
                             background: $white;
                             background-clip: padding-box;
                             border-radius: 25px;
-                            font-family: "Kanit-500";
-                            font-size: 14px;
+                            @include font-size-10-100("Kanit-500");
                             border: 0.7px solid rgb($black, 0.3);
                             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
                         }
@@ -131,8 +128,7 @@
                         }
 
                         mat-form-field {
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            @include font-size-10-100("Kanit-500");
                             width: 100%;
                         }
                     }
@@ -181,8 +177,7 @@
                                     }
 
                                     > .mat-radio-label-content {
-                                        font-family: "Kanit-500";
-                                        font-size: 14px;
+                                        @include font-size-10-100("Kanit-500");
                                         padding-left: 5px;
                                         color: $color-black;
                                     }
@@ -212,8 +207,7 @@
                                         height: 28pt;
                                         color: $color-black;
                                         padding: 0 17pt;
-                                        font-family: "Kanit-500";
-                                        font-size: 14px;
+                                        @include font-size-10-100("Kanit-500");
                                         border: 0.7px solid rgb($black, 0.3);
 
                                         > .mat-form-field-label-wrapper {
@@ -250,8 +244,7 @@
                 }
 
                 > .form-label {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10-100("Kanit-500");
                     display: flex;
                     color: $black;
                     margin-top: 10pt;
@@ -271,8 +264,7 @@
             width: 70pt;
             margin: 0 6pt;
             border: $width-border solid $bg-fog-gray !important;
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10-100("Kanit-500");
             background-color: $brandcolor2;
             color: $brandcolor;
             // transition: 0.5s;
@@ -312,7 +304,7 @@
 }
 
 @media (max-width: $small) {
-    .wrapper-dialog-edit-profile { 
+    .wrapper-dialog-edit-profile {
         height: 100vh;
         > .wrapper-body-edit-profile {
             form {
@@ -353,7 +345,7 @@
                                     margin-right: unset;
                                     margin-bottom: 7pt;
 
-                                    &:last-child{
+                                    &:last-child {
                                         margin-bottom: unset;
                                     }
                                 }

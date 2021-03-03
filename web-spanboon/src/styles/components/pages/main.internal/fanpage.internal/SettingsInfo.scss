@@ -208,8 +208,7 @@
                     }
                     > .display-name {
                         margin-top: 3px;
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9-100("Kanit-500");
                         word-break: break-all;
                         padding: 0 13px;
                     }
@@ -372,14 +371,14 @@
         > .card-info {
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10-100("Kanit-500");
                 }
             }
             > .card-right {
-                font-size: 14px;
+                @include font-size-10-100("Kanit-500");
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                     //             > .card-bottom {
                     //                 > .card-title {
@@ -388,16 +387,16 @@
                     //                 > .card-confirm {
                     //                     text-align: end;
                     //                     > .save-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11-100("Kanit-500");
                     //                     }
                     //                     > .cancel-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11-100("Kanit-500");
                     //                     }
                     //                 }
                     // }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 12px;
+                        @include font-size-11-100("Kanit-500");
                     }
                 }
             }
@@ -417,15 +416,15 @@
             > .card-left {
                 width: 88pt;
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10-100("Kanit-500");
                 }
             }
             > .card-right {
                 width: calc(100% - 88pt - 15pt);
-                font-size: 14px;
+                @include font-size-10-100("Kanit-500");
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                     //             > .card-bottom {
                     //                 > .card-title {
@@ -434,16 +433,16 @@
                     //                 > .card-confirm {
                     //                     text-align: end;
                     //                     > .save-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11-100("Kanit-500");
                     //                     }
                     //                     > .cancel-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11-100("Kanit-500");
                     //                     }
                     //                 }
                     // }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 12px;
+                        @include font-size-11-100("Kanit-500");
                     }
                 }
             }
@@ -453,23 +452,23 @@
 
 @media (max-width: $medium) {
     .fanpage-info {
-        > .info-title { 
+        > .info-title {
         }
-        > .card-info { 
+        > .card-info {
             flex-direction: column;
 
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10-100("Kanit-500");
                 }
             }
             > .card-right {
                 width: 100%;
                 padding-top: 8pt;
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                     > .card-bottom {
                         > .card-title {
@@ -478,16 +477,16 @@
                         > .card-confirm {
                             text-align: end;
                             > .save-card {
-                                font-size: 12px;
+                                @include font-size-11-100("Kanit-500");
                             }
                             > .cancel-card {
-                                font-size: 12px;
+                                @include font-size-11-100("Kanit-500");
                             }
                         }
                     }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
             }
@@ -508,13 +507,13 @@
 
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10-100("Kanit-500");
                 }
             }
             > .card-right {
                 width: 100%;
                 padding-top: 8pt;
-                font-size: 16px;
+                @include font-size-9-100("Kanit-500");
                 > .card-detail {
                     > .card-bottom {
                         > .card-title {
@@ -523,21 +522,21 @@
                         > .card-confirm {
                             text-align: end;
                             > .save-card {
-                                font-size: 12px;
+                                @include font-size-11-100("Kanit-500");
                             }
                             > .cancel-card {
-                                font-size: 12px;
+                                @include font-size-11-100("Kanit-500");
                             }
                         }
                     }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 14px;
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
-                >.crop-input {
-                    >.input-data {
-                        font-size: 14px;
+                > .crop-input {
+                    > .input-data {
+                        @include font-size-10-100("Kanit-500");
                     }
                 }
             }
