@@ -28,9 +28,12 @@
                     {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}
                 </div>
             </div>
-            <div class="link-connect" [class.hide]="isLoading" [class.active]="connect"
-                (click)="connectionSocial('facebook',connect)">
-                {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            <div class="social-name">
+                <a *ngIf="dataBinding" href="//www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank"> {{ ( dataBinding && dataBinding.providerPageName ) }} </a>
+                <div class="link-connect" [class.hide]="isLoading" [class.active]="connect"
+                    (click)="connectionSocial('facebook',connect)">
+                    {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+                </div>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -48,14 +51,17 @@
                     {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
                 </div>
             </div>
-            <div class="link-connect" *ngIf="!isLoading" [class.active]="connectTwitter"
-                (click)="connectionSocial('twitter',connectTwitter)">
-                {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            <div class="social-name">
+                <a *ngIf="dataBindingTwitter"  href="www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank">{{ ( dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
+                <div class="link-connect" *ngIf="!isLoading" [class.active]="connectTwitter"
+                    (click)="connectionSocial('twitter',connectTwitter)">
+                    {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+                </div>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
     </div>
-    <div class="label-info">
+    <!-- <div class="label-info">
         เลือกเพจที่ต้องการแชร์
     </div>
     <div class="body-social">
@@ -81,29 +87,15 @@
                 </div>
             </div>
         </ng-container>
-        <div class="box-social" *ngIf="dataBinding && dataBinding.data">
-            <div class="left">
-                <div class="icon-left share-page">
-                    <div class="display-name">
-                        {{dataBinding.providerPageName | slice: 0:1 }}
-                    </div>
-                </div>
-                <div class="lost-connect">
-                    {{dataBinding.providerPageName}}
-                </div>
-            </div>
-            <div class="link-connect" [class.active]="autoPostFacebook">
-            </div>
-        </div>
 
-    </div>
+    </div> -->
 
     <div class="label-info">
-        แชร์โพสต์อัตโนมัติ
+        เผยแพร่โพสต์อัตโนมัติ
     </div>
     <div class="body-social">
         <div class="label-connect">
-            การตั้งค่าเริ่มต้นสำหรับการแชร์โพสต์สำหรับ facebook และ twitter
+            การตั้งค่าเริ่มต้นสำหรับการเผยแพร่โพสต์สำหรับ facebook และ twitter
         </div>
         <div class="box-social">
             <div class="left">
@@ -122,13 +114,14 @@
 
                 </div>
                 <div class="lost-connect">
-                    {{autoPostFacebook ? 'แชร์โพสต์ไปยัง Facebook' : 'ยังไม่ได้เชื่อมต่อแชร์โพสต์ไปยัง Facebook'}}
+                    {{autoPostFacebook ? 'เผยแพร่โพสต์ไปยัง Facebook' : 'ไม่เผยแพร่โพสต์ไปยัง Facebook'}}
                 </div>
             </div>
             <div class="link-connect" [class.active]="autoPostFacebook">
-                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostFacebook"
+                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostFacebook"
                     (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
             </div>
+            <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
         <div class="box-social">
             <div class="left">
@@ -141,14 +134,15 @@
                     </svg>
                 </div>
                 <div class="lost-connect">
-                    {{autoPostTwitter ? 'แชร์โพสต์ไปยัง Twitter' : 'ยังไม่ได้เชื่อมต่อแชร์โพสต์ไปยัง Twitter'}}
+                    {{autoPostTwitter ? 'เผยแพร่โพสต์ไปยัง Twitter' : 'ไม่เผยแพร่โพสต์ไปยัง Twitter'}}
                 </div>
             </div>
 
-            <div class="link-connect" [class.active]="autoPostTwitter">
+            <div class="link-connect" *ngIf="!isLoading" [class.active]="autoPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
                     (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
+            <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
     </div>
 </div>
