@@ -53,7 +53,7 @@
                 }
 
                 > .description {
-                    @include font-size-10-100("Kanit-300");
+                    @include font-size-10($font-family-kanit300);
                     color: rgba($color: #909090, $alpha: 0.7);
                 }
             }

@@ -60,7 +60,7 @@
                 display: flex;
                 align-items: center;
                 margin-top: 5pt;
-                @include font-size-10-100("Kanit-500");
+                @include font-size-10($font-family-kanit500);
 
                 > .page-by {
                     padding-right: 5pt;

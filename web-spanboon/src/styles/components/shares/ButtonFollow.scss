@@ -7,7 +7,7 @@
 
 .button-follow {
     background-color: $white;
-    @include font-size-10-100("Kanit-500");
+    @include font-size-10($font-family-kanit500);
     border-radius: 3pt;
     border: 0.7px solid $brandcolor2 !important;
     color: $brandcolor2;

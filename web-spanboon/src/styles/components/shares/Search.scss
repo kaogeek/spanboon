@@ -12,7 +12,7 @@
         display: flex;
         padding: 0 10pt;
         align-items: center;
-        @include font-size-10-100("Anakotmai-Medium");
+        @include font-size-10($font-family-anakotmai-medium);
         cursor: pointer;
         -webkit-user-select: none;
         /* Safari 3.1+ */
@@ -44,7 +44,7 @@
                             background: url(/../../../assets/img/search.svg) no-repeat;
                             background-size: 12pt;
                             background-position: 12px 12px;
-                            @include font-size-10-100("Anakotmai-Medium");
+                            @include font-size-10($font-family-anakotmai-medium);
                             padding: 0 40px !important;
                         }
                     }
@@ -57,7 +57,7 @@
                                             width: 100%;
                                             > .list-popular {
                                                 padding: 0 13pt;
-                                                @include font-size-10-100("Anakotmai-Medium");
+                                                @include font-size-10($font-family-anakotmai-medium);
                                                 > .item-popular {
                                                     display: flex;
                                                     justify-content: space-between;

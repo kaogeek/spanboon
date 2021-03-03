@@ -21,7 +21,7 @@
 
         > .title {
             color: $color-gray;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
         }
     }
 
@@ -82,7 +82,7 @@
                 padding: 0 20pt;
                 height: 50pt;
                 border-bottom: 0.7pt solid $border-color;
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
 
                 > .label-doing {
                     display: flex;
@@ -127,7 +127,7 @@
                         border: 0.7pt solid #e5e5e5;
                         border-radius: 5pt;
                         padding: 5pt 25pt;
-                        @include font-size-10-100("Kanit-500");
+                        @include font-size-10($font-family-kanit500);
                     }
 
                     > .icon-clear {
@@ -173,7 +173,7 @@
                         border: 0.7pt solid $border-color;
                         border-radius: 5pt;
                         @include pointer();
-                        @include font-size-9-100("Kanit-500");
+                        @include font-size-9($font-family-kanit500);
                         align-self: stretch;
 
                         &.active {
@@ -284,7 +284,7 @@
                         }
                         > .path-name {
                             color: #a5a5a6;
-                            @include font-size-10-100("Kanit-500");
+                            @include font-size-10($font-family-kanit500);
                             display: -webkit-box;
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
@@ -356,7 +356,7 @@
                 align-items: center;
                 padding: 0 20pt;
                 height: 50pt;
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
 
                 > .label-doing-left {
                 }
@@ -445,7 +445,7 @@
     padding: 20px 10px;
     justify-content: space-between;
     border: 0.7pt solid $border-color;
-    @include font-size-10-100("Kanit-500");
+    @include font-size-10($font-family-kanit500);
     @include pointer();
 
     &:hover {
@@ -521,7 +521,7 @@
                     text-align: left;
                     border: unset;
                     box-shadow: 0 2px 9px 0 #e5e3dd;
-                    @include font-size-9-100("Kanit-300");
+                    @include font-size-9($font-family-kanit300);
                 }
 
                 > .list-category {
@@ -541,7 +541,7 @@
                             border-radius: 20pt;
                             text-align: right;
                             border: unset;
-                            @include font-size-9-100("Kanit-400");
+                            @include font-size-9($font-family-kanit400);
                             border: 1px solid rgb($black, 0.1);
                         }
 
@@ -554,7 +554,7 @@
                             border-radius: 20pt;
                             text-align: center;
                             border: unset;
-                            @include font-size-9-100("Kanit-300");
+                            @include font-size-9($font-family-kanit300);
                             border: 1px solid rgb($black, 0.1);
                         }
                     }
@@ -730,7 +730,7 @@
         > .center { 
             > .center-left {
                 > .open-folder {
-                     @include font-size-9-100("Kanit-500");
+                     @include font-size-9($font-family-kanit500);
                 }
 
                 > .body-list-item {
@@ -766,7 +766,7 @@
                     height: 40pt;
                 }
                 > .open-folder {
-                     @include font-size-9-100("Kanit-500");
+                     @include font-size-9($font-family-kanit500);
                 }
                 > .body-list-item {
                     .list-search-doing {
@@ -781,7 +781,7 @@
                                 font-size: 33px;
                             }
                             > .label-item {
-                                @include font-size-10-100("Kanit-500");
+                                @include font-size-10($font-family-kanit500);
                             }
                         }
                         > .body-empty {

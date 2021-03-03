@@ -97,7 +97,7 @@
                                     height: 25pt;
                                     color: $color-black;
                                     padding: 0 17pt;
-                                    @include font-size-10-100("Anakotmai-Medium");
+                                    @include font-size-10($font-family-anakotmai-medium);
                                     box-shadow: 0px 1px 9px 0 #e5e3dd;
                                     > .mat-form-field-label-wrapper {
                                     }

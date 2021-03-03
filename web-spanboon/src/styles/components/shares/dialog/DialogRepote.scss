@@ -61,7 +61,7 @@
         position: relative;
         overflow: hidden;
         > .edit-head-one {
-            @include font-size-8-100("Kanit-500");
+            @include font-size-8($font-family-kanit500);
             height: 20px;
             color: white;
         }
@@ -91,7 +91,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         max-height: calc(55vh - 40pt - 20pt - 20pt);
-        @include font-size-7-100("Kanit-500");
+        @include font-size-7($font-family-kanit500);
         word-break: break-word;
     }
     ckeditor {
@@ -113,7 +113,7 @@
             cursor: pointer;
             border: $width-border solid #e0e0e0;
             text-align: center;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-family-kanit500);
             margin: 0 0.25rem;
             transition: 0.5s;
             &:hover {

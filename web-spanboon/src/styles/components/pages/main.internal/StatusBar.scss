@@ -74,7 +74,7 @@
         align-items: flex-end;
 
         > .topic-create {
-            @include font-size-10-100("Kanit-500");
+            @include font-size-10($font-family-kanit500);
             color: $color-gray;
 
             .icon-time {
@@ -90,7 +90,7 @@
             color: $color-black;
 
             > .topic-type {
-                @include font-size-10-100("Kanit-500");
+                @include font-size-10($font-family-kanit500);
                 color: gray;
 
                 > .image {
@@ -148,7 +148,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9-100("Kanit-500");
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }
@@ -159,7 +159,7 @@
                 font-size: 18px;
 
                 > .topic-see-all {
-                    @include font-size-9-100("Kanit-500");
+                    @include font-size-9($font-family-kanit500);
                 }
             }
         }
@@ -178,7 +178,7 @@
 
         > .topic-label-right {
             > .topic-count {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
 
                 > .topic-see-all {
                     font-size: 15px;
@@ -220,7 +220,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9-100("Kanit-500");
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }
@@ -229,7 +229,7 @@
         > .topic-label-right {
             > .topic-count {
                 > .topic-see-all {
-                    @include font-size-10-100("Kanit-500");
+                    @include font-size-10($font-family-kanit500);
                 }
             }
         }
@@ -258,7 +258,7 @@
 
         > .topic-label-right {
             > .topic-count {
-                // @include font-size-9-100("Kanit-500");
+                // @include font-size-9($font-family-kanit500);
             }
         }
     }
