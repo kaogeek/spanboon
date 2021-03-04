@@ -7,6 +7,7 @@
 
 import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MatPaginator, MatTableDataSource, MAT_DIALOG_DATA } from '@angular/material';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 import { environment } from 'src/environments/environment';
 
 let needs: any[] = [];
@@ -22,6 +23,7 @@ export class DialogCheckFulfill {
     public apiBaseURL = environment.apiBaseURL;
     public displayedColumns: string[] = ['imageURL', 'name', 'quantity', 'unit'];
     public dataSource: MatTableDataSource<any> = undefined;
+    public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 

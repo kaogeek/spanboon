@@ -184,7 +184,7 @@
                                 <div class="post-data-createdBy">
                                     <div class="icon-feed looking"></div>
                                     <span>
-                                        มองหา
+                                        {{PLATFORM_NEEDS_TEXT}}
                                     </span>
                                     <div class="post-to">
                                         <a href={{linkPost}} target="_blank">
@@ -215,7 +215,7 @@
                     <ng-container *ngIf="!isShowProfile">
                         <div class="icon-feed looking"></div>
                         <span>
-                            มองหา
+                            {{PLATFORM_NEEDS_TEXT}}
                         </span>
                         <div class="post-to">
                             <a href={{linkPost}} target="_blank">
@@ -379,7 +379,7 @@
                                 <div class="name-top">
                                     <div class="fulfill-name">{{itemPost.requester && itemPost.requester.displayName}}
                                     </div>
-                                    <div class="text">ผู้ร่วมเติมเต็ม</div>
+                                    <div class="text">ผู้ร่วม{{PLATFORM_FULFILL_TEXT}}</div>
                                 </div>
                             </div>
                         </a>
@@ -448,7 +448,7 @@
                                         <div class="text">สิ่งที่กำลังทำ</div>
                                     </ng-container>
                                     <ng-template #elseTemplateObjective>
-                                        <div class="text">เพจที่มองหา</div>
+                                        <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
                                     </ng-template>
 
                                 </div>
@@ -480,7 +480,7 @@
         </div>
         <div class="page-give" *ngIf="isFulfill"
             [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
-            <span>ร่วมเติมเต็มให้กับ</span>
+            <span>ร่วม{{PLATFORM_FULFILL_TEXT}}ให้กับ</span>
             <a target="_blank"
                 matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
                 href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">
@@ -524,7 +524,8 @@
                         fill="#a5a5a6" />
                 </svg>
 
-                <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length === 1; else elseTemplateSocialPost">
+                <ng-container
+                    *ngIf="itemPost.socialPosts && itemPost.socialPosts.length === 1; else elseTemplateSocialPost">
                     <span>โพสต์นี้ถูกเผยแพร่ไปยัง</span>
                     <ng-container *ngFor="let item of itemPost.socialPosts">
                         <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocial">
@@ -532,7 +533,7 @@
                                 ทวิตเตอร์
                             </a>
                         </ng-container>
-                        <ng-template #elseTemplateShareSocial> 
+                        <ng-template #elseTemplateShareSocial>
                             <a target="_blank"
                                 href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
                                 เฟสบุ๊ค
@@ -552,7 +553,8 @@
                                     </a>
                                 </ng-container>
                                 <ng-template #elseTemplateShareSocialMenu>
-                                    <a target="_blank" href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
+                                    <a target="_blank"
+                                        href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
                                         เฟสบุ๊ค
                                     </a>
                                 </ng-template>

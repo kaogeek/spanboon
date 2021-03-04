@@ -49,7 +49,7 @@ export class PostPage extends AbstractPage implements OnInit {
   @Output()
   public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'กำลังมองหา', keyword: 'needs' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'กำลัง' + this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -205,7 +205,7 @@ export class PostPage extends AbstractPage implements OnInit {
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;

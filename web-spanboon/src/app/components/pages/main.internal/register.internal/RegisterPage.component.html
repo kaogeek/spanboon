@@ -55,7 +55,7 @@
                             [(ngModel)]="data.uniqueId" required (keyup)="checkUUID(username.value)">
 
                     </ng-template>
-                    <div class="display-name">www.spanboon.com/@{{data.uniqueId}}</div>
+                    <div class="display-name">{{PLATFORM_URL}}/@{{data.uniqueId}}</div>
                 </div>
             </div> 
         </div>
@@ -116,7 +116,7 @@
             </ng-container>
             <ng-template #btnComfirm>
                 <div class="wrapper-policy">
-                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์มสะพานบุญ <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
+                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์ม{{PLATFORM_NAME_TH}} <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
                 </div> 
                 <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว</span>
                 <div class="div-btn">

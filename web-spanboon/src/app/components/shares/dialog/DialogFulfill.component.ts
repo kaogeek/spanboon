@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { AuthenManager, FulfillFacade } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 
 const PAGE_NAME: string = 'dialog-fulfill';
 
@@ -31,6 +32,8 @@ export class DialogFulfill extends AbstractPage {
     // Variable
     private dataMessage: any;
     private cloneItem: any;
+
+    public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
     constructor(public dialogRef: MatDialogRef<DialogFulfill>, @Inject(MAT_DIALOG_DATA) public data: any,
         dialog: MatDialog, authenManager: AuthenManager, router: Router, fulfillFacade: FulfillFacade) {
@@ -123,7 +126,7 @@ export class DialogFulfill extends AbstractPage {
             canCelEventEmitter.subscribe(() => {
                 this.onCancelFulfillDialog.emit();
             });
-            let dialog = this.showDialogWarming("คุณต้องการปิดรายการเติมเต็ม ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+            let dialog = this.showDialogWarming("คุณต้องการปิดรายการ" + this.PLATFORM_FULFILL_TEXT + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
             dialog.afterClosed().subscribe((res) => {
                 if (res) {
                     this.dialogRef.close(this.cloneItem);

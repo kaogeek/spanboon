@@ -348,13 +348,13 @@
       }
 
       span {
-        @include font-size-9($font-family-kanit500);
+        @include font-size-10($font-family-kanit400);
         padding: 0 5pt;
         color: $color-gray;
       }
 
       a {
-        @include font-size-9($font-family-kanit500);
+        @include font-size-10($font-family-kanit400);
         color: $black;
         &:hover {
           color: $brandcolor2;

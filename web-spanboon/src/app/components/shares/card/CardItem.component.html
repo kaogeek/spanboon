@@ -17,14 +17,15 @@
         <ng-template #elseisDoIng>
             <div class="header-option">
                 <div class="header-looking-for">
-                    สิ่งที่ กำลังมองหาอยู่
+                    สิ่งที่ กำลัง{{PLATFORM_NEEDS_TEXT}}อยู่
                 </div>
             </div>
         </ng-template>
         <div>
             <!-- <span class="material-icons" *ngIf="isEdit" (click)="showDialogEdit()"> edit </span> -->
-            <spanboon-button class="btn" *ngIf="isButton" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
-                [fontSize]="fontSize" [height]="" [width]="'65pt'" [radius]="'6px'" (click)="fulfillNeeds(item,index)">
+            <spanboon-button class="btn" *ngIf="isButton" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'"
+                [text]="PLATFORM_FULFILL_TEXT" [fontSize]="fontSize" [height]="" [width]="'65pt'" [radius]="'6px'"
+                (click)="fulfillNeeds(item,index)">
             </spanboon-button>
         </div>
     </div>
@@ -130,7 +131,7 @@
 
         <div class="btn-donate">
             <ng-container *ngIf="isPageName">
-                <spanboon-button class="btn" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
+                <spanboon-button class="btn" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT"
                     [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn" [radius]="'6px'"
                     (click)="fulfillNeeds(itemData,index)">
                 </spanboon-button>

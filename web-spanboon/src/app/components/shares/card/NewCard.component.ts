@@ -11,6 +11,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuContextualService } from 'src/app/services/services';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
 
 @Component({
   selector: 'new-card',
@@ -23,7 +24,7 @@ export class NewCard {
   @Input()
   public marginPerAction: string;
   @Input()
-  public status: string = "กำลังมองหา";
+  public status: string = "กำลัง" + PLATFORM_NEEDS_TEXT;
   @Input()
   public topic: string = "พม.ลุยช่วยเหลือกลุ่มคนไม่ได้รับเงิน 5,000 เราไม่ทิ้งกัน";
   @Input()
@@ -87,6 +88,7 @@ export class NewCard {
   public showDelay: number
   public linkPost: string
   public linkPage: string
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
   constructor(router: Router, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef) {
     this.router = router;
@@ -119,5 +121,5 @@ export class NewCard {
       });
   }
 
-  public navigate() {}
+  public navigate() { }
 }

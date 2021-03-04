@@ -40,6 +40,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public noti: any = [];
 
   public user: any;
+
   public partners: any[] = [];
   public countPageuser: any;
   public isclickmenu: boolean;
