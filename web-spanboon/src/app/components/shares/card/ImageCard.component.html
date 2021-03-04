@@ -5,9 +5,8 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 --> 
 <div *ngIf="!showLoading" class="image-card" [ngStyle]="{ 'width': widthImg , 'height' : heightImg  }">
-    <ng-container
-        *ngIf="data && data.coverBase64 && data.coverBase64 !== undefined && data.coverBase64 !== '' && data.coverBase64 !== null; else elseTemplate">
-        <img class="bg-img" data-src="{{data.coverBase64}}">
+    <ng-container *ngIf="images; else elseTemplate">
+        <img class="bg-img" data-src="{{images}}">
     </ng-container>
     <ng-template #elseTemplate>
         <div class="bg-img file-none">
@@ -27,10 +26,8 @@
         </svg>
     </div>
     <div class="wrapper-tag">
-        <div class="tag-message"> {{hashTag}}
-        </div>
-        <div class="tag-username"> {{name}}
-        </div>
+        <div class="tag-message"> {{hashTag}} </div>
+        <div class="tag-username"> {{name}} </div>
         <div class="tag-social" *ngIf="showDefault">
             <div class="wrapper-social">
                 <svg class="wrapper-icon" xmlns="http://www.w3.org/2000/svg" width="37.962" height="30.845"

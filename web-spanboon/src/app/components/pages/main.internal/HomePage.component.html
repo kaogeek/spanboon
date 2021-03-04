@@ -13,15 +13,16 @@
                 [isStausIcon]="'true'" [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
                 [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
             </status-bar>
-        </ng-container> 
-        <div class="swiper-container" [swiper]="config"
-            *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
-            <div class="swiper-wrapper">
-                <ng-container *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
-                    <ng-container *ngIf="index === 0 || index <= 5"> 
+        </ng-container>
+        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
+            <div class="swiper-container" [swiper]="config" > 
+                <div class="swiper-wrapper" *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
+                    <ng-container *ngIf="index === 0 || index <= 5">
+                        <!-- <ng-container *ngIf="index === 0 || index <= 5">  -->
                         <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="isLoadingImage"
-                            [data]="dataEmergency" [hashTag]="dataEmergency.title" [name]="dataEmergency.owner"
-                            [isWhite]="true" [countFacebook]="dataEmergency.facebookCount  | shortNumber"
+                            [images]="dataEmergency.coverBase64" [hashTag]="dataEmergency.title"
+                            [name]="dataEmergency.owner" [isWhite]="true"
+                            [countFacebook]="dataEmergency.facebookCount  | shortNumber"
                             [countTwitter]="dataEmergency.twitterCount  | shortNumber"
                             [comment]="dataEmergency.commentCount | shortNumber "
                             [reboon]="dataEmergency.repostCount | shortNumber "
@@ -33,23 +34,25 @@
                             [isShowtext]="false" [isShowtext2]="true" [showSottomSocial]="true"
                             [linkMore]="'/search?hashtag='+ dataEmergency.title.substring(1)">
                         </image-card>
+                        <!-- </ng-container> -->
                     </ng-container>
-                </ng-container>
-                <ng-template #elseEmercency>
+                    <ng-template #elseEmercency>
 
-                </ng-template>
-            </div>
-            <div class="swiper-button-prev">
-                <div class="material-icons">
-                    chevron_left
+                    </ng-template>
+                </div>
+                <div class="swiper-button-prev">
+                    <div class="material-icons">
+                        chevron_left
+                    </div>
+                </div>
+                <div class="swiper-button-next">
+                    <div class="material-icons">
+                        chevron_right
+                    </div>
                 </div>
             </div>
-            <div class="swiper-button-next">
-                <div class="material-icons">
-                    chevron_right
-                </div>
-            </div>
-        </div>
+        </ng-container>
+
     </section>
     <!-- Header - End -->
 
