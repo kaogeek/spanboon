@@ -321,26 +321,12 @@
                 <input #address type="text" class="input-data" [(ngModel)]="resDataPage && resDataPage.address"
                     style="display: inline-block; margin-right: 5pt; width: calc(100% - 16pt - 2px);"
                     placeholder="ที่อยู่" (keyup)="changeActive(address.value , 11)">
-                <!-- <input type="text" class="input-data"
-                    style="display: inline-block; margin-right: 5pt; width: calc(50% - 16pt - 2px - 5pt - 35pt);"
-                    placeholder="ที่อยู่"> -->
-                <!-- <input type="text" class="input-data"
-                    style="display: inline-block; margin-right: 5pt; width: calc(50% - 16pt - 2px - 5pt - 35pt);"
-                    placeholder="เมือง">
-                <input type="text" class="input-data" style="display: inline-block; width: calc(70pt - 16pt - 2px);"
-                    placeholder="รหัสไปรษณีย์"> -->
                 <input type="text" class="input-data" #latitude
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt); margin-top: 10pt; margin-right: 5pt;"
                     placeholder="ละติจูด" (keyup)="aboutPage(latitude.value , '12')">
                 <input type="text" class="input-data" #longtitude
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt); margin-top: 10pt;"
                     placeholder="ลองจิจูด" (keyup)="aboutPage(longtitude.value , '13')">
-                <!-- <div class="div-map">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3876.154689065922!2d100.40476211541511!3d13.709079390375159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e297c575c6c6d3%3A0xcc5ff56f1a86ecb4!2sAbsolute%20Management%20Solutions%20Co.%2C%20Ltd.!5e0!3m2!1sth!2sth!4v1600673407126!5m2!1sth!2sth"
-                        width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen=""
-                        aria-hidden="false" tabindex="0"></iframe>
-                </div> -->
                 <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span style="font-family: Kanit-600;">ลูกค้ามาเยี่ยมชมธุรกิจของฉันตามที่อยู่นี้
@@ -360,61 +346,4 @@
             </div>
         </div>
     </div>
-
-    <!-- <div class="info-title">เวลาทำการ</div>
-    <div class="card-info" (click)="clickCard('12')" [class.active]="isCard12">
-        <div class="card-left">
-            <div class="header">
-                เวลาทำการ
-            </div>
-        </div>
-        <div class="card-right">
-            <div class="card-detail">
-                <mat-radio-group>
-                    <mat-radio-button [disableRipple]="'true'" value="{{open.value}}" [checked]="open.checked"
-                        (click)="clickTimeSone(open.click)" *ngFor="let open of opens">
-                        {{open.label}}
-                    </mat-radio-button>
-                </mat-radio-group>
-                <div class="set-time-to-date" *ngIf="isTimeSet">
-                    <div class="date-time" *ngFor="let date of dates; let i = index" [attr.data-index]="i">
-                        <div class="card-date">
-                            <div class="date">
-                                <mat-checkbox [disableRipple]="'true'">{{date.label}}</mat-checkbox>
-                            </div>
-                            <div class="time">
-                                <input type="text" class="input-data" style="width: 50pt;" placeholder="เวลา">
-                                <span class="to">-</span>
-                                <input type="text" class="input-data" style="width: 50pt;" placeholder="เวลา">
-                            </div>
-                            <span class="material-icons add-time" (click)="clickAddTime($event , i)">
-                                add
-                            </span>
-                        </div>
-                        <div class="card-date" *ngIf="date.isDateShow">
-                            <div class="date"></div>
-                            <div class="time">
-                                <input type="text" class="input-data" style="width: 50pt;" placeholder="เวลา">
-                                <span class="to">-</span>
-                                <input type="text" class="input-data" style="width: 50pt;" placeholder="เวลา">
-                            </div>
-                            <span class="material-icons remove-time">
-                                remove
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-bottom" [class.active]="isCard12">
-                    <div class="card-title">
-                        <div>อัพเดตเวลาทำการของคุณเพื่อให้ผลการค้นหาแสดงเมื่อสถานที่ของคุณเปิดให้บริการ</div>
-                    </div>
-                    <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card">บันทึกการเปลี่ยนแปลง</button>
-                        <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '12')">ยกเลิก</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
 </div>
