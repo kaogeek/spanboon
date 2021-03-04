@@ -11,6 +11,7 @@ export * from './Postcode';
 export * from './MainPageVideo';
 export * from './MainPageSlide';
 export * from './Config';
+export * from '../../custom/variable';
 export * from './CommentPosts';
 //
 export * from './ActionLog';

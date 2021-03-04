@@ -6,7 +6,7 @@
  */
 
 .fanpage-settings {
-    background: $background-page;
+    background: $background-fan-page;
     min-height: calc(100vh - 55pt);
 
     .container {
@@ -237,7 +237,7 @@
 @media (max-width: $medium) {
     .fanpage-settings {
         .container {
-            max-width: 720px;  
+            max-width: 720px;
             > .setting-back {
                 &.active {
                     display: flex;
