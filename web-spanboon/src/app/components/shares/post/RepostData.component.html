@@ -46,7 +46,7 @@
                         <div class="name-top">
                             <div class="fulfill-name">{{itemPost.requester && itemPost.requester.displayName}}
                             </div>
-                            <div class="text">ผู้ร่วมเติมเต็ม</div>
+                            <div class="text">ผู้ร่วม{{PLATFORM_FULFILL_TEXT}}</div>
                         </div>
                     </div>
                 </a>
@@ -114,7 +114,7 @@
                                 <div class="text">สิ่งที่กำลังทำ</div>
                             </ng-container>
                             <ng-template #elseTemplateObjective>
-                                <div class="text">เพจที่มองหา</div>
+                                <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
                             </ng-template>
 
                         </div>
@@ -160,7 +160,7 @@
             <div class="left">
                 <div class="icon-feed looking"></div>
                 <span>
-                    มองหา
+                    {{PLATFORM_NEEDS_TEXT}}
                 </span>
                 <div class="post-to">
                     <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
@@ -183,7 +183,7 @@
         </div>
         <div class="page-give" *ngIf="isFulfill"
             [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
-            <span>ร่วมเติมเต็มให้กับ</span>
+            <span>ร่วม{{PLATFORM_FULFILL_TEXT}}ให้กับ</span>
             <a target="_blank"
                 matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
                 href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">

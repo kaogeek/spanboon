@@ -231,13 +231,10 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
 
     chooseStory: any[] = [
         { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-        { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
-        // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+        { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
     ];
     chooseStorys: any[] = [
-        // { value: 'เลือกประเภทเรื่องราว', viewValue: 'เลือกประเภทเรื่องราว' },
         { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-        // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
     ];
 
     selected: string = "ทั่วไป";
@@ -499,7 +496,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         }
                     }
                     if (this.content.type === POST_TYPE.NEEDS) {
-                        this.selected = "มองหา";
+                        this.selected = this.PLATFORM_NEEDS_TEXT;
                         if (this.content.needs && this.content.needs.length > 0) {
                             let index = 0;
                             for (let needs of this.content.needs) {
@@ -687,9 +684,9 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     public selectType(value) {
-        if (value === "เติมเต็ม") {
+        if (value === this.PLATFORM_FULFILL_TEXT) {
             this.typeStroy = POST_TYPE.FULFILLMENT;
-        } else if (value === "มองหา") {
+        } else if (value === this.PLATFORM_NEEDS_TEXT) {
             this.typeStroy = POST_TYPE.NEEDS;
             this.showDialogDoing();
 

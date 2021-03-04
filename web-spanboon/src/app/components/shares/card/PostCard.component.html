@@ -78,7 +78,7 @@
             <div class="wrapper-footer-fulfill">
                 <div class="footer-post">
                     <div class="left">
-                        คนที่เคยเติมเต็มให้กับ
+                        คนที่เคย{{PLATFORM_FULFILL_TEXT}}ให้กับ
                     </div>
                     <div class="right" #pageNameDiv style="position: relative;"
                         (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
@@ -132,8 +132,8 @@
                     </div>
                     <a href={{linkPost}} target="_blank">
                         <spanboon-button class="btn-donate" [color]="'#FFFFFF'"
-                            [text]="butNeeds ? 'ร่วมเติมเต็ม' : 'อ่านโพสต์'" [radius]="'6px'" [fontSize]="'14px'"
-                            [height]="'28pt'" [width]="'70pt'"></spanboon-button>
+                            [text]="butNeeds ? 'ร่วม'+PLATFORM_FULFILL_TEXT : 'อ่านโพสต์'" [radius]="'6px'"
+                            [fontSize]="'14px'" [height]="'28pt'" [width]="'70pt'"></spanboon-button>
                     </a>
                 </div>
             </div>

@@ -96,10 +96,10 @@
                         <ng-container
                             *ngIf="(objective !== null && objective !== undefined && objective !== '') || (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''); else elseTemplate">
                             <span class="pointer">·</span>
-                            <span class="list-length"> {{fulfillRequestCount}} รายการเติมเต็ม </span>
+                            <span class="list-length"> {{fulfillRequestCount}} รายการ{{PLATFORM_FULFILL_TEXT}} </span>
                         </ng-container>
                         <ng-template #elseTemplate>
-                            <span class="list-length"> {{fulfillRequestCount}} รายการเติมเต็ม </span>
+                            <span class="list-length"> {{fulfillRequestCount}} รายการ{{PLATFORM_FULFILL_TEXT}} </span>
                         </ng-template>
                     </span>
                 </div>

@@ -41,7 +41,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'มองหา', keyword: 'needs' }, { label: 'เติมเต็ม', keyword: 'fulfillment' }];
+  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   filterType: 'เฉพาะที่คุณติดตาม' | 'ทั้งหมด' | 'กำหนดเอง' = 'ทั้งหมด';
@@ -267,7 +267,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               const dataHashtag = text.split('=')[1].split(',');
               if (dataHashtag.length > 0) {
                 for (let data of dataHashtag) {
-                  if (data.includes('#')) { 
+                  if (data.includes('#')) {
                     this.matHashTag.push(data.substring(1, data.length));
                   } else {
                     this.matHashTag = text.split('=')[1].split(',');
@@ -326,20 +326,20 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.endActionCount = Number(text.split('=')[1]);
             } else if (text.includes('type')) {
               const typeCate = text.split('=')[1];
-              if(typeCate.toUpperCase() === POST_TYPE.NEEDS){ 
-                this.type = text.split('=')[1]; 
-                this.activeLink = 'มองหา';
-              } else if(typeCate.toUpperCase() === POST_TYPE.FULFILLMENT){
-                this.type = text.split('=')[1]; 
-                this.activeLink = 'เติมเต็ม';
-              } else if(typeCate.toUpperCase() === POST_TYPE.GENERAL){
-                this.type = text.split('=')[1]; 
+              if (typeCate.toUpperCase() === POST_TYPE.NEEDS) {
+                this.type = text.split('=')[1];
+                this.activeLink = this.PLATFORM_NEEDS_TEXT;
+              } else if (typeCate.toUpperCase() === POST_TYPE.FULFILLMENT) {
+                this.type = text.split('=')[1];
+                this.activeLink = this.PLATFORM_FULFILL_TEXT;
+              } else if (typeCate.toUpperCase() === POST_TYPE.GENERAL) {
+                this.type = text.split('=')[1];
                 this.activeLink = 'ทั่วไป';
               } else {
-                this.type = text.split('=')[1]; 
+                this.type = text.split('=')[1];
                 this.activeLink = 'ทั้งหมด';
               }
-            } 
+            }
           }
           // this.searchTrendTag();
           // const splitText = substringPath.split('=');
@@ -377,7 +377,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       var x = document.getElementsByClassName('header-top')[0].clientHeight;
       let top = x + y;
       if (this.prevOld > scrollTop) {
-        if( this.feedbodysearch &&  this.feedbodysearch.nativeElement !== undefined){ 
+        if (this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined) {
           if (window.innerWidth < 489) {
             this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
           } else {
@@ -385,7 +385,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
         }
       } else {
-        if(this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined){
+        if (this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined) {
           this.feedbodysearch.nativeElement.style.top = - top + 'px';
         }
       }

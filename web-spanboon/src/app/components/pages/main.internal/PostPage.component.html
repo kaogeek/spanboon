@@ -192,7 +192,7 @@
                         <!-- <div *ngIf="!isPload" class="wrapper-looking-for" style="display: none;">
                             <div class="wrapper-header">
                                 <div class="header-looking-for">
-                                    ติดต่อเพื่อเติมเต็ม
+                                    ติดต่อเพื่อ{{PLATFORM_FULFILL_TEXT}}
                                 </div>
                             </div>
                             <ng-container *ngIf="expression; else elseTemplates">
@@ -228,7 +228,6 @@
                                             สิ่งที่ {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
                                         </div>
                                         <div class="label-looking-for">
-                                            กำลังมองหาอยู่
                                         </div>
                                     </div>
                                     <div>
@@ -283,7 +282,7 @@
                                 </div>
                                 <div class="btn-donate" *ngIf="resDataPage.needs.length > 6">
                                     <span class="btn-donate-top">
-                                        ร่วมเติมเต็ม
+                                        ร่วม{{PLATFORM_FULFILL_TEXT}}
                                     </span>
                                     <div class="btn-donate-bottom">
                                         {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}

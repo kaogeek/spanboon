@@ -64,7 +64,7 @@
 
                 <ng-container matColumnDef="currentQuantity">
                     <mat-header-cell *matHeaderCellDef>
-                        มองหาอีก
+                        {{PLATFORM_NEEDS_TEXT}}อีก
                     </mat-header-cell>
                     <mat-cell class="cell-number" *matCellDef="let element">
                         {{element.currentQuantity}}
@@ -73,7 +73,7 @@
 
                 <ng-container matColumnDef="fulfillQuantity">
                     <mat-header-cell *matHeaderCellDef>
-                        เติมเต็ม
+                        {{PLATFORM_FULFILL_TEXT}}
                     </mat-header-cell>
                     <mat-cell class="cell-number" *matCellDef="let element">
                         <span class="fulfill-quantity">{{element.fulfillQuantity}}</span>

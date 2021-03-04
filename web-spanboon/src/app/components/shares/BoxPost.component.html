@@ -5,9 +5,9 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="box-post" (window:resize)="onResize()" [ngClass]="class" >
+<div class="box-post" (window:resize)="onResize()" [ngClass]="class">
     <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet" mat-dialog-content>
-        <div *ngIf="isRepost" class="box-story" #headerTop >
+        <div *ngIf="isRepost" class="box-story" #headerTop>
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
@@ -201,9 +201,9 @@
             [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
             [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
-            <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText" > 
-                <div class="text-limit"
-                    [class.validate]="getTextLength() > 230" [class.active]="isMobilePost  && isMobileText">
+            <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
+                <div class="text-limit" [class.validate]="getTextLength() > 230"
+                    [class.active]="isMobilePost  && isMobileText">
                     {{getTextLength() ? getTextLength() : 0 }} <span>/230</span>
                 </div>
             </div>
@@ -315,7 +315,7 @@
                         </ng-template>
                     </div>
                     <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()">
+                        (keydown)="$event.stopPropagation()">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
                                 <div class="create-doing">
@@ -395,7 +395,7 @@
                                         </div>
                                         <div class="btn-submit">
                                             <spanboon-button (click)="createImageObjective()" [height]="'28pt'"
-                                                [width]="'79pt'"  [text]="'สร้าง'">
+                                                [width]="'79pt'" [text]="'สร้าง'">
                                             </spanboon-button>
                                         </div>
                                     </div>
@@ -403,7 +403,7 @@
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
-                            <div class="wrapper-body-objective" >
+                            <div class="wrapper-body-objective">
                                 <div class="search-header-objective">
                                     <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
                                         height="20.682" viewBox="0 0 20.276 20.682">
@@ -413,9 +413,10 @@
                                                 transform="translate(26.891 0)" fill="#474747" />
                                         </g>
                                     </svg>
-                                    <mat-form-field class="form-search-field" appearance="none" (click)="$event.stopPropagation()"
-                                    (keydown)="$event.stopPropagation()">
-                                        <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective"
+                                    <mat-form-field class="form-search-field" appearance="none"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                        <input matInput placeholder="ค้นหา" #searchInputObjective
+                                            id="searchInputObjective"
                                             (keyup)="keyUpSearchObjective(searchInputObjective.value)">
                                     </mat-form-field>
                                 </div>
@@ -504,12 +505,14 @@
                 </div>
                 <ng-container *ngIf="arrListItem && arrListItem.length > 0 && isTypeNeed; else elseNeeds">
                     <div class="wrapper-edit-story" (click)="showDialogDoing()">
-                        <span class="label-needs"> กำลังมองหา {{getObjectLength(arrListItem)}} รายการ</span>
+                        <span class="label-needs"> กำลัง{{PLATFORM_NEEDS_TEXT}} {{getObjectLength(arrListItem)}}
+                            รายการ</span>
                     </div>
                 </ng-container>
                 <ng-template #elseNeeds>
                     <div *ngIf="typeStroy === 'NEEDS'" class="wrapper-edit-story" (click)="showDialogDoing()">
-                        <span class="label-needs" id="needs" [class.msg-error-shake]="isMsgNeeds">กำลังมองหา 0
+                        <span class="label-needs" id="needs"
+                            [class.msg-error-shake]="isMsgNeeds">กำลัง{{PLATFORM_NEEDS_TEXT}} 0
                             รายการ</span>
                     </div>
                 </ng-template>
@@ -521,7 +524,7 @@
                         {{getTextLength() ? getTextLength() : 0 }}/230
                     </div>
                 </ng-container>
-                <ng-template #elseTemplateisTablet> 
+                <ng-template #elseTemplateisTablet>
                     <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
                         [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
@@ -715,9 +718,10 @@
                             </div>
                         </ng-template>
                     </div>
-                    <ng-container *ngIf="isSharePost"> 
+                    <ng-container *ngIf="isSharePost">
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
-                            <svg class="icon-social" [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
+                            <svg class="icon-social"
+                                [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
                                 xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
                                 viewBox="0 0 17.474 17.474">
                                 <path id="social-media"
@@ -733,8 +737,8 @@
                                         โพสต์บนช่องทางอื่น
                                     </div>
                                     <div class="setting-all">
-                                        <svg (click)="redirectSetting()" xmlns="http://www.w3.org/2000/svg" width="16.334"
-                                            height="16.773" viewBox="0 0 16.334 16.773">
+                                        <svg (click)="redirectSetting()" xmlns="http://www.w3.org/2000/svg"
+                                            width="16.334" height="16.773" viewBox="0 0 16.334 16.773">
                                             <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
                                                 <g id="Group_401" data-name="Group 401" transform="translate(6.71)">
                                                     <path id="Path_265" data-name="Path 265"
@@ -747,14 +751,17 @@
                                 </div>
                                 <div class="body-list">
                                     <div class="checklist" *ngIf="facebookConection">
-                                        <mat-checkbox #checkbox [(ngModel)]="isAutoPostFacebook"  [class.active]="isAutoPostFacebook" [ngModelOptions]="{standalone: true}"
-                                         class="item-checkbox" (click)="$event.stopPropagation()" (change)="socialBinding(isAutoPostTwitter , 'facebook')">
+                                        <mat-checkbox #checkbox [(ngModel)]="isAutoPostFacebook"
+                                            [class.active]="isAutoPostFacebook" [ngModelOptions]="{standalone: true}"
+                                            class="item-checkbox" (click)="$event.stopPropagation()"
+                                            (change)="socialBinding(isAutoPostTwitter , 'facebook')">
                                             <div class="icon-social facebook">
                                                 <svg class="icon" version="1.1" id="Capa_1"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                                     viewBox="0 0 96.124 96.123"
-                                                    style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+                                                    style="enable-background:new 0 0 96.124 96.123;"
+                                                    xml:space="preserve">
                                                     <g>
                                                         <path fill="#F8F7F2"
                                                             d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
@@ -786,7 +793,7 @@
                                 </div>
                             </div>
                         </mat-menu>
-                    </ng-container>  
+                    </ng-container>
                 </div>
             </div>
             <div class="right">

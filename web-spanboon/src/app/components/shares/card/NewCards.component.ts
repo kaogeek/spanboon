@@ -12,6 +12,7 @@ import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { MenuContextualService } from 'src/app/services/services';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import { ScrollStrategy } from '@angular/cdk/overlay';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
 
 declare var $: any;
 
@@ -38,7 +39,7 @@ export class NewCards {
   @Input()
   public countUserFollow: string = "3K";
   @Input()
-  public status: string = "กำลังมองหา";
+  public status: string = "กำลัง" + PLATFORM_NEEDS_TEXT;
   @Input()
   public textLink: string = "อ่านสตอรี่";
   @Input()
@@ -91,6 +92,7 @@ export class NewCards {
   public showDelay: number
   public linkPost: string
   public linkPage: string
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
   open: boolean;
   scrollStrategy: ScrollStrategy;
 
@@ -145,8 +147,8 @@ export class NewCards {
       data: data,
     })
       .subscribe(res => {
-    });
+      });
   }
 
-  public navigate() {}
+  public navigate() { }
 }

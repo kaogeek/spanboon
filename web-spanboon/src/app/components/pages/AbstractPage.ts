@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogAlert } from '../shares/dialog/DialogAlert.component';
 import { MESSAGE } from '../../AlertMessage';
 import { EventEmitter, OnInit } from '@angular/core';
-import { PLATFORM_NAME } from '../../../custom/variable';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../custom/variable';
 import { Router } from '@angular/router';
 
 const TOKEN_KEY: string = 'token';
@@ -23,7 +23,12 @@ export abstract class AbstractPage implements OnInit {
   protected dialog: MatDialog;
   protected router: Router;
 
-  public platformName: string = PLATFORM_NAME
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH
+  public PLATFORM_NAME_ENG: string = PLATFORM_NAME_ENG
+  public PLATFORM_SOPPORT_EMAIL: string = PLATFORM_SOPPORT_EMAIL
+  public PLATFORM_URL: string = PLATFORM_URL
+  public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
   constructor(name: string, authenManager: AuthenManager, dialog: MatDialog, router: Router) {
     this.name = name;

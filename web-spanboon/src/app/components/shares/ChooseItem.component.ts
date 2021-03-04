@@ -106,7 +106,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
     public widthBtn: any;
     public isFirst: any;
 
-    public dataList: any = [{ name: 'มองหา', id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
+    public dataList: any = [{ name: this.PLATFORM_NEEDS_TEXT, id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
 
     constructor(pageCategoryFacade: PageCategoryFacade, pageFacade: PageFacade,
         dialog: MatDialog, authenManager: AuthenManager, router: Router, assetFacade: AssetFacade, observManager: ObservableManager, needsFacade: NeedsFacade) {
@@ -132,7 +132,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
         this.parrentCategoryMap = {};
         this.parrentCategoryMapSelect = {};
 
-        this.labelHeader = 'รายการมองหาทั้งหมด';
+        this.labelHeader = 'รายการ' + this.PLATFORM_NEEDS_TEXT + 'ทั้งหมด';
         this.isTabClick = this.dataList[0].id;
     }
 
@@ -464,7 +464,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
         if (data === '') {
             this.isSearchAll = false;
             this.searchPageCategory();
-            this.labelHeader = 'สิ่งที่มองหาล่าสุด';
+            this.labelHeader = 'สิ่งที่' + this.PLATFORM_NEEDS_TEXT + 'ล่าสุด';
             return;
         }
 
@@ -484,7 +484,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             if (this.resItemCategory.length === 0) {
                 this.labelHeader = 'ไม่พบรายการที่ค้นหา';
             } else {
-                this.labelHeader = 'ผลลัพธ์การมองหา';
+                this.labelHeader = 'ผลลัพธ์การ' + this.PLATFORM_NEEDS_TEXT;
             }
             for (const itemSelect of this.arrListItem) {
                 let index = 0;
@@ -503,7 +503,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             if (err.error.status === 0) {
                 if (err.error.message === 'Cannot search StandardItem') {
                     this.resItemCategory = [];
-                    this.labelHeader = 'ไม่พบรายการมองหา';
+                    this.labelHeader = 'ไม่พบรายการ' + this.PLATFORM_NEEDS_TEXT;
                 }
             }
             this.stopLoading();
@@ -634,8 +634,8 @@ export class ChooseItem extends AbstractPage implements OnInit {
             this.arrListItem.splice(indexItem, 1);
             if (this.arrListItem.length === 0) {
                 this.isListItem = false;
-            } 
-        } 
+            }
+        }
     }
 
     public keyUpText(text: string, index: number, type: string) {
@@ -653,8 +653,8 @@ export class ChooseItem extends AbstractPage implements OnInit {
     }
 
     public openListItem() {
-        this.isListItem = !this.isListItem; 
-        this.isUnit = false; 
+        this.isListItem = !this.isListItem;
+        this.isUnit = false;
         this.arrListItem.push({
             isAddItem: true,
             standardItemId: "",
@@ -691,7 +691,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 }
             }
             this.removeCategorySelect(listItem);
-            this.arrListItem.splice(index, 1); 
+            this.arrListItem.splice(index, 1);
         }
     }
 
@@ -804,7 +804,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             // }
 
         }
-    } 
+    }
 
     public clickData(event, text) {
         if (event.isTrusted) {
@@ -814,14 +814,14 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 var data = document.getElementById('centerleft');
                 data.style.display = 'flex';
                 this.isListItem = false;
-                this.isTabClick = text; 
+                this.isTabClick = text;
             } else {
                 $('#defaultOpen1').removeClass('active');
                 $('#defaultOpen2').addClass('active');
                 var data = document.getElementById('centerleft');
                 data.style.display = 'none';
                 this.isListItem = true;
-                this.isTabClick = text; 
+                this.isTabClick = text;
             }
         }
     }

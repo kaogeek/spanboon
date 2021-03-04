@@ -104,11 +104,6 @@ export class AboutPage extends AbstractPage implements OnInit {
             icon: "access_time",
             label: "โพสต์ตั้งเวลา",
         },
-        // {
-        //     link: "",
-        //     icon: "favorite",
-        //     label: "เติมเต็ม",
-        // }
     ];
 
     public opens = [
