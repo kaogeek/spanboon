@@ -70,7 +70,7 @@ export class NotificationService {
         }
     }
 
-    public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string): Promise<Notification> {
+    public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any): Promise<Notification> {
 
         const notification: Notification = new Notification();
         notification.isRead = false;
@@ -82,6 +82,7 @@ export class NotificationService {
         notification.link = link;
         notification.type = notificationType;
         notification.deleted = false;
+        notification.data = data;
 
         return await this.create(notification);
     }
