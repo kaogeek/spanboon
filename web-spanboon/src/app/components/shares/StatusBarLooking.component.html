@@ -25,7 +25,7 @@
     </div>
     <div class="topic-label-right">
         <ng-container *ngIf="isStausDate; else elseTemplate">
-            <div class="topic-date">
+            <div class="topic-date" *ngIf="createDate">
                 <div class="date">
                     <svg class="time" height="512pt" viewBox="0 0 512 512" width="512pt"
                         xmlns="http://www.w3.org/2000/svg">
