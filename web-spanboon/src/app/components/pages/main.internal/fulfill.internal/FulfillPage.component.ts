@@ -165,6 +165,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDates: any
     public pageId: string;
     public postId: string;
+    public roomId: string;
     public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
@@ -234,6 +235,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
+        if(this.needsFromState && this.needsFromState.room){ 
+            this.roomId = this.needsFromState.room.roomId;
+        }
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -305,10 +309,19 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
-
+ 
                 if (result !== null && result !== undefined) {
-                    if (this.needsFromState !== null && this.needsFromState !== undefined) {
+                    if (this.needsFromState && this.needsFromState.data && this.needsFromState.data !== null && this.needsFromState.data !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
+                    } else if (this.roomId !== '' && this.roomId !== undefined && this.roomId !== null){ 
+                        for(let value of result){ 
+                            for(let chat of value.cases){ 
+                                if(chat.chatRoom === this.roomId){
+                                    console.log('chat ',chat)
+                                    this.getChatRoom(chat,this.asPage); 
+                                }
+                            }
+                        }
                     }
                 }
             }).catch((err) => {
@@ -588,7 +601,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
                     this.observManager.publish(CHATROOM_ID, this.chatRoomId);
                     this.chatRoomId = res.chatRoom.id;
-                    this.pageName = res.fulfillCase.pageName;
+                    this.pageName = res.fulfillCase.pageName; 
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
                         this.canAccessCase = true;
                         this.canAccessChatRoom = true;
@@ -673,7 +686,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.showChatRoom = false;
                 this.canAccessCase = false;
                 this.canAccessChatRoom = false;
-                console.log(error.name);
+                console.log(error);
             });
         } else {
             setTimeout(() => {
