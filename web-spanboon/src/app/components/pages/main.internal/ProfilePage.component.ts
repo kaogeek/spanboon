@@ -92,7 +92,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
@@ -131,7 +131,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             data = {
               type: 'GENERAL',
             }
-            this.activeLink = 'ทั่วไป';
+            this.activeLink = this.PLATFORM_GENERAL_TEXT;
             this.searchTimeLinePost(data);
           } else if (this.subPage === 'fulfillment') {
             data = {
@@ -283,7 +283,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       data = {
         type: 'GENERAL'
       }
-      this.activeLink = 'ทั่วไป';
+      this.activeLink = this.PLATFORM_GENERAL_TEXT;
       this.searchTimeLinePost(data, true);
     } else if (subPage === 'fulfillment') {
       data = {

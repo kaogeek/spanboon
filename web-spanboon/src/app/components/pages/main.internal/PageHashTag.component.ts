@@ -41,7 +41,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   filterType: 'เฉพาะที่คุณติดตาม' | 'ทั้งหมด' | 'กำหนดเอง' = 'ทั้งหมด';
@@ -334,7 +334,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 this.activeLink = this.PLATFORM_FULFILL_TEXT;
               } else if (typeCate.toUpperCase() === POST_TYPE.GENERAL) {
                 this.type = text.split('=')[1];
-                this.activeLink = 'ทั่วไป';
+                this.activeLink = this.PLATFORM_GENERAL_TEXT;
               } else {
                 this.type = text.split('=')[1];
                 this.activeLink = 'ทั้งหมด';
