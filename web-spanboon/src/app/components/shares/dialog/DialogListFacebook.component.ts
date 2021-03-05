@@ -42,21 +42,14 @@ export class DialogListFacebook extends AbstractPage {
     public submitDialog: EventEmitter<any> = new EventEmitter();
     @Output()
     public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
-
-    public dataTest: any;
+ 
 
     constructor(public dialogRef: MatDialogRef<DialogListFacebook>, @Inject(MAT_DIALOG_DATA) public data: any,
         dialog: MatDialog, authenManager: AuthenManager, router: Router) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.dialog = dialog;
         this.isProvideItem = this.data.isProvideItem;
-        this.index = 0;
-        this.dataTest = [{
-            name: 'ssssss1',
-            selected: true
-        }, {
-            name: 'tttt2'
-        }]
+        this.index = 0; 
     }
 
     public ngOnInit(): void {

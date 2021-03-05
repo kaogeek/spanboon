@@ -25,14 +25,14 @@
 
                 </div>
                 <div class="lost-connect">
-                    {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}
+                    {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}   
+                    <a *ngIf="dataBinding" href="//www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank"> {{ ( dataBinding && dataBinding.providerPageName ) }} </a>
                 </div>
             </div>
-            <div class="social-name">
-                <a *ngIf="dataBinding" href="//www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank"> {{ ( dataBinding && dataBinding.providerPageName ) }} </a>
-                <div class="link-connect" [class.hide]="isLoading" [class.active]="connect"
-                    (click)="connectionSocial('facebook',connect)">
-                    {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+            <div class="social-name"> 
+                <div class="link-connect" [class.hide]="isLoading" [class.active]="connect" >
+                    <!-- {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}} -->
+                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connect" (click)="connectionSocial('facebook',connect)" (click)="$event.stopPropagation()" ></mat-checkbox>
                 </div>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
@@ -49,16 +49,17 @@
                 </div>
                 <div class="lost-connect">
                     {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
+                    <a *ngIf="dataBindingTwitter"  href="www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank">{{ ( dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
                 </div>
             </div>
-            <div class="social-name">
-                <a *ngIf="dataBindingTwitter"  href="www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank">{{ ( dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
-                <div class="link-connect" *ngIf="!isLoading" [class.active]="connectTwitter"
+            <div class="social-name"> 
+                <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="connectTwitter"
                     (click)="connectionSocial('twitter',connectTwitter)">
-                    {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}}
+                    <!-- {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}} -->
+                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connectTwitter" (click)="$event.stopPropagation()" ></mat-checkbox>
                 </div>
             </div>
-            <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
+            <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
     </div>
     <!-- <div class="label-info">
@@ -138,11 +139,11 @@
                 </div>
             </div>
 
-            <div class="link-connect" *ngIf="!isLoading" [class.active]="autoPostTwitter">
+            <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="autoPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
                     (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
-            <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
+            <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
     </div>
 </div>
