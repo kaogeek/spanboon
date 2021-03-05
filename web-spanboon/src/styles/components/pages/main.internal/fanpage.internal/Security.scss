@@ -65,27 +65,29 @@
                     > .display-name {
                     }
                 }
-            }
-            > .lost-connect {
-                @include font-size-9($font-family-kanit500);
-                color: $color-gray;
-            }
+
+                > .lost-connect {
+                    display: flex;
+                    flex-direction: column;
+                    @include font-size-9($font-family-kanit500);
+                    color: $color-black;
+                    a {
+                        @include font-size-10($font-family-kanit400);
+                        padding-right: 5pt;
+                        color: $color-gray;
+                        @include pointer();
+        
+                        &:hover {
+                            color: $brandcolor2;
+                        }
+                    }
+                } 
+            } 
 
             > .social-name {
                 display: flex;
                 align-items: center;
-                flex: 0 0 auto;
-
-                a {
-                    @include font-size-9($font-family-kanit500);
-                    padding-right: 5pt;
-                    color: $color-gray;
-                    @include pointer();
-
-                    &:hover {
-                        color: $brandcolor2;
-                    }
-                }
+                flex: 0 0 auto; 
             }
 
             .link-connect {

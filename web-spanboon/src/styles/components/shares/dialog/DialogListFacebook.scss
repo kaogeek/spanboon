@@ -128,3 +128,15 @@
         }
     }
 }
+
+@media (max-width: $large){
+    .dialog-list-facebook {
+        width: 100vw !important;
+        >.dialog-facebook {
+
+        }
+        >.mat-dialog-content {
+            height: 100vh;
+        }
+    }
+}
