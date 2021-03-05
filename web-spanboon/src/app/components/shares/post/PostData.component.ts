@@ -392,8 +392,10 @@ export class PostData {
   }
 
   public substringData(settingname: string) {
-    if (settingname.length > 0) {
-      return settingname.split('_');
+    if (settingname && settingname.length > 0) { 
+      if(settingname.match(/[^_]*$/)){  
+        return settingname.split('_');
+      }
     }
   }
 
