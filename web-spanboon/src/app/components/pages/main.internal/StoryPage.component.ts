@@ -16,6 +16,7 @@ import { Asset } from '../../../models/Asset';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { BoxPost, DialogMedia, DialogAlert, DialogReboonTopic } from '../../shares/shares';
+import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from 'src/app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
@@ -422,8 +423,8 @@ export class StoryPage extends AbstractPage implements OnInit {
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: "ต้องการลบความคิดเห็น ?",
-          bottomText2: "ตกลง",
+          text: MESSAGE.TEXT_TITLE_DELETE_COMMENT_CONFIRM,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
           bottomColorText2: "black",
         }
       });
@@ -446,17 +447,6 @@ export class StoryPage extends AbstractPage implements OnInit {
       } else {
         this.commentpost[data.index].isEdit = true;
       }
-      // let dialog = this.dialog.open(DialogAlert, {
-      //   disableClose: true,
-      //   data: {
-      //     text: "ระบบอยู่ในระหว่างการพัฒนา",
-      //     bottomText2: "ตกลง",
-      //     bottomColorText2: "black",
-      //     btDisplay1: "none"
-      //   }
-      // });
-      // dialog.afterClosed().subscribe((res) => {
-      // });
     } else if (data.action === 'CANCEL') {
       this.commentpost[data.index].isEdit = false;
     }

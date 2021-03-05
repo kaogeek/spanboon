@@ -265,7 +265,7 @@
                         flex-wrap: wrap;
                         padding: 3pt 0;
                         > .date {
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-family-kanit300);
                             color: rgb($black, 0.5);
 
                             a {
@@ -363,8 +363,8 @@
 
                             > .user {
                                 word-break: break-all;
-                                color: rgba(0, 0, 0, 0.7);
-                                @include font-size-9($font-family-kanit500);
+                                color: $home-page-activate-color;
+                                @include font-size-9($font-family-kanit300);
 
                                 a {
                                     color: #a5a5a6;

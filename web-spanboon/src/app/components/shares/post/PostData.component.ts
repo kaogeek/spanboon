@@ -17,8 +17,9 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
-import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT } from '../../../../custom/variable';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
 import { BoxPost } from '../shares';
+import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 
 @Component({
@@ -89,9 +90,12 @@ export class PostData {
 
   private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
+
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
   public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
   public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
+  public PLATFORM_STORY: string = PLATFORM_STORY;
+  public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
 
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
@@ -270,9 +274,9 @@ export class PostData {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-        bottomText2: "ตกลง",
-        bottomText1: "ยกเลิก",
+        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
         bottomColorText2: "black",
         // btDisplay1: "none"
       }
@@ -358,8 +362,8 @@ export class PostData {
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: "ต้องการลบความคิดเห็น ?",
-          bottomText2: "ตกลง",
+          text: MESSAGE.TEXT_TITLE_DELETE_COMMENT_CONFIRM,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
           bottomColorText2: "black",
         }
       });
@@ -382,17 +386,6 @@ export class PostData {
       } else {
         this.commentpost[data.index].isEdit = true;
       }
-      // let dialog = this.dialog.open(DialogAlert, {
-      //   disableClose: true,
-      //   data: {
-      //     text: "ระบบอยู่ในระหว่างการพัฒนา",
-      //     bottomText2: "ตกลง",
-      //     bottomColorText2: "black",
-      //     btDisplay1: "none"
-      //   }
-      // });
-      // dialog.afterClosed().subscribe((res) => {
-      // });
     } else if (data.action === 'CANCEL') {
       this.commentpost[data.index].isEdit = false;
     }
@@ -441,8 +434,8 @@ export class PostData {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: MESSAGE.TEXT_TITLE_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }
