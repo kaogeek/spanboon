@@ -109,11 +109,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง",
                 "type": "MANUAL"
             },
-            // {
-            //     "label": "เข้าโพสต์มองหาทั่วไป",
-            //     "detail": "จัดสรรเข้าโพสต์ที่ไม่ระบุเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ",
-            //     "type": "MANUALGENERAL"
-            // }
         ]
 
         this.sortingByDateArr = [
@@ -838,9 +833,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public getTypePost(type): string {
         if (type === "NEEDS") {
-            return "มองหา"
+            return this.PLATFORM_NEEDS_TEXT;
         } else if (type === "GENERAL") {
-            return "ทั่วไป"
+            return this.PLATFORM_GENERAL_TEXT
         } else {
             return "ไม่ระบุประเภท"
         }

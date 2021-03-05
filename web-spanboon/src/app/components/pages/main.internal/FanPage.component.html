@@ -420,9 +420,9 @@
                         <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
                             <ng-container>
                                 <card-item [isDevelop]="true" [itemData]="resDataPage.needs"
-                                    [pageName]="resDataPage.name" [label]="'ร่วมเติมเต็ม'" [isPageName]="'true'"
-                                    [isTabletObjectList]="'true'" [isEdit]="false" [isButton]="true"
-                                    [isShowWidthButton]="'899'">
+                                    [pageName]="resDataPage.name" [label]="'ร่วม'+PLATFORM_FULFILL_TEXT"
+                                    [isPageName]="'true'" [isTabletObjectList]="'true'" [isEdit]="false"
+                                    [isButton]="true" [isShowWidthButton]="'899'">
                                 </card-item>
                             </ng-container>
                         </ng-container>

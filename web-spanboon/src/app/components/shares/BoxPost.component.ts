@@ -235,17 +235,14 @@ export class BoxPost extends AbstractPage implements OnInit {
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
   chooseStory: any[] = [
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
-    // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
-    // { value: 'เลือกประเภทเรื่องราว', viewValue: 'เลือกประเภทเรื่องราว' },
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
   ];
 
-  selected: string = "ทั่วไป";
+  selected: string = this.PLATFORM_GENERAL_TEXT;
   selected1: string = "โพสต์"
   selected2: string = "โพสต์"
   selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
@@ -415,7 +412,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
           }
           if (this.content.type === POST_TYPE.NEEDS) {
-            this.selected = "มองหา";
+            this.selected = this.PLATFORM_NEEDS_TEXT;
             if (this.content.needs && this.content.needs.length > 0) {
               let index = 0;
               for (let needs of this.content.needs) {
@@ -429,7 +426,7 @@ export class BoxPost extends AbstractPage implements OnInit {
               index++;
             }
           } else {
-            this.selected = "ทั่วไป"
+            this.selected = this.PLATFORM_GENERAL_TEXT
           }
           if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
             this.modeShowDoing = true
@@ -670,9 +667,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public selectType(value) {
-    if (value === "เติมเต็ม") {
+    if (value === this.PLATFORM_FULFILL_TEXT) {
       this.typeStroy = POST_TYPE.FULFILLMENT;
-    } else if (value === "มองหา") {
+    } else if (value === this.PLATFORM_NEEDS_TEXT) {
       this.typeStroy = POST_TYPE.NEEDS;
       this.showDialogDoing();
 
@@ -1225,7 +1222,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
-      this.isShowEmergency = true; 
+      this.isShowEmergency = true;
     }
   }
 
@@ -1461,7 +1458,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.hashTag = [];
     this.listTag = [];
     this.userTag = [];
-    this.selected = "ทั่วไป";
+    this.selected = this.PLATFORM_GENERAL_TEXT;
     this.selected1 = "โพสต์";
     this.isShowImage = false;
     this.isChecked = false;
@@ -1939,7 +1936,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public clickObjectiveDoing() {
     this.isUpload = false;
     this.isShowObjective = true;
-    this.keyUpSearchObjective(""); 
+    this.keyUpSearchObjective("");
     setTimeout(() => {
       const element = document.querySelector('.active-click-doing');
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');

@@ -9,6 +9,7 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
 import { environment } from '../../../../environments/environment';
 import { ObservableManager } from '../../../services/services';
+import { PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 
 @Component({
     selector: 'card-contact',
@@ -57,6 +58,7 @@ export class CardContact {
 
     public isActive: boolean = false;
     public apiBaseURL = environment.apiBaseURL;
+    public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
     ngOnInit(): void {
         if (this.data.status === FULFILLMENT_STATUS.INPROGRESS && (this.data.fulfillmentPost === null || this.data.fulfillmentPost === undefined || this.data.fulfillmentPost === '')) {

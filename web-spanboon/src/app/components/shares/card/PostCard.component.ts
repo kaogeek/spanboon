@@ -9,6 +9,7 @@ import { Component, EventEmitter, Input, Output, ViewContainerRef } from '@angul
 import { Router } from '@angular/router';
 import { AssetFacade, MenuContextualService } from '../../../services/services';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
+import { PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 
 
 @Component({
@@ -89,6 +90,7 @@ export class PostCard {
   public linkPost: string;
   public linkPage: string;
   public unset: any;
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
   protected router: Router;
 

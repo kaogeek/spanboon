@@ -73,8 +73,9 @@
         </span>
       </div>
       <a href={{linkPost}} target="_blank" class="btn-fulfill">
-        <spanboon-button [color]="'#FFFFFF'" (click)="navigate();" [text]="butNeeds ? 'ร่วมเติมเต็ม' : 'อ่านโพสต์'"
-          [radius]="'6px'" [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn"> </spanboon-button>
+        <spanboon-button [color]="'#FFFFFF'" (click)="navigate();"
+          [text]="butNeeds ? 'ร่วม'+PLATFORM_FULFILL_TEXT : 'อ่านโพสต์'" [radius]="'6px'" [fontSize]="fontSize"
+          [height]="heightBtn" [width]="widthBtn"> </spanboon-button>
       </a>
     </div>
   </div>

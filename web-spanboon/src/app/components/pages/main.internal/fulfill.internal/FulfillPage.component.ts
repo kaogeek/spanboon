@@ -483,7 +483,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result !== null && result !== undefined) {
 
-                this.snackBar.open("สร้างโพสต์เติมเต็มสำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
+                this.snackBar.open("สร้างโพสต์" + this.PLATFORM_FULFILL_TEXT + "สำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
                     this.router.navigate([]).then(() => {
                         window.open('/post/' + result.id, '_blank');
                     });
@@ -736,7 +736,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             });
 
             this.showDialogWithOptions({
-                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการเติมเต็มนี้ ?',
+                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการ"' + this.PLATFORM_FULFILL_TEXT + '"นี้ ?',
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                 bottomColorText2: "black",
@@ -1150,7 +1150,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         }).catch((createError) => {
             console.log('createError ', createError)
             if (createError.error.error.message === "Create FulfillmentCase Error") {
-                this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
+                this.showAlertDialog('ไม่สามารถสร้างเคส' + this.PLATFORM_FULFILL_TEXT + 'ได้');
             }
         });
     }

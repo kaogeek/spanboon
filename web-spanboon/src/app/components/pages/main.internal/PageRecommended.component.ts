@@ -8,8 +8,8 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage'; 
-import { FileHandle } from '../../shares/directive/directives'; 
+import { AbstractPage } from '../AbstractPage';
+import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost } from '../../shares/shares';
 import { SearchFilter } from '../../../models/SearchFilter';
@@ -32,7 +32,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   @Input()
   public text: string = "ข้อความ";
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'กำลังมองหา', keyword: 'needs' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: 'กำลัง' + this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -75,17 +75,17 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
-  });
+    });
   }
 
   public ngOnInit(): void {
     this.searchTrendTag();
-    this.openLoading(); 
+    this.openLoading();
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -98,11 +98,11 @@ export class PageRecommended extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
-  
+
   public checkPath(): boolean {
     return this.router.url.includes('hashtag');
   }
- 
+
   private openLoading() {
     this.isloading = true;
   }
@@ -112,7 +112,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   }
 
   public clickDataSearch(data) {
-    this.router.navigateByUrl('/search?hashtag='+ data.label.substring(1))
+    this.router.navigateByUrl('/search?hashtag=' + data.label.substring(1))
     // this.router.navigateByUrl('/search/' + data.label)
   }
 
@@ -120,7 +120,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
   }
 
-public heightWindow() {
+  public heightWindow() {
     var resizeWin = window.innerHeight;
     var recommended = this.recommendedRight.nativeElement.offsetHeight;
     var maxrecommended = recommended + 100;
@@ -128,12 +128,12 @@ public heightWindow() {
     var maxcount = count + 60;
 
     if (maxrecommended > resizeWin) {
-        this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
+      this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
     } else {
-        this.recommendedRight.nativeElement.style.top = '55pt';
+      this.recommendedRight.nativeElement.style.top = '55pt';
     }
-}
+  }
 
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
@@ -158,8 +158,8 @@ public heightWindow() {
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       setTimeout(() => {
         this.closeLoading();
-      }, 1000); 
-      this.dataTrend = res 
+      }, 1000);
+      this.dataTrend = res
     }).catch((err: any) => {
       console.log(err)
     })

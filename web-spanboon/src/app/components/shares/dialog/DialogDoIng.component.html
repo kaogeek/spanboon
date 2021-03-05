@@ -24,7 +24,6 @@
     </ng-container>
     <ng-template #elseIsDoIng>
         <choose-item [data]="data" (onSubmit)="onConfirm($event)" (onClosed)="onClose($event)" #bodyList
-            [statusLabel]="'สิ่งที่กำลังมองหา'"></choose-item>
     </ng-template>
 </div> -->
 
@@ -47,6 +46,6 @@
     </ng-container>
     <ng-template #elseIsDoIng>
         <choose-item [data]="data" (onSubmit)="onConfirm($event)" (onClosed)="onClose($event)" #bodyList
-            [statusLabel]="'สิ่งที่กำลังมองหา'"></choose-item>
+            [statusLabel]="'สิ่งที่กำลัง'+PLATFORM_NEEDS_TEXT"></choose-item>
     </ng-template>
 </div>

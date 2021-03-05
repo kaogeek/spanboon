@@ -51,7 +51,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   @Output()
   public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'มองหา', keyword: 'needs' }, { label: 'เติมเต็ม', keyword: 'fulfillment' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -101,11 +101,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public userCloneDatas: any
   public resDataPost: any
   public postId: any
-  public name: any 
+  public name: any
   public resContact: any[] = [];
   public linkmain: any = '';
   public labelStatus: string;
-  public isCheck: boolean = true; 
+  public isCheck: boolean = true;
   public countScroll: number;
 
   public CheckPost: boolean = true;
@@ -175,7 +175,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
 
         } else if (pathPost.includes('post')) {
-          this.CheckPost = false; 
+          this.CheckPost = false;
           this.searchPostById(pathPostId);
         }
       }
@@ -204,13 +204,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             data = {
               type: 'GENERAL',
             }
-            this.activeLink = 'ทั่วไป';
+            this.activeLink = this.PLATFORM_GENERAL_TEXT;
             this.searchPostPageType(data);
           } else if (this.splitTpyeClone === 'needs') {
             data = {
               type: 'NEEDS',
             }
-            this.activeLink = 'มองหา';
+            this.activeLink = this.PLATFORM_NEEDS_TEXT;
             this.searchPostPageType(data);
           } else if (this.splitTpyeClone === 'timeline') {
             this.activeLink = 'ไทมไลน์';
@@ -222,7 +222,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             data = {
               type: 'FULFILLMENT',
             }
-            this.activeLink = 'เติมเต็ม';
+            this.activeLink = this.PLATFORM_FULFILL_TEXT;
             this.searchPostPageType(data);
           }
         }, 1000);
@@ -287,14 +287,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         type: 'GENERAL',
         offset: 0
       }
-      this.activeLink = 'ทั่วไป';
+      this.activeLink = this.PLATFORM_GENERAL_TEXT;
       this.searchPostPageType(data, true);
     } else if (subPage === 'needs') {
       data = {
         type: 'NEEDS',
         offset: 0
       }
-      this.activeLink = 'มองหา';
+      this.activeLink = this.PLATFORM_NEEDS_TEXT;
       this.searchPostPageType(data, true);
     } else if (subPage === 'timeline') {
       this.activeLink = 'ไทมไลน์';
@@ -308,10 +308,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         type: 'FULFILLMENT',
         offset: 0
       }
-      this.activeLink = 'เติมเต็ม';
+      this.activeLink = this.PLATFORM_FULFILL_TEXT;
       this.searchPostPageType(data, true);
     } else if (this.splitTpyeClone === 'fulfillment') {
-      this.activeLink = 'เติมเต็ม';
+      this.activeLink = this.PLATFORM_FULFILL_TEXT;
       data = {
         type: 'FULFILLMENT',
         offset: 0
@@ -387,7 +387,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               }
               postIndex++;
             }
-          } 
+          }
           this.isLoadingPost = false;
           this.isLoadingClickTab = false;
           this.isLoadDataPost = false;
@@ -406,13 +406,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public searchPostById(postId: string) {  
+  public searchPostById(postId: string) {
     let search: SearchFilter = new SearchFilter();
     search.limit = 10;
     search.count = false;
     search.whereConditions = { _id: postId };
     this.postFacade.search(search).then((res: any) => {
-      this.resDataPost = res; 
+      this.resDataPost = res;
       if (this.resDataPost.length === 0) {
         this.msgPageNotFound = true;
         this.labelStatus = 'ไม่พบโพสต์';
@@ -436,7 +436,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             search.limit = 30;
             search.count = false;
             search.whereConditions = { _id: post.referencePost };
-            this.postFacade.search(search).then((res: any) => { 
+            this.postFacade.search(search).then((res: any) => {
               if (res.length !== 0) {
                 post.referencePostObject = res[0]
               } else {
@@ -447,7 +447,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }
-      
+
     }).catch((err: any) => {
     });
   }
@@ -605,7 +605,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public createPost(value): void { 
+  public createPost(value): void {
     if (value.title) {
       let pageId;
       if (value.id !== '' && value.id !== undefined && value.id !== null) {
@@ -613,7 +613,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else {
         pageId = this.resDataPage.id;
       }
-      this.pageFacade.createPost(pageId, value, value.postSocialTW , value.postSocialFB).then((res) => {
+      this.pageFacade.createPost(pageId, value, value.postSocialTW, value.postSocialFB).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
           if (res.message === 'Create PagePost Success') {

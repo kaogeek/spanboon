@@ -143,7 +143,7 @@ export class DialogDoIng extends AbstractPage {
             canCelEventEmitter.subscribe(() => {
                 this.submitCanCelDialog.emit();
             });
-            let dialog = this.showDialogWarming("คุณต้องการปิดรายการมองหา ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+            let dialog = this.showDialogWarming("คุณต้องการปิดรายการ" + this.PLATFORM_NEEDS_TEXT + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
             dialog.afterClosed().subscribe((res) => {
                 if (res) {
                     this.data.arrListItem = [];
@@ -160,7 +160,7 @@ export class DialogDoIng extends AbstractPage {
         this.dialogRef.close(data);
     }
 
-    public onResize() { 
+    public onResize() {
         // if (window.innerWidth <= 768) {
         //     if (this.dialogDoing && this.bodyList) { 
         //         let bottom = this.dialogDoing.nativeElement.offsetHeight;

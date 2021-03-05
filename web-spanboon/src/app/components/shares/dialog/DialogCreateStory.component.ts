@@ -38,15 +38,15 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
   @ViewChild('autoCompleteTag', { static: false }) autoCompleteTag: ElementRef;
 
-  public links = [{ label: 'เรื่องราว', keyword: 'story' }, { label: 'มองหา', keyword: 'needs' }];
+  public links = [{ label: 'เรื่องราว', keyword: 'story' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   chooseStory: any[] = [
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
 
-  selected = 'ทั่วไป'
+  selected = this.PLATFORM_GENERAL_TEXT
 
   private pageCategoryFacade: PageCategoryFacade;
   private observManager: ObservableManager;
@@ -263,8 +263,8 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   public selectType(value) {
     if (value === "เติมเต็ม") {
       this.typeStroy = POST_TYPE.FULFILLMENT;
-    } else if (value === "มองหา") {
-      this.activeLink === 'กำลังมองหา'
+    } else if (value === this.PLATFORM_NEEDS_TEXT) {
+      this.activeLink === 'กำลัง' + this.PLATFORM_NEEDS_TEXT
 
     } else {
       this.typeStroy = POST_TYPE.GENERAL;

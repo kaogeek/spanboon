@@ -78,10 +78,12 @@
             <div class="button button-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onCancel() ">
                 {{data.bottomText1 ? data.bottomText1 : "ยกเลิก"}}</div>
             <div class="button button-edit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ไม่, เปิดคำขอเติมเต็มใหม่"}}
+                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ไม่,
+                เปิดคำขอ"+PLATFORM_FULFILL_TEXT+"ใหม่"}}
             </div>
             <div class="button button-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="onClose() ">{{data.bottomText3 ? data.bottomText3 : "ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม"}}
+                (debounceClick)="onClose() ">{{data.bottomText3 ? data.bottomText3 : "ใช่,
+                เพิ่มเข้าคำขอ"+PLATFORM_FULFILL_TEXT+"เดิม"}}
             </div>
         </div>
     </div>

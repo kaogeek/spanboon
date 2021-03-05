@@ -92,7 +92,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'เติมเต็ม', keyword: 'fulfillment' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
@@ -131,13 +131,13 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             data = {
               type: 'GENERAL',
             }
-            this.activeLink = 'ทั่วไป';
+            this.activeLink = this.PLATFORM_GENERAL_TEXT;
             this.searchTimeLinePost(data);
           } else if (this.subPage === 'fulfillment') {
             data = {
               type: 'FULFILLMENT',
             }
-            this.activeLink = 'เติมเต็ม';
+            this.activeLink = this.PLATFORM_FULFILL_TEXT;
             this.searchTimeLinePost(data);
           } else if (this.subPage === 'timeline') {
             this.activeLink = 'ไทมไลน์';
@@ -283,13 +283,13 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       data = {
         type: 'GENERAL'
       }
-      this.activeLink = 'ทั่วไป';
+      this.activeLink = this.PLATFORM_GENERAL_TEXT;
       this.searchTimeLinePost(data, true);
     } else if (subPage === 'fulfillment') {
       data = {
         type: 'FULFILLMENT'
       }
-      this.activeLink = 'เติมเต็ม';
+      this.activeLink = this.PLATFORM_FULFILL_TEXT;
       this.searchTimeLinePost(data, true);
     } else if (subPage === 'timeline') {
       this.activeLink = 'ไทมไลน์';
@@ -302,9 +302,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-  public linkDataType(link: any) { 
+  public linkDataType(link: any) {
     this.isLoadingClickTab = true;
-    this.router.navigateByUrl('/profile/' + this.url + "/" + link.keyword) 
+    this.router.navigateByUrl('/profile/' + this.url + "/" + link.keyword)
   }
 
   filesDropped(files: FileHandle[]): void {
@@ -368,7 +368,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else {
       this.resPost.posts[index].isLike = true;
       this.resPost.posts[index].likeCount = 1;
-      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => { 
+      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
         this.resPost.posts[index].isLike = res.isLike
         this.resPost.posts[index].likeCount = res.likeCount
       }).catch((err: any) => {
