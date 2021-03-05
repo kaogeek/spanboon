@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
-import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT } from '../../../../custom/variable';
 import { BoxPost } from '../shares';
 import { Router } from '@angular/router';
 
@@ -91,6 +91,7 @@ export class PostData {
   private mainPageLink: string = window.location.origin + '/page/';
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
   public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
+  public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
 
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;

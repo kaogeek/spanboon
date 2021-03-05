@@ -835,7 +835,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         if (type === "NEEDS") {
             return this.PLATFORM_NEEDS_TEXT;
         } else if (type === "GENERAL") {
-            return "ทั่วไป"
+            return this.PLATFORM_GENERAL_TEXT
         } else {
             return "ไม่ระบุประเภท"
         }

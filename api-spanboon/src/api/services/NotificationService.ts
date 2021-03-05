@@ -82,8 +82,8 @@ export class NotificationService {
         notification.link = link;
         notification.type = notificationType;
         notification.deleted = false;
-        notification.data = data;
-
+        notification.data = data; 
+        
         return await this.create(notification);
     }
 

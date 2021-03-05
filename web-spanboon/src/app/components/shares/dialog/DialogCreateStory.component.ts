@@ -42,11 +42,11 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   public activeLink = this.links[0].label;
 
   chooseStory: any[] = [
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
     { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
 
-  selected = 'ทั่วไป'
+  selected = this.PLATFORM_GENERAL_TEXT
 
   private pageCategoryFacade: PageCategoryFacade;
   private observManager: ObservableManager;
