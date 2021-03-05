@@ -57,13 +57,11 @@ comment-post {
 
           > .username {
             color: $brandcolor2;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-family-kanit500);
           }
 
           > .comment-comment {
-            font-family: "Sarabun-Light";
-            font-size: 16px;
+            @include font-size-10($font-family-sarabun-light);
             color: rgb($black, 0.7);
 
             &.comment-edit {
@@ -83,8 +81,7 @@ comment-post {
           padding: 3pt 10pt;
 
           span {
-            font-family: "Kanit-500";
-            font-size: 12px;
+            @include font-size-11($font-family-kanit500);
             margin-right: 4px;
           }
 
@@ -103,8 +100,7 @@ comment-post {
           }
 
           .date-time {
-            font-family: "Kanit-500";
-            font-size: 12px;
+            @include font-size-11($font-family-kanit500);
           }
 
           .comment-like {

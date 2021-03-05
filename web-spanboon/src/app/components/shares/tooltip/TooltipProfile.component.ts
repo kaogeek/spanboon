@@ -10,6 +10,7 @@ import { MatDialog, MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { find } from 'rxjs/operators';
 import { AuthenManager, MenuContextualService, ObservableManager } from 'src/app/services/services';
+import { environment } from 'src/environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 
@@ -59,6 +60,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
       this.popupService.close(this.data);
     });
   }
+  public apiBaseURL = environment.apiBaseURL;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 

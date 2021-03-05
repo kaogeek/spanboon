@@ -53,8 +53,7 @@
                 }
 
                 > .description {
-                    font-size: 16px;
-                    font-family: "Kanit-300";
+                    @include font-size-10($font-family-kanit300);
                     color: rgba($color: #909090, $alpha: 0.7);
                 }
             }
@@ -217,7 +216,7 @@
             }
 
             > .button-submit {
-                background-color: $bg-color4;
+                background-color: $brandcolor2;
                 color: $white;
                 width: 150pt;
             }
@@ -230,7 +229,7 @@
             }
 
             > .button-cancel,
-            .button-edit { 
+            .button-edit {
                 border: 0.3px solid $border-color;
                 color: $color-black;
             }

@@ -22,6 +22,7 @@ import { Asset } from '../../../api/models/Asset';
 import { FileUtil } from '../../../utils/Utils';
 import { ASSET_SCOPE, ASSET_PATH } from '../../../constants/AssetScope';
 import { AssetService } from '../../../api/services/AssetService';
+import moment from 'moment';
 
 @JsonController('/admin/item')
 export class AdminStandardItemController {
@@ -237,8 +238,10 @@ export class AdminStandardItemController {
                 changeCategory = catObjId;
             }
 
+            const updateDate = moment().toDate();
+
             const updateQuery = { _id: objId };
-            const newValue = { $set: { name: standardItem.name, unit: standardItem.unit, category: changeCategory, imageURL } };
+            const newValue = { $set: { name: standardItem.name, unit: standardItem.unit, category: changeCategory, imageURL, updateDate } };
 
             const itemSave = await this.standardItemService.update(updateQuery, newValue);
 

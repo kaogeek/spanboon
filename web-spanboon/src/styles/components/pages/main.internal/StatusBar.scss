@@ -74,9 +74,8 @@
         align-items: flex-end;
 
         > .topic-create {
-            font-family: "Kanit-500";
-            font-size: 14px;
-            color: $koalaGray;
+            @include font-size-10($font-family-kanit500);
+            color: $color-gray;
 
             .icon-time {
                 height: $width-time;
@@ -91,8 +90,7 @@
             color: $color-black;
 
             > .topic-type {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
                 color: gray;
 
                 > .image {
@@ -150,7 +148,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }
@@ -161,7 +159,7 @@
                 font-size: 18px;
 
                 > .topic-see-all {
-                    font-size: 16px;
+                    @include font-size-9($font-family-kanit500);
                 }
             }
         }
@@ -180,7 +178,7 @@
 
         > .topic-label-right {
             > .topic-count {
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
 
                 > .topic-see-all {
                     font-size: 15px;
@@ -197,7 +195,6 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    // font-size: 20px;
                 }
             }
         }
@@ -205,7 +202,6 @@
         > .topic-label-right {
             > .topic-count {
                 > .topic-see-all {
-                    // font-size: 14px;
                 }
             }
         }
@@ -224,7 +220,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }
@@ -233,7 +229,7 @@
         > .topic-label-right {
             > .topic-count {
                 > .topic-see-all {
-                    font-size: 14px;
+                    @include font-size-10($font-family-kanit500);
                 }
             }
         }
@@ -262,7 +258,7 @@
 
         > .topic-label-right {
             > .topic-count {
-                // font-size: 16px;
+                // @include font-size-9($font-family-kanit500);
             }
         }
     }

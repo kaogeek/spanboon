@@ -74,4 +74,10 @@ export class TagEvent extends AbstractPage implements OnInit {
   public actions() {
     // this.clickEmergency.emit(true);
   }
+
+  public onResize(){
+    if(window.innerWidth < 479){
+      return true;
+    }
+  }
 }

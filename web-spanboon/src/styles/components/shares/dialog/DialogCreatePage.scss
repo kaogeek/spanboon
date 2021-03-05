@@ -66,8 +66,7 @@
         flex-direction: column;
 
         .mat-stroked-button {
-            font-family: "Kanit-400";
-            font-size: 16px;
+            @include font-size-9($font-family-kanit500);
             min-width: 75pt;
             height: 30pt;
             padding: 0 20pt;
@@ -80,8 +79,7 @@
             flex: 0 0 auto;
 
             > .create-help {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
                 @include pointer();
                 color: $brandcolor2;
 
@@ -331,8 +329,7 @@
                                 border-radius: 7px;
                                 background: $white;
                                 border: 1px solid rgba($black, 0.1);
-                                font-family: "Kanit-300";
-                                font-size: 16px;
+                                @include font-size-10($font-family-kanit300);
 
                                 &.add-to-page {
                                     width: calc(100% - 39pt - 2px);
@@ -369,8 +366,7 @@
                         > .label-show-error {
                             margin-top: 2pt;
                             color: red;
-                            font-family: "Kanit-300";
-                            font-size: 14px;
+                            @include font-size-10($font-family-kanit500);
                             margin: 2pt auto 0 0;
                         }
                     }
@@ -494,8 +490,7 @@
                                             margin-bottom: 1.5em;
 
                                             > li {
-                                                font-family: "Kanit-300";
-                                                font-size: 16px;
+                                                @include font-size-10($font-family-kanit300);
                                                 margin-bottom: 1em;
                                                 color: rgb($black, 0.5);
 
@@ -620,7 +615,7 @@
                                 }
 
                                 > .title {
-                                    font-size: 16px;
+                                    @include font-size-10($font-family-kanit500);
                                 }
                             }
 
@@ -633,7 +628,7 @@
                                 }
 
                                 > .sub-name {
-                                    font-size: 16px;
+                                    @include font-size-10($font-family-kanit500);
                                 }
                             }
                         }
@@ -823,12 +818,12 @@
                                 > .detail-confirm {
                                     > .agreement {
                                         > .agreement-title {
-                                            font-size: 16px;
+                                            @include font-size-10($font-family-kanit500);
                                         }
 
                                         > .grop-agreement {
                                             > .header-agreement {
-                                                font-size: 16px;
+                                                @include font-size-10($font-family-kanit500);
 
                                                 > .check-true {
                                                     > mat-checkbox {
@@ -839,10 +834,10 @@
 
                                             > ul {
                                                 > li {
-                                                    font-size: 14px;
+                                                    @include font-size-10($font-family-kanit500);
 
                                                     > p {
-                                                        font-size: 16px;
+                                                        @include font-size-10($font-family-kanit500);
                                                     }
                                                 }
                                             }
@@ -883,7 +878,7 @@
                 }
 
                 > .title {
-                    font-size: 16px;
+                    @include font-size-10($font-family-kanit500);
                     margin-top: 10pt;
                 }
             }
@@ -910,7 +905,7 @@
                         }
 
                         > .title {
-                            font-size: 16px;
+                            @include font-size-10($font-family-kanit500);
                         }
                     }
 
@@ -971,7 +966,7 @@
                             }
 
                             > .title {
-                                font-size: 16px;
+                                @include font-size-10($font-family-kanit500);
                             }
 
                             > .drop-input {
@@ -1004,7 +999,7 @@
                                 }
 
                                 > .title {
-                                    font-size: 16px;
+                                    @include font-size-10($font-family-kanit500);
                                 }
                             }
 

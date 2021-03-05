@@ -55,7 +55,7 @@
                             [(ngModel)]="data.uniqueId" required (keyup)="checkUUID(username.value)">
 
                     </ng-template>
-                    <div class="display-name">www.spanboon.com/@{{data.uniqueId}}</div>
+                    <div class="display-name">{{PLATFORM_URL}}/@{{data.uniqueId}}</div>
                 </div>
             </div> 
         </div>
@@ -111,18 +111,18 @@
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
                     <spanboon-button [text]="'สมัครสมาชิก'" [height]="'35pt'" (click)="onClickregister(register.value)"
-                        [bgColor]="'#FD545A'" [color]="'#F8F7F2'" [fontSize]="'16px'"></spanboon-button>
+                         [color]="'#F8F7F2'" [fontSize]="'16px'"></spanboon-button>
                 </div>
             </ng-container>
             <ng-template #btnComfirm>
                 <div class="wrapper-policy">
-                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์มสะพานบุญ <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
+                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์ม{{PLATFORM_NAME_TH}} <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
                 </div> 
                 <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว</span>
                 <div class="div-btn">
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
-                    <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'" [bgColor]="'#FD545A'" [color]="'#F8F7F2'"
+                    <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'"  [color]="'#F8F7F2'"
                         [fontSize]="'16px'" (click)="onClickregister(register.value)">
                     </spanboon-button>
                 </div>

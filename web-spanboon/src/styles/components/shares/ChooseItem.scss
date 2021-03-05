@@ -8,8 +8,7 @@
 .choose-item {
     overflow: hidden;
     display: flex;
-    flex-direction: column;
-    // height: 75vh;
+    flex-direction: column; 
 
     > .top {
         flex: 0 0 auto;
@@ -21,8 +20,8 @@
         }
 
         > .title {
-            color: $koalaGray;
-            font-size: 16px;
+            color: $color-gray;
+            @include font-size-9($font-family-kanit500);
         }
     }
 
@@ -60,7 +59,7 @@
     }
     > .mat-dialog-content {
         margin: unset;
-        padding: unset;
+        padding: unset; 
     }
 
     > .center {
@@ -68,7 +67,7 @@
         display: flex;
         overflow: hidden;
         border-top: 0.7pt solid $border-color;
-        min-height: 500px;
+        min-height: 500px; 
 
         > .center-left {
             // width: 50%;
@@ -83,7 +82,7 @@
                 padding: 0 20pt;
                 height: 50pt;
                 border-bottom: 0.7pt solid $border-color;
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-family-kanit500);
 
                 > .label-doing {
                     display: flex;
@@ -93,7 +92,7 @@
                     > .active-hover {
                         @include pointer();
                         > .non-active {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                         &:hover {
                             > .folder-sub {
@@ -128,8 +127,7 @@
                         border: 0.7pt solid #e5e5e5;
                         border-radius: 5pt;
                         padding: 5pt 25pt;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10($font-family-kanit500);
                     }
 
                     > .icon-clear {
@@ -175,8 +173,7 @@
                         border: 0.7pt solid $border-color;
                         border-radius: 5pt;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-family-kanit500);
                         align-self: stretch;
 
                         &.active {
@@ -287,7 +284,7 @@
                         }
                         > .path-name {
                             color: #a5a5a6;
-                            font-size: 14px;
+                            @include font-size-10($font-family-kanit500);
                             display: -webkit-box;
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
@@ -330,14 +327,14 @@
                     }
                     > .body-empty {
                         border: 3pt dashed #1288ce;
-                        width: calc(25% - 8pt - 8pt - 2.8pt - 10pt - 6pt);
+                        width: calc(25% - 8pt - 8pt - 2.8pt - 10pt - 6pt) !important;
                         > .add-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             // padding-left: 5pt;
                             @include pointer();
                         }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
                     }
@@ -359,8 +356,7 @@
                 align-items: center;
                 padding: 0 20pt;
                 height: 50pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
 
                 > .label-doing-left {
                 }
@@ -380,7 +376,7 @@
         flex: 0 0 auto;
         position: relative;
         display: flex;
-        align-items: center;  
+        align-items: center;
 
         > .close-dialog {
             margin-right: 5pt;
@@ -449,8 +445,7 @@
     padding: 20px 10px;
     justify-content: space-between;
     border: 0.7pt solid $border-color;
-    font-family: "Kanit-400";
-    font-size: 16px;
+    @include font-size-10($font-family-kanit500);
     @include pointer();
 
     &:hover {
@@ -526,8 +521,7 @@
                     text-align: left;
                     border: unset;
                     box-shadow: 0 2px 9px 0 #e5e3dd;
-                    font-family: "Kanit-300";
-                    font-size: 16px;
+                    @include font-size-9($font-family-kanit300);
                 }
 
                 > .list-category {
@@ -547,8 +541,7 @@
                             border-radius: 20pt;
                             text-align: right;
                             border: unset;
-                            font-family: "Kanit-400";
-                            font-size: 16px;
+                            @include font-size-9($font-family-kanit400);
                             border: 1px solid rgb($black, 0.1);
                         }
 
@@ -561,8 +554,7 @@
                             border-radius: 20pt;
                             text-align: center;
                             border: unset;
-                            font-family: "Kanit-300";
-                            font-size: 16px;
+                            @include font-size-9($font-family-kanit300);
                             border: 1px solid rgb($black, 0.1);
                         }
                     }
@@ -697,7 +689,7 @@
                 display: none;
                 width: 100%;
                 &.active {
-                    display: flex;
+                    display: flex !important;
                 }
             }
 
@@ -711,6 +703,7 @@
 @media (max-width: $lmedium) {
     .choose-item {
         > .center {
+            min-height: 500px;
             > .center-left {
                 > .body-list-item {
                     height: calc(100vh - 20pt);
@@ -733,22 +726,20 @@
 }
 
 @media (max-width: $medium) {
-    .choose-item { 
-        > .center {
-            // flex: unset;
+    .choose-item {
+        > .center { 
             > .center-left {
                 > .open-folder {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                     @include font-size-9($font-family-kanit500);
                 }
 
                 > .body-list-item {
                     .list-search-doing {
                         > .body-data-category {
-                            width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                            width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
 
                             &.active {
-                                width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
+                                width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                         > .empty-data {
@@ -762,15 +753,20 @@
 }
 
 @media (max-width: $small) {
-    .choose-item {
+    .choose-item { 
+        > .mat-dialog-content { 
+            max-height: 59vh;
+        }
         > .center {
+            min-height: unset;
+            flex: unset; 
+            height: calc(100vh - 20pt);
             > .center-left {
                 > .doing-search {
                     height: 40pt;
                 }
                 > .open-folder {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                     @include font-size-9($font-family-kanit500);
                 }
                 > .body-list-item {
                     .list-search-doing {
@@ -785,12 +781,15 @@
                                 font-size: 33px;
                             }
                             > .label-item {
-                                font-family: "Kanit-500";
-                                font-size: 14px;
+                                @include font-size-10($font-family-kanit500);
                             }
                         }
                         > .body-empty {
-                            width: calc(50% - 8pt - 8pt - 2.8pt - 10pt - 6pt);
+                            width: calc(50% - 8pt - 8pt - 2.8pt - 10pt - 6pt) !important;
+
+                            &.active {
+                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt - 6pt) !important;
+                            }
                         }
                     }
                 }

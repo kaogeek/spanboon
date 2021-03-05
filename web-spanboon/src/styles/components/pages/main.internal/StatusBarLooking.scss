@@ -47,8 +47,7 @@
             > a {
                 > .topic-type {
                     color: $brandcolor2;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-family-kanit500);
                     margin-left: 5pt;
                     @include pointer();
 
@@ -81,8 +80,7 @@
             > a {
                 > .topic-type {
                     color: $brandcolor2;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-family-kanit500);
                     margin-left: 5pt;
                     @include pointer();
 
@@ -136,7 +134,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }
@@ -177,21 +175,21 @@
 
         > .topic-label-right {
             > .topic-date {
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
 
                 > a {
                     > .topic-type {
-                        font-size: 14px;
+                        @include font-size-10($font-family-kanit500);
                     }
                 }
             }
 
             > .topic-count {
-                font-size: 16px;
+                @include font-size-9($font-family-kanit500);
 
                 > a {
                     > .topic-type {
-                        font-size: 14px;
+                        @include font-size-10($font-family-kanit500);
                     }
                 }
             }
@@ -215,17 +213,17 @@
             > .topic-date {
                 > a {
                     > .topic-type {
-                        // font-size: 14px;
+                        
                     }
                 }
             }
 
             > .topic-count {
-                // font-size: 16px;
+                // @include font-size-9($font-family-kanit500);
 
                 > a {
                     > .topic-type {
-                        // font-size: 14px;
+                        
                     }
                 }
             }
@@ -245,7 +243,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-family-kanit500);
                     }
                 }
             }

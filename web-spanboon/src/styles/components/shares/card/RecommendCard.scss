@@ -50,8 +50,7 @@
           margin-left: 5pt;
 
           > .follow-name {
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10($font-family-kanit500);
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
@@ -65,9 +64,8 @@
           }
 
           > .follow-name-eng {
-            font-family: "Kanit-500";
-            font-size: 14px;
-            color: $koalaGray;
+            @include font-size-10($font-family-kanit500);
+            color: $color-gray;
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
@@ -89,8 +87,7 @@
     text-align: center;
     color: $brandcolor2;
     @include pointer();
-    font-family: "Kanit-500";
-    font-size: 16px;
+    @include font-size-10($font-family-kanit500);
     min-height: 26pt;
     display: flex;
     justify-content: center;

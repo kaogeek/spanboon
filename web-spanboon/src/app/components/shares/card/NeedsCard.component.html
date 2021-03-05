@@ -5,17 +5,6 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="list-needs-for" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
-    <!-- <div class="list-needs-for" [class.active]="isFulfill" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds> -->
-    <!-- <div class="item" *ngIf="isFulfill">
-        <div class="left" [class.active]="!isButtonFulfill">
-            <span>รายการเติมเต็ม</span>
-            <span class="count-fufill"> {{itemNeeds.length}} รายการ</span>
-        </div> 
-        <div class="right" *ngIf="isButtonFulfill">
-            <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'ร่วมเติมเต็ม'" [radius]="'4px'">
-            </spanboon-button>
-        </div>
-    </div> -->
     <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
         <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let item of needs; let index = index;">
@@ -74,7 +63,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-template #elseTemplateUnLimit>
-                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
+                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT"
                                             [radius]="'4px'" (click)="fulfillNeeds(item)">
                                         </spanboon-button>
                                     </ng-template>

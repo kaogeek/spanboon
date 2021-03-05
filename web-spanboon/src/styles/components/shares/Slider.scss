@@ -15,12 +15,12 @@
         justify-content: space-between;
         padding: 10pt;
         border-bottom: $width-border solid $border-color;
-        @include font-size-8-100("Kanit-500");
+        @include font-size-8($font-family-kanit500);
         > .left {
             display: flex;
             align-items: center;
             &:last-of-type {
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
             }
             > .mat-slide-toggle {
                 margin-left: 5pt;
@@ -36,10 +36,8 @@
         flex-direction: column;
         // > .select-calendar {
         //     width: 100%;
-        //     font-family: "Kanit-500";
-        //     font-size: 14px;
         //     border: 1pt solid $border-color;
-        //     color: $koalaGray;
+        //     color: $color-gray;
         //     > .mat-button-wrapper {
         //         display: flex;
         //         align-items: center;
@@ -64,8 +62,7 @@
                             height: 25pt;
                             color: $color-black;
                             padding: 2pt 10pt 2pt 13pt;
-                            font-family: "Kanit-500";
-                            font-size: 14px;
+                            @include font-size-10($font-family-kanit500);
                             box-shadow: 0px 1px 9px 0 #00000020;
                         }
                     }
@@ -97,9 +94,8 @@
             display: flex;
             align-items: center;
             @include pointer();
-            font-family: "Kanit-300";
-            font-size: 16px;
-            color: $koalaGray;
+            @include font-size-10($font-family-kanit500);
+            color: $color-gray;
             margin-left: 9pt;
             width: 50pt;
             flex: 0 0 auto;
@@ -123,15 +119,15 @@
                 font-family: "Kanit-500";
                 margin-left: 6pt;
                 > .top {
-                    font-size: 14px;
+                    @include font-size-10($font-family-kanit500);
                     color: #a5a5a6;
                 }
                 > .middle {
-                    font-size: 16px;
+                    @include font-size-10($font-family-kanit500);
                 }
                 > .trend {
                     display: flex;
-                    font-size: 14px;
+                    @include font-size-10($font-family-kanit500);
                     > .count {
                     }
                     // > .tag {
@@ -147,8 +143,7 @@
         }
         > .header-card {
             padding: 4pt 5pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-family-kanit500);
         }
         > .box-slider {
             // border: 0.7pt solid $border-color;
@@ -185,8 +180,7 @@
                     opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
             > .ng5-slider-bubble {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
             }
             > .ng5-slider-pointer.ng5-slider-active::after {
                 transform: scale(1);
@@ -204,7 +198,7 @@
         text-align: center;
         color: $brandcolor2;
         @include pointer();
-        @include font-size-9-100("Kanit-500");
+        @include font-size-9($font-family-kanit500);
         min-height: 26pt;
         display: flex;
         justify-content: center;

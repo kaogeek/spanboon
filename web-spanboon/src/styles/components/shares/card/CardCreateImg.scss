@@ -8,7 +8,7 @@
 .create-image {
     width: 100%;
     position: relative;
-    @include font-size-9-100("Sarabun-Light");
+    @include font-size-9($font-family-sarabun-light);
     .create-image-h {
         width: calc(100% - 60px);
         height: 40px;
@@ -50,7 +50,7 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
                 &:hover {
                     transition: 0.4s;
                     transform: scale(1.1);
@@ -75,7 +75,7 @@
             transition: 0.2s;
             width: 60pt;
             height: 20pt;
-            font-size: 14px;
+            @include font-size-10($font-family-kanit500);
             border-radius: 4px;
             cursor: pointer;
             display: flex;

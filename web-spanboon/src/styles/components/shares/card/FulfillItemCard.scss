@@ -61,15 +61,13 @@
             }
 
             > .unit {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
                 color: rgb($black, 0.5);
             }
         }
 
         > .item-edit {
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10($font-family-kanit500);
             line-height: 30px;
             padding: 0 24px;
         }

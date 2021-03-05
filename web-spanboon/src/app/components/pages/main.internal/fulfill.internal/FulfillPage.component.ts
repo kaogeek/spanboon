@@ -257,10 +257,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         if (index !== -1) {
                             caseData.cases[index].unreadMessageCount = data.count;
                             caseData.cases[index].chatMessage = data.message;
-                            caseData.cases[index].isRead = false;  
+                            caseData.cases[index].isRead = false;
                             this.observManager.createSubject('chat_message');
-                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) { 
-                                caseData.cases[index].isRead = true;  
+                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) {
+                                caseData.cases[index].isRead = true;
                                 caseData.cases[index].unreadMessageCount = 0
                                 this.observManager.publish('chat_message', caseData.cases[index].chatRoom)
                             }
@@ -483,7 +483,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result !== null && result !== undefined) {
 
-                this.snackBar.open("สร้างโพสต์เติมเต็มสำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
+                this.snackBar.open("สร้างโพสต์" + this.PLATFORM_FULFILL_TEXT + "สำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
                     this.router.navigate([]).then(() => {
                         window.open('/post/' + result.id, '_blank');
                     });
@@ -736,7 +736,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             });
 
             this.showDialogWithOptions({
-                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการเติมเต็มนี้ ?',
+                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการ"' + this.PLATFORM_FULFILL_TEXT + '"นี้ ?',
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                 bottomColorText2: "black",
@@ -1144,13 +1144,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            console.log('>>> createResult',createResult)
-            console.log('>>> data',data)
+            console.log('>>> createResult', createResult)
+            console.log('>>> data', data)
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
         }).catch((createError) => {
-            console.log('createError ',createError)
+            console.log('createError ', createError)
             if (createError.error.error.message === "Create FulfillmentCase Error") {
-                this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
+                this.showAlertDialog('ไม่สามารถสร้างเคส' + this.PLATFORM_FULFILL_TEXT + 'ได้');
             }
         });
     }
@@ -1400,6 +1400,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
+        data.owner = Object.assign(data.owner, { type: "PAGE" });
         this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
             data: data,
         })

@@ -150,8 +150,7 @@
             }
 
             > .fulfill-item-footer {
-                font-family: "Kanit-400";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit400);
                 > .fulfill-item-name {
                 }
 
@@ -215,8 +214,7 @@
             }
 
             > .fulfill-item-footer {
-                font-family: "Kanit-400";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit400);
                 > .fulfill-item-name {
                 }
 

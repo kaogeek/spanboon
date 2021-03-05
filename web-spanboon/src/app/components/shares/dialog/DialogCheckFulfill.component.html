@@ -78,24 +78,13 @@
             <div class="button button-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onCancel() ">
                 {{data.bottomText1 ? data.bottomText1 : "ยกเลิก"}}</div>
             <div class="button button-edit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ไม่, เปิดคำขอเติมเต็มใหม่"}}
+                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ไม่,
+                เปิดคำขอ"+PLATFORM_FULFILL_TEXT+"ใหม่"}}
             </div>
             <div class="button button-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="onClose() ">{{data.bottomText3 ? data.bottomText3 : "ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม"}}
+                (debounceClick)="onClose() ">{{data.bottomText3 ? data.bottomText3 : "ใช่,
+                เพิ่มเข้าคำขอ"+PLATFORM_FULFILL_TEXT+"เดิม"}}
             </div>
         </div>
-
-        <!-- <spanboon-button class="confirm-fulfill-button button-cancel"
-            [text]="data.bottomText1 ? data.bottomText1 : 'ยกเลิก'" [radius]="'5pt'" [bgColor]="'#F8F7F2'"
-            [width]="'80pt'" [color]="'#212721'" (click)="onCancel()">
-        </spanboon-button>
-        <spanboon-button class="confirm-fulfill-button button-edit"
-            [text]="data.bottomText2 ? data.bottomText2 : 'ไม่, เปิดคำขอเติมเต็มใหม่'" [bgColor]="'#F8F7F2'"
-            [radius]="'5pt'" [color]="'#212721'" [width]="'130pt'" (click)="onConfirm()">
-        </spanboon-button>
-        <spanboon-button class="confirm-fulfill-button button-submit"
-            [text]="data.bottomText3 ? data.bottomText3 : 'ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม'" [bgColor]="'#7AAF67'"
-            [radius]="'5pt'" [width]="'130pt'" (click)="onClose()">
-        </spanboon-button> -->
     </div>
 </div>

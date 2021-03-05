@@ -49,11 +49,11 @@
                 font-family: "Kanit-500";
                 margin-left: 6pt;
                 > .top {
-                    font-size: 14px;
+                    @include font-size-10($font-family-kanit500);
                     color: #a5a5a6;
                 }
                 > .middle {
-                    font-size: 16px;
+                    @include font-size-10($font-family-kanit500);
                     display: -webkit-box;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
@@ -61,7 +61,7 @@
                     word-break: break-all;
                 }
                 > .trend {
-                    font-size: 14px;
+                    @include font-size-10($font-family-kanit500);
                     display: -webkit-box;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
@@ -102,8 +102,7 @@
         text-align: center;
         color: $brandcolor2;
         @include pointer(); 
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-family-kanit500);
         min-height: 26pt;
         display: flex;
         justify-content: center;

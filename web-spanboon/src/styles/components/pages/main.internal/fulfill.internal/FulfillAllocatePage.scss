@@ -9,11 +9,10 @@
     width: 100%;
     height: auto;
     overflow: hidden;
-    font-size: 16px;
+    @include font-size-9($font-family-kanit400);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Kanit-400";
     background: $white;
 
     > .fulfill-allocate-box {
@@ -224,8 +223,7 @@
                             > .menu-sorting {
                                 height: 20pt;
                                 border: 0.7pt solid $border-color;
-                                font-family: "Kanit-400";
-                                font-size: 16px;
+                                @include font-size-9($font-family-kanit400);
                                 &:hover {
                                     color: $brandcolor2;
                                     background: rgba($brandcolor2, 0.1);
@@ -257,8 +255,7 @@
                             > .menu-sorting {
                                 height: 20pt;
                                 border: 0.7pt solid $border-color;
-                                font-family: "Kanit-400";
-                                font-size: 16px;
+                                @include font-size-9($font-family-kanit400);
                                 &:hover {
                                     color: $brandcolor2;
                                     background: rgba($brandcolor2, 0.1);
@@ -309,6 +306,22 @@
                             &:hover {
                                 .iconfill {
                                     fill: #599144;
+                                }
+                            }
+                        }
+                        > .icon-delete {
+                            padding: 10px 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 25px;
+                            cursor: pointer;
+                            .iconfill {
+                                fill: #000000;
+                            }
+                            &:hover {
+                                .iconfill {
+                                    fill: #b32b2b;
                                 }
                             }
                         }
@@ -375,8 +388,7 @@
                             }
                             > .quantity {
                                 opacity: 0.7;
-                                font-size: 16px;
-                                font-family: "Kanit-300";
+                                @include font-size-9($font-family-kanit300);
                             }
                         }
                     }
@@ -388,8 +400,7 @@
                         > .left {
                             width: 50%;
                             > .detail {
-                                font-size: 16px;
-                                font-family: "Kanit-300";
+                                @include font-size-9($font-family-kanit300);
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                                 -webkit-line-clamp: 2;
@@ -402,9 +413,8 @@
                                 justify-content: center;
                                 padding: 12px 20px;
                                 > .date {
-                                    font-size: 12px;
+                                    @include font-size-11($font-family-kanit300);
                                     color: #4e4e4e;
-                                    font-size: 12px;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
@@ -421,8 +431,7 @@
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-d {
-                                    font-size: 16px;
-                                    font-family: "Kanit-300";
+                                    @include font-size-9($font-family-kanit300);
                                     overflow: hidden;
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
@@ -431,7 +440,7 @@
                                     width: 100%;
                                 }
                                 > .detail-e {
-                                    font-size: 16px;
+                                    @include font-size-9($font-family-kanit500);
                                     color: #747474;
                                     font-family: unset;
                                     overflow: hidden;
@@ -596,8 +605,7 @@
                                     }
                                     > .quantity {
                                         opacity: 0.7;
-                                        font-size: 16px;
-                                        font-family: "Kanit-400";
+                                        @include font-size-9($font-family-kanit400);
                                     }
                                 }
                             }
@@ -618,9 +626,9 @@
                                 justify-content: center;
                                 padding: 15px;
                                 > .date {
-                                    font-size: 12px;
+                                    @include font-size-11($font-family-kanit300);
                                     color: #4e4e4e;
-                                    font-size: 12px;
+                                    @include font-size-11($font-family-kanit300);
                                     color: #4e4e4e;
                                     display: flex;
                                     align-items: center;
@@ -636,7 +644,7 @@
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-d {
-                                    font-size: 16px;
+                                    @include font-size-9($font-family-kanit500);
                                     font-family: unset;
                                     overflow: hidden;
                                     text-overflow: ellipsis;
@@ -645,7 +653,7 @@
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-e {
-                                    font-size: 16px;
+                                    @include font-size-9($font-family-kanit500);
                                     color: #747474;
                                     font-family: unset;
                                     overflow: hidden;
@@ -926,7 +934,7 @@
         > .list-item
         > .list-item-detail
         > .text-detail {
-        font-size: 14px;
+        @include font-size-10($font-family-kanit500);
         @include limit-text-length(2);
     }
 }

@@ -8,6 +8,7 @@
 import { EventEmitter } from '@angular/core';
 import { Output } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../custom/variable';
 
 @Component({
   selector: 'status-bar-looking',
@@ -18,7 +19,7 @@ export class StatusBarLooking implements OnInit {
   @Input()
   public topic: string = "เหตุการณ์ด่วน !";
   @Input()
-  public status: string = "กำลังมองหา";
+  public status: string = "กำลัง" + PLATFORM_NEEDS_TEXT;
   @Input()
   public createDate: string = "3 วันที่แล้ว";
   @Input()

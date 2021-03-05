@@ -236,7 +236,7 @@
         > .wrapper-img-detail {
           position: relative;
           font-family: "Sarabun-Light";
-          font-size: 16px;
+          @include font-size-9($font-family-sarabun-light);
 
           > .btn-read-more {
           }
@@ -1703,7 +1703,7 @@
     > .section-personal-tag {
       padding: 10pt 0;
 
-      >status-bar{
+      > status-bar {
         display: block;
         padding: 0 10pt;
       }
@@ -2246,5 +2246,9 @@
         display: block;
       }
     }
+  }
+
+  .svg-color-gray {
+    fill: #0000bd;
   }
 }

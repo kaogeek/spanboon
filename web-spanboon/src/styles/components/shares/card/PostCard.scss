@@ -25,8 +25,7 @@
             align-items: center;
             flex: 1 1 0%;
             margin-right: 15pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-family-kanit500);
 
             > .sup-name-page {
                 display: flex;
@@ -58,9 +57,8 @@
                 flex: 0 0 auto;
                 display: flex;
                 align-items: center;
-                color: $koalaGray;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                color: $color-gray;
+                @include font-size-10($font-family-kanit500);
                 @include pointer();
 
                 &:hover {
@@ -153,7 +151,7 @@
                 margin-bottom: 15pt;
                 flex: 1 1 0%;
                 font-family: "Sarabun-Light";
-                font-size: 16px;
+                @include font-size-10($font-family-sarabun-light);
                 word-break: break-word;
 
                 > .btn-read-more {
@@ -178,8 +176,7 @@
                     border-bottom: $width-border solid $border-separator;
 
                     > .left {
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10($font-family-kanit500);
                         font-weight: normal;
                         flex: 0 0 auto;
                     }
@@ -188,8 +185,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: flex-end;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10($font-family-kanit500);
                         margin-left: 15pt;
 
                         > .icon-offical-post-card {
@@ -212,7 +208,7 @@
                             flex: 1 1 0;
 
                             > .post-card-page-name {
-                                color: $text-svg-home-color;
+                                color: $home-page-activate-color;
                                 cursor: pointer;
                                 position: relative;
                                 z-index: 5;
@@ -224,7 +220,7 @@
                         }
 
                         > .count-user {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                     }
                 }
@@ -255,17 +251,16 @@
                             box-shadow: 2.5px 0px 0px 0 $white;
                             overflow: hidden;
                             color: $brandcolor;
-                            font-family: "Kanit-500";
-                            font-size: 14px;
+                            @include font-size-10($font-family-kanit500);
                             @include pointer();
                             z-index: 2;
 
-                            &:nth-child(2){
+                            &:nth-child(2) {
                                 margin-left: -6pt;
                                 z-index: 1;
                             }
 
-                            &:nth-child(3){
+                            &:nth-child(3) {
                                 margin-left: -6pt;
                                 z-index: 0;
                             }
@@ -283,6 +278,11 @@
                     }
 
                     > a {
+                        spanboon-button {
+                            .spanboon-button {
+                                background-color: $button-home-card !important;
+                            }
+                        }
                         > .btn-donate {
                         }
                     }
@@ -303,11 +303,11 @@
                 padding: 7pt 10pt;
 
                 > .title-post {
-                    font-size: 16px;
+                    @include font-size-10($font-family-kanit500);
                 }
 
-                >.content-post{
-                    font-size: 14px;
+                > .content-post {
+                    @include font-size-10($font-family-kanit500);
                 }
             }
         }

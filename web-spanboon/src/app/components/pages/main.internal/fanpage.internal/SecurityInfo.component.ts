@@ -14,6 +14,7 @@ import { PageSocialTW, PageSoialFB } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
 import { environment } from '../../../../../environments/environment';
 import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';
+import { DialogListFacebook } from 'src/app/components/shares/shares';
 
 const PAGE_NAME: string = 'connect';
 
@@ -52,6 +53,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     private accessToken: any;
     public responseFacabook: any;
     public dataBinding: any;
+    public dataBindingTwitter: any;
     public redirection: string;
     public index: number;
 
@@ -188,24 +190,25 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public socialGetBindingTwitter() {
-        this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => { 
-            if(Object.keys(res.data).length > 0){
-                this.connectTwitter = res.data.data; 
+        this.pageFacade.socialGetBindingTwitter(this.pageId).then((res: any) => {
+            if (Object.keys(res.data).length > 0) {
+                this.connectTwitter = res.data.data;
                 this.isLoading = false;
+                this.dataBindingTwitter = res.data;
             }
-           
+
         }).catch((err: any) => {
             console.log('err ', err)
         });
     }
 
     public socialGetBindingFacebook() {
-        this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => { 
-            if(Object.keys(res.data).length > 0){
-                this.connect = res.data.data; 
+        this.pageFacade.socialGetBindingFacebook(this.pageId).then((res: any) => {
+            if (Object.keys(res.data).length > 0) {
+                this.connect = res.data.data;
                 this.isLoading = false;
-                this.dataBinding = res.data; 
-            } 
+                this.dataBinding = res.data;
+            }
         }).catch((err: any) => {
             console.log('err ', err)
         });
@@ -327,21 +330,35 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         this.isLoading = false;
         let pageUserId: string = "";
         window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
-            if (response && !response.error) { 
+            if (response && !response.error) {
                 /* handle the result */
                 this.responseFacabook = response;
                 if (this.responseFacabook !== undefined) {
-                    this.checkBoxBindingPageFacebook(this.responseFacabook.data[0]);
-                    for (let facebook of this.responseFacabook.data) {
-                        pageUserId = facebook.id 
-                        this.getImagePageProfile(pageUserId);
-                    } 
+                    // this.checkBoxBindingPageFacebook(this.responseFacabook.data[0]);
+                    Object.assign(this.responseFacabook.data[0], { selected: true });
+                    this.getListFacebook(this.responseFacabook);
+                    // for (let facebook of this.responseFacabook.data) {
+                    //     pageUserId = facebook.id 
+                    //     this.getImagePageProfile(pageUserId);
+                    // } 
                 }
             }
-        }); 
+        });
     }
 
-    public getImagePageProfile(pageUserId){
+    public getListFacebook(data) {
+        let dialog = this.dialog.open(DialogListFacebook, {
+            disableClose: true,
+            data: data
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if(res){
+                this.checkBoxBindingPageFacebook(res);
+            }
+        });
+    }
+
+    public getImagePageProfile(pageUserId) {
         window['FB'].api("/" + pageUserId + "/picture?redirect=0&access_token=" + this.accessToken.fbtoken, (picture) => {
             if (picture && !picture.error) {
                 // console.log('picture ', picture)
@@ -351,26 +368,18 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         })
     }
 
-    public checkBoxBindingPageFacebook(access: any, i?: number) {
-        // if (typeof (this.index) === 'number') {
-        //     if (this.index !== i) {
-        //         Object.assign(this.responseFacabook[this.index], { selected: false });
-        //         this.index = i
-        //     }
-        // } else {
-        //     this.index = i
-        // } 
-
+    public checkBoxBindingPageFacebook(access: any, i?: number) { 
         const facebook = new PageSoialFB();
         facebook.facebookPageId = access.id;
         facebook.pageAccessToken = access.access_token;
         facebook.facebookPageName = access.name;
 
         this.pageFacade.socialBindingFacebook(this.pageId, facebook).then((res: any) => {
-           
+
             if (res.data) {
-                this.connect = res.data;
+                this.connect = res.data; 
                 Object.assign(access, { selected: true });
+                this.socialGetBindingFacebook();
                 this.isLoading = false;
             }
 

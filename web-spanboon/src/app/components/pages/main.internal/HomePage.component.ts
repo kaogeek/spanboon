@@ -10,12 +10,10 @@ import { MatPaginator, MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
 import { NgxGalleryOptions, NgxGalleryImage } from 'ngx-gallery';
 import { Gallery, GalleryRef } from '@ngx-gallery/core';
-import {
-  AuthenManager, MainPageSlideFacade, AssetFacade
-} from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, AssetFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
-import { PostFacade } from '../../../services/facade/PostFacade.service'; 
+import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { Router } from '@angular/router';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../../shares/dialog/dialog';
@@ -67,6 +65,7 @@ export class HomePage extends AbstractPage implements OnInit {
   public isMobile: boolean;
   public isLoading: boolean;
   public showLoading: boolean;
+  public isLoadingImage: boolean;
   public dataMainPage: any;
   public dataLastest: any;
   public innerWidth: any;
@@ -179,16 +178,10 @@ export class HomePage extends AbstractPage implements OnInit {
       },
       768: {
         slidesPerView: 2.2,
-      },
-      // 899: {
-      //   slidesPerView: 2,
-      // },
+      }, 
       1024: {
         slidesPerView: 3.2,
-      },
-      // 1280: {
-      //   slidesPerView: 3.5,
-      // },
+      }, 
       1440: {
         slidesPerView: 4,
       },
@@ -208,7 +201,8 @@ export class HomePage extends AbstractPage implements OnInit {
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
     this.isLoading = false;
-    this.showLoading = true
+    this.showLoading = true;
+    this.isLoadingImage = true;
 
     setTimeout(() => {
       this.showLoading = false
@@ -223,7 +217,7 @@ export class HomePage extends AbstractPage implements OnInit {
       keyboard: false,
       mousewheel: false,
       scrollbar: false,
-      loop: true,
+      // loop: true,
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
@@ -233,13 +227,7 @@ export class HomePage extends AbstractPage implements OnInit {
         loadPrevNext: true,
         loadPrevNextAmount: 2,
       },
-      breakpoints: {
-        // 479: {
-        //   slidesPerView: 1,
-        //   spaceBetween: 0,
-        // },
-        // 768: {
-        // },
+      breakpoints: { 
         991: {
           slidesPerView: 1,
           spaceBetween: 5,
@@ -250,78 +238,7 @@ export class HomePage extends AbstractPage implements OnInit {
         },
       },
     }
-
-    // this.configSlider = {
-    //   direction: 'horizontal',
-    //   slidesPerView: 4,
-    //   spaceBetween: 10,
-    //   keyboard: false,
-    //   mousewheel: false,
-    //   scrollbar: false,
-    //   navigation: {
-    //     nextEl: '.swiper-button-next',
-    //     prevEl: '.swiper-button-prev',
-    //   },
-    //   breakpoints: {
-    //     479: {
-    //       slidesPerView: 1,
-    //     },
-    //     576: {
-    //       slidesPerView: 1.3,
-    //     },
-    //     700: {
-    //       slidesPerView: 1.8,
-    //     },
-    //     768: {
-    //       slidesPerView: 2,
-    //       spaceBetween: 5,
-    //     },
-    //     899: {
-    //       slidesPerView: 2.2,
-    //     },
-    //     1024: {
-    //       slidesPerView: 2.8,
-    //     },
-    //     1440: {
-    //       slidesPerView: 3.2,
-    //     },
-    //     1600: {
-    //       slidesPerView: 4,
-    //       spaceBetween: 10,
-    //     },
-    //   },
-    // }
-
-    // this.config3 = {
-    //   direction: 'horizontal',
-    //   slidesPerView: 6,
-    //   spaceBetween: 10,
-    //   keyboard: false,
-    //   mousewheel: false,
-    //   scrollbar: false,
-    //   navigation: {
-    //     nextEl: '.swiper-button-next',
-    //     prevEl: '.swiper-button-prev',
-    //   },
-    //   breakpoints: {
-    //     479: {
-    //       slidesPerView: 1,
-    //       spaceBetween: 10,
-    //     },
-    //     768: {
-    //       slidesPerView: 3,
-    //       spaceBetween: 10,
-    //     },
-    //     1024: {
-    //       slidesPerView: 3,
-    //       spaceBetween: 10,
-    //     },
-    //     1600: {
-    //       slidesPerView: 4,
-    //       spaceBetween: 10,
-    //     },
-    //   },
-    // }
+ 
   }
 
   public ngOnInit(): void {
@@ -488,8 +405,9 @@ export class HomePage extends AbstractPage implements OnInit {
         this.dataMainPage.emergencyEvents.contents[contentsIndex].isLoadingCover = true;
         if (image.coverPageUrl && image.coverPageUrl !== null && image.coverPageUrl !== "" && image.coverPageUrl !== undefined) {
           this.getDataIcon(image.coverPageUrl, "cover", contentsIndex);
-          contentsIndex++;
+          this.isLoadingImage = false;
         }
+        contentsIndex++;
       }
       for (let image of this.dataMainPage.lastest.contents) {
         if (image.owner && image.owner.imageURL !== null && image.owner.imageURL !== "" && image.owner.imageURL !== undefined) {
@@ -520,7 +438,7 @@ export class HomePage extends AbstractPage implements OnInit {
               } else {
                 Object.assign(image, { coverBase64: null });
               }
-            } 
+            }
           }).catch((err: any) => {
             if (err.error.status === 0) {
               if (err.error.message === 'Unable got Asset') {
@@ -807,6 +725,7 @@ export class HomePage extends AbstractPage implements OnInit {
           }
         } else if (myType === "cover") {
           this.dataMainPage.emergencyEvents.contents[index].isLoadingCover = false;
+          this.isLoadingImage = false;
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
             Object.assign(this.dataMainPage.emergencyEvents.contents[index], { coverBase64: res.data });
           } else {

@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Output } from '@angular/core';
+import { Output, ViewContainerRef } from '@angular/core';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -13,10 +13,11 @@ import { interval, Observable, Subject, Subscription, timer } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
 import { Asset } from '../../../models/models';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, ObservableManager } from '../../../services/services';
+import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, MenuContextualService, ObservableManager } from '../../../services/services';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
+import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 
 const PAGE_NAME: string = 'ChatMessage';
 const REFRESH_LIST_CASE = 'authen.listcase';
@@ -59,6 +60,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public isCaseHasPost: boolean = false;
   @Input()
   public isBackArrow: boolean = false;
+  @Input()
+  public ProfilePage: any;
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
   @Output()
@@ -91,10 +94,12 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public senderName: string = '';
   public senderImage: any;
   public status: any;
-  public cloneMessage: any; 
+  public cloneMessage: any;
+  public ganY: any;
+  public ganX: any;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
-    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
+    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, private popupService: MenuContextualService,private viewContainerRef: ViewContainerRef, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.observManager = observManager;
@@ -113,7 +118,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
     for (let message of this.data) {
       this.status = message;
     }
-    this.cloneMessage = JSON.parse(JSON.stringify(this.data)); 
+    this.cloneMessage = JSON.parse(JSON.stringify(this.data));
   }
 
   public ngOnDestroy(): void {
@@ -146,39 +151,39 @@ export class ChatMessage extends AbstractPage implements OnInit {
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       this.observManager.subscribe('chat_message', (roomId: any) => {
         // this will be your http get request 
-        this.chatRoomFacade.getChatMessages(roomId, this.asPage).subscribe(async (res) => { 
-            if (res.data !== null && res.data !== undefined) { 
-              for (let newMessage of res.data) {
-                var isMessage = false;
-                for (let message of this.cloneMessage) {
-                  if (newMessage.chatMessage.id === message.chatMessage.id) {
-                    isMessage = true;
-                    break;
-                  }
+        this.chatRoomFacade.getChatMessages(roomId, this.asPage).subscribe(async (res) => {
+          if (res.data !== null && res.data !== undefined) {
+            for (let newMessage of res.data) {
+              var isMessage = false;
+              for (let message of this.cloneMessage) {
+                if (newMessage.chatMessage.id === message.chatMessage.id) {
+                  isMessage = true;
+                  break;
                 }
-                if (!isMessage) {
-                  this.markRead(newMessage.chatMessage.id, this.asPage);
-                  if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
-                    this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
-                      if (image.status === 1) {
-                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                          newMessage.senderImage = '';
-                        } else {
-                          newMessage.senderImage = image.data;
-                        }
-                      } else {
+              }
+              if (!isMessage) {
+                this.markRead(newMessage.chatMessage.id, this.asPage);
+                if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
+                  this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
+                    if (image.status === 1) {
+                      if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
                         newMessage.senderImage = '';
+                      } else {
+                        newMessage.senderImage = image.data;
                       }
-                    });
-                  }  
-                  this.data.push(newMessage); 
-                  this.cloneMessage = JSON.parse(JSON.stringify(this.data));
+                    } else {
+                      newMessage.senderImage = '';
+                    }
+                  });
                 }
-              } 
+                this.data.push(newMessage);
+                this.cloneMessage = JSON.parse(JSON.stringify(this.data));
+              }
+            }
             this.scrollChat();
           }
         });
-      }); 
+      });
     }
   }
 
@@ -326,4 +331,20 @@ export class ChatMessage extends AbstractPage implements OnInit {
       console.log('error >>>> ', error);
     });
   }
+
+  onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {
+    const bounds = outerDiv.getBoundingClientRect();
+    this.ganX = (event.clientX - bounds.left + 'px');
+    this.ganY = (event.clientY - bounds.top + 'px');
+  }
+
+  public Tooltip(origin: any, data) {
+    data.owner = Object.assign(data.owner, { type: "PAGE" });
+    this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+      data: data,
+    })
+      .subscribe(res => {
+      });
+  }
+
 }

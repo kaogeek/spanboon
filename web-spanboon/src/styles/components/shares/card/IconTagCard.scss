@@ -60,8 +60,7 @@
                 display: flex;
                 align-items: center;
                 margin-top: 5pt;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-family-kanit500);
 
                 > .page-by {
                     padding-right: 5pt;
@@ -84,7 +83,7 @@
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
                             overflow: hidden;
-                            color: $text-svg-home-color;
+                            color: $home-page-activate-color;
                             &:hover {
                                 color: rgba($brandcolor2, 0.95);
                             }
@@ -100,7 +99,7 @@
                 }
 
                 > .count-user {
-                    color: $koalaGray;
+                    color: $color-gray;
                 }
             }
 

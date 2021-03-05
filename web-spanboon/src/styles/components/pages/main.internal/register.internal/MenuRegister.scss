@@ -29,8 +29,7 @@
             }
 
             > .wrapper-sub-header {
-                font-family: "Kanit-400";
-                font-size: 16px;
+                @include font-size-9($font-family-kanit400);
             }
         }
 
@@ -54,8 +53,7 @@
                 > .span-for {
                     flex: 0 0 auto;
                     display: inline-block;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-family-kanit500);
                     position: relative;
                     padding: 0 20px;
                 }
@@ -74,20 +72,18 @@
             text-align: center;
             font-weight: 300;
             margin-top: 30pt;
-            font-family: "Sarabun-Light";
-            font-size: 16px;
+            @include font-size-9($font-family-sarabun-light);
         }
         > .policy {
             display: flex;
             justify-content: center;
-            font-size: 14px;
-            font-family: "Kanit-300";
+            @include font-size-10($font-family-kanit300);
             padding-top: 5px;
-            color: $koalaGray;
+            color: $color-gray;
             &:hover {
                 color: rgba($brandcolor2, 0.95);
-              }
-          }
+            }
+        }
     }
 
     > .background-menu {

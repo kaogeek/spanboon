@@ -62,7 +62,7 @@ display-gallery {
                     height: 100%;
                     left: 0;
                     top: 0;
-                    @include font-size-8-100("Anakotmai-Medium");
+                    @include font-size-8($font-family-anakotmai-medium);
                     color: $white;
                     background-color: #000;
                     opacity: 0.5;

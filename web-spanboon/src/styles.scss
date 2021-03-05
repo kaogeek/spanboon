@@ -93,7 +93,7 @@ p {
 //     }
 // }
 .cdk-global-overlay-wrapper {
-    > .cdk-overlay-pane {
+    > .cdk-overlay-pane { 
         .mat-dialog-container {
             padding: unset;
         }
@@ -102,7 +102,10 @@ p {
         }
     }
 }
-
+// for dialog alert
+.cdk-overlay-pane {
+    max-width: 100vw !important;
+}
 @media only screen and (max-width: $large) {
     .customize-dialog {
         max-width: 100vw !important;
@@ -220,90 +223,10 @@ p {
 // }
 //------------------------------------------------------------------//
 
-// Anakotmai
-@font-face {
-    font-family: "Anakotmai-Medium";
-    src: url("../src/app/font-ana/Anakotmai-Medium.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Anakotmai-Bold";
-    src: url("../src/app/font-ana/Anakotmai-Bold.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Anakotmai-Light";
-    src: url("../src/app/font-ana/Anakotmai-Light.ttf") format("truetype");
-    font-style: normal;
-}
-
-// sarabun
-@font-face {
-    font-family: "Sarabun-Light";
-    src: url("../src/app/font-sarabun/Sarabun-Light.ttf") format("truetype");
-    font-style: normal;
-}
-
-// Kanit
-@font-face {
-    font-family: "Kanit-100";
-    src: url("../src/app/Kanit/Kanit-Thin.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-200";
-    src: url("../src/app/Kanit/Kanit-ExtraLight.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-300";
-    src: url("../src/app/Kanit/Kanit-Light.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-400";
-    src: url("../src/app/Kanit/Kanit-Regular.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-500";
-    src: url("../src/app/Kanit/Kanit-Medium.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-600";
-    src: url("../src/app/Kanit/Kanit-SemiBold.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-700";
-    src: url("../src/app/Kanit/Kanit-Bold.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-800";
-    src: url("../src/app/Kanit/Kanit-ExtraBold.ttf") format("truetype");
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Kanit-900";
-    src: url("../src/app/Kanit/Kanit-Black.ttf") format("truetype");
-    font-style: normal;
-}
 
 textarea {
     outline: none;
-    @include font-size-9-100("Kanit-200");
+    @include font-size-9($font-family-kanit200);
 }
 
 textarea:focus,
@@ -330,7 +253,7 @@ input:focus {
 //                 // }
 
 //                 > .mat-select {
-//                     @include font-size-9-100("Kanit-500");
+//                     @include font-size-9($font-family-kanit500);
 //                     > .mat-select-trigger {
 //                         > .mat-select-value {
 //                         }
