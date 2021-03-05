@@ -788,8 +788,7 @@
                     align-items: center;
 
                     > .date-time {
-                      font-family: "Kanit-500";
-                      @include font-size-11($font-family-kanit500);
+                      @include font-size-11($font-family-kanit300);
                       color: $black;
                       margin-right: 7px;
                     }
