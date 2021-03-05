@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
 
 const PAGE_NAME: string = "item";
 
-const SEARCH_LIMIT: number = 10;
+const SEARCH_LIMIT: number = 0;
 const SEARCH_OFFSET: number = 0;
 
 @Component({
@@ -147,10 +147,10 @@ export class StandardItemPage extends AbstractPage implements OnInit {
         var objectUrl = _URL.createObjectURL(this.fileToUpload[0]);
         let self = this;
         img.onload = function () {
-            if (img.width === 60 || img.height === 60) {
+            if (img.width === 64 || img.height === 64) {
                 self.statusImg = true
             } else {
-                alert('กรุณาอัพรูปขนาด 60*60 เท่านั้น');
+                alert('กรุณาอัพรูปขนาด 64*64 เท่านั้น');
                 self.statusImg = false
             }
         };
