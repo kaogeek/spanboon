@@ -49,7 +49,6 @@ export class Notification extends BaseModel {
     @Column({ name: 'data' })
     public data: any;
 
-
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();
