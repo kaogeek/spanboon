@@ -6,7 +6,7 @@
 -->
 
 <div class="control-action" *ngIf="isAction">
-    <div class="collis"> 
+    <div class="collis">
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{comment | shortNumber }}</span>
@@ -38,7 +38,7 @@
         </div>
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count">{{reboon | shortNumber}}</span> 
+            <span class="label-count">{{reboon | shortNumber}}</span>
             <ng-container *ngIf="userReboon; else elseNotReboon">
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
@@ -50,10 +50,10 @@
             </ng-container>
             <mat-menu #menu="matMenu" xPosition="before">
                 <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="postReboon('UNDOTOPIC');">
-                    <span>ยกเลิกบอกต่อเรื่องราว</span>
+                    <span>ยกเลิกบอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </button>
                 <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="postReboon('TOPIC');">
-                    <span>บอกต่อเรื่องราวพร้อมความเห็น
+                    <span>บอกต่อ{{PLATFORM_STORY_TALE}}พร้อมความเห็น
                     </span>
                 </button>
             </mat-menu>
@@ -68,10 +68,10 @@
                 <mat-menu #menu="matMenu" xPosition="before">
                     <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
                         (click)="postReboon('NOTOPIC');">
-                        <span>บอกต่อเรื่องราว</span>
+                        <span>บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                     </button>
                     <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="postReboon('TOPIC');">
-                        <span>บอกต่อเรื่องราวพร้อมความเห็น
+                        <span>บอกต่อ{{PLATFORM_STORY_TALE}}พร้อมความเห็น
                         </span>
                     </button>
                 </mat-menu>

@@ -15,7 +15,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { Asset } from '../../../models/Asset';
 import { RePost } from '../../../models/RePost';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import * as moment from 'moment';
 import { CommentPosts } from '../../../models/CommentPosts';
@@ -595,7 +595,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-              text: 'แก้ไขข้อมูลสำเร็จ',
+              text: MESSAGE.TEXT_EDIT_SUCCESS,
               bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
               bottomColorText2: "black",
               btDisplay1: "none"

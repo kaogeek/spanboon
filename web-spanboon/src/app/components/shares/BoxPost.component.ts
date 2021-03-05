@@ -691,7 +691,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.submitCanCelDialog.emit(this.dataStroy);
         });
 
-        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้างสตอรี่โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + "โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
         dialog.afterClosed().subscribe((res) => {
           if (res) {
             this.dataStroy.storyPost = "";

@@ -18,7 +18,7 @@ import { FileHandle } from '../directive/DragAndDrop.directive';
 import * as moment from 'moment';
 import { DomSanitizer } from '@angular/platform-browser';
 import { POST_TYPE } from '../../../TypePost';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import * as $ from 'jquery';
 import './../../../../assets/script/jquery.atwho.js';
 import { environment } from 'src/environments/environment';
@@ -363,7 +363,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
 
   public onClose(): void {
     if (this.ary.length > 0) {
-      let dialog = this.showAlertDialogWarming("คุณยังไม่บันทึกเรื่องราวของคุณ?", "ยกเลิก")
+      let dialog = this.showAlertDialogWarming("คุณยังไม่บันทึก" + this.PLATFORM_STORY_TALE + "ของคุณ?", "ยกเลิก")
       dialog.afterClosed().subscribe((res) => {
         if (res) {
           this.dialogRef.close(null);
@@ -812,7 +812,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     } else if (this.textType(item.htmlType)) {
       let text = document.getElementById(index).innerText
       if (text !== '' && text !== undefined && text !== null) {
-        let dialog = this.showAlertDialogWarming("คุณต้องการลบเรื่องราวออกใช่ไหม ?", "ยกเลิก")
+        let dialog = this.showAlertDialogWarming("คุณต้องการลบ" + this.PLATFORM_STORY_TALE + "ออกใช่ไหม ?", "ยกเลิก")
         dialog.afterClosed().subscribe((res) => {
           if (res) {
             if (index !== null && index !== undefined) {

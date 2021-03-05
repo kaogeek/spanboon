@@ -795,8 +795,7 @@
                     }
 
                     > .post-name {
-                      font-family: "Kanit-400";
-                      @include font-size-11($font-family-kanit400);
+                      @include font-size-11($font-family-kanit200);
                       color: $color-gray;
                     }
                   }

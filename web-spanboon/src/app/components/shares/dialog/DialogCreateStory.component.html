@@ -9,8 +9,9 @@
     <div class="create-story">
         <div *ngIf="!isSelectImage" class="create-story-h full">
             <div class="create-story-h-icon-r">
-                <h2 style="margin: 0;">สร้างสตอรี่ของคุณ</h2>
-                <span style="font-size: 12px;color: #8c8c8c;">สร้างสตอรี่เพื่อบอกเล่าเรื่องราวในแบบของคุณ</span>
+                <h2 style="margin: 0;">สร้าง{{PLATFORM_STORY}}ของคุณ</h2>
+                <span
+                    style="font-size: 12px;color: #8c8c8c;">สร้าง{{PLATFORM_STORY}}เพื่อบอกเล่า{{PLATFORM_STORY_TALE}}ในแบบของคุณ</span>
             </div>
             <div class="create-story-h-icon-l">
                 <spanboon-button style="margin-right:10px ;" (click)="onClose()" [color]="'black'" [width]="'60pt'"
@@ -23,7 +24,7 @@
         </div>
         <div *ngIf="!isSelectImage" class="create-story-h small">
             <div class="create-story-h-icon-r">
-                <h2 style="margin: 0;">สร้างสตอรี่</h2>
+                <h2 style="margin: 0;">สร้าง{{PLATFORM_STORY}}</h2>
             </div>
             <div class="create-story-h-icon-l">
                 <spanboon-button style="margin-right:10px ;" (click)="onClose()" [color]="'black'" [width]="'50pt'"
