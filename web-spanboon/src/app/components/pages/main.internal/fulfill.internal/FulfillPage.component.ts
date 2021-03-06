@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MESSAGE } from '../../../../AlertMessage';
+import { MESSAGE } from '../../../../../custom/variable';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
 import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
@@ -1392,9 +1392,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-                bottomText2: "ตกลง",
-                bottomText1: "ยกเลิก",
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomColorText2: "black",
                 // btDisplay1: "none"
             }

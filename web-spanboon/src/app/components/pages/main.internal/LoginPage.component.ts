@@ -15,7 +15,7 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { AbstractPage } from '../AbstractPage';
 // import { LOGIN_FACEBOOK_ENABLE } from '../../../Constants';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
 
@@ -104,7 +104,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }
 
-    if (doRunAccessToken) { 
+    if (doRunAccessToken) {
       this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
@@ -189,7 +189,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginTwitter() { 
+  public clickLoginTwitter() {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
       this.authorizeLink += '?' + result;
@@ -395,8 +395,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }

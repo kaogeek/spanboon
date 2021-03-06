@@ -16,7 +16,7 @@ import { AbstractPage } from '../pages/AbstractPage';
 import { DialogFulfill } from './dialog/DialogFulfill.component';
 import * as $ from 'jquery';
 import { DialogConfirmFulfill } from './dialog/DialogConfirmFulfill.component';
-import { MESSAGE } from '../../AlertMessage';
+import { MESSAGE } from '../../../custom/variable';
 import { DialogAlert } from './dialog/dialog';
 
 const PAGE_NAME: string = 'fulfill-item';
@@ -527,7 +527,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
                     // this.dialogRef.close(); 
                     let needs = {
                         item: needsResult,
-                        bottomText1: "ย้อนกลับ",
+                        bottomText1: MESSAGE.TEXT_BUTTON_BACK,
                         text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
                         isConfirmFullFill: true
                     }
