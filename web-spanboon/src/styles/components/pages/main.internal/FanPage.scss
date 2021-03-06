@@ -788,15 +788,13 @@
                     align-items: center;
 
                     > .date-time {
-                      font-family: "Kanit-500";
-                      @include font-size-11($font-family-kanit500);
+                      @include font-size-11($font-family-kanit300);
                       color: $black;
                       margin-right: 7px;
                     }
 
                     > .post-name {
-                      font-family: "Kanit-400";
-                      @include font-size-11($font-family-kanit400);
+                      @include font-size-11($font-family-kanit200);
                       color: $color-gray;
                     }
                   }

@@ -13,9 +13,7 @@ import { DialogAlertAllocate } from '../../shares/dialog/DialogAlertAllocate.com
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from '../../../../environments/environment';
-import * as $ from 'jquery';
-import { count } from 'rxjs/operators';
-import { E, L } from '@angular/cdk/keycodes';
+import { MESSAGE } from '../../../../custom/variable';
 
 const PAGE_NAME: string = 'fulfillallocate';
 const SEARCH_LIMIT: number = 10;
@@ -437,7 +435,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                         let dialog = this.dialog.open(DialogAlertAllocate, {
                             disableClose: true,
                             data: {
-                                text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้",
+                                text: MESSAGE.TEXT_TITLE_FULFILL_ALLOCATE_ERROR,
                                 item: "รายการ : " + textAllocate,
                                 bottomText1: "กลับไปจัดสรร",
                                 btDisplay1: "block",
@@ -703,9 +701,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-                bottomText2: "ตกลง",
-                bottomText1: "ยกเลิก",
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomColorText2: "black",
                 // btDisplay1: "none"
             }
@@ -835,7 +833,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         if (type === "NEEDS") {
             return this.PLATFORM_NEEDS_TEXT;
         } else if (type === "GENERAL") {
-            return "ทั่วไป"
+            return this.PLATFORM_GENERAL_TEXT
         } else {
             return "ไม่ระบุประเภท"
         }
@@ -1242,8 +1240,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 let dialog = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
-                        text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้ ",
-                        bottomText1: "ปิด",
+                        text: MESSAGE.TEXT_TITLE_FULFILL_ALLOCATE_ERROR,
+                        bottomText1: MESSAGE.TEXT_BUTTON_CLOSE,
                         btDisplay1: "block",
                         btDisplay2: "none",
                     }

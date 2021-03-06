@@ -12,7 +12,7 @@ import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { DialogAlert } from '../../../shares/dialog/DialogAlert.component';
 import { ObservableManager } from '../../../../services/ObservableManager.service';
 import { AuthenManager } from '../../../../services/AuthenManager.service';
-import { MESSAGE } from '../../../../AlertMessage';
+import { MESSAGE } from '../../../../../custom/variable';
 import { User } from '../../../../models/User';
 import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
@@ -86,7 +86,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }
 
-        if (doRunAccessToken) { 
+        if (doRunAccessToken) {
             this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
                 let spilt = res.split('&');
                 const token = spilt[0].split('=')[1];
@@ -180,15 +180,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
         });
     }
 
-    public clickLoginTW() { 
+    public clickLoginTW() {
         let callback = environment.webBaseURL + "/login";
         this.twitterService.requestToken(callback).then((result: any) => {
-          this.authorizeLink += '?' + result; 
-          window.open(this.authorizeLink);
+            this.authorizeLink += '?' + result;
+            window.open(this.authorizeLink);
         }).catch((error: any) => {
-          console.log(error);
+            console.log(error);
         });
-    
+
     }
 
     private loginGoogle() {

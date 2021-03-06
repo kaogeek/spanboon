@@ -5,9 +5,12 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
+import { SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+import { CHAT_MESSAGE_TYPE } from '../../../app/ChatMessageTypes';
 import { AuthenManager, NotificationFacade, AssetFacade } from '../../services/services';
 import { AbstractPage } from '../pages/AbstractPage';
 
@@ -56,15 +59,16 @@ export class Notification extends AbstractPage implements OnInit {
     var myVar;
     clearInterval(myVar);
     myVar = setInterval(() => {
-      // this.checkNotification();
+      this.checkNotification();
     }, 31000);
   }
 
   public ngAfterViewInit(): void {
-    setTimeout(() => { 
-      // this.checkNotification();
+    setTimeout(() => {
+      this.checkNotification();
     }, 1000);
   }
+
 
   public ngOnInit(): void {
   }
@@ -100,19 +104,26 @@ export class Notification extends AbstractPage implements OnInit {
             noti.sender.avatarURL = res.data
           }).catch((err: any) => {
           });
-        } 
+        }
         if (!noti.notification.isRead) {
           this.notiisRead.push(noti)
           noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
         }
       }
-      this.notiOrigin = this.noti; 
+      this.notiOrigin = this.noti;
     }
   }
 
-  public markReadNoti(data) {
-    // this.router.navigateByUrl('/fulfill');
-    this.notificationFacade.markRead(data)
+  public markReadNoti(data) {   
+    this.notificationFacade.markRead(data.notification.id)
+  }
+
+  public redirectNotification(data) { 
+    if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) { 
+      this.router.navigateByUrl(data.notification.link)
+    } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT){
+      this.router.navigateByUrl('/fulfill' , { state: { room: data.notification.data } })
+    }
   }
 
   public markReadNotiAll() {
@@ -120,7 +131,7 @@ export class Notification extends AbstractPage implements OnInit {
     this.showAlertDevelopDialog();
   }
 
-  public isOpened() {
+  public isOpened() { 
     if (this.notiOrigin && this.notiOrigin.length > 0) {
       for (let msg of this.notiOrigin) {
         this.notificationFacade.markRead(msg.notification.id);

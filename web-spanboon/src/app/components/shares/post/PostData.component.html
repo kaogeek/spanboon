@@ -67,7 +67,7 @@
                             <div class="post-data-createdBy">
                                 <div class="icon-feed"></div>
                                 <span>
-                                    ทั่วไป
+                                    {{PLATFORM_GENERAL_TEXT}}
                                 </span>
                                 <div class="post-to">
                                     <a href={{linkPost}} target="_blank">
@@ -97,7 +97,7 @@
                 <ng-container *ngIf="!isShowProfile">
                     <div class="icon-feed"></div>
                     <span>
-                        ทั่วไป
+                        {{PLATFORM_GENERAL_TEXT}}
                     </span>
                     <div class="post-to">
                         <a href={{linkPost}} target="_blank">
@@ -148,12 +148,12 @@
                         transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
                 </svg>
                 <ng-container *ngIf="isUserPage; else UserPage">
-                    <span>คุณได้บอกต่อเรื่องราว</span>
+                    <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </ng-container>
                 <ng-template #UserPage>
                     <span
                         *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                        || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อเรื่องราว</span>
+                        || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </ng-template>
             </div>
         </div>
@@ -250,12 +250,12 @@
                             transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
                     </svg>
                     <ng-container *ngIf="isUserPage; else UserPage">
-                        <span>คุณได้บอกต่อเรื่องราว</span>
+                        <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                     </ng-container>
                     <ng-template #UserPage>
                         <span
                             *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อเรื่องราว</span>
+                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                     </ng-template>
                 </div>
             </div>
@@ -352,12 +352,12 @@
                             transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
                     </svg>
                     <ng-container *ngIf="isUserPage; else UserPage">
-                        <span>คุณได้บอกต่อเรื่องราว</span>
+                        <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                     </ng-container>
                     <ng-template #UserPage>
                         <span
                             *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อเรื่องราว</span>
+                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                     </ng-template>
                 </div>
             </div>
@@ -499,7 +499,8 @@
             </ng-container>
         </ng-template>
         <ng-container *ngIf="itemPost.story">
-            <div (click)="storyTeb(itemPost)" class="content-sub"> อ่านสตอรี่ <span style="margin-left: 1px;">...</span>
+            <div (click)="storyTeb(itemPost)" class="content-sub"> อ่าน{{PLATFORM_STORY}} <span
+                    style="margin-left: 1px;">...</span>
             </div>
         </ng-container>
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0">

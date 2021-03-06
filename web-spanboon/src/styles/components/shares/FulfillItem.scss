@@ -320,11 +320,11 @@
                             bottom: 5pt;
                             right: 5pt;
                             color: $color-gray;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-family-kanit300);
                             align-items: center;
                             > .material-icons {
-                                color: $bg-color4;
-                                @include font-size-9($font-family-kanit500);
+                                color: $home-page-activate-color;
+                                font-size: 16px;
                                 padding-right: 5pt;
                             }
 

@@ -15,7 +15,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { Asset } from '../../../models/Asset';
 import { RePost } from '../../../models/RePost';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import * as moment from 'moment';
 import { CommentPosts } from '../../../models/CommentPosts';
@@ -92,7 +92,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
@@ -131,7 +131,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             data = {
               type: 'GENERAL',
             }
-            this.activeLink = 'ทั่วไป';
+            this.activeLink = this.PLATFORM_GENERAL_TEXT;
             this.searchTimeLinePost(data);
           } else if (this.subPage === 'fulfillment') {
             data = {
@@ -283,7 +283,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       data = {
         type: 'GENERAL'
       }
-      this.activeLink = 'ทั่วไป';
+      this.activeLink = this.PLATFORM_GENERAL_TEXT;
       this.searchTimeLinePost(data, true);
     } else if (subPage === 'fulfillment') {
       data = {
@@ -595,7 +595,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-              text: 'แก้ไขข้อมูลสำเร็จ',
+              text: MESSAGE.TEXT_EDIT_SUCCESS,
               bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
               bottomColorText2: "black",
               btDisplay1: "none"

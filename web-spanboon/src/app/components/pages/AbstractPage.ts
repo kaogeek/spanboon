@@ -8,9 +8,8 @@
 import { AuthenManager } from '../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAlert } from '../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../AlertMessage';
 import { EventEmitter, OnInit } from '@angular/core';
-import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../custom/variable';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY_TALE, PLATFORM_STORY, MESSAGE } from '../../../custom/variable';
 import { Router } from '@angular/router';
 
 const TOKEN_KEY: string = 'token';
@@ -23,12 +22,15 @@ export abstract class AbstractPage implements OnInit {
   protected dialog: MatDialog;
   protected router: Router;
 
-  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH
-  public PLATFORM_NAME_ENG: string = PLATFORM_NAME_ENG
-  public PLATFORM_SOPPORT_EMAIL: string = PLATFORM_SOPPORT_EMAIL
-  public PLATFORM_URL: string = PLATFORM_URL
-  public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT
-  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
+  public PLATFORM_NAME_ENG: string = PLATFORM_NAME_ENG;
+  public PLATFORM_SOPPORT_EMAIL: string = PLATFORM_SOPPORT_EMAIL;
+  public PLATFORM_URL: string = PLATFORM_URL;
+  public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+  public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
+  public PLATFORM_STORY: string = PLATFORM_STORY;
+  public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
 
   constructor(name: string, authenManager: AuthenManager, dialog: MatDialog, router: Router) {
     this.name = name;
@@ -66,8 +68,8 @@ export abstract class AbstractPage implements OnInit {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: text ? text : "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: text ? text : MESSAGE.TEXT_TITLE_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }
@@ -83,24 +85,6 @@ export abstract class AbstractPage implements OnInit {
   public getAuthenManager(): AuthenManager {
     return this.authenManager;
   }
-
-  // public checkAccountStatus(): Promise<boolean> {
-  //   return new Promise((resolve, reject) => {
-  //     let token = sessionStorage.getItem(TOKEN_KEY) ? sessionStorage.getItem(TOKEN_KEY) : undefined;
-  //     token = token ? token : localStorage.getItem(TOKEN_KEY);
-  //     let mode = sessionStorage.getItem(TOKEN_MODE_KEY) ? sessionStorage.getItem(TOKEN_MODE_KEY) : undefined;
-  //     mode = mode ? mode : localStorage.getItem(TOKEN_MODE_KEY);
-  //     if (token) {
-  //       this.getAuthenManager().checkAccountStatus(token, mode).then((res) => {
-  //         resolve(true);
-  //       }).catch((err) => {
-  //         resolve(false);
-  //       });
-  //     } else {
-  //       resolve(false);
-  //     }
-  //   });
-  // }
 
   public isLogin(): boolean {
     return this.authenManager.getCurrentUser() !== undefined && this.authenManager.getCurrentUser() !== null ? true : false;

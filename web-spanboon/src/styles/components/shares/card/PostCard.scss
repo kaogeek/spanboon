@@ -58,7 +58,7 @@
                 display: flex;
                 align-items: center;
                 color: $color-gray;
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-family-kanit300);
                 @include pointer();
 
                 &:hover {

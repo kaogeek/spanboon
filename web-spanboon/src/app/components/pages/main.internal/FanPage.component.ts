@@ -51,7 +51,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   @Output()
   public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -204,7 +204,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             data = {
               type: 'GENERAL',
             }
-            this.activeLink = 'ทั่วไป';
+            this.activeLink = this.PLATFORM_GENERAL_TEXT;
             this.searchPostPageType(data);
           } else if (this.splitTpyeClone === 'needs') {
             data = {
@@ -287,7 +287,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         type: 'GENERAL',
         offset: 0
       }
-      this.activeLink = 'ทั่วไป';
+      this.activeLink = this.PLATFORM_GENERAL_TEXT;
       this.searchPostPageType(data, true);
     } else if (subPage === 'needs') {
       data = {

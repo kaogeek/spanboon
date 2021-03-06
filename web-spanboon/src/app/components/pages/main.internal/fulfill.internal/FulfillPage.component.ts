@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MESSAGE } from '../../../../AlertMessage';
+import { MESSAGE } from '../../../../../custom/variable';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
 import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
@@ -165,6 +165,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public postDates: any
     public pageId: string;
     public postId: string;
+    public roomId: string;
     public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
@@ -234,6 +235,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
+        if(this.needsFromState && this.needsFromState.room){ 
+            this.roomId = this.needsFromState.room.roomId;
+        }
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -305,10 +309,19 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
-
+ 
                 if (result !== null && result !== undefined) {
-                    if (this.needsFromState !== null && this.needsFromState !== undefined) {
+                    if (this.needsFromState && this.needsFromState.data && this.needsFromState.data !== null && this.needsFromState.data !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
+                    } else if (this.roomId !== '' && this.roomId !== undefined && this.roomId !== null){ 
+                        for(let value of result){ 
+                            for(let chat of value.cases){ 
+                                if(chat.chatRoom === this.roomId){
+                                    console.log('chat ',chat)
+                                    this.getChatRoom(chat,this.asPage); 
+                                }
+                            }
+                        }
                     }
                 }
             }).catch((err) => {
@@ -588,7 +601,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
                     this.observManager.publish(CHATROOM_ID, this.chatRoomId);
                     this.chatRoomId = res.chatRoom.id;
-                    this.pageName = res.fulfillCase.pageName;
+                    this.pageName = res.fulfillCase.pageName; 
                     this.chatRoomFacade.getChatMessage(res.chatRoom.id, asPage).then((chatData) => {
                         this.canAccessCase = true;
                         this.canAccessChatRoom = true;
@@ -673,7 +686,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.showChatRoom = false;
                 this.canAccessCase = false;
                 this.canAccessChatRoom = false;
-                console.log(error.name);
+                console.log(error);
             });
         } else {
             setTimeout(() => {
@@ -1379,9 +1392,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-                bottomText2: "ตกลง",
-                bottomText1: "ยกเลิก",
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomColorText2: "black",
                 // btDisplay1: "none"
             }

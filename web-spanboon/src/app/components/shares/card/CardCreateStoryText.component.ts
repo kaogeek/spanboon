@@ -230,14 +230,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     dataSource = new MatTableDataSource(this.resHashTag);
 
     chooseStory: any[] = [
-        { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
+        { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
         { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
     ];
     chooseStorys: any[] = [
-        { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
+        { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
     ];
 
-    selected: string = "ทั่วไป";
+    selected: string = this.PLATFORM_GENERAL_TEXT;
     selected1: string = "โพสต์"
     selected2: string = "โพสต์"
     selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
@@ -510,7 +510,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                             index++;
                         }
                     } else {
-                        this.selected = "ทั่วไป"
+                        this.selected = this.PLATFORM_GENERAL_TEXT
                     }
                     if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
                         this.modeShowDoing = true
@@ -708,7 +708,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                     this.submitCanCelDialog.emit(this.dataStroy);
                 });
 
-                let dialog = this.showDialogWarming("คุณต้องการปิดการสร้างสตอรี่โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+                let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + "โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
                 dialog.afterClosed().subscribe((res) => {
                     if (res) {
                         this.dataStroy.storyPost = "";
@@ -1508,7 +1508,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         this.listTag = [];
         this.userTag = [];
         this.textLimit = 0;
-        this.selected = "ทั่วไป";
+        this.selected = this.PLATFORM_GENERAL_TEXT;
         this.selected1 = "โพสต์";
         this.isShowImage = false;
         this.isChecked = false;

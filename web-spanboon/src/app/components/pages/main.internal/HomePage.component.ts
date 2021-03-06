@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../../shares/dialog/dialog';
 import { environment } from 'src/environments/environment';
+import { MESSAGE } from '../../../../custom/variable';
 
 declare var $: any;
 
@@ -178,10 +179,10 @@ export class HomePage extends AbstractPage implements OnInit {
       },
       768: {
         slidesPerView: 2.2,
-      }, 
+      },
       1024: {
         slidesPerView: 3.2,
-      }, 
+      },
       1440: {
         slidesPerView: 4,
       },
@@ -227,7 +228,7 @@ export class HomePage extends AbstractPage implements OnInit {
         loadPrevNext: true,
         loadPrevNextAmount: 2,
       },
-      breakpoints: { 
+      breakpoints: {
         991: {
           slidesPerView: 1,
           spaceBetween: 5,
@@ -238,7 +239,7 @@ export class HomePage extends AbstractPage implements OnInit {
         },
       },
     }
- 
+
   }
 
   public ngOnInit(): void {
@@ -860,8 +861,8 @@ export class HomePage extends AbstractPage implements OnInit {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }

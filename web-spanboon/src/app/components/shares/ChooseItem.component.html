@@ -26,9 +26,8 @@
                     <div class="doing-search-box">
                         <label class="material-icons icon-search" for="search-img">search</label>
                         <input matInput #searchAll id="search-img" class="search-img" type="search"
-                            placeholder="'คุณกำลัง'+PLATFORM_NEEDS_TEXT+'อะไรอยู่ ?'"
-                            (keyup)="keyUpSearchAll(searchAll.value)" (keyup.enter)="keyUpSearchAll(searchAll.value)"
-                            [(ngModel)]="query_conversation">
+                            placeholder='คุณกำลังมองหาอะไรอยู่ ?' (keyup)="keyUpSearchAll(searchAll.value)"
+                            (keyup.enter)="keyUpSearchAll(searchAll.value)" [(ngModel)]="query_conversation">
                         <span class="material-icons icon-clear" (click)="closeSearch(searchAll.value)"> close
                         </span>
                     </div>

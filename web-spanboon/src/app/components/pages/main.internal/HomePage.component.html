@@ -14,9 +14,11 @@
                 [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
             </status-bar>
         </ng-container>
-        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
-            <div class="swiper-container" [swiper]="config" > 
-                <div class="swiper-wrapper" *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
+        <ng-container
+            *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
+            <div class="swiper-container" [swiper]="config">
+                <div class="swiper-wrapper"
+                    *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
                     <ng-container *ngIf="index === 0 || index <= 5">
                         <!-- <ng-container *ngIf="index === 0 || index <= 5">  -->
                         <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="isLoadingImage"
@@ -227,7 +229,7 @@
                     </div>
                     <div *ngIf="!showLoading" class="btn-follow">
                         <spanboon-button (click)="showAlertDialog()" [width]="'90pt'" [height]="'30pt'"
-                             [text]="'ติดตาม'">
+                            [text]="'ติดตาม'">
                         </spanboon-button>
                     </div>
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
