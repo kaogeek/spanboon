@@ -14,9 +14,9 @@ null-data {
   }
   .null-title {
     color: $color-gray;
-    @include font-size-8($font-family-kanit500);
+    @include font-size-8($font-family-500);
   }
   .null-sub-title {
-    @include font-size-9($font-family-kanit200);
+    @include font-size-9($font-family-200);
   }
 }

@@ -31,7 +31,7 @@
 
     > .form-search-field {
       padding-left: 10pt;
-      @include font-size-10($font-family-kanit500);
+      @include font-size-10($font-family-500);
 
       > .mat-form-field-wrapper {
         > .mat-form-field-flex {
@@ -54,14 +54,14 @@
       align-items: center;
 
       > .page-doing {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
       }
 
       > .image-upload {
         display: flex;
         align-items: center;
         cursor: pointer;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
         @include pointer();
 
         > .icon-add {
@@ -91,7 +91,7 @@
         height: 100%;
         justify-content: center;
         align-items: center;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
       }
 
       > .wrapper-doing {
@@ -99,7 +99,7 @@
         padding: 14pt;
         margin: 0;
         width: calc(25% - 28pt);
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
         height: max-content;
 
         &:hover {

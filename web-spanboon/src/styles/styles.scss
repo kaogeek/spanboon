@@ -71,7 +71,7 @@
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
-    @include font-size-10($font-family-kanit500);
+    @include font-size-10($font-family-500);
     .box-icon {
       width: 500pt;
       height: 200pt;
@@ -100,7 +100,7 @@
           align-items: flex-end;
           .box-from-text {
             color: #ff0000;
-            @include font-size-4($font-family-kanit400);
+            @include font-size-4($font-family-400);
             width: 105%;
             text-align: initial;
           }
@@ -265,7 +265,7 @@ a {
   box-sizing: border-box;
   cursor: move;
   background: white;
-  @include font-size-10($font-family-kanit500);
+  @include font-size-10($font-family-500);
 }
 
 .cdk-drag-preview {

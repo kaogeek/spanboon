@@ -66,7 +66,7 @@
                                     overflow: hidden;
                                     color: $brandcolor;
                                     background: $brandcolor2;
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-family-500);
                                 }
 
                                 > img {
@@ -121,7 +121,7 @@
                             > .menu-filter {
                                 height: 36pt;
                                 padding: 0 5px 0 15px;
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
 
                                 > .mat-button-wrapper {
                                     display: flex;
@@ -218,7 +218,7 @@
                         }
 
                         > .lookfor {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-family-300);
                             margin-left: 5px;
                         }
 
@@ -229,7 +229,7 @@
                         }
 
                         > .date {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-family-300);
                             color: rgb($black, 0.5);
                             margin-left: 5px;
 
@@ -265,7 +265,7 @@
                         flex-wrap: wrap;
                         padding: 3pt 0;
                         > .date {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-family-300);
                             color: rgb($black, 0.5);
 
                             a {
@@ -309,7 +309,7 @@
 
                                 > .contact-event {
                                     margin: 0 10pt 0 8px;
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-family-500);
                                     color: $brandcolor2;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
@@ -329,7 +329,7 @@
                             }
 
                             > .event-cos {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                                 color: rgb($black, 0.5);
                             }
                         }
@@ -363,7 +363,7 @@
 
                             > .user {
                                 word-break: break-all;
-                                @include font-size-9($font-family-kanit400);
+                                @include font-size-9($font-family-400);
 
                                 a {
                                     color: #a5a5a6;
@@ -395,7 +395,7 @@
                             overflow: hidden;
                             color: $brandcolor;
                             background: $brandcolor2;
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-family-500);
 
                             a {
                                 color: $brandcolor;
@@ -413,7 +413,7 @@
                         }
 
                         > .text-fulfill-close {
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-family-500);
                             color: $brandcolor2;
                             > .date-case-close {
                                 text-align: end;
@@ -588,7 +588,7 @@
                                     // width: 100%;
 
                                     > .butt-fulfill-bottom {
-                                        @include font-size-10($font-family-kanit500);
+                                        @include font-size-10($font-family-500);
 
                                         &:last-child {
                                             margin-left: 6pt;
@@ -614,7 +614,7 @@
                 font-size: 26px;
             }
             > .fulfill-search {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
                 color: $brandcolor2;
                 > .hover {
                     @include pointer();
@@ -629,7 +629,7 @@
 
 .drop-menu-filter {
     > .mat-menu-item {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
         height: 40px;
     }
 }
@@ -677,7 +677,7 @@
         overflow: hidden;
         color: $brandcolor;
         background: $brandcolor2;
-        @include font-size-9($font-family-kanit500);
+        @include font-size-9($font-family-500);
     }
 
     > .profile {
@@ -747,7 +747,7 @@
                         }
                         > .list-item {
                             display: flex;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-family-500);
                             color: $bg-color4;
                             @include pointer();
                             padding-top: 4pt;
@@ -838,7 +838,7 @@
                         }
                         > .list-item {
                             display: flex;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-family-500);
                             color: $bg-color4;
                             padding-top: 4pt;
                             @include pointer();
@@ -968,10 +968,10 @@
                     > .story-left {
                         > .story-category {
                             > .lookfor {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                             > .date {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                         }
                         > .contact-head {
@@ -1098,10 +1098,10 @@
                     > .story-left {
                         > .story-category {
                             > .lookfor {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                             > .date {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                         }
                         > .contact-head {

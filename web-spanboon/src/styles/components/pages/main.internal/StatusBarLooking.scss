@@ -47,7 +47,7 @@
             > a {
                 > .topic-type {
                     color: $brandcolor2;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-family-500);
                     margin-left: 5pt;
                     @include pointer();
 
@@ -80,7 +80,7 @@
             > a {
                 > .topic-type {
                     color: $brandcolor2;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-family-500);
                     margin-left: 5pt;
                     @include pointer();
 
@@ -134,7 +134,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                     }
                 }
             }
@@ -175,21 +175,21 @@
 
         > .topic-label-right {
             > .topic-date {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
 
                 > a {
                     > .topic-type {
-                        @include font-size-10($font-family-kanit500);
+                        @include font-size-10($font-family-500);
                     }
                 }
             }
 
             > .topic-count {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
 
                 > a {
                     > .topic-type {
-                        @include font-size-10($font-family-kanit500);
+                        @include font-size-10($font-family-500);
                     }
                 }
             }
@@ -219,7 +219,7 @@
             }
 
             > .topic-count {
-                // @include font-size-9($font-family-kanit500);
+                // @include font-size-9($font-family-500);
 
                 > a {
                     > .topic-type {
@@ -243,7 +243,7 @@
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                     }
                 }
             }

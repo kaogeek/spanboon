@@ -65,7 +65,6 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   public ngOnInit(): void {
-    console.log('this.data', this.data)
 
   }
   public ngOnDestroy(): void {
@@ -109,4 +108,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
       icon: "sms_failed"
     },
   ];
+  public tooltipClose(event) {
+    this.popupService.close(undefined);
+  }
 }

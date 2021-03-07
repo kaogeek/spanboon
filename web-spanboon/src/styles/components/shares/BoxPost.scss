@@ -43,7 +43,7 @@
       > .mobile-post {
         border-right: unset;
         color: $brandcolor2;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
         @include pointer();
         text-align: center;
       }
@@ -74,7 +74,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
       }
 
       .mat-slide-toggle {
@@ -270,7 +270,7 @@
             border-top: unset !important;
 
             > .mat-select {
-              @include font-size-9($font-family-kanit500);
+              @include font-size-9($font-family-500);
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -303,7 +303,7 @@
             display: flex;
             padding: 0 10pt;
             align-items: center;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-family-500);
             @include pointer();
 
             &.active-tag1 {
@@ -341,7 +341,7 @@
           > .objective-doing {
             display: flex;
             align-items: center;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-family-500);
             @include pointer();
 
             &.active-tag {
@@ -379,7 +379,7 @@
           display: flex;
           align-items: center;
           padding: 0 0 0 10pt;
-          @include font-size-10($font-family-kanit500);
+          @include font-size-10($font-family-500);
           @include pointer();
           &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -399,7 +399,7 @@
         > .text-limit {
           padding: 0 10pt;
           @include pointer();
-          @include font-size-10($font-family-kanit500);
+          @include font-size-10($font-family-500);
 
           &.validate {
             color: $brandcolor2;
@@ -522,11 +522,11 @@
                     padding: 10pt;
                     align-items: center;
                     border-bottom: $width-border solid $border-color;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-family-500);
 
                     > .list-checkBox {
                       > .name-tag {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                       }
                     }
 
@@ -699,7 +699,7 @@
       border-radius: 30pt;
       @include pointer();
       padding: 0 10pt;
-      @include font-size-9($font-family-kanit400);
+      @include font-size-9($font-family-400);
 
       &:hover {
         background: rgb($bg-grey, 0.7);
@@ -710,7 +710,7 @@
 
 .mat-option {
   > .mat-option-text {
-    @include font-size-9($font-family-kanit500);
+    @include font-size-9($font-family-500);
 
     > .wrapper-body-action {
       display: flex;
@@ -766,7 +766,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0 10pt;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
       }
     }
   }
@@ -777,7 +777,7 @@
     > .mat-form-field-flex {
       > .mat-form-field-infix {
         .mat-select {
-          @include font-size-9($font-family-kanit500);
+          @include font-size-9($font-family-500);
         }
 
         > .selected-dropdown {
@@ -804,7 +804,7 @@
             background-color: $brandcolor2;
             overflow: hidden;
             color: $brandcolor;
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-family-500);
           }
         }
       }
@@ -895,7 +895,7 @@
                       > .mat-tab-link {
                         color: $color-black;
                         @include pointer();
-                        @include font-size-9($font-family-kanit400);
+                        @include font-size-9($font-family-400);
                         opacity: 1;
 
                         &:hover {
@@ -936,14 +936,14 @@
                     align-items: center;
                     justify-content: space-between;
                     padding: 0 10pt;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-family-500);
                   }
 
                   > .list-checkbox {
                     > .mat-checkbox {
                       display: block;
                       padding: 0 10pt;
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-family-500);
 
                       > .mat-checkbox-layout {
                         width: 100%;
@@ -996,7 +996,7 @@
               min-width: 145pt;
               justify-content: space-between;
               > .left {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
               }
               > .setting-all {
                 display: flex;
@@ -1048,7 +1048,7 @@
                         }
                       }
                       > .middle {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                       }
                     }
                   }
@@ -1123,14 +1123,14 @@
         }
 
         > .wrapper-right {
-          @include font-size-9($font-family-kanit500);
+          @include font-size-9($font-family-500);
         }
 
         > .wrapper-middle {
           padding-top: 5pt;
           > .wrapper-edit-story {
             padding: 0 0 0 15pt;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-family-500);
           }
         }
 
