@@ -56,9 +56,9 @@
                 </div>
                 <div class="lost-connect">
                     {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
-                    <div class="link-social" *ngIf="dataBindingTwitter && dataBindingTwitter.providerPageName">
+                    <div class="link-social" *ngIf="dataBindingTwitter && dataBindingTwitter.providerPageId">
                         <span>บัญชี : </span>
-                        <a href="www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank">{{ (
+                        <a href="//www.twitter.com/{{dataBindingTwitter && dataBindingTwitter.providerPageName}}" target="_blank">{{ (
                             dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
                     </div>
                 </div>
