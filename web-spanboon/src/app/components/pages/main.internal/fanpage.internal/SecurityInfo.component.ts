@@ -139,7 +139,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 // this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadIng = false;
 
-                window.bindTwitter = (resultTwitter) => {
+                window.bindTwitter = (resultTwitter) => {  
                     if (resultTwitter !== undefined && resultTwitter !== null) {
                         const twitter = new PageSocialTW();
                         twitter.twitterOauthToken = resultTwitter.token;
@@ -151,6 +151,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                             if (res.data) {
                                 this.connectTwitter = res.data;
                                 this.isLoadingTwitter = false;
+                                this.socialGetBindingTwitter();
                             }
 
                         }).catch((err: any) => {
@@ -160,8 +161,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         });
                     }
                 }
-            }).catch((error: any) => {
-                console.log(error);
+            }).catch((error: any) => { 
                 this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 this.isPreLoadIng = false;
                 this.isLoadingTwitter = false;
