@@ -109,6 +109,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public connectionSocial(text: string, bind?: boolean) {
+
         if (text === 'facebook' && !bind) {
             this.isLoading = true;
             this.clickLoginFB();
@@ -174,6 +175,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         checked: false
                     }
                     this.unBindingSharePost(slider, 'twitter');
+                    this.socialGetBindingTwitter();
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
@@ -321,8 +323,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     fbexptime: response.authResponse.data_access_expiration_time,
                     fbsignedRequest: response.authResponse.signedRequest
                 }
-                this.accessToken = accessToken;
-
+                this.accessToken = accessToken; 
                 this._ngZone.run(() => this.listPageFacebook());
 
             } else { 
@@ -338,11 +339,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             if (response && !response.error) {
                 /* handle the result */
                 this.responseFacabook = response;
-                if (this.responseFacabook !== undefined) {
+                if (this.responseFacabook.length > 0 && this.responseFacabook !== undefined) {
                     Object.assign(this.responseFacabook.data[0], { selected: true });
                     this.getListFacebook(this.responseFacabook);
+                } else {
+                    this.connect = false;
+                    this.showAlertDialog('ไม่สามารถเชื่อมต่อกับเพจได้');
                 }
-            }
+            } 
         });
     }
 
@@ -364,7 +368,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             if (picture && !picture.error) {
                 // console.log('picture ', picture)
                 /* handle the result */
-
             }
         })
     }
