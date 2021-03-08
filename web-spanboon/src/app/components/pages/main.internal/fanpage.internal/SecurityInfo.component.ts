@@ -164,6 +164,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 console.log(error);
                 this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 this.isPreLoadIng = false;
+                this.isLoadingTwitter = false;
             });
 
         } else if (text === 'twitter' && bind) {
