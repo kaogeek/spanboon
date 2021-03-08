@@ -29,7 +29,7 @@
             }
 
             > .wrapper-sub-header {
-                @include font-size-9($font-family-kanit400);
+                @include font-size-9($font-family-400);
             }
         }
 
@@ -53,7 +53,7 @@
                 > .span-for {
                     flex: 0 0 auto;
                     display: inline-block;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-family-500);
                     position: relative;
                     padding: 0 20px;
                 }
@@ -77,7 +77,7 @@
         > .policy {
             display: flex;
             justify-content: center;
-            @include font-size-10($font-family-kanit300);
+            @include font-size-10($font-family-300);
             padding-top: 5px;
             color: $color-gray;
             &:hover {

@@ -43,7 +43,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
                 flex: 1 1 0%;
                 margin-right: 10pt;
 
@@ -82,7 +82,7 @@
             }
 
             .link-connect {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
                 color: $color-gray;
 
                 &:hover {
@@ -116,14 +116,14 @@
             color: $white;
             background-color: $brandcolor2;
             > .mat-button-wrapper {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
             }
         }
         > .mat-button:first-child {
             border: 0.3px solid $border-color;
             margin-right: 5pt;
             > .mat-button-wrapper {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
             }
         }
     }

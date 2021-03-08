@@ -27,7 +27,7 @@
 //     /* IE 10+ */
 //     user-select: none;
 //     /* Standard syntax */
-//     @include font-size-8($font-family-kanit500);
+//     @include font-size-8($font-family-500);
 //     transform: scale(1, 1);
 
 //     &:focus {
@@ -76,7 +76,7 @@
     text-decoration: unset;
     color: unset;
     @include pointer();
-    @include font-size-8($font-family-kanit500);
+    @include font-size-8($font-family-500);
     transform: scale(1, 1);
 
     &:active {

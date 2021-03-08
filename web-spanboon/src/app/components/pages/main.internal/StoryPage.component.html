@@ -52,7 +52,7 @@
             <div class="ct-container" [innerHTML]='postStoryData.story | highlight' id="storyBody">
             </div>
             <div class="ct-needs">
-                <card-item [itemData]="dataNeeds"></card-item>
+                <card-item [itemData]="postStoryData.needs"></card-item>
             </div>
             <div *ngIf="user !== undefined && user !== null" class="control">
                 <div class="even">

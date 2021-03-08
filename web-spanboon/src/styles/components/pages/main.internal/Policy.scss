@@ -15,7 +15,7 @@
                 font-family: "Kanit-500";
             }
             > .detail-policy {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-family-500);
                 > .policy {
                 }
             }

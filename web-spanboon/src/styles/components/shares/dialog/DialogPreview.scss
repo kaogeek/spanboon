@@ -6,7 +6,7 @@
     width: 630pt;
     height: 435pt;
     overflow: hidden;
-    @include font-size-10($font-family-kanit400);
+    @include font-size-10($font-family-400);
     background: #fff;
 
     .mat-dialog-title {

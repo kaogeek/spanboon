@@ -108,7 +108,7 @@
                             display: flex;
                             align-items: center;
                             &:last-of-type {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                             > .mat-slide-toggle {
                                 margin-left: 5pt;
@@ -141,7 +141,7 @@
                                             height: 25pt;
                                             color: $color-black;
                                             padding: 2pt 10pt 2pt 13pt;
-                                            @include font-size-10($font-family-kanit500);
+                                            @include font-size-10($font-family-500);
                                             box-shadow: 0px 1px 9px 0 #00000020;
                                         }
                                     }
@@ -173,7 +173,7 @@
                             display: flex;
                             align-items: center;
                             @include pointer();
-                            @include font-size-9($font-family-kanit300);
+                            @include font-size-9($font-family-300);
                             color: $color-gray;
                             margin-left: 9pt;
                             width: 50pt;
@@ -198,15 +198,15 @@
                                 font-family: "Kanit-500";
                                 margin-left: 6pt;
                                 > .top {
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-family-500);
                                     color: #a5a5a6;
                                 }
                                 > .middle {
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-family-500);
                                 }
                                 > .trend {
                                     display: flex;
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-family-500);
                                     > .count {
                                     }
                                     // > .tag {
@@ -222,7 +222,7 @@
                         }
                         > .header-card {
                             padding: 4pt 5pt;
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-family-500);
                         }
                         > .box-slider {
                             // border: 0.7pt solid $border-color;
@@ -259,7 +259,7 @@
                                     opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
                             }
                             > .ng5-slider-bubble {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                             > .ng5-slider-pointer.ng5-slider-active::after {
                                 transform: scale(1);
@@ -277,7 +277,7 @@
                         text-align: center;
                         color: $brandcolor2;
                         @include pointer();
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                         min-height: 26pt;
                         display: flex;
                         justify-content: center;
@@ -486,7 +486,7 @@
                                             > .mat-tab-links {
                                                 > .mat-tab-link {
                                                     min-width: auto;
-                                                    @include font-size-8($font-family-kanit400);
+                                                    @include font-size-8($font-family-400);
                                                     font-weight: bold;
                                                     opacity: 1;
 
@@ -509,7 +509,7 @@
                                 > .menu-sorting {
                                     height: 20pt;
                                     border: 0.7pt solid $border-color;
-                                    @include font-size-9($font-family-kanit400);
+                                    @include font-size-9($font-family-400);
                                     &:hover {
                                         color: $brandcolor2;
                                         background: rgba($brandcolor2, 0.1);
@@ -633,7 +633,7 @@
                     > .feed-none-post {
                         text-align: center;
                         padding: 20pt 0;
-                        @include font-size-7($font-family-kanit500);
+                        @include font-size-7($font-family-500);
                     }
 
                     > .wrapper-body-middle {
@@ -684,19 +684,19 @@
                             }
 
                             > .trend-title {
-                                // @include font-size-10($font-family-kanit400);
-                                @include font-size-9($font-family-kanit400);
+                                // @include font-size-10($font-family-400);
+                                @include font-size-9($font-family-400);
                                 color: $color-gray;
                             }
 
                             > .trend-hashtag {
-                                @include font-size-9($font-family-kanit500);
+                                @include font-size-9($font-family-500);
                                 color: $black;
                             }
 
                             > .trend-hashtag-count {
                                 margin-top: 5px;
-                                @include font-size-9($font-family-kanit500);
+                                @include font-size-9($font-family-500);
                                 color: $color-gray;
                             }
                         }
@@ -704,7 +704,7 @@
                         > .read-more {
                             @include pointer();
                             padding: 15px;
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-family-500);
                             color: $brandcolor2;
 
                             &:hover {
@@ -751,7 +751,7 @@
                                     flex-direction: column;
 
                                     > .header-name {
-                                        @include font-size-9($font-family-kanit500);
+                                        @include font-size-9($font-family-500);
                                     }
 
                                     > .mat-radio-group {
@@ -765,7 +765,7 @@
                                                 flex-direction: row-reverse;
                                                 justify-content: space-between;
                                                 align-items: center;
-                                                @include font-size-9($font-family-kanit500);
+                                                @include font-size-9($font-family-500);
                                                 color: rgba($black, 0.6);
 
                                                 > .mat-radio-container {
@@ -798,7 +798,7 @@
                                         flex: 1 1 0%;
                                         margin-right: 5pt;
                                         > .input-data {
-                                            @include font-size-9($font-family-kanit400);
+                                            @include font-size-9($font-family-400);
                                         }
                                         > .autocomp-close {
                                             @include pointer();
@@ -812,7 +812,7 @@
                                         display: flex;
                                         align-items: center;
                                         @include pointer();
-                                        @include font-size-9($font-family-kanit300);
+                                        @include font-size-9($font-family-300);
                                         color: $color-gray;
                                         margin-left: 9pt;
                                         width: 50pt;
@@ -844,18 +844,18 @@
                                             align-items: center;
                                             justify-content: center;
                                             background-color: $brandcolor2;
-                                            @include font-size-10($font-family-kanit500);
+                                            @include font-size-10($font-family-500);
                                             color: $white;
                                         }
 
                                         > .page-name {
                                             margin-left: 5pt;
                                             > .top {
-                                                @include font-size-9($font-family-kanit500);
+                                                @include font-size-9($font-family-500);
                                             }
                                             > .page-username {
                                                 color: $color-gray;
-                                                @include font-size-9($font-family-kanit500);
+                                                @include font-size-9($font-family-500);
                                             }
                                         }
                                     }
@@ -897,10 +897,10 @@
                                     > .list-follow-name {
                                         margin-left: 5pt;
                                         > .follow-name {
-                                            @include font-size-10($font-family-kanit500);
+                                            @include font-size-10($font-family-500);
                                         }
                                         > .follow-name-eng {
-                                            @include font-size-10($font-family-kanit400);
+                                            @include font-size-10($font-family-400);
                                             color: $color-gray;
                                         }
                                     }
@@ -920,7 +920,7 @@
                                 min-height: 26pt;
                                 border-top: $width-border solid $border-color;
                                 @include pointer();
-                                @include font-size-9($font-family-kanit500);
+                                @include font-size-9($font-family-500);
                             }
                         }
                         > .wrapper-matter {
@@ -938,7 +938,7 @@
                                 color: $brandcolor2;
                                 padding: 10pt;
                                 text-align: center;
-                                @include font-size-9($font-family-kanit500);
+                                @include font-size-9($font-family-500);
                                 @include pointer();
                             }
                         }
@@ -975,11 +975,11 @@
                                 border-radius: 8pt;
                             }
                             > .trend-hashtag {
-                                @include font-size-10($font-family-kanit400);
+                                @include font-size-10($font-family-400);
                             }
                             > .trend-hashtag-count {
                                 color: $color-gray;
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-family-500);
                             }
                         }
                     }
@@ -1031,7 +1031,7 @@
                                     margin-left: 5pt;
 
                                     > .follow-name {
-                                        @include font-size-10($font-family-kanit500);
+                                        @include font-size-10($font-family-500);
 
                                         > .img-icon {
                                             width: 12pt;
@@ -1040,7 +1040,7 @@
                                     }
 
                                     > .follow-name-eng {
-                                        @include font-size-10($font-family-kanit500);
+                                        @include font-size-10($font-family-500);
                                         color: $color-gray;
                                     }
                                 }
@@ -1058,7 +1058,7 @@
                         text-align: center;
                         color: $brandcolor2;
                         @include pointer();
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                         min-height: 26pt;
                         display: flex;
                         justify-content: center;
@@ -1097,7 +1097,7 @@ page-hashtag {
                     align-items: center;
                     justify-content: center;
                     background-color: $brandcolor2;
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-family-500);
                     color: $white;
                 }
                 > .show-name {
@@ -1123,7 +1123,7 @@ page-hashtag {
             border-bottom: 0.7pt solid $border-color;
         }
         > .list-sort {
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-family-500);
             padding: 0 18pt;
             > .select-name {
                 &.active {
@@ -1446,7 +1446,7 @@ page-hashtag {
                                             > .mat-tab-list {
                                                 > .mat-tab-links {
                                                     > .mat-tab-link {
-                                                        @include font-size-9($font-family-kanit500);
+                                                        @include font-size-9($font-family-500);
                                                     }
                                                 }
                                             }
