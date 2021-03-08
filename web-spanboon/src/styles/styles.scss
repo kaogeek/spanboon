@@ -100,7 +100,7 @@
           align-items: flex-end;
           .box-from-text {
             color: #ff0000;
-            @include font-size-4($font-family-400);
+            @include font-size-10($font-family-400);
             width: 105%;
             text-align: initial;
           }
