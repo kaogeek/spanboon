@@ -93,8 +93,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkLoginAndRedirection();
 
     let doRunAccessToken = false;
-    const fullURL = window.location.href;
-    console.log('fullURL ', fullURL)
+    const fullURL = window.location.href; 
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
