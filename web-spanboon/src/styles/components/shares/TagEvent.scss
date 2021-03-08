@@ -18,7 +18,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-family-500);
         @include pointer();
         padding: 0 3px;
         margin: 0 3px;

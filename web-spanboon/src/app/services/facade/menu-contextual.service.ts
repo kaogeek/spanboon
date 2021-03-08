@@ -179,7 +179,7 @@ export class MenuContextualService {
 	public setArrow() {
 		setTimeout(() => {
 			$('.back-drop-tool').mousemove(function () {
-				// $(".cdk-overlay-connected-position-bounding-box").remove();
+				$(".cdk-overlay-connected-position-bounding-box").remove();
 			});
 		}, 1000);
 

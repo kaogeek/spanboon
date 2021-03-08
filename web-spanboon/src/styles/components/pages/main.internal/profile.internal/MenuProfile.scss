@@ -52,7 +52,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-family-500);
         }
     }
 }
@@ -109,13 +109,13 @@
 
                     > .profile-name-eng {
                         color: $color-gray;
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                     }
 
                     > .header-follow {
                         display: flex;
                         align-items: center;
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                         justify-content: center;
                         padding-top: 10px;
 
@@ -156,7 +156,7 @@
 
                     > .name {
                         padding: 5pt 13pt;
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-family-500);
                     }
                 }
             }
