@@ -106,7 +106,7 @@
                 z-index: 99;
                 border-bottom: $width-border solid $border-separator;
                 border-top: $width-border solid$border-separator;
-                @include font-size-9($font-family-500);
+                @include font-size-9($font-head-500);
                 > .page-name-div {
                 }
 
@@ -171,7 +171,7 @@
                         }
                         // > .wrapper-page-name {
                         > .wrapper-page-name-eng {
-                            @include font-size-10($font-family-500);
+                            @include font-size-10($font-head-500);
                             color: $color-gray;
                         }
                         > .offical-page {

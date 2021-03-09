@@ -54,7 +54,7 @@ toolbar-tag {
                 }
                 > .form-search-field {
                     padding-left: 10pt;
-                    @include font-size-9($font-family-anakotmai-medium);
+                    @include font-size-9($font-content2-medium);
                     > .mat-form-field-wrapper {
                         > .mat-form-field-flex {
                             > .mat-form-field-infix {
@@ -74,10 +74,10 @@ toolbar-tag {
                     padding: 10pt;
                     align-items: center;
                     border-bottom: $width-border solid $border-color;
-                    @include font-size-9($font-family-anakotmai-medium);
+                    @include font-size-9($font-content2-medium);
                     > .list-checkBox {
                         > .name-tag {
-                            @include font-size-9($font-family-anakotmai-medium);
+                            @include font-size-9($font-content2-medium);
                         }
                     }
                     > .tag-count {

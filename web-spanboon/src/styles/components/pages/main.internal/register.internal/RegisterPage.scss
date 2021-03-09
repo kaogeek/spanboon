@@ -94,13 +94,13 @@
             box-shadow: 0px 1px 9px 0 #00000020;
             border: unset;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            @include font-size-9($font-family-500);
+            @include font-size-9($font-head-500);
             border: 2px solid transparent;
           }
 
           > .display-name {
             margin-top: 3px;
-            @include font-size-9($font-family-500);
+            @include font-size-9($font-head-500);
             word-break: break-all;
             padding: 0 13px;
           }
@@ -132,7 +132,7 @@
         box-shadow: 0px 1px 9px 0 #00000020;
         border: unset;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        @include font-size-9($font-family-500);
+        @include font-size-9($font-head-500);
         margin-bottom: 10pt;
       }
 
@@ -148,7 +148,7 @@
       }
 
       > .title-label {
-        @include font-size-9($font-family-500);
+        @include font-size-9($font-head-500);
         margin: 10pt 0 8pt 0;
       }
 
@@ -190,7 +190,7 @@
                 height: 25pt;
                 color: $color-black;
                 padding: 2pt 20pt 2pt 13pt;
-                @include font-size-10($font-family-500);
+                @include font-size-10($font-head-500);
                 box-shadow: 0px 1px 9px 0 #00000020;
                 > .mat-form-field-label-wrapper {
                 }
@@ -266,7 +266,7 @@
 
             > .mat-radio-label-content {
               color: $color-black;
-              @include font-size-10($font-family-500);
+              @include font-size-10($font-head-500);
             }
           }
         }
@@ -276,7 +276,7 @@
         color: $color-gray;
         text-align: left;
         margin: 15pt;
-        @include font-size-10($font-family-300);
+        @include font-size-10($font-head-300);
         span {
           font-family: "Kanit-500";
         }
@@ -295,7 +295,7 @@
       > .policy {
         display: flex;
         justify-content: center;
-        @include font-size-10($font-family-300);
+        @include font-size-10($font-head-300);
         padding-top: 5px;
         @include pointer();
         color: $color-gray;

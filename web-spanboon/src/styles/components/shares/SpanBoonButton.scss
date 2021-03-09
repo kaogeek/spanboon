@@ -6,7 +6,7 @@
  */
 
 .spanboon-button {
-    @include font-size-10($font-family-500);
+    @include font-size-10($font-head-500);
     box-shadow: 0px 1px 2px 0 #00000030;
     border-radius: 3pt;
     color: $white;

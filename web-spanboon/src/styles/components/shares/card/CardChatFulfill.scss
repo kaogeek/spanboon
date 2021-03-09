@@ -150,7 +150,7 @@
             }
 
             > .fulfill-item-footer {
-                @include font-size-10($font-family-400);
+                @include font-size-10($font-head-400);
                 > .fulfill-item-name {
                 }
 
@@ -214,7 +214,7 @@
             }
 
             > .fulfill-item-footer {
-                @include font-size-10($font-family-400);
+                @include font-size-10($font-head-400);
                 > .fulfill-item-name {
                 }
 

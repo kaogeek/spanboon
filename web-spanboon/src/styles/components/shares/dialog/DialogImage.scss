@@ -26,7 +26,7 @@
             padding: 0 10pt;
 
             >.title-name{
-                @include font-size-8($font-family-500);
+                @include font-size-8($font-head-500);
             }
         }
 
@@ -116,7 +116,7 @@
             >.butt{
                 border-radius: 5px;
                 padding: 2pt 0;
-                @include font-size-8($font-family-400);
+                @include font-size-8($font-head-400);
                 cursor: pointer;
                 width: 54pt;
                 height: 16pt;
