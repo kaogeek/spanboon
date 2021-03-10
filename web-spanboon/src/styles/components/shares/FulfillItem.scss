@@ -319,6 +319,7 @@
                             right: 5pt;
                             color: $color-gray;
                             @include font-size-10($font-head-300);
+                            color: $color-gray;
                             align-items: center;
                             > .material-icons {
                                 color: $status-success;

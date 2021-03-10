@@ -11,7 +11,6 @@ import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import { SearchFilter } from './requests/SearchFilterRequest'; 
 import { UserFollowService } from '../services/UserFollowService';
-import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { HashTagService } from '../services/HashTagService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
