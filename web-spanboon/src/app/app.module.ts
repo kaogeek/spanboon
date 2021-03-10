@@ -220,7 +220,8 @@ import {
   ChatRoomFacade,
   ChatFacade,
   AboutPageFacade,
-  TwitterService
+  TwitterService,
+  RecommendFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -430,6 +431,7 @@ const SERVICE_CLASSES: any[] = [
   ChatFacade,
   AboutPageFacade,
   TwitterService,
+  RecommendFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

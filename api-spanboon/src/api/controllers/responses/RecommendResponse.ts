@@ -10,4 +10,9 @@ export class RecommendResponse {
     public subTitle: string;
     public itemType: string;
     public itemId: string;
+    //
+    public type: any;
+    public imageURL: string;
+    public displayName: string;
+
 }
