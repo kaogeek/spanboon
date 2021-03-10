@@ -5,7 +5,6 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-<<<<<<< HEAD
 // .story-container {
 //   background: white;
 //   height: auto;
@@ -211,212 +210,6 @@
 //       }
 //     }
 //   }
-=======
-.story-container {
-  background: white;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  .wp-block-cover-image {
-    position: relative;
-    background-size: cover;
-    background-position: 80%;
-    min-height: 50vh;
-    width: 100%;
-    margin: 0 0 1.5em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .background-text {
-      transition: 0.3s;
-      width: 550px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-      z-index: 10;
-      .background-text-h {
-        @include font-size-5($font-head-500);
-        color: white;
-        line-height: 50px;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .background-text-h-s {
-        @include font-size-8($font-head-300);
-        color: rgb(201, 201, 201);
-        text-align: center;
-        margin-bottom: 20px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-      .line {
-        width: 20%;
-        height: 5pt;
-        background-color: white;
-        margin-bottom: 20px;
-      }
-      .background-text-score {
-        width: 100%;
-        height: auto;
-        display: flex;
-        flex-direction: initial;
-        justify-content: center;
-
-        .text-score {
-          @include font-size-8($font-head-500);
-          color: #c9c9c9;
-          text-align: center;
-          margin: 0px 10px 0px 10px;
-        }
-        .text-point {
-          @include font-size-8($font-head-500);
-          color: #c9c9c9;
-          text-align: center;
-        }
-      }
-    }
-  }
-
-  .dis-container {
-    padding: 15px;
-    width: 80%;
-    display: flex;
-    height: auto;
-    .left {
-      width: 70%;
-      padding: 10px;
-      position: relative;
-      .dis-sub-name-page {
-        padding: 20px 0px;
-        border-bottom: 1px solid #efefef;
-        margin-bottom: 20px;
-        display: flex;
-        .dis-sub-img-page {
-          width: 10%;
-          .img-user {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            overflow: hidden;
-            background-color: #747743;
-          }
-        }
-        .dis-sub-name-text-page {
-          width: 90%;
-          display: flex;
-          align-items: center;
-        }
-      }
-      .user {
-        @include font-size-8($font-head-400);
-        display: flex;
-        flex-direction: column;
-        .user-name {
-          display: flex;
-          align-items: center;
-          .point {
-            width: 10px;
-            height: 10px;
-            border-radius: 5px;
-            background-color: gray;
-            margin-right: 10px;
-          }
-          .type {
-            @include font-size-10($font-head-300);
-            margin-right: 15px;
-          }
-          .date {
-            @include font-size-11($font-head-300);
-            color: gray;
-          }
-        }
-      }
-      .ct-container {
-        width: 100%;
-        height: auto;
-        position: relative;
-        .ct-background-text {
-          width: 100%;
-          height: auto;
-          margin: 10px 0px;
-          @include font-size-9($font-content-light);
-        }
-        .ct-background-image {
-          width: 100%;
-          margin: 10px 0px;
-          background-size: 100%;
-          height: auto;
-        }
-        .ct-background-video {
-          width: 100%;
-          margin: 10px 0px;
-          height: auto;
-          display: flex;
-          justify-content: center;
-        }
-      }
-      .ct-needs {
-        display: none;
-      }
-      .control {
-        display: flex;
-        border-top: solid 1px #f3f3f3;
-        padding: 10px 0px;
-        .even {
-          width: 60%;
-          @include font-size-8($font-head-400);
-          color: #e65857;
-          font-size: 15px;
-          display: flex;
-          align-items: center;
-        }
-        .controls {
-          width: 40%;
-        }
-      }
-      .comment {
-        padding: 10px 20px;
-        display: flex;
-        // border: 1px solid #efefef;
-        border-radius: 4px;
-        .img-user {
-          width: 34px;
-          height: 34px;
-          border-radius: 20px;
-          overflow: hidden;
-          background-color: #747743;
-        }
-        > .input-comment {
-          width: calc(100% - 60pt);
-          display: flex;
-          border: 1px solid #f0f0f0;
-          border-radius: 25px;
-          overflow: hidden;
-          margin-left: 20px;
-        }
-      }
-    }
-    .right {
-      width: 30%;
-      padding: 10px;
-      position: relative;
-      .sticky {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 60pt;
-      }
-      .card-item-looking-for > .btn-donate {
-        display: none !important;
-      }
-    }
-  }
->>>>>>> origin/dev-chalucks
 
 //   .story-footer {
 //     width: 100%;
@@ -464,8 +257,6 @@
 
 //         &:hover {
 //         }
-
-<<<<<<< HEAD
 //         > .material-icons {
 //         }
 //       }
@@ -479,21 +270,6 @@
 //       display: flex;
 //     }
 //   }
-=======
-        > .material-icons {
-        }
-      }
-    }
-    .text {
-      padding: 30px 50px;
-      @include font-size-7($font-content-light);
-      color: #000000;
-    }
-    .more-story {
-      display: flex;
-    }
-  }
->>>>>>> origin/dev-chalucks
 
 //   .story-footer-teb {
 //     width: 100%;
@@ -639,29 +415,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-<<<<<<< HEAD
       max-width: 70%;
       text-align: center;
       width: auto;
       span {
-=======
-      padding: 40px;
-      z-index: 10;
-      .background-text-h {
-        @include font-size-7($font-content-light);
->>>>>>> origin/dev-chalucks
         color: white;
       }
-<<<<<<< HEAD
       > .post-title {
         @include font-size-6($font-head-500);
         line-height: 40px;
-=======
-      .background-text-h-s {
-        @include font-size-10($font-content-light);
-        color: rgb(201, 201, 201);
-        text-align: center;
->>>>>>> origin/dev-chalucks
         margin-bottom: 20px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -686,7 +448,6 @@
       }
       > .count {
         display: flex;
-<<<<<<< HEAD
         align-items: center;
         @include font-size-9($font-head-300);
         > .text-count-desktop {
@@ -695,21 +456,6 @@
         }
         > .text-point {
           margin: 0px 3px;
-=======
-        flex-direction: initial;
-        justify-content: center;
-
-        .text-score {
-          @include font-size-9($font-content-light);
-          color: #c9c9c9;
-          text-align: center;
-          margin: 0px 10px 0px 10px;
-        }
-        .text-point {
-          @include font-size-9($font-content-light);
-          color: #c9c9c9;
-          text-align: center;
->>>>>>> origin/dev-chalucks
         }
         > .box-count {
           display: none;
@@ -748,6 +494,7 @@
           > .page-display {
             width: auto;
             > .type {
+              display: flex;
               > .type-status {
                 width: 15px;
                 height: 15px;
@@ -785,7 +532,6 @@
       display: flex !important;
       @include font-size-10($font-head-500);
       align-items: center;
-<<<<<<< HEAD
       justify-content: center;
       width: auto;
       height: 40px;
@@ -796,33 +542,6 @@
     }
     .text-count-desktop {
       display: none !important;
-=======
-      .background-text {
-        transition: 0.6s;
-        width: 350px;
-        .background-text-h {
-          font-size: 28px;
-        }
-        .background-text-h-s {
-          @include font-size-10($font-content-light);
-        }
-      }
-    }
-    .dis-container {
-      transition: 0.6s;
-      width: 100%;
-      padding: 0;
-      .dis-sub-name-page {
-      }
-      .ct-container {
-        .ct-background-text {
-          @include font-size-9($font-content-light);
-        }
-        .ct-background-image {
-          @include font-size-9($font-content-light);
-        }
-      }
->>>>>>> origin/dev-chalucks
     }
   }
 
