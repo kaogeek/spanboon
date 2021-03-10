@@ -105,6 +105,11 @@
         > .post-name {
           @include font-size-10($font-head-200);
           color: #a5a5a6;
+          span {
+            &:hover {
+              color: $brandcolor2;
+            }
+          }
         }
       }
     }
