@@ -1126,11 +1126,9 @@ export class PagePostController {
                         }
                     },
                     {
-                        $project: {
-                            'ownerUser._id': 0,
+                        $project: {  
                             'ownerUser.username': 0,
-                            'ownerUser.password': 0,
-                            'ownerUser.uniqueId': 0,
+                            'ownerUser.password': 0, 
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
