@@ -165,9 +165,10 @@
                 margin-left: 8px;
 
                 > .material-icons {
+                    font-family: 'Material Icons' !important;
                     color: $brandcolor2;
                     font-weight: 900;
-                    @include font-size-8($font-head-500);
+                    font-size: $font-size-icon-large;
                 }
 
                 > .time {
@@ -217,9 +218,10 @@
                         margin-right: 8px;
 
                         > .material-icons {
+                            font-family: 'Material Icons' !important;
                             color: $brandcolor2;
                             font-weight: 900;
-                            @include font-size-8($font-head-500);
+                            font-size: $font-size-icon-large;
                         }
 
                         > .time {
@@ -411,6 +413,7 @@
             flex: 0 0 auto;
 
             .material-icons {
+                font-family: 'Material Icons' !important;
                 font-size: 20pt;
                 color: $brandcolor2;
             }

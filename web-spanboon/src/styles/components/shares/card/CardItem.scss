@@ -26,6 +26,7 @@
                 @include font-size-9($font-head-500);
             }
             > .material-icons {
+                font-family: 'Material Icons' !important;
                 @include pointer();
             }
 
@@ -43,7 +44,8 @@
             flex: 0 0 auto;
 
             > .material-icons {
-                @include font-size-8($font-head-500);
+                font-family: 'Material Icons' !important;
+                font-size: $font-size-icon-large;
                 @include pointer();
             }
         }

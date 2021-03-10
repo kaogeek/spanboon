@@ -480,7 +480,8 @@
                         cursor: pointer;
 
                         > .material-icons {
-                            @include font-size-9($font-head-500);
+                            font-family: 'Material Icons' !important;
+                            font-size: $font-size-icon-small;
                         }
                     }
                 }

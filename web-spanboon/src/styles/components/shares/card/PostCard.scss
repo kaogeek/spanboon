@@ -149,7 +149,6 @@
                 min-height: 55pt;
                 margin-bottom: 15pt;
                 flex: 1 1 0%;
-                font-family: "Sarabun-Light";
                 @include font-size-10($font-content-light);
                 word-break: break-word;
 
@@ -306,7 +305,7 @@
                 }
 
                 > .content-post {
-                    @include font-size-10($font-head-500);
+                    @include font-size-10($font-content-light);
                 }
             }
         }

@@ -22,6 +22,7 @@
         background-color: $brandcolor2;
         > .material-icons {
             display: flex;
+            font-family: 'Material Icons' !important;
             justify-content: flex-end;
             cursor: pointer;
             color: $white;

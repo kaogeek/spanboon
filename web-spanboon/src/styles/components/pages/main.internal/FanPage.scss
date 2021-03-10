@@ -25,7 +25,7 @@
         > .wrapper-cover-image {
           width: calc(100% - 4px);
           height: calc(#{$height-cover-img-fanpage} - 4px);
-          border: 2px dashed $brandcolor2;
+          // border: 2px dashed $brandcolor2;
 
           &:hover {
             @include pointer();
@@ -399,7 +399,8 @@
               }
 
               > .material-icons {
-                @include font-size-8($font-head-500);
+                font-family: "Material Icons" !important;
+                font-size: $font-size-icon-small;
                 @include pointer();
                 flex: 0 0 auto;
               }
@@ -686,7 +687,8 @@
 
                   > .mat-button-wrapper {
                     > .material-icons {
-                      @include font-size-5($font-head-500);
+                      font-family: 'Material Icons' !important;
+                      font-size: $font-size-icon-small;
                     }
                   }
                 }
