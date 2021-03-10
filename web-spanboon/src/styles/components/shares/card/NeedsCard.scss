@@ -201,7 +201,7 @@
                                         height: 26pt;
                                         color: $bg-color4;
                                         @include font-size-10($font-head-500);
-
+                                        color: $color-gray;
                                         > .material-icons {
                                             font-family: "Material Icons" !important;
                                             color: $status-success;
