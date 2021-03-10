@@ -59,7 +59,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
   public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-  public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+  public accessTokenLink = '';
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
@@ -103,7 +103,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }
 
-    if (doRunAccessToken) {
+    if (doRunAccessToken) { 
       this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
