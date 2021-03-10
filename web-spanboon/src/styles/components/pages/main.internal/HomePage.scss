@@ -236,7 +236,7 @@
         > .wrapper-img-detail {
           position: relative;
           font-family: "Sarabun-Light";
-          @include font-size-9($font-family-sarabun-light);
+          @include font-size-9($font-content-light);
 
           > .btn-read-more {
           }

@@ -43,7 +43,7 @@
         justify-content: center;
         top: -6px;
         right: -5px;
-        @include font-size-10($font-family-300);
+        @include font-size-10($font-head-300);
 
         &.active-plus {
             padding: 1px 5px;
@@ -88,7 +88,7 @@
         height: 40pt;
         padding: 0 15pt;
         border-bottom: $width-border solid $border-separator;
-        @include font-size-10($font-family-500);
+        @include font-size-10($font-head-500);
 
         > .wrapper-noti {
         }
@@ -145,12 +145,12 @@
                             justify-content: center;
                             background-color: $brandcolor2;
                             color: $white;
-                            @include font-size-10($font-family-500);
+                            @include font-size-10($font-head-500);
                         }
                     }
 
                     > .wrapper-message {
-                        @include font-size-10($font-family-500);
+                        @include font-size-10($font-head-500);
 
                         > .top {
                             color: $black;
@@ -165,7 +165,7 @@
                             display: flex;
                             align-items: center;
                             color: $color-gray;
-                            @include font-size-11($font-family-400);
+                            @include font-size-11($font-head-400);
 
                             &:hover {
                                 color: rgba($brandcolor2, 0.95);
@@ -197,7 +197,7 @@
         height: 40pt;
         background-color: $bg-grey;
         @include pointer();
-        @include font-size-10($font-family-500);
+        @include font-size-10($font-head-500);
         user-select: none;
     }
 }
@@ -239,7 +239,7 @@
         .notiAlert {
             min-width: 16px;
             height: 16px;
-            @include font-size-11($font-family-300);
+            @include font-size-11($font-head-300);
             top: -2px;
             right: -3px;
 

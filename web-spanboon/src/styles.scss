@@ -226,7 +226,7 @@ p {
 
 textarea {
     outline: none;
-    @include font-size-9($font-family-200);
+    @include font-size-9($font-head-200);
 }
 
 textarea:focus,
@@ -253,7 +253,7 @@ input:focus {
 //                 // }
 
 //                 > .mat-select {
-//                     @include font-size-9($font-family-500);
+//                     @include font-size-9($font-head-500);
 //                     > .mat-select-trigger {
 //                         > .mat-select-value {
 //                         }

@@ -73,7 +73,7 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                @include font-size-10($font-family-500);
+                @include font-size-10($font-head-500);
                 &:hover {
                     transition: 0.4s;
                     transform: scale(1.1);
@@ -91,7 +91,7 @@
             transition: 0.2s;
             width: 60pt;
             height: 20pt;
-            @include font-size-10($font-family-500);
+            @include font-size-10($font-head-500);
             border-radius: 4px;
             cursor: pointer;
             display: flex;

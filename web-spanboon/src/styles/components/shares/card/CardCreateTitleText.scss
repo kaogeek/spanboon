@@ -52,7 +52,7 @@
         .text-area {
             width: calc(100% - 32px);
             resize: none;
-            @include font-size-11($font-family-500);
+            @include font-size-11($font-head-500);
             padding: 10px;
             border: 1px solid rgb(226, 226, 226);
             overflow: auto;
@@ -79,7 +79,7 @@
             transition: 0.2s;
             width: 60pt;
             height: 20pt;
-            @include font-size-10($font-family-500);
+            @include font-size-10($font-head-500);
             border-radius: 4px;
             cursor: pointer;
             display: flex;
