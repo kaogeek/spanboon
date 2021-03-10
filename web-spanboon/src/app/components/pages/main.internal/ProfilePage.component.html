@@ -351,7 +351,7 @@
                                     [isNotAccess]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                     (delete)="deletePost($event,index)" (update)="editPost($event,index)"></post-data>
                             </ng-container>
-                            <Preload-card ngif="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
+                            <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
                             </Preload-card>
                         </ng-container>
                         <ng-template #elsePost>
@@ -366,7 +366,7 @@
 
                 </div>
                 <div class="side-follow" #sidefeedHeight>
-                    <recommend-card *ngIf="!showLoading" [title]="'คนที่คุณอาจรู้จัก'"></recommend-card>
+                    <recommend-card *ngIf="!showLoading" [title]="'คนที่คุณอาจรู้จัก'" [data]="dataRecommend" (submitFollow)="clickFollowUser()"></recommend-card>
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
                     </Preload-card>
                     <ng-container *ngIf="resProfile && resProfile.provideItems && resProfile.provideItems.length > 0">

@@ -19,6 +19,8 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { RecommendStoryParam } from './params/RecomendStoryParam';
 import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { UserService } from '../services/UserService';
+import { PageService } from '../services/PageService';
 
 @JsonController('/recommend')
 export class RecommendController {
@@ -27,7 +29,9 @@ export class RecommendController {
         private userFollowService: UserFollowService,
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
-        private hashTagService: HashTagService
+        private hashTagService: HashTagService,
+        private userService: UserService,
+        private pageService: PageService,
     ) { }
 
     // Get Recommend API
@@ -46,8 +50,10 @@ export class RecommendController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get()
-    public async getRecomend(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
-        const result: RecommendResponse[] = [];
+    public async getRecomend(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParams() options: any, @Req() req: any, @Res() res: any): Promise<any> {
+        // const result: RecommendResponse[] = [];
+        const result: any = [];
+        // const randomData: RecommendResponse = new RecommendResponse();
         const userId = req.headers.userid;
         // const clientId = req.headers['client-id'];
         // const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
@@ -56,7 +62,6 @@ export class RecommendController {
         if (userId !== null && userId !== undefined && userId !== '') {
             userObjId = new ObjectID(userId);
         }
-
         // Recommend can be Page or User
         // 1. Score from UserEngagement which is not followed user
 
@@ -73,7 +78,6 @@ export class RecommendController {
             };
 
             const followResult: any = await this.userFollowService.search(undefined, undefined, ['subjectId', 'subjectType'], undefined, fwhereConditions, undefined, false);
-
             const orUserConditions = [];
             const orPageConditions = [];
             for (const followObj of followResult) {
@@ -84,32 +88,143 @@ export class RecommendController {
                 }
             }
 
+            let isRandomUser = false;
+            let isRandomPage = false;
+
+            if (options !== undefined) {
+                if (options.isRandomUser !== undefined && typeof options.isRandomUser === 'string') {
+                    if ('TRUE' === options.isRandomUser.toUpperCase()) {
+                        isRandomUser = true;
+                    }
+                }
+                if (options.isRandomPage !== undefined && typeof options.isRandomPage === 'string') {
+                    if ('TRUE' === options.isRandomPage.toUpperCase()) {
+                        isRandomPage = true;
+                    }
+                }
+            }
+
+            // random limit  
+            const limitData = limit ? limit : 3;
+            const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
+            const randomLimitPage = limitData - randomLimitUser;
+            if (isRandomUser) { 
+                const stmt = [];
+                stmt.push({ $match: { _id: { $nin: orUserConditions } } },
+                    { $sample: { size: randomLimitUser } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                    }
+                );
+                const userFollow = await this.userService.aggregate(stmt);
+                for (const user of userFollow) {
+                    Object.assign(user, { type: 'USER' });
+                    result.push(user);
+                }
+            }
+
+            if (isRandomPage) { 
+                const stmt = [];
+                // stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
+                stmt.push({ $match: { _id: { $nin: orPageConditions } } },
+                    { $sample: { size: randomLimitPage } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                    }
+                );
+                const pageFollow = await this.pageService.aggregate(stmt); 
+                for (const page of pageFollow) {
+                    Object.assign(page, { type: 'PAGE' });
+                    result.push(page);
+                }
+            }
+
+            if (!isRandomPage && !isRandomUser) { 
+                const stmt = [
+                    { $sample: { size: randomLimitUser } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                    }
+                ];
+                const userFollow = await this.userService.aggregate(stmt);
+                for (const data of userFollow) {
+                    Object.assign(data, { type: 'USER' });
+                    result.push(data);
+                }
+
+                const stmtPage = [
+                    { $sample: { size: randomLimitPage } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                    }
+                ];
+                const pageFollow = await this.pageService.aggregate(stmtPage);
+                for (const data of pageFollow) {
+                    Object.assign(data, { type: 'PAGE' });
+                    result.push(data);
+                }
+            }
+
             // add in filter
-            notUserFollowedFilter.whereConditions.userId = userObjId;
-            notUserFollowedFilter.whereConditions.contentType = ENGAGEMENT_CONTENT_TYPE.USER;
-            notUserFollowedFilter.whereConditions.contentId = {
-                $nin: orUserConditions
-            };
-            notUserFollowedFilter.whereConditions.action = {
-                $in: [ENGAGEMENT_ACTION.VIEW, ENGAGEMENT_ACTION.TAG, ENGAGEMENT_ACTION.CLICK, ENGAGEMENT_ACTION.LIKE, ENGAGEMENT_ACTION.SEARCH]
-            };
+            // notUserFollowedFilter.whereConditions.userId = userObjId;
+            // notUserFollowedFilter.whereConditions.contentType = ENGAGEMENT_CONTENT_TYPE.USER;
+            // notUserFollowedFilter.whereConditions.contentId = {
+            //     $nin: orUserConditions
+            // };
+            // notUserFollowedFilter.whereConditions.action = {
+            //     $in: [ENGAGEMENT_ACTION.VIEW, ENGAGEMENT_ACTION.TAG, ENGAGEMENT_ACTION.CLICK, ENGAGEMENT_ACTION.LIKE, ENGAGEMENT_ACTION.SEARCH]
+            // };
 
-            notPageFollowedFilter.whereConditions.userId = userObjId;
-            notPageFollowedFilter.whereConditions.contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
-            notPageFollowedFilter.whereConditions.contentId = {
-                $nin: orPageConditions
-            };
-            notPageFollowedFilter.whereConditions.action = {
-                $in: [ENGAGEMENT_ACTION.VIEW, ENGAGEMENT_ACTION.TAG, ENGAGEMENT_ACTION.CLICK, ENGAGEMENT_ACTION.LIKE, ENGAGEMENT_ACTION.SEARCH]
-            };
+            // notPageFollowedFilter.whereConditions.userId = userObjId;
+            // notPageFollowedFilter.whereConditions.contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
+            // notPageFollowedFilter.whereConditions.contentId = {
+            //     $nin: orPageConditions
+            // };
+            // notPageFollowedFilter.whereConditions.action = {
+            //     $in: [ENGAGEMENT_ACTION.VIEW, ENGAGEMENT_ACTION.TAG, ENGAGEMENT_ACTION.CLICK, ENGAGEMENT_ACTION.LIKE, ENGAGEMENT_ACTION.SEARCH]
+            // }; 
 
-            const userFolEnResult = await this.userEngagementService.search(undefined, undefined, undefined, undefined, notUserFollowedFilter.whereConditions, undefined, false);
-            console.log(userFolEnResult);
+            // const userFolEnResult = await this.userEngagementService.search(undefined, undefined, undefined, undefined, notUserFollowedFilter.whereConditions, undefined, false);
+            // console.log(userFolEnResult);
 
-            const pageFolEnResult = await this.userEngagementService.search(undefined, undefined, undefined, undefined, notPageFollowedFilter.whereConditions, undefined, false);
-            console.log(pageFolEnResult);
+            // const pageFolEnResult = await this.userEngagementService.search(undefined, undefined, undefined, undefined, notPageFollowedFilter.whereConditions, undefined, false);
+            // console.log(pageFolEnResult);
         } else {
-            // guest mode
+            // guest mode   
+            const limitData = limit ? limit : 3; 
+            const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
+            const randomLimitPage = limitData - randomLimitUser;
+
+            const stmt = [
+                { $sample: { size: randomLimitUser } },
+                { $skip: offset ? offset : 0 },
+                {
+                    $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                }
+            ];
+            const userFollow = await this.userService.aggregate(stmt);
+            for (const data of userFollow) {
+                Object.assign(data, { type: 'USER' });
+                result.push(data);
+            }
+
+            const stmtPage = [
+                { $sample: { size: randomLimitPage } },
+                { $skip: offset ? offset : 0 },
+                {
+                    $project: {  name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                }
+            ];
+            const pageFollow = await this.pageService.aggregate(stmtPage);
+            for (const data of pageFollow) {
+                Object.assign(data, { type: 'PAGE' }); 
+                result.push(data);
+            }
+
         }
 
         const successResponse = ResponseUtil.getSuccessResponse('Successfully get User Page Access', result);

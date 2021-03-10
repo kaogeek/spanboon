@@ -195,6 +195,9 @@ export class LoginPage extends AbstractPage implements OnInit {
       window.open(this.authorizeLink);
     }).catch((error: any) => {
       console.log(error);
+      if(error && error.message){
+        return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+      }
     });
   }
 

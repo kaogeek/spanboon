@@ -363,9 +363,11 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public addUserLevel() {
+        if(this.valueSt === ''){
+            return;
+        }
         this.isActive = true;
-        let levelUser = this.getLevelUser(this.selectPower.label);
-
+        let levelUser = this.getLevelUser(this.selectPower.label); 
         let access = {
             level: levelUser,
             user: this.valueSt.id || this.valueSt.uniqueId
