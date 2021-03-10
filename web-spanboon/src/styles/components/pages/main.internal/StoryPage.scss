@@ -166,7 +166,6 @@
 //           width: 60%;
 //           @include font-size-8($font-head-400);
 //           color: #e65857;
-//           font-size: 15px;
 //           display: flex;
 //           align-items: center;
 //         }
@@ -277,8 +276,6 @@
 //     display: flex;
 //     align-items: center;
 //     justify-content: center;
-//     font-family: "Kanit-500";
-//     font-size: 18px;
 //     > .text {
 //       margin: 0px 10px;
 //       color: #000;
@@ -477,14 +474,14 @@
     > .content {
       width: 80%;
       display: flex;
+      position: relative;
       > .left {
-        width: 60%;
+        width: 65%;
         height: 1200px;
-        background-color: blanchedalmond;
         > .head {
           width: calc(100% - 60px);
-          padding: 10px 30px;
-          border-bottom: solid 0.6px gray;
+          padding: 20px 30px;
+          border-bottom: 1px solid #d3d3d3;
           display: flex;
           align-items: center;
           > .img-user {
@@ -493,25 +490,83 @@
           }
           > .page-display {
             width: auto;
+            margin: 0px 20px;
             > .type {
               display: flex;
-              > .type-status {
+              align-items: center;
+              > .type-status-needs {
                 width: 15px;
                 height: 15px;
                 border-radius: 50%;
-                background-color: aqua;
+                background-color: $status-post-need;
+              }
+              > .type-status-general {
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background-color: $status-post-general;
               }
               > .type-display {
+                margin: 0px 10px;
+                @include font-size-9($font-head-500);
+              }
+              > .time-display {
+                margin: 0px 5px;
+                @include font-size-9($font-head-300);
+              }
+            }
+            > .user-display {
+              > span {
+                @include font-size-9($font-head-300);
+              }
+              > a {
+                @include font-size-9($font-head-500);
+
+                &:hover {
+                  color: rgba($brandcolor2, 0.95);
+                }
               }
             }
           }
         }
+        > .story-display {
+          width: 100%;
+          position: relative;
+          .ct-background-text {
+            width: 100%;
+            height: auto;
+            margin: 10px 0px;
+            @include font-size-9($font-content-light);
+          }
+          .ct-background-image {
+            width: 100%;
+            margin: 10px 0px;
+            background-size: 100%;
+            height: auto;
+          }
+          .ct-background-video {
+            width: 100%;
+            margin: 10px 0px;
+            height: auto;
+            display: flex;
+            justify-content: center;
+          }
+        }
       }
       > .right {
-        width: 40%;
-        height: 800px;
+        width: 35%;
+        height: 400px;
         background-color: rgb(236, 142, 0);
+        position: -webkit-sticky;
+        position: sticky;
+        top: 60pt;
       }
+    }
+    .comDelet {
+      display: none !important;
+    }
+    .cdk-drag-handle {
+      display: none !important;
     }
   }
 
@@ -541,6 +596,12 @@
       }
     }
     .text-count-desktop {
+      display: none !important;
+    }
+    .left {
+      width: 100% !important;
+    }
+    .right {
       display: none !important;
     }
   }

@@ -33,8 +33,7 @@
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                font-size: 18px;
-                font-family: "Kanit-500";
+                @include font-size-9($font-head-500);
                 word-break: break-all;
                 margin-right: 10pt;
                 color: rgb($black, 0.6);

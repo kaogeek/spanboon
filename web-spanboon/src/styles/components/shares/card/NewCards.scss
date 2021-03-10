@@ -48,8 +48,7 @@
     }
 
     > .new-cards-topic {
-      font-family: "Kanit-500";
-      font-size: 18px;
+      @include font-size-9($font-head-500);
       color: $color-black;
       margin: 10pt 0;
       display: -webkit-box;

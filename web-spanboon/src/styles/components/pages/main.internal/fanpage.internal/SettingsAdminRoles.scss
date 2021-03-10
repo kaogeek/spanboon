@@ -13,8 +13,7 @@
         padding: 20pt 40pt;
 
         > .head {
-            font-family: "Kanit-500";
-            font-size: 22px;
+            @include font-size-7($font-head-500);
             color: $black;
         }
 
@@ -30,8 +29,7 @@
             padding: 15pt 40pt;
 
             > .y1-title {
-                font-size: 18px;
-                font-family: "Kanit-400";
+                @include font-size-9($font-head-400);
             }
 
             > .set-your {

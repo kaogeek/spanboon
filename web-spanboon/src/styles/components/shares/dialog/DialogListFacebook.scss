@@ -30,8 +30,7 @@
         padding: unset;
         padding: 20pt 20pt 0 20pt; 
         span {
-            font-family: "Kanit-500";
-            font-size: 18px; 
+            @include font-size-9($font-head-500);
         }
         > .box-social {
             position: relative;

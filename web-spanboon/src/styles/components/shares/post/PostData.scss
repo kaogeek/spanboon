@@ -222,8 +222,7 @@
   > .topic-name {
     display: flex;
     padding: 10pt 15pt 10pt 15pt;
-    font-family: "Kanit-400";
-    font-size: 20px;
+    @include font-size-8($font-head-400);
     &.active {
       display: none;
     }
@@ -250,7 +249,7 @@
 
     > .mat-button-wrapper {
       > .material-icons {
-        font-size: 26px;
+        @include font-size-6($font-head-500);
       }
     }
   }
@@ -319,8 +318,7 @@
           height: 100%;
           left: 0;
           top: 0;
-          font-family: "Kanit-500";
-          font-size: 18px;
+          @include font-size-9($font-head-500);
           color: $white;
           background-color: $black;
           opacity: 0.5;
@@ -639,8 +637,7 @@
             height: 25pt;
 
             > .text-h {
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
               line-height: 15px;
               color: #717886;
               overflow: hidden;
@@ -672,8 +669,7 @@
                 }
 
                 > .unit-sub {
-                  font-family: "Kanit-500";
-                  font-size: 14px;
+                  @include font-size-11($font-head-500);
                   color: #717886;
                   overflow: hidden;
                   text-overflow: ellipsis;
@@ -788,8 +784,7 @@
 }
 
 .repost-title {
-  font-family: "Kanit-500";
-  font-size: 18px;
+  @include font-size-9($font-head-500);
 }
 
 .repost-sub-title {

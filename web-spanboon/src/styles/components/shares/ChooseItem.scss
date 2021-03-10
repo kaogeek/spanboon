@@ -8,7 +8,7 @@
 .choose-item {
     overflow: hidden;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
 
     > .top {
         flex: 0 0 auto;
@@ -16,7 +16,7 @@
         font-family: "Kanit-500";
 
         > .header {
-            font-size: 22px;
+            @include font-size-7($font-head-500);
         }
 
         > .title {
@@ -41,8 +41,7 @@
             align-items: center;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 18px;
-            font-family: "Kanit-500";
+            @include font-size-9($font-head-500);
             color: $black;
             border-bottom: 3pt solid transparent;
 
@@ -59,7 +58,7 @@
     }
     > .mat-dialog-content {
         margin: unset;
-        padding: unset; 
+        padding: unset;
     }
 
     > .center {
@@ -67,7 +66,7 @@
         display: flex;
         overflow: hidden;
         border-top: 0.7pt solid $border-color;
-        min-height: 630px; 
+        min-height: 630px;
 
         > .center-left {
             // width: 50%;
@@ -149,8 +148,7 @@
                 overflow-y: auto;
 
                 > .search-latest {
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     width: 100%;
                 }
                 .list-search-doing {
@@ -595,8 +593,7 @@
 .cdk-drag-preview {
     opacity: 1;
     background: #dedede2e;
-    font-family: "Kanit-500";
-    font-size: 18px;
+    @include font-size-9($font-head-500);
 }
 
 .cdk-drop-list-dragging .cdk-drag {
@@ -727,10 +724,10 @@
 
 @media (max-width: $medium) {
     .choose-item {
-        > .center { 
+        > .center {
             > .center-left {
                 > .open-folder {
-                     @include font-size-9($font-head-500);
+                    @include font-size-9($font-head-500);
                 }
 
                 > .body-list-item {
@@ -753,20 +750,20 @@
 }
 
 @media (max-width: $small) {
-    .choose-item { 
-        > .mat-dialog-content { 
+    .choose-item {
+        > .mat-dialog-content {
             max-height: 59vh;
         }
         > .center {
             min-height: unset;
-            flex: unset; 
+            flex: unset;
             height: calc(100vh - 20pt);
             > .center-left {
                 > .doing-search {
                     height: 40pt;
                 }
                 > .open-folder {
-                     @include font-size-9($font-head-500);
+                    @include font-size-9($font-head-500);
                 }
                 > .body-list-item {
                     .list-search-doing {

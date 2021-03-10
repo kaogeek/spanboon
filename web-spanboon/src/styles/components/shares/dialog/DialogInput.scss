@@ -26,8 +26,7 @@
         overflow: hidden;
 
         > .dialog-input-header-text {
-            font-size: 20px;
-            font-family: "Kanit-500";
+            @include font-size-8($font-head-500);
             color: #61646b;
         }
 
@@ -69,7 +68,7 @@
             }
 
             > .dialog-input-value {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 padding-top: 5pt;
                 color: #68717f;
             }

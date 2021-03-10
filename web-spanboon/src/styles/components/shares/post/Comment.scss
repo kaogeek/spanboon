@@ -7,7 +7,7 @@
 
 comment-post {
   width: 100%;
-  
+
   .comment {
     &:last-child {
       > .comment-body {
@@ -17,7 +17,7 @@ comment-post {
 
     > .comment-body {
       display: flex;
-      flex:1 1 10%;
+      flex: 1 1 10%;
       margin-bottom: 8pt;
 
       > .comment-img {
@@ -38,8 +38,7 @@ comment-post {
             justify-content: center;
             align-items: center;
             background: $brandcolor2;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
           }
         }
       }

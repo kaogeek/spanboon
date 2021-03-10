@@ -17,7 +17,7 @@
         height: 40pt;
         border: 0.7px solid #e5e5e5;
         display: flex;
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         padding: 0px 20px;
         align-items: center;
     }
@@ -36,7 +36,7 @@
             color: gray;
         }
         .text-center {
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             color: black;
         }
         .text-bottom {

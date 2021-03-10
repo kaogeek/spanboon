@@ -105,11 +105,10 @@
             text-align: initial;
           }
           .input-test {
-            font-family: "Kanit-400";
             padding: 6px;
             width: 100%;
             margin-bottom: 20px;
-            font-size: 18px;
+            @include font-size-9($font-head-400);
           }
           .test-login-bt {
             transition: 0.2s;

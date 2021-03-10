@@ -29,8 +29,7 @@
         position: relative;
         flex: 0 0 auto;
         border-bottom: 1px solid rgba($border-color, 0.7);
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         height: 45pt;
         display: flex;
         justify-content: center;
@@ -168,7 +167,7 @@
                 > .material-icons {
                     color: $brandcolor2;
                     font-weight: 900;
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
 
                 > .time {
@@ -220,7 +219,7 @@
                         > .material-icons {
                             color: $brandcolor2;
                             font-weight: 900;
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
 
                         > .time {
@@ -449,7 +448,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -475,7 +474,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -503,7 +502,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -548,7 +547,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
