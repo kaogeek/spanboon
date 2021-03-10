@@ -97,7 +97,7 @@
             }
 
             > .sub-name {
-                @include font-size-10($font-family-500);
+                @include font-size-10($font-head-500);
                 color: rgb($black, 0.5);
                 word-break: break-word;
                 margin-top: 5pt;
@@ -116,7 +116,7 @@
                 }
 
                 > .text-category {
-                    @include font-size-10($font-family-500);
+                    @include font-size-10($font-head-500);
                     color: $black;
                 }
             }
@@ -144,7 +144,7 @@
                     padding-right: 7pt;
 
                     > .fol-span {
-                        @include font-size-10($font-family-500);
+                        @include font-size-10($font-head-500);
                         color: $black;
                     }
 
@@ -161,7 +161,7 @@
 
                     > .count {
                         margin-left: 5pt;
-                        @include font-size-10($font-family-500);
+                        @include font-size-10($font-head-500);
                         color: $black;
                     }
                 }
@@ -185,7 +185,7 @@
                     flex: 0 0 auto;
                     overflow: hidden;
                     box-shadow: 2.5px 0px 0px 0 $white;
-                    @include font-size-10($font-family-500);
+                    @include font-size-10($font-head-500);
                     margin-left: -6pt;
                     background: $brandcolor2;
                     color: $white;
@@ -207,12 +207,12 @@
                 margin-top: 5pt;
 
                 > .user-birthday {
-                    @include font-size-10($font-family-500);
+                    @include font-size-10($font-head-500);
                 }
 
                 > .user-follow {
                     margin-top: 3pt;
-                    @include font-size-10($font-family-500);
+                    @include font-size-10($font-head-500);
                     display: flex;
                     flex-direction: row;
                     align-items: center;
@@ -311,7 +311,7 @@
             }
 
             > .text-label {
-                @include font-size-10($font-family-400);
+                @include font-size-10($font-head-400);
                 padding-right: 15pt;
             }
         }

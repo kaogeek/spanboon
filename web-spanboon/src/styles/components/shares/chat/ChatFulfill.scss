@@ -8,7 +8,7 @@
 .chat-fulfill-wrapper {
     background: #f1f3f5;
     border-radius: 6px;
-    @include font-size-10($font-family-500);
+    @include font-size-10($font-head-500);
     position: relative;
 
     > .chat-item-action {
