@@ -424,7 +424,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     return this.userFacade.checkUniqueId(body);
   }
 
-  public orgValueChange(date : any){ 
+  public orgValueChange(date: any) {
     this.vaidatorDate(date);
   }
 
@@ -435,7 +435,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     if (this.isCheckDate) {
       this.data.birthday = moment(text, 'DD/MM/YYYY').toDate();
       return;
-    }  
+    }
   }
 
   public checkUUID(event) {
@@ -483,8 +483,12 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
   }
 
-  public getTwitterUser() {
-    this.twitterService.accountVerify(this.accessToken.twitterOauthToken, this.accessToken.twitterOauthTokenSecret).then((account: any) => {
+  public getTwitterUser() {  
+    let body = {
+      twitterOauthToken: this.accessToken.twitterOauthToken,
+      twitterOauthTokenSecret: this.accessToken.twitterOauthTokenSecret
+    }
+    this.twitterService.accountVerify(body).then((account: any) => { 
       this.data = account;
       this.data.displayName = account.name;
       this.images = account.profile_image_url_https;
