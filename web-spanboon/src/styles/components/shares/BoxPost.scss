@@ -229,10 +229,12 @@
 
         > .material-icons,
         .space-icon {
+          font-family: 'Material Icons' !important;
           width: 15pt;
         }
 
         > .material-icons {
+          font-family: 'Material Icons' !important;
           display: none;
           color: $color-black;
           opacity: 0.4;
@@ -244,6 +246,7 @@
           opacity: 0.8;
 
           > .material-icons {
+            font-family: 'Material Icons' !important;
             display: flex;
             align-items: center;
           }

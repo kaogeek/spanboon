@@ -635,6 +635,8 @@
                                             }
                                         }
                                         > .material-icons {
+                                            font-family: 'Material Icons' !important;
+                                            font-size: $font-size-icon-small;
                                             @include pointer();
                                         }
                                     }

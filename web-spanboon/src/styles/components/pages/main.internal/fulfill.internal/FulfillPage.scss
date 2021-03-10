@@ -135,6 +135,7 @@
                                     }
 
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         margin-left: 5px;
                                     }
                                 }
@@ -548,6 +549,7 @@
                                     background: rgb($bg-grey, 0.2);
 
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         color: $bg-color4;
                                         font-size: 70px;
                                         font-weight: 900;
@@ -768,6 +770,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -857,6 +860,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -1015,6 +1019,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -1145,6 +1150,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -1249,7 +1255,8 @@
                             }
                             > .mat-button-wrapper {
                                 > .material-icons {
-                                    @include font-size-6($font-head-500);
+                                    font-family: 'Material Icons' !important;
+                                    font-size: $font-size-icon-small;
                                 }
                             }
                         }
@@ -1417,6 +1424,7 @@
                                 > .plus-item {
                                     > .d-plus {
                                         > .material-icons {
+                                            font-family: 'Material Icons' !important;
                                             font-size: 56px;
                                         }
                                     }

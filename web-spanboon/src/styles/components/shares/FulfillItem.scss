@@ -322,7 +322,8 @@
                             align-items: center;
                             > .material-icons {
                                 color: $home-page-activate-color;
-                                @include font-size-10($font-head-500);
+                                font-size: $font-size-icon-medium;
+                                font-family: 'Material Icons' !important;
                                 padding-right: 5pt;
                             }
 

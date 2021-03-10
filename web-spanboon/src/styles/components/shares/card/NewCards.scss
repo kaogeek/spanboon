@@ -181,7 +181,7 @@
       }
 
       > .new-cards-content {
-        @include font-size-10($font-head-500);
+        @include font-size-10($font-content-light);
       }
     }
   }

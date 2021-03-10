@@ -604,6 +604,12 @@
     .right {
       display: none !important;
     }
+    .type-display {
+      @include font-size-10($font-head-500);
+    }
+    .time-display {
+      @include font-size-10($font-head-300);
+    }
   }
 
   @media (max-width: $small) {
