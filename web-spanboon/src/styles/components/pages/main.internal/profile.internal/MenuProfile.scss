@@ -123,7 +123,7 @@
                         }
 
                         > .dote {
-                            font-size: 24px;
+                            @include font-size-6($font-head-500);
                             line-height: 16px;
                             margin: 0 5pt;
                         }

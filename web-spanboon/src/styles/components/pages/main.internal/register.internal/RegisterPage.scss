@@ -22,8 +22,7 @@
 
     > .header {
       color: $brandcolor2;
-      font-family: "Kanit-500";
-      font-size: 24px;
+      @include font-size-6($font-head-500);
     }
 
     > .wrapper-upload {
@@ -80,8 +79,7 @@
             position: absolute;
             top: 0.5pt;
             left: 9pt;
-            font-family: "Kanit-500";
-            font-size: 24px;
+            @include font-size-6($font-head-500);
             user-select: none;
           }
 

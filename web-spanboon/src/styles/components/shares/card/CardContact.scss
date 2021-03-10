@@ -69,8 +69,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     margin-right: 15pt;
                     word-break: break-all;
                     > .sub-title{
@@ -200,7 +199,7 @@
     .card-contact {
         > .user-contact {
             >.donator {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
             > .card-contact-body {
                 > .contact-head {

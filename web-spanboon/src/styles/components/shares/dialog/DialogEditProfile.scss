@@ -30,8 +30,7 @@
         padding: 10pt 15pt;
         background: $brandcolor2;
         color: $white;
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
 
         > .dialog-image-title-right {
             display: flex;

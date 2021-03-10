@@ -71,8 +71,7 @@
             display: flex;
             justify-content: center;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 26px;
+            @include font-size-6($font-head-500);
         }
 
         > .tag-social {
@@ -102,8 +101,7 @@
                 > .wrapper-count {
                     color: $brandcolor;
                     margin: 5pt;
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }

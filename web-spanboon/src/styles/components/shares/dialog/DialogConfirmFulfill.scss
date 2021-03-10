@@ -48,8 +48,7 @@
 
             > .header {
                 > .title {
-                    font-size: 20px;
-                    font-family: "Kanit-500";
+                    @include font-size-8($font-head-500);
                 }
 
                 > .description {

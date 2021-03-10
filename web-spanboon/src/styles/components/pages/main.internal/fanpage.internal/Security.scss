@@ -7,8 +7,7 @@
 
 .security-info {
     > .label-info {
-        font-family: "Kanit-500";
-        font-size: 22px;
+        @include font-size-7($font-head-500);
         margin: 15pt 40pt 5pt 40pt;
         border-bottom: 0.7pt solid $border-color;
         height: 30pt;

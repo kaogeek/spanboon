@@ -116,19 +116,19 @@
                     width: 120px;
                     align-items: center;
 
-                        >.add-page{
-                            @include pointer();
-                            margin: 0 7pt;
-                            background: $brandcolor3;
-                            color: $white;
-                            border-radius: 50%;
-                            padding: 5pt;
-                            box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
+                    > .add-page {
+                        @include pointer();
+                        margin: 0 7pt;
+                        background: $brandcolor3;
+                        color: $white;
+                        border-radius: 50%;
+                        padding: 5pt;
+                        box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
 
-                            &:hover{
-                                transform: scale(1.05 , 1.05);
-                            }
+                        &:hover {
+                            transform: scale(1.05, 1.05);
                         }
+                    }
                 }
             }
             .wrapper-list-page {
@@ -162,8 +162,7 @@
                         align-items: center;
                         // padding: 0 5pt;
                         @include text-limit();
-                        font-family: "Kanit-500";
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                         > .con-text-name {
                             overflow: hidden;
                             text-overflow: ellipsis;
@@ -199,8 +198,7 @@
                 flex-direction: column;
                 justify-content: center;
                 height: calc(100% - 60pt);
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 > .logo-img {
                     margin: 10pt;
                 }

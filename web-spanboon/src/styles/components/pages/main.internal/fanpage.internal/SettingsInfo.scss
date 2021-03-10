@@ -65,8 +65,7 @@
 
 .fanpage-info {
     > .info-title {
-        font-family: "Kanit-500";
-        font-size: 22px;
+        @include font-size-7($font-head-500);
         margin: 15pt 50pt 5pt 50pt;
         height: 30pt;
     }
@@ -256,8 +255,7 @@
         > label {
             position: absolute;
             left: 9pt;
-            font-family: "Kanit-500";
-            font-size: 24px;
+            @include font-size-6($font-head-500);
             bottom: 2pt;
         }
 
@@ -366,7 +364,7 @@
 @media (max-width: $large) {
     .fanpage-info {
         > .info-title {
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             > .card-left {
@@ -408,7 +406,7 @@
     .fanpage-info {
         > .info-title {
             margin: 15pt 30pt 5pt 30pt;
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             margin: 0 20pt;
@@ -499,7 +497,7 @@
         min-height: calc(100vh - 39pt);
         > .info-title {
             margin: 15pt 16pt 5pt 16pt;
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             margin: 0 5pt;

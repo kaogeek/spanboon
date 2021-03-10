@@ -13,8 +13,7 @@
     > .header-title {
         padding: 15pt;
         border-bottom: $width-border solid $border-color; 
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
     }
 
     > .wrapper-card {

@@ -124,8 +124,7 @@
               height: 100%;
               justify-content: center;
               align-items: center;
-              font-family: "Kanit-400";
-              font-size: 18px;
+              @include font-size-9($font-head-400);
 
               > .wrapper-icon-upload {
                 > .icon-upload {
@@ -309,8 +308,7 @@
               width: 97pt;
               padding: 7pt 10pt 10pt;
               text-align: center;
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
               margin: 0 0 0 auto;
             }
 
@@ -321,8 +319,7 @@
               > .fan-page-name {
                 color: $brandcolor2;
                 margin: 0 10pt;
-                font-family: "Kanit-500";
-                font-size: 22px;
+                @include font-size-7($font-head-500);
               }
 
               > .fan-page-tag {
@@ -370,8 +367,7 @@
                     height: 100%;
                     color: $color-black;
                     @include pointer();
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     opacity: 1;
 
                     &:hover {
@@ -434,8 +430,7 @@
             padding: 5pt 30pt;
 
             > .content-header {
-              font-family: "Kanit-500";
-              font-size: 20px;
+              @include font-size-8($font-head-500);
             }
 
             > .content-body {
@@ -508,8 +503,7 @@
           justify-content: center;
           height: 501pt;
           background-color: $brandcolor;
-          font-family: "Kanit-500";
-          font-size: 18px;
+          @include font-size-9($font-head-500);
 
           > .lable-timeline {
             padding: 50pt;
@@ -535,8 +529,7 @@
             padding: 10pt;
             border-bottom: $width-border solid $border-color;
             background-color: $white;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
           }
 
           > .wrapper-card {
@@ -608,8 +601,7 @@
               margin-top: 5pt;
               border-bottom: $width-border solid $border-color;
               justify-content: space-between;
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
             }
 
             > .item-all {

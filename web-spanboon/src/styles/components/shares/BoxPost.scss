@@ -150,8 +150,7 @@
             height: 100%;
             left: 0;
             top: 0;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             color: $white;
             background-color: $black;
             opacity: 0.5;
@@ -169,16 +168,14 @@
       width: calc(100% - 40pt);
       padding: 10pt 20pt;
       border: unset;
-      font-family: "Kanit-500";
-      font-size: 20px;
+      @include font-size-8($font-head-500);
     }
 
     [contenteditable="true"].header-story:empty:before {
       content: attr(placeholder);
       pointer-events: none;
       display: block; /* For Firefox */
-      font-family: "Kanit-500";
-      font-size: 18px;
+      @include font-size-9($font-head-500);
     }
 
     [contenteditable="true"].header-story {
