@@ -82,7 +82,7 @@ export class Redirect implements OnInit {
                         }
                     }
 
-                    if (doRunAccessToken) {  
+                    if (doRunAccessToken) {   
                         this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => { 
                             let spilt = res.split('&');
                             const token = spilt[0].split('=')[1];

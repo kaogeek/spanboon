@@ -61,7 +61,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
     public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-    public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+    public accessTokenLink = '';
     public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
     constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade, twitterService: TwitterService,
@@ -114,6 +114,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.isLoading = true;
             this.clickLoginFB();
         } else if (text === 'facebook' && bind) {
+            this.isLoading = true;
             this.pageFacade.socialUnBindingFacebook(this.pageId).then((res: any) => {
                 // if delete true set false
                 if (res.data) {
@@ -168,6 +169,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             });
 
         } else if (text === 'twitter' && bind) {
+            this.isLoadingTwitter = true;
             this.pageFacade.socialUnBindingTwitter(this.pageId).then((res: any) => {
                 // if delete true set false
                 if (res.data) {
@@ -249,8 +251,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
             if (res.name === FACEBOOK_AUTO_POST) {
                 this.autoPostFacebook = res.value;
+                this.isLoading = false;
             } else if (res.name === TWITTER_AUTO_POST) {
                 this.autoPostTwitter = res.value;
+                this.isLoadingTwitter = false;
             }
         }).catch((err: any) => {
             console.log('err ', err)
@@ -258,7 +262,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public onChangeSlide(event: any, social: string) {
-
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
