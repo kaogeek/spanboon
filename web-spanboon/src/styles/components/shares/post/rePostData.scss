@@ -176,7 +176,8 @@ repost-data {
 
       > .mat-button-wrapper {
         > .material-icons {
-          @include font-size-6($font-head-500);
+          font-size: $font-size-icon-large;
+          font-family: 'Material Icons' !important;
         }
       }
     }
