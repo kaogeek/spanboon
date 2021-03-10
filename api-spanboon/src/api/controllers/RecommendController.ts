@@ -9,16 +9,14 @@ import 'reflect-metadata';
 import { JsonController, Res, Get, Req, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
-import { SearchFilter } from './requests/SearchFilterRequest';
-import { RecommendResponse } from './responses/RecommendResponse';
+import { SearchFilter } from './requests/SearchFilterRequest'; 
 import { UserFollowService } from '../services/UserFollowService';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { HashTagService } from '../services/HashTagService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { RecommendStoryParam } from './params/RecomendStoryParam';
-import { StorySectionProcessor } from '../processors/StorySectionProcessor';
-import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { StorySectionProcessor } from '../processors/StorySectionProcessor'; 
 import { UserService } from '../services/UserService';
 import { PageService } from '../services/PageService';
 
@@ -26,8 +24,7 @@ import { PageService } from '../services/PageService';
 export class RecommendController {
 
     constructor(
-        private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService,
+        private userFollowService: UserFollowService, 
         private postsService: PostsService,
         private hashTagService: HashTagService,
         private userService: UserService,

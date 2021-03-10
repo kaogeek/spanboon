@@ -203,7 +203,8 @@
                                         @include font-size-10($font-head-500);
 
                                         > .material-icons {
-                                            font-family: 'Material Icons' !important;
+                                            font-family: "Material Icons" !important;
+                                            color: $status-success;
                                             font-size: $font-size-icon-small;
                                             padding-right: 2pt;
                                         }
@@ -224,8 +225,8 @@
                             @include font-size-10($font-head-500);
                             color: $color-gray;
                             > .material-icons {
-                                font-family: 'Material Icons' !important;
-                                color: $bg-color4;
+                                font-family: "Material Icons" !important;
+                                color: $status-success;
                                 font-size: $font-size-icon-small;
                                 padding-right: 5pt;
                             }
