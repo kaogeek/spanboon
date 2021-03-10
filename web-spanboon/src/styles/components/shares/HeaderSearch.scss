@@ -165,8 +165,7 @@
                     align-items: center;
                     cursor: pointer;
                     transition: 0.3s;
-                    font-size: 18px;
-                    font-family: "Kanit-500";
+                    @include font-size-9($font-head-500);
                     color: $black;
                     border-bottom: 3pt solid transparent;
 
@@ -481,7 +480,7 @@
                         cursor: pointer;
 
                         > .material-icons {
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -491,8 +490,7 @@
                     align-items: center;
                     justify-content: center;
                     height: 100%;
-                    font-family: "Kanit-500";
-                    font-size: 24px;
+                    @include font-size-6($font-head-500);
                 }
             }
         }
@@ -556,7 +554,7 @@
             > .wrapper-body-tag {
                 > .tab {
                     > .tablinks {
-                        font-size: 15px;
+                        @include font-size-10($font-head-500);
                     }
                 }
 
@@ -602,7 +600,7 @@
 
                 > .tab {
                     > .tablinks {
-                        font-size: 14px;
+                        @include font-size-11($font-head-500);
                     }
                 }
             }

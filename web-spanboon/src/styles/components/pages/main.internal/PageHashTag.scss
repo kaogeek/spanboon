@@ -53,8 +53,7 @@
 
                         > .title-setting {
                             margin: 0 15px;
-                            font-size: 18px;
-                            font-family: "Kanit-500";
+                            @include font-size-9($font-head-500);
                         }
                     }
 
@@ -102,8 +101,7 @@
                         justify-content: space-between;
                         padding: 10pt;
                         border-bottom: $width-border solid $border-color;
-                        font-size: 18px;
-                        font-family: "Kanit-500";
+                        @include font-size-9($font-head-500);
                         > .left {
                             display: flex;
                             align-items: center;
@@ -666,8 +664,7 @@
                             padding: 15pt;
                             border-top: 0.5px solid #e5e5e5;
                             border-bottom: 0.5px solid #e5e5e5;
-                            font-size: 18px;
-                            font-family: "Kanit-500";
+                            @include font-size-9($font-head-500);
                             background: $white;
                             position: sticky;
                             top: 55pt;
@@ -738,8 +735,7 @@
                             > .wrapper-filter-name {
                                 padding: 10pt;
                                 border-bottom: $width-border solid $border-color;
-                                font-size: 18px;
-                                font-family: "Kanit-500";
+                                @include font-size-9($font-head-500);
                             }
 
                             > .body-filter {
@@ -780,8 +776,7 @@
                             }
                             > .footer-more {
                                 padding: 10pt;
-                                font-size: 18px;
-                                font-family: "Kanit-500";
+                                @include font-size-9($font-head-500);
 
                                 > .search-page {
                                     display: flex;
@@ -870,8 +865,7 @@
                             padding: 10pt;
                             border-bottom: $width-border solid $border-color;
                             background-color: $white;
-                            font-family: "Kanit-500";
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                         > .wrapper-card {
                             background-color: $white;
@@ -931,8 +925,7 @@
                                 padding: 10pt;
                                 margin-top: 5pt;
                                 border-bottom: $width-border solid $border-color;
-                                font-size: 18px;
-                                font-family: "Kanit-500";
+                                @include font-size-9($font-head-500);
                             }
                             > .item-all {
                                 color: $brandcolor2;
@@ -958,10 +951,7 @@
                         border: $width-border solid $border-color;
 
                         > .header-top-name {
-                            // font-size: 18px;
-                            font-family: "Kanit-500";
-                            font-size: 18px;
-                            font-family: "Kanit-500";
+                            @include font-size-9($font-head-500);
                             width: calc(100% - 20pt);
                             padding: 10pt;
                             border-radius: 4px;
@@ -996,8 +986,7 @@
                     > .head-follow {
                         padding: 15pt;
                         border-bottom: $width-border solid $border-color;
-                        font-size: 18px;
-                        font-family: "Kanit-500";
+                        @include font-size-9($font-head-500);
                     }
 
                     > .wrapper-card {
@@ -1117,8 +1106,7 @@ page-hashtag {
 .cdk-overlay-container {
     .mat-menu-content {
         > .select-by-name {
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             padding: 10pt;
             border-bottom: 0.7pt solid $border-color;
         }

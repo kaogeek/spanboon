@@ -200,7 +200,7 @@
                 > .profile-page-settings {
                     > .page {
                         > .name-page {
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
                     }
                 }
@@ -225,7 +225,7 @@
                 > .profile-page-settings {
                     > .page {
                         > .name-page {
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -277,7 +277,7 @@
 
                     > .page {
                         > .name-page {
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -359,7 +359,7 @@
 
                     > .page {
                         > .name-page {
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
                     }
                 }

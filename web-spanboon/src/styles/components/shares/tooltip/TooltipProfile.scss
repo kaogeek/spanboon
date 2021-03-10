@@ -85,8 +85,7 @@
             margin-left: 12pt;
 
             > .name {
-                font-family: "Kanit-500";
-                font-size: 22px;
+                @include font-size-7($font-head-500);
                 line-height: 28px;
                 color: $black;
                 word-break: break-word;

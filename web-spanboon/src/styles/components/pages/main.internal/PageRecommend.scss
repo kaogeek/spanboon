@@ -895,7 +895,7 @@
                     > .recommended-left {
                         > .wrapper-body-middle {
                             > .header-top-name {
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                             }
                             > .wrapper-body-trend {
                                 > .trend-title {
@@ -929,7 +929,7 @@
                     > .recommended-left {
                         > .wrapper-body-middle {
                             > .header-top-name {
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                             }
                             > .wrapper-body-trend {
                                 > .trend-title {

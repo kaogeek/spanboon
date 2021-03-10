@@ -17,7 +17,7 @@
         font-family: "Kanit-500";
 
         > .header {
-            font-size: 22px;
+            @include font-size-7($font-head-500);
         }
 
         > .title {
@@ -42,8 +42,7 @@
             align-items: center;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 18px;
-            font-family: "Kanit-500";
+            @include font-size-9($font-head-500);
             color: $black;
             border-bottom: 3pt solid transparent;
 
@@ -145,8 +144,7 @@
                 overflow-y: auto;
 
                 > .search-latest {
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     width: 100%;
                 }
                 .list-search-fulfill {
@@ -324,7 +322,7 @@
                             align-items: center;
                             > .material-icons {
                                 color: $home-page-activate-color;
-                                font-size: 16px;
+                                @include font-size-10($font-head-500);
                                 padding-right: 5pt;
                             }
 

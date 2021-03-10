@@ -31,8 +31,7 @@
 
     > .label {
       text-align: center;
-      font-family: "Kanit-500";
-      font-size: 24px;
+      @include font-size-6($font-head-500);
       color: $brandcolor2;
       margin-bottom: 20pt;
     }

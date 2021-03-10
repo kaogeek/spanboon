@@ -23,16 +23,14 @@
             padding-right: 15pt;
 
             > .header-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
             > .material-icons {
                 @include pointer();
             }
 
             > .label-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
 
             > .subline-looking-for {
@@ -45,7 +43,7 @@
             flex: 0 0 auto;
 
             > .material-icons {
-                font-size: 20px;
+                @include font-size-8($font-head-500);
                 @include pointer();
             }
         }

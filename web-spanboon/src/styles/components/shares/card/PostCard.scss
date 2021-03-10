@@ -137,8 +137,7 @@
             justify-content: stretch;
 
             > .title-post {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 margin-bottom: 5pt;
                 display: -webkit-box;
                 -webkit-line-clamp: 1;

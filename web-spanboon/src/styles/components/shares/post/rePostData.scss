@@ -154,8 +154,7 @@ repost-data {
     > .topic-name {
       display: flex;
       padding: 10pt 15pt 10pt 15pt;
-      font-family: "Kanit-400";
-      font-size: 20px;
+      @include font-size-8($font-head-400);
       &.active {
         display: none;
       }
@@ -177,7 +176,7 @@ repost-data {
 
       > .mat-button-wrapper {
         > .material-icons {
-          font-size: 26px;
+          @include font-size-6($font-head-500);
         }
       }
     }
@@ -246,8 +245,7 @@ repost-data {
             height: 100%;
             left: 0;
             top: 0;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             color: $white;
             background-color: $black;
             opacity: 0.5;
@@ -286,8 +284,7 @@ repost-data {
       }
 
       > .title {
-        font-family: "Kanit-300";
-        font-size: 20px;
+        @include font-size-8($font-head-300);
       }
 
       > .content {
@@ -484,8 +481,7 @@ repost-data {
               width: 100%;
               height: 25pt;
               > .text-h {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 line-height: 15px;
                 color: #717886;
               }
@@ -699,8 +695,7 @@ repost-data {
   }
 
   .repost-title {
-    font-family: "Kanit-500";
-    font-size: 18px;
+    @include font-size-9($font-head-500);
   }
 
   .repost-sub-title {
@@ -741,7 +736,7 @@ repost-data {
               > .post-data-profile {
                 // width: 32pt;
                 // height: 32pt;
-              } 
+              }
             }
           }
 

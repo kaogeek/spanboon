@@ -23,8 +23,7 @@
             0px 4px 10px 5px rgb(197 197 197 / 12%);
         background-color: $white;
         > .box-hrader {
-            font-size: 26px;
-            font-family: "Kanit-500";
+            @include font-size-6($font-head-500);
             flex-grow: 2;
             border-bottom: 0.1px solid rgb(14 14 14 / 15%);
             display: flex;
@@ -116,7 +115,7 @@
                 height: 400px;
                 > .box-list-hrader {
                     padding: 10px 20px;
-                    font-size: 22px;
+                    @include font-size-7($font-head-500);
                 }
                 > .box-list-body {
                     height: calc(100% - 73px);
@@ -152,12 +151,11 @@
                             align-items: baseline;
                             justify-content: center;
                             > .text-label {
-                                font-size: 20px;
+                                @include font-size-8($font-head-500);
                             }
                             > .text-detail {
-                                font-size: 18px;
+                                @include font-size-9($font-head-300);
                                 color: rgba(0, 0, 0, 0.5);
-                                font-family: "Kanit-300";
                             }
                         }
                         > .list-item-forward {
@@ -192,7 +190,7 @@
                         }
                     }
                     > .text {
-                        font-size: 22px;
+                        @include font-size-7($font-head-500);
                         color: black;
                     }
                     > .list-item-Next {
@@ -338,9 +336,8 @@
                         height: calc(100% - 155px) !important;
                     }
                     > .text {
-                        font-size: 20px;
+                        @include font-size-8($font-head-500);
                         opacity: 0.6;
-                        font-family: "Kanit-500";
                         margin: 15px 10px;
                     }
                     > .item {
@@ -383,8 +380,7 @@
                             flex-direction: column;
                             align-items: center;
                             > .name {
-                                font-size: 18px;
-                                font-family: "Kanit-500";
+                                @include font-size-9($font-head-500);
                             }
                             > .quantity {
                                 opacity: 0.7;
@@ -422,8 +418,7 @@
                                     cursor: pointer;
                                 }
                                 > .detail-h {
-                                    font-size: 18px;
-                                    font-family: "Kanit-500";
+                                    @include font-size-9($font-head-500);
                                     overflow: hidden;
                                     line-height: 30px;
                                     text-overflow: ellipsis;
@@ -602,8 +597,7 @@
                                     align-items: center;
                                     justify-content: center;
                                     > .name {
-                                        font-size: 18px;
-                                        font-family: "Kanit-500";
+                                        @include font-size-9($font-head-500);
                                     }
                                     > .quantity {
                                         opacity: 0.7;
@@ -637,8 +631,7 @@
                                     justify-content: center;
                                 }
                                 > .detail-h {
-                                    font-size: 18px;
-                                    font-family: "Kanit-500";
+                                    @include font-size-9($font-head-500);
                                     overflow: hidden;
                                     line-height: 30px;
                                     text-overflow: ellipsis;
@@ -756,7 +749,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 22px;
+                        @include font-size-7($font-head-500);
                         > .link {
                             margin: 0px 10px;
                             color: $brandcolor2;
@@ -776,8 +769,7 @@
             justify-content: center;
             > .text {
                 opacity: 0.5;
-                font-family: "Kanit-600";
-                font-size: 18px;
+                @include font-size-9($font-head-600);
             }
         }
     }
@@ -810,7 +802,7 @@
         }
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader {
-        font-size: 20px;
+        @include font-size-8($font-head-500);
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list > .box-list-hrader {
         display: none;
@@ -916,7 +908,7 @@
         display: none;
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .left > span {
-        font-size: 20px;
+        @include font-size-8($font-head-500);
         @include limit-text-length(1);
     }
     .fulfill-allocate
@@ -927,7 +919,7 @@
         > .list-item
         > .list-item-detail
         > .text-label {
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         @include limit-text-length(1);
     }
     .fulfill-allocate
