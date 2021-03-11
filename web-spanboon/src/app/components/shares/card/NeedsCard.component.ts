@@ -263,7 +263,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
         slidesPerView: 2.2,
       },
       479: {
-        slidesPerView: 1.8,
+        slidesPerView: 1.7,
       }, 
     },
   }

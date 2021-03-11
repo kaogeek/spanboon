@@ -69,6 +69,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public isMaxLoadingPost: boolean;
   public isLoadingPost: boolean;
   public isLoadingClickTab: boolean;
+  public isClickPostPreLoad: boolean;
 
   public curPos: number;
   public position: number;
@@ -368,6 +369,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
             this.searchTimeLinePost(data);
             this.boxPost.clearDataAll();
+            this.isClickPostPreLoad = false;
           }
         }
       }).catch((err: any) => {
@@ -472,8 +474,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     let originalpost: any[] = this.resPost.posts;
     this.profileFacade.searchType(data, this.url).then(async (res: any) => {
       if (!Array.isArray(res) && res.posts.length > 0) {
-        if (res.posts.length !== 5) {
-          console.log('res.posts.length ',res.posts.length)
+        if (res.posts.length !== 5) { 
           this.isMaxLoadingPost = true;
           this.isLoadingPost = false;
         }

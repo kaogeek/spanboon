@@ -466,13 +466,13 @@
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
                                 <div *ngIf="!isPost" class="main-feed">
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
-                                        [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
+                                        [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage" [isClickPostPreLoad]="isClickPostPreLoad"
                                         [profile]="resDataPage.imageBase64" [isShowTablet]="'true'"
                                         [isShowMaxWidth]="'899'" (createPost)="createPost($event)"
                                         style="display: block; padding: 5pt 0;">
                                     </box-post>
                                     <div class="title-feed">
-                                        {{ resPost && resPost.posts && resPost.posts.length > 0 ? PLATFORM_STORY_TALE :
+                                        {{ resPost && resPost.posts && resPost.posts.length > 0 && !isLoadingClickTab ? PLATFORM_STORY_TALE :
                                         'คุณสามารถเพิ่ม'+PLATFORM_STORY_TALE+'ได้ที่นี่' }}
                                     </div>
                                     <ng-container *ngIf="isLoadingClickTab; else elseTemplateLoad">

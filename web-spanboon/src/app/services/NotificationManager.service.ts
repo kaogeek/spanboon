@@ -145,7 +145,7 @@ export class NotificationManager extends AbstractFacade {
             throw 'Current User was not found';
         }
 
-        const userId = currentUser.id;
+        const userId = currentUser && currentUser.id;
         if (this.notificationMap[userId] === undefined) {
             return;
         }

@@ -233,9 +233,9 @@ export class GuestController {
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
-
+                const fbTokenSign = jwt.sign({ token: fbToken }, env.SECRET_KEY);
                 if (authIdCreate) {
-                    const result: any = { token: fbToken, user: userData };
+                    const result: any = { token: fbTokenSign, user: userData };
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Facebook Success', result);
                     return res.status(200).send(successResponse);
                 }
@@ -284,7 +284,6 @@ export class GuestController {
                     const userId = resultData.id;
 
                     userData = this.userService.cleanUserField(resultData);
-
                     if (assets !== null && assets !== undefined && Object.keys(assets).length > 0) {
                         const asset = new Asset();
                         const fileName = userId + FileUtil.renameFile();
@@ -300,6 +299,7 @@ export class GuestController {
                         if (assetCreate) {
                             await this.userService.update({ _id: userId }, { $set: { imageURL: imagePath } });
                         }
+                        userData.imageURL = imagePath;
                     }
 
                     const userExrTime = await this.getUserLoginExpireTime();
@@ -327,9 +327,9 @@ export class GuestController {
                         authIdCreate = await this.authenticationIdService.create(authenId);
                         authenIdCreated.push(authIdCreate);
                     }
-
+                    const fbTokenSign = jwt.sign({ token: fbToken }, env.SECRET_KEY);
                     if (authenIdCreated.length > 0) {
-                        const result: any = { token: fbToken, user: userData };
+                        const result: any = { token: fbTokenSign, user: userData };
                         const successResponse = ResponseUtil.getSuccessResponse('Register With Facebook Success', result);
                         return res.status(200).send(successResponse);
                     } else {
@@ -498,7 +498,6 @@ export class GuestController {
             }
 
             const userExrTime = await this.getUserLoginExpireTime();
-
             if (resultUser) {
                 // check if has authenid
                 const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.TWITTER });
@@ -523,9 +522,10 @@ export class GuestController {
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
                 authIdCreate = await this.authenticationIdService.create(authenId);
+                const twToken = jwt.sign({ token: authenId.storedCredentials }, env.SECRET_KEY);
 
                 if (authIdCreate) {
-                    const result: any = { token: twitterUserId, user: userData };
+                    const result: any = { token: twToken, user: userData }; 
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', result);
                     return res.status(200).send(successResponse);
                 }
@@ -574,7 +574,6 @@ export class GuestController {
                     const userId = resultData.id;
 
                     userData = this.userService.cleanUserField(resultData);
-
                     if (assets !== null && assets !== undefined && Object.keys(assets).length > 0) {
                         const asset = new Asset();
                         const fileName = userId + FileUtil.renameFile();
@@ -590,10 +589,11 @@ export class GuestController {
                         if (assetCreate) {
                             await this.userService.update({ _id: userId }, { $set: { imageURL: imagePath } });
                         }
+                        userData.imageURL = imagePath;
                     }
 
                     const authenIdCreated: AuthenticationId[] = [];
-
+                    let twToken = undefined;
                     for (const provider of providerList) {
                         const authenId = new AuthenticationId();
                         authenId.user = userData.id;
@@ -617,13 +617,14 @@ export class GuestController {
                             };
                             authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
+                        twToken = authenId.storedCredentials;
 
                         authIdCreate = await this.authenticationIdService.create(authenId);
                         authenIdCreated.push(authIdCreate);
                     }
-
+                    twToken = jwt.sign({ token: twToken }, env.SECRET_KEY);
                     if (authenIdCreated.length > 0) {
-                        const result: any = { token: twitterUserId, user: userData };
+                        const result: any = { token: twToken, user: userData };
                         const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', result);
                         return res.status(200).send(successResponse);
                     } else {
@@ -745,9 +746,9 @@ export class GuestController {
             // }
 
             let fbUser = undefined;
-            try{
+            try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
-            }catch(err){
+            } catch (err) {
                 console.log(err);
             }
 
@@ -1044,7 +1045,7 @@ export class GuestController {
         if (isMode !== undefined && isMode === 'FB') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
-                if(decryptToken.token === undefined){
+                if (decryptToken.token === undefined) {
                     const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
                     return response.status(400).send(errorUserNameResponse);
                 }
@@ -1058,7 +1059,7 @@ export class GuestController {
         } if (isMode !== undefined && isMode === 'TW') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
-                if(decryptToken.token === undefined){
+                if (decryptToken.token === undefined) {
                     const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
                     return response.status(400).send(errorUserNameResponse);
                 }

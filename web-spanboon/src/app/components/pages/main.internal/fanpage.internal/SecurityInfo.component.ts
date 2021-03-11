@@ -153,6 +153,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                                 this.connectTwitter = res.data;
                                 this.isLoadingTwitter = false;
                                 this.socialGetBindingTwitter();
+                                let check = {
+                                    checked : true
+                                }
+                                this.onChangeSlide(check,'twitter');
                             }
 
                         }).catch((err: any) => {

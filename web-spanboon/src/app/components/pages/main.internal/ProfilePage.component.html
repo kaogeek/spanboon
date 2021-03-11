@@ -317,8 +317,7 @@
                                 {{resProfile && resProfile.following !== undefined ? resProfile.following : 0}}
                                 กำลังติดตาม
                             </span>
-                            <span class="following">
-
+                            <span class="following"> 
                                 {{resProfile && resProfile.followers !== undefined ? resProfile.followers : 0}}
                                 ผู้ติดตาม
                             </span>
@@ -332,7 +331,7 @@
                         </nav>
                     </div>
                     <box-post *ngIf="isLogin() && isNotAccess && !showLoading" #boxPost id="boxPost"
-                        [profile]="resProfile && resProfile.imageBase64" [isShowTablet]="'true'"
+                        [profile]="resProfile && resProfile.imageBase64" [isShowTablet]="'true'" [isClickPostPreLoad]="isClickPostPreLoad"
                         [isShowMaxWidth]="'899'" (createPost)="createPost($event)" [dataPage]="name"
                         [modeDoIng]="'true'" style="display: block; padding: 5pt 0;">
                     </box-post>
