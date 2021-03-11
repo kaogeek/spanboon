@@ -115,7 +115,7 @@
                     > .header-follow {
                         display: flex;
                         align-items: center;
-                        @include font-size-9($font-head-500);
+                        @include font-size-9($font-head-400);
                         justify-content: center;
                         padding-top: 10px;
 
@@ -156,7 +156,7 @@
 
                     > .name {
                         padding: 5pt 13pt;
-                        @include font-size-9($font-head-500);
+                        @include font-size-9($font-head-400);
                     }
                 }
             }

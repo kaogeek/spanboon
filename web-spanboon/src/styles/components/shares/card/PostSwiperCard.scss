@@ -1,0 +1,131 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.post-swiper-for {
+    padding: 5pt 0;
+
+    &.active {
+        background: $white;
+        border-top: 0.7px solid $border-color;
+        border-bottom: 0.7px solid $border-color;
+        margin-top: 15pt;
+        padding: 10pt 14pt;
+    }
+
+    > .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+
+        > .left {
+            @include font-size-9($font-head-500);
+
+            &.active {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+
+        .count-fufill {
+            padding-left: 10pt;
+            color: $bg-color4;
+
+            &.active {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+
+        > .right {
+            flex: 0 0 auto;
+
+            > spanboon-button {
+                > .spanboon-button {
+                    width: auto !important;
+                    padding: 0 7pt;
+                    height: 26pt !important;
+                }
+            }
+        }
+    }
+
+    > .swiper-container {
+        padding: 10pt 1pt 1pt 1pt;
+
+        &.active {
+            // padding: 0 1pt 1pt 1pt;
+        }
+
+        > .swiper-wrapper {
+            > .swiper-slide {
+                .wp-block-cover {
+                    position: relative;
+                    background-size: cover;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    .background-text {
+                        transition: 0.3s;
+                        width: auto;
+                        max-width: 60%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        word-break: break-all;
+                        z-index: 10;
+                        .background-text-h {
+                            @include font-size-6($font-head-500);
+                            color: white;
+                            line-height: 50px;
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .background-text-h-s {
+                            @include font-size-8($font-head-300);
+                            color: rgb(201, 201, 201);
+                            text-align: center;
+                            margin-bottom: 20px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 3;
+                            -webkit-box-orient: vertical;
+                        }
+                        .line {
+                            width: 50%;
+                            height: 5pt;
+                            background-color: white;
+                            margin-bottom: 20px;
+                        }
+                        .background-text-score {
+                            width: 100%;
+                            height: auto;
+                            display: flex;
+                            flex-direction: initial;
+                            justify-content: center;
+
+                            .text-score {
+                                @include font-size-8($font-head-300);
+                                color: #c9c9c9;
+                                text-align: center;
+                                margin: 0px 10px 0px 10px;
+                            }
+                            .text-point {
+                                @include font-size-8($font-head-500);
+                                color: #c9c9c9;
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

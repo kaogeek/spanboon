@@ -108,8 +108,8 @@
                     transform="translate(-235.283 -0.91)" fill="#F8F7F2" />
             </svg>
         </div>
-        <mat-form-field *ngIf="isPage && isShowUser" appearance="none" class="field-profile">
-            <div class="div-profile" *ngIf="accessPage">
+        <mat-form-field *ngIf="isPage && isShowUser && accessPage" appearance="none" class="field-profile">
+            <div class="div-profile">
                 <img *ngIf="isImges" class="icon-images"
                     src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">
                 <div *ngIf="isDis" class="donator-contro">

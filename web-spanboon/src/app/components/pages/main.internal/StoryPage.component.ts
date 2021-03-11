@@ -84,6 +84,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   public loding: boolean;
   public isComment: boolean
   public isPreload: boolean = true;
+  public isLoding: boolean = true;
   public isSearchHashTag: boolean
   public apiBaseURL = environment.apiBaseURL;
   public h: number
@@ -251,14 +252,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       }
     ]
 
-    // let users = this.authenManager.getCurrentUser()
-
     this.routeActivated.params.subscribe((params) => {
       this.url = params['postId']
     })
-    // var dataPageObj = JSON.parse(sessionStorage.dataPage);
-
-    // this.pageId = dataPageObj.pageId
     let imgGallery: any[]
     let search: SearchFilter = new SearchFilter();
     search.limit = 5;
@@ -266,6 +262,7 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then((res: any) => {
       this.postStoryData = res[0]
+      console.log('this.postStoryData', this.postStoryData)
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
       }).catch((err: any) => {
@@ -311,6 +308,10 @@ export class StoryPage extends AbstractPage implements OnInit {
     }
     this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
 
+    setTimeout(() => {
+      this.isLoding = false;
+    }, 3500);
+
   }
 
   public ngOnDestroy(): void {
@@ -337,12 +338,6 @@ export class StoryPage extends AbstractPage implements OnInit {
         loadPrevNextAmount: 2,
       },
       breakpoints: {
-        // 479: {
-        //   slidesPerView: 1,
-        //   spaceBetween: 0,
-        // },
-        // 768: {
-        // },
         991: {
           slidesPerView: 1,
           spaceBetween: 5,
@@ -390,15 +385,12 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   isPageDirty(): boolean {
-    // throw new Error('Method not implemented.');
     return false;
   }
   onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
-    // throw new Error('Method not implemented.');
     return;
   }
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
-    // throw new Error('Method not implemented.');
     return;
   }
 
@@ -631,7 +623,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     if (action.mod === 'COMMENT') {
     } else if (action.mod === 'LIKE') {
       this.postLike();
-      // this.action.emit({ mod: action.mod, postData: this.postStoryData, userAsPage: this.user });
     } else if (action.mod === 'REBOON') {
       this.isLoginUser();
       if (this.user.id !== undefined && this.user.id !== null) {
@@ -654,64 +645,12 @@ export class StoryPage extends AbstractPage implements OnInit {
           width: '550pt',
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: this.user } }
         });
-
-        // dialogRef.afterClosed().subscribe(result => {
-        //   if (!result) {
-        //     return
-        //   }
-        //   if (result.isConfirm) {
-        //     if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
-        //       data.pageId = null
-        //       if (result.text === "") {
-        //         if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-        //           dataPost = action.post.referencePost._id
-        //         } else {
-        //           dataPost = action.post._id
-        //         }
-        //       } else {
-        //         dataPost = action.post._id
-        //       }
-        //     } else {
-        //       data.pageId = result.pageId
-        //       if (result.text === "") {
-        //         if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-        //           dataPost = action.post.referencePost._id
-        //         } else {
-        //           dataPost = action.post._id
-        //         }
-        //       } else {
-        //         dataPost = action.post._id
-        //       }
-        //     }
-        //     data.detail = result.text
-        //     if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-        //       data.postAsPage = action.userAsPage.id
-        //     }
-        //     if (result.hashTag !== undefined && result.hashTag !== null) {
-        //       data.hashTag = result.hashTag
-        //     }
-        //     this.postFacade.rePost(dataPost, data).then((res: any) => {
-        //       this.resPost.posts[index].repostCount++
-        //     }).catch((err: any) => {
-        //       console.log(err)
-        //     })
-        //   }
-        // });
       } else if (action.type === "NOTOPIC") {
-        // data.pageId = null
-        // dataPost = action.post._id
-        // this.postFacade.rePost(dataPost, data).then((res: any) => {
-        //   this.resPost.posts[index].repostCount++
-        //   this.resPost.posts[index].isRepost = true
-        // }).catch((err: any) => {
-        //   console.log(err)
-        // })
       } else if (action.type === "UNDOTOPIC") {
         this.postFacade.undoPost(action.post._id).then((res: any) => {
         }).catch((err: any) => {
         })
       }
-      // this.action.emit({ mod: action.mod, postData: this.postStoryData._id, type: action.type, post: this.postStoryData, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
       this.action.emit({ mod: action.mod });
     }
@@ -725,11 +664,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     } else {
       this.asPage = undefined
     }
-    // if (this.commentpost.length !== 0) {
-    //   for (let c of this.commentpost) {
-    //     comments.push(c.id)
-    //   }
-    // }
     this.postFacade.getAaaPost(this.postStoryData._id, this.asPage).then((pages: any) => {
       this.postStoryData.isComment = pages.isComment
       this.postStoryData.isLike = pages.isLike
@@ -737,6 +671,29 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.postStoryData.isShare = pages.isShare
     }).catch((err: any) => {
     })
+  }
+
+
+  public convertTextType(text): string {
+    if (text === "GENERAL") {
+      return "ทั่วไป"
+    } else if (text === "NEEDS") {
+      return "มองหา"
+    }
+  }
+
+  public typeStatusGeneral(type): boolean {
+    if (type === "GENERAL") {
+      return true
+    } else
+      return false
+  }
+
+  public typeStatusNeeds(type): boolean {
+    if (type === "NEEDS") {
+      return true
+    } else
+      return false
   }
 
 }
