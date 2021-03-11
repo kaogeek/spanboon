@@ -143,6 +143,7 @@ import {
   DisplayImage,
   NewCard,
   PostCard,
+  PostSwiperCard,
   NewCards,
   ControlAction,
   IconTagCard,
@@ -336,6 +337,7 @@ const COMPONENTS: any[] = [
   NullPostData,
   //
   ImageCard,
+  PostSwiperCard,
   DisplayGallery,
   DisplayImage,
   NewCard,
