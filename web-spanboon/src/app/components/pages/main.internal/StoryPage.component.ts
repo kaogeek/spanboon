@@ -199,6 +199,7 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.postFacade = postFacade;
     this.isComment = false
     this.isSearchHashTag = false
+    this.isLoding = true;
     this.position = "50% 80%"
     this.h = 80
     this.test = [1, 2, 3]
