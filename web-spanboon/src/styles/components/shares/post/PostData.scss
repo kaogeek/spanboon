@@ -94,6 +94,7 @@
             > span {
               cursor: pointer;
               color: $color-gray;
+              @include font-size-10($font-head-200);
 
               &:hover {
                 color: rgba($brandcolor2, 0.95);
