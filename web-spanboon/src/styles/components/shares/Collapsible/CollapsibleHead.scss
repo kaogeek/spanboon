@@ -33,15 +33,14 @@
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                font-size: 18px;
-                font-family: "Kanit-500";
+                @include font-size-9($font-head-500);
                 word-break: break-all;
                 margin-right: 10pt;
                 color: rgb($black, 0.6);
             }
 
             > .content-count {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 flex: 0 0 auto;
                 color: rgb($black, 0.5);
             }
@@ -54,7 +53,7 @@
             align-items: center;
 
             > .count-contact-user {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 background: $brandcolor2;
                 color: $white;
                 border-radius: 10px;
@@ -79,7 +78,7 @@
         justify-content: center;
         padding: 10pt;
         @include pointer();
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-head-500);
         border-bottom: 1px solid $border-color;
         border-right: 1px solid $border-color;
 

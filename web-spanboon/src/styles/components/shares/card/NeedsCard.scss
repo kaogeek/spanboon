@@ -23,7 +23,7 @@
         padding: 0;
 
         > .left {
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
 
             &.active {
                 display: flex;
@@ -125,7 +125,7 @@
                             }
                             .needs-data-h {
                                 .text-h {
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-head-500);
                                     line-height: 15px;
                                     color: #717886;
                                     display: -webkit-box;
@@ -168,7 +168,7 @@
                                     .unit-box {
                                         .unit-num {
                                             color: $bg-color4;
-                                            @include font-size-10($font-family-kanit500);
+                                            @include font-size-10($font-head-500);
                                             overflow: hidden;
                                             text-overflow: ellipsis;
                                             display: -webkit-box;
@@ -177,7 +177,7 @@
                                         }
 
                                         .unit-sub {
-                                            @include font-size-10($font-family-kanit500);
+                                            @include font-size-10($font-head-500);
                                             color: #717886;
                                             overflow: hidden;
                                             text-overflow: ellipsis;
@@ -200,10 +200,12 @@
                                         padding: 0 7pt;
                                         height: 26pt;
                                         color: $bg-color4;
-                                        @include font-size-10($font-family-kanit500);
-
+                                        @include font-size-10($font-head-500);
+                                        color: $color-gray;
                                         > .material-icons {
-                                            @include font-size-10($font-family-kanit500);
+                                            font-family: "Material Icons" !important;
+                                            color: $status-success;
+                                            font-size: $font-size-icon-small;
                                             padding-right: 2pt;
                                         }
                                     }
@@ -217,21 +219,22 @@
                                 }
                             }
                         }
-                        >.amonut {
+                        > .amonut {
                             display: flex;
                             align-items: center;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             color: $color-gray;
-                            >.material-icons {
-                                color : $bg-color4;
-                                @include font-size-10($font-family-kanit500);
+                            > .material-icons {
+                                font-family: "Material Icons" !important;
+                                color: $status-success;
+                                font-size: $font-size-icon-small;
                                 padding-right: 5pt;
                             }
-                            >.quantity {
+                            > .quantity {
                                 color: black;
                                 padding-left: 3pt;
                             }
-                            >.unit {
+                            > .unit {
                                 padding-left: 3pt;
                                 color: black;
                             }

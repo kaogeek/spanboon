@@ -38,14 +38,12 @@
             justify-content: center;
             align-items: center;
             color: $white;
-            font-family: "Kanit-500";
-            font-size: 20px;
+            @include font-size-8($font-head-500);
         }
 
         > .wrapper-topic {
             > .topic-label {
-                font-family: "Kanit-500";
-                font-size: 26px;
+                @include font-size-6($font-head-500);
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
@@ -74,7 +72,7 @@
         align-items: flex-end;
 
         > .topic-create {
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-head-500);
             color: $color-gray;
 
             .icon-time {
@@ -85,12 +83,11 @@
         }
 
         > .topic-count {
-            font-family: "Kanit-500";
-            font-size: 20px;
+            @include font-size-8($font-head-500);
             color: $color-black;
 
             > .topic-type {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: gray;
 
                 > .image {
@@ -103,8 +100,7 @@
 
             > .topic-see-all {
                 color: $brandcolor2;
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 margin-left: 5pt;
                 white-space: nowrap;
                 @include pointer();
@@ -129,7 +125,7 @@
         > .topic-label-right {
             > .topic-count {
                 > .topic-see-all {
-                    font-size: 17px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }
@@ -143,12 +139,12 @@
         > .wrapper-left {
             > .wrapper-topic {
                 > .topic-label {
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-head-500);
                     }
                 }
             }
@@ -156,10 +152,10 @@
 
         > .topic-label-right {
             > .topic-count {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
 
                 > .topic-see-all {
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-head-500);
                 }
             }
         }
@@ -178,10 +174,10 @@
 
         > .topic-label-right {
             > .topic-count {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
 
                 > .topic-see-all {
-                    font-size: 15px;
+                    @include font-size-10($font-head-500);
                 }
             }
         }
@@ -215,12 +211,12 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
 
                 > .wrapper-icon {
                     > span {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-head-500);
                     }
                 }
             }
@@ -229,7 +225,7 @@
         > .topic-label-right {
             > .topic-count {
                 > .topic-see-all {
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-head-500);
                 }
             }
         }
@@ -245,12 +241,12 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    // font-size: 18px;
+                    
                 }
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 15px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
@@ -258,7 +254,7 @@
 
         > .topic-label-right {
             > .topic-count {
-                // @include font-size-9($font-family-kanit500);
+                // @include font-size-9($font-head-500);
             }
         }
     }

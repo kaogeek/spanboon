@@ -36,6 +36,8 @@ $status-post-need: $brandcolor3;
 $status-post-general: rgb(165, 165, 166);
 $status-post-fulfill: rgb(40, 167, 69);
 
+$status-success: rgb(40, 167, 69);
+
 // Button Color
 
 $button-home-card: rgb(122, 175, 103);
@@ -54,28 +56,32 @@ $font-size-based: 13px;
 $font-size-10: 2px;
 $font-size-9: 4px;
 $font-size-8: 6px;
-$font-size-7: 12px;
-$font-size-6: 24px;
-$font-size-5: 32px;
-$font-size-4: 42px;
-$font-size-3: 50px;
+$font-size-7: 9px;
+$font-size-6: 12px;
+$font-size-5: 16px;
+$font-size-4: 24px;
+$font-size-3: 32px;
 $font-size-2: 56px;
 $font-size-1: 60px;
 
+$font-size-icon-small: 15px;
+$font-size-icon-medium: 17px;
+$font-size-icon-large: 19px;
+
 // 2.Font Family
 
-$font-family-kanit600: "Kanit-600";
-$font-family-kanit500: "Kanit-500";
-$font-family-kanit400: "Kanit-400";
-$font-family-kanit300: "Kanit-300";
-$font-family-kanit200: "Kanit-200";
-$font-family-kanit100: "Kanit-100";
+$font-head-600: "Kanit-600";
+$font-head-500: "Kanit-500";
+$font-head-400: "Kanit-400";
+$font-head-300: "Kanit-300";
+$font-head-200: "Kanit-200";
+$font-head-100: "Kanit-100";
 
-$font-family-sarabun-light: "Sarabun-Light";
-$font-family-sarabun-medium: "Sarabun-Medium";
+$font-content-light: "Sarabun-Light";
+$font-content-medium: "Sarabun-Medium";
 
-$font-family-anakotmai-medium: "Anakotmai-Medium";
-$font-family-anakotmai-bold: "Anakotmai-Bold";
+$font-content2-medium: "Anakotmai-Medium";
+$font-content2-bold: "Anakotmai-Bold";
 
 // Font Family import
 

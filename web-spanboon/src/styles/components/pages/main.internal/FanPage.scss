@@ -25,7 +25,7 @@
         > .wrapper-cover-image {
           width: calc(100% - 4px);
           height: calc(#{$height-cover-img-fanpage} - 4px);
-          border: 2px dashed $brandcolor2;
+          // border: 2px dashed $brandcolor2;
 
           &:hover {
             @include pointer();
@@ -42,8 +42,7 @@
             height: 100%;
             justify-content: center;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
 
             > .wrapper-icon-upload {
               display: flex;
@@ -123,8 +122,7 @@
             align-items: center;
             background-color: #f4dead2f;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 20px;
+            @include font-size-8($font-head-500);
             padding-right: $padding-right-img-phrase;
           }
         }
@@ -149,7 +147,7 @@
             background: rgba($black, 0.2);
             color: $white;
             @include pointer();
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
             border: 0.7px solid rgb($white, 0.1);
 
             &:hover {
@@ -267,8 +265,7 @@
               display: flex;
               width: 100%;
               color: $brandcolor2;
-              font-family: "Kanit-500";
-              font-size: 20px;
+              @include font-size-8($font-head-500);
               margin-bottom: 5pt;
               align-items: center;
               justify-content: center;
@@ -287,14 +284,13 @@
             }
 
             > .fan-page-subline {
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
               margin-bottom: 5pt;
             }
 
             > .fan-page-tag {
               color: $color-gray;
-              @include font-size-9($font-family-kanit500);
+              @include font-size-9($font-head-500);
               justify-content: center;
               margin-bottom: 15pt;
             }
@@ -310,7 +306,7 @@
             border-left: $width-border solid $border-color;
             border-bottom: $width-border solid $border-color;
             border-right: $width-border solid $border-color;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
 
             > .btn-follow-about {
               display: flex;
@@ -318,7 +314,7 @@
               width: 33.33%;
               justify-content: center;
               align-items: center;
-              @include font-size-9($font-family-kanit500);
+              @include font-size-9($font-head-500);
 
               &:nth-child(1) {
                 margin: 0 8pt;
@@ -388,8 +384,7 @@
             border: $width-border solid $border-color;
             border-radius: $border-radius-4px;
             margin-top: 5pt;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
 
             > .wrapper-header {
               display: flex;
@@ -398,25 +393,24 @@
               border-bottom: $width-border solid $border-color;
 
               > .header-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 flex: 1 1 0%;
                 padding-right: 15pt;
               }
 
               > .material-icons {
-                font-size: 20px;
+                font-family: "Material Icons" !important;
+                font-size: $font-size-icon-small;
                 @include pointer();
                 flex: 0 0 auto;
               }
 
               > .label-looking-for {
-                font-family: "Kanit-400";
-                font-size: 18px;
+                @include font-size-9($font-head-400);
               }
 
               > .subline-looking-for {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: $color-gray;
               }
             }
@@ -426,11 +420,11 @@
               height: auto;
               padding: unset;
               border-bottom: unset;
-              @include font-size-9($font-family-kanit500);
+              @include font-size-9($font-head-500);
 
               > .con-text {
                 padding: 10pt 15pt;
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
               }
             }
 
@@ -438,7 +432,7 @@
               > .item-looking-for {
                 padding: 10pt 15pt 10pt;
                 margin: 0;
-                @include font-size-9($font-family-kanit400);
+                @include font-size-9($font-head-400);
                 &:hover {
                   border-radius: 0;
                 }
@@ -559,12 +553,12 @@
               align-items: center;
 
               > .btn-donate-top {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 color: $brandcolor2;
               }
 
               > .btn-donate-bottom {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: $color-gray;
               }
             }
@@ -603,8 +597,7 @@
                       height: 100%;
                       color: $color-black;
                       @include pointer();
-                      font-family: "Kanit-500";
-                      font-size: 18px;
+                      @include font-size-9($font-head-500);
                       opacity: 1;
 
                       &:hover {
@@ -667,8 +660,7 @@
               > .title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
-                font-family: "Kanit-500";
-                font-size: 20px;
+                @include font-size-8($font-head-500);
               }
 
               > .card-feed-post {
@@ -695,7 +687,8 @@
 
                   > .mat-button-wrapper {
                     > .material-icons {
-                      font-size: 26px;
+                      font-family: 'Material Icons' !important;
+                      font-size: $font-size-icon-small;
                     }
                   }
                 }
@@ -764,8 +757,7 @@
                         height: 100%;
                         left: 0;
                         top: 0;
-                        font-family: "Kanit-500";
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                         color: $white;
                         background-color: $black;
                         opacity: 0.5;
@@ -788,20 +780,19 @@
                     align-items: center;
 
                     > .date-time {
-                      @include font-size-11($font-family-kanit300);
+                      @include font-size-11($font-head-300);
                       color: $black;
                       margin-right: 7px;
                     }
 
                     > .post-name {
-                      @include font-size-11($font-family-kanit200);
+                      @include font-size-11($font-head-200);
                       color: $color-gray;
                     }
                   }
 
                   > .title {
-                    font-family: "Kanit-500";
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                   }
 
                   > .content {
@@ -809,7 +800,7 @@
                     color: $color-black;
                     margin-bottom: 10pt;
                     font-family: "Sarabun-Light";
-                    @include font-size-9($font-family-sarabun-light);
+                    @include font-size-9($font-content-light);
                   }
 
                   > .content-sub {
@@ -818,7 +809,7 @@
                     margin-bottom: 10pt;
                     cursor: pointer;
                     color: $brandcolor2;
-                    @include font-size-10($font-family-sarabun-light);
+                    @include font-size-10($font-content-light);
 
                     &:hover {
                       color: rgba($brandcolor2, 0.95);
@@ -832,7 +823,7 @@
 
                     > .h_tag_list {
                       width: max-content;
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-head-500);
                       @include pointer();
                       margin: 0 7pt 7pt 0;
 
@@ -850,7 +841,7 @@
                       border-bottom: unset !important;
                       margin: 0;
                       padding: 10pt 10pt 10pt 5pt;
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-head-500);
 
                       > span {
                         > .icon-looking-for {
@@ -883,7 +874,7 @@
                       background: rgba($bg-fog-gray, 0.8);
                       padding: 6pt;
                       @include pointer();
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-head-500);
                       border-radius: $border-radius-4px;
                       margin: 5pt 0;
                       transform: scale(1, 1);
@@ -916,7 +907,7 @@
                       }
 
                       > span {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-head-500);
                       }
                     }
                   }
@@ -931,7 +922,7 @@
                     > .left {
                       display: flex;
                       align-items: center;
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-head-500);
                       color: $color-gray;
 
                       > .icon-feed {
@@ -958,7 +949,7 @@
                       display: flex;
                       align-items: center;
                       color: $brandcolor2;
-                      @include font-size-9($font-family-kanit500);
+                      @include font-size-9($font-head-500);
                     }
                   }
                 }
@@ -969,8 +960,7 @@
                 justify-content: center;
                 height: 501pt;
                 background-color: $brandcolor;
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
 
                 > .lable-timeline {
                   padding: 50pt;
@@ -991,7 +981,7 @@
                 display: flex;
                 justify-content: center;
                 flex-wrap: wrap;
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 border: $width-border solid $border-color;
                 background-color: $white;
                 margin-top: 5pt;
@@ -1000,8 +990,7 @@
                   width: 100%;
                   padding: 15pt;
                   border-bottom: $width-border solid $border-color;
-                  font-family: "Kanit-500";
-                  font-size: 18px;
+                  @include font-size-9($font-head-500);
                 }
 
                 > .side-feed-about-page {
@@ -1011,15 +1000,14 @@
 
                   > .label-about {
                     padding: 15pt;
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
                   > .content-about {
                     padding: 10pt 15pt;
                     width: calc(100% - 30pt);
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
@@ -1028,7 +1016,7 @@
                     text-align: center;
                     color: $brandcolor2;
                     @include pointer();
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-head-500);
                   }
                 }
 
@@ -1086,7 +1074,7 @@
                   text-align: center;
                   color: $brandcolor2;
                   @include pointer();
-                  @include font-size-9($font-family-kanit500);
+                  @include font-size-9($font-head-500);
                   min-height: 26pt;
                   display: flex;
                   justify-content: center;
@@ -1112,7 +1100,7 @@
   }
 
   > span {
-    @include font-size-10($font-family-kanit500);
+    @include font-size-10($font-head-500);
   }
 }
 
@@ -1125,7 +1113,7 @@
   background-color: $brandcolor;
   border-bottom: $width-border solid $border-color;
   color: $font-color-none;
-  @include font-size-9($font-family-kanit500);
+  @include font-size-9($font-head-500);
 }
 
 .doing-none {
@@ -1137,7 +1125,7 @@
   background-color: $brandcolor;
   border-bottom: $width-border solid $border-color;
   color: $font-color-none;
-  @include font-size-9($font-family-kanit500);
+  @include font-size-9($font-head-500);
 }
 
 .pageNotFound {
@@ -1145,8 +1133,7 @@
   height: calc(100vh - 55pt);
   justify-content: center;
   align-items: center;
-  font-family: "Kanit-500";
-  font-size: 20px;
+  @include font-size-8($font-head-500);
 
   > #Group_142 {
     width: 100pt;
@@ -1156,8 +1143,7 @@
 
   > .text-NotFound {
     margin-top: 15pt;
-    font-family: "Kanit-500";
-    font-size: 22px;
+    @include font-size-7($font-head-500);
   }
 }
 
@@ -1186,7 +1172,7 @@
             height: calc(#{$height-cover-img-fanpage} - 4px - 10pt);
 
             > .text-wrapper {
-              @include font-size-9($font-family-kanit500);
+              @include font-size-9($font-head-500);
 
               > .wrapper-icon-upload {
                 > .icon-upload {
@@ -1224,7 +1210,7 @@
                   > .mat-tab-list {
                     > .mat-tab-links {
                       > .mat-tab-link {
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-head-500);
                       }
                     }
                   }

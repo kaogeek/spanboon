@@ -10,7 +10,7 @@
     border: $width-border solid $border-color;
     border-radius: $border-radius-4px;
     margin-top: 5pt;
-    @include font-size-10($font-family-kanit500);
+    @include font-size-10($font-head-500);
 
     > .wrapper-header {
         display: flex;
@@ -23,20 +23,19 @@
             padding-right: 15pt;
 
             > .header-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
             > .material-icons {
+                font-family: 'Material Icons' !important;
                 @include pointer();
             }
 
             > .label-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
 
             > .subline-looking-for {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: $color-gray;
             }
         }
@@ -45,7 +44,8 @@
             flex: 0 0 auto;
 
             > .material-icons {
-                font-size: 20px;
+                font-family: 'Material Icons' !important;
+                font-size: $font-size-icon-large;
                 @include pointer();
             }
         }
@@ -63,7 +63,7 @@
             // overflow: hidden;
             // word-break: break-all;
             padding: 10pt 15pt;
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-head-500);
             // color: rgba($black, 0.6);
         }
 
@@ -113,7 +113,7 @@
             text-align: center;
             color: $brandcolor2;
             @include pointer();
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
             min-height: 26pt;
             display: flex;
             justify-content: center;
@@ -138,7 +138,7 @@
                         justify-content: center;
                         padding: 20px;
                         border-radius: 4px;
-                        background: $bg-fog-gray2;
+                        background: whitesmoke;
                         border: 0.7px solid #f2f2f2;
                         @include pointer();
 
@@ -163,7 +163,7 @@
                             -webkit-box-orient: vertical;
                             overflow: hidden;
                             word-break: break-all;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             color: rgb($black, 0.6);
                         }
                     }
@@ -279,7 +279,7 @@
                         > .div-img {
                             width: 100%;
                             padding: 15pt 0;
-                            background: $bg-fog-gray2;
+                            background: whitesmoke;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -306,7 +306,7 @@
                                 -webkit-box-orient: vertical;
                                 overflow: hidden;
                                 word-break: break-all;
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                                 color: rgb($black, 0.6);
                             }
 
@@ -318,13 +318,13 @@
                                 width: 100%;
 
                                 > .ob-top {
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-head-500);
                                     color: $bg-color4;
                                 }
 
                                 > .ob-bottom {
                                     margin-left: 5pt;
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-head-500);
                                     color: rgb($black, 0.6);
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
@@ -402,7 +402,7 @@
 
         > .btn-fulfill {
             padding: 3pt 9pt;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
             @include pointer();
             color: $white;
             background-color: #84b572;
@@ -411,12 +411,12 @@
         }
 
         > .btn-donate-top {
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
             color: $brandcolor2;
         }
 
         > .btn-donate-bottom {
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-head-500);
             color: $color-gray;
         }
     }

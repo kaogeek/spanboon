@@ -45,7 +45,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
     public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-    public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+    public accessTokenLink = '';
     public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
     constructor(authenManager: AuthenManager,

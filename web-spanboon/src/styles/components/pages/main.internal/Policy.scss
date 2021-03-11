@@ -11,11 +11,10 @@
             padding: 15px 0;
 
             > .topic {
-                font-size: 20px;
-                font-family: "Kanit-500";
+                @include font-size-8($font-head-500);
             }
             > .detail-policy {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 > .policy {
                 }
             }

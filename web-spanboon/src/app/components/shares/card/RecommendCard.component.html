@@ -9,15 +9,23 @@
     <div class="header-title">
         {{title}}
     </div>
-    <div class="wrapper-card">
-        <div class="card-follow">
+    <div class="wrapper-card" *ngIf="data && data.length > 0">
+        <div class="card-follow" *ngFor="let recommed of data">
             <div class="follow">
-                <img class="img-user"
-                    src="https://mymodernmet.com/wp/wp-content/uploads/2020/10/cooper-baby-corgi-dogs-8.jpg">
-                <ng-container *ngIf="isIconPage; else elseTemplate">
+                <ng-container *ngIf="recommed && recommed.imageURL !== '' && recommed.imageURL !== null && recommed.imageURL !== undefined; else elseTemplateImageURL">
+                    <img class="img-user" src="{{apiBaseURL + recommed.imageURL +'/image'}}">
+                </ng-container>
+                <ng-template #elseTemplateImageURL>
+                    <div class="label-image">
+                        {{recommed.name || recommed.displayName  | slice : 0 : 1}}
+                    </div>
+                </ng-template>
+
+
+                <ng-container *ngIf="recommed.type === 'PAGE'; else elseTemplate">
                     <div class="list-follow-name">
                         <div class="follow-name">
-                            <svg class="img-icon" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
+                            <svg *ngIf="recommed.isOffical" class="img-icon" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
                                 height="47.208" viewBox="0 0 43.383 47.208">
                                 <g id="Group_88" data-name="Group 88" transform="translate(0)">
                                     <path id="Path_141" data-name="Path 141"
@@ -28,57 +36,32 @@
                                         transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
                                 </g>
                             </svg>
-                            มูลนิธิเพื่อสัตว์
+                            {{recommed.name}}
                         </div>
-                        <div class="follow-name-eng"> @corgi
+                        <div class="follow-name-eng"
+                            *ngIf="recommed && recommed.pageUsername !== null && recommed.pageUsername !== undefined && recommed.pageUsername !== '' ">
+                            {{ '@'+recommed.pageUsername}}
                         </div>
                     </div>
                 </ng-container>
                 <ng-template #elseTemplate>
                     <div class="list-follow-name">
                         <div class="follow-name">
-                            มูลนิธิเพื่อสัตว์
+                            {{recommed.displayName}}
                         </div>
-                        <div class="follow-name-eng"> @corgi
+                        <div class="follow-name-eng"
+                            *ngIf="recommed && recommed.uniqueId !== null && recommed.uniqueId !== undefined && recommed.uniqueId !== '' ">
+                            {{'@'+recommed.uniqueId}}
                         </div>
                     </div>
                 </ng-template>
             </div>
             <div class="wrapper-btn-follow">
-                <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'" (submitFollow)="onClick()"></button-follow>
             </div>
-        </div>
-        <div class="card-follow">
-            <div class="follow">
-                <img class="img-user" src="https://us-fbcloud.net/wb/data/1106/1106085-img.tbclwu.1.jpg">
-                <div class="list-follow-name">
-                    <div class="follow-name"> เด็กยากไร้
-                    </div>
-                    <div class="follow-name-eng"> @child
-                    </div>
-                </div>
-            </div>
-            <div class="wrapper-btn-follow">
-                <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
-            </div>
-        </div>
-        <div class="card-follow">
-            <div class="follow">
-                <img class="img-user"
-                    src="https://www.sarakadee.com/blog/oneton/wp-content/uploads/2017/12/cat-cute-e1533862828469.jpg">
-                <div class="list-follow-name">
-                    <div class="follow-name"> มูลนิธิเพื่อสุนัขและแมว
-                    </div>
-                    <div class="follow-name-eng">
-                    </div>
-                </div>
-            </div>
-            <div class="wrapper-btn-follow">
-                <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
-            </div>
-        </div>
+        </div> 
     </div>
-    <div class="follow-all">
+    <div class="follow-all" (click)="clickSystemDevelopment()">
         ดูทั้งหมด
     </div>
 </div>

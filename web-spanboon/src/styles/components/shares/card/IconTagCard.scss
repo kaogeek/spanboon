@@ -45,7 +45,7 @@
                 display: flex;
                 color: $black;
                 font-family: "Kanit-500";
-                font-size: 24px;
+                ;
 
                 &:hover {
                     color: rgba($brandcolor2, 0.95);
@@ -60,7 +60,7 @@
                 display: flex;
                 align-items: center;
                 margin-top: 5pt;
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
 
                 > .page-by {
                     padding-right: 5pt;
@@ -128,7 +128,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 22px;
+                    @include font-size-7($font-head-500);
                 }
             }
         }
@@ -152,7 +152,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
             }
         }
@@ -176,7 +176,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }

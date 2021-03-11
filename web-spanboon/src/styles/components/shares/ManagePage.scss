@@ -106,7 +106,7 @@
                 z-index: 99;
                 border-bottom: $width-border solid $border-separator;
                 border-top: $width-border solid$border-separator;
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 > .page-name-div {
                 }
 
@@ -115,20 +115,22 @@
                     justify-content: center;
                     width: 120px;
                     align-items: center;
+                    @include pointer();
 
-                        >.add-page{
-                            @include pointer();
-                            margin: 0 7pt;
-                            background: $brandcolor3;
-                            color: $white;
-                            border-radius: 50%;
-                            padding: 5pt;
-                            box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
-
-                            &:hover{
-                                transform: scale(1.05 , 1.05);
-                            }
+                    > .add-page {
+                        @include pointer();
+                        margin: 0 7pt;
+                        background: $brandcolor3;
+                        color: $white;
+                        border-radius: 50%;
+                        padding: 5pt;
+                        box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
+                    }
+                    &:hover {
+                        .add-page {
+                            transform: scale(1.05, 1.05);
                         }
+                    }
                 }
             }
             .wrapper-list-page {
@@ -162,8 +164,7 @@
                         align-items: center;
                         // padding: 0 5pt;
                         @include text-limit();
-                        font-family: "Kanit-500";
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                         > .con-text-name {
                             overflow: hidden;
                             text-overflow: ellipsis;
@@ -171,7 +172,7 @@
                         }
                         // > .wrapper-page-name {
                         > .wrapper-page-name-eng {
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             color: $color-gray;
                         }
                         > .offical-page {
@@ -199,8 +200,7 @@
                 flex-direction: column;
                 justify-content: center;
                 height: calc(100% - 60pt);
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 > .logo-img {
                     margin: 10pt;
                 }

@@ -59,7 +59,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
   public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-  public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+  public accessTokenLink = '';
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
@@ -93,8 +93,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkLoginAndRedirection();
 
     let doRunAccessToken = false;
-    const fullURL = window.location.href;
-    console.log('fullURL ', fullURL)
+    const fullURL = window.location.href; 
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
@@ -104,7 +103,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }
 
-    if (doRunAccessToken) {
+    if (doRunAccessToken) { 
       this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
@@ -196,6 +195,9 @@ export class LoginPage extends AbstractPage implements OnInit {
       window.open(this.authorizeLink);
     }).catch((error: any) => {
       console.log(error);
+      if(error && error.message){
+        return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+      }
     });
   }
 

@@ -21,7 +21,7 @@
         > .wrapper-action {
             display: flex;
             align-items: center;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
 
             > .label-count {
                 text-align: center;
@@ -59,7 +59,7 @@
         color: rgb($white, 0.7);
 
         > .list-items {
-            @include font-size-10($font-family-kanit400);
+            @include font-size-10($font-head-400);
 
             &:nth-child(5) {
                 display: none;
@@ -128,7 +128,7 @@
     overflow: hidden;
     color: $white;
     @include pointer();
-    @include font-size-9($font-family-kanit500);
+    @include font-size-9($font-head-500);
 }
 
 @media (max-width: $xlarge) {

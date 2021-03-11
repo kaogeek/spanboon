@@ -29,7 +29,7 @@
             }
 
             > .wrapper-sub-header {
-                @include font-size-9($font-family-kanit400);
+                @include font-size-9($font-head-400);
             }
         }
 
@@ -53,7 +53,7 @@
                 > .span-for {
                     flex: 0 0 auto;
                     display: inline-block;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-head-500);
                     position: relative;
                     padding: 0 20px;
                 }
@@ -72,12 +72,12 @@
             text-align: center;
             font-weight: 300;
             margin-top: 30pt;
-            @include font-size-9($font-family-sarabun-light);
+            @include font-size-9($font-content-light);
         }
         > .policy {
             display: flex;
             justify-content: center;
-            @include font-size-10($font-family-kanit300);
+            @include font-size-10($font-head-300);
             padding-top: 5px;
             color: $color-gray;
             &:hover {

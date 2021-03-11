@@ -5,7 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { MESSAGE } from '../../../../app/AlertMessage';
+import { environment } from '../../../../environments/environment';
+import { DialogAlert } from '../dialog/DialogAlert.component';
 
 
 @Component({
@@ -14,20 +18,44 @@ import { Component, Input } from '@angular/core';
 })
 export class RecommendCard {
 
-    @Input()
-    public images: string = "https://pbs.twimg.com/media/EOoioS8VAAAy6lO.jpg";
-    @Input()
-    public data: any; 
-    @Input()
-    public title: string; 
-    public isIconPage: boolean;
-     
-  constructor() {    
-    
+  @Input()
+  public images: string = "https://pbs.twimg.com/media/EOoioS8VAAAy6lO.jpg";
+  @Input()
+  public data: any;
+  @Input()
+  public title: string;
+  public isIconPage: boolean;
+
+  public apiBaseURL = environment.apiBaseURL;
+  public dialog: MatDialog;
+
+  @Output()
+  public submitFollow: EventEmitter<any> = new EventEmitter();
+
+  constructor(dialog: MatDialog) {
+    this.dialog = dialog;
   }
-  public ngOnInit(): void { 
-    
+  public ngOnInit(): void {
+
   }
-  
-  
+
+  public clickSystemDevelopment(): void {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+    });
+  }
+
+  public onClick(){
+    this.submitFollow.emit();
+  }
+
+
 }

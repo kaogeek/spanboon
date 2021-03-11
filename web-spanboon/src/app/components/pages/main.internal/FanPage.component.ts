@@ -87,6 +87,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public isLoadingPost: boolean;
   public isMaxLoadingPost: boolean;
   public isLoadingClickTab: boolean;
+  public isClickPostPreLoad: boolean;
   public isLoadDataPost: boolean;
   public imageCoverSize: number;
   public position: number;
@@ -623,7 +624,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               } else {
                 alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
               }
-              this.showAlertDialogWarming(alertMessages, "none");
+              this.showAlertDialogWarming(alertMessages, "none"); 
             }
             if (this.splitTpyeClone !== undefined && this.splitTpyeClone !== null) {
               this.initPage(this.splitTpyeClone);
@@ -632,7 +633,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
             this.boxPost.clearDataAll();
             this.stopLoading();
-
+            this.isClickPostPreLoad = false;
           }
         }
       }).catch((err: any) => {

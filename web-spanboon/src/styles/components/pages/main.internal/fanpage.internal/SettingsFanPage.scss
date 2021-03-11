@@ -80,7 +80,7 @@
 
                     > .name-page {
                         margin-left: 8pt;
-                        @include font-size-10($font-family-kanit500);
+                        @include font-size-10($font-head-500);
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
@@ -105,7 +105,7 @@
                 }
 
                 .mat-tab-link {
-                    @include font-size-8($font-family-kanit500);
+                    @include font-size-8($font-head-500);
                     height: 50pt;
                     opacity: 1;
 
@@ -138,7 +138,7 @@
                         padding: 13px 10px;
                         border-top: 1px solid $border-color;
                         @include pointer();
-                        @include font-size-9($font-family-kanit500);
+                        @include font-size-9($font-head-500);
                         opacity: 0.7;
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -200,7 +200,7 @@
                 > .profile-page-settings {
                     > .page {
                         > .name-page {
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
                     }
                 }
@@ -209,7 +209,7 @@
                 > .settings-left {
                     > .settings-list {
                         > .list-item-menu {
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                         }
                     }
                 }
@@ -225,7 +225,7 @@
                 > .profile-page-settings {
                     > .page {
                         > .name-page {
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -277,7 +277,7 @@
 
                     > .page {
                         > .name-page {
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -291,7 +291,7 @@
                         > .mat-tab-list {
                             > .mat-tab-links {
                                 > .mat-tab-link {
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-head-500);
                                 }
                             }
                         }
@@ -307,7 +307,7 @@
                     }
                     > .settings-list {
                         > .list-item-menu {
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }
@@ -359,7 +359,7 @@
 
                     > .page {
                         > .name-page {
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
                     }
                 }
@@ -379,7 +379,7 @@
                     }
                     > .settings-list {
                         > .list-item-menu {
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-head-500);
                         }
                     }
                 }

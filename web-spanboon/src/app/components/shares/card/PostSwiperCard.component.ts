@@ -15,13 +15,13 @@ import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { DialogFulfill } from '../dialog/dialog';
 
-const PAGE_NAME: string = 'needscard';
+const PAGE_NAME: string = 'postswiperCard';
 
 @Component({
-  selector: 'needs-card',
-  templateUrl: './NeedsCard.component.html'
+  selector: 'post-swiper-card',
+  templateUrl: './PostSwiperCard.component.html'
 })
-export class NeedsCard extends AbstractPage implements OnInit {
+export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -66,17 +66,23 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.router = router;
     this.observManager = observManager;
 
+
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
       this.getNeeds();
+      console.log('this.itemNeeds', this.itemNeeds)
     }, 650);
+  }
+  ngAfterViewInit(): void {
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
+
 
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
@@ -98,7 +104,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.originalNeeds = []
     if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
-        Data.push(needs) 
+        Data.push(needs)
       }
       if (Data.length > 0) {
         this.originalNeeds.push({ needs: Data });
@@ -108,7 +114,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
           this.indexNeed--
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
-      } 
+      }
       this.getOffsetHeight();
     }
 
@@ -147,97 +153,6 @@ export class NeedsCard extends AbstractPage implements OnInit {
     }
   }
 
-  public fulfillNeeds(item: any) { 
-    if (!this.isLogin()) {
-      this.showAlertLoginDialog(this.router.url); 
-    } else {
-      let needsList: any[] = [];
-
-      for (let needs of this.itemNeeds) {
-        needs.isFrom = 'POST';
-        needsList.push(needs);
-      }
-
-      let dialog = this.dialog.open(DialogFulfill, {
-        width: 'auto',
-        data: {
-          isFrom: 'POST',
-          fulfill: needsList,
-          currentPostItem: item
-        },
-        disableClose: false
-      });
-      dialog.afterClosed().subscribe((res) => { 
-        needsList = [];
-      });
-    }
-  }
-
-  public onClose(item, index: number) {
-    this.setNewNeeds(item);
-    this.close.emit({ item, index });
-  }
-
-  private setNewNeeds(item) {
-    let pos = this.itemNeeds.map(function (e) { return e.standardItemId; }).indexOf(item.standardItemId);
-    this.itemNeeds.splice(pos, 1)
-    this.getNeeds();
-    this.getOffsetHeight();
-    this.directiveRef.update();
-  }
-
-  // public getNeeds(index?: number, next?: boolean) {
-  //   let need: any[]
-  //   this.needs = []
-  //   if (index !== undefined && index !== null) {
-  //     if (next === true) {
-  //       for (let indexs = index; indexs < this.itemNeeds.needs.length; indexs++) {
-  //         this.needs.push(this.itemNeeds.needs[indexs])
-  //         this.index++
-  //         if (this.needs.length === 3) {
-  //           if (((this.index + 1) === this.needs.length)) {
-  //             return this.isNext = false, this.isBack = true
-  //           } else {
-  //             return this.isNext = true, this.isBack = true
-  //           }
-  //         } else if ((this.index + 1) === this.itemNeeds.needs.length) {
-  //           this.needs.push(this.itemNeeds.needs[indexs])
-  //           this.index++
-  //           return this.isNext = false
-  //         }
-  //         this.needs
-  //       }
-  //     } else if (next === false) {
-  //       console.log('next', next)
-  //       console.log('index', index)
-  //       for (let indexs = (index); indexs < this.itemNeeds.needs.length; indexs++) {
-  //         this.needs.push(this.itemNeeds.needs[indexs])
-  //         this.index--
-  //         if (this.needs.length === 3) {
-  //           return
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     for (let needs of this.itemNeeds.needs) {
-  //       this.needs.push(needs)
-  //       this.index++
-  //       if (this.needs.length === 3) {
-  //         if (((this.index + 1) === this.needs.length)) {
-  //           return this.isNext = false
-  //         } else {
-  //           return this.isNext = true
-  //         }
-  //       }
-  //     }
-  //   }
-
-  // }
-
-  // public next(type?: boolean) {
-  //   this.getNeeds(this.index, type)
-  // }
-
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
     slidesPerView: 3,
@@ -263,8 +178,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
         slidesPerView: 2.2,
       },
       479: {
-        slidesPerView: 1.7,
-      }, 
+        slidesPerView: 1.8,
+      },
     },
   }
 }

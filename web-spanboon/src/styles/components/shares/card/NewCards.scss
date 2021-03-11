@@ -26,7 +26,7 @@
 
       span {
         color: $color-gray !important;
-        @include font-size-10($font-family-kanit300);
+        @include font-size-10($font-head-300);
       }
 
       > a {
@@ -48,8 +48,7 @@
     }
 
     > .new-cards-topic {
-      font-family: "Kanit-500";
-      font-size: 18px;
+      @include font-size-9($font-head-500);
       color: $color-black;
       margin: 10pt 0;
       display: -webkit-box;
@@ -60,7 +59,7 @@
     }
 
     > .new-cards-content {
-      @include font-size-10($font-family-sarabun-light);
+      @include font-size-10($font-content-light);
       color: $color-black;
       min-height: 55pt;
       flex: 1 1 0%;
@@ -92,7 +91,7 @@
       justify-content: space-between;
       align-items: center;
       border-top: $width-border solid $bg-fog-gray;
-      @include font-size-10($font-family-kanit500);
+      @include font-size-10($font-head-500);
 
       > .new-footer-icon {
         display: flex;
@@ -178,11 +177,11 @@
   .new-cards {
     > .wrapper-body {
       > .new-cards-topic {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-head-500);
       }
 
       > .new-cards-content {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-content-light);
       }
     }
   }

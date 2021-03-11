@@ -143,6 +143,7 @@ import {
   DisplayImage,
   NewCard,
   PostCard,
+  PostSwiperCard,
   NewCards,
   ControlAction,
   IconTagCard,
@@ -220,7 +221,8 @@ import {
   ChatRoomFacade,
   ChatFacade,
   AboutPageFacade,
-  TwitterService
+  TwitterService,
+  RecommendFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -336,6 +338,7 @@ const COMPONENTS: any[] = [
   NullPostData,
   //
   ImageCard,
+  PostSwiperCard,
   DisplayGallery,
   DisplayImage,
   NewCard,
@@ -430,6 +433,7 @@ const SERVICE_CLASSES: any[] = [
   ChatFacade,
   AboutPageFacade,
   TwitterService,
+  RecommendFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

@@ -9,7 +9,7 @@
     width: 100%;
     height: auto;
     overflow: hidden;
-    @include font-size-9($font-family-kanit400);
+    @include font-size-9($font-head-400);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,8 +23,7 @@
             0px 4px 10px 5px rgb(197 197 197 / 12%);
         background-color: $white;
         > .box-hrader {
-            font-size: 26px;
-            font-family: "Kanit-500";
+            @include font-size-6($font-head-500);
             flex-grow: 2;
             border-bottom: 0.1px solid rgb(14 14 14 / 15%);
             display: flex;
@@ -116,7 +115,7 @@
                 height: 400px;
                 > .box-list-hrader {
                     padding: 10px 20px;
-                    font-size: 22px;
+                    @include font-size-7($font-head-500);
                 }
                 > .box-list-body {
                     height: calc(100% - 73px);
@@ -152,12 +151,11 @@
                             align-items: baseline;
                             justify-content: center;
                             > .text-label {
-                                font-size: 20px;
+                                @include font-size-8($font-head-500);
                             }
                             > .text-detail {
-                                font-size: 18px;
+                                @include font-size-9($font-head-300);
                                 color: rgba(0, 0, 0, 0.5);
-                                font-family: "Kanit-300";
                             }
                         }
                         > .list-item-forward {
@@ -192,7 +190,7 @@
                         }
                     }
                     > .text {
-                        font-size: 22px;
+                        @include font-size-7($font-head-500);
                         color: black;
                     }
                     > .list-item-Next {
@@ -223,7 +221,7 @@
                             > .menu-sorting {
                                 height: 20pt;
                                 border: 0.7pt solid $border-color;
-                                @include font-size-9($font-family-kanit400);
+                                @include font-size-9($font-head-400);
                                 &:hover {
                                     color: $brandcolor2;
                                     background: rgba($brandcolor2, 0.1);
@@ -255,7 +253,7 @@
                             > .menu-sorting {
                                 height: 20pt;
                                 border: 0.7pt solid $border-color;
-                                @include font-size-9($font-family-kanit400);
+                                @include font-size-9($font-head-400);
                                 &:hover {
                                     color: $brandcolor2;
                                     background: rgba($brandcolor2, 0.1);
@@ -317,7 +315,7 @@
                             width: 25px;
                             cursor: pointer;
                             .iconfill {
-                                fill: #000000;
+                                fill: #474747;
                             }
                             &:hover {
                                 .iconfill {
@@ -338,9 +336,8 @@
                         height: calc(100% - 155px) !important;
                     }
                     > .text {
-                        font-size: 20px;
+                        @include font-size-8($font-head-500);
                         opacity: 0.6;
-                        font-family: "Kanit-500";
                         margin: 15px 10px;
                     }
                     > .item {
@@ -383,12 +380,11 @@
                             flex-direction: column;
                             align-items: center;
                             > .name {
-                                font-size: 18px;
-                                font-family: "Kanit-500";
+                                @include font-size-9($font-head-500);
                             }
                             > .quantity {
                                 opacity: 0.7;
-                                @include font-size-9($font-family-kanit300);
+                                @include font-size-9($font-head-300);
                             }
                         }
                     }
@@ -400,7 +396,7 @@
                         > .left {
                             width: 50%;
                             > .detail {
-                                @include font-size-9($font-family-kanit300);
+                                @include font-size-9($font-head-300);
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                                 -webkit-line-clamp: 2;
@@ -413,7 +409,7 @@
                                 justify-content: center;
                                 padding: 12px 20px;
                                 > .date {
-                                    @include font-size-11($font-family-kanit300);
+                                    @include font-size-11($font-head-300);
                                     color: #4e4e4e;
                                     display: flex;
                                     align-items: center;
@@ -422,25 +418,26 @@
                                     cursor: pointer;
                                 }
                                 > .detail-h {
-                                    font-size: 18px;
-                                    font-family: "Kanit-500";
+                                    @include font-size-9($font-head-500);
                                     overflow: hidden;
+                                    line-height: 30px;
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-d {
-                                    @include font-size-9($font-family-kanit300);
+                                    @include font-size-9($font-head-300);
                                     overflow: hidden;
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
+                                    line-height: 18px;
                                     -webkit-line-clamp: 2;
                                     -webkit-box-orient: vertical;
                                     width: 100%;
                                 }
                                 > .detail-e {
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-head-500);
                                     color: #747474;
                                     font-family: unset;
                                     overflow: hidden;
@@ -600,12 +597,11 @@
                                     align-items: center;
                                     justify-content: center;
                                     > .name {
-                                        font-size: 18px;
-                                        font-family: "Kanit-500";
+                                        @include font-size-9($font-head-500);
                                     }
                                     > .quantity {
                                         opacity: 0.7;
-                                        @include font-size-9($font-family-kanit400);
+                                        @include font-size-9($font-head-400);
                                     }
                                 }
                             }
@@ -626,34 +622,35 @@
                                 justify-content: center;
                                 padding: 15px;
                                 > .date {
-                                    @include font-size-11($font-family-kanit300);
+                                    @include font-size-11($font-head-300);
                                     color: #4e4e4e;
-                                    @include font-size-11($font-family-kanit300);
+                                    @include font-size-11($font-head-300);
                                     color: #4e4e4e;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
                                 }
                                 > .detail-h {
-                                    font-size: 18px;
-                                    font-family: "Kanit-500";
+                                    @include font-size-9($font-head-500);
                                     overflow: hidden;
+                                    line-height: 30px;
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-d {
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-head-500);
                                     font-family: unset;
                                     overflow: hidden;
+                                    line-height: 18px;
                                     text-overflow: ellipsis;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 2;
                                     -webkit-box-orient: vertical;
                                 }
                                 > .detail-e {
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-head-500);
                                     color: #747474;
                                     font-family: unset;
                                     overflow: hidden;
@@ -752,7 +749,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 22px;
+                        @include font-size-7($font-head-500);
                         > .link {
                             margin: 0px 10px;
                             color: $brandcolor2;
@@ -772,8 +769,7 @@
             justify-content: center;
             > .text {
                 opacity: 0.5;
-                font-family: "Kanit-600";
-                font-size: 18px;
+                @include font-size-9($font-head-600);
             }
         }
     }
@@ -806,7 +802,7 @@
         }
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader {
-        font-size: 20px;
+        @include font-size-8($font-head-500);
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-body > .box-list > .box-list-hrader {
         display: none;
@@ -912,7 +908,7 @@
         display: none;
     }
     .fulfill-allocate > .fulfill-allocate-box > .box-hrader > .left > span {
-        font-size: 20px;
+        @include font-size-8($font-head-500);
         @include limit-text-length(1);
     }
     .fulfill-allocate
@@ -923,7 +919,7 @@
         > .list-item
         > .list-item-detail
         > .text-label {
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         @include limit-text-length(1);
     }
     .fulfill-allocate
@@ -934,7 +930,7 @@
         > .list-item
         > .list-item-detail
         > .text-detail {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-head-500);
         @include limit-text-length(2);
     }
 }

@@ -26,8 +26,7 @@
         overflow: hidden;
 
         > .dialog-input-header-text {
-            font-size: 20px;
-            font-family: "Kanit-500";
+            @include font-size-8($font-head-500);
             color: #61646b;
         }
 
@@ -41,6 +40,7 @@
             > .material-icons {
                 cursor: pointer;
                 opacity: 0.4;
+                font-family: 'Material Icons' !important;
                 color: #61646b;
 
                 &:hover {
@@ -69,7 +69,7 @@
             }
 
             > .dialog-input-value {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 padding-top: 5pt;
                 color: #68717f;
             }
@@ -82,7 +82,7 @@
             margin: 0 10px;
 
             > .dialog-input-label {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: #68717f;
             }
 
@@ -90,7 +90,7 @@
                 > .input-value {
                     width: 100%;
                     color: $black;
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-head-500);
                     text-align: right;
                     padding-right: 5px;
                     border: #f8f7f8 1px solid;
@@ -133,7 +133,7 @@
             text-align: center;
             margin: 0 0.25rem;
             transition: 0.5s;
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-head-500);
 
             &:hover {
                 // transform: scale(1.06);

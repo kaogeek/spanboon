@@ -796,7 +796,7 @@
                     </ng-container>
                 </div>
             </div>
-            <div class="right">
+            <div class="right" [class.active]="isClickPostPreLoad">
                 <div class="div-gatdata-post" (click)="onClickGetDataPost()"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
@@ -832,7 +832,7 @@
                             </ng-template>
                         </mat-select>
                     </mat-form-field>
-                </ng-template>
+                </ng-template> 
             </div>
         </div>
     </form>

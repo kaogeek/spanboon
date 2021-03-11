@@ -61,7 +61,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
     public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-    public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+    public accessTokenLink = '';
     public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
     constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade, twitterService: TwitterService,
@@ -109,10 +109,12 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public connectionSocial(text: string, bind?: boolean) {
+
         if (text === 'facebook' && !bind) {
             this.isLoading = true;
             this.clickLoginFB();
         } else if (text === 'facebook' && bind) {
+            this.isLoading = true;
             this.pageFacade.socialUnBindingFacebook(this.pageId).then((res: any) => {
                 // if delete true set false
                 if (res.data) {
@@ -138,7 +140,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 // this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadIng = false;
 
-                window.bindTwitter = (resultTwitter) => {
+                window.bindTwitter = (resultTwitter) => {  
                     if (resultTwitter !== undefined && resultTwitter !== null) {
                         const twitter = new PageSocialTW();
                         twitter.twitterOauthToken = resultTwitter.token;
@@ -150,6 +152,11 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                             if (res.data) {
                                 this.connectTwitter = res.data;
                                 this.isLoadingTwitter = false;
+                                this.socialGetBindingTwitter();
+                                let check = {
+                                    checked : true
+                                }
+                                this.onChangeSlide(check,'twitter');
                             }
 
                         }).catch((err: any) => {
@@ -159,13 +166,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         });
                     }
                 }
-            }).catch((error: any) => {
-                console.log(error);
+            }).catch((error: any) => { 
                 this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 this.isPreLoadIng = false;
+                this.isLoadingTwitter = false;
             });
 
         } else if (text === 'twitter' && bind) {
+            this.isLoadingTwitter = true;
             this.pageFacade.socialUnBindingTwitter(this.pageId).then((res: any) => {
                 // if delete true set false
                 if (res.data) {
@@ -174,6 +182,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         checked: false
                     }
                     this.unBindingSharePost(slider, 'twitter');
+                    this.socialGetBindingTwitter();
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
@@ -246,8 +255,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
             if (res.name === FACEBOOK_AUTO_POST) {
                 this.autoPostFacebook = res.value;
+                this.isLoading = false;
             } else if (res.name === TWITTER_AUTO_POST) {
                 this.autoPostTwitter = res.value;
+                this.isLoadingTwitter = false;
             }
         }).catch((err: any) => {
             console.log('err ', err)
@@ -255,7 +266,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public onChangeSlide(event: any, social: string) {
-
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
@@ -321,8 +331,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     fbexptime: response.authResponse.data_access_expiration_time,
                     fbsignedRequest: response.authResponse.signedRequest
                 }
-                this.accessToken = accessToken;
-
+                this.accessToken = accessToken; 
                 this._ngZone.run(() => this.listPageFacebook());
 
             } else { 
@@ -338,11 +347,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             if (response && !response.error) {
                 /* handle the result */
                 this.responseFacabook = response;
-                if (this.responseFacabook !== undefined) {
+                if (this.responseFacabook.length > 0 && this.responseFacabook !== undefined) {
                     Object.assign(this.responseFacabook.data[0], { selected: true });
                     this.getListFacebook(this.responseFacabook);
+                } else {
+                    this.connect = false;
+                    this.showAlertDialog('ไม่สามารถเชื่อมต่อกับเพจได้');
                 }
-            }
+            } 
         });
     }
 
@@ -364,7 +376,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             if (picture && !picture.error) {
                 // console.log('picture ', picture)
                 /* handle the result */
-
             }
         })
     }

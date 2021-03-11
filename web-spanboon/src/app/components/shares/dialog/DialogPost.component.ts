@@ -186,6 +186,11 @@ export class DialogPost extends AbstractPage {
           }
         }).catch((err: any) => {
           console.log(err);
+          let alertMessages: string;
+          if(err && err.name === 'Objective was not found.'){
+            alertMessages = 'เกิดข้อผิดพลาด กรูณาทำใหม่อีกครั้ง'
+            this.showAlertDialogWarming(alertMessages, "none");
+          }
         })
       }
     } else {

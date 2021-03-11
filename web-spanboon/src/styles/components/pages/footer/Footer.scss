@@ -18,7 +18,7 @@
   > .wrapper-menu {
     display: flex;
     > .menu {
-      @include font-size-9($font-family-anakotmai-medium);
+      @include font-size-9($font-content2-medium);
       padding: 0 10pt;
       cursor: pointer;
       font-weight: 300;
@@ -36,7 +36,7 @@
     }
   }
   > .logo-spanboon {
-    @include font-size-7($font-family-kanit500);
+    @include font-size-7($font-head-500);
     text-align: right;
     padding: 0 40pt;
   }

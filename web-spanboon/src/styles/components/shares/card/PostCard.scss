@@ -25,7 +25,7 @@
             align-items: center;
             flex: 1 1 0%;
             margin-right: 15pt;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
 
             > .sup-name-page {
                 display: flex;
@@ -58,7 +58,7 @@
                 display: flex;
                 align-items: center;
                 color: $color-gray;
-                @include font-size-10($font-family-kanit300);
+                @include font-size-10($font-head-300);
                 @include pointer();
 
                 &:hover {
@@ -137,8 +137,7 @@
             justify-content: stretch;
 
             > .title-post {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 margin-bottom: 5pt;
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
@@ -150,8 +149,7 @@
                 min-height: 55pt;
                 margin-bottom: 15pt;
                 flex: 1 1 0%;
-                font-family: "Sarabun-Light";
-                @include font-size-10($font-family-sarabun-light);
+                @include font-size-10($font-content-light);
                 word-break: break-word;
 
                 > .btn-read-more {
@@ -176,7 +174,7 @@
                     border-bottom: $width-border solid $border-separator;
 
                     > .left {
-                        @include font-size-10($font-family-kanit500);
+                        @include font-size-10($font-head-500);
                         font-weight: normal;
                         flex: 0 0 auto;
                     }
@@ -185,7 +183,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: flex-end;
-                        @include font-size-10($font-family-kanit500);
+                        @include font-size-10($font-head-500);
                         margin-left: 15pt;
 
                         > .icon-offical-post-card {
@@ -251,7 +249,7 @@
                             box-shadow: 2.5px 0px 0px 0 $white;
                             overflow: hidden;
                             color: $brandcolor;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             @include pointer();
                             z-index: 2;
 
@@ -303,11 +301,11 @@
                 padding: 7pt 10pt;
 
                 > .title-post {
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-head-500);
                 }
 
                 > .content-post {
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-content-light);
                 }
             }
         }

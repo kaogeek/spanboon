@@ -66,7 +66,7 @@
                                     overflow: hidden;
                                     color: $brandcolor;
                                     background: $brandcolor2;
-                                    @include font-size-9($font-family-kanit500);
+                                    @include font-size-9($font-head-500);
                                 }
 
                                 > img {
@@ -78,8 +78,7 @@
                                 }
 
                                 > .name-page {
-                                    font-family: "Kanit-500";
-                                    font-size: 18px;
+                                    @include font-size-9($font-head-500);
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
                                     -webkit-box-orient: vertical;
@@ -121,7 +120,7 @@
                             > .menu-filter {
                                 height: 36pt;
                                 padding: 0 5px 0 15px;
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
 
                                 > .mat-button-wrapper {
                                     display: flex;
@@ -136,6 +135,7 @@
                                     }
 
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         margin-left: 5px;
                                     }
                                 }
@@ -172,9 +172,8 @@
                     > .contact-notfound {
                         display: flex;
                         justify-content: center;
-                        font-family: "Kanit-500";
                         align-items: center;
-                        font-size: 22px;
+                        @include font-size-7($font-head-500);
                     }
                 }
             }
@@ -218,7 +217,7 @@
                         }
 
                         > .lookfor {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-head-300);
                             margin-left: 5px;
                         }
 
@@ -229,7 +228,7 @@
                         }
 
                         > .date {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-head-300);
                             color: rgb($black, 0.5);
                             margin-left: 5px;
 
@@ -244,8 +243,7 @@
                     }
 
                     > .contact-head {
-                        font-family: "Kanit-500";
-                        font-size: 24px;
+                        @include font-size-6($font-head-500);
                         margin-top: 3pt;
                         display: -webkit-box;
                         -webkit-line-clamp: 1;
@@ -265,7 +263,7 @@
                         flex-wrap: wrap;
                         padding: 3pt 0;
                         > .date {
-                            @include font-size-9($font-family-kanit400);
+                            @include font-size-9($font-head-300);
                             color: rgb($black, 0.5);
 
                             a {
@@ -309,7 +307,7 @@
 
                                 > .contact-event {
                                     margin: 0 10pt 0 8px;
-                                    @include font-size-10($font-family-kanit500);
+                                    @include font-size-10($font-head-500);
                                     color: $brandcolor2;
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
@@ -329,7 +327,7 @@
                             }
 
                             > .event-cos {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                                 color: rgb($black, 0.5);
                             }
                         }
@@ -356,14 +354,13 @@
                             text-align: right;
 
                             > .joinus {
-                                font-family: "Kanit-500";
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                                 color: $home-page-activate-color;
                             }
 
                             > .user {
                                 word-break: break-all;
-                                @include font-size-9($font-family-kanit400);
+                                @include font-size-9($font-head-400);
 
                                 a {
                                     color: #a5a5a6;
@@ -395,7 +392,7 @@
                             overflow: hidden;
                             color: $brandcolor;
                             background: $brandcolor2;
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-head-500);
 
                             a {
                                 color: $brandcolor;
@@ -413,7 +410,7 @@
                         }
 
                         > .text-fulfill-close {
-                            @include font-size-9($font-family-kanit500);
+                            @include font-size-9($font-head-500);
                             color: $brandcolor2;
                             > .date-case-close {
                                 text-align: end;
@@ -481,8 +478,7 @@
                         > .header {
                             flex: 0 0 auto;
                             border-bottom: 1px solid rgba($border-color, 0.7);
-                            font-family: "Kanit-500";
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                             height: 45pt;
                             display: flex;
                             justify-content: center;
@@ -553,6 +549,7 @@
                                     background: rgb($bg-grey, 0.2);
 
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         color: $bg-color4;
                                         font-size: 70px;
                                         font-weight: 900;
@@ -588,7 +585,7 @@
                                     // width: 100%;
 
                                     > .butt-fulfill-bottom {
-                                        @include font-size-10($font-family-kanit500);
+                                        @include font-size-10($font-head-500);
 
                                         &:last-child {
                                             margin-left: 6pt;
@@ -610,11 +607,10 @@
                 height: 60pt;
             }
             > .fulfill-label {
-                font-family: "Kanit-500";
-                font-size: 26px;
+                @include font-size-6($font-head-500);
             }
             > .fulfill-search {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 color: $brandcolor2;
                 > .hover {
                     @include pointer();
@@ -629,7 +625,7 @@
 
 .drop-menu-filter {
     > .mat-menu-item {
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-head-500);
         height: 40px;
     }
 }
@@ -653,8 +649,7 @@
 
         > .select-name {
             flex: 1 1 0%;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             margin-left: 10pt;
         }
     }
@@ -677,7 +672,7 @@
         overflow: hidden;
         color: $brandcolor;
         background: $brandcolor2;
-        @include font-size-9($font-family-kanit500);
+        @include font-size-9($font-head-500);
     }
 
     > .profile {
@@ -691,8 +686,7 @@
 
     > .select-name {
         flex: 1 1 0%;
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         margin-left: 10pt;
     }
 }
@@ -747,7 +741,7 @@
                         }
                         > .list-item {
                             display: flex;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             color: $bg-color4;
                             @include pointer();
                             padding-top: 4pt;
@@ -776,6 +770,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -838,7 +833,7 @@
                         }
                         > .list-item {
                             display: flex;
-                            @include font-size-10($font-family-kanit500);
+                            @include font-size-10($font-head-500);
                             color: $bg-color4;
                             padding-top: 4pt;
                             @include pointer();
@@ -865,6 +860,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -968,14 +964,14 @@
                     > .story-left {
                         > .story-category {
                             > .lookfor {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                             }
                             > .date {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                             }
                         }
                         > .contact-head {
-                            font-size: 22px;
+                            @include font-size-7($font-head-500);
                             margin-top: unset;
                         }
                         > .contact-hashtag {
@@ -1023,6 +1019,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -1098,14 +1095,14 @@
                     > .story-left {
                         > .story-category {
                             > .lookfor {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                             }
                             > .date {
-                                @include font-size-10($font-family-kanit500);
+                                @include font-size-10($font-head-500);
                             }
                         }
                         > .contact-head {
-                            font-size: 22px;
+                            @include font-size-7($font-head-500);
                             margin-top: unset;
                         }
                         > .contact-hashtag {
@@ -1153,6 +1150,7 @@
                                     bottom: 0;
                                     top: 0;
                                     > .material-icons {
+                                        font-family: 'Material Icons' !important;
                                         @include pointer();
                                     }
                                 }
@@ -1257,7 +1255,8 @@
                             }
                             > .mat-button-wrapper {
                                 > .material-icons {
-                                    font-size: 26px;
+                                    font-family: 'Material Icons' !important;
+                                    font-size: $font-size-icon-small;
                                 }
                             }
                         }
@@ -1396,7 +1395,7 @@
                             }
                         }
                         > .contact-head {
-                            font-size: 22px;
+                            @include font-size-7($font-head-500);
                             margin-top: unset;
                         }
                         > .contact-hashtag {
@@ -1425,6 +1424,7 @@
                                 > .plus-item {
                                     > .d-plus {
                                         > .material-icons {
+                                            font-family: 'Material Icons' !important;
                                             font-size: 56px;
                                         }
                                     }

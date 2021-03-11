@@ -89,11 +89,11 @@ span:focus {
             .top {
                 display: flex;
                 flex-direction: column;
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
             }
 
             .bottom {
-                @include font-size-10($font-family-kanit500);
+                @include font-size-10($font-head-500);
                 color: $color-gray;
             }
 
@@ -167,8 +167,7 @@ span:focus {
         }
 
         span {
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             margin-left: 5pt;
         }
     }
@@ -177,7 +176,7 @@ span:focus {
         display: flex;
         color: $bg-fog-gray;
         align-items: center;
-        @include font-size-10($font-family-kanit500);
+        @include font-size-10($font-head-500);
 
         &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -329,7 +328,7 @@ span:focus {
             padding: 20pt;
 
             > .top {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 color: $bg-color2;
                 text-align: left;
             }
@@ -344,7 +343,7 @@ span:focus {
                     vertical-align: middle;
                     background-size: 18px;
                     box-shadow: 0px 1px 9px 0 #e5e3dd;
-                    @include font-size-10($font-family-kanit500);
+                    @include font-size-10($font-head-500);
                     border: unset;
                     color: $color-black;
                     border-radius: 25pt;
@@ -838,7 +837,7 @@ span:focus {
 }
 
 .content {
-    margin-top: 5pt;
+    margin-top: 10pt;
     min-height: 40px;
     color: $color-11;
 }
@@ -970,15 +969,14 @@ $baby-blue: #f8faff;
     padding: 12px 20px;
 
     > span {
-        font-family: "Kanit-300";
-        font-size: 18px;
+        @include font-size-9($font-head-300);
         color: $white;
         margin-right: 20px;
     }
 
     > button {
         flex: 0 0 auto;
-        @include font-size-9($font-family-kanit500);
+        @include font-size-9($font-head-500);
         // padding: 2pt 15pt;
         background: $white;
         color: $black;
@@ -988,11 +986,11 @@ $baby-blue: #f8faff;
 @media (max-width: $medium) {
     .tool-developer {
         > span {
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
         }
 
         > button {
-            font-size: 15px;
+            @include font-size-10($font-head-500);
         }
     }
 }
@@ -1000,11 +998,11 @@ $baby-blue: #f8faff;
 @media (max-width: $small) {
     .tool-developer {
         > span {
-            font-size: 15px;
+            @include font-size-10($font-head-500);
         }
 
         > button {
-            @include font-size-10($font-family-kanit500);
+            @include font-size-10($font-head-500);
         }
     }
 }

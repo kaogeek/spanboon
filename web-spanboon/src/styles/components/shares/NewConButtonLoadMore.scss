@@ -14,7 +14,7 @@ spanboon-button-load-more {
     .spanboon-button-load-more {
         padding: 5pt 20pt;
         cursor: pointer;
-        @include font-size-8($font-family-kanit400);
+        @include font-size-8($font-head-400);
         border-radius: 7pt;
         opacity: 0.95;
         transform: scale(1, 1);

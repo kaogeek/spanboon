@@ -7,8 +7,7 @@
 
 .security-info {
     > .label-info {
-        font-family: "Kanit-500";
-        font-size: 22px;
+        @include font-size-7($font-head-500);
         margin: 15pt 40pt 5pt 40pt;
         border-bottom: 0.7pt solid $border-color;
         height: 30pt;
@@ -17,7 +16,7 @@
         > .label-connect {
             padding: 10pt;
             margin: 0 30pt;
-            @include font-size-9($font-family-kanit500);
+            @include font-size-9($font-head-500);
         }
         > .box-social {
             position: relative;
@@ -29,7 +28,7 @@
             > .left {
                 display: flex;
                 align-items: center;
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 flex: 1 1 0%;
                 margin-right: 10pt;
 
@@ -69,29 +68,34 @@
                 > .lost-connect {
                     display: flex;
                     flex-direction: column;
-                    @include font-size-9($font-family-kanit500);
+                    @include font-size-9($font-head-500);
                     color: $color-black;
-                    a {
-                        @include font-size-10($font-family-kanit400);
-                        padding-right: 5pt;
+
+                    > .link-social {
+                        @include font-size-10($font-head-400);
                         color: $color-gray;
-                        @include pointer();
-        
-                        &:hover {
-                            color: $brandcolor2;
+                        a {
+                            @include font-size-10($font-head-400);
+                            color: $color-gray;
+                            padding-right: 5pt;
+                            @include pointer();
+
+                            &:hover {
+                                color: $brandcolor2;
+                            }
                         }
                     }
-                } 
-            } 
+                }
+            }
 
             > .social-name {
                 display: flex;
                 align-items: center;
-                flex: 0 0 auto; 
+                flex: 0 0 auto;
             }
 
             .link-connect {
-                @include font-size-9($font-family-kanit500);
+                @include font-size-9($font-head-500);
                 color: $color-gray;
 
                 &:hover {

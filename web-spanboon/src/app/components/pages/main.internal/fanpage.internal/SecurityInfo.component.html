@@ -25,14 +25,21 @@
 
                 </div>
                 <div class="lost-connect">
-                    {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}   
-                    <a *ngIf="dataBinding" href="//www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank"> {{ ( dataBinding && dataBinding.providerPageName ) }} </a>
+                    {{connect ? 'เชื่อมต่อกับ Facebook' : 'ยังไม่ได้เชื่อมต่อกับ Facebook'}}
+                    <div class="link-social" *ngIf="dataBinding && dataBinding.providerPageId">
+                        <span>เพจ : </span>
+                        <a href="//www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank"> {{ (
+                            dataBinding && dataBinding.providerPageName ) }} </a>
+                    </div>
+
                 </div>
             </div>
-            <div class="social-name"> 
-                <div class="link-connect" [class.hide]="isLoading" [class.active]="connect" >
+            <div class="social-name">
+                <div class="link-connect" [class.hide]="isLoading" [class.active]="connect">
                     <!-- {{connect ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}} -->
-                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connect" (click)="connectionSocial('facebook',connect)" (click)="$event.stopPropagation()" ></mat-checkbox>
+                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connect"
+                        (click)="connectionSocial('facebook',connect)" (click)="$event.stopPropagation()">
+                    </mat-checkbox>
                 </div>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
@@ -49,14 +56,18 @@
                 </div>
                 <div class="lost-connect">
                     {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
-                    <a *ngIf="dataBindingTwitter"  href="www.facebook.com/{{dataBinding && dataBinding.providerPageId}}" target="_blank">{{ ( dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
+                    <div class="link-social" *ngIf="dataBindingTwitter && dataBindingTwitter.providerPageId">
+                        <span>บัญชี : </span>
+                        <a href="//www.twitter.com/{{dataBindingTwitter && dataBindingTwitter.providerPageName}}" target="_blank">{{ (
+                            dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
+                    </div>
                 </div>
             </div>
-            <div class="social-name"> 
-                <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="connectTwitter"
-                    (click)="connectionSocial('twitter',connectTwitter)">
+            <div class="social-name">
+                <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="connectTwitter" >
                     <!-- {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}} -->
-                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connectTwitter" (click)="$event.stopPropagation()" ></mat-checkbox>
+                    <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connectTwitter"
+                    (click)="connectionSocial('twitter',connectTwitter)"  (click)="$event.stopPropagation()"></mat-checkbox>
                 </div>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
@@ -96,7 +107,7 @@
     </div>
     <div class="body-social">
         <div class="label-connect">
-            การตั้งค่าเริ่มต้นสำหรับการเผยแพร่โพสต์สำหรับ facebook และ twitter
+            การตั้งค่าเริ่มต้นสำหรับการเผยแพร่โพสต์ไปยังแฟลตฟอร์มอื่นๆ
         </div>
         <div class="box-social">
             <div class="left">
@@ -119,8 +130,8 @@
                 </div>
             </div>
             <div class="link-connect" [class.active]="autoPostFacebook">
-                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostFacebook"
-                    (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
+                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="autoPostFacebook" (click)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -141,7 +152,7 @@
 
             <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="autoPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
-                    (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
+                    (click)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
