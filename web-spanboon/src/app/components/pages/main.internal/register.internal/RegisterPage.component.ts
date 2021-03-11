@@ -478,7 +478,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     dialogRef.afterClosed().subscribe(res => {
       if (res.password !== '' && res.password !== null && res.password !== undefined) {
         this.passwordModeSocial = res.password;
-        this.onClickregister(this.registerForm.value);
+        // this.onClickregister(this.registerForm.value);
       }
     });
   }

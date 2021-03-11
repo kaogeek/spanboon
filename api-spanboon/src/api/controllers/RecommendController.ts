@@ -9,13 +9,12 @@ import 'reflect-metadata';
 import { JsonController, Res, Get, Req, QueryParam, QueryParams } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
-import { SearchFilter } from './requests/SearchFilterRequest'; 
 import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
 import { HashTagService } from '../services/HashTagService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { RecommendStoryParam } from './params/RecomendStoryParam';
-import { StorySectionProcessor } from '../processors/StorySectionProcessor'; 
+import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { UserService } from '../services/UserService';
 import { PageService } from '../services/PageService';
 
@@ -23,7 +22,7 @@ import { PageService } from '../services/PageService';
 export class RecommendController {
 
     constructor(
-        private userFollowService: UserFollowService, 
+        private userFollowService: UserFollowService,
         private postsService: PostsService,
         private hashTagService: HashTagService,
         private userService: UserService,
@@ -70,7 +69,8 @@ export class RecommendController {
 
             // search followed user
             const fwhereConditions: any = {
-                userId: userObjId
+                userId: userObjId,
+                isAdmin: false
             };
 
             const followResult: any = await this.userFollowService.search(undefined, undefined, ['subjectId', 'subjectType'], undefined, fwhereConditions, undefined, false);
@@ -104,13 +104,13 @@ export class RecommendController {
             const limitData = limit ? limit : 3;
             const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
             const randomLimitPage = limitData - randomLimitUser;
-            if (isRandomUser) { 
+            if (isRandomUser) {
                 const stmt = [];
                 stmt.push({ $match: { _id: { $nin: orUserConditions } } },
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                     }
                 );
                 const userFollow = await this.userService.aggregate(stmt);
@@ -120,29 +120,29 @@ export class RecommendController {
                 }
             }
 
-            if (isRandomPage) { 
+            if (isRandomPage) {
                 const stmt = [];
                 // stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
                 stmt.push({ $match: { _id: { $nin: orPageConditions } } },
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
                     }
                 );
-                const pageFollow = await this.pageService.aggregate(stmt); 
+                const pageFollow = await this.pageService.aggregate(stmt);
                 for (const page of pageFollow) {
                     Object.assign(page, { type: 'PAGE' });
                     result.push(page);
                 }
             }
 
-            if (!isRandomPage && !isRandomUser) { 
+            if (!isRandomPage && !isRandomUser) {
                 const stmt = [
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                     }
                 ];
                 const userFollow = await this.userService.aggregate(stmt);
@@ -155,7 +155,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
                     }
                 ];
                 const pageFollow = await this.pageService.aggregate(stmtPage);
@@ -191,7 +191,7 @@ export class RecommendController {
             // console.log(pageFolEnResult);
         } else {
             // guest mode   
-            const limitData = limit ? limit : 3; 
+            const limitData = limit ? limit : 3;
             const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
             const randomLimitPage = limitData - randomLimitUser;
 
@@ -199,7 +199,7 @@ export class RecommendController {
                 { $sample: { size: randomLimitUser } },
                 { $skip: offset ? offset : 0 },
                 {
-                    $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                    $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                 }
             ];
             const userFollow = await this.userService.aggregate(stmt);
@@ -212,12 +212,12 @@ export class RecommendController {
                 { $sample: { size: randomLimitPage } },
                 { $skip: offset ? offset : 0 },
                 {
-                    $project: {  _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                    $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
                 }
             ];
             const pageFollow = await this.pageService.aggregate(stmtPage);
             for (const data of pageFollow) {
-                Object.assign(data, { type: 'PAGE' }); 
+                Object.assign(data, { type: 'PAGE' });
                 result.push(data);
             }
 
