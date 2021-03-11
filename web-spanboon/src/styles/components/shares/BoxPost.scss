@@ -1141,9 +1141,15 @@
         > .wrapper-left {
           > .search-tag-emergency {
             max-width: 50%;
+            >.event-tag  {
+              @include font-size-10($font-head-500);
+            }
           }
           > .search-objective {
             max-width: 50%;
+            >.objective-doing {
+              @include font-size-10($font-head-500);
+            }
           }
         }
       }
@@ -1173,6 +1179,7 @@
         width: calc(50% - 30pt) !important;
       }
       .m-right {
+        display: flex !important;
         width: calc(100% - 30pt) !important;
         border-left: unset !important;
         border-top: 0.7px solid #e5e5e5;
