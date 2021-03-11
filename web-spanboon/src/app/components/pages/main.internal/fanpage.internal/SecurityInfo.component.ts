@@ -136,7 +136,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             let callback = environment.webBaseURL + "/callback";
             this.twitterService.requestToken(callback).then((result: any) => {
                 this.authorizeLink += '?' + result;
-                window.open(this.authorizeLink);
+                window.open(this.authorizeLink , '_blank');
                 // this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadIng = false;
 

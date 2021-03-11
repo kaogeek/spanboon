@@ -28,6 +28,9 @@
                     padding-right: 5pt;
                 }
             }
+            span {
+                font-family: "Kanit-500";
+            }
         }
 
         > .setting-top {
@@ -251,20 +254,22 @@
                     width: calc(100% - 20pt - 2px);
                     padding: 7pt 10pt;
                 }
-
-                > .setting-back-left {
-                    transition: all 0.5s ease;
-                    @include pointer();
-                    &:hover {
+                &:hover {
+                    .setting-back-left {
                         > .left {
                             path {
                                 fill: $brandcolor2;
                             }
                         }
-                        span {
-                            color: $brandcolor2;
-                        }
                     }
+                    span {
+                        color: $brandcolor2;
+                    }
+                }
+
+                > .setting-back-left {
+                    transition: all 0.5s ease;
+                    @include pointer();
                 }
             }
             > .setting-top {
@@ -337,18 +342,20 @@
                 &.active {
                     top: 39pt;
                 }
-                > .setting-back-left {
-                    @include pointer();
-                    &:hover {
+                &:hover {
+                    .setting-back-left {
                         > .left {
                             path {
                                 fill: $brandcolor2;
                             }
                         }
-                        span {
-                            color: $brandcolor2;
-                        }
                     }
+                    span {
+                        color: $brandcolor2;
+                    }
+                }
+                > .setting-back-left {
+                    @include pointer();
                 }
             }
             > .setting-top {
