@@ -63,10 +63,10 @@ export class RecommendController {
 
         if (userObjId !== null) {
             // user login mode
-            const notPageFollowedFilter: SearchFilter = new SearchFilter();
-            notPageFollowedFilter.whereConditions = {};
-            const notUserFollowedFilter: SearchFilter = new SearchFilter();
-            notUserFollowedFilter.whereConditions = {};
+            // const notPageFollowedFilter: SearchFilter = new SearchFilter();
+            // notPageFollowedFilter.whereConditions = {};
+            // const notUserFollowedFilter: SearchFilter = new SearchFilter();
+            // notUserFollowedFilter.whereConditions = {};
 
             // search followed user
             const fwhereConditions: any = {
@@ -110,7 +110,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                     }
                 );
                 const userFollow = await this.userService.aggregate(stmt);
@@ -127,7 +127,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                        $project: { _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
                     }
                 );
                 const pageFollow = await this.pageService.aggregate(stmt); 
@@ -142,7 +142,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                     }
                 ];
                 const userFollow = await this.userService.aggregate(stmt);
@@ -155,7 +155,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        $project: { _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
                     }
                 ];
                 const pageFollow = await this.pageService.aggregate(stmtPage);
@@ -199,7 +199,7 @@ export class RecommendController {
                 { $sample: { size: randomLimitUser } },
                 { $skip: offset ? offset : 0 },
                 {
-                    $project: { displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                    $project: { _id: 1 ,displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
                 }
             ];
             const userFollow = await this.userService.aggregate(stmt);
@@ -212,7 +212,7 @@ export class RecommendController {
                 { $sample: { size: randomLimitPage } },
                 { $skip: offset ? offset : 0 },
                 {
-                    $project: {  name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                    $project: {  _id: 1 ,name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
                 }
             ];
             const pageFollow = await this.pageService.aggregate(stmtPage);

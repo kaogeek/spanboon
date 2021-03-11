@@ -620,6 +620,10 @@
         align-items: center;
         border-left: $width-border solid $border-color;
         color: $brandcolor2;
+        &.isClickPostPreLoad {
+          pointer-events: none;
+          opacity: 0.6; 
+        }
 
         .mat-option {
           width: 2000pt !important;

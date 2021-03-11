@@ -282,12 +282,7 @@ export class AuthenManager {
 
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
-      }
-      // let body: any = {};
-      // if(registEmail !== undefined && registEmail !== null){ 
-      //   body = Object.assign(registEmail); 
-      // }
-
+      } 
 
       let httpOptions = {
         headers: headers
@@ -401,9 +396,8 @@ export class AuthenManager {
       }
 
       let httpOptions = {
-        headers: headers
-      };
-
+        headers: headers, 
+      }; 
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
 
         if (mode === "TW") {

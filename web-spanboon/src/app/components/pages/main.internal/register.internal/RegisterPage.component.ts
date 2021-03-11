@@ -483,12 +483,12 @@ export class RegisterPage extends AbstractPage implements OnInit {
     });
   }
 
-  public getTwitterUser() {  
+  public getTwitterUser() {
     let body = {
       twitterOauthToken: this.accessToken.twitterOauthToken,
       twitterOauthTokenSecret: this.accessToken.twitterOauthTokenSecret
     }
-    this.twitterService.accountVerify(body).then((account: any) => { 
+    this.twitterService.accountVerify(body).then((account: any) => {
       this.data = account;
       this.data.displayName = account.name;
       this.images = account.profile_image_url_https;
@@ -531,9 +531,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.firstName = userInfo.first_name;
       this.data.lastName = userInfo.last_name;
       this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
-      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined;
-      this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal';
-      // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=normal&access_token='+this.accessToken.fbtoken;
+      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined; 
+      // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=large';
+      // console.log('this.images ',this.images)
+      this.images = userInfo.picture.data.url;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;
       }).catch(err => {

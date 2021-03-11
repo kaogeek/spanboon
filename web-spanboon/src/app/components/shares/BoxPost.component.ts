@@ -83,6 +83,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isListPage: boolean;
   @Input()
+  public isClickPostPreLoad: boolean = false;
+  @Input()
   public isEdit: boolean = false;
   @Input()
   public isFulfill: boolean = false;
@@ -829,6 +831,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
           Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
         }
+        this.isClickPostPreLoad = true;
         return this.createPost.emit(data);
       }
       this.stopLoading();
