@@ -255,6 +255,9 @@
 
 </div> -->
 
+<div *ngIf="isLoding" class="loding">
+    <loading></loading>
+</div>
 <div class="story">
     <div class="story-background"
         [ngStyle]="{'background-position': position , 'background-image': 'url('+ imageCover +')'}">
@@ -385,9 +388,9 @@
                     </ng-container>
                 </div>
                 <div class="story-footer">
-                    <!-- <post-swiper-card [itemNeeds]="recommendedStorys.contents" [isFulfillQuantity]="true"
+                    <post-swiper-card [itemNeeds]="recommendedStorys.contents" [isFulfillQuantity]="true"
                         [isFulfill]="'true'">
-                    </post-swiper-card> -->
+                    </post-swiper-card>
                 </div>
             </div>
             <div class="right">
@@ -405,9 +408,5 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div *ngIf="isLoding" class="loding">
-        <loading></loading>
     </div>
 </div>

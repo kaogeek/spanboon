@@ -68,6 +68,7 @@
                 .wp-block-cover {
                     position: relative;
                     background-size: cover;
+                    background-position: 0%;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -80,16 +81,21 @@
                         align-items: center;
                         word-break: break-all;
                         z-index: 10;
+                        margin: 50px;
                         .background-text-h {
-                            @include font-size-6($font-head-500);
+                            @include font-size-8($font-head-500);
                             color: white;
                             line-height: 50px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
                             text-align: center;
-                            margin-bottom: 20px;
                         }
                         .background-text-h-s {
-                            @include font-size-8($font-head-300);
-                            color: rgb(201, 201, 201);
+                            @include font-size-10($font-head-300);
+                            color: white;
                             text-align: center;
                             margin-bottom: 20px;
                             overflow: hidden;
@@ -112,14 +118,14 @@
                             justify-content: center;
 
                             .text-score {
-                                @include font-size-8($font-head-300);
-                                color: #c9c9c9;
+                                @include font-size-10($font-head-300);
+                                color: white;
                                 text-align: center;
                                 margin: 0px 10px 0px 10px;
                             }
                             .text-point {
-                                @include font-size-8($font-head-500);
-                                color: #c9c9c9;
+                                @include font-size-10($font-head-300);
+                                color: white;
                                 text-align: center;
                             }
                         }
