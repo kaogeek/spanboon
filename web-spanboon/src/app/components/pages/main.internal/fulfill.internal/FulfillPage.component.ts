@@ -519,8 +519,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
     }
 
-    public getChatRoom(fulfill: any, asPage?: any) {
-        console.log('fulfill', fulfill);
+    public getChatRoom(fulfill: any, asPage?: any) { 
         this.chatData = [];
         this.reqData = [];
 
@@ -1156,13 +1155,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private async createFulfillmentCase(data: any) {
-        this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            console.log('>>> createResult', createResult)
-            console.log('>>> data', data)
+        this.fulFillFacade.createFulfillmentCase(data).then((createResult) => { 
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
-        }).catch((createError) => {
-            console.log('createError ', createError)
-            if (createError.error.error.message === "Create FulfillmentCase Error") {
+        }).catch((createError) => { 
+            if (createError && createError.error.error.message === "Create FulfillmentCase Error") {
                 this.showAlertDialog('ไม่สามารถสร้างเคส' + this.PLATFORM_FULFILL_TEXT + 'ได้');
             }
         });

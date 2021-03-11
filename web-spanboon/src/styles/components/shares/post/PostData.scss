@@ -94,6 +94,7 @@
             > span {
               cursor: pointer;
               color: $color-gray;
+              @include font-size-10($font-head-200);
 
               &:hover {
                 color: rgba($brandcolor2, 0.95);
@@ -418,7 +419,7 @@
     > .content {
       white-space: pre-wrap;
       color: $color-black;
-      @include font-size-9($font-content-light);
+      @include font-size-10($font-content-light);
       min-height: unset;
     }
     > .page-give {

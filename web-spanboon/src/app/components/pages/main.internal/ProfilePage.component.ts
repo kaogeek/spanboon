@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade } from '../../../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -56,6 +56,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private pageFacade: PageFacade;
   private postCommentFacade: PostCommentFacade;
   private postFacade: PostFacade;
+  private recommendFacade: RecommendFacade;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -82,6 +83,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public userImage: any;
   public name: any;
   public splitTpyeClone: any;
+  public dataRecommend: any;
 
   public postId: any
   public userCloneDatas: any
@@ -96,7 +98,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
-    sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade) {
+    sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -107,7 +109,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.routeActivated = routeActivated;
     this.postFacade = postFacade;
     this.pageFacade = pageFacade;
-    this.postCommentFacade = postCommentFacade
+    this.postCommentFacade = postCommentFacade;
+    this.recommendFacade = recommendFacade;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true
@@ -153,7 +156,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
 
         }, 1000);
-      }
+      }  
     });
 
     this.mySubscription = this.router.events.subscribe((event) => {
@@ -195,6 +198,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     super.ngOnInit();
     this.setTab();
     this.checkLoginAndRedirection();
+    this.getRecommend();
     if (this.isLogin()) {
       this.getProfileImage();
     }
@@ -249,6 +253,16 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else {
       return '/profile/' + this.user.id
     }
+  }
+
+  public getRecommend() {
+    let limit: number = 3; 
+    let offset: number = 0;
+    this.recommendFacade.getRecommend(limit , offset).then((res) => { 
+      this.dataRecommend = res.data;
+    }).catch((err: any) => {
+      console.log('err ',err)
+    });
   }
 
   public getProfileImage() {
@@ -459,6 +473,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.profileFacade.searchType(data, this.url).then(async (res: any) => {
       if (!Array.isArray(res) && res.posts.length > 0) {
         if (res.posts.length !== 5) {
+          console.log('res.posts.length ',res.posts.length)
           this.isMaxLoadingPost = true;
           this.isLoadingPost = false;
         }

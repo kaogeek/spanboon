@@ -85,9 +85,15 @@
                                         </div>
                                     </a>
                                     <ng-container *ngIf="isUserPage">
-                                        <div class="post-name">
+                                        <!-- <div class="post-name">
                                             เผยแพร่โดย: {{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
-                                        </div>
+                                        </div> -->
+                                        <a class="post-name"
+                                            href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                                            เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                                itemPost.ownerUser.name}}</span>
+                                        </a>
+
                                     </ng-container>
                                 </div>
                             </div>
@@ -115,10 +121,15 @@
                             </div>
                         </a>
                         <ng-container *ngIf="isUserPage">
-                            <div class="post-name">
+                            <!-- <div class="post-name">
                                 เผยแพร่โดย: {{ (itemPost.ownerUser && itemPost.ownerUser.displayName) ||
                                 (itemPost.ownerUser && itemPost.ownerUser.name)}}
-                            </div>
+                            </div> -->
+                            <a class="post-name"
+                                href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                                เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                    itemPost.ownerUser.name}}</span>
+                            </a>
                         </ng-container>
                     </div>
                 </ng-container>
@@ -202,10 +213,15 @@
                                             </div>
                                         </a>
                                         <ng-container *ngIf="isUserPage">
-                                            <div class="post-name">
+                                            <!-- <div class="post-name">
                                                 เผยแพร่โดย: {{itemPost.ownerUser.displayName ||
                                                 itemPost.ownerUser.name}}
-                                            </div>
+                                            </div> -->
+                                            <a class="post-name"
+                                                href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                                                เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                                    itemPost.ownerUser.name}}</span>
+                                            </a>
                                         </ng-container>
                                     </div>
                                 </div>
@@ -233,9 +249,14 @@
                                 </div>
                             </a>
                             <ng-container *ngIf="isUserPage">
-                                <div class="post-name">
+                                <!-- <div class="post-name">
                                     เผยแพร่โดย: {{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
-                                </div>
+                                </div> -->
+                                <a class="post-name"
+                                    href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                                    เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                        itemPost.ownerUser.name}}</span>
+                                </a>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -334,10 +355,11 @@
                                 </div>
                             </a>
                             <ng-container *ngIf="isUserPage">
-                                <div class="post-name">
-                                    เผยแพร่โดย: {{ itemPost.ownerUser && itemPost.ownerUser.displayName ||
-                                    itemPost.ownerUser && itemPost.ownerUser.name}}
-                                </div>
+                                <a class="post-name"
+                                    href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                                    เผยแพร่โดย :<span>{{ itemPost.ownerUser && itemPost.ownerUser.displayName ||
+                                        itemPost.ownerUser && itemPost.ownerUser.name}}</span>
+                                </a>
                             </ng-container>
                         </div>
                     </ng-container>
@@ -536,7 +558,7 @@
                         </ng-container>
                         <ng-template #elseTemplateShareSocial>
                             <a target="_blank"
-                                href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
+                                href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId) && substringData(item.socialId)[1]}}&id={{substringData(item.socialId) && substringData(item.socialId)[0]}}">
                                 เฟสบุ๊ค
                             </a>
                         </ng-template>
