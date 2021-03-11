@@ -25,3 +25,4 @@ export * from './CardCreateStoryTitleText.component';
 export * from './FulfillItemCard.component';
 export * from './CardFulfillItem.component';
 export * from './CardChatFulfill.component';
+export * from './PostSwiperCard.component';

@@ -102,7 +102,7 @@ export class ManagePage extends AbstractPage implements OnInit {
         // dialogRef.afterClosed().subscribe(res => {
         //     console.log(res)
         // });
-        this.clickSystemDevelopment();
+        // this.clickSystemDevelopment();
     }
 
     public clickSystemDevelopment(): void {

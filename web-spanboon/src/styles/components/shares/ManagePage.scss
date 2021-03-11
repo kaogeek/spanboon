@@ -115,6 +115,7 @@
                     justify-content: center;
                     width: 120px;
                     align-items: center;
+                    @include pointer();
 
                     > .add-page {
                         @include pointer();
@@ -124,8 +125,9 @@
                         border-radius: 50%;
                         padding: 5pt;
                         box-shadow: 2px 3px 5px -1px rgba(0, 0, 0, 0.2);
-
-                        &:hover {
+                    }
+                    &:hover {
+                        .add-page {
                             transform: scale(1.05, 1.05);
                         }
                     }
