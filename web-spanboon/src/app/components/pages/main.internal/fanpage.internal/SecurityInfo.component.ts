@@ -274,33 +274,31 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             }
         } else if (social === 'facebook') {
             // facebook 
-            if (!this.connect) { 
+            if (!this.connect) {
                 this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
                 return this.autoPostFacebook = false;
             }
         }
 
-        if (this.connectTwitter && this.connect) {
-            let autopost: string = '';
-            if (social === 'facebook') {
-                autopost = FACEBOOK_AUTO_POST;
-            } else if (social === 'twitter') {
-                autopost = TWITTER_AUTO_POST;
-            }
-            let config = {
-                value: event.checked,
-                type: "boolean"
-            }
-            this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
-                if (res.name === FACEBOOK_AUTO_POST) {
-                    this.autoPostFacebook = res.value;
-                } else if (res.name === TWITTER_AUTO_POST) {
-                    this.autoPostTwitter = res.value;
-                }
-            }).catch((err: any) => {
-                console.log('err ', err)
-            });
+        let autopost: string = '';
+        if (social === 'facebook') {
+            autopost = FACEBOOK_AUTO_POST;
+        } else if (social === 'twitter') {
+            autopost = TWITTER_AUTO_POST;
         }
+        let config = {
+            value: event.checked,
+            type: "boolean"
+        }
+        this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
+            if (res.name === FACEBOOK_AUTO_POST) {
+                this.autoPostFacebook = res.value;
+            } else if (res.name === TWITTER_AUTO_POST) {
+                this.autoPostTwitter = res.value;
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
     }
 
     public fbLibrary() {
