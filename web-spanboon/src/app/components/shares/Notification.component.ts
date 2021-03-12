@@ -39,6 +39,7 @@ export class Notification extends AbstractPage implements OnInit {
 
   public notiisRead: any[] = []
   public linkPost: string;
+  public preload: boolean;
   public notiOrigin: any[] = [];
 
   private mainPostLink: string = window.location.origin
@@ -56,6 +57,8 @@ export class Notification extends AbstractPage implements OnInit {
     this.assetFacade = assetFacade;
     this.notificationFacade = notificationFacade;
 
+    this.preload = true;
+
     var myVar;
     clearInterval(myVar);
     myVar = setInterval(() => {
@@ -66,6 +69,9 @@ export class Notification extends AbstractPage implements OnInit {
   public ngAfterViewInit(): void {
     setTimeout(() => {
       this.checkNotification();
+      setTimeout(() => {
+        this.preload = false
+      }, 1000);
     }, 1000);
   }
 
@@ -111,18 +117,19 @@ export class Notification extends AbstractPage implements OnInit {
         }
       }
       this.notiOrigin = this.noti;
+      console.log('this.notiOrigin', this.notiOrigin)
     }
   }
 
-  public markReadNoti(data) {   
+  public markReadNoti(data) {
     this.notificationFacade.markRead(data.notification.id)
   }
 
-  public redirectNotification(data) { 
-    if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) { 
+  public redirectNotification(data) {
+    if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) {
       this.router.navigateByUrl(data.notification.link)
-    } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT){
-      this.router.navigateByUrl('/fulfill' , { state: { room: data.notification.data } })
+    } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT) {
+      this.router.navigateByUrl('/fulfill', { state: { room: data.notification.data } })
     }
   }
 
@@ -131,7 +138,7 @@ export class Notification extends AbstractPage implements OnInit {
     this.showAlertDevelopDialog();
   }
 
-  public isOpened() { 
+  public isOpened() {
     if (this.notiOrigin && this.notiOrigin.length > 0) {
       for (let msg of this.notiOrigin) {
         this.notificationFacade.markRead(msg.notification.id);

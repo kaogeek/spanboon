@@ -2403,13 +2403,13 @@ export class BoxPost extends AbstractPage implements OnInit {
       var postion = $('.wrapper-tool-post');
       postion.addClass("m-tool-post");
 
-      var postion1 = $('.left');
+      var postion1 = $('.box-left');
       postion1.addClass("m-left");
 
-      var postion2 = $('.center');
+      var postion2 = $('.box-center');
       postion2.addClass("m-center");
 
-      var postion3 = $('.right');
+      var postion3 = $('.box-right');
       postion3.addClass("m-right");
     } else if (window.innerWidth > 899) {
       this.isMobilePost = false;
