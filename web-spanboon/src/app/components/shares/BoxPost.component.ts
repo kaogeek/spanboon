@@ -130,6 +130,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public submitClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public selectedInformation: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -1260,6 +1262,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.modeDoIng = true;
     }
+    this.selectedInformation.emit(page);
   }
 
   public onClickGetDataPost(isDraft?: boolean) {
@@ -1299,7 +1302,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isMsgError = true
         var contentAlert;
         if (this.isListPage) {
-          topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
+          contentAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
           document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
         } else {
           contentAlert = document.getElementById('editableStoryPost');
@@ -2646,7 +2649,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  public redirectSetting() {
-    this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+  public redirectSetting() { 
+    if(this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null){
+      this.router.navigateByUrl('page/' + this.dataPageId.pageUsername + '/settings?tab=connect');
+    } else {
+      this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    }
   }
 }

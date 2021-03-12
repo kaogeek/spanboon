@@ -1058,6 +1058,11 @@
                       }
                     }
                   }
+                } 
+
+                >.list-found {
+                  color: $color-gray;
+                  @include font-size-9($font-head-500);
                 }
               }
             }
