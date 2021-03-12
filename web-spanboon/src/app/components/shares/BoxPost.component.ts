@@ -685,7 +685,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public onChangeSlide(event?: MatSlideToggleChange) {
     this.isStory = event.checked;
     if (!this.isStory) {
-      if (this.dataStroy && this.dataStroy.storyPost !== "") {
+      if (!(Object.keys(this.dataStroy).length === 0 && this.dataStroy.constructor === Object)) {
         const confirmEventEmitter = new EventEmitter<any>();
         confirmEventEmitter.subscribe(() => {
           this.submitDialog.emit(this.dataStroy);
@@ -695,10 +695,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.submitCanCelDialog.emit(this.dataStroy);
         });
 
-        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + "โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.dataStroy.storyPost = "";
             this.closeDialog();
           } else {
             this.isStory = true;
@@ -706,6 +705,30 @@ export class BoxPost extends AbstractPage implements OnInit {
         });
       } else {
         this.closeDialog();
+      }
+      if (this.content !== undefined && this.content !== null) {
+        if (!(Object.keys(this.content.story).length === 0 && this.content.story.constructor === Object)) {
+          const confirmEventEmitter = new EventEmitter<any>();
+          confirmEventEmitter.subscribe(() => {
+            this.submitDialog.emit(this.dataStroy);
+          });
+          const canCelEventEmitter = new EventEmitter<any>();
+          canCelEventEmitter.subscribe(() => {
+            this.submitCanCelDialog.emit(this.dataStroy);
+          });
+
+          let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.dataStroy = {};
+              this.closeDialog();
+            } else {
+              this.isStory = true;
+            }
+          });
+        } else {
+          this.closeDialog();
+        }
       }
     }
   }
@@ -826,9 +849,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           postGallery: this.dataImage,
           coverImage: this.coverImage
         }
-        // if (this.dataStroy.storyPost === '') {
-        //   delete data.story;
-        // }
         if (this.modeShowDoing) {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
           Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });

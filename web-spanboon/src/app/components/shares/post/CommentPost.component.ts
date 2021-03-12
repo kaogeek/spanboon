@@ -5,6 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
+import { I } from '@angular/cdk/keycodes';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { PostCommentFacade } from '../../../services/services';
 
@@ -22,6 +23,8 @@ export class CommentPost {
   public commentdata: any;
   @Input()
   public isLogin: boolean
+  @Input()
+  public userId: string
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
@@ -47,6 +50,10 @@ export class CommentPost {
 
   public testIimageURL(data: any): string {
     return data
+  }
+
+  public checkAccessCustom(uuId:string): boolean {
+    return uuId === this.userId;
   }
 
   public menuProfile(): void { }

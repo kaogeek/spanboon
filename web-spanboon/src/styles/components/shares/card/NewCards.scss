@@ -177,7 +177,7 @@
   .new-cards {
     > .wrapper-body {
       > .new-cards-topic {
-        @include font-size-10($font-head-500);
+        @include font-size-8($font-head-500);
       }
 
       > .new-cards-content {
