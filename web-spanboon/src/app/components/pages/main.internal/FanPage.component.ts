@@ -334,7 +334,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.resPost.posts = [];
       this.isLoadingPost = true;
     } else {
-      data.offset = this.resPost && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
+      data.offset = this.resPost && this.resPost.posts && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
     data.limit = 5
     let originalpost: any[] = this.resPost.posts;

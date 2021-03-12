@@ -17,8 +17,8 @@
         <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix"
             (submitClose)="onClose($event)" (submitResizeClose)="onResizeClose($event)" [modeDoIng]="data.modeDoIng"
             [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage"
-            [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage"
-            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost">
+            [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage" (selectedInformation)="selectedInformation($event)"
+            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost" >
         </box-post>
     </ng-template>
 </div>
