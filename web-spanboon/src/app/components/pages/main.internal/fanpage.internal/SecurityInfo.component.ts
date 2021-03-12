@@ -136,11 +136,11 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             let callback = environment.webBaseURL + "/callback";
             this.twitterService.requestToken(callback).then((result: any) => {
                 this.authorizeLink += '?' + result;
-                window.open(this.authorizeLink , '_blank');
+                window.open(this.authorizeLink, '_blank');
                 // this.popup(this.authorizeLink, '', 600, 200, 'yes');
                 this.isPreLoadIng = false;
 
-                window.bindTwitter = (resultTwitter) => {  
+                window.bindTwitter = (resultTwitter) => {
                     if (resultTwitter !== undefined && resultTwitter !== null) {
                         const twitter = new PageSocialTW();
                         twitter.twitterOauthToken = resultTwitter.token;
@@ -154,9 +154,9 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                                 this.isLoadingTwitter = false;
                                 this.socialGetBindingTwitter();
                                 let check = {
-                                    checked : true
+                                    checked: true
                                 }
-                                this.onChangeSlide(check,'twitter');
+                                this.onChangeSlide(check, 'twitter');
                             }
 
                         }).catch((err: any) => {
@@ -166,7 +166,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         });
                     }
                 }
-            }).catch((error: any) => { 
+            }).catch((error: any) => {
                 this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
                 this.isPreLoadIng = false;
                 this.isLoadingTwitter = false;
@@ -269,36 +269,38 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
-                this.autoPostTwitter = undefined;
-                return this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
+                this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
+                return this.autoPostTwitter = false;
             }
         } else if (social === 'facebook') {
-            // facebook
-            if (!this.connect) {
-                this.autoPostFacebook = undefined;
-                return this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
+            // facebook 
+            if (!this.connect) { 
+                this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
+                return this.autoPostFacebook = false;
             }
         }
 
-        let autopost: string = '';
-        if (social === 'facebook') {
-            autopost = FACEBOOK_AUTO_POST;
-        } else if (social === 'twitter') {
-            autopost = TWITTER_AUTO_POST;
-        }
-        let config = {
-            value: event.checked,
-            type: "boolean"
-        }
-        this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
-            if (res.name === FACEBOOK_AUTO_POST) {
-                this.autoPostFacebook = res.value;
-            } else if (res.name === TWITTER_AUTO_POST) {
-                this.autoPostTwitter = res.value;
+        if (this.connectTwitter && this.connect) {
+            let autopost: string = '';
+            if (social === 'facebook') {
+                autopost = FACEBOOK_AUTO_POST;
+            } else if (social === 'twitter') {
+                autopost = TWITTER_AUTO_POST;
             }
-        }).catch((err: any) => {
-            console.log('err ', err)
-        })
+            let config = {
+                value: event.checked,
+                type: "boolean"
+            }
+            this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
+                if (res.name === FACEBOOK_AUTO_POST) {
+                    this.autoPostFacebook = res.value;
+                } else if (res.name === TWITTER_AUTO_POST) {
+                    this.autoPostTwitter = res.value;
+                }
+            }).catch((err: any) => {
+                console.log('err ', err)
+            });
+        }
     }
 
     public fbLibrary() {
@@ -322,7 +324,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
     }
 
-    public clickLoginFB() { 
+    public clickLoginFB() {
         window['FB'].login((response) => {
             if (response.authResponse) {
                 let accessToken = {
@@ -331,18 +333,18 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     fbexptime: response.authResponse.data_access_expiration_time,
                     fbsignedRequest: response.authResponse.signedRequest
                 }
-                this.accessToken = accessToken; 
+                this.accessToken = accessToken;
                 this._ngZone.run(() => this.listPageFacebook());
 
-            } else { 
+            } else {
                 this.isLoading = false;
                 this.connect = false;
             }
         }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement,pages_manage_posts,publish_to_groups' });
     }
 
-    public listPageFacebook() { 
-        this.isLoading = false; 
+    public listPageFacebook() {
+        this.isLoading = false;
         window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
             if (response && !response.error) {
                 /* handle the result */
@@ -354,7 +356,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     this.connect = false;
                     this.showAlertDialog('ไม่พบเพจ');
                 }
-            } 
+            }
         });
     }
 
