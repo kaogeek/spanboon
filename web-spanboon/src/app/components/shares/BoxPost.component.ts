@@ -2486,7 +2486,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
-        this.facebookConection = res.data;
+        this.facebookConection = res.data; 
       }).catch((err: any) => {
         console.log('err ', err)
       });
