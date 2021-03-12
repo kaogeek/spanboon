@@ -2629,7 +2629,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  public redirectSetting() {
-    this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+  public redirectSetting() { 
+    if(this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null){
+      this.router.navigateByUrl('page/' + this.dataPageId.pageUsername + '/settings?tab=connect');
+    } else {
+      this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    }
   }
 }
