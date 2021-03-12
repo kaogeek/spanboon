@@ -147,8 +147,6 @@
   }
 }
 
-$color-green: #8f6;
-
 $circle-size: 60px;
 
 .circle,
@@ -168,7 +166,7 @@ $circle-size: 60px;
 .circle-border {
   z-index: 0;
   position: absolute;
-  background: $color-green;
+  background: $brandcolor2;
   transform: scale(1.2);
   animation: circle-anim 400ms ease;
   margin: 0px 20px;
@@ -200,7 +198,7 @@ $circle-size: 60px;
   content: "";
   display: block;
   height: 4px;
-  background: $color-green;
+  background: $brandcolor2;
   position: absolute;
 }
 
