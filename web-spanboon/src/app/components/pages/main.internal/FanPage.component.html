@@ -471,7 +471,7 @@
                                         [isShowMaxWidth]="'899'" (createPost)="createPost($event)"
                                         style="display: block; padding: 5pt 0;">
                                     </box-post>
-                                    <div class="title-feed">
+                                    <div class="title-feed" (click)="openDialogPost()">
                                         {{ resPost && resPost.posts && resPost.posts.length > 0 && !isLoadingClickTab ? PLATFORM_STORY_TALE :
                                         'คุณสามารถเพิ่ม'+PLATFORM_STORY_TALE+'ได้ที่นี่' }}
                                     </div>

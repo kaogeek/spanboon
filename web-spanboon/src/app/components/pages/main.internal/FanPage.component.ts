@@ -624,7 +624,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               } else {
                 alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
               }
-              this.showAlertDialogWarming(alertMessages, "none"); 
+              this.showAlertDialogWarming(alertMessages, "none");
             }
             if (this.splitTpyeClone !== undefined && this.splitTpyeClone !== null) {
               this.initPage(this.splitTpyeClone);
@@ -878,6 +878,30 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     data.isFulfill = false;
     data.isListPage = true;
     data.isEdit = true;
+    const dialogRef = this.dialog.open(DialogPost, {
+      width: 'auto',
+      data: data,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+      }
+      this.stopLoading();
+    });
+  }
+
+  public openDialogPost() {
+    let data = { 
+      isListPage: true,
+      isHeaderPage: true,
+      isEdit: false,
+      isFulfill: false,
+      modeDoIng: true,
+      isMobileButton: true,
+      name: this.resDataPage.name
+    }
+
     const dialogRef = this.dialog.open(DialogPost, {
       width: 'auto',
       data: data,
