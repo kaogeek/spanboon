@@ -37,6 +37,59 @@
     }
 }
 
+.msg-error-shake {
+    position: relative;
+    animation: shake 0.1s linear;
+    animation-iteration-count: 3;
+    color: red;
+}
+
+.input-shake {
+    position: relative;
+    animation: shake 0.1s linear;
+    animation-iteration-count: 3;
+}
+
+.input-shake::-webkit-input-placeholder {
+    /* Chrome/Opera/Safari/Edge */
+    /*styles here*/
+    color: red;
+    // border: 1px solid red;
+}
+
+.input-shake::-ms-input-placeholder {
+    /* Microsoft Edge */
+    /*styles here*/
+    color: red;
+    // border: 1px solid red;
+}
+
+.input-shake:-ms-input-placeholder {
+    /* IE 10+ */
+    /*styles here*/
+    color: red;
+    // border: 1px solid red;
+}
+
+.input-shake::-moz-placeholder {
+    /* Firefox 19+ */
+    opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
+    /*styles here*/
+    color: red;
+}
+
+.input-shake:-moz-placeholder {
+    /* Firefox 18- */
+    opacity: 1; /*Firefox by default has an opacity object that usually is ideal to reset so it matches webkit*/
+    /*styles here*/
+    color: red;
+}
+
+.input-shake::placeholder {
+    /*styles here*/
+    color: red;
+}
+
 @media (max-width: $lmedium) {
     .dialog-post { 
         width: 1200px !important;
