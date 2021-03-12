@@ -70,7 +70,7 @@
                 > .lost-connect {
                     display: flex;
                     flex-direction: column;
-                    @include font-size-9($font-head-500);
+                    @include font-size-10($font-head-500);
                     color: $color-black;
 
                     > .link-social {
