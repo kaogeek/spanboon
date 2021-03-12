@@ -137,7 +137,7 @@
             justify-content: stretch;
 
             > .title-post {
-                @include font-size-9($font-head-500);
+                @include font-size-8($font-head-500);
                 margin-bottom: 5pt;
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
@@ -301,7 +301,7 @@
                 padding: 7pt 10pt;
 
                 > .title-post {
-                    @include font-size-10($font-head-500);
+                    @include font-size-8($font-head-500);
                 }
 
                 > .content-post {
