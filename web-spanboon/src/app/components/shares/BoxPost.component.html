@@ -64,7 +64,7 @@
                 </mat-form-field>
             </div>
             <div *ngIf="isMobilePost" class="mobile-post" (click)="onCloseDialog()">
-                ยกเลิก
+                <span> ยกเลิก</span>
             </div>
             <div *ngIf="isListPage && isHeaderPage && isMobilePost" class="dropdown-page mobile-page">
                 <mat-form-field appearance="none">
@@ -121,7 +121,10 @@
                     </div>
                 </mat-form-field>
             </div>
-            <div class="box-toggle">สร้าง{{PLATFORM_STORY}} :
+
+            <div class="box-toggle">
+                <span *ngIf="!isMobilePost">สร้าง{{PLATFORM_STORY}} :</span>
+                <!-- <span *ngIf="isMobilePost" class="material-icons"> history_edu </span> -->
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
                 <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
@@ -184,8 +187,8 @@
 
         <div *ngIf="!isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true"
-            attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}" (keyup)="onKeyup($event)"
-            (click)="onKeyup($event)">
+            attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}"
+            (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
 
         <div class="wrapper-selector-tag" *ngIf="selectValueTag && selectValueTag.length > 0 ">
@@ -538,7 +541,7 @@
         </div>
 
         <div class="wrapper-tool-post" mat-dialog-actions (window:resize)="onResize()">
-            <div class="left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
+            <div class="box-left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
                 <mat-form-field appearance="none" *ngIf="!isFulfill">
                     <mat-select *ngIf="isRepost;" #matSelect [(ngModel)]="selected"
                         [ngModelOptions]="{standalone: true}">
@@ -575,7 +578,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="center" style="justify-content: flex-end;">
+            <div class="box-center" style="justify-content: flex-end;">
                 <!-- <div class="center" style="justify-content: flex-end;"> -->
                 <!-- <img class="btn-action" src="../../../assets/img/vision.png" (click)="preview()" alt=""> -->
                 <div class="wrapper-action">
@@ -796,7 +799,7 @@
                     </ng-container>
                 </div>
             </div>
-            <div class="right" [class.active]="isClickPostPreLoad">
+            <div class="box-right" [class.active]="isClickPostPreLoad">
                 <div class="div-gatdata-post" (click)="onClickGetDataPost()"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
@@ -832,7 +835,7 @@
                             </ng-template>
                         </mat-select>
                     </mat-form-field>
-                </ng-template> 
+                </ng-template>
             </div>
         </div>
     </form>

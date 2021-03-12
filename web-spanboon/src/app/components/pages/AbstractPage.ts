@@ -166,14 +166,19 @@ export abstract class AbstractPage implements OnInit {
     });
     return dialog;
   }
-  public showDialogError(error: any, redirection: string) {
+  public showDialogError(error: any, redirection?: string) {
     if (error !== undefined) {
       if (error === "AccessDeniedError") {
         let dialog = this.showAlertDialogWarming("เซลชั่นหมดอายุกรุณาเข้าสู่ระบบใหม่อีกครั้ง.", "none");
         dialog.afterClosed().subscribe((res) => {
           if (res) {
             this.authenManager.clearStorage();
-            this.router.navigate(["/login", { redirection: redirection }]);
+            if(redirection){
+              this.router.navigate(["/login", { redirection: redirection }]);
+            } else {
+              this.router.navigate(["/login"]);
+            }
+          
           }
         });
       } else {
