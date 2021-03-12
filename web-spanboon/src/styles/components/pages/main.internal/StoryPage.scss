@@ -401,96 +401,104 @@
   > .story-background {
     position: relative;
     background-size: cover;
-    min-height: 50vh;
+    height: 50vh;
     width: 100%;
     // margin: 0 0 1.5em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
 
-    > .text-box {
+    > .text-box-overlay {
+      width: 100%;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      max-width: 70%;
-      text-align: center;
-      width: auto;
-      span {
-        color: white;
-      }
-      > .post-title {
-        width: 100%;
-        @include font-size-6($font-head-500);
-        word-break: break-all;
-        line-height: 40px;
-        margin-bottom: 20px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      > .post-content {
-        @include font-size-8($font-head-300);
-        width: 100%;
-        line-height: 20px;
-        word-break: break-all;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-      > .line {
-        width: 60%;
-        background-color: white;
-        height: 5px;
-        margin: 30px;
-      }
-      > .count {
+      justify-content: center;
+      height: 100%;
+      background-color: rgb(0 0 0 / 43%);
+      > .text-box {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        @include font-size-9($font-head-300);
-        > .text-count-desktop {
-          margin: 0px 10px;
-          @include font-size-9($font-head-500);
+        max-width: 70%;
+        text-align: center;
+        width: auto;
+        span {
+          color: white;
         }
-        > .text-point {
-          margin: 0px 3px;
+        > .post-title {
+          width: 100%;
+          @include font-size-6($font-head-500);
+          word-break: break-all;
+          line-height: 40px;
+          margin-bottom: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
-        > .box-count {
-          display: none;
-          cursor: pointer;
-          &:hover {
+        > .post-content {
+          @include font-size-8($font-head-300);
+          width: 100%;
+          line-height: 20px;
+          word-break: break-all;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+        }
+        > .line {
+          width: 60%;
+          background-color: white;
+          height: 5px;
+          margin: 30px;
+        }
+        > .count {
+          display: flex;
+          align-items: center;
+          @include font-size-9($font-head-300);
+          > .text-count-desktop {
+            margin: 0px 10px;
+            @include font-size-9($font-head-500);
+          }
+          > .text-point {
+            margin: 0px 3px;
+          }
+          > .box-count {
+            display: none;
+            cursor: pointer;
+            &:hover {
+              > svg {
+                > .svg-box-count {
+                  fill: rgba($brandcolor2, 0.95) !important;
+                }
+              }
+            }
+
+            > .text-count {
+              margin: 0px 5px;
+            }
             > svg {
               > .svg-box-count {
-                fill: rgba($brandcolor2, 0.95) !important;
-              }
-            }
-          }
-
-          > .text-count {
-            margin: 0px 5px;
-          }
-          > svg {
-            > .svg-box-count {
-              &.active {
-                fill: $brandcolor2 !important;
+                &.active {
+                  fill: $brandcolor2 !important;
+                }
               }
             }
           }
         }
-      }
-      > .need-count {
-        @include font-size-10($font-head-400);
-        line-height: 20px;
-        word-break: break-all;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        margin: 15px 0px;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
+        > .need-count {
+          @include font-size-10($font-head-400);
+          line-height: 20px;
+          word-break: break-all;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          margin: 15px 0px;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+        }
       }
     }
   }
