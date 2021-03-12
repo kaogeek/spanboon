@@ -419,7 +419,9 @@
         color: white;
       }
       > .post-title {
+        width: 100%;
         @include font-size-6($font-head-500);
+        word-break: break-all;
         line-height: 40px;
         margin-bottom: 20px;
         overflow: hidden;
@@ -430,7 +432,9 @@
       }
       > .post-content {
         @include font-size-8($font-head-300);
+        width: 100%;
         line-height: 20px;
+        word-break: break-all;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
@@ -456,11 +460,37 @@
         }
         > .box-count {
           display: none;
+          cursor: pointer;
+          &:hover {
+            > svg {
+              > .svg-box-count {
+                fill: rgba($brandcolor2, 0.95) !important;
+              }
+            }
+          }
 
           > .text-count {
             margin: 0px 5px;
           }
+          > svg {
+            > .svg-box-count {
+              &.active {
+                fill: $brandcolor2 !important;
+              }
+            }
+          }
         }
+      }
+      > .need-count {
+        @include font-size-10($font-head-400);
+        line-height: 20px;
+        word-break: break-all;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        margin: 15px 0px;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
       }
     }
   }
@@ -521,6 +551,7 @@
               }
               > a {
                 @include font-size-9($font-head-500);
+                color: $color-gray;
 
                 &:hover {
                   color: rgba($brandcolor2, 0.95);
@@ -621,6 +652,22 @@
             overflow: hidden;
           }
         }
+        > .story-footer {
+          width: 100%;
+          padding: 15px 0px;
+          position: relative;
+          border-bottom: 1px solid #ebebeb;
+          > span {
+            @include font-size-9($font-head-500);
+          }
+          > a {
+            @include font-size-9($font-head-500);
+            color: $color-gray;
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
+          }
+        }
       }
       > .right {
         width: 30%;
@@ -641,7 +688,7 @@
 }
 
 .display-mobile {
-  display: none;
+  display: none !important;
 }
 
 .loding {
@@ -692,7 +739,7 @@
     text-align: center !important;
   }
   .display-mobile {
-    display: block;
+    display: block !important;
   }
 }
 

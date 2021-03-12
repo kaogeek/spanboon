@@ -93,7 +93,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkLoginAndRedirection();
 
     let doRunAccessToken = false;
-    const fullURL = window.location.href; 
+    const fullURL = window.location.href;
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
@@ -103,7 +103,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }
 
-    if (doRunAccessToken) { 
+    if (doRunAccessToken) {
       this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
@@ -195,7 +195,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       window.open(this.authorizeLink);
     }).catch((error: any) => {
       console.log(error);
-      if(error && error.message){
+      if (error && error.message) {
         return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
       }
     });
@@ -203,22 +203,22 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public clickLoginGoogle(): void {
     this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
-    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+    // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
 
-      if (result !== null && result !== undefined) {
-        let googleToken = {
-          googleUserId: result.id,
-          authToken: result.authToken,
-          idToken: result.idToken
-        };
+    //   if (result !== null && result !== undefined) {
+    //     let googleToken = {
+    //       googleUserId: result.id,
+    //       authToken: result.authToken,
+    //       idToken: result.idToken
+    //     };
 
-        this.googleToken = googleToken;
+    //     this.googleToken = googleToken;
 
-        this._ngZone.run(() => this.loginGoogle());
-      }
-    }).catch((error) => {
-      console.log('error >>> ', error);
-    });
+    //     this._ngZone.run(() => this.loginGoogle());
+    //   }
+    // }).catch((error) => {
+    //   console.log('error >>> ', error);
+    // });
 
   }
 
