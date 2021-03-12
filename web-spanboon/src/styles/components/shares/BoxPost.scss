@@ -168,7 +168,7 @@
       width: calc(100% - 40pt);
       padding: 10pt 20pt;
       border: unset;
-      @include font-size-8($font-head-500);
+      @include font-size-7($font-head-500);
     }
 
     [contenteditable="true"].header-story:empty:before {
@@ -732,7 +732,7 @@
       }
 
       > .looking {
-        background-color: $brandcolor3;
+        background-color: $brandcolor2;
       }
 
       > .lookingWhite {
