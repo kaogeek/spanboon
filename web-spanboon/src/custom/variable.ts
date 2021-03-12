@@ -5,8 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-export const PLATFORM_NAME_TH: string = 'สะพานบุญ';
-export const PLATFORM_NAME_ENG: string = 'Spanboon';
+// export const PLATFORM_NAME_TH: string = 'สะพานบุญ';
+// export const PLATFORM_NAME_ENG: string = 'Spanboon';
+export const PLATFORM_NAME_TH: string = 'ก้าวไกลทูเดย์';
+export const PLATFORM_NAME_ENG: string = 'MFP Today';
 
 // Dialog Message
 
@@ -54,5 +56,6 @@ export const PLATFORM_GENERAL_TEXT: string = 'ทั่วไป';
 
 export const PLATFORM_STORY: string = 'สตอรี่';
 export const PLATFORM_STORY_TALE: string = 'เรื่องราว';
-export const PLATFORM_URL: string = 'www.spanboon.com';
+// export const PLATFORM_URL: string = 'www.spanboon.com';
+export const PLATFORM_URL: string = 'today.moveforwardparty.org';
 export const PLATFORM_SOPPORT_EMAIL: string = 'support@spanboon.com';
