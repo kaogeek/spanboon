@@ -210,6 +210,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
         }).catch((err: any) => {
             console.log('err ', err)
+            this.showDialogError(err && err.error.name , undefined);
         });
     }
 
@@ -222,6 +223,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             }
         }).catch((err: any) => {
             console.log('err ', err)
+            this.showDialogError(err && err.error.name , this.router.url);
         });
     }
 
@@ -230,6 +232,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.autoPostFacebook = res.value;
         }).catch((err: any) => {
             console.log('err ', err)
+            this.showDialogError(err && err.error.name , undefined);
         })
     }
 
@@ -238,6 +241,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.autoPostTwitter = res.value;
         }).catch((err: any) => {
             console.log('err ', err)
+            this.showDialogError(err && err.error.name , undefined);
         });
     }
 
