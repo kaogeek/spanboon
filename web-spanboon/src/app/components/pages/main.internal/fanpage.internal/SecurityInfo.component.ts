@@ -10,11 +10,11 @@ import { MatAutocompleteTrigger, MatInput, MatDialog, MatSlideToggleChange } fro
 import { NavigationExtras, Router } from '@angular/router';
 import { AuthenManager, ObservableManager, AssetFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
-import { PageSocialTW, PageSoialFB } from '../../../../models/models';
+import { MESSAGE, PageSocialTW, PageSoialFB } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
 import { environment } from '../../../../../environments/environment';
 import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';
-import { DialogListFacebook } from 'src/app/components/shares/shares';
+import { DialogAlert, DialogListFacebook } from 'src/app/components/shares/shares';
 
 const PAGE_NAME: string = 'connect';
 
@@ -210,7 +210,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
 
         }).catch((err: any) => {
             console.log('err ', err)
-            this.showDialogError(err && err.error.name , undefined);
+            this.showDialogError(err && err.error.name, undefined);
         });
     }
 
@@ -223,7 +223,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             }
         }).catch((err: any) => {
             console.log('err ', err)
-            this.showDialogError(err && err.error.name , this.router.url);
+            this.showDialogError(err && err.error.name, this.router.url);
         });
     }
 
@@ -232,7 +232,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.autoPostFacebook = res.value;
         }).catch((err: any) => {
             console.log('err ', err)
-            this.showDialogError(err && err.error.name , undefined);
+            this.showDialogError(err && err.error.name, undefined);
         })
     }
 
@@ -241,7 +241,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.autoPostTwitter = res.value;
         }).catch((err: any) => {
             console.log('err ', err)
-            this.showDialogError(err && err.error.name , undefined);
+            this.showDialogError(err && err.error.name, undefined);
         });
     }
 
@@ -269,40 +269,65 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         })
     }
 
-    public onChangeSlide(event: any, social: string) {
+    public onChangeSlide(event: any, social: string) { 
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
-                this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
-                return this.autoPostTwitter = false;
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostTwitter = false;
+                    }
+                }); 
             }
         } else if (social === 'facebook') {
             // facebook 
             if (!this.connect) {
-                this.showAlertDialogWarming('คุณต้องเชื่อมต่อกับ' + social, "none");
-                return this.autoPostFacebook = false;
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostFacebook = false;
+                    }
+                });
             }
-        }
-
-        let autopost: string = '';
-        if (social === 'facebook') {
-            autopost = FACEBOOK_AUTO_POST;
-        } else if (social === 'twitter') {
-            autopost = TWITTER_AUTO_POST;
-        }
-        let config = {
-            value: event.checked,
-            type: "boolean"
-        }
-        this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
-            if (res.name === FACEBOOK_AUTO_POST) {
-                this.autoPostFacebook = res.value;
-            } else if (res.name === TWITTER_AUTO_POST) {
-                this.autoPostTwitter = res.value;
+        } 
+        if (this.connect || this.connectTwitter) { 
+            let autopost: string = '';
+            if (social === 'facebook') {
+                autopost = FACEBOOK_AUTO_POST;
+            } else if (social === 'twitter') {
+                autopost = TWITTER_AUTO_POST;
             }
-        }).catch((err: any) => {
-            console.log('err ', err)
-        });
+            let config = {
+                value: event.checked,
+                type: "boolean"
+            }
+            this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
+                if (res.name === FACEBOOK_AUTO_POST) {
+                    this.autoPostFacebook = res.value; 
+                } else if (res.name === TWITTER_AUTO_POST) {
+                    this.autoPostTwitter = res.value;
+                }
+            }).catch((err: any) => {
+                console.log('err ', err)
+            });
+        }
     }
 
     public fbLibrary() {
@@ -371,6 +396,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         dialog.afterClosed().subscribe((res) => {
             if (res) {
                 this.checkBoxBindingPageFacebook(res);
+                let check = {
+                    checked: true
+                }
+                this.onChangeSlide(check, 'facebook');
             } else {
                 this.connect = false;
             }

@@ -128,10 +128,10 @@
                 <div class="lost-connect">
                     {{autoPostFacebook ? 'เผยแพร่โพสต์ไปยัง Facebook' : 'ไม่เผยแพร่โพสต์ไปยัง Facebook'}}
                 </div>
-            </div> 
+            </div>  
             <div class="link-connect" [class.active]="autoPostFacebook">
                 <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}"
-                    [(ngModel)]="autoPostFacebook" (click)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
+                [checked]="autoPostFacebook" [(ngModel)]="autoPostFacebook" (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -152,7 +152,7 @@
 
             <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="autoPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
-                    (click)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
+                    (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
