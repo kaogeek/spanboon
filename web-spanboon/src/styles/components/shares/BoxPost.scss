@@ -175,7 +175,7 @@
       content: attr(placeholder);
       pointer-events: none;
       display: block; /* For Firefox */
-      @include font-size-9($font-head-500);
+      @include font-size-8($font-head-500);
     }
 
     [contenteditable="true"].header-story {
@@ -716,7 +716,7 @@
 
 .mat-option {
   > .mat-option-text {
-    @include font-size-9($font-head-500);
+    @include font-size-10($font-head-500);
 
     > .wrapper-body-action {
       display: flex;
