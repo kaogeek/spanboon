@@ -347,12 +347,12 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             if (response && !response.error) {
                 /* handle the result */
                 this.responseFacabook = response;
-                if (this.responseFacabook.length > 0 && this.responseFacabook !== undefined) {
+                if (this.responseFacabook && this.responseFacabook.data.length > 0 && this.responseFacabook !== undefined) {
                     Object.assign(this.responseFacabook.data[0], { selected: true });
                     this.getListFacebook(this.responseFacabook);
                 } else {
                     this.connect = false;
-                    this.showAlertDialog('ไม่สามารถเชื่อมต่อกับเพจได้');
+                    this.showAlertDialog('ไม่พบเพจ');
                 }
             } 
         });
@@ -367,6 +367,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         dialog.afterClosed().subscribe((res) => {
             if (res) {
                 this.checkBoxBindingPageFacebook(res);
+            } else {
+                this.connect = false;
             }
         });
     }
