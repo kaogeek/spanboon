@@ -292,7 +292,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-    }, { scope: 'public_profile,email,user_birthday,user_gender' });
+    }, { scope: 'public_profile,email' });
   }
 
   public emailLogin() {

@@ -207,7 +207,7 @@ export class DialogCreatePage extends AbstractPage {
       let dataPage = {
         name: pageName,
         category: this.typeId,
-        pageUserName: urlPage,
+        pageUsername: urlPage,
         mobileNo: this.mobile,
         websiteURL: this.web,
         email: this.email,

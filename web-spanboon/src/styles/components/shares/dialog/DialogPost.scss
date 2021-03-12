@@ -37,12 +37,11 @@
     }
 }
 
-// @media (max-width: $medium) {
-//     .dialog-post {
-//         width: 100vw;
-//         height: 100vh;
-//     }
-// }
+@media (max-width: $lmedium) {
+    .dialog-post { 
+        width: 1200px !important;
+    }
+}
 
 // @media (max-width: $small) {
 //     .dialog-post {

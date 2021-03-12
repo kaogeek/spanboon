@@ -423,7 +423,7 @@
       height: $height-wrapper-tool-post;
       border-top: $width-border solid $border-color;
 
-      > .left {
+      > .box-left {
         display: flex;
         width: calc(25% - #{$padding-side-wrapper-tool-post});
         padding: 0 $padding-side-wrapper-tool-post;
@@ -443,7 +443,7 @@
         }
       }
 
-      > .center {
+      > .box-center {
         display: flex;
         width: calc(50% - #{$padding-side-wrapper-tool-post});
         padding: 0 $padding-side-wrapper-tool-post;
@@ -462,7 +462,7 @@
         }
 
         > .wrapper-action {
-          position: relative;
+          // position: relative;
           display: flex;
           align-items: center;
 
@@ -611,7 +611,7 @@
         }
       }
 
-      > .right {
+      > .box-right {
         display: flex;
         position: relative;
         width: calc(25% - #{$padding-side-wrapper-tool-post});
@@ -1097,7 +1097,7 @@
 
 @media (max-width: $medium) {
   .box-post > .box > .box-story > .box-toggle {
-    width: 50%;
+    width: unset;
   }
 }
 
@@ -1112,6 +1112,14 @@
 
       > .box-story {
         flex: 0 0 auto;
+
+        >.box-toggle {
+          width: unset;
+        }
+
+        >.mobile-post {
+          width: calc(20% - 10pt);
+        }
       }
 
       > .textarea-editor {
@@ -1156,11 +1164,11 @@
 
       > .wrapper-tool-post {
         height: unset;
-        > .left {
+        > .box-left {
         }
-        > .center {
+        > .box-center {
         }
-        > .right {
+        > .box-right {
         }
       }
       > .mat-dialog-actions {
