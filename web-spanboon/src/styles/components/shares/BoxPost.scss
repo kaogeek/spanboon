@@ -229,12 +229,12 @@
 
         > .material-icons,
         .space-icon {
-          font-family: 'Material Icons' !important;
+          font-family: "Material Icons" !important;
           width: 15pt;
         }
 
         > .material-icons {
-          font-family: 'Material Icons' !important;
+          font-family: "Material Icons" !important;
           display: none;
           color: $color-black;
           opacity: 0.4;
@@ -246,7 +246,7 @@
           opacity: 0.8;
 
           > .material-icons {
-            font-family: 'Material Icons' !important;
+            font-family: "Material Icons" !important;
             display: flex;
             align-items: center;
           }
@@ -624,7 +624,7 @@
         color: $brandcolor2;
         &.isClickPostPreLoad {
           pointer-events: none;
-          opacity: 0.6; 
+          opacity: 0.6;
         }
 
         .mat-option {
@@ -696,6 +696,12 @@
     }
 
     > .to-dialog-post {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-all;
+      width: 100%;
       flex: 1 1 0%;
       display: flex;
       align-items: center;
@@ -1058,9 +1064,9 @@
                       }
                     }
                   }
-                } 
+                }
 
-                >.list-found {
+                > .list-found {
                   color: $color-gray;
                   @include font-size-9($font-head-500);
                 }
@@ -1120,11 +1126,11 @@
       > .box-story {
         flex: 0 0 auto;
 
-        >.box-toggle {
+        > .box-toggle {
           width: unset;
         }
 
-        >.mobile-post {
+        > .mobile-post {
           width: calc(20% - 10pt);
         }
       }
@@ -1156,13 +1162,13 @@
         > .wrapper-left {
           > .search-tag-emergency {
             max-width: 50%;
-            >.event-tag  {
+            > .event-tag {
               @include font-size-10($font-head-500);
             }
           }
           > .search-objective {
             max-width: 50%;
-            >.objective-doing {
+            > .objective-doing {
               @include font-size-10($font-head-500);
             }
           }

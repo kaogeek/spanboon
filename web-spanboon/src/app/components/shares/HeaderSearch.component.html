@@ -130,20 +130,29 @@
                             มีส่วนร่วม
                         </div>
                     </div>
-                    <div class="list-popular">
-                        <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
-                            (click)="searchHashTag(trend,index);clickOpenLink(trend)">
-                            <div class="tag-popular">
-                                {{trend.label}}
+                    <ng-container *ngIf="dataTrend && dataTrend.length > 0; else elseTemplatedataTrend">
+                        <div class="list-popular">
+                            <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
+                                (click)="searchHashTag(trend,index);clickOpenLink(trend)">
+                                <div class="tag-popular">
+                                    {{trend.label}}
+                                </div>
+                                <div class="count-participate">
+                                    {{trend.count | shortNumber }} ครั้ง
+                                </div>
                             </div>
-                            <div class="count-participate">
-                                {{trend.count | shortNumber }} ครั้ง
+                            <div class="wrapper-allPost" (click)="loadMoreHashTag()">
+                                ดูเพิ่มเติม
                             </div>
                         </div>
-                        <div class="wrapper-allPost" (click)="loadMoreHashTag()">
-                            ดูเพิ่มเติม
+                    </ng-container>
+                    <ng-template #elseTemplatedataTrend>
+                        <div class="list-popular data-found">
+                            ไม่ค้นพบข้อมูล 
                         </div>
-                    </div>
+                    </ng-template>
+
+
                 </div>
                 <div class="wrapper-history tabcontent" id="history">
                     <div class="wrapper-header">

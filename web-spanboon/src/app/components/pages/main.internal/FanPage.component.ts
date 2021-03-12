@@ -23,7 +23,7 @@ import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogPost } from '../../shares/shares';
+import { DialogAlert, DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -1262,6 +1262,20 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.imgprofile.nativeElement.style.marginTop = '-55pt';
       }
     }
+  }
+
+  public clickSystemDevelopment(): void {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+    });
   }
 }
 
