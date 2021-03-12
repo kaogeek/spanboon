@@ -271,6 +271,13 @@
                         @include font-size-10($font-head-500);
                     }
                 }
+                > .data-found {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    @include font-size-9($font-head-500);
+                    color: $color-gray;
+                }
             }
             > .wrapper-history {
                 width: 55%;
@@ -480,7 +487,7 @@
                         cursor: pointer;
 
                         > .material-icons {
-                            font-family: 'Material Icons' !important;
+                            font-family: "Material Icons" !important;
                             font-size: $font-size-icon-small;
                         }
                     }
