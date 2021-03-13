@@ -187,6 +187,15 @@
         .preload {
             padding: unset;
         }
+        .eorror {
+            width: 100%;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            @include font-size-8($font-head-500);
+        }
     }
 
     .wrapper-all-footer {

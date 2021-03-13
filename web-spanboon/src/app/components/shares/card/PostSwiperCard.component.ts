@@ -53,7 +53,6 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public needs: any[] = [];
   private originalNeeds: any[] = [];
   public indexNeed: number = 0;
-  // public offsetHeightCard: number;
   private needsResult: any[] = [];
   private observManager: ObservableManager;
 
@@ -154,7 +153,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 2,
+    slidesPerView: 2.5,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,
@@ -165,10 +164,10 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 2,
+        slidesPerView: 2.5,
       },
       899: {
-        slidesPerView: 2,
+        slidesPerView: 2.5,
       },
       676: {
         slidesPerView: 1.5,
