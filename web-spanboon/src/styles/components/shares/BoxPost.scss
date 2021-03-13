@@ -58,7 +58,7 @@
                   > .mat-select {
                     > .mat-select-trigger {
                       > .mat-select-value {
-                        display: none;
+                        // display: none;
                       }
                     }
                   }
@@ -1096,6 +1096,9 @@
       }
       > .box-story {
         flex: 0 0 auto;
+        >.mobile-post {
+          padding: 0 19pt;
+        }
       }
 
       > .textarea-editor {
@@ -1132,6 +1135,9 @@
 
         > .mobile-post {
           width: calc(20% - 10pt);
+        }
+        >.mobile-page  {
+          width: calc(59% - 10pt - 0.7px);
         }
       }
 
