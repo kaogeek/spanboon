@@ -403,10 +403,6 @@
     background-size: cover;
     height: 50vh;
     width: 100%;
-    // margin: 0 0 1.5em;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
 
     > .text-box-overlay {
       width: 100%;
@@ -467,17 +463,27 @@
           }
           > .box-count {
             display: none;
+            &.active {
+              color: $brandcolor2 !important;
+            }
             cursor: pointer;
             &:hover {
               > svg {
                 > .svg-box-count {
+                  color: $brandcolor2 !important;
                   fill: rgba($brandcolor2, 0.95) !important;
                 }
+              }
+              > .text-count {
+                color: $brandcolor2 !important;
               }
             }
 
             > .text-count {
               margin: 0px 5px;
+              &.active {
+                color: $brandcolor2 !important;
+              }
             }
             > svg {
               > .svg-box-count {
@@ -709,6 +715,39 @@
   z-index: 10;
 }
 
+.post-story-not-found {
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  display: flex;
+  width: 100vw;
+  top: 0;
+  z-index: 9;
+  height: 100vh;
+  background-color: $bg-grey;
+  > .box {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    align-items: center;
+    justify-content: center;
+    > .text {
+      @include font-size-5($font-head-500);
+    }
+    > .sub-text {
+      @include font-size-8($font-head-400);
+      color: #a5a5a6;
+      display: flex;
+      align-items: center;
+      margin: 7px 0px;
+      > spanboon-button {
+        width: 100px;
+        margin: 0px 10px;
+      }
+    }
+  }
+}
+
 @media (max-width: $xxlarge) {
 }
 
@@ -748,6 +787,23 @@
   }
   .display-mobile {
     display: block !important;
+  }
+
+  .post-story-not-found {
+    > .box {
+      > .text {
+        @include font-size-6($font-head-500);
+        text-align: center;
+      }
+      > .sub-text {
+        @include font-size-9($font-head-400);
+        text-align: center;
+        color: #a5a5a6;
+        display: unset;
+        > spanboon-button {
+        }
+      }
+    }
   }
 }
 
