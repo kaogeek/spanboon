@@ -241,8 +241,8 @@
                                             <span class="user-name">
                                                 <a #pageNameDiv style="position: relative;"
                                                     (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
-                                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" href="{{linkPage}}"
-                                                    target="_blank">
+                                                    (mouseover)="Tooltip(showTooltip , ProfilePage,true)"
+                                                    href="{{linkPage}}" target="_blank">
                                                     {{pageName}}
                                                 </a>
                                             </span>

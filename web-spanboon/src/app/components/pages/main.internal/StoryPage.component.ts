@@ -657,6 +657,15 @@ export class StoryPage extends AbstractPage implements OnInit {
     })
   }
 
+  public navigateHomePage() {
+
+    this.router.navigate(["/home"]);
+
+  }
+
+  public developDialog() {
+    this.showAlertDevelopDialog();
+  }
 
   public convertTextType(text): string {
     if (text === "GENERAL") {

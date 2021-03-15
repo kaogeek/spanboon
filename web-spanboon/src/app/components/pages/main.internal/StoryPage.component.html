@@ -6,244 +6,6 @@
 -->
 
 <!-- <div class="story-container">
-    <section style="width: 100%;position: relative;z-index: 5;">
-        <div [ngStyle]="{'background-position': position , 'background-image': 'url('+ imageCover +')'}"
-            class="wp-block-cover-image has-background-dim">
-            <div class="background-text">
-                <span class="background-text-h">{{postStoryData ? postStoryData.title : ''}}</span>
-                <span class="background-text-h-s">{{postStoryData ? postStoryData.detail : '' }}</span>
-                <div class="line"></div>
-                <div class="background-text-score">
-                    <span class="text-score">{{postStoryData ? postStoryData.commentCount : '' }} แสดงความคิดเห็น</span>
-                    <span class="text-point"> • </span>
-                    <span class="text-score">{{postStoryData ? postStoryData.repostCount : '' }} บอกต่อ</span>
-                    <span class="text-point"> • </span>
-                    <span class="text-score">{{postStoryData ? postStoryData.likeCount : '' }} ถูกใจ</span>
-                    <span class="text-point"> • </span>
-                    <span class="text-score">{{postStoryData ? postStoryData.shareCount : '' }} แชร์</span>
-                </div>
-            </div>
-        </div>
-        <Preload-card *ngIf="isPreload" [isShowCard1]="true" [isShowCard2]="false">
-        </Preload-card>
-    </section>
-    <div class="dis-container">
-        <div class="left">
-            <Preload-card *ngIf="isPreload" [isShowCard1]="true" [isShowCard2]="false">
-            </Preload-card>
-            <div class="dis-sub-name-page">
-                <div class="dis-sub-img-page">
-                    <div class="img-user">
-                        <img style="width: 100%;"
-                            src="{{postStoryData ? apiBaseURL+postStoryData.ownerUser.imageURL+'/image' : ''}}">
-                    </div>
-                </div>
-                <div class="dis-sub-name-text-page">
-                    <div class="user">
-                        <div class="user-name">
-                            <div class="point"></div>
-                            <span class="type"> {{PLATFORM_GENERAL_TEXT}} </span>
-                        </div>
-                        <span>{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="ct-container" [innerHTML]='postStoryData.story | highlight' id="storyBody">
-            </div>
-            <div class="ct-needs">
-                <card-item *ngIf="postStoryData.needs.length > 0" [itemData]="postStoryData.needs"></card-item>
-            </div>
-            <div *ngIf="user !== undefined && user !== null" class="control">
-                <div class="even">
-                    <span style="margin: 0px 10px;"> # {{postStoryData.emergencyEventTag}}</span>
-                    <span style="margin: 0px 10px;"> # {{postStoryData.objectiveTag}}</span>
-                </div>
-                <div class="controls">
-                    <control-action [isAction]="'true'" [isBlack]="true"
-                        [comment]="postStoryData ? postStoryData.commentCount : 0 "
-                        [reboon]="postStoryData ? postStoryData.repostCount : 0"
-                        [like]="postStoryData ? postStoryData.likeCount : 0"
-                        [share]="postStoryData ? postStoryData.shareCount : 0"
-                        [userLike]="postStoryData ? postStoryData.isLike : false"
-                        [userReboon]="postStoryData ? postStoryData.isRepost : false" [accessPage]="pageUser"
-                        [userComment]="postStoryData ? postStoryData.isComment : false" [isPage]="true"
-                        [isShowUser]="true" (emitpage)="pageAction($event)" (submit)="postAction($event)">
-                    </control-action>
-                </div>
-            </div>
-            <div *ngIf="user !== undefined && user !== null" class="comment">
-                <div class="img-user">
-                    <ng-container
-                        *ngIf="userCloneDatas && userCloneDatas.imageURL && userCloneDatas.imageURL !== undefined && userCloneDatas.imageURL !== null && userCloneDatas.imageURL !== '' ; else elseImage">
-                        <div class="menu-user" (click)="menuProfile();">
-                            <img class="image-profile"
-                                src="{{postStoryData ? apiBaseURL+userCloneDatas.imageURL+'/image' : ''}}">
-                        </div>
-                    </ng-container>
-                    <ng-template #elseImage>
-                        <div class="menu-user displayName"
-                            *ngIf="userCloneDatas && userCloneDatas.displayName && userCloneDatas.displayName !== undefined && userCloneDatas.displayName !== null && userCloneDatas.displayName !== '' || userCloneDatas && userCloneDatas.name && userCloneDatas.name !== null && userCloneDatas.name !== '' && userCloneDatas.name !== undefined ">
-                            <div class="donator">
-                                {{ userCloneDatas.name || userCloneDatas.displayName | slice: 0:1 }}
-                            </div>
-                        </div>
-                    </ng-template>
-                </div>
-                <div class="input-comment">
-                    <input placeholder="แสดงความคิดเห็นที่นี้" id="textCom" (keyup.enter)="onClickComment($event);"
-                        [(ngModel)]="textComment" type="text"
-                        style="width: 80%;height: 30px;border: none;padding: 0px 15px;">
-                </div>
-            </div>
-            <ng-container *ngIf="commentpost.length > 0">
-                <div class="post-comment" *ngIf="!isSearchHashTag">
-                    <comment-post (isLogin)="isComment" (submit)="commentAction($event)" [commentdata]="commentpost">
-                    </comment-post>
-                </div>
-            </ng-container>
-        </div>
-        <div class="right">
-            <div class="sticky">
-                <ng-container *ngIf="postStoryData ? postStoryData.needs.length > 0 : false">
-                    <ng-container>
-                        <card-item [itemData]="postStoryData.needs"></card-item>
-                    </ng-container>
-                </ng-container>
-                <ng-container *ngIf="recommendedStoryHashtag ? recommendedStoryHashtag.contents.length > 0 : false">
-                    <ng-container>
-                        <card-concerned [dataStoryHashtag]="recommendedStoryHashtag.contents"></card-concerned>
-                    </ng-container>
-                </ng-container>
-            </div>
-            <Preload-card *ngIf="isPreload" [isShowCard1]="true" [isShowCard2]="false">
-            </Preload-card>
-        </div>
-    </div>
-    <div *ngIf="!isPreload" class="story-footer">
-        <div class="text">
-            <span>{{PLATFORM_STORY}}ที่คุณอาจสนใจ</span>
-        </div>
-
-        <div class="swiper-container" [swiper]="configIcon"
-            *ngIf="recommendedStory ? recommendedStory.contents.length > 0 : false">
-            <div class="swiper-wrapper">
-                <ng-container *ngFor="let data of recommendedStory.contents;let index = index">
-                    <ng-container>
-                        <div *ngIf="data.coverPageUrl" class="wp-block-cover has-background-dim"
-                            [ngStyle]="{'background-image': 'url('+ apiBaseURL+data.coverPageUrl+'/image' +')'}">
-                            <div class="background-text">
-                                <span class="background-text-h">{{data.post.title}}</span>
-                                <span class="background-text-h-s">{{data.post.detail}}</span>
-                                <div class="line"></div>
-                                <div class="background-text-score">
-                                    <span class="text-score">{{data.commentCount}} แสดงความคิดเห็น</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.repostCount}} บอกต่อ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.likeCount}} ถูกใจ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.shareCount}} แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="!data.coverPageUrl" style="background-color: #deafaf;"
-                            class="wp-block-cover has-background-dim">
-                            <img style="width: 50%;position: absolute;" src="../../../../assets/img/logo/logo.svg"
-                                alt="">
-                            <div class="background-text">
-                                <span class="background-text-h">{{data.post.title}}</span>
-                                <span class="background-text-h-s">{{data.post.detail}}</span>
-                                <div class="line"></div>
-                                <div class="background-text-score">
-                                    <span class="text-score">{{data.commentCount}} แสดงความคิดเห็น</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.repostCount}} บอกต่อ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.likeCount}} ถูกใจ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.shareCount}} แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-            <div class="swiper-button-prev">
-                <div class="material-icons">
-                    chevron_left
-                </div>
-            </div>
-            <div class="swiper-button-next">
-                <div class="material-icons">
-                    chevron_right
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="!isPreload" class="story-footer">
-        <div class="text">
-            <span>{{PLATFORM_STORY}}ของ : </span>
-            <a href={{linkPage}} target="_blank">{{postStoryData ? postStoryData.ownerUser.displayName : ''}}</a>
-        </div>
-
-        <div class="swiper-container" [swiper]="configIcon"
-            *ngIf="recommendedStorys ? recommendedStorys.contents.length > 0 : false">
-            <div class="swiper-wrapper">
-                <ng-container *ngFor="let data of recommendedStorys.contents;let index = index">
-                    <ng-container>
-                        <div *ngIf="data.coverPageUrl" class="wp-block-cover has-background-dim"
-                            [ngStyle]="{'background-image': 'url('+ apiBaseURL+data.coverPageUrl+'/image' +')'}">
-                            <div class="background-text">
-                                <span class="background-text-h">{{data.post.title}}</span>
-                                <span class="background-text-h-s">{{data.post.detail}}</span>
-                                <div class="line"></div>
-                                <div class="background-text-score">
-                                    <span class="text-score">{{data.commentCount}} แสดงความคิดเห็น</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.repostCount}} บอกต่อ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.likeCount}} ถูกใจ</span>
-                                    <span class="text-point"> • </span>
-                                    <span class="text-score">{{data.shareCount}} แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="!data.coverPageUrl" style="background-color: #deafaf;"
-                            class="wp-block-cover has-background-dim">
-                            <img style="width: 50%;position: absolute;" src="../../../../assets/img/logo/logo.svg"
-                                alt="">
-                            <div class="background-text">
-                                <span class="background-text-h" style="color: black;">{{data.post.title}}</span>
-                                <span class="background-text-h-s" style="color: black;">{{data.post.detail}}</span>
-                                <div class="line"></div>
-                                <div class="background-text-score">
-                                    <span class="text-score" style="color: black;">{{data.commentCount}}
-                                        แสดงความคิดเห็น</span>
-                                    <span class="text-point" style="color: black;"> • </span>
-                                    <span class="text-score" style="color: black;">{{data.repostCount}} บอกต่อ</span>
-                                    <span class="text-point" style="color: black;"> • </span>
-                                    <span class="text-score" style="color: black;">{{data.likeCount}} ถูกใจ</span>
-                                    <span class="text-point" style="color: black;"> • </span>
-                                    <span class="text-score" style="color: black;">{{data.shareCount}} แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-            <div class="swiper-button-prev">
-                <div class="material-icons">
-                    chevron_left
-                </div>
-            </div>
-            <div class="swiper-button-next">
-                <div class="material-icons">
-                    chevron_right
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="story-footer-teb">
         <a href="/home" target="_blank" class="text">หน้าหลัก</a>
@@ -267,11 +29,12 @@
                 <span class="post-content">{{postStoryData ? postStoryData.detail : '' }}</span>
                 <div class="line"></div>
                 <div class="count">
-                    <span class="text-count-desktop">{{postStoryData ?
+                    <span class="text-count-desktop" [class.active]="postStoryData.isComment">{{postStoryData ?
                         postStoryData.commentCount : '' }}
                         แสดงความคิดเห็น</span>
                     <div class="box-count">
-                        <span class="text-count">{{postStoryData ? postStoryData.commentCount : '' }}</span>
+                        <span class="text-count" [class.active]="postStoryData.isComment">{{postStoryData ?
+                            postStoryData.commentCount : '' }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.58" height="20.521"
                             viewBox="0 0 53.58 50.521">
                             <path class="svg-box-count" [class.active]="postStoryData.isComment" id="Path_3671"
@@ -282,9 +45,11 @@
                     </div>
 
                     <span class="text-point"> • </span>
-                    <span class="text-count-desktop">{{postStoryData ? postStoryData.repostCount : '' }} บอกต่อ</span>
-                    <div class="box-count">
-                        <span class="text-count">{{postStoryData ? postStoryData.repostCount : '' }}</span>
+                    <span class="text-count-desktop" [class.active]="postStoryData.isRepost">{{postStoryData ?
+                        postStoryData.repostCount : '' }} บอกต่อ</span>
+                    <div class="box-count" [matMenuTriggerFor]="menu">
+                        <span class="text-count" [class.active]="postStoryData.isRepost">{{postStoryData ?
+                            postStoryData.repostCount : '' }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.098" height="20.868"
                             viewBox="0 0 56.098 47.868">
                             <path class="svg-box-count" [class.active]="postStoryData.isRepost" id="Path_3668"
@@ -292,11 +57,24 @@
                                 d="M127.39,105.96h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11l-2.56,2.58-2.6-2.57a14.869,14.869,0,0,0-10.36-4.18h-.3A14.956,14.956,0,0,0,83.16,99.77l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,94.87A8.012,8.012,0,0,1,99.32,83.48l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0v11.45a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                                 transform="translate(-78.841 -74.072)" fill="#F8F7F2" />
                         </svg>
+                        <mat-menu #menu="matMenu" xPosition="before">
+                            <button (click)="postAction({mod:'REBOON',type:'NOTOPIC'})" mat-menu-item
+                                [disableRipple]="'true'" class="list-dropdown">
+                                <span>บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                            </button>
+                            <button (click)="postAction({mod:'REBOON',type:'TOPIC'})" mat-menu-item
+                                [disableRipple]="'true'" class="list-dropdown">
+                                <span>บอกต่อ{{PLATFORM_STORY_TALE}}พร้อมความเห็น
+                                </span>
+                            </button>
+                        </mat-menu>
                     </div>
                     <span class="text-point"> • </span>
-                    <span class="text-count-desktop">{{postStoryData ? postStoryData.likeCount : '' }} ถูกใจ</span>
+                    <span class="text-count-desktop" [class.active]="postStoryData.isLike">{{postStoryData ?
+                        postStoryData.likeCount : '' }} ถูกใจ</span>
                     <div class="box-count" (click)="postLike()">
-                        <span class="text-count">{{postStoryData ? postStoryData.likeCount : '' }}</span>
+                        <span class="text-count" [class.active]="postStoryData.isLike">{{postStoryData ?
+                            postStoryData.likeCount : '' }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.85" height="20.58" viewBox="0 0 56.85 48.58">
                             <path class="svg-box-count" [class.active]="postStoryData.isLike" id="Path_3669"
                                 data-name="Path 3669"
@@ -305,9 +83,12 @@
                         </svg>
                     </div>
                     <span class="text-point"> • </span>
-                    <span class="text-count-desktop">{{postStoryData ? postStoryData.shareCount : '' }} แชร์</span>
-                    <div class="box-count">
-                        <span class="text-count">{{postStoryData ? postStoryData.shareCount : '' }}</span>
+                    <span (click)="developDialog();" class="text-count-desktop"
+                        [class.active]="postStoryData.isShare">{{postStoryData ?
+                        postStoryData.shareCount : '' }} แชร์</span>
+                    <div (click)="developDialog();" class="box-count">
+                        <span class="text-count" [class.active]="postStoryData.isShare">{{postStoryData ?
+                            postStoryData.shareCount : '' }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.107" height="20.3" viewBox="0 0 40.107 44.3">
                             <path class="svg-box-count" [class.active]="postStoryData.isShare" id="Path_3664"
                                 data-name="Path 3664"
@@ -427,6 +208,18 @@
                     </ng-container>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<div class="post-story-not-found" *ngIf="!postStoryData">
+    <div class="box">
+        <div class="text">
+            ไม่พบเนื้อหา เรื่องราวหรือโพสต์อาจถูกลบ
+        </div>
+        <div class="sub-text">
+            ไปที่หน้าแรกเพื่อดูเนื้อหาอื่นๆที่น่าสนใจ
+            <spanboon-button [color]="'#FFFFFF'" [text]="'ตกลง'" (click)="navigateHomePage()" [radius]="'6px'">
+            </spanboon-button>
         </div>
     </div>
 </div>
