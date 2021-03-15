@@ -464,7 +464,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }, 1000);
                 resolve(this.fulfillCase);
             } else {
-                console.log('2', fulfillList);
                 this.fulfillCase = [];
                 this.isPreloadLoad = false;
                 resolve(this.fulfillCase);
@@ -519,7 +518,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
     }
 
-    public getChatRoom(fulfill: any, asPage?: any) { 
+    public getChatRoom(fulfill: any, asPage?: any) {
         this.chatData = [];
         this.reqData = [];
 
@@ -1155,9 +1154,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
     }
 
     private async createFulfillmentCase(data: any) {
-        this.fulFillFacade.createFulfillmentCase(data).then((createResult) => { 
+        this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
             this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
-        }).catch((createError) => { 
+        }).catch((createError) => {
             if (createError && createError.error.error.message === "Create FulfillmentCase Error") {
                 this.showAlertDialog('ไม่สามารถสร้างเคส' + this.PLATFORM_FULFILL_TEXT + 'ได้');
             }
@@ -1408,11 +1407,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.ganY = (event.clientY - bounds.top + 'px');
     }
 
-    public Tooltip(origin: any, data) {
+    public Tooltip(origin: any, data, isRight?: boolean) {
         data.owner = Object.assign(data.owner, { type: "PAGE" });
         this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
             data: data,
-        })
+        }, isRight)
             .subscribe(res => {
             });
     }

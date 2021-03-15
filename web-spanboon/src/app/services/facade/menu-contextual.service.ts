@@ -34,10 +34,11 @@ export class MenuContextualService {
 	constructor(
 		private overlay: Overlay) { }
 
-	open(origin: any, component: any, viewContainerRef: ViewContainerRef, data: any) {
+	open(origin: any, component: any, viewContainerRef: ViewContainerRef, data: any, isRight?: boolean) {
 		this.close(null);
+		console.log('origin', origin);
 		this.overlayRef = this.overlay.create(
-			this.getOverlayConfig({ origin: origin })
+			this.getOverlayConfig({ origin: origin }, isRight)
 		);
 
 		const ref = this.overlayRef.attach(new ComponentPortal(component, viewContainerRef));
@@ -73,107 +74,195 @@ export class MenuContextualService {
 			this.afterClosed.next(data)
 		}
 	}
-	private getOverlayPosition(origin: any): PositionStrategy {
+	private getOverlayPosition(origin: any, isRight?: boolean): PositionStrategy {
+		console.log('this.getPositions()', this.getPositions())
 		const positionStrategy = this.overlay
 			.position()
 			.flexibleConnectedTo(origin)
-			.withPositions(this.getPositions())
+			.withPositions(this.getPositions(isRight))
 			.withPush(false);
 		return positionStrategy;
 	}
-	private getOverlayConfig({ origin }): OverlayConfig {
+	private getOverlayConfig({ origin }, isRight?: boolean): OverlayConfig {
 		return new OverlayConfig({
 			hasBackdrop: false,
 			backdropClass: "popover-backdrop",
-			positionStrategy: this.getOverlayPosition(origin),
+			positionStrategy: this.getOverlayPosition(origin, isRight),
 			scrollStrategy: this.overlay.scrollStrategies.close()
 		});
 	}
-	private getPositions(): ConnectionPositionPair[] {
+	private getPositions(isRight?: boolean): ConnectionPositionPair[] {
 		this.setArrow();
 
-		return [
-			// {
-			// 	originX: "center",
-			// 	originY: "bottom",
-			// 	overlayX: "center",
-			// 	overlayY: "top"
-			// },
-			// {
-			// 	originX: "start",
-			// 	originY: "bottom",
-			// 	overlayX: "start",
-			// 	overlayY: "top"
-			// },
-			// {
-			// 	originX: "end",
-			// 	originY: "bottom",
-			// 	overlayX: "end",
-			// 	overlayY: "top"
-			// }
-			// {
-			// 	originX: "center",
-			// 	originY: "top",
-			// 	overlayX: "center",
-			// 	overlayY: "bottom"
-			// },
-			// {
-			// 	originX: "center",
-			// 	originY: "bottom",
-			// 	overlayX: "center",
-			// 	overlayY: "top"
-			// },
-			// -----------------------
-			// {
-			// 	originX: "start",
-			// 	originY: "top",
-			// 	overlayX: "start",
-			// 	overlayY: "bottom"
-			// },
-			// {
-			// 	originX: "start",
-			// 	originY: "bottom",
-			// 	overlayX: "start",
-			// 	overlayY: "top"
-			// },
-			// {
-			// 	originX: "center",
-			// 	originY: "top",
-			// 	overlayX: "center",
-			// 	overlayY: "bottom"
-			// },
-			// {
-			// 	originX: "center",
-			// 	originY: "bottom",
-			// 	overlayX: "center",
-			// 	overlayY: "top"
-			// },
-			// {
-			// 	originX: "end",
-			// 	originY: "top",
-			// 	overlayX: "start",
-			// 	overlayY: "bottom"
-			// },
-			// {
-			// 	originX: "end",
-			// 	originY: "bottom",
-			// 	overlayX: "start",
-			// 	overlayY: "top"
-			// },
-			// -----------------------
-			{
-				originX: "center",
-				originY: "top",
-				overlayX: "center",
-				overlayY: "bottom"
-			},
-			{
-				originX: "center",
-				originY: "bottom",
-				overlayX: "center",
-				overlayY: "top"
-			},
-		];
+		if (isRight) {
+			return [
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "start",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "bottom",
+				// 	overlayX: "end",
+				// 	overlayY: "top"
+				// }
+				// {
+				// 	originX: "center",
+				// 	originY: "top",
+				// 	overlayX: "center",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// -----------------------
+				// {
+				// 	originX: "start",
+				// 	originY: "top",
+				// 	overlayX: "start",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "start",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "top",
+				// 	overlayX: "center",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "top",
+				// 	overlayX: "start",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// -----------------------
+				{
+					originX: "end",
+					originY: "center",
+					overlayX: "end",
+					overlayY: "center"
+				},
+				{
+					originX: "end",
+					originY: "center",
+					overlayX: "end",
+					overlayY: "center"
+				},
+			];
+		} else {
+			return [
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "start",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "bottom",
+				// 	overlayX: "end",
+				// 	overlayY: "top"
+				// }
+				// {
+				// 	originX: "center",
+				// 	originY: "top",
+				// 	overlayX: "center",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// -----------------------
+				// {
+				// 	originX: "start",
+				// 	originY: "top",
+				// 	overlayX: "start",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "start",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "top",
+				// 	overlayX: "center",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "center",
+				// 	originY: "bottom",
+				// 	overlayX: "center",
+				// 	overlayY: "top"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "top",
+				// 	overlayX: "start",
+				// 	overlayY: "bottom"
+				// },
+				// {
+				// 	originX: "end",
+				// 	originY: "bottom",
+				// 	overlayX: "start",
+				// 	overlayY: "top"
+				// },
+				// -----------------------
+				{
+					originX: "center",
+					originY: "top",
+					overlayX: "center",
+					overlayY: "bottom"
+				},
+				{
+					originX: "center",
+					originY: "bottom",
+					overlayX: "center",
+					overlayY: "top"
+				},
+			];
+		}
+
+
 	}
 
 	public setArrow() {
@@ -194,26 +283,26 @@ export class MenuContextualService {
 			if (y !== null && y !== undefined) {
 				if ((y.includes('bottom') > 0)) {
 					arrowTop.css({ display: 'none' });
-					arrowBottom.css({ display: 'block' , opacity: 1});
+					arrowBottom.css({ display: 'block', opacity: 1 });
 
-					if(arrowBottom.css('display') === 'block'){
+					if (arrowBottom.css('display') === 'block') {
 						arrowBottom.css({ display: 'block' });
 					}
 
-					if(arrowBottom.css('opacity') === '1'){
+					if (arrowBottom.css('opacity') === '1') {
 						arrowBottom.css({ opacity: '1' });
 					}
 				}
 
 				if ((y.includes('top') > 0)) {
 					arrowBottom.css({ display: 'none' });
-					arrowTop.css({ display: 'block' , opacity: 1});
+					arrowTop.css({ display: 'block', opacity: 1 });
 
-					if(arrowTop.css('display') === 'block'){
+					if (arrowTop.css('display') === 'block') {
 						arrowBottom.css({ display: 'block' });
 					}
 
-					if(arrowTop.css('opacity') === '1'){
+					if (arrowTop.css('opacity') === '1') {
 						arrowBottom.css({ opacity: '1' });
 					}
 				}
