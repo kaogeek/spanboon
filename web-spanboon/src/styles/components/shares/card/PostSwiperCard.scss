@@ -83,7 +83,7 @@
                         align-items: center;
                         word-break: break-all;
                         z-index: 10;
-                        padding: 5px;
+                        // padding: 5px;
                         background-color: #00000047;
                         .background-text-h {
                             @include font-size-8($font-head-500);

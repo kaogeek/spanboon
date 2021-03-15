@@ -64,14 +64,12 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     this.dialog = dialog;
     this.router = router;
     this.observManager = observManager;
-
-
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
       this.getNeeds();
+      console.log('itemNeeds', this.itemNeeds);
     }, 650);
   }
   ngAfterViewInit(): void {
