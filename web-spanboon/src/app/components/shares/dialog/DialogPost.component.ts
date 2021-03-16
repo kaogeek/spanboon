@@ -81,6 +81,7 @@ export class DialogPost extends AbstractPage {
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
+      this.isSharePost = true;
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
@@ -227,6 +228,8 @@ export class DialogPost extends AbstractPage {
                 }
                 this.showAlertDialogWarming(alertMessages, "none");
               }
+              this.postFacade.nextMessageTopic('');
+              this.postFacade.nextMessage('');
               this.boxPost.clearDataAll();
               this.observManager.publish(REFRESH_DATA, data.type);
               this.dialogRef.close();

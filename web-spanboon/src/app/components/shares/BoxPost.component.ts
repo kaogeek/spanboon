@@ -307,6 +307,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     }).catch((error: any) => {
       // console.log(error) 
     });
+
   }
 
   public ngOnInit(): void {
@@ -593,7 +594,6 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.user.imageURL = null
                 } else {
                   data.user.imageURL = image.data
-                  // this.accessPageImage = image.data
                 }
               }
             }).catch((err: any) => {
@@ -623,6 +623,17 @@ export class BoxPost extends AbstractPage implements OnInit {
             })
           } else {
             this.accessPage = res
+          }
+
+          if (this.router.url.split('/')[1] === "page") {
+            if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
+              this.accessPageImage = data.page;
+              this.dataPage = data.page.name;
+              this.dataPageId = data.page;
+            }
+          } else {
+            this.accessPageImage = data.user;
+            this.dataPageId = data.user;
           }
         }
       }
@@ -1188,26 +1199,27 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getImage() {
-    let user = this.authenManager.getCurrentUser();
-    this.userClone = user;
-    if (this.userClone && this.userClone.imageURL && this.userClone.imageURL !== '' && this.userClone.imageURL !== undefined && this.userClone.imageURL !== null) {
-      this.assetFacade.getPathFile(this.userClone.imageURL).then((image: any) => {
-        if (image.status === 1) {
-          if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-            this.userClone.imageBase64 = null
-          } else {
-            this.userClone.imageBase64 = image.data
-          }
-          this.accessPageImage.imageURL = this.userClone.imageBase64
-        }
-      }).catch((err: any) => {
-        if (err.error.message === "Unable got Asset") {
-          this.userClone.imageURL = ''
-        }
-      })
-    } else {
-      this.accessPageImage = this.userClone
-    }
+    // let user = this.authenManager.getCurrentUser();
+    // this.userClone = user;
+    // if (this.userClone && this.userClone.imageURL && this.userClone.imageURL !== '' && this.userClone.imageURL !== undefined && this.userClone.imageURL !== null) {
+    //   this.assetFacade.getPathFile(this.userClone.imageURL).then((image: any) => {
+    //     if (image.status === 1) {
+    //       if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+    //         this.userClone.imageBase64 = null
+    //       } else {
+    //         this.userClone.imageBase64 = image.data
+    //       } 
+    //     }
+    //   }).catch((err: any) => {
+    //     if (err.error.message === "Unable got Asset") {
+    //       this.userClone.imageURL = ''
+    //     }
+    //   })
+    // } else {
+    //   this.accessPageImage = this.userClone;
+    // }
+
+
   }
 
   public genImages(images: any): void {
@@ -1416,12 +1428,12 @@ export class BoxPost extends AbstractPage implements OnInit {
       if (this.arrListItem.length === 0) {
         delete data.needs
       }
-      if (this.isListPage) {
-        if (this.selectedAccessPage === 'โพสต์เข้าไทม์ไลน์ของฉัน') {
-          Object.assign(data, { id: this.dataPageId });
+      if (this.isListPage) { 
+        if(this.accessPageImage.name){
+          Object.assign(data, { id: this.accessPageImage.id });
         } else {
-          Object.assign(data, { id: this.pageId });
-        }
+          Object.assign(data, { id: undefined });
+        } 
       }
 
       if (this.isFulfill) {
@@ -1464,7 +1476,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
-  public clearDataAll() {
+  public clearDataAll() { 
     this.topic.nativeElement.innerText = ""
     this.storyPost.nativeElement.innerText = "";
     if (this.objectiveDoingName !== undefined) {
@@ -2610,7 +2622,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public getConfigFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.getConfigByPage(this.dataPageId.id, FACEBOOK_AUTO_POST).then((res: any) => {
-        this.isAutoPostFacebook = res.value;
+        this.isAutoPostFacebook = res.value; 
       }).catch((err: any) => {
         console.log('err ', err)
       })

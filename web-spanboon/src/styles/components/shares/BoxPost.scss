@@ -841,6 +841,12 @@
           border-radius: 50%;
           object-fit: cover;
         }
+        > .profile-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: $brandcolor2;
+        }
       }
 
       > .wrapper-body-action {
@@ -1096,7 +1102,7 @@
       }
       > .box-story {
         flex: 0 0 auto;
-        >.mobile-post {
+        > .mobile-post {
           padding: 0 19pt;
         }
       }
@@ -1136,7 +1142,7 @@
         > .mobile-post {
           width: calc(20% - 10pt);
         }
-        >.mobile-page  {
+        > .mobile-page {
           width: calc(59% - 10pt - 0.7px);
         }
       }

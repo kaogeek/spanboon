@@ -17,21 +17,23 @@
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
-                                <span>{{accessPageImage && ( accessPageImage.displayName || accessPageImage.name |
+                                <span>{{accessPageImage && ( accessPageImage.name || accessPageImage.displayName |
                                     slice: 0:1 ) }}</span>
                             </div>
-                        </ng-template>
-                        <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
+                        </ng-template> 
+                        <mat-select name="pageName" [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="selectedAccessPage"
-                                    (click)="selectAccessPage(data.user , 'USER')">
+                                <mat-option *ngIf="index === 0" [value]="data.user.displayName" (click)="selectAccessPage(data.user , 'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
                                                 *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
                                                 <img class="icon-image" src="{{data.user.imageURL}}" alt="">
                                             </ng-container>
-                                            <ng-template #elseImageProfile>
+                                            <ng-template #elseImageProfile> 
+                                                <!-- <div class="icon-image profile-label">
+                                                    {{data.user.displayName | slice: 0:1 }}
+                                                </div> -->
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
                                             </ng-template>
                                         </div>
@@ -343,8 +345,7 @@
                                                     [(ngModel)]="selectedValue" name="objectCategory" required>
                                                     <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
                                                     </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory"
-                                                        [value]="item.name">
+                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.name">
                                                         {{item.name}}
                                                     </mat-option>
                                                 </mat-select>
@@ -425,8 +426,7 @@
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
                                         <div class="page-doing">
-                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}}
-                                            กำลังทำอยู่
+                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}} กำลังทำอยู่
                                         </div>
                                         <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
                                             <svg class="icon-add" xmlns="http://www.w3.org/2000/svg" width="20.948"
@@ -719,8 +719,8 @@
                                     accept="image/*" multiple />
                             </div>
                         </ng-template>
-                    </div>
-                    <ng-container *ngIf="isSharePost">
+                    </div> 
+                    <ng-container *ngIf="isSharePost"> 
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
                             <svg class="icon-social"
                                 [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"

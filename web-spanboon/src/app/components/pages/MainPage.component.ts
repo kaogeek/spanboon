@@ -263,7 +263,7 @@ export class MainPage extends AbstractPage implements OnInit {
       } else if (this.user.displayName) {
         dataName = this.user.displayName
       }
-      this.data.name = dataName;
+     
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
@@ -271,7 +271,11 @@ export class MainPage extends AbstractPage implements OnInit {
       this.data.modeDoIng = true;
       this.data.isMobileButton = true;
       this.data.id = this.user.id;
-
+      if(this.router.url.split('/')[1] === 'page'){
+        this.data.name = this.router.url.split('/')[2]; 
+      } else {
+        this.data.name = dataName;
+      } 
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
         data: this.data,
