@@ -791,8 +791,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public showDialogCreateStory(isEdit?: boolean): void {
     const topic = this.topic.nativeElement.innerHTML;
     const storyPostShort = this.storyPost.nativeElement.innerText
-    let cloneStory = this.dataStroy ? this.dataStroy : '';
-    this.dataStroy = this.content ? this.content.story : {};
+    let cloneStory = this.dataStroy ? this.dataStroy : ''; 
+    this.dataStroy = this.content && this.content.story ? this.content.story : {}; 
     const storyPost = this.storyPost.nativeElement.innerText
     this.dataClone = {
       topic,

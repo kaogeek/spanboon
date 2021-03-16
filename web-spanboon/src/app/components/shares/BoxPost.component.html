@@ -80,14 +80,13 @@
                                     slice: 0:1 ) }}</span>
                             </div>
                         </ng-template>
-                        <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
+                        <mat-select name="pageName" [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="selectedAccessPage"
+                                <mat-option *ngIf="index === 0" [value]="data.user.displayName"
                                     (click)="selectAccessPage(data.user , 'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
-                                            <ng-container
-                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
+                                            <ng-container *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
                                                 <img class="icon-image" src="{{data.user.imageURL}}" alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
@@ -99,7 +98,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.pageUsername || data.page.name "
+                                <mat-option [value]="data.page.name"
                                     (click)="selectAccessPage(data.page, 'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
@@ -112,7 +111,7 @@
                                             </ng-template>
                                         </div>
                                         <div class="wrapper-body-action">
-                                            <div>{{data.page.pageUsername || data.page.name }}</div>
+                                            <div>{{ data.page.name }}</div>
                                         </div>
                                     </div>
                                 </mat-option>

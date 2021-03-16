@@ -1140,7 +1140,8 @@
         }
 
         > .mobile-post {
-          width: calc(20% - 10pt);
+          width: calc(20% - 14pt); 
+          padding: 0 7pt;
         }
         > .mobile-page {
           width: calc(59% - 10pt - 0.7px);
