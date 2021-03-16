@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Renderer2, EventEmitter, Output } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
@@ -50,6 +50,7 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   protected observManager: ObservableManager;
   protected assetFacade: AssetFacade;
+  protected myElement: ElementRef;
   protected pageFacade: PageFacade;
   protected postCommentFacade: PostCommentFacade;
   protected postFacade: PostFacade;
@@ -70,7 +71,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   public dataTypeM: any = { type: '' };
   public position: any
   public dataNeeds: any;
-  public test: any;
+  public type: string;
   public pageUser: any
   public userCloneDatas: any
   public url: any
@@ -79,12 +80,20 @@ export class StoryPage extends AbstractPage implements OnInit {
   public recommendedStory: any
   public recommendedStorys: any
   public recommendedStoryHashtag: any
+
+  public emergencyEventTag: any
+  public objectiveTag: any
+  public createdDate: any
+  public ownerUser: any
+  public userId: any
+
   public linkPage: any
 
   public loding: boolean;
   public isComment: boolean
   public isPreload: boolean = true;
   public isLoding: boolean = true;
+  public isPendingFulfill: boolean = false;
   public isSearchHashTag: boolean
   public apiBaseURL = environment.apiBaseURL;
   public h: number
@@ -188,7 +197,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  constructor(router: Router, postCommentFacade: PostCommentFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
+  constructor(router: Router, postCommentFacade: PostCommentFacade, private renderer: Renderer2, postFacade: PostFacade, dialog: MatDialog, myElement: ElementRef, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
@@ -202,56 +211,8 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.isLoding = true;
     this.position = "50% 80%"
     this.h = 80
-    this.test = [1, 2, 3]
-    this.dataNeeds = [
-      {
-        "id": "วัตถุดิบ(ปลาหมึก)",
-        "createdDate": "2020-10-22T04:19:24.469Z",
-        "customItemId": "5f91084ca23f15136bd56350",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "วัตถุดิบ(ปลาหมึก)",
-        "active": true,
-        "quantity": 10,
-        "unit": "กิโล",
-        "post": "5f91084ca23f15136bd5634c"
-      },
-      {
-        "id": "5f4349d1669c480f8bb67f20",
-        "createdDate": "2020-10-25T16:36:51.480Z",
-        "standardItemId": "5f4349d1669c480f8bb67f20",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "ข้าวสาร",
-        "active": true,
-        "fullfilled": false,
-        "quantity": 5,
-        "unit": "กิโลกรัม",
-        "post": "5f95a9a3b5184e606cec452e",
-        "fulfillQuantity": 0,
-        "pendingQuantity": 0
-      },
-      {
-        "id": "5f4349e8669c480f8bb67f23",
-        "createdDate": "2020-10-22T04:19:24.471Z",
-        "standardItemId": "5f4349e8669c480f8bb67f23",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "ปลากระป๋อง",
-        "active": true,
-        "quantity": 4,
-        "unit": "กระป๋อง",
-        "post": "5f91084ca23f15136bd5634c"
-      },
-      {
-        "id": "อาหารแห้ง",
-        "createdDate": "2020-10-22T04:19:24.465Z",
-        "customItemId": "5f91084ca23f15136bd5634e",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "อาหารแห้ง",
-        "active": true,
-        "quantity": 4,
-        "unit": "ชุด",
-        "post": "5f91084ca23f15136bd5634c"
-      }
-    ]
+    this.dataNeeds = []
+
 
     this.routeActivated.params.subscribe((params) => {
       this.url = params['postId']
@@ -263,7 +224,11 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then((res: any) => {
       this.postStoryData = res[0]
-      console.log('this.postStoryData', this.postStoryData)
+      this.type = this.postStoryData.type
+      this.objectiveTag = this.postStoryData.objectiveTag
+      this.emergencyEventTag = this.postStoryData.emergencyEventTag
+      this.createdDate = this.postStoryData.createdDate;
+      this.ownerUser = this.postStoryData.ownerUser;
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
       }).catch((err: any) => {
@@ -306,8 +271,9 @@ export class StoryPage extends AbstractPage implements OnInit {
     if (this.user !== undefined && this.user !== null) {
       this.getProfileImage(this.user);
       this.searchPageInUser(this.user.id)
+      this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
+      this.userId = this.userCloneDatas.id
     }
-    this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
 
     setTimeout(() => {
       this.isLoding = false;
@@ -317,6 +283,14 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+  }
+
+  public scrollFulfill() {
+    try {
+      const errorField = this.renderer.selectRootElement('.needs-display');
+      errorField.scrollIntoTop();
+    } catch (err) {
+    }
   }
 
 
@@ -397,7 +371,15 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   public menuProfile() { }
 
+  public checkAccessCustom(): boolean {
+    return this.userCloneDatas.id === this.postStoryData.id;
+  }
+
   public commentAction(data: any) {
+    if (!this.isLogin()) {
+      return this.showAlertLoginDialog("/story/" + this.postStoryData._id);
+    }
+
     if (data.action === "LIKE") {
       if (this.user.id !== undefined && this.user.id !== null) {
         this.postCommentFacade.like(this.postStoryData._id, data.commentdata, this.user.id).then((res: any) => {
@@ -445,12 +427,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     }
   }
 
-  public getRecommendedStory() {
-    this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
-      this.recommendedStory = res.data
-    }).catch((err: any) => {
-    })
-  }
 
   public getRecommendedHashtag() {
     this.postFacade.recommendedHashtag(this.postStoryData._id).then((res: any) => {
@@ -459,9 +435,16 @@ export class StoryPage extends AbstractPage implements OnInit {
     })
   }
 
+  public getRecommendedStory() {
+    this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
+      this.recommendedStory = res.data.contents;
+    }).catch((err: any) => {
+    })
+  }
+
   public getRecommendedStorys() {
     this.postFacade.recommendedStorys(this.postStoryData._id, this.postStoryData.pageId).then((res: any) => {
-      this.recommendedStorys = res.data
+      this.recommendedStorys = res.data.contents;
     }).catch((err: any) => {
     })
   }
@@ -474,6 +457,7 @@ export class StoryPage extends AbstractPage implements OnInit {
       search.limit = 0
     }
     this.postCommentFacade.search(search, this.postStoryData._id).then((res: any) => {
+      console.log('res', res)
       for (let c of res) {
         c.isEdit = false
       }
@@ -595,14 +579,13 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   private isLoginUser() {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
-      return
+      return this.showAlertLoginDialog("/story/" + this.postStoryData._id);
     }
   }
 
   public postLike() {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+      this.showAlertLoginDialog("/story/" + this.postStoryData._id);
     } else {
       this.postFacade.like(this.postStoryData._id, this.asPage).then((res: any) => {
         this.postStoryData.isLike = res.isLike
@@ -614,6 +597,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public async postAction(action: any) {
+    this.isLoginUser();
     let userAsPage: any
     let pageInUser: any[]
     let search: SearchFilter = new SearchFilter();
@@ -658,7 +642,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public pageAction(action: any) {
-    let comments: any[] = []
     this.userCloneDatas = action
     if (action.ownerUser !== undefined && action.ownerUser !== null) {
       this.asPage = action.id
@@ -674,6 +657,15 @@ export class StoryPage extends AbstractPage implements OnInit {
     })
   }
 
+  public navigateHomePage() {
+
+    this.router.navigate(["/home"]);
+
+  }
+
+  public developDialog() {
+    this.showAlertDevelopDialog();
+  }
 
   public convertTextType(text): string {
     if (text === "GENERAL") {

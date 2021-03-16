@@ -46,7 +46,7 @@
         background-clip: padding-box;
         border: 0.7pt solid $bg-grey;
         border-radius: 25px;
-        @include font-size-9($font-head-500);
+        @include font-size-10($font-head-500);
         box-shadow: 0px 1px 9px 0 #00000020;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         margin-bottom: 10pt;

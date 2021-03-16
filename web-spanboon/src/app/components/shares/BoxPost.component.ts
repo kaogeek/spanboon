@@ -130,6 +130,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public submitClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public selectedInformation: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -683,7 +685,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public onChangeSlide(event?: MatSlideToggleChange) {
     this.isStory = event.checked;
     if (!this.isStory) {
-      if (this.dataStroy && this.dataStroy.storyPost !== "") {
+      if (!(Object.keys(this.dataStroy).length === 0 && this.dataStroy.constructor === Object)) {
         const confirmEventEmitter = new EventEmitter<any>();
         confirmEventEmitter.subscribe(() => {
           this.submitDialog.emit(this.dataStroy);
@@ -693,10 +695,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.submitCanCelDialog.emit(this.dataStroy);
         });
 
-        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + "โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.dataStroy.storyPost = "";
             this.closeDialog();
           } else {
             this.isStory = true;
@@ -704,6 +705,30 @@ export class BoxPost extends AbstractPage implements OnInit {
         });
       } else {
         this.closeDialog();
+      }
+      if (this.content !== undefined && this.content !== null) {
+        if (!(Object.keys(this.content.story).length === 0 && this.content.story.constructor === Object)) {
+          const confirmEventEmitter = new EventEmitter<any>();
+          confirmEventEmitter.subscribe(() => {
+            this.submitDialog.emit(this.dataStroy);
+          });
+          const canCelEventEmitter = new EventEmitter<any>();
+          canCelEventEmitter.subscribe(() => {
+            this.submitCanCelDialog.emit(this.dataStroy);
+          });
+
+          let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.dataStroy = {};
+              this.closeDialog();
+            } else {
+              this.isStory = true;
+            }
+          });
+        } else {
+          this.closeDialog();
+        }
       }
     }
   }
@@ -753,7 +778,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public showDialogCreateStory(isEdit?: boolean): void {
-    const topic = this.topic.nativeElement.value
+    const topic = this.topic.nativeElement.innerHTML;
     const storyPostShort = this.storyPost.nativeElement.innerText
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content ? this.content.story : {};
@@ -824,9 +849,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           postGallery: this.dataImage,
           coverImage: this.coverImage
         }
-        // if (this.dataStroy.storyPost === '') {
-        //   delete data.story;
-        // }
         if (this.modeShowDoing) {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
           Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
@@ -1240,6 +1262,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.modeDoIng = true;
     }
+    this.selectedInformation.emit(page);
   }
 
   public onClickGetDataPost(isDraft?: boolean) {
@@ -1279,7 +1302,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isMsgError = true
         var contentAlert;
         if (this.isListPage) {
-          topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
+          contentAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
           document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
         } else {
           contentAlert = document.getElementById('editableStoryPost');
@@ -2380,13 +2403,13 @@ export class BoxPost extends AbstractPage implements OnInit {
       var postion = $('.wrapper-tool-post');
       postion.addClass("m-tool-post");
 
-      var postion1 = $('.left');
+      var postion1 = $('.box-left');
       postion1.addClass("m-left");
 
-      var postion2 = $('.center');
+      var postion2 = $('.box-center');
       postion2.addClass("m-center");
 
-      var postion3 = $('.right');
+      var postion3 = $('.box-right');
       postion3.addClass("m-right");
     } else if (window.innerWidth > 899) {
       this.isMobilePost = false;
@@ -2486,7 +2509,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
-        this.facebookConection = res.data; 
+        this.facebookConection = res.data;
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2627,6 +2650,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public redirectSetting() {
-    this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    if (this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null) {
+      this.router.navigateByUrl('page/' + this.dataPageId.pageUsername + '/settings?tab=connect');
+    } else {
+      this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    }
   }
 }

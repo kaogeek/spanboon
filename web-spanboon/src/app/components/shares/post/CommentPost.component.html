@@ -41,10 +41,12 @@
                     <span class="like" [ngClass]="{'like-at': comment.isLike}"
                         (click)="commentAction('LIKE',comment,i)">ถูกใจ</span>
                     <span>•</span>
-                    <span (click)="commentAction('EDIT',comment,i)" class="like">แก้ไข</span>
-                    <span>•</span>
-                    <span (click)="commentAction('DELETE',comment,i)" class="like">ลบ</span>
-                    <span>•</span>
+                    <span (click)="commentAction('EDIT',comment,i)" *ngIf="checkAccessCustom(comment.user.id)"
+                        class="like">แก้ไข</span>
+                    <span *ngIf="checkAccessCustom(comment.user.id)">•</span>
+                    <span (click)="commentAction('DELETE',comment,i)" *ngIf="checkAccessCustom(comment.user.id)"
+                        class="like">ลบ</span>
+                    <span *ngIf="checkAccessCustom(comment.user.id)">•</span>
                     <span>{{comment && comment.createdDate | dateFormat}}</span>
                 </ng-container>
                 <ng-template #elseTemplateEdit>

@@ -70,18 +70,21 @@
                     background-size: cover;
                     background-position: 0%;
                     display: flex;
+                    min-height: 250px;
                     justify-content: center;
                     align-items: center;
                     .background-text {
                         transition: 0.3s;
-                        width: auto;
-                        max-width: 60%;
-                        display: flex;
+                        width: 100%;
+                        position: absolute;
+                        bottom: 0;
                         flex-direction: column;
+                        display: flex;
                         align-items: center;
                         word-break: break-all;
                         z-index: 10;
-                        margin: 50px;
+                        // padding: 5px;
+                        background-color: #00000047;
                         .background-text-h {
                             @include font-size-8($font-head-500);
                             color: white;
@@ -106,9 +109,9 @@
                         }
                         .line {
                             width: 50%;
-                            height: 5pt;
+                            height: 2pt;
                             background-color: white;
-                            margin-bottom: 20px;
+                            margin-bottom: 10px;
                         }
                         .background-text-score {
                             width: 100%;
@@ -116,17 +119,20 @@
                             display: flex;
                             flex-direction: initial;
                             justify-content: center;
+                            align-items: center;
+                            margin-bottom: 10px;
 
                             .text-score {
                                 @include font-size-10($font-head-300);
                                 color: white;
                                 text-align: center;
-                                margin: 0px 10px 0px 10px;
+                                margin: 0px 5px 0px 5px;
                             }
                             .text-point {
                                 @include font-size-10($font-head-300);
                                 color: white;
                                 text-align: center;
+                                margin: 0px 5px;
                             }
                         }
                     }

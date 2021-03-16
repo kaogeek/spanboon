@@ -23,7 +23,7 @@ import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogPost } from '../../shares/shares';
+import { DialogAlert, DialogPost } from '../../shares/shares';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -334,7 +334,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.resPost.posts = [];
       this.isLoadingPost = true;
     } else {
-      data.offset = this.resPost && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
+      data.offset = this.resPost && this.resPost.posts && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
     data.limit = 5
     let originalpost: any[] = this.resPost.posts;
@@ -624,7 +624,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               } else {
                 alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
               }
-              this.showAlertDialogWarming(alertMessages, "none"); 
+              this.showAlertDialogWarming(alertMessages, "none");
             }
             if (this.splitTpyeClone !== undefined && this.splitTpyeClone !== null) {
               this.initPage(this.splitTpyeClone);
@@ -878,6 +878,30 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     data.isFulfill = false;
     data.isListPage = true;
     data.isEdit = true;
+    const dialogRef = this.dialog.open(DialogPost, {
+      width: 'auto',
+      data: data,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+      }
+      this.stopLoading();
+    });
+  }
+
+  public openDialogPost() {
+    let data = { 
+      isListPage: true,
+      isHeaderPage: true,
+      isEdit: false,
+      isFulfill: false,
+      modeDoIng: true,
+      isMobileButton: true,
+      name: this.resDataPage.name
+    }
+
     const dialogRef = this.dialog.open(DialogPost, {
       width: 'auto',
       data: data,
@@ -1262,6 +1286,20 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.imgprofile.nativeElement.style.marginTop = '-55pt';
       }
     }
+  }
+
+  public clickSystemDevelopment(): void {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+    });
   }
 }
 

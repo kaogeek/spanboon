@@ -58,7 +58,7 @@
                   > .mat-select {
                     > .mat-select-trigger {
                       > .mat-select-value {
-                        display: none;
+                        // display: none;
                       }
                     }
                   }
@@ -229,12 +229,12 @@
 
         > .material-icons,
         .space-icon {
-          font-family: 'Material Icons' !important;
+          font-family: "Material Icons" !important;
           width: 15pt;
         }
 
         > .material-icons {
-          font-family: 'Material Icons' !important;
+          font-family: "Material Icons" !important;
           display: none;
           color: $color-black;
           opacity: 0.4;
@@ -246,7 +246,7 @@
           opacity: 0.8;
 
           > .material-icons {
-            font-family: 'Material Icons' !important;
+            font-family: "Material Icons" !important;
             display: flex;
             align-items: center;
           }
@@ -263,6 +263,7 @@
 
       .mat-form-field-wrapper {
         padding-bottom: 0;
+        display: flex;
 
         .mat-form-field-flex {
           .mat-form-field-infix {
@@ -271,6 +272,7 @@
 
             > .mat-select {
               @include font-size-9($font-head-500);
+              line-height: 2;
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -303,7 +305,7 @@
             display: flex;
             padding: 0 10pt;
             align-items: center;
-            @include font-size-9($font-head-500);
+            @include font-size-10($font-head-500);
             @include pointer();
 
             &.active-tag1 {
@@ -341,7 +343,7 @@
           > .objective-doing {
             display: flex;
             align-items: center;
-            @include font-size-9($font-head-500);
+            @include font-size-10($font-head-500);
             @include pointer();
 
             &.active-tag {
@@ -622,7 +624,7 @@
         color: $brandcolor2;
         &.isClickPostPreLoad {
           pointer-events: none;
-          opacity: 0.6; 
+          opacity: 0.6;
         }
 
         .mat-option {
@@ -694,6 +696,12 @@
     }
 
     > .to-dialog-post {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-all;
+      width: 100%;
       flex: 1 1 0%;
       display: flex;
       align-items: center;
@@ -781,7 +789,7 @@
     > .mat-form-field-flex {
       > .mat-form-field-infix {
         .mat-select {
-          @include font-size-9($font-head-500);
+          @include font-size-10($font-head-500);
         }
 
         > .selected-dropdown {
@@ -1057,6 +1065,11 @@
                     }
                   }
                 }
+
+                > .list-found {
+                  color: $color-gray;
+                  @include font-size-9($font-head-500);
+                }
               }
             }
           }
@@ -1083,6 +1096,9 @@
       }
       > .box-story {
         flex: 0 0 auto;
+        >.mobile-post {
+          padding: 0 19pt;
+        }
       }
 
       > .textarea-editor {
@@ -1113,12 +1129,15 @@
       > .box-story {
         flex: 0 0 auto;
 
-        >.box-toggle {
+        > .box-toggle {
           width: unset;
         }
 
-        >.mobile-post {
+        > .mobile-post {
           width: calc(20% - 10pt);
+        }
+        >.mobile-page  {
+          width: calc(59% - 10pt - 0.7px);
         }
       }
 
@@ -1149,13 +1168,13 @@
         > .wrapper-left {
           > .search-tag-emergency {
             max-width: 50%;
-            >.event-tag  {
+            > .event-tag {
               @include font-size-10($font-head-500);
             }
           }
           > .search-objective {
             max-width: 50%;
-            >.objective-doing {
+            > .objective-doing {
               @include font-size-10($font-head-500);
             }
           }

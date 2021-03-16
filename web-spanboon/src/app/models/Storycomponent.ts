@@ -16,6 +16,7 @@ export class Storycomponent extends BaseModel {
   public index: number
   public style: any
   public isNewTeb: any
+  public text: string
 
   public imageUrl: string
   public image64: string

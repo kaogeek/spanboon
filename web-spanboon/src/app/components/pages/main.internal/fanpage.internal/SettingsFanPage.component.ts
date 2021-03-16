@@ -144,7 +144,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             } else {
                 this.selected = this.link.label;
             }
-        }); 
+        });
 
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
@@ -173,7 +173,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     public ngOnInit(): void {
         if (!this.isLogin()) {
             this.router.navigateByUrl("/home");
-        } 
+        }
     }
 
     public ngOnDestroy(): void {
@@ -219,12 +219,12 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getAccessPage() { 
+    public getAccessPage() {
         this.isLoadImage = false;
         this.pageFacade.getProfilePage(this.pageId).then((res) => {
             if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
                 this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
-                    if (image.status === 1) { 
+                    if (image.status === 1) {
                         if (!this.validBase64Image(image.data)) {
                             res.data.imageURL = null
                         } else {
@@ -260,6 +260,13 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public backSetting() {
         this.isMobile = false;
+    }
 
+    public backToPage() {
+        if (this.resListPage && this.resListPage.pageUsername !== undefined && this.resListPage.pageUsername !== '' && this.resListPage.pageUsername !== null) {
+            this.router.navigateByUrl('page/' + this.resListPage.pageUsername);
+        } else {
+            this.router.navigateByUrl('page/' + this.resListPage.id);
+        }
     }
 }

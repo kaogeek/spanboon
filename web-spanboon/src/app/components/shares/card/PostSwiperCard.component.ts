@@ -53,7 +53,6 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public needs: any[] = [];
   private originalNeeds: any[] = [];
   public indexNeed: number = 0;
-  // public offsetHeightCard: number;
   private needsResult: any[] = [];
   private observManager: ObservableManager;
 
@@ -65,15 +64,12 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     this.dialog = dialog;
     this.router = router;
     this.observManager = observManager;
-
-
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
       this.getNeeds();
-      console.log('this.itemNeeds', this.itemNeeds)
+      console.log('itemNeeds', this.itemNeeds);
     }, 650);
   }
   ngAfterViewInit(): void {
@@ -155,7 +151,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 3,
+    slidesPerView: 2.5,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,
@@ -169,16 +165,16 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
         slidesPerView: 2.5,
       },
       899: {
-        slidesPerView: 3,
-      },
-      676: {
         slidesPerView: 2.5,
       },
+      676: {
+        slidesPerView: 1.5,
+      },
       566: {
-        slidesPerView: 2.2,
+        slidesPerView: 1.5,
       },
       479: {
-        slidesPerView: 1.8,
+        slidesPerView: 1.5,
       },
     },
   }

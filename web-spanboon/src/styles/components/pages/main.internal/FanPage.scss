@@ -432,7 +432,7 @@
               > .item-looking-for {
                 padding: 10pt 15pt 10pt;
                 margin: 0;
-                @include font-size-9($font-head-400);
+                @include font-size-10($font-head-400);
                 &:hover {
                   border-radius: 0;
                 }
@@ -660,6 +660,7 @@
               > .title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
+                @include pointer();
                 @include font-size-8($font-head-500);
               }
 

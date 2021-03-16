@@ -41,6 +41,7 @@
                     height: 20pt;
                     margin-right: 7pt;
                     background-color: $color-gray;
+                    flex: 0 0 auto;
 
                     &.facebook {
                         background-color: #2851a3;
@@ -56,6 +57,7 @@
                         color: $white;
                         width: 35pt;
                         height: 35pt;
+                        flex: 0 0 auto;
                     }
                     > .icon {
                         height: 20px;
@@ -68,13 +70,20 @@
                 > .lost-connect {
                     display: flex;
                     flex-direction: column;
-                    @include font-size-9($font-head-500);
+                    @include font-size-10($font-head-500);
                     color: $color-black;
 
                     > .link-social {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        word-break: break-all;
+                        width: 100%;
                         @include font-size-10($font-head-400);
                         color: $color-gray;
                         a {
+                           
                             @include font-size-10($font-head-400);
                             color: $color-gray;
                             padding-right: 5pt;

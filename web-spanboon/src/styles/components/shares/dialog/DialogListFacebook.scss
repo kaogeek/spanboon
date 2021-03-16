@@ -56,7 +56,8 @@
                     height: 20pt;
                     margin-right: 7pt;
                     background-color: $color-gray;
-
+                    flex: 0 0 auto;
+                    
                     &.facebook {
                         background-color: #2851a3;
                     }
@@ -71,6 +72,7 @@
                         color: $white;
                         width: 35pt;
                         height: 35pt;
+                        flex: 0 0 auto;
                     }
                     > .icon {
                         height: 20px;

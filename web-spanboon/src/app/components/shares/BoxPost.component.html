@@ -40,8 +40,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.pageUsername || data.page.name "
-                                    (click)="selectAccessPage(data.page, 'PAGE')">
+                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page, 'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -53,7 +52,7 @@
                                             </ng-template>
                                         </div>
                                         <div class="wrapper-body-action">
-                                            <div>{{data.page.pageUsername || data.page.name }}</div>
+                                            <div>{{ data.page.name }}</div>
                                         </div>
                                     </div>
                                 </mat-option>
@@ -752,7 +751,10 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="body-list"> 
+                                <div class="body-list">
+                                    <div class="checklist" *ngIf="facebookConection && !facebookConection.data">
+                                        <span class="list-found">ไม่พบเพจหรือบัญชีผู้ใช้</span>
+                                    </div>
                                     <div class="checklist" *ngIf="facebookConection && facebookConection.data">
                                         <mat-checkbox #checkbox [(ngModel)]="isAutoPostFacebook"
                                             [class.active]="isAutoPostFacebook" [ngModelOptions]="{standalone: true}"
@@ -848,7 +850,9 @@
             <img src="../../../../assets/img/profile.svg" class="img-profile">
         </ng-template>
         <div class="to-dialog-post" (click)="dialogPost()">
-            {{PLATFORM_STORY_TALE}}ของ {{dataPage}}
+            <div class="mobile">
+                {{PLATFORM_STORY_TALE}}ของ {{dataPage}}
+            </div>
         </div>
     </div>
 </div>
