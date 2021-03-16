@@ -41,8 +41,8 @@
                 <div class="background-story"
                     [ngStyle]="{'background-image': image ? 'url(' + image + ')' : 'url(' + '' + ')'}">
                     <div class="text-h">
-                        <span style="font-size: 23px;font-weight: 600;">{{textH}}</span>
-                        <span style="color: #cecece;">{{textS}}</span>
+                        <span class="h">{{textH}}</span>
+                        <span class="s">{{textS}}</span>
                         <div class="line"></div>
                         <div class="background-text-score">
                             <span class="text-score">60 แสดงความคิดเห็น</span>
@@ -505,7 +505,7 @@
                                     </div>
 
                                     <div id={{i}} style="display:flex;flex-direction: column;"
-                                        [ngStyle]="{'align-items': item.style.imagealign}"
+                                        [ngStyle]="{'align-items': item.imageStyle.imagealign}"
                                         *ngIf="imageType(item.htmlType);" id={{i}}>
                                         <input id="file-input-image" style="display: none;" #fileImage type="file"
                                             (change)="onFileSelect($event)" accept="image/*" />
@@ -516,7 +516,7 @@
                                             </div>
                                         </div>
                                         <img class="ct-background-image" *ngIf="item.image64"
-                                            [ngStyle]="{'width': item.style.imageSize}" (click)="fileImage.click()"
+                                            [ngStyle]="{'width': item.imageStyle.imageSize}" (click)="fileImage.click()"
                                             style="cursor: pointer;" [src]="item.image64 ">
                                         <span>{{item.imageDetail}}</span>
                                     </div>
