@@ -709,9 +709,10 @@
       height: 30pt;
       // width: calc(100% - 24pt);
       border-radius: 30pt;
-      @include pointer();
+      // @include pointer();
+      cursor: text;
       padding: 0 10pt;
-      @include font-size-9($font-head-400);
+      @include font-size-10($font-head-400);
 
       &:hover {
         background: rgb($bg-grey, 0.7);
@@ -1096,9 +1097,6 @@
       }
       > .box-story {
         flex: 0 0 auto;
-        >.mobile-post {
-          padding: 0 19pt;
-        }
       }
 
       > .textarea-editor {
@@ -1137,7 +1135,7 @@
           width: calc(20% - 10pt);
         }
         >.mobile-page  {
-          width: calc(59% - 10pt - 0.7px);
+          width: calc(65% - 10pt - 0.7px);
         }
       }
 

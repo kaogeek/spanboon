@@ -778,7 +778,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public showDialogCreateStory(isEdit?: boolean): void {
-    const topic = this.topic.nativeElement.value
+    const topic = this.topic.nativeElement.innerHTML;
     const storyPostShort = this.storyPost.nativeElement.innerText
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content ? this.content.story : {};
@@ -2509,7 +2509,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
-        this.facebookConection = res.data; 
+        this.facebookConection = res.data;
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2649,8 +2649,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  public redirectSetting() { 
-    if(this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null){
+  public redirectSetting() {
+    if (this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null) {
       this.router.navigateByUrl('page/' + this.dataPageId.pageUsername + '/settings?tab=connect');
     } else {
       this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
