@@ -270,13 +270,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     }
 
     public onChangeSlide(event: any, social: string) { 
+        var isAutoPost = false;
         if (social === 'twitter') {
             // twitter
             if (!this.connectTwitter) {
                 let dialogRef = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
-                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
                         bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                         bottomColorText2: "black",
                         btDisplay1: "none"
@@ -284,13 +285,15 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 })
                 dialogRef.afterClosed().subscribe(response => {
                     if (response) {
-                        this.autoPostTwitter = false;
+                        this.autoPostTwitter = false; 
                     }
                 }); 
+            } else {
+                isAutoPost = true;
             }
         } else if (social === 'facebook') {
             // facebook 
-            if (!this.connect) {
+            if (!this.connect) { 
                 let dialogRef = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
@@ -302,12 +305,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 })
                 dialogRef.afterClosed().subscribe(response => {
                     if (response) {
-                        this.autoPostFacebook = false;
+                        this.autoPostFacebook = false; 
                     }
                 });
+            } else {
+                isAutoPost = true;
             }
         } 
-        if (this.connect || this.connectTwitter) { 
+        if (isAutoPost) { 
             let autopost: string = '';
             if (social === 'facebook') {
                 autopost = FACEBOOK_AUTO_POST;

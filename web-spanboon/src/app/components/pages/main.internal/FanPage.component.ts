@@ -899,7 +899,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       isFulfill: false,
       modeDoIng: true,
       isMobileButton: true,
-      name: this.resDataPage.name
+      name: this.resDataPage
     }
 
     const dialogRef = this.dialog.open(DialogPost, {
@@ -975,10 +975,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     let pageId = this.resDataPage.id
     this.pageFacade.saveCoverImagePage(pageId, dataList).then((res: any) => {
-      if (res.status === 1) {
-        this.getDataIcon(res.data.coverURL, "cover");
+      if (res.status === 1) { 
         this.isFiles = false;
-        this.showProfilePage(this.url);
+        this.getDataIcon(res.data.coverURL, "cover");
+        this.resDataPage.coverPosition = res.data.coverPosition; 
       }
 
     }).catch((err: any) => {

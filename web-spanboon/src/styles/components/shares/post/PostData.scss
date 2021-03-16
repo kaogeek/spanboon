@@ -368,7 +368,7 @@
 
       .wrapper-action {
         > .other-social {
-          @include font-size-10($font-head-500);
+          @include font-size-10($font-head-300);
           color: $black;
           @include pointer();
 

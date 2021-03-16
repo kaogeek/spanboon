@@ -491,8 +491,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-right: $width-border solid $border-color;
-                cursor: pointer;
+                border-right: $width-border solid $border-color; 
                 text-decoration: none;
 
                 &:last-of-type {
@@ -501,7 +500,11 @@
                 &:hover {
                   background-color: $background-hover;
                 }
+                &.none {
+                  pointer-events: none;
+                }
                 &.active {
+                  cursor: pointer;
                   > .facebook {
                     > svg,
                     g,
@@ -537,7 +540,7 @@
                       fill: #3b85c7;
                     }
                   }
-                }
+                } 
               }
             }
 
