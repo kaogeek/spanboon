@@ -26,6 +26,7 @@ import { DialogImage } from '../../shares/dialog/DialogImage.component';
 import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
 import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { BoxPost } from '../../shares/BoxPost.component';
+import { DialogPost } from '../../shares/dialog/DialogPost.component';
 
 const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
@@ -651,10 +652,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
 
     this.profileFacade.saveCoverImageProfile(userId, dataImages).then((res: any) => {
-      if (res.status === 1) {
+      if (res.status === 1) { 
+        this.isFiles = false; 
         this.getDataIcon(res.data.coverURL, "cover");
-        this.isFiles = false;
-        this.showProfile(this.url);
+        this.resProfile.coverPosition = res.data.coverPosition; 
       }
     }).catch((err: any) => {
       console.log(err)
@@ -1013,8 +1014,21 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   }
 
-  public editPost(post: any, index: number) {
+  public editPost(data: any, index: number) {
+    data.isFulfill = false;
+    data.isListPage = true;
+    data.isEdit = true;
+    const dialogRef = this.dialog.open(DialogPost, {
+      width: 'auto',
+      data: data,
+      disableClose: true,
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+      }
+      this.stopLoading();
+    });
   }
 
   public heightWindow() {

@@ -116,8 +116,7 @@ export class Notification extends AbstractPage implements OnInit {
           noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
         }
       }
-      this.notiOrigin = this.noti;
-      console.log('this.notiOrigin', this.notiOrigin)
+      this.notiOrigin = this.noti; 
     }
   }
 

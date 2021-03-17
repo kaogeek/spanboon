@@ -35,8 +35,7 @@ export class MenuContextualService {
 		private overlay: Overlay) { }
 
 	open(origin: any, component: any, viewContainerRef: ViewContainerRef, data: any, isRight?: boolean) {
-		this.close(null);
-		console.log('origin', origin);
+		this.close(null); 
 		this.overlayRef = this.overlay.create(
 			this.getOverlayConfig({ origin: origin }, isRight)
 		);
@@ -74,8 +73,7 @@ export class MenuContextualService {
 			this.afterClosed.next(data)
 		}
 	}
-	private getOverlayPosition(origin: any, isRight?: boolean): PositionStrategy {
-		console.log('this.getPositions()', this.getPositions())
+	private getOverlayPosition(origin: any, isRight?: boolean): PositionStrategy { 
 		const positionStrategy = this.overlay
 			.position()
 			.flexibleConnectedTo(origin)
