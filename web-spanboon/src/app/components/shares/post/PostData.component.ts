@@ -6,7 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { PostCommentFacade, AuthenManager, ObservableManager } from '../../../services/services';
+import { PostCommentFacade, AuthenManager, ObservableManager, Engagement } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
@@ -18,9 +18,8 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
 import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
-import { BoxPost } from '../shares';
 import { MESSAGE } from '../../../../custom/variable';
-import { Router } from '@angular/router';
+import { Router } from '@angular/router';  
 
 @Component({
   selector: 'post-data',
@@ -37,6 +36,7 @@ export class PostData {
   private assetFacade: AssetFacade;
   private router: Router;
   public dialog: MatDialog;
+  public engagementService: Engagement;
 
   public commentpost: any[] = []
   public isComment: boolean
@@ -64,6 +64,8 @@ export class PostData {
   @Input()
   public pageUser: any;
   @Input()
+  public mainPostLink: string;
+  @Input()
   public itemPost: any;
   @Input()
   public user: any;
@@ -81,6 +83,8 @@ export class PostData {
   public update: EventEmitter<any> = new EventEmitter();
   @Output()
   public userpage: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public engagement: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -88,7 +92,8 @@ export class PostData {
   public isFulfill: boolean = false;
   public isPendingFulfill: boolean = false;
 
-  private mainPostLink: string = window.location.origin + '/post/'
+  // private mainPostLink: string = window.location.origin + '/profile/aaa/post/'
+  // private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
 
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
@@ -103,15 +108,16 @@ export class PostData {
   public menuProfile: any;
 
   constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager,
-    observManager: ObservableManager, router: Router,) {
+    observManager: ObservableManager, router: Router, engagementService: Engagement) {
     this.dialog = dialog;
     this.authenManager = authenManager;
     this.postCommentFacade = postCommentFacade
     this.observManager = observManager;
-    this.postFacade = postFacade
-    this.assetFacade = assetFacade
-    this.needsFacade = needsFacade
-    this.pageFacade = pageFacade
+    this.postFacade = postFacade;
+    this.assetFacade = assetFacade;
+    this.needsFacade = needsFacade;
+    this.pageFacade = pageFacade;
+    this.engagementService = engagementService;
     this.router = router;
     this.isComment = false
     this.isRepost = true;
@@ -264,13 +270,23 @@ export class PostData {
     this.getComment(true);
   }
 
-  public clickDevelop(index, text) {
-    let url = ''
-    if (index === 1) {
-      url += "emergency=#" + text
-    } else if (index === 2) {
-      url += "objective=" + text
-    }
+  public clickDevelop(data, text) {
+    let url = '';
+    let type = '';
+    let eventId = '';
+    if (data.index === 1) {
+      url += "emergency=#" + text.emergencyEventTag
+      type = "emergency";
+      eventId = text.emergencyEvent.hashTag;
+    } else if (data.index === 2) {
+      url += "objective=" + text.objectiveTag;
+      type = "objective";
+      eventId = text.objective.hashTag;
+    }  
+    
+    let click = this.engagementService.getEngagement(data.event, eventId, type);
+    this.engagement.emit(click)
+
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
@@ -392,8 +408,8 @@ export class PostData {
   }
 
   public substringData(settingname: string) {
-    if (settingname && settingname.length > 0) { 
-      if(settingname.match(/[^_]*$/)){  
+    if (settingname && settingname.length > 0) {
+      if (settingname.match(/[^_]*$/)) {
         return settingname.split('_');
       }
     }
@@ -448,6 +464,18 @@ export class PostData {
 
   public editPost(itemPost) {
     this.update.emit(itemPost)
+  }
+
+  public onClickEngagement(event, id: any, contentType: string) {
+    console.log('event >', contentType)
+    let data = this.engagementService.getEngagement(event, id, contentType);
+    this.engagement.emit(data)
+
+  }
+
+  public fulfillEngagement(event, postId: string) {
+    let data = this.engagementService.getEngagement(event, postId, "fulfillment");
+    this.engagement.emit(data)
   }
 
 }

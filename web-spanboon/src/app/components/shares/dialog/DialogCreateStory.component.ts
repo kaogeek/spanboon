@@ -157,8 +157,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     if (this.data.imagesTimeline.length > 0) {
       this.image = this.data.imagesTimeline[0].image
       this.coverImage = this.data.imagesTimeline[0]
-    }
-    console.log('this.data ',this.data)
+    } 
     if (this.data.dataStroy.storyAry !== null && this.data.dataStroy.storyAry !== undefined && this.data.dataStroy.storyAry.length > 0) {
       setTimeout(() => {
         this.ary = this.data.dataStroy.storyAry

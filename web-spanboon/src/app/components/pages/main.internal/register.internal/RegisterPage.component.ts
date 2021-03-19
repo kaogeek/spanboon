@@ -584,5 +584,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public clickBlack() {
     this.router.navigateByUrl('/login');
-  }
+  } 
+  
 }

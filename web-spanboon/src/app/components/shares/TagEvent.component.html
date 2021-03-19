@@ -33,7 +33,7 @@
                     transform="translate(692.701 427.463) rotate(-90)" width="1"></rect>
             </g>
         </svg>
-        <div class="tag-name-emergency" (click)="emergencyClick.emit(1)" [class.active]="isNameEmergency === true" matTooltip="{{nameEmergency}}">
+        <div class="tag-name-emergency" (click)="emergency($event)" [class.active]="isNameEmergency === true" matTooltip="{{nameEmergency}}">
             {{'#'+nameEmergency}}
         </div>
     </div>
@@ -55,7 +55,7 @@
                     data-name="Path 3208" fill="#747474" id="Path_3208" transform="translate(-248.03 -228.703)"></path>
             </g>
         </svg>
-        <div class="tag-name-objective" [class.active]="isNameObjective === true" (click)="objectiveClick.emit(2)"  matTooltip="{{nameObjective}}">
+        <div class="tag-name-objective" [class.active]="isNameObjective === true" (click)="objective($event)"  matTooltip="{{nameObjective}}">
             {{'#'+nameObjective}}
         </div>
     </div>

@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -20,6 +20,7 @@ import { POST_TYPE, SORT_BY } from '../../../TypePost';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { RePost } from '../../../models/RePost';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
+import { UserEngagement } from '../../../models/UserEngagement';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -68,6 +69,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   private pageCategoryFacade: PageCategoryFacade;
   private pageFacade: PageFacade;
   private dateAdapter: DateAdapter<Date>;
+  private engagementService: Engagement;
+  private userEngagementFacade: UserEngagementFacade;
 
   public resDataPage: any;
   public resObjective: any;
@@ -207,7 +210,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
-    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade) {
+    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade,engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -222,6 +225,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.pageCategoryFacade = pageCategoryFacade;
     this.accountFacade = accountFacade;
     this.pageFacade = pageFacade;
+    this.engagementService = engagementService;
+    this.userEngagementFacade = userEngagementFacade;
     this.isOpen = false;
     this.isAdvance = false;
     this.isAdvanceRich = false;
@@ -752,25 +757,45 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
   }
 
-  public getObjective(data) {
-    if (data.selected) {
+  public getObjective(data) { 
+    if (data.item.selected) {
       this.objective = data.hashTag;
     } else {
       this.objective = '';
     }
     this.searchTrendTag();
+
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
+    console.log('dataEngagement ',dataEngagement) ;
+    // this.createEngagement(dataEngagement);
+
   }
 
   public getEmergency(data) {
-    if (data.selected) {
-      this.emergency = data.id;
+    console.log('data.event ',data.item)
+    console.log('data ',data.event.source._elementRef.nativeElement.outerHTML)
+    console.log('innerHTML ',data.event.source._elementRef.nativeElement.innerHTML)
+    if (data.item.selected) {
+      this.emergency = data.item.id;
     } else {
       this.emergency = '';
     }
     this.searchTrendTag();
+     
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
+    console.log('dataEngagement ',dataEngagement) 
+    // this.createEngagement(dataEngagement);
   }
 
-  public getPagecategory(data) {
+  public createEngagement(dataEngagement: UserEngagement){
+     this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+      console.log('engagement ', res)
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
+  }
+
+  public getPagecategory(data) { 
     if (data.selected) {
       this.page.push(data.id);
     } else {
@@ -781,7 +806,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
         i++;
       }
-    }
+    } 
     this.searchTrendTag();
   }
 
@@ -797,17 +822,20 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public checkBoxMutiple(data) {
-    if (data.selected) {
-      this.matHashTag.push(data.value)
+    if (data.item.selected) {
+      this.matHashTag.push(data.item.value)
     } else {
       const isHashtag = this.matHashTag.findIndex(lTag => {
-        return lTag === data.value
+        return lTag === data.item.value
       });
       if (isHashtag !== -1) {
         this.matHashTag.splice(isHashtag, 1)
       }
     }
-    this.searchTrendTag();
+    this.searchTrendTag(); 
+
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.outerHTML);
+    console.log('dataEngagement ',dataEngagement) 
   }
 
   public searchTrendTag(offset?: boolean) {
