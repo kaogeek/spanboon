@@ -6,13 +6,14 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost } from '../../shares/shares';
 import { SearchFilter } from '../../../models/SearchFilter';
+import { UserEngagement } from '../../../models/UserEngagement';
 
 const PAGE_NAME: string = 'recommended';
 const SEARCH_LIMIT: number = 20;
@@ -43,6 +44,8 @@ export class PageRecommended extends AbstractPage implements OnInit {
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
   private searchHashTagFacade: HashTagFacade;
+  private engagementService: Engagement;
+  private userEngagementFacade: UserEngagementFacade;
   protected observManager: ObservableManager;
 
   public resDataPage: any;
@@ -63,7 +66,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -71,6 +74,8 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.observManager = observManager;
     this.routeActivated = routeActivated;
     this.searchHashTagFacade = searchHashTagFacade;
+    this.engagementService = engagementService;
+    this.userEngagementFacade = userEngagementFacade;
     this.whereConditions = ["name"]
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
@@ -111,9 +116,17 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.isloading = false;
   }
 
-  public clickDataSearch(data) {
-    this.router.navigateByUrl('/search?hashtag=' + data.label.substring(1))
-    // this.router.navigateByUrl('/search/' + data.label)
+  public clickDataSearch(event: any, data) {
+    this.router.navigateByUrl('/search?hashtag=' + data.label.substring(1));
+
+    const result = this.engagementService.getEngagement(event, data.label, "hashTag");
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost(result.contentType, result.contentId, result.dom);
+
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+      console.log('engagement ', res)
+    }).catch((err: any) => {
+      console.log('err ', err)
+    }); 
   }
 
   public clickLoadmore() {

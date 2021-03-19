@@ -1407,8 +1407,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         pageId: this.selectedPage,
         coverImage: this.coverImage,
         postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
-        // postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false 
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;

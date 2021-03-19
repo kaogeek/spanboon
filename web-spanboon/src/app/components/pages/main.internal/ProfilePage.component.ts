@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade } from '../../../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -19,7 +19,7 @@ import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import * as moment from 'moment';
 import { CommentPosts } from '../../../models/CommentPosts';
-import { SearchFilter } from '../../../models/models';
+import { SearchFilter, UserEngagement } from '../../../models/models';
 import { DialogEditProfile } from '../../shares/dialog/DialogEditProfile.component';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -58,6 +58,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private postCommentFacade: PostCommentFacade;
   private postFacade: PostFacade;
   private recommendFacade: RecommendFacade;
+  private engagementService: Engagement;
+  private userEngagementFacade: UserEngagementFacade;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -86,10 +88,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public name: any;
   public splitTpyeClone: any;
   public dataRecommend: any;
+  public pathPostId: string;
 
   public postId: any
   public userCloneDatas: any
-  public Tab: boolean = true;
+  public Tab: boolean = true; 
+  public CheckPost: boolean = true;
 
   private coverImageoldValue = 50;
 
@@ -100,7 +104,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
-    sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade) {
+    sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
+    engagementService: Engagement,userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -113,11 +118,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.pageFacade = pageFacade;
     this.postCommentFacade = postCommentFacade;
     this.recommendFacade = recommendFacade;
+    this.engagementService = engagementService;
+    this.userEngagementFacade = userEngagementFacade;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true
     this.userImage = {};
-
     this.resPost.posts = [];
 
     // create obsvr subject
@@ -158,7 +164,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
 
         }, 1000);
-      }  
+      }
     });
 
     this.mySubscription = this.router.events.subscribe((event) => {
@@ -171,9 +177,13 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           const splitTextId = replaceCommentURL.split('/')[0];
           this.subPage = replaceCommentURL.split('/')[1];
           if (splitTextId !== undefined && splitTextId !== null) {
-            this.url = splitTextId;
-            if (!this.resProfile) {
+            this.url = splitTextId; 
+            if (!this.resProfile) { 
               this.showProfile(this.url);
+            } else {
+              if (this.resProfile && this.resProfile.uniqueId !== splitTextId && this.resProfile.id !== splitTextId) {
+                this.showProfile(this.url);
+              }
             }
           }
           if (!this.msgUserNotFound) {
@@ -185,6 +195,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
           }
           this.checkAuthenUser(splitTextId);
+
+          const pathPost = url && url.split('/')[3];
+          this.pathPostId = url && url.split('/')[4];
+          if (pathPost !== undefined && pathPost !== null) { 
+            this.initPage(pathPost)
+          }
         }
       }
     });
@@ -204,7 +220,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     if (this.isLogin()) {
       this.getProfileImage();
     }
-
+// this.searchPostById('6051c688fb3585b175ab4765')
     $(window).resize(() => {
       this.setTab();
     });
@@ -258,12 +274,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public getRecommend() {
-    let limit: number = 3; 
+    let limit: number = 3;
     let offset: number = 0;
-    this.recommendFacade.getRecommend(limit , offset).then((res) => { 
+    this.recommendFacade.getRecommend(limit, offset).then((res) => {
       this.dataRecommend = res.data;
     }).catch((err: any) => {
-      console.log('err ',err)
+      console.log('err ', err)
     });
   }
 
@@ -313,6 +329,11 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         type: ''
       }
       this.searchTimeLinePost(data, true);
+    } else if (subPage === 'post') {
+      if (this.pathPostId !== undefined && this.pathPostId !== null) {
+        this.CheckPost = false;
+        this.searchPostById(this.pathPostId);
+      }
     } else {
       return this.router.navigateByUrl('/profile/' + this.url);
     }
@@ -350,25 +371,27 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
               this.showAlertDialogWarming(alertMessages, "none");
             }
             let data;
-            if (res.data.type === "GENERAL") {
+            if (res.data.posts.type === "GENERAL") {
               data = {
                 type: 'GENERAL'
               }
-
-            } else if (res.data.type === "NEEDS") {
+              this.searchTimeLinePost(data, true);
+            } else if (res.data.posts.type === "NEEDS") {
               data = {
                 type: 'NEEDS'
               }
-            } else if (res.data.type === "FULFILLMENT") {
+              this.searchTimeLinePost(data, true);
+            } else if (res.data.posts.type === "FULFILLMENT") {
               data = {
                 type: 'FULFILLMENT'
               }
+              this.searchTimeLinePost(data, true);
             } else {
               data = {
                 type: ''
               }
+              this.searchTimeLinePost(data, true);
             }
-            this.searchTimeLinePost(data);
             this.boxPost.clearDataAll();
             this.isClickPostPreLoad = false;
           }
@@ -417,7 +440,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public showProfile(url: string): void {
-    this.isLoading = true;
+    this.isLoading = true; 
     this.profileFacade.getProfile(url).then((res) => {
       if (res.status === 1 && res.data) {
         let user = {
@@ -471,11 +494,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       data.offset = this.resPost && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
     data.limit = 5;
-
     let originalpost: any[] = this.resPost.posts;
     this.profileFacade.searchType(data, this.url).then(async (res: any) => {
       if (!Array.isArray(res) && res.posts.length > 0) {
-        if (res.posts.length !== 5) { 
+        if (res.posts.length !== 5) {
           this.isMaxLoadingPost = true;
           this.isLoadingPost = false;
         }
@@ -652,10 +674,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
 
     this.profileFacade.saveCoverImageProfile(userId, dataImages).then((res: any) => {
-      if (res.status === 1) { 
-        this.isFiles = false; 
+      if (res.status === 1) {
+        this.isFiles = false;
         this.getDataIcon(res.data.coverURL, "cover");
-        this.resProfile.coverPosition = res.data.coverPosition; 
+        this.resProfile.coverPosition = res.data.coverPosition;
       }
     }).catch((err: any) => {
       console.log(err)
@@ -1075,13 +1097,15 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.pageUser.push(this.userCloneDatas)
       this.pageUser.reverse();
     }).catch((err: any) => {
-    })
-    for (let p of this.pageUser) {
-      var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-        p.img64 = res.data
-      }).catch((err: any) => {
-      });
-    }
+    });
+    if(this.pageUser){
+      for (let p of this.pageUser) {
+        var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+          p.img64 = res.data
+        }).catch((err: any) => {
+        });
+      }
+    } 
   }
 
 
@@ -1113,6 +1137,64 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else {
       this.Tab = false;
     }
+  }
+
+  public searchPostById(postId: string) {
+    this.resPost.posts = [];
+    let search: SearchFilter = new SearchFilter();
+    search.limit = 10;
+    search.count = false;
+    search.whereConditions = { _id: postId };
+    this.postFacade.search(search).then((res: any) => {
+      this.resPost.posts = res; 
+      if (this.resProfile.length === 0) {
+        this.msgUserNotFound = true;
+        // this.labelStatus = 'ไม่พบโพสต์';
+      } else {
+        this.showProfile(res[0].ownerUser._id);
+        this.isMaxLoadingPost = true;
+        let postIndex: number = 0
+        let galleryIndex = 0;
+        for (let post of this.resPost.posts) {
+          if (post.gallery.length > 0) {
+            for (let img of post.gallery) {
+              if (img.imageURL !== '') {
+                this.getDataGallery(img.imageURL, postIndex, galleryIndex);
+                galleryIndex++
+              }
+            }
+            postIndex++;
+          }
+
+          if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
+            let search: SearchFilter = new SearchFilter();
+            search.limit = 30;
+            search.count = false;
+            search.whereConditions = { _id: post.referencePost };
+            this.postFacade.search(search).then((res: any) => {
+              if (res.length !== 0) {
+                post.referencePostObject = res[0]
+              } else {
+                post.referencePostObject = 'UNDEFINED PAGE'
+              }
+            }).catch((err: any) => {
+            });
+          }
+        }
+      }   
+    }).catch((err: any) => {
+    });
+  }
+
+  public engagement(event) { 
+    const dataEngagement : UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
+ 
+    this.userEngagementFacade.create(dataEngagement).then((res : any)=>{
+      console.log('engagement ',res)
+    }).catch((err : any)=>{
+      console.log('err ',err)
+    })
+    console.log('engagement ', dataEngagement)
   }
 
 }
