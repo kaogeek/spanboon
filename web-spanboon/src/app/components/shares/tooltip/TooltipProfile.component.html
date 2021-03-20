@@ -7,6 +7,8 @@
 
 <div class="arrow-top"></div>
 <div (mouseout)="tooltipClose($event)">
+
+    <!-- <div> -->
     <div class="tooltip-body">
         <div class="detail" style="pointer-events: none;">
             <ng-container
@@ -149,17 +151,18 @@
                 </ng-template>
             </div>
         </div>
-        <div class="tooltip-bottom" style="pointer-events: none;">
-            <button-follow [bgColor]="'#FFFFFF'" [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
-                (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
+        <div class="tooltip-bottom">
+            <button-follow [bgColor]="'#FFFFFF'" [text]="data.owner && data.owner.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
+                (click)="clickFollow(data.owner)" [class.active]="data.owner && data.owner.isFollow">
             </button-follow>
             <div class="tooltip-bottom-right">
-                <button mat-stroked-button class="but-send">
+                <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send">
                     <span class="material-icons">
                         send
                     </span>
                 </button>
-                <button mat-stroked-button class="but-send tool-dropdow" [matMenuTriggerFor]="menu">
+                <!-- <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send tool-dropdow" [matMenuTriggerFor]="menu"> -->
+                <button (click)="clickSend(data.owner)" mat-stroked-button class="but-send tool-dropdow">
                     <span class="material-icons">
                         more_horiz
                     </span>

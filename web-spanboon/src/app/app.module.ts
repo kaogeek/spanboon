@@ -195,6 +195,7 @@ import {
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -223,6 +224,7 @@ import {
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserEngagementFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -406,6 +408,7 @@ const SERVICE_CLASSES: any[] = [
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
   // facade 
   PostFacade,
   AllocateFacade,
@@ -434,6 +437,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserEngagementFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

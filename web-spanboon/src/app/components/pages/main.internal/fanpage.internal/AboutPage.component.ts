@@ -11,11 +11,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as $ from 'jquery';
 import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
-import { AboutPages } from '../../../../models/AboutPages'; 
+import { AboutPages } from '../../../../models/AboutPages';
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
-const SEARCH_OFFSET: number = 0; 
+const SEARCH_OFFSET: number = 0;
 
 declare var $: any;
 @Component({
@@ -36,7 +36,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     private routeActivated: ActivatedRoute;
     private pageFacade: PageFacade;
     private aboutPageFacade: AboutPageFacade;
-   
+
     public isCard1: boolean = false;
     public isCard2: boolean = false;
     public isCard3: boolean = false;
@@ -180,12 +180,11 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.routeActivated.params.subscribe(async (params) => {
             this.pageId = params['id'];
         });
- 
+
     }
 
     public ngOnInit(): void {
-        this.getDataPage();
-        this.searchAboutPage(); 
+        this.getDataPage(); 
     }
 
     public ngOnDestroy(): void {
@@ -194,16 +193,16 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public isPageDirty(): boolean {
         if (this.isActiveButton1 || this.isActiveButton2 || this.isActiveButton3 || this.isActiveButton4 || this.isActiveButton5 || this.isActiveButton8 || this.isActiveButton9 || this.isActiveButton10 || this.isActiveButton11 || this.isActiveButtonEmail || this.isActiveButtonWeb) {
-            return true; 
+            return true;
         }
         return false;
     }
 
-    public onDirtyDialogConfirmBtnClick(): EventEmitter<any> { 
+    public onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         return this.dirtyConfirmEvent;
     }
 
-    public onDirtyDialogCancelButtonClick(): EventEmitter<any> { 
+    public onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         return this.dirtyCancelEvent;
     }
 
@@ -343,7 +342,12 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public getDataPage() {
         this.pageFacade.getProfilePage(this.pageId).then((res) => {
-            this.resDataPage = res.data
+            if (res) {
+                this.resDataPage = res.data
+                this.pageId = this.resDataPage.id;
+                this.searchAboutPage();
+            }
+
             this.cloneData = JSON.parse(JSON.stringify(this.resDataPage));
         }).catch((err) => {
             console.log('error ', err)
@@ -360,6 +364,12 @@ export class AboutPage extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             console.log('error ', err)
+            console.log('err ', err)
+            if (err.error.status === 0) {
+                if (err.error.message === 'Unable got Page') {
+                  this.showAlertDialog('ไม่พบเพจ');
+                } 
+            }
         });
     }
 
@@ -411,7 +421,7 @@ export class AboutPage extends AbstractPage implements OnInit {
             if (text === name || text === '') {
                 this.isActiveButton1 = false;
             } else {
-                this.isActiveButton1 = true; 
+                this.isActiveButton1 = true;
             }
         } else if (index === 3) {
             const value = this.cloneAboutPage && this.cloneAboutPage[0].value;
@@ -544,11 +554,11 @@ export class AboutPage extends AbstractPage implements OnInit {
                 twitterURL: this.twitter.nativeElement.value
             }
         }
-        this.pageFacade.updateProfilePage(this.pageId, body).then((res) => { 
+        this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
                 this.resDataPage = res.data;
-                this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings;id=' + this.pageId);
-                this.closeCard(index); 
+                this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings'); 
+                this.closeCard(index);
             }
         }).catch((err) => {
             console.log('error ', err)
@@ -652,7 +662,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         }
         arr.push(aboutPage);
         this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
-            arr = [];  
+            arr = [];
             let indexValue = Number(index);
             this.closeCard(indexValue);
         }).catch((err: any) => {

@@ -65,7 +65,7 @@
 
 .fanpage-info {
     > .info-title {
-        @include font-size-7($font-head-500);
+        @include font-size-8($font-head-500);
         margin: 15pt 50pt 5pt 50pt;
         height: 30pt;
     }
@@ -95,7 +95,7 @@
             padding-right: 15pt;
 
             > .header {
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
             }
         }
 
@@ -255,7 +255,7 @@
         > label {
             position: absolute;
             left: 9pt;
-            @include font-size-6($font-head-500);
+            @include font-size-8($font-head-500);
             bottom: 2pt;
         }
 
@@ -300,7 +300,7 @@
         border-radius: 4px;
         padding: 0 8pt;
         height: 26pt;
-        @include font-size-9($font-head-400);
+        @include font-size-10($font-head-400);
     }
 
     .textarea {

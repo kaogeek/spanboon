@@ -54,7 +54,7 @@
                             <loading></loading>
                         </ng-container>
                         <ng-template #elseTemplate1>
-                            <div class="wrapper-body-trend" (click)="clickDataSearch(item)"
+                            <div class="wrapper-body-trend" (click)="clickDataSearch($event,item)"
                                 *ngFor="let item of dataTrend">
                                 <div class="trend-title">
                                     ได้รับความนิยม
