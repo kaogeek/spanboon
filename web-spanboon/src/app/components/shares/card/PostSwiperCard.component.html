@@ -8,7 +8,7 @@
     <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
         <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let item of itemNeeds; let index = index;">
-                <!-- <div *ngIf="item.coverPageUrl" class="wp-block-cover"
+                <div *ngIf="item.coverPageUrl" class="wp-block-cover"
                     [ngStyle]="{'background-image': 'url('+ apiBaseURL+item.coverPageUrl+'/image' +')'}">
                     <div class="background-text">
                         <span class="background-text-h">{{item.post.title}}</span>
@@ -47,11 +47,11 @@
                             </svg>
                         </div>
                     </div>
-                </div> -->
-
-                <div class="wp-block-cover">
-
                 </div>
+
+                <!-- <div class="wp-block-cover">
+
+                </div> -->
 
             </div>
 
