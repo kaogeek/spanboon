@@ -90,6 +90,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   public linkPage: any
 
   public loding: boolean;
+  public isStoryData: boolean;
   public isComment: boolean
   public isPreload: boolean = true;
   public isLoding: boolean = true;
@@ -229,6 +230,12 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.emergencyEventTag = this.postStoryData.emergencyEventTag
       this.createdDate = this.postStoryData.createdDate;
       this.ownerUser = this.postStoryData.ownerUser;
+      if (this.postStoryData.pageId !== null && this.postStoryData.pageId !== undefined) {
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          this.postStoryData.pageData = page
+        }).catch((err: any) => {
+        });
+      }
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
       }).catch((err: any) => {
@@ -252,13 +259,11 @@ export class StoryPage extends AbstractPage implements OnInit {
         }).catch((err: any) => {
         });
       }
-      setTimeout(() => {
-        this.loding = false
-        this.getRecommendedStory();
-        this.getRecommendedStorys();
-        this.getRecommendedHashtag();
-        this.setCardSilder();
-      }, 1500);
+      this.loding = false
+      this.getRecommendedStory();
+      this.getRecommendedStorys();
+      this.getRecommendedHashtag();
+      this.setCardSilder();
       setTimeout(() => {
         this.isPreload = false
       }, 500);
