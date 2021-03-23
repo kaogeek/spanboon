@@ -123,7 +123,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade,engagementService: Engagement) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -792,6 +792,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     });
   }
+  public redirectSetting() {
+    if (this.resDataPage.pageUsername !== undefined && this.resDataPage.pageUsername !== '' && this.resDataPage.pageUsername !== null) {
+      return this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+    } else {
+      return this.router.navigateByUrl('/page/' + this.resDataPage.id + '/settings');
+    }
+  }
 
   public searchTypePost(data: string) {
     this.pageFacade.searchPostType(data, this.url).then((posts: any) => {
@@ -1318,13 +1325,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public engagement(event) { 
-    const dataEngagement : UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
- 
-    this.userEngagementFacade.create(dataEngagement).then((res : any)=>{
-      console.log('engagement ',res)
-    }).catch((err : any)=>{
-      console.log('err ',err)
+  public engagement(event) {
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
+
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+      console.log('engagement ', res)
+    }).catch((err: any) => {
+      console.log('err ', err)
     })
     console.log('engagement ', dataEngagement)
   }

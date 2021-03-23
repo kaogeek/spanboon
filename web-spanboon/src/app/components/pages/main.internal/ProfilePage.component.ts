@@ -1188,13 +1188,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public engagement(event) { 
     const dataEngagement : UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
- 
-    this.userEngagementFacade.create(dataEngagement).then((res : any)=>{
-      console.log('engagement ',res)
+    this.userEngagementFacade.create(dataEngagement).then((res : any)=>{ 
     }).catch((err : any)=>{
       console.log('err ',err)
-    })
-    console.log('engagement ', dataEngagement)
+    }) 
   }
 
 }
