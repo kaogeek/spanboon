@@ -457,7 +457,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
 
   public Image() {
     this.ary[this.selectIndex].htmlType = "IMAGE"
-    this.ary[this.selectIndex].imageUrl = "https://ssudjai.dblog.org/img/default.jpg"
+    this.ary[this.selectIndex].imageUrl = ""
     this.ary[this.selectIndex].imageDetail = ""
     if (this.ary[this.selectIndex].imageStyle === undefined) {
       this.ary[this.selectIndex].imageStyle = { imageSize: "50%", imagealign: "center" }
