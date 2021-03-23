@@ -201,7 +201,7 @@
             <ng-container *ngFor="let cardPin of dataMainPage.emergencyPin.contents">
                 <image-card class="card-img-pin-tag" [widthImg]="'100%'" [isPin]="'true'" [isWhite]="true"
                     [showLoading]="showLoading" [data]="cardPin" [countFacebook]="cardPin.facebookCount | shortNumber"
-                    [countTwitter]="cardPin.twitterCount | shortNumber"
+                    [countTwitter]="cardPin.twitterCount | shortNumber" [images]="apiBaseURL+cardPin.coverPageUrl+'/image'"
                     [countSpanboon]="cardPin.postCount | shortNumber" [hashTag]="cardPin.title" [name]="cardPin.owner">
                 </image-card>
                 <div class="wrapper-pin-img">
