@@ -58,10 +58,11 @@ export class UserEngagementController {
         } else { 
             userEngagement.isFirst = true; 
         } 
+
         userEngagementAction = await this.userEngagementService.create(userEngagement); 
  
-        if (userEngagement) {
-            const successResponse = ResponseUtil.getSuccessResponse('Create Engagement Success', userEngagement);
+        if (userEngagementAction) {
+            const successResponse = ResponseUtil.getSuccessResponse('Create Engagement Success', userEngagementAction);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Create Engagement Failed', undefined);
