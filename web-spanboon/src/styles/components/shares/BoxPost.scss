@@ -1089,6 +1089,23 @@
     }
   }
 }
+
+//snackbar
+.mat-simple-snackbar span {
+  margin: auto;
+  text-align: center;
+}
+.my-custom-snackbar {
+  // margin: 0 !important;
+  // position: absolute;
+  // right: 0;
+  // left: 0;
+  // top: 50%;
+}
+.mat-snack-bar-container {
+  color: $brandcolor2;
+}
+
 @media (max-width: $large) {
   .box-post {
     > .mat-dialog-content {
@@ -1260,4 +1277,4 @@
       }
     }
   }
-}
+} 

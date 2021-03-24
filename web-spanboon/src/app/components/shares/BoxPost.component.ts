@@ -7,7 +7,7 @@
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
-import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange } from '@angular/material';
+import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
@@ -147,6 +147,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   private pageFacade: PageFacade;
   private cacheConfigInfo: CacheConfigInfo;
 
+  public snackBar: MatSnackBar;
+
   private masterSelected: boolean;
 
   public httpItems: Observable<any[]>;
@@ -259,7 +261,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   constructor(dialog: MatDialog, postFacade: PostFacade, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, authenManager: AuthenManager, pageFacade: PageFacade,
     objectiveFacade: ObjectiveFacade, assetFacade: AssetFacade, userFacade: UserFacade, observManager: ObservableManager, userAccessFacade: UserAccessFacade, needsFacade: NeedsFacade,
-    router: Router, twitterService: TwitterService, cacheConfigInfo: CacheConfigInfo) {
+    router: Router, twitterService: TwitterService, cacheConfigInfo: CacheConfigInfo, snackBar: MatSnackBar) {
     super(null, authenManager, dialog, router);
     this.isRepost = true
     this.dialog = dialog
@@ -274,6 +276,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.pageFacade = pageFacade;
     this.twitterService = twitterService;
     this.cacheConfigInfo = cacheConfigInfo;
+    this.snackBar = snackBar;
     this.isLoading = false;
     this.masterSelected = false;
     this.onPost = false;
@@ -337,11 +340,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
-
-    console.log('dataPageId ', this.dataPageId)
+  ngOnChanges(changes: SimpleChanges): void { 
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
@@ -584,8 +583,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public updateText() {
-    document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake') {
+    document.addEventListener('paste', (evt: any) => { 
+      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake'  || evt.srcElement.className === 'textarea-editor msg-error-shake'
+      || evt.srcElement.className === 'header-story'|| evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake' ) {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
@@ -753,7 +753,15 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public onChangeSlide(event?: MatSlideToggleChange) {
     this.isStory = event.checked;
+    // duration: 10000000,
+    // verticalPosition: 'bottom',
+    // horizontalPosition: 'center',
+    // panelClass: customize
     if (!this.isStory) {
+      if(window.innerWidth <= 1024){
+        this.snackBarToast("ปิดสตอรี่",1000);
+      }
+      
       if (!(Object.keys(this.dataStroy).length === 0 && this.dataStroy.constructor === Object)) {
         const confirmEventEmitter = new EventEmitter<any>();
         confirmEventEmitter.subscribe(() => {
@@ -775,7 +783,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       } else {
         this.closeDialog();
       }
-      if (this.content !== undefined && this.content !== null) {
+      if (this.content !== '' && this.content !== undefined && this.content !== null) {
         if (!(Object.keys(this.content.story).length === 0 && this.content.story.constructor === Object)) {
           const confirmEventEmitter = new EventEmitter<any>();
           confirmEventEmitter.subscribe(() => {
@@ -799,7 +807,20 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.closeDialog();
         }
       }
+    } else {
+      if(window.innerWidth <= 1024){
+        this.snackBarToast("เปิดสตอรี่",1000);
+      }
     }
+  }
+
+  public snackBarToast(text: string, duration?: any, vertical?: any, horizontal?: any, customize?: any) {
+    this.snackBar.open(text, "", {
+      duration: duration,
+      verticalPosition: vertical,
+      horizontalPosition: horizontal,
+      panelClass: customize
+    });
   }
 
   public showDialogDoing(): void {
@@ -2422,33 +2443,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     // }
   }
 
-  public getHeight() {
-    if (this.headerTop && this.topic && this.tagEvent && this.toolBar) {
-      let top = this.headerTop && this.headerTop.nativeElement.offsetHeight;
-      let topic = this.topic && this.topic.nativeElement.offsetHeight;
-      let tag = this.tagEvent && this.tagEvent.nativeElement.offsetHeight;
-      let toolbar = this.toolBar && this.toolBar.nativeElement.offsetHeight;
-      let x = top + topic + tag + toolbar + 1.4;
-      var chromeH = window.outerHeight - window.innerHeight;
-      var needs = this.needsElement && this.needsElement.listNeeds && this.needsElement.listNeeds.nativeElement.offsetHeight;
-      if (needs) {
-        x = x + needs;
-      }
-
-      if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
-        // x = x + 30.5; 
-        x = x + chromeH;
-
-      } else {
-        if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-          // x = x + chromeH;
-          x = x + 60.5;
-        }
-      }
-      return x;
-    }
-  }
-
   public onResize() {
     this.checkTabs();
     if (window.innerWidth <= 479) {
@@ -2515,7 +2509,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.modeShowDoing = true;
     if (this.router.url.split('/')[1] === "page") {
       this.data.isSharePost = true;
-    } else { 
+    } else {
       this.data.isSharePost = false;
     }
     // this.data.isBox = true;
@@ -2568,7 +2562,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingTwitter() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
-        this.twitterConection = res.data; 
+        this.twitterConection = res.data;
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2578,7 +2572,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
-        this.facebookConection = res.data; 
+        this.facebookConection = res.data;
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2682,19 +2676,19 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isAutoPostFacebook = res.value;
       }).catch((err: any) => {
         if (err && err.error && err.error.message === 'Unable to Get Page Config') {
-          this.isAutoPostFacebook = false; 
+          this.isAutoPostFacebook = false;
         }
       })
     }
   }
 
-  public getConfigTwitter() { 
+  public getConfigTwitter() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
         this.isAutoPostTwitter = res.value;
       }).catch((err: any) => {
         if (err && err.error && err.error.message === 'Unable to Get Page Config') {
-          this.isAutoPostTwitter = false; 
+          this.isAutoPostTwitter = false;
         }
       });
     }
