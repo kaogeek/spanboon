@@ -7,6 +7,7 @@
 
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { publish } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'card-contact-home',
@@ -29,6 +30,7 @@ export class CardContentHome {
 
     public amountSocial: number = 0;
     public isOfficial: boolean = true;
+    public apiBaseURL = environment.apiBaseURL;
 
     ngOnInit(): void {
         this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount)

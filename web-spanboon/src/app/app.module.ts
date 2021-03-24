@@ -42,7 +42,7 @@ import {
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import {
-  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, HighlightText
+  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime, HighlightText
 } from './components/shares/pipes/pipes';
 
 import {
@@ -389,6 +389,7 @@ const PIPE_CLASSES: any[] = [
   ShortNumberPipe,
   PrefixNumberPipe,
   PipeDatetime,
+  PipeThFormatDatetime,
   HighlightText,
   SafePipe,
   RemoveBadWords
