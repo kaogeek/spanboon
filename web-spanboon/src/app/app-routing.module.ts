@@ -10,7 +10,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {
   // Pages
-  LoginPage, MainPage, HomePage, ProfilePage,
+  LoginPage, MainPage, HomePage, HomePageV2, ProfilePage,
   FanPage,
   StoryPage,
   PostPage,
@@ -41,6 +41,10 @@ export const APP_ROUTES: Routes = [
       {
         path: HomePage.PAGE_NAME,
         component: HomePage,
+      },
+      {
+        path: HomePageV2.PAGE_NAME,
+        component: HomePageV2,
       },
       {
         path: ProfilePage.PAGE_NAME + "/:id",
