@@ -42,7 +42,7 @@ import {
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import {
-  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, HighlightText
+  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime, HighlightText
 } from './components/shares/pipes/pipes';
 
 import {
@@ -67,6 +67,7 @@ import {
 
   // page
   HomePage,
+  HomePageV2,
   LoginPage,
   ProfilePage,
   forgotPasswordPage,
@@ -109,6 +110,7 @@ import {
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -262,6 +264,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  HomePageV2,
   LoginPage,
   RegisterPage,
   ProfilePage,
@@ -310,6 +313,7 @@ const COMPONENTS: any[] = [
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -385,6 +389,7 @@ const PIPE_CLASSES: any[] = [
   ShortNumberPipe,
   PrefixNumberPipe,
   PipeDatetime,
+  PipeThFormatDatetime,
   HighlightText,
   SafePipe,
   RemoveBadWords

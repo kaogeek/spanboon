@@ -1,0 +1,31 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+<div style="display:flex; flex-direction: column;">
+    <div style="display:flex;margin: 10px;">
+        <div *ngFor="let dataViewSection of testData;let index = index">
+            <card-contact-home [smallCard]='true' [postData]='dataViewSection'></card-contact-home>
+        </div>
+    </div>
+
+    <div style="display:flex;margin: 10px;">
+        <div *ngFor="let dataViewSection of testData;let index = index">
+            <card-contact-home [mediumCard]='true' [postData]='dataViewSection'></card-contact-home>
+        </div>
+    </div>
+
+    <div style="display:flex;margin: 10px;">
+        <div *ngFor="let dataViewSection of testData;let index = index">
+            <card-contact-home [largeCard]='true' [postData]='dataViewSection'></card-contact-home>
+        </div>
+    </div>
+
+    <div style="display:flex;margin: 10px;">
+        <div *ngFor="let dataViewSection of testData;let index = index">
+            <card-contact-home [eventCard]='true' [postData]='dataViewSection'></card-contact-home>
+        </div>
+    </div>
+</div>
