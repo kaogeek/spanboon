@@ -1,0 +1,139 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+<div class="card_content_home">
+    <div *ngIf="smallCard" class="small_card">
+        <div class="top_small_card">
+            <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
+                <img width="150%" src={{postData.imageBase64}}>
+            </div>
+            <ng-template #other_topic>
+                <div class="other_topic">
+                    <span>{{postData.post.title}}</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="bottom_small_card">
+            <div class="bottom_small_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
+                <span class="title">{{postData.post.title}}</span>
+                <!-- <span>{{postData.post.detail}}</span> -->
+            </div>
+            <ng-template #other_topic_detail>
+                <div class="other_topic_detail">
+                    <span>{{postData.post.detail}}</span>
+                </div>
+            </ng-template>
+            <div class="bottom_small_card_detail_footer">
+                <div class="owner">
+                    <span>{{postData.owner.name}}</span>
+                </div>
+                <div class="amount_social">
+                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="mediumCard" class="medium_card">
+
+        <div class="top_medium_card">
+            <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
+                <img width="150%" src={{postData.imageBase64}}>
+            </div>
+            <ng-template #other_topic>
+                <div class="other_topic">
+                    <span>{{postData.post.title}}</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="bottom_medium_card">
+            <div class="bottom_medium_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
+                <span class="title">{{postData.post.title}}</span>
+                <!-- <span>{{postData.post.detail}}</span> -->
+            </div>
+            <ng-template #other_topic_detail>
+                <div class="other_topic_detail">
+                    <span>{{postData.post.detail}}</span>
+                </div>
+            </ng-template>
+            <div class="bottom_medium_card_detail_footer">
+                <div class="owner">
+                    <span>{{postData.owner.name}}</span>
+                </div>
+                <div class="amount_social">
+                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="largeCard" class="large_card">
+        <div class="top_large_card">
+            <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
+                <img width="150%" src={{postData.imageBase64}}>
+            </div>
+            <ng-template #other_topic>
+                <div class="other_topic">
+                    <span>{{postData.post.title}}</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="bottom_large_card">
+            <div class="bottom_large_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
+                <span class="title">{{postData.post.title}}</span>
+                <!-- <span>{{postData.post.detail}}</span> -->
+            </div>
+            <ng-template #other_topic_detail>
+                <div class="other_topic_detail">
+                    <span>{{postData.post.detail}}</span>
+                </div>
+            </ng-template>
+            <div class="bottom_large_card_detail_footer">
+                <div class="owner">
+                    <span>{{postData.owner.name}}</span>
+                </div>
+                <div class="amount_social">
+                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="extraCard" class="extra_card">
+
+        <div class="top_extra_card">
+            <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
+                <img width="150%" src={{postData.imageBase64}}>
+            </div>
+            <ng-template #other_topic>
+                <div class="other_topic">
+                    <span>{{postData.post.title}}</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="bottom_extra_card">
+            <div class="bottom_extra_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
+                <span class="title">{{postData.post.title}}</span>
+            </div>
+            <ng-template #other_topic_detail>
+                <div class="other_topic_detail">
+                    <span>{{postData.post.detail}}</span>
+                </div>
+            </ng-template>
+            <div class="bottom_extra_card_detail_footer">
+                <div class="owner">
+                    <span>{{postData.owner.name}}</span>
+                </div>
+                <div class="amount_social">
+                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

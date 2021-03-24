@@ -263,7 +263,7 @@ export class MainPage extends AbstractPage implements OnInit {
       } else if (this.user.displayName) {
         dataName = this.user.displayName
       }
-     
+
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
@@ -271,11 +271,11 @@ export class MainPage extends AbstractPage implements OnInit {
       this.data.modeDoIng = true;
       this.data.isMobileButton = true;
       this.data.id = this.user.id;
-      if(this.router.url.split('/')[1] === 'page'){
-        this.data.name = this.router.url.split('/')[2]; 
+      if (this.router.url.split('/')[1] === 'page') {
+        this.data.name = this.router.url.split('/')[2];
       } else {
         this.data.name = dataName;
-      } 
+      }
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
         data: this.data,
@@ -283,7 +283,7 @@ export class MainPage extends AbstractPage implements OnInit {
         disableClose: false,
       });
 
-      dialogRef.afterClosed().subscribe(result => { 
+      dialogRef.afterClosed().subscribe(result => {
         this.stopLoading();
       });
     } else {
@@ -301,6 +301,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
 export * from './main.internal/HomePage.component';
+export * from './main.internal/HomePageV2.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
 export * from './main.internal/ForgotPasswordPage.component';
@@ -315,4 +316,4 @@ export * from './main.internal/register.internal/MenuRegister.component';
 export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
-export * from './main.internal/fulfill.internal/fulfill'; 
+export * from './main.internal/fulfill.internal/fulfill';
