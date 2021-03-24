@@ -54,6 +54,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 };
                 const searchResult = await this.emergencyEvent.aggregate([
                     { $match: searchFilter.whereConditions },
+                    { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: limit },
                     {
