@@ -188,9 +188,15 @@
                     margin-top: 8pt;
                     color: $black;
 
-                    > span {
-                        margin-left: 6pt;
-                    }
+                    >.mat-checkbox {
+                        >.mat-checkbox-layout {
+                            >.mat-checkbox-label {
+                                > .checkbox-confirm { 
+                                    @include font-size-10($font-head-500);
+                                }
+                            }
+                        }
+                    } 
                 }
 
                 > .card-bottom {

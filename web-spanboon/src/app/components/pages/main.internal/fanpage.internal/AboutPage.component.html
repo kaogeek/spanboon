@@ -90,7 +90,7 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton4" (click)="aboutPage(organzier.value , '3')" >บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton4" (click)="createAboutPage('organzier',organzier.value , '3')" >บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '3' , organzier.value )">ยกเลิก</button>
                     </div>
@@ -107,7 +107,7 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <textarea #background='ngModel' name="background" class="input-data textarea" placeholder="ความเป็นมา"
+                <textarea #background='ngModel' name="background" id="background" class="input-data textarea" placeholder="ความเป็นมา"
                     [(ngModel)]="resDataPage && resDataPage.backgroundStory"
                     (keyup)="changeActive(background.value , 4)"></textarea>
                 <div class="card-bottom" [class.active]="isCard4">
@@ -313,32 +313,33 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <div class="div-checkbox" style="margin-top: 0; margin-bottom: 8pt; font-family: Kanit-600;">
-                    <mat-checkbox (change)="showOptions($event)" [checked]="isCard11" [disableRipple]="'true'">
+                <!-- (change)="showOptions($event)" [checked]="isCard11"  -->
+                <div class="div-checkbox" (click)="optionClicked($event);" style="margin-top: 0; margin-bottom: 8pt; font-family: Kanit-600;">
+                    <mat-checkbox (change)="showOptions($event)" [disableRipple]="'true'">
+                        <span class="checkbox-confirm">มีที่อยู่</span>
                     </mat-checkbox>
-                    <span>มีที่อยู่</span>
                 </div>
                 <input #address type="text" class="input-data" [(ngModel)]="resDataPage && resDataPage.address"
                     style="display: inline-block; margin-right: 5pt; width: calc(100% - 16pt - 2px);"
                     placeholder="ที่อยู่" (keyup)="changeActive(address.value , 11)">
-                <input type="text" class="input-data" #latitude
-                    style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt); margin-top: 10pt; margin-right: 5pt;"
+                <input type="text" class="input-data" #latitude id="latitude"
+                    style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt; margin-right: 5pt;"
                     placeholder="ละติจูด" (keyup)="aboutPage(latitude.value , '12')">
-                <input type="text" class="input-data" #longtitude
-                    style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt); margin-top: 10pt;"
+                <input type="text" class="input-data" #longtitude id="longtitude"
+                    style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt;"
                     placeholder="ลองจิจูด" (keyup)="aboutPage(longtitude.value , '13')">
-                <div class="div-checkbox">
+                <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span style="font-family: Kanit-600;">ลูกค้ามาเยี่ยมชมธุรกิจของฉันตามที่อยู่นี้
                         (หากไม่ทำเครื่องหมายในกล่องนี้ ที่อยู่ของคุณจะไม่แสดงบนเพจ)</span>
-                </div>
+                </div> -->
                 <div class="card-bottom" [class.active]="isCard11">
                     <div class="card-title">
                         <div></div>
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton11">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton11" (click)="createAboutPage()">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '11' , address.value)">ยกเลิก</button>
                     </div>

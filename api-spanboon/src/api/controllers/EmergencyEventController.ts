@@ -132,7 +132,9 @@ export class EmergencyEventController {
                 }
             });
 
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyLists);
+            const emergencyResult = ObjectUtil.removeDuplicateJSONValue(emergencyLists, data => data.hashTag);
+
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyResult);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getSuccessResponse('EmergencyEvent Not Found', undefined);
