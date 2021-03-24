@@ -484,15 +484,15 @@ export class AboutPage extends AbstractPage implements OnInit {
         if (phone === clonePhone) {
             this.isActiveButton3 = false;
         } else {
-            if (phone.length > 0) {
+            if (phone.length > 0) { 
                 this.isActiveButton3 = true;
                 let pattern = phone.match('^[0-9]{9}$|^[0-9]{10}$');
+             
                 if (!pattern) {
-                    document.getElementById('phone').style.border = '2px solid red';
+                    return document.getElementById('phone').style.border = '2px solid red';
 
-                } else {
-                    document.getElementById('phone').style.border = '2px solid green';
-                    this.editInfoPage(5);
+                } else { 
+                    return document.getElementById('phone').style.border = '2px solid green'; 
                 }
             }
         }

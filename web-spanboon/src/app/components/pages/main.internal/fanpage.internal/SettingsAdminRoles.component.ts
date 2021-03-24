@@ -51,6 +51,8 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public submitDialog: EventEmitter<any> = new EventEmitter();
     @Output()
     public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
+    @Input()
+    public pageId: any;
 
     public isHow: boolean = true;
     public isEdit: boolean = false;
@@ -70,7 +72,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public resListPage: any;
     public dataUser: any;
     public accessPage: any;
-    public pageId: string;
+    // public pageIdUrl: string;
 
     @ViewChild('formfield', { static: false }) formfield: ElementRef;
     @ViewChild('selectroles', { static: false }) selectroles: ElementRef;
@@ -185,7 +187,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         this.dirtyCancelEvent = new EventEmitter();
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void { 
         if (this.isLogin) {
             this.getAccessPage();
         }
@@ -362,7 +364,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         return base64Image && regex.test(base64Image) ? true : false;
     }
 
-    public addUserLevel() {
+    public addUserLevel() { 
         if(this.valueSt === ''){
             return;
         }
@@ -371,7 +373,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         let access = {
             level: levelUser,
             user: this.valueSt.id || this.valueSt.uniqueId
-        }
+        } 
         this.pageFacade.addAccess(this.pageId, access).then((res) => {
             if (res.message === "Successfully adding User Page Access") {
                 this.clearInputData();
