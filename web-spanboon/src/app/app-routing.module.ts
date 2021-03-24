@@ -10,7 +10,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {
   // Pages
-  LoginPage, MainPage, HomePage, ProfilePage,
+  LoginPage, MainPage, HomePage, HomePageV2, ProfilePage,
   FanPage,
   StoryPage,
   PostPage,
@@ -43,9 +43,17 @@ export const APP_ROUTES: Routes = [
         component: HomePage,
       },
       {
+        path: HomePageV2.PAGE_NAME,
+        component: HomePageV2,
+      },
+      {
         path: ProfilePage.PAGE_NAME + "/:id",
         component: ProfilePage,
         children: [
+          {
+            path: "post/:postId",
+            component: ProfilePage,
+          },
           {
             path: 'timeline',
             component: ProfilePage,
@@ -64,6 +72,10 @@ export const APP_ROUTES: Routes = [
         path: FanPage.PAGE_NAME + "/:id",
         component: FanPage,
         children: [
+          {
+            path: "post/:postId",
+            component: FanPage,
+          },
           {
             path: 'timeline',
             component: FanPage,
@@ -192,9 +204,9 @@ export const APP_ROUTES: Routes = [
       {
         path: FulfillPage.PAGE_NAME,
         component: FulfillPage,
-        children : [
+        children: [
           {
-            path : ':fulfillId',
+            path: ':fulfillId',
             component: FulfillPage
           }
         ]

@@ -25,7 +25,7 @@
         [ngStyle]="{'background-position': position , 'background-image': 'url('+ imageCover +')'}">
         <div class="text-box-overlay">
             <div class="text-box">
-                <span class="post-title">{{postStoryData ? postStoryData.title : ''}}</span>
+                <span class="post-title" [innerHTML]='postStoryData.title' ></span>
                 <span class="post-content">{{postStoryData ? postStoryData.detail : '' }}</span>
                 <div class="line"></div>
                 <div class="count">
@@ -117,7 +117,7 @@
                             <span class="time-display"> เมื่อ {{createdDate | dateFormat}}</span>
                         </div>
                         <div class="user-display">
-                            <span>เผยแพร่โดย :</span><a href={{linkPage}}> {{ownerUser.displayName}}</a>
+                            <span>เผยแพร่โดย :</span><a href={{linkPage}}> {{postStoryData.pageData.data.name}}</a>
                         </div>
                     </div>
                 </div>
@@ -217,8 +217,22 @@
             ไม่พบเนื้อหา เรื่องราวหรือโพสต์อาจถูกลบ
         </div>
         <div class="sub-text">
-            ไปที่หน้าแรกเพื่อดูเนื้อหาอื่นๆที่น่าสนใจ
+            ไปที่หน้าแรกเพื่อดูเนื้อหาอื่น ๆ ที่น่าสนใจ
             <spanboon-button [color]="'#FFFFFF'" [text]="'ตกลง'" (click)="navigateHomePage()" [radius]="'6px'">
+            </spanboon-button>
+        </div>
+    </div>
+</div>
+<div class="post-story-not-found" *ngIf="!postStoryData.story">
+    <div class="box">
+        <div class="text">
+            ไม่พบเนื้อหา เรื่องราวอาจถูกลบ
+        </div>
+        <div class="sub-text">
+            <span>ไปที่เพจ </span><a href={{linkPage}} #linkPages>
+                {{postStoryData.pageData.data.name}}</a><span>เพื่อดูเนื้อหาหรือโพสต์อื่น ๆ
+                ที่น่าสนใจ</span>
+            <spanboon-button [color]="'#FFFFFF'" [text]="'ตกลง'" (click)="linkPages.click()" [radius]="'6px'">
             </spanboon-button>
         </div>
     </div>

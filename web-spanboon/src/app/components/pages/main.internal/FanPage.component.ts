@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -24,6 +24,8 @@ import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
+import { UserEngagement } from '../../../models/models';
+import { ENGAGEMENT_ACTION } from '../../../UserTypeEngagement';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -68,6 +70,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private needsFacade: NeedsFacade;
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
+  private userEngagementFacade: UserEngagementFacade;
+  private engagementService: Engagement;
   protected observManager: ObservableManager;
 
   public resDataPage: any;
@@ -106,6 +110,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public resContact: any[] = [];
   public linkmain: any = '';
   public labelStatus: string;
+  public pathPostId: string;
   public isCheck: boolean = true;
   public countScroll: number;
 
@@ -118,7 +123,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -130,6 +135,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.assetFacade = assetFacade;
     this.observManager = observManager;
     this.routeActivated = routeActivated;
+    this.userEngagementFacade = userEngagementFacade;
+    this.engagementService = engagementService;
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
@@ -143,8 +150,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.mySubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
-        const pathPost = url.split('/')[1];
-        const pathPostId = url.split('/')[2];
+        const pathUrlPost = url.split('/')[1];
+        const postId = url.split('/')[2];
 
         if (url.indexOf(URL_PATH) >= 0) {
           const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
@@ -174,10 +181,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               this.initPage('timeline');
             }
           }
-
-        } else if (pathPost.includes('post')) {
+          const pathPost = url && url.split('/')[3];
+          this.pathPostId = url && url.split('/')[4];
+          if (pathPost !== undefined && pathPost !== null) {
+            this.initPage(pathPost)
+          }
+        } else if (pathUrlPost === 'post') {
           this.CheckPost = false;
-          this.searchPostById(pathPostId);
+          this.searchPostById(postId);
         }
       }
     });
@@ -320,6 +331,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.searchPostPageType(data, true);
     } else if (subPage === 'settings') {
       return this.router.navigateByUrl('/page/' + this.url + '/' + subPage);
+    } else if (subPage === 'post') {
+      if (this.pathPostId !== undefined && this.pathPostId !== null) {
+        this.CheckPost = false;
+        this.searchPostById(this.pathPostId);
+      }
     } else {
       return this.router.navigateByUrl('/page/' + this.url);
     }
@@ -419,6 +435,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.labelStatus = 'ไม่พบโพสต์';
       } else {
         this.showProfilePage(res[0].pageId);
+        this.isMaxLoadingPost = true;
         let postIndex: number = 0
         let galleryIndex = 0;
         for (let post of this.resDataPost) {
@@ -448,7 +465,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }
-
     }).catch((err: any) => {
     });
   }
@@ -700,8 +716,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.resDataPage = res.data;
         if (this.resDataPage && this.resDataPage.name) {
           this.name = this.resDataPage.name
-        } else if (this.resDataPage && this.resDataPage.uniqueId) {
-          this.name = this.resDataPage.uniqueId
+        } else if (this.resDataPage && this.resDataPage.pageUsername) {
+          this.name = this.resDataPage.pageUsername
         } else if (this.resDataPage.displayName) {
           this.name = this.resDataPage.displayName
         }
@@ -775,6 +791,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       }
     });
+  }
+  public redirectSetting() {
+    if (this.resDataPage.pageUsername !== undefined && this.resDataPage.pageUsername !== '' && this.resDataPage.pageUsername !== null) {
+      return this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+    } else {
+      return this.router.navigateByUrl('/page/' + this.resDataPage.id + '/settings');
+    }
   }
 
   public searchTypePost(data: string) {
@@ -892,7 +915,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public openDialogPost() {
-    let data = { 
+    let data = {
       isListPage: true,
       isHeaderPage: true,
       isEdit: false,
@@ -975,10 +998,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     let pageId = this.resDataPage.id
     this.pageFacade.saveCoverImagePage(pageId, dataList).then((res: any) => {
-      if (res.status === 1) { 
+      if (res.status === 1) {
         this.isFiles = false;
         this.getDataIcon(res.data.coverURL, "cover");
-        this.resDataPage.coverPosition = res.data.coverPosition; 
+        this.resDataPage.coverPosition = res.data.coverPosition;
       }
 
     }).catch((err: any) => {
@@ -1300,6 +1323,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
     dialog.afterClosed().subscribe((res) => {
     });
+  }
+
+  public engagement(event) {
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
+
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+      console.log('engagement ', res)
+    }).catch((err: any) => {
+      console.log('err ', err)
+    })
+    console.log('engagement ', dataEngagement)
   }
 }
 

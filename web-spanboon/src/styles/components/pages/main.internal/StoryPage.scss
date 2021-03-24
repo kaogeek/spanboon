@@ -458,13 +458,13 @@
             margin: 0px 10px;
             @include font-size-9($font-head-500);
             cursor: pointer;
-            
+
             &.active {
               color: $brandcolor2 !important;
-              
-            &:hover {
-              color: $brandcolor2 !important;
-            }
+
+              &:hover {
+                color: $brandcolor2 !important;
+              }
             }
           }
           > .text-point {
@@ -753,6 +753,12 @@
         width: 100px;
         margin: 0px 10px;
       }
+      > a {
+        @include font-size-7($font-head-400);
+        margin: 0px 5px;
+        color: $brandcolor2;
+        cursor: unset;
+      }
     }
   }
 }
@@ -809,6 +815,10 @@
         text-align: center;
         color: #a5a5a6;
         display: unset;
+        > a {
+          color: $brandcolor2;
+          cursor: unset;
+        }
         > spanboon-button {
         }
       }

@@ -38,8 +38,8 @@
             </div>
             <div class="user">
                 <div class="user-grop">
-                    <input type="text" #displayName name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
-                        class="input-text" [(ngModel)]="data.displayName" required shake [shake]="active">
+                    <input type="text" #displayName="ngModel" name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
+                        class="input-text" [(ngModel)]="data.displayName" required shake [shake]="active">  
                 </div>
                 <div class="user-grop">
                     <ng-container *ngIf="uuid; else elseUUid">

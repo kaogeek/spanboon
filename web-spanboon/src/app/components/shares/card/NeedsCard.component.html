@@ -27,10 +27,11 @@
                             <div class="needs-data-body" [class.active]="isFulfill">
                                 <div class="unit" [class.active]="isFulfill">
                                     <div class="unit-box">
-                                        <div class="unit-num"> 
+                                        <div class="unit-num">
                                             <ng-container *ngIf="isPendingFulfill; else elseTemplateQty">
                                                 <span *ngIf="isFulfillQuantity">
-                                                    <span [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                    <span
+                                                        [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
                                                         {{item.fulfillQuantity}} / </span>
                                                 </span>
                                                 <span *ngIf="!isFulfill"
@@ -39,11 +40,11 @@
                                                 </span>
                                             </ng-container>
                                             <ng-template #elseTemplateQty>
-                                                <span [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                <span
+                                                    [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
                                                     {{item.quantity}}
                                                 </span>
                                             </ng-template>
-
 
                                             <!-- <span *ngIf="!isFulfill"
                                                 [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
@@ -63,8 +64,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-template #elseTemplateUnLimit>
-                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT"
-                                            [radius]="'4px'" (click)="fulfillNeeds(item)">
+                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"  (click)="fulfillNeeds($event,item)">
                                         </spanboon-button>
                                     </ng-template>
                                 </div>

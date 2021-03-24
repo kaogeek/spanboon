@@ -67,6 +67,7 @@ import {
 
   // page
   HomePage,
+  HomePageV2,
   LoginPage,
   ProfilePage,
   forgotPasswordPage,
@@ -109,6 +110,7 @@ import {
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -195,6 +197,7 @@ import {
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -223,6 +226,7 @@ import {
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserEngagementFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -260,6 +264,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  HomePageV2,
   LoginPage,
   RegisterPage,
   ProfilePage,
@@ -308,6 +313,7 @@ const COMPONENTS: any[] = [
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -406,6 +412,7 @@ const SERVICE_CLASSES: any[] = [
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
   // facade 
   PostFacade,
   AllocateFacade,
@@ -434,6 +441,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserEngagementFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

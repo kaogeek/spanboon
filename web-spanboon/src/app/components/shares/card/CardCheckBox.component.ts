@@ -128,6 +128,10 @@ export class CardCheckBox {
     }
 
     public checkBoxvalue(event, item, i) { 
+        let data = {
+            event,
+            item
+        }
         if (typeof (this.index) === 'number') {
             if (this.index !== i) {
                 Object.assign(this.data[this.index], { selected: false });
@@ -136,11 +140,15 @@ export class CardCheckBox {
         } else {
             this.index = i
         }
-        this.click.emit(item);
+        this.click.emit(data);
     }
 
     public checkBoxMutiple(event, item, i) {
-        this.clickMutiple.emit(item);
+        let data = {
+            event,
+            item
+        }
+        this.clickMutiple.emit(data);
     }
 
     public showDialogEdit() {

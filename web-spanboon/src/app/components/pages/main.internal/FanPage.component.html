@@ -222,7 +222,7 @@
                                 <div class="header-looking-for">
                                     ข้อมูลเพจ
                                 </div>
-                                <span class="material-icons" (click)="showAlertDevelopDialog()"
+                                <span class="material-icons" (click)="redirectSetting()"
                                     *ngIf="isLogin() && isNotAccess"> edit </span>
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
@@ -649,12 +649,14 @@
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
                                             <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage._id+'/post/' "
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                                    (delete)="deletePost($event,index)" (update)="editPost($event)">
+                                                    (delete)="deletePost($event,index)" (update)="editPost($event)"
+                                                    (engagement)="engagement($event)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"
@@ -668,10 +670,12 @@
                                 <div class="main-feed">
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage" [isNotAccess]
+                                            <post-data [itemPost]="itemPost" [user]="userImage"  
                                                 (action)="actionComment($event,index)" (comment)="createComment($event)"
                                                 [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
-                                                (delete)="deletePost($event,index)"></post-data>
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage._id+'/post/' "
+                                                (delete)="deletePost($event,index)"
+                                                (engagement)="engagement($event)"></post-data>
                                         </ng-container>
                                     </ng-container>
                                 </div>
