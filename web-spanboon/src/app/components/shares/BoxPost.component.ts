@@ -5,9 +5,9 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
-import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger } from '@angular/material';
+import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
@@ -23,6 +23,7 @@ import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
 import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
+import { cpuUsage } from 'process';
 
 declare var $: any;
 declare const window: any;
@@ -167,6 +168,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isDataStroy: boolean;
   public isTablet: boolean;
   public isButtonFulfill: boolean;
+  public isShowText: boolean;
   public isTypeNeed: boolean = true;
   public typeStroy: any;
   public dataAutoComp: any; // 2: click, 1: totic, 0: content
@@ -252,8 +254,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
   selectedValue: string = "เลือกหมวดหมู่";
 
-  private apiBaseURL = environment.apiBaseURL;
-  private webBaseURL = environment.webBaseURL;
+  public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
 
   constructor(dialog: MatDialog, postFacade: PostFacade, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, authenManager: AuthenManager, pageFacade: PageFacade,
     objectiveFacade: ObjectiveFacade, assetFacade: AssetFacade, userFacade: UserFacade, observManager: ObservableManager, userAccessFacade: UserAccessFacade, needsFacade: NeedsFacade,
@@ -296,7 +298,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data = {};
 
     this.observManager.subscribe('authen.check', (data) => {
-      this.getImage();
+
     });
 
     this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
@@ -312,10 +314,12 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     this.searchAccessPage();
-    this.getImage();
+    // this.getImage();
     this.checkTabs();
     this.onResize();
     this.setContentStory();
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
     this.getConfigTwitter();
     this.getConfigFacebook();
     setTimeout(() => {
@@ -323,8 +327,6 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.keyUpSearchObjective("");
       this.keyUpSearchHashTag("", false);
       this.searchObjectivePageCategory();
-      this.socialGetBindingTwitter();
-      this.socialGetBindingFacebook();
     }, 500);
   }
 
@@ -335,8 +337,17 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
 
-  ngAfterViewInit(): void {
+    console.log('dataPageId ', this.dataPageId)
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+  }
+  public ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
@@ -434,7 +445,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.selected = this.PLATFORM_GENERAL_TEXT
           }
           if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
-            this.modeShowDoing = true
+            this.modeShowDoing = true;
           }
           if (this.content && this.content.objectiveTag !== '' && this.content.objectiveTag !== undefined && this.content.objectiveTag !== null) {
             this.dataObjective.hashTag = this.content.objectiveTag
@@ -586,23 +597,25 @@ export class BoxPost extends AbstractPage implements OnInit {
   public searchAccessPage() {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
+        let index = 0;
         for (let data of res) {
-          if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
-            this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
-              if (image.status === 1) {
-                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                  data.user.imageURL = null
-                } else {
-                  data.user.imageURL = image.data
+          if (index === 0) {
+            Object.assign(data.user, { type: 'user' });
+            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+              this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
+                if (image.status === 1) {
+                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                    data.user.imageURL = null
+                  } else {
+                    data.user.imageURL = image.data
+                  }
                 }
-              }
-            }).catch((err: any) => {
-              if (err.error.message === "Unable got Asset") {
-                data.user.imageURL = ''
-              }
-            })
-          } else {
-            // this.accessPageImage = data.user 
+              }).catch((err: any) => {
+                if (err.error.message === "Unable got Asset") {
+                  data.user.imageURL = ''
+                }
+              })
+            }
           }
           if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
             this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
@@ -613,7 +626,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = image.data
                 }
                 setTimeout(() => {
-                  this.accessPage = res
+                  this.accessPage = res;
                 }, 1000);
               }
             }).catch((err: any) => {
@@ -622,24 +635,69 @@ export class BoxPost extends AbstractPage implements OnInit {
               }
             })
           } else {
-            this.accessPage = res
+            this.accessPage = res;
           }
-
-          if (this.router.url.split('/')[1] === "page") {
-            if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
-              this.accessPageImage = data.page;
-              this.dataPage = data.page.name;
-              this.dataPageId = data.page;
-            }
-          } else {
-            this.accessPageImage = data.user;
-            this.dataPageId = data.user;
-          }
+          index++;
         }
+        this.selectOption();
       }
     }).catch((err: any) => {
       console.log(err)
     });
+  }
+
+  public selectOption() {
+    if (this.accessPage.length > 0) {
+      for (let data of this.accessPage) {
+        if (this.router.url.split('/')[1] === "page") {
+          if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
+            const cloneDataPage = JSON.parse(JSON.stringify(data.page));
+            if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
+              this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
+                if (image.status === 1) {
+                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                    cloneDataPage.imageURL = null
+                  } else {
+                    cloneDataPage.imageURL = image.data
+                  }
+                  this.accessPageImage = cloneDataPage;
+                }
+              }).catch((err: any) => {
+                if (err.error.message === "Unable got Asset") {
+                  cloneDataPage.imageURL = ''
+                }
+              });
+            } else {
+              this.accessPageImage = cloneDataPage;
+            }
+            this.dataPage = data.page.name;
+            this.dataPageId = data.page;
+            this.modeDoIng = false;
+          }
+        } else {
+          const cloneDataUser = JSON.parse(JSON.stringify(data.user));
+          this.dataPageId = data.user;
+          if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
+            this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
+              if (image.status === 1) {
+                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                  cloneDataUser.imageURL = null
+                } else {
+                  cloneDataUser.imageURL = image.data
+                }
+                this.accessPageImage = cloneDataUser;
+              }
+            }).catch((err: any) => {
+              if (err.error.message === "Unable got Asset") {
+                cloneDataUser.imageURL = ''
+              }
+            });
+          } else {
+            this.accessPageImage = cloneDataUser;
+          }
+        }
+      }
+    }
   }
 
   private clickAddHashtag(tag: string) {
@@ -791,8 +849,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public showDialogCreateStory(isEdit?: boolean): void {
     const topic = this.topic.nativeElement.innerHTML;
     const storyPostShort = this.storyPost.nativeElement.innerText
-    let cloneStory = this.dataStroy ? this.dataStroy : ''; 
-    this.dataStroy = this.content && this.content.story ? this.content.story : {}; 
+    let cloneStory = this.dataStroy ? this.dataStroy : '';
+    this.dataStroy = this.content && this.content.story ? this.content.story : {};
     const storyPost = this.storyPost.nativeElement.innerText
     this.dataClone = {
       topic,
@@ -803,10 +861,6 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    // if (isEdit) {
-    //   this.dataStroy
-    // } else {
-    // }
     const dialogRef = this.dialog.open(DialogCreateStory, {
       width: '100vw',
       height: '100vh',
@@ -1198,30 +1252,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     return user !== undefined && user !== null;
   }
 
-  public getImage() {
-    // let user = this.authenManager.getCurrentUser();
-    // this.userClone = user;
-    // if (this.userClone && this.userClone.imageURL && this.userClone.imageURL !== '' && this.userClone.imageURL !== undefined && this.userClone.imageURL !== null) {
-    //   this.assetFacade.getPathFile(this.userClone.imageURL).then((image: any) => {
-    //     if (image.status === 1) {
-    //       if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-    //         this.userClone.imageBase64 = null
-    //       } else {
-    //         this.userClone.imageBase64 = image.data
-    //       } 
-    //     }
-    //   }).catch((err: any) => {
-    //     if (err.error.message === "Unable got Asset") {
-    //       this.userClone.imageURL = ''
-    //     }
-    //   })
-    // } else {
-    //   this.accessPageImage = this.userClone;
-    // }
-
-
-  }
-
   public genImages(images: any): void {
     this.modeShowImage = true;
     this.imagesTimeline.push(images);
@@ -1263,18 +1293,26 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
   }
 
-  public selectAccessPage(page: any, type: string) {
-    this.pageId = page.id
-    this.accessPageImage = page
-    this.dataPage = page.name || page.displayName;
+  public selectAccessPage(event: any, type?: string) {
+    this.pageId = event.id;
+    this.dataPage = event.name || event.displayName;
     this.dataPageId = {};
-    this.dataPageId.id = page.id;
+    this.dataPageId.id = event.id;
     if (type === 'PAGE') {
       this.modeDoIng = false;
+      this.accessPageImage = event;
+      this.isSharePost = true;
     } else {
       this.modeDoIng = true;
+      this.isSharePost = false;
+      this.accessPageImage.imageURL = event.imageURL;
     }
-    this.selectedInformation.emit(page);
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+
+    this.selectedInformation.emit(event);
   }
 
   public onClickGetDataPost(isDraft?: boolean) {
@@ -1407,7 +1445,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         pageId: this.selectedPage,
         coverImage: this.coverImage,
         postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false 
+        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;
@@ -1427,12 +1465,12 @@ export class BoxPost extends AbstractPage implements OnInit {
       if (this.arrListItem.length === 0) {
         delete data.needs
       }
-      if (this.isListPage) { 
-        if(this.accessPageImage.name){
+      if (this.isListPage) {
+        if (this.accessPageImage.name) {
           Object.assign(data, { id: this.accessPageImage.id });
         } else {
           Object.assign(data, { id: undefined });
-        } 
+        }
       }
 
       if (this.isFulfill) {
@@ -1475,9 +1513,13 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
-  public clearDataAll() { 
-    this.topic.nativeElement.innerText = ""
-    this.storyPost.nativeElement.innerText = "";
+  public clearDataAll() {
+    if (this.topic !== undefined) {
+      this.topic.nativeElement.innerText = "";
+    }
+    if (this.storyPost !== undefined) {
+      this.storyPost.nativeElement.innerText = "";
+    }
     if (this.objectiveDoingName !== undefined) {
       this.objectiveDoingName.nativeElement.value = "";
     }
@@ -2039,7 +2081,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET;
     filter.relation = [];
-    filter.whereConditions = {};
+    filter.whereConditions = {
+      active: true
+    };
     filter.count = false;
     filter.orderBy = {}
     this.objectiveFacade.searchObjectiveCategory(filter).then((res: any) => {
@@ -2411,6 +2455,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isMobilePost = true;
       this.isMobileText = true;
       this.isTablet = false;
+      this.isShowText = false;
       var postion = $('.wrapper-tool-post');
       postion.addClass("m-tool-post");
 
@@ -2422,18 +2467,26 @@ export class BoxPost extends AbstractPage implements OnInit {
 
       var postion3 = $('.box-right');
       postion3.addClass("m-right");
-    } else if (window.innerWidth > 899) {
+    } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
       this.isMobileText = false;
+      this.isShowText = true;
     }
 
-    if (window.innerWidth <= 899 && 479 < window.innerWidth) {
+    if (window.innerWidth <= 1024 && 768 < window.innerWidth) {
       this.isMobilePost = true;
       this.isMobileText = false;
       this.isTablet = true;
-    } else if (window.innerWidth > 899) {
+      this.isShowText = true;
+    } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
+      this.isShowText = true;
       this.onResizeCloseDialog();
+    } else if (479 < window.innerWidth) {
+      this.isMobilePost = true;
+      this.isMobileText = false;
+      this.isTablet = true;
+      this.isShowText = false;
     }
   }
 
@@ -2460,6 +2513,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.isFulfill = false;
     this.data.id = this.user.id;
     this.data.modeShowDoing = true;
+    if (this.router.url.split('/')[1] === "page") {
+      this.data.isSharePost = true;
+    } else { 
+      this.data.isSharePost = false;
+    }
     // this.data.isBox = true;
 
     const dialogRef = this.dialog.open(DialogPost, {
@@ -2510,7 +2568,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingTwitter() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
-        this.twitterConection = res.data;
+        this.twitterConection = res.data; 
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2520,7 +2578,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public socialGetBindingFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
-        this.facebookConection = res.data;
+        this.facebookConection = res.data; 
       }).catch((err: any) => {
         console.log('err ', err)
       });
@@ -2621,19 +2679,23 @@ export class BoxPost extends AbstractPage implements OnInit {
   public getConfigFacebook() {
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.getConfigByPage(this.dataPageId.id, FACEBOOK_AUTO_POST).then((res: any) => {
-        this.isAutoPostFacebook = res.value; 
+        this.isAutoPostFacebook = res.value;
       }).catch((err: any) => {
-        console.log('err ', err)
+        if (err && err.error && err.error.message === 'Unable to Get Page Config') {
+          this.isAutoPostFacebook = false; 
+        }
       })
     }
   }
 
-  public getConfigTwitter() {
+  public getConfigTwitter() { 
     if (this.dataPageId && this.dataPageId.id !== undefined) {
       this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
         this.isAutoPostTwitter = res.value;
       }).catch((err: any) => {
-        console.log('err ', err)
+        if (err && err.error && err.error.message === 'Unable to Get Page Config') {
+          this.isAutoPostTwitter = false; 
+        }
       });
     }
   }

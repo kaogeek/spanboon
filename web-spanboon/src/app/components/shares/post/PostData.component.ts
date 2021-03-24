@@ -466,16 +466,14 @@ export class PostData {
     this.update.emit(itemPost)
   }
 
-  public onClickEngagement(event, id: any, contentType: string) {
-    console.log('event >', contentType)
+  public onClickEngagement(event, id: any, contentType: string) { 
     let data = this.engagementService.getEngagement(event, id, contentType);
-    this.engagement.emit(data)
-
+    this.engagement.emit(data); 
   }
 
   public fulfillEngagement(event, postId: string) {
     let data = this.engagementService.getEngagement(event, postId, "fulfillment");
-    this.engagement.emit(data)
+    this.engagement.emit(data);
   }
 
 }
