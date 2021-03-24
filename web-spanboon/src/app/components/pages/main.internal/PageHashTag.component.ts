@@ -210,7 +210,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
-    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade,engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
+    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -757,7 +757,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
   }
 
-  public getObjective(data) { 
+  public getObjective(data) {
     if (data.item.selected) {
       this.objective = data.hashTag;
     } else {
@@ -766,36 +766,30 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.searchTrendTag();
 
     const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
-    console.log('dataEngagement ',dataEngagement) ;
-    // this.createEngagement(dataEngagement);
+    this.createEngagement(dataEngagement);
 
   }
 
   public getEmergency(data) {
-    console.log('data.event ',data.item)
-    console.log('data ',data.event.source._elementRef.nativeElement.outerHTML)
-    console.log('innerHTML ',data.event.source._elementRef.nativeElement.innerHTML)
     if (data.item.selected) {
       this.emergency = data.item.id;
     } else {
       this.emergency = '';
     }
     this.searchTrendTag();
-     
+
     const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
-    console.log('dataEngagement ',dataEngagement) 
-    // this.createEngagement(dataEngagement);
+    this.createEngagement(dataEngagement);
   }
 
-  public createEngagement(dataEngagement: UserEngagement){
-     this.userEngagementFacade.create(dataEngagement).then((res: any) => {
-      console.log('engagement ', res)
+  public createEngagement(dataEngagement: UserEngagement) {
+    return this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
     }).catch((err: any) => {
       console.log('err ', err)
     });
   }
 
-  public getPagecategory(data) { 
+  public getPagecategory(data) {
     if (data.selected) {
       this.page.push(data.id);
     } else {
@@ -806,7 +800,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
         i++;
       }
-    } 
+    }
     this.searchTrendTag();
   }
 
@@ -832,10 +826,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.matHashTag.splice(isHashtag, 1)
       }
     }
-    this.searchTrendTag(); 
+    this.searchTrendTag();
 
     const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.outerHTML);
-    console.log('dataEngagement ',dataEngagement) 
+    this.createEngagement(dataEngagement);
   }
 
   public searchTrendTag(offset?: boolean) {

@@ -217,10 +217,10 @@
 
       > .keyword-tag {
         display: flex;
-        height: 20pt;
+        height: 23pt;
         width: auto;
         align-items: center;
-        padding-top: 5pt;
+        padding: 5pt 0 0 0;
         @include pointer();
 
         a {
@@ -272,7 +272,7 @@
 
             > .mat-select {
               @include font-size-9($font-head-500);
-              line-height: 1.5;
+              line-height: 2;
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -298,8 +298,6 @@
       > .wrapper-left {
         display: flex;
         flex: 1 1 0%;
-        padding-top: 5pt;
-
         > .search-tag-emergency {
           position: relative;
 
@@ -698,33 +696,28 @@
     }
 
     > .to-dialog-post {
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      word-break: break-all;
       width: 100%;
       flex: 1 1 0%;
       display: flex;
       align-items: center;
-      background: $white;
-      height: 25pt;
+      background: $bg-grey;
+      height: 30pt;
       // width: calc(100% - 24pt);
       border-radius: 30pt;
-      border: 1px solid rgb($black, 0.1);
       @include pointer();
       padding: 0 10pt;
-      @include font-size-10($font-head-400);
-
-      > .mobile {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        color: rgb($black, 0.5);
-      }
+      @include font-size-9($font-head-400);
 
       &:hover {
         background: rgb($bg-grey, 0.7);
+      }
+
+      > .mobile {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-all;
       }
     }
   }
@@ -732,7 +725,7 @@
 
 .mat-option {
   > .mat-option-text {
-    @include font-size-10($font-head-500);
+    @include font-size-9($font-head-500);
 
     > .wrapper-body-action {
       display: flex;
@@ -923,7 +916,7 @@
                       > .mat-tab-link {
                         color: $color-black;
                         @include pointer();
-                        @include font-size-10($font-head-400);
+                        @include font-size-9($font-head-400);
                         opacity: 1;
 
                         &:hover {
@@ -964,14 +957,14 @@
                     align-items: center;
                     justify-content: space-between;
                     padding: 0 10pt;
-                    @include font-size-10($font-head-500);
+                    @include font-size-9($font-head-500);
                   }
 
                   > .list-checkbox {
                     > .mat-checkbox {
                       display: block;
                       padding: 0 10pt;
-                      @include font-size-10($font-head-500);
+                      @include font-size-9($font-head-500);
 
                       > .mat-checkbox-layout {
                         width: 100%;
@@ -1094,7 +1087,7 @@
     }
   }
 }
-@media (max-width: $lmedium) {
+@media (max-width: $large) {
   .box-post {
     > .mat-dialog-content {
       max-height: unset;
@@ -1228,7 +1221,7 @@
         border-left: unset !important;
         border-top: 0.7px solid #e5e5e5;
         color: $brandcolor2 !important;
-        padding: 7pt 15pt !important;
+        padding: 12pt 15pt !important;
         > .div-gatdata-post {
           width: 100%;
         }
@@ -1236,9 +1229,8 @@
           &.active {
             border-radius: 25pt;
             border: 0.7px solid;
-            padding: 7pt;
+            padding: 3pt 5pt;
             background-color: $brandcolor2;
-            width: 80%;
           }
           > .mat-form-field-wrapper {
             > .mat-form-field-flex {
