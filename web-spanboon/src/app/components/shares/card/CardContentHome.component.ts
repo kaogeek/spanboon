@@ -34,7 +34,6 @@ export class CardContentHome {
 
     ngOnInit(): void {
         this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount)
-        console.log('this.postData', this.postData)
     }
 
     ngOnChanges(changes: SimpleChanges): void {
