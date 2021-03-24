@@ -25,7 +25,7 @@
         [ngStyle]="{'background-position': position , 'background-image': 'url('+ imageCover +')'}">
         <div class="text-box-overlay">
             <div class="text-box">
-                <span class="post-title">{{postStoryData ? postStoryData.title : ''}}</span>
+                <span class="post-title" [innerHTML]='postStoryData.title' ></span>
                 <span class="post-content">{{postStoryData ? postStoryData.detail : '' }}</span>
                 <div class="line"></div>
                 <div class="count">

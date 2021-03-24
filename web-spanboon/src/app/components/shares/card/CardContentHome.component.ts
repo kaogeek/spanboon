@@ -25,9 +25,10 @@ export class CardContentHome {
     @Input()
     public largeCard: boolean;
     @Input()
-    public extraCard: boolean;
+    public eventCard: boolean;
 
     public amountSocial: number = 0;
+    public isOfficial: boolean = true;
 
     ngOnInit(): void {
         this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount)
