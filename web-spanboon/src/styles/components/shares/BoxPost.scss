@@ -217,10 +217,10 @@
 
       > .keyword-tag {
         display: flex;
-        height: 23pt;
+        height: 20pt;
         width: auto;
         align-items: center;
-        padding: 5pt 5pt 5pt 0;
+        padding-top: 5pt;
         @include pointer();
 
         a {
@@ -272,7 +272,7 @@
 
             > .mat-select {
               @include font-size-9($font-head-500);
-              line-height: 2;
+              line-height: 1.5;
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -298,6 +298,8 @@
       > .wrapper-left {
         display: flex;
         flex: 1 1 0%;
+        padding-top: 5pt;
+
         > .search-tag-emergency {
           position: relative;
 
@@ -705,13 +707,21 @@
       flex: 1 1 0%;
       display: flex;
       align-items: center;
-      background: $bg-grey;
-      height: 30pt;
+      background: $white;
+      height: 25pt;
       // width: calc(100% - 24pt);
       border-radius: 30pt;
+      border: 1px solid rgb($black, 0.1);
       @include pointer();
       padding: 0 10pt;
-      @include font-size-9($font-head-400);
+      @include font-size-10($font-head-400);
+
+      > .mobile {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: rgb($black, 0.5);
+      }
 
       &:hover {
         background: rgb($bg-grey, 0.7);
@@ -722,7 +732,7 @@
 
 .mat-option {
   > .mat-option-text {
-    @include font-size-9($font-head-500);
+    @include font-size-10($font-head-500);
 
     > .wrapper-body-action {
       display: flex;
@@ -913,7 +923,7 @@
                       > .mat-tab-link {
                         color: $color-black;
                         @include pointer();
-                        @include font-size-9($font-head-400);
+                        @include font-size-10($font-head-400);
                         opacity: 1;
 
                         &:hover {
@@ -954,14 +964,14 @@
                     align-items: center;
                     justify-content: space-between;
                     padding: 0 10pt;
-                    @include font-size-9($font-head-500);
+                    @include font-size-10($font-head-500);
                   }
 
                   > .list-checkbox {
                     > .mat-checkbox {
                       display: block;
                       padding: 0 10pt;
-                      @include font-size-9($font-head-500);
+                      @include font-size-10($font-head-500);
 
                       > .mat-checkbox-layout {
                         width: 100%;
@@ -1140,7 +1150,7 @@
         }
 
         > .mobile-post {
-          width: calc(20% - 14pt); 
+          width: calc(20% - 14pt);
           padding: 0 7pt;
         }
         > .mobile-page {
@@ -1207,7 +1217,7 @@
       }
       .m-left {
         width: calc(50% - 30pt - 1.4px) !important;
-        padding: 10pt 15pt !important;
+        padding: 7pt 15pt !important;
       }
       .m-center {
         width: calc(50% - 30pt) !important;
@@ -1218,7 +1228,7 @@
         border-left: unset !important;
         border-top: 0.7px solid #e5e5e5;
         color: $brandcolor2 !important;
-        padding: 15pt 15pt !important;
+        padding: 7pt 15pt !important;
         > .div-gatdata-post {
           width: 100%;
         }
@@ -1226,8 +1236,9 @@
           &.active {
             border-radius: 25pt;
             border: 0.7px solid;
-            padding: 8pt 8pt;
+            padding: 7pt;
             background-color: $brandcolor2;
+            width: 80%;
           }
           > .mat-form-field-wrapper {
             > .mat-form-field-flex {
