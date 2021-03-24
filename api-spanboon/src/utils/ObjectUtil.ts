@@ -52,4 +52,10 @@ export class ObjectUtil {
 
         return keyMap;
     }
+
+    public static removeDuplicateJSONValue(data: any[], key: any): any {
+        return [...new Map(
+            data.map(x => [key(x), x])
+        ).values()];
+    }
 }
