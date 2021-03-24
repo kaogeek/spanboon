@@ -29,4 +29,5 @@ export class UpdatePageRequest {
     public mobileNo: string;
     public twitterURL: string;
     public address: string;
+    public email: string;
 }

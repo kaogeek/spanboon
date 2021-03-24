@@ -20,4 +20,5 @@ export class CreatePageRequest {
     public color: string;
     public category: string;
     public asset: any;
+    public email: string;
 }
