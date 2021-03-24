@@ -12,13 +12,13 @@
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
+                    <span [innerHTML]='postData.post.title'></span>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postData.coverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
+                <span [innerHTML]='postData.post.title'></span>
                 <!-- <span>{{postData.post.detail}}</span> -->
             </div>
             <ng-template #other_topic_detail>
