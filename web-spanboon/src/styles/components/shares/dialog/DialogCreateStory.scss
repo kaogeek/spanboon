@@ -631,6 +631,9 @@
                 text-align: center;
                 margin: 0px 10px 0px 10px;
               }
+              .text-count {
+                display: none;
+              }
               .text-point {
                 color: #c9c9c9;
                 text-align: center;
@@ -1149,6 +1152,41 @@ a.palette-item {
   .dialog-create-story .create-story .create-story-b .create-story-b-story .box-create-body {
     padding: unset !important;
     width: unset !important;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score
+    .text-score {
+    display: none;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score
+    .text-count {
+    display: block;
+    color: #c9c9c9;
+    text-align: center;
+    margin: 0px 10px 0px 10px;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score {
+    align-items: center;
+    svg {
+      margin: 0px 10px;
+    }
   }
 }
 

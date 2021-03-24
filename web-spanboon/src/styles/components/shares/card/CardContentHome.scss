@@ -41,6 +41,7 @@
             height: 100px;
             word-break: break-word;
             position: relative;
+            padding: 0px 5px;
             > .bottom_small_card_detail {
                 > span {
                     margin-top: 5px;
@@ -76,11 +77,30 @@
             > .bottom_small_card_detail_footer {
                 position: absolute;
                 bottom: 0;
+                width: 100%;
                 > .owner {
+                    display: flex;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    line-height: 18px;
                     color: rgb(150, 150, 150);
                     @include font-size-11($font-head-500);
+                    > .new-cards-offical {
+                        display: flex;
+                        width: 14px;
+                        height: 14px;
+                        margin: 0 5pt 0 0;
+                        flex: 0 0 auto;
+                        > g {
+                            > path {
+                                fill: rgb(150, 150, 150);
+                            }
+                        }
+                    }
                 }
                 > .amount_social {
+                    margin-top: 5px;
                     color: rgb(44, 44, 44);
                     @include font-size-11($font-head-400);
                 }
@@ -119,16 +139,13 @@
         }
         > .bottom_medium_card {
             width: 300px;
-            height: 150px;
+            height: 250px;
             word-break: break-word;
             position: relative;
+            padding: 0px 5px;
             > .bottom_medium_card_detail {
                 > span {
                     margin-top: 5px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
                     line-height: 18px;
                     @include font-size-11($font-head-300);
                 }
@@ -143,27 +160,58 @@
                     @include font-size-9($font-head-500);
                 }
             }
+            > a {
+                @include font-size-11($font-head-500);
+            }
             > .other_topic_detail {
                 > span {
                     margin-top: 5px;
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
+                    -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-10($font-head-300);
+                    @include font-size-11($font-head-300);
                 }
             }
             > .bottom_medium_card_detail_footer {
                 position: absolute;
                 bottom: 0;
                 > .owner {
+                    display: flex;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    line-height: 18px;
                     color: rgb(150, 150, 150);
                     @include font-size-11($font-head-500);
+                    > .new-cards-offical {
+                        display: flex;
+                        width: 14px;
+                        height: 14px;
+                        margin: 0 5pt 0 0;
+                        flex: 0 0 auto;
+                        > g {
+                            > path {
+                                fill: rgb(150, 150, 150);
+                            }
+                        }
+                    }
                 }
                 > .amount_social {
-                    color: rgb(44, 44, 44);
+                    margin-top: 5px;
+                    color: rgb(92, 92, 92);
                     @include font-size-11($font-head-400);
+                    > .count-aontrol {
+                    }
+
+                    > .title-control {
+                        margin-left: 2px;
+                    }
+
+                    > .drot {
+                        margin: 0 5pt;
+                    }
                 }
             }
         }
@@ -199,17 +247,14 @@
             }
         }
         > .bottom_large_card {
-            width: 400px;
-            height: 150px;
+            width: 300px;
+            height: 250px;
             word-break: break-word;
             position: relative;
+            padding: 0px 5px;
             > .bottom_large_card_detail {
                 > span {
                     margin-top: 5px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
                     line-height: 18px;
                     @include font-size-11($font-head-300);
                 }
@@ -224,27 +269,59 @@
                     @include font-size-9($font-head-500);
                 }
             }
+            > a {
+                @include font-size-11($font-head-500);
+            }
             > .other_topic_detail {
                 > span {
                     margin-top: 5px;
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
+                    -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-10($font-head-300);
+                    @include font-size-11($font-head-300);
                 }
             }
             > .bottom_large_card_detail_footer {
                 position: absolute;
                 bottom: 0;
                 > .owner {
+                    display: flex;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    line-height: 18px;
                     color: rgb(150, 150, 150);
                     @include font-size-11($font-head-500);
+                    > .new-cards-offical {
+                        display: flex;
+                        width: 14px;
+                        height: 14px;
+                        margin: 0 5pt 0 0;
+                        flex: 0 0 auto;
+                        > g {
+                            > path {
+                                fill: rgb(150, 150, 150);
+                            }
+                        }
+                    }
                 }
+
                 > .amount_social {
-                    color: rgb(44, 44, 44);
+                    margin-top: 5px;
+                    color: rgb(92, 92, 92);
                     @include font-size-11($font-head-400);
+                    > .count-aontrol {
+                    }
+
+                    > .title-control {
+                        margin-left: 2px;
+                    }
+
+                    > .drot {
+                        margin: 0 5pt;
+                    }
                 }
             }
         }
@@ -284,6 +361,7 @@
             height: 150px;
             word-break: break-word;
             position: relative;
+            padding: 0px 5px;
             > .bottom_extra_card_detail {
                 > span {
                     margin-top: 5px;
