@@ -68,15 +68,20 @@ export class AboutPage extends AbstractPage implements OnInit {
     @ViewChild('facebookURL', { static: false }) facebook: ElementRef;
     @ViewChild('twitter', { static: false }) twitter: ElementRef;
     @ViewChild('lineId', { static: false }) lineId: ElementRef;
-    @ViewChild('background', { static: false }) background: ElementRef;
+    @ViewChild('address', { static: false }) address: ElementRef;
+    @ViewChild('latitude', { static: false }) latitude: ElementRef;
+    @ViewChild('longtitude', { static: false }) longtitude: ElementRef;
+    @ViewChild('background', { static: false }) background: any;
 
     public pageId: string;
     public phone: any;
     public resDataPage: any;
     public resAboutPage: any;
     public cloneData: any;
+    public arrAboutPage: any[] = [];
     public cloneAboutPage: any;
     public uuid: boolean;
+    public indexCard: number;
 
     public links = [
         {
@@ -184,7 +189,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.getDataPage(); 
+        this.getDataPage();
     }
 
     public ngOnDestroy(): void {
@@ -367,8 +372,8 @@ export class AboutPage extends AbstractPage implements OnInit {
             console.log('err ', err)
             if (err.error.status === 0) {
                 if (err.error.message === 'Unable got Page') {
-                  this.showAlertDialog('ไม่พบเพจ');
-                } 
+                    this.showAlertDialog('ไม่พบเพจ');
+                }
             }
         });
     }
@@ -484,15 +489,16 @@ export class AboutPage extends AbstractPage implements OnInit {
         if (phone === clonePhone) {
             this.isActiveButton3 = false;
         } else {
-            if (phone.length > 0) { 
+            if (phone.length > 0) {
                 this.isActiveButton3 = true;
                 let pattern = phone.match('^[0-9]{9}$|^[0-9]{10}$');
-             
+
                 if (!pattern) {
                     return document.getElementById('phone').style.border = '2px solid red';
 
-                } else { 
-                    return document.getElementById('phone').style.border = '2px solid green'; 
+                } else {
+                    this.phone = phone;
+                    return document.getElementById('phone').style.border = '2px solid green';
                 }
             }
         }
@@ -527,9 +533,10 @@ export class AboutPage extends AbstractPage implements OnInit {
             }
         } else if (index === 4) {
             body = {
-                backgroundStory: this.background.nativeElement.value
+                backgroundStory: this.resDataPage.backgroundStory
             }
         } else if (index === 5) {
+            console.log('this.phone ', this.phone)
             body = {
                 mobileNo: this.phone
             }
@@ -557,12 +564,17 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
                 this.resDataPage = res.data;
-                this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings'); 
+                this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
                 this.closeCard(index);
             }
         }).catch((err) => {
             console.log('error ', err)
         });
+    }
+
+    public optionClicked(event) {
+        event.stopPropagation();
+        this.showOptions(event);
     }
 
     public showOptions(event) {
@@ -639,35 +651,114 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public aboutPage(text: string, index: any) {
-        const aboutPage = new AboutPages();
-        let arr = [];
-        if (index === '3') {
-            if (text !== '') {
-                aboutPage.label = 'หน่วยงาน';
-                aboutPage.value = text;
-                aboutPage.ordering = 1;
-            }
-        } else if (index === '13') {
-            if (text !== '') {
-                aboutPage.label = 'ละติจูด';
-                aboutPage.value = text;
-                aboutPage.ordering = 1;
-            }
-        } else if (index === '14') {
-            if (text !== '') {
-                aboutPage.label = 'ลองจิจูด';
-                aboutPage.value = text;
-                aboutPage.ordering = 2;
+        let pattern1, pattern2;
+
+        if (this.latitude.nativeElement.value !== undefined && this.latitude.nativeElement.value !== null && this.latitude.nativeElement.value !== ''
+            && this.longtitude.nativeElement.value !== undefined && this.longtitude.nativeElement.value !== null && this.longtitude.nativeElement.value !== '') {
+            this.isActiveButton11 = true;
+        } else {
+            this.isActiveButton11 = false;
+        }
+        this.indexCard = index;
+        if (index === '12') {
+            pattern1 = text.match(/((\d+)+(\.\d+))$/);
+            if (!pattern1) {
+                return document.getElementById('latitude').style.border = '2px solid red';
+            } else {
+                return document.getElementById('latitude').style.border = '2px solid green';
             }
         }
-        arr.push(aboutPage);
-        this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
-            arr = [];
-            let indexValue = Number(index);
-            this.closeCard(indexValue);
-        }).catch((err: any) => {
-            console.log('ere ', err)
-        })
+        if (index === '13') {
+            pattern2 = text.match(/((\d+)+(\.\d+))$/);
+            if (!pattern2) {
+                return document.getElementById('longtitude').style.border = '2px solid red';
+            } else {
+                return document.getElementById('longtitude').style.border = '2px solid green';
+            }
+        }
+
+        // if (index === '3') {
+        //     if (text !== '') {
+        //         aboutPage.label = 'หน่วยงาน';
+        //         aboutPage.value = text;
+        //         aboutPage.ordering = 1;
+        //     }
+        // } else if (index === '12') {
+        //     if (text !== '') {
+        //         aboutPage1.label = 'ละติจูด';
+        //         aboutPage1.value = text;
+        //         aboutPage1.ordering = 1;
+        //     }
+        //     this.arrAboutPage.push(aboutPage1);
+        // }
+        // if (index === '13') {
+        //     if (text !== '') {
+        //         aboutPage.label = 'ลองจิจูด';
+        //         aboutPage.value = text;
+        //         aboutPage.ordering = 2;
+        //     }
+        //     this.arrAboutPage.push(aboutPage);
+        // }  
+        // this.arrAboutPage.push(aboutPage);
+    }
+
+    public createAboutPage(name?: string, data?: any, index?: string) {
+        if (name === 'organzier') {
+            const aboutPage = new AboutPages();
+            let arr: any = []
+            aboutPage.label = 'หน่วยงาน';
+            aboutPage.value = data;
+            aboutPage.ordering = 1;
+            arr.push(aboutPage);
+
+            this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
+                let indexValue = Number(this.indexCard);
+                this.closeCard(indexValue);
+            }).catch((err: any) => {
+                console.log('ere ', err)
+            })
+
+        } else {
+            let body;
+            if (this.address.nativeElement.value !== undefined && this.address.nativeElement.value !== null && this.address.nativeElement.value !== '') {
+                body = {
+                    address: this.address.nativeElement.value
+                }
+                this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
+                    if (res.data) {
+                        this.resDataPage = res.data;
+                        this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+                        this.closeCard(11);
+                    }
+                }).catch((err) => {
+                    console.log('error ', err)
+                });
+            }
+
+            const aboutPage = new AboutPages();
+            if (this.latitude.nativeElement.value !== undefined && this.latitude.nativeElement.value !== null && this.latitude.nativeElement.value !== '') {
+                aboutPage.label = 'ละติจูด';
+                aboutPage.value = this.latitude.nativeElement.value;
+                aboutPage.ordering = 1;
+                this.arrAboutPage.push(aboutPage);
+            }
+            const aboutPage1 = new AboutPages();
+            if (this.longtitude.nativeElement.value !== undefined && this.longtitude.nativeElement.value !== null && this.longtitude.nativeElement.value !== '') {
+                aboutPage1.label = 'ลองจิจูด';
+                aboutPage1.value = this.longtitude.nativeElement.value;
+                aboutPage1.ordering = 2;
+                this.arrAboutPage.push(aboutPage1);
+            }
+
+            // if (this.arrAboutPage.length > 0) {
+            // this.aboutPageFacade.create(this.pageId, this.arrAboutPage).then((res: any) => {
+            //     let indexValue = Number(this.indexCard);
+            //     this.closeCard(indexValue);
+            // }).catch((err: any) => {
+            //     console.log('ere ', err)
+            // })
+            // } 
+        }
     }
 
     public getDirtyConfirmEvent(): EventEmitter<any> {
