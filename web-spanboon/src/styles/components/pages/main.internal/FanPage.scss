@@ -400,7 +400,7 @@
 
               > .material-icons {
                 font-family: "Material Icons" !important;
-                font-size: $font-size-icon-small;
+                font-size: $font-size-icon-large;
                 @include pointer();
                 flex: 0 0 auto;
               }
@@ -1028,7 +1028,7 @@
                   width: 100%;
                   height: auto;
                   padding: unset !important;
-                  border-bottom: unset !important;
+                  // border-bottom: unset !important;
 
                   > .wrapper-doing {
                     display: flex;

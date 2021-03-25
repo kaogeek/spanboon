@@ -641,9 +641,30 @@
           left: 0;
         }
 
+        >.edit-post {
+          color: $black;
+          @include font-size-9($font-head-500);
+        }
+
         mat-form-field {
           z-index: 1;
           position: relative;
+          // >.mat-form-field-wrapper {
+          //   >.mat-form-field-flex {
+          //     >.mat-form-field-infix {
+          //       >.mat-select {
+          //         >.mat-select-trigger {
+
+          //         }
+          //         >.mat-select-arrow-wrapper {
+          //           &.active {
+          //             display: none;
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
         }
       }
     }

@@ -271,6 +271,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.data.modeDoIng = true;
       this.data.isMobileButton = true;
       this.data.id = this.user.id;
+      this.data.isSharePost = true;
       if (this.router.url.split('/')[1] === 'page') {
         this.data.name = this.router.url.split('/')[2];
       } else {
