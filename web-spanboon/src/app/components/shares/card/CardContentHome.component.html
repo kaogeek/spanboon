@@ -50,7 +50,14 @@
 
 
     <div *ngIf="mediumCard" class="medium_card">
-
+        <div class="type_post">
+            <div class="type" [class.need]="postData.post.type === 'NEEDS'"
+                [class.general]="postData.post.type === 'GENERAL'"></div>
+            <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
+            <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
+            <span class="drot">•</span>
+            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+        </div>
         <div class="top_medium_card">
             <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
                 <img width="150%" src={{postData.imageBase64}}>
@@ -64,7 +71,7 @@
         <div class="bottom_medium_card">
             <div class="bottom_medium_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
                 <span class="title">{{postData.post.title}}</span>
-                <span>{{postData.dateTime | thformatdatetime}}</span>
+                <span>{{postData.post.detail}}</span>
             </div>
             <a>อ่านต่อ...</a>
             <ng-template #other_topic_detail>
