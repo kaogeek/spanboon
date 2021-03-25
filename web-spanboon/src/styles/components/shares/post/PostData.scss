@@ -18,7 +18,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 15pt;
+    padding: 12pt;
     &.active {
       justify-content: unset;
     }
@@ -231,7 +231,7 @@
 
   > .dropdown {
     position: absolute;
-    top: 12pt;
+    top: 8pt;
     // top: 7pt;
     right: 14px;
     width: 30px;
@@ -251,7 +251,7 @@
     > .mat-button-wrapper {
       > .material-icons {
         font-size: $font-size-icon-large;
-        font-family: 'Material Icons' !important;
+        font-family: "Material Icons" !important;
       }
     }
   }
@@ -871,10 +871,10 @@
   .card-feed-post {
     margin: 9pt 0;
     > .header-post {
-      padding: 15pt 10pt;
+      padding: 12pt;
     }
     > .dropdown {
-      top: 12pt;
+      top: 8pt;
     }
     > .wrapper-content {
       padding: 15pt 10pt 0 10pt;

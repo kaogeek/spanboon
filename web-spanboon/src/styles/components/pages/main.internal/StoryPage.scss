@@ -410,7 +410,7 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      background-color: rgb(0 0 0 / 43%);
+      background-color: rgb(0 0 0 / 0.7);
       > .text-box {
         display: flex;
         flex-direction: column;
@@ -423,7 +423,7 @@
         }
         > .post-title {
           width: 100%;
-          @include font-size-6($font-head-500);
+          @include font-size-4($font-head-500);
           word-break: break-all;
           line-height: 40px;
           margin-bottom: 20px;
@@ -436,7 +436,7 @@
         > .post-content {
           @include font-size-8($font-head-300);
           width: 100%;
-          line-height: 20px;
+          line-height: 1.5;
           word-break: break-all;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -445,9 +445,9 @@
           -webkit-box-orient: vertical;
         }
         > .line {
-          width: 60%;
+          width: 100%;
           background-color: white;
-          height: 5px;
+          height: 2px;
           margin: 30px;
         }
         > .count {
@@ -548,32 +548,33 @@
               display: flex;
               align-items: center;
               > .type-status-needs {
-                width: 15px;
-                height: 15px;
+                width: 8pt;
+                height: 8pt;
                 border-radius: 50%;
                 background-color: $status-post-need;
               }
               > .type-status-general {
-                width: 15px;
-                height: 15px;
+                width: 8pt;
+                height: 8pt;
                 border-radius: 50%;
                 background-color: $status-post-general;
               }
               > .type-display {
                 margin: 0px 10px;
-                @include font-size-9($font-head-500);
+                color: $color-black;
+                @include font-size-10($font-head-500);
               }
               > .time-display {
                 margin: 0px 5px;
-                @include font-size-9($font-head-300);
+                @include font-size-10($font-head-300);
               }
             }
             > .user-display {
               > span {
-                @include font-size-9($font-head-300);
+                @include font-size-10($font-head-300);
               }
               > a {
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
                 color: $color-gray;
 
                 &:hover {
