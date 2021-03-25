@@ -73,13 +73,16 @@ export class StoryPage extends AbstractPage implements OnInit {
   public dataNeeds: any;
   public type: string;
   public pageUser: any
-  public userCloneDatas: any
-  public url: any
-  public user: any
-  public asPage: any
-  public recommendedStory: any
-  public recommendedStorys: any
-  public recommendedStoryHashtag: any
+  public userCloneDatas: any;
+  public url: any;
+  public user: any;
+  public asPage: any;
+  public recommendedStory: any = [];
+  public recommendedStorys: any = [];
+  public recommendedStoryHashtag: any;
+
+  public story: any;
+  public title: any;
 
   public emergencyEventTag: any
   public objectiveTag: any
@@ -90,17 +93,26 @@ export class StoryPage extends AbstractPage implements OnInit {
   public linkPage: any
 
   public loding: boolean;
-  public isComment: boolean
+  public isStoryData: boolean;
   public isPreload: boolean = true;
   public isLoding: boolean = true;
   public isPendingFulfill: boolean = false;
   public isSearchHashTag: boolean
   public apiBaseURL = environment.apiBaseURL;
   public h: number
+
+  public needs: any = [];
+
+  public isComment: boolean;
+  public isRepost: boolean;
+  public isLike: boolean;
+  public isShare: boolean;
   public commentCount: number;
   public repostCount: number;
   public likeCount: number;
   public shareCount: number;
+
+  public pageName: string;
 
 
   public config: SwiperConfigInterface = {
@@ -206,7 +218,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.routeActivated = routeActivated;
     this.postCommentFacade = postCommentFacade;
     this.postFacade = postFacade;
-    this.isComment = false
     this.isSearchHashTag = false
     this.isLoding = true;
     this.position = "50% 80%"
@@ -229,6 +240,12 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.emergencyEventTag = this.postStoryData.emergencyEventTag
       this.createdDate = this.postStoryData.createdDate;
       this.ownerUser = this.postStoryData.ownerUser;
+      if (this.postStoryData.pageId !== null && this.postStoryData.pageId !== undefined) {
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          this.postStoryData.pageData = page
+        }).catch((err: any) => {
+        });
+      }
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
       }).catch((err: any) => {
@@ -252,13 +269,11 @@ export class StoryPage extends AbstractPage implements OnInit {
         }).catch((err: any) => {
         });
       }
-      setTimeout(() => {
-        this.loding = false
-        this.getRecommendedStory();
-        this.getRecommendedStorys();
-        this.getRecommendedHashtag();
-        this.setCardSilder();
-      }, 1500);
+      this.loding = false
+      this.getRecommendedStory();
+      this.getRecommendedStorys();
+      this.getRecommendedHashtag();
+      this.setCardSilder();
       setTimeout(() => {
         this.isPreload = false
       }, 500);
@@ -267,6 +282,7 @@ export class StoryPage extends AbstractPage implements OnInit {
 
       console.log(err)
     })
+
     this.user = this.authenManager.getCurrentUser();
     if (this.user !== undefined && this.user !== null) {
       this.getProfileImage(this.user);
@@ -276,6 +292,19 @@ export class StoryPage extends AbstractPage implements OnInit {
     }
 
     setTimeout(() => {
+      this.pageName = this.postStoryData.pageData.data.name;
+      this.story = this.postStoryData.story;
+      this.title = this.postStoryData.title;
+
+      this.isComment = this.postStoryData.isComment;
+      this.isRepost = this.postStoryData.isRepost;
+      this.isLike = this.postStoryData.isLike;
+      this.isShare = this.postStoryData.isShare;
+      this.commentCount = this.postStoryData.commentCount;
+      this.repostCount = this.postStoryData.repostCount;
+      this.likeCount = this.postStoryData.likeCount;
+      this.shareCount = this.postStoryData.shareCount;
+      this.needs = this.postStoryData.needs;
       this.isLoding = false;
     }, 3500);
 

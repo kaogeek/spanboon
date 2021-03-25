@@ -75,13 +75,16 @@ export class DialogPost extends AbstractPage {
     }, 1000);
 
     this.observManager.createSubject(REFRESH_DATA);
-    this.observManager.createSubject('scroll.fix');
-
+    this.observManager.createSubject('scroll.fix'); 
     if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
-      this.isSharePost = true;
+      if(this.data && !this.data.isSharePost){
+        this.isSharePost = this.data.isSharePost;
+      } else { 
+        this.isSharePost = true;
+      }
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {

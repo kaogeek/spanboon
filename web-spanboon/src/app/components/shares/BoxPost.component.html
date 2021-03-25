@@ -17,23 +17,23 @@
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
-                                <span>{{accessPageImage && ( accessPageImage.name || accessPageImage.displayName |
+                                <span>{{accessPageImage && ( accessPageImage.displayName || accessPageImage.name |
                                     slice: 0:1 ) }}</span>
                             </div>
-                        </ng-template> 
-                        <mat-select name="pageName" [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
+                        </ng-template>
+                        <mat-select [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="data.user.displayName" (click)="selectAccessPage(data.user , 'USER')">
+                                <mat-option *ngIf="index === 0 && data.user.type === 'user'"
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    (click)="selectAccessPage(data.user)">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
                                                 *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
                                                 <img class="icon-image" src="{{data.user.imageURL}}" alt="">
                                             </ng-container>
-                                            <ng-template #elseImageProfile> 
-                                                <!-- <div class="icon-image profile-label">
-                                                    {{data.user.displayName | slice: 0:1 }}
-                                                </div> -->
+                                            <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
                                             </ng-template>
                                         </div>
@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page, 'PAGE')">
+                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page ,'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -59,7 +59,6 @@
                                     </div>
                                 </mat-option>
                             </ng-container>
-
                         </mat-select>
                     </div>
                 </mat-form-field>
@@ -80,13 +79,16 @@
                                     slice: 0:1 ) }}</span>
                             </div>
                         </ng-template>
-                        <mat-select name="pageName" [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
+                        <mat-select [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="data.user.displayName"
-                                    (click)="selectAccessPage(data.user , 'USER')">
+                                <mat-option *ngIf="index === 0 && data.user.type === 'user'"
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    (click)="selectAccessPage(data.user)">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
-                                            <ng-container *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
+                                            <ng-container
+                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
                                                 <img class="icon-image" src="{{data.user.imageURL}}" alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
@@ -98,8 +100,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.name"
-                                    (click)="selectAccessPage(data.page, 'PAGE')">
+                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page ,'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -116,15 +117,13 @@
                                     </div>
                                 </mat-option>
                             </ng-container>
-
                         </mat-select>
                     </div>
                 </mat-form-field>
             </div>
 
             <div class="box-toggle">
-                <span *ngIf="!isMobilePost">สร้าง{{PLATFORM_STORY}} :</span>
-                <!-- <span *ngIf="isMobilePost" class="material-icons"> history_edu </span> -->
+                <span *ngIf="isShowText">สร้าง{{PLATFORM_STORY}} :</span>
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
                 <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
@@ -344,7 +343,8 @@
                                                     [(ngModel)]="selectedValue" name="objectCategory" required>
                                                     <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
                                                     </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.name">
+                                                    <mat-option *ngFor="let item of resPageCategory"
+                                                        [value]="item.name">
                                                         {{item.name}}
                                                     </mat-option>
                                                 </mat-select>
@@ -718,8 +718,8 @@
                                     accept="image/*" multiple />
                             </div>
                         </ng-template>
-                    </div> 
-                    <ng-container *ngIf="isSharePost"> 
+                    </div>
+                    <ng-container *ngIf="isSharePost">
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
                             <svg class="icon-social"
                                 [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
@@ -751,7 +751,8 @@
                                     </div>
                                 </div>
                                 <div class="body-list">
-                                    <div class="checklist" *ngIf="facebookConection && !facebookConection.data">
+                                    <div class="checklist"
+                                        *ngIf="facebookConection && !facebookConection.data && twitterConection && !twitterConection.data">
                                         <span class="list-found">ไม่พบเพจหรือบัญชีผู้ใช้</span>
                                     </div>
                                     <div class="checklist" *ngIf="facebookConection && facebookConection.data">

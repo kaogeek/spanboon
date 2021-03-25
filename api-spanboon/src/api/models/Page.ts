@@ -79,6 +79,9 @@ export class Page extends BaseModel {
     @Column({ name: 'address' })
     public address: string;
 
+    @Column({ name: 'email' })
+    public email: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

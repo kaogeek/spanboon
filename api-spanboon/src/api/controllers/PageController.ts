@@ -1516,6 +1516,7 @@ export class PageController {
         page.coverPosition = pages.coverPosition;
         page.color = pages.color;
         page.backgroundStory = page.backgroundStory;
+        page.email = pages.email;
         page.category = (pageCategory !== null && pageCategory !== undefined) ? new ObjectID(pageCategory.id) : null;
         page.isOfficial = false;
         page.banned = false;
@@ -1929,6 +1930,7 @@ export class PageController {
             let pageAddress = pages.address;
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
+            let pageEmail = pages.email;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -1975,6 +1977,10 @@ export class PageController {
 
             if (pageTwitterURL === null || pageTwitterURL === undefined) {
                 pageTwitterURL = pageUpdate.twitterURL;
+            }
+
+            if (pageEmail === null || pageEmail === undefined) {
+                pageEmail = pageUpdate.email;
             }
 
             // let updateImageAsset;
@@ -2076,7 +2082,8 @@ export class PageController {
                     websiteURL: pageWebsiteURL,
                     mobileNo: pageMobileNo,
                     address: pageAddress,
-                    twitterURL: pageTwitterURL
+                    twitterURL: pageTwitterURL,
+                    email: pageEmail
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);

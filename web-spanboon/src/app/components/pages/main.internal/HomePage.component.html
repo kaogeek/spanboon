@@ -132,12 +132,12 @@
             [bgColor]="'transparent'"></status-bar>
         <ng-container *ngIf="dataMainPage.viewSection.contents; else elseViewSection">
             <ng-container *ngIf="dataMainPage.viewSection.isList; else elseTemplateviewSection">
-                <div class="missed-wrap"> 
+                <div class="missed-wrap">
                     <post-card class="card-missed"
                         *ngFor="let dataViewSection of dataMainPage.viewSection.contents;let index = index"
                         [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
                         [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
-                        [images]="dataViewSection.imageBase64" [isWhite]="true" 
+                        [images]="dataViewSection.imageBase64" [isWhite]="true"
                         [pageName]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
                         [username]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
                         [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
@@ -202,6 +202,7 @@
                 <image-card class="card-img-pin-tag" [widthImg]="'100%'" [isPin]="'true'" [isWhite]="true"
                     [showLoading]="showLoading" [data]="cardPin" [countFacebook]="cardPin.facebookCount | shortNumber"
                     [countTwitter]="cardPin.twitterCount | shortNumber"
+                    [images]="apiBaseURL+cardPin.coverPageUrl+'/image'"
                     [countSpanboon]="cardPin.postCount | shortNumber" [hashTag]="cardPin.title" [name]="cardPin.owner">
                 </image-card>
                 <div class="wrapper-pin-img">
