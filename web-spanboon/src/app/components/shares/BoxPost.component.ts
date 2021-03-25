@@ -340,8 +340,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('11111')
+  ngOnChanges(changes: SimpleChanges): void { 
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();

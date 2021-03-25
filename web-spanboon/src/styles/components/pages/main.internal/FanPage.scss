@@ -526,11 +526,25 @@
                       fill: #6fc32e;
                     }
                   }
+                  >.location {
+                    > svg,
+                    g,
+                    path {
+                      fill: #fd5454;
+                    }
+                  }
                   > .phone {
                     > svg,
                     g,
                     path {
-                      fill: #5a5a5a;
+                      fill: #6fc32e;
+                    }
+                  }
+                  > .message {
+                    > svg,
+                    g,
+                    path {
+                      fill: #FCD12A;
                     }
                   }
                   > .web {
