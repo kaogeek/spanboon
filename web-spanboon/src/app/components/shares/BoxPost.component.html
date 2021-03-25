@@ -434,7 +434,7 @@
                                                     d="M17.88,3.068A10.474,10.474,0,0,0,3.067,17.88,10.474,10.474,0,0,0,17.88,3.068ZM10.473,19.311a8.837,8.837,0,1,1,8.837-8.837,8.847,8.847,0,0,1-8.837,8.837Zm.818-9.656h3.682v1.637H11.292v3.682H9.655V11.291H5.973V9.655H9.655V5.973h1.637Zm0,0"
                                                     transform="translate(0)" fill="#212721" />
                                             </svg>
-                                            เพิ่มใหม่
+                                            <span class="add-label">เพิ่มใหม่</span>
                                             <div class="lable-add"></div>
                                         </div>
                                     </div>
@@ -447,10 +447,8 @@
                                             <div class="wrapper-doing" id="wrapper-doing"
                                                 [class.active-click-doing]="selectedObjectiveId === item.id"
                                                 *ngFor="let item of resObjective ; let i = index"
-                                                (click)="clickCardObjective(i,item)">
-
-                                                <ng-container
-                                                    *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
+                                                (click)="clickCardObjective(i,item)"> 
+                                                <ng-container *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
                                                     <span class="loading-image">
                                                         <div class="linear-background">
                                                         </div>
@@ -812,15 +810,15 @@
                         </mat-select>
                     </mat-form-field>
                 </ng-container>
-                <ng-template #elseIsFulfill>
-                    <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
-                        <mat-select [(value)]="selected1">
-                            <ng-container *ngIf="isEdit; else elseIsEdit">
-                                <mat-option [value]="'แก้ไขโพสต์'" (click)="onClickGetDataPost()">
-                                    แก้ไขโพสต์
-                                </mat-option>
-                            </ng-container>
-                            <ng-template #elseIsEdit>
+                <ng-template #elseIsFulfill> 
+                    <ng-container *ngIf="isEdit; else elseIsEdit">
+                        <div class="edit-post" (click)="onClickGetDataPost()">
+                            แก้ไขโพสต์
+                        </div>
+                    </ng-container>
+                    <ng-template #elseIsEdit>
+                        <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
+                            <mat-select [(value)]="selected1">
                                 <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
                                     โพสต์
                                 </mat-option>
@@ -834,9 +832,29 @@
                                 <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                     ตั้งเวลาโพสต์
                                 </mat-option>
-                            </ng-template>
-                        </mat-select>
-                    </mat-form-field>
+                                <!-- <ng-container *ngIf="isEdit; else elseIsEdit"> 
+                                    <mat-option [value]="'แก้ไขโพสต์'" [class.active]="isEdit" (click)="onClickGetDataPost()">
+                                        แก้ไขโพสต์
+                                    </mat-option>
+                                </ng-container>
+                                <ng-template #elseIsEdit>
+                                    <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                        โพสต์
+                                    </mat-option>
+                                    <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                        โพสต์
+                                    </mat-option>
+                                    <mat-option *ngIf="isRepost" [value]="'บันทึกฉบับร่าง'"
+                                        (click)="onClickGetDataPost(true)">
+                                        บันทึกฉบับร่าง
+                                    </mat-option>
+                                    <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
+                                        ตั้งเวลาโพสต์
+                                    </mat-option>
+                                </ng-template> -->
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-template> 
                 </ng-template>
             </div>
         </div>

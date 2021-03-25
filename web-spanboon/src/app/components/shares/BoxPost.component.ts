@@ -301,7 +301,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data = {};
 
     this.observManager.subscribe('authen.check', (data) => {
-
+      this.selectOption();
     });
 
     this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
@@ -583,9 +583,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public updateText() {
-    document.addEventListener('paste', (evt: any) => { 
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake'  || evt.srcElement.className === 'textarea-editor msg-error-shake'
-      || evt.srcElement.className === 'header-story'|| evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake' ) {
+    document.addEventListener('paste', (evt: any) => {
+      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake' || evt.srcElement.className === 'textarea-editor msg-error-shake'
+        || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake') {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
@@ -758,10 +758,10 @@ export class BoxPost extends AbstractPage implements OnInit {
     // horizontalPosition: 'center',
     // panelClass: customize
     if (!this.isStory) {
-      if(window.innerWidth <= 1024){
-        this.snackBarToast("ปิดสตอรี่",1000);
+      if (window.innerWidth <= 1024) {
+        this.snackBarToast("ปิดสตอรี่", 1000);
       }
-      
+
       if (!(Object.keys(this.dataStroy).length === 0 && this.dataStroy.constructor === Object)) {
         const confirmEventEmitter = new EventEmitter<any>();
         confirmEventEmitter.subscribe(() => {
@@ -808,8 +808,8 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       }
     } else {
-      if(window.innerWidth <= 1024){
-        this.snackBarToast("เปิดสตอรี่",1000);
+      if (window.innerWidth <= 1024) {
+        this.snackBarToast("เปิดสตอรี่", 1000);
       }
     }
   }
@@ -1598,6 +1598,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           if (data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null) {
             Object.assign(this.resObjective[index], { isLoadImageIcon: true });
             this.getDataIcon(data.iconURL, index);
+          } else {
+            Object.assign(this.resObjective[index], { isLoadImageIcon: false });
+            this.isLoading = false;
           }
           index++;
         }
@@ -1887,7 +1890,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.getTextLength();
   }
 
-  public clickCardObjective(index: number, item: any) {
+  public clickCardObjective(index: number, item: any) { 
     if (this.elementCheck) {
       if (this.dataObjective && this.dataObjective.id === item.id) {
         this.dataObjective = {};
@@ -2042,8 +2045,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
     }, 500);
 
-    setTimeout(() => {
-
+    setTimeout(() => { 
       this.setTopobj();
     }, 0);
   }
@@ -2445,6 +2447,11 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public onResize() {
     this.checkTabs();
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+
     if (window.innerWidth <= 479) {
       this.isMobilePost = true;
       this.isMobileText = true;
