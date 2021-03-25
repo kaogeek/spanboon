@@ -1103,11 +1103,12 @@ export class PagePostController {
                     },
                     {
                         $project: {
-                            'objective._id': 0,
+                            // 'objective._id': 0,
                             'objective.pageId': 0,
                             'objective.title': 0,
                             'objective.detail': 0,
                             'objective.iconURL': 0,
+                            'objective.hashTag': 0,
                             'objective.createdDate': 0
                         }
                     },
