@@ -150,7 +150,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 5,
+    slidesPerView: 4.6,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,
@@ -161,19 +161,19 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 5,
+        slidesPerView: 4.6,
       },
       899: {
-        slidesPerView: 5,
+        slidesPerView: 3.3,
       },
       676: {
-        slidesPerView: 3.4,
+        slidesPerView: 2.6,
       },
       566: {
-        slidesPerView: 3.4,
+        slidesPerView: 2.3,
       },
       479: {
-        slidesPerView: 3.4,
+        slidesPerView: 1.4,
       },
     },
   }

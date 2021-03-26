@@ -18,6 +18,8 @@ export class CardContentHome {
 
     @Input()
     public postData: any;
+    @Input()
+    public eventData: any;
 
     @Input()
     public smallCard: boolean;
@@ -29,16 +31,30 @@ export class CardContentHome {
     public eventCard: boolean;
 
     public amountSocial: number = 0;
+    public eventDataAct: number = 0;
     public isOfficial: boolean = true;
     public apiBaseURL = environment.apiBaseURL;
 
-    ngOnInit(): void {
-        this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount)
+    // eventCoverPageUrl //
+    public eventCoverPageUrl: string = '';
 
-        console.log('postData', this.postData)
+    ngOnInit(): void {
+        if (this.isDerTy(this.postData))
+            this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
+
+        if (this.isDerTy(this.eventData)) {
+            this.eventDataAct = this.eventData[0];
+            this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
+            console.log('this.eventDataAct', this.eventDataAct)
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+    }
+
+    isDerTy(value): boolean {
+
+        return (value !== null && value !== undefined && value !== '')
     }
 
 }
