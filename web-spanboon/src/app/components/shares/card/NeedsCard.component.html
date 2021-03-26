@@ -64,7 +64,9 @@
                                         </div>
                                     </ng-container>
                                     <ng-template #elseTemplateUnLimit>
-                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"  (click)="fulfillNeeds($event,item)">
+                                        <spanboon-button [class]="'fulfill'" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'"
+                                            [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"
+                                            (click)="fulfillNeeds($event,item)">
                                         </spanboon-button>
                                     </ng-template>
                                 </div>

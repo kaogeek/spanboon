@@ -50,10 +50,12 @@
                         </a>
                     </ng-template>
                 </ng-template>
-                <div class="sub-name">
-                    @{{data.owner.type}}
-                </div>
                 <ng-container *ngIf="data.owner.type === 'PAGE'; else elseTemplatePageOrUser">
+                    <div class="sub-name">
+                        <a class="name" href="page/{{data.owner.uniqueId}}">
+                            @{{data.owner.uniqueId}}
+                        </a>
+                    </div>
                     <div class="category">
                         <div class="text-category">
                             เพจ:
