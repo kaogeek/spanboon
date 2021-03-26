@@ -167,13 +167,13 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
         slidesPerView: 5,
       },
       676: {
-        slidesPerView: 1.5,
+        slidesPerView: 3.4,
       },
       566: {
-        slidesPerView: 1.5,
+        slidesPerView: 3.4,
       },
       479: {
-        slidesPerView: 1.5,
+        slidesPerView: 3.4,
       },
     },
   }

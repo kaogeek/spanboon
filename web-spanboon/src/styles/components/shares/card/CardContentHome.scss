@@ -84,7 +84,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    color: rgb(150, 150, 150);
+                    color: #cacaca;
                     @include font-size-11($font-head-500);
                     > .new-cards-offical {
                         display: flex;
@@ -94,7 +94,7 @@
                         flex: 0 0 auto;
                         > g {
                             > path {
-                                fill: rgb(150, 150, 150);
+                                fill: #cacaca;
                             }
                         }
                     }
@@ -110,6 +110,34 @@
     > .medium_card {
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
+        > .type_post {
+            display: flex;
+            align-items: center;
+            margin: 10px 0px;
+            > .type {
+                width: 6pt;
+                height: 6pt;
+                border-radius: 50%;
+                margin-right: 5px;
+                &.need {
+                    background-color: $status-post-need;
+                }
+                &.general {
+                    background-color: $status-post-general;
+                }
+            }
+            > span {
+                @include font-size-11($font-head-400);
+            }
+            > .date_time {
+                @include font-size-11($font-head-300);
+                color: #cacaca;
+            }
+            > .drot {
+                color: #cacaca;
+                margin: 0px 5px;
+            }
+        }
         > .top_medium_card {
             width: 300px;
             height: 200px;
@@ -183,7 +211,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    color: rgb(150, 150, 150);
+                    color: #cacaca;
                     @include font-size-11($font-head-500);
                     > .new-cards-offical {
                         display: flex;
@@ -193,7 +221,7 @@
                         flex: 0 0 auto;
                         > g {
                             > path {
-                                fill: rgb(150, 150, 150);
+                                fill: #cacaca;
                             }
                         }
                     }
@@ -292,7 +320,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    color: rgb(150, 150, 150);
+                    color: #cacaca;
                     @include font-size-11($font-head-500);
                     > .new-cards-offical {
                         display: flex;
@@ -302,7 +330,7 @@
                         flex: 0 0 auto;
                         > g {
                             > path {
-                                fill: rgb(150, 150, 150);
+                                fill: #cacaca;
                             }
                         }
                     }
@@ -398,7 +426,7 @@
                 position: absolute;
                 bottom: 0;
                 > .owner {
-                    color: rgb(150, 150, 150);
+                    color: #cacaca;
                     @include font-size-11($font-head-500);
                 }
                 > .amount_social {
