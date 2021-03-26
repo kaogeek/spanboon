@@ -282,8 +282,7 @@ export class PostData {
       url += "objective=" + text.objectiveTag;
       type = "objective";
       eventId = text.objective.hashTag;
-    }  
-    
+    }   
     let click = this.engagementService.getEngagement(data.event, eventId, type);
     this.engagement.emit(click)
 

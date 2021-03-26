@@ -80,9 +80,9 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input type="text" #organzier class="input-data" placeholder="ชื่อหน่วยงาน" (keyup)="changeActive(organzier.value,3)"
-                    [(ngModel)]="resAboutPage && resAboutPage.length > 0 && resAboutPage[0].value">
-                <div class="card-bottom" [class.active]="isCard3" >
+                <input type="text" #organzier class="input-data" placeholder="ชื่อหน่วยงาน"
+                    (keyup)="changeActive(organzier.value,3)" [(ngModel)]="dataAboutPage && dataAboutPage.value">
+                <div class="card-bottom" [class.active]="isCard3">
                     <div class="card-title">
                         <div>สรุปสั้นๆ เกี่ยวกับเพจของคุณ จำกัดตัวอักษรที่ 255 ตัวอักษร</div>
                         <div>คุณสามารถเขียนข้อสรุปสั้นๆ เกี่ยวกับเพจนี้ หรือบอกผู้อื่นเกี่ยวกับสินค้าและบริการของคุณ
@@ -90,7 +90,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton4" (click)="createAboutPage('organzier',organzier.value , '3')" >บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton4"
+                            (click)="createAboutPage('organzier',organzier.value , '3')">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '3' , organzier.value )">ยกเลิก</button>
                     </div>
@@ -107,8 +108,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <textarea #background='ngModel' name="background" id="background" class="input-data textarea" placeholder="ความเป็นมา"
-                    [(ngModel)]="resDataPage && resDataPage.backgroundStory"
+                <textarea #background='ngModel' name="background" id="background" class="input-data textarea"
+                    placeholder="ความเป็นมา" [(ngModel)]="resDataPage && resDataPage.backgroundStory"
                     (keyup)="changeActive(background.value , 4)"></textarea>
                 <div class="card-bottom" [class.active]="isCard4">
                     <div class="card-title">
@@ -167,7 +168,8 @@
         <div class="card-right">
             <div class="card-detail">
                 <input #website type="text" class="input-data" placeholder="ป้อนเว็บไซต์"
-                    [(ngModel)]="resDataPage && resDataPage.websiteURL" (keyup)="changeActive(resDataPage.websiteURL,6)">
+                    [(ngModel)]="resDataPage && resDataPage.websiteURL"
+                    (keyup)="changeActive(resDataPage.websiteURL,6)">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -177,8 +179,8 @@
                         <div>ช่วยให้ลูกค้าเป้าหมายเรียนรู้เพิ่มเติมเกี่ยวกับธุรกิจของคุณได้อย่างง่ายๆ</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card"
-                            (click)="editInfoPage(6)" [class.active]="isActiveButtonWeb">บันทึกการเปลี่ยนแปลง</button>
+                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(6)"
+                            [class.active]="isActiveButtonWeb">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '6',website.value)">ยกเลิก</button>
                     </div>
@@ -207,7 +209,8 @@
                             เราจะส่งอีเมลไปยังที่อยู่นี้เพื่อยืนยันว่าอีเมลนี้ถูกต้อง</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(7)" [class.active]="isActiveButtonEmail">บันทึกการเปลี่ยนแปลง</button>
+                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(7)"
+                            [class.active]="isActiveButtonEmail">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '7' , email.value)">ยกเลิก</button>
                     </div>
@@ -283,7 +286,7 @@
         <div class="card-right">
             <div class="card-detail">
                 <input #twitter type="text" class="input-data" placeholder="ป้อนทวิตเตอร์"
-                    (keyup)="changeActive(twitter.value , 10)"  [(ngModel)]="resDataPage && resDataPage.twitterURL">
+                    (keyup)="changeActive(twitter.value , 10)" [(ngModel)]="resDataPage && resDataPage.twitterURL">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -314,7 +317,8 @@
         <div class="card-right">
             <div class="card-detail">
                 <!-- (change)="showOptions($event)" [checked]="isCard11"  -->
-                <div class="div-checkbox" (click)="optionClicked($event);" style="margin-top: 0; margin-bottom: 8pt; font-family: Kanit-600;">
+                <div class="div-checkbox" (click)="optionClicked($event);"
+                    style="margin-top: 0; margin-bottom: 8pt; font-family: Kanit-600;">
                     <mat-checkbox (change)="showOptions($event)" [disableRipple]="'true'">
                         <span class="checkbox-confirm">มีที่อยู่</span>
                     </mat-checkbox>
@@ -322,10 +326,12 @@
                 <input #address type="text" class="input-data" [(ngModel)]="resDataPage && resDataPage.address"
                     style="display: inline-block; margin-right: 5pt; width: calc(100% - 16pt - 2px);"
                     placeholder="ที่อยู่" (keyup)="changeActive(address.value , 11)">
+
                 <input type="text" class="input-data" #latitude id="latitude"
+                    [(ngModel)]="latitudeAboutPage && latitudeAboutPage.value"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt; margin-right: 5pt;"
                     placeholder="ละติจูด" (keyup)="aboutPage(latitude.value , '12')">
-                <input type="text" class="input-data" #longtitude id="longtitude"
+                <input type="text" class="input-data" #longtitude id="longtitude" [(ngModel)]="longtitudeAboutPage && longtitudeAboutPage.value"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt;"
                     placeholder="ลองจิจูด" (keyup)="aboutPage(longtitude.value , '13')">
                 <!-- <div class="div-checkbox">
