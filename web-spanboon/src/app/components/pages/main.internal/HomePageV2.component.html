@@ -24,8 +24,8 @@
     </div>
 
     <div style="display:flex;margin: 10px;">
-        <div *ngFor="let dataViewSection of testData;let index = index">
-            <card-contact-home [eventCard]='true' [postData]='dataViewSection'></card-contact-home>
+        <div>
+            <card-contact-home [eventCard]='true' [eventData]='evant'></card-contact-home>
         </div>
     </div>
 </div>

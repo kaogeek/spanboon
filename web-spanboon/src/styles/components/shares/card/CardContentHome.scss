@@ -12,12 +12,13 @@
         > .top_small_card {
             width: 200px;
             height: 150px;
+            margin-bottom: 10px;
             > .image_base64 {
                 overflow: hidden;
                 height: 150px;
             }
             > .other_topic {
-                background-color: #fcfcfd;
+                background-color: #f0f0f0;
                 width: 100%;
                 height: 100%;
                 word-break: break-word;
@@ -50,7 +51,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-head-300);
+                    @include font-size-11($font-content-medium);
                 }
                 > .title {
                     margin-top: 5px;
@@ -71,7 +72,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-10($font-head-300);
+                    @include font-size-10($font-content-medium);
                 }
             }
             > .bottom_small_card_detail_footer {
@@ -130,7 +131,7 @@
                 @include font-size-11($font-head-400);
             }
             > .date_time {
-                @include font-size-11($font-head-300);
+                @include font-size-11($font-content-medium);
                 color: #cacaca;
             }
             > .drot {
@@ -140,13 +141,14 @@
         }
         > .top_medium_card {
             width: 300px;
+            margin-bottom: 10px;
             height: 200px;
             > .image_base64 {
                 overflow: hidden;
                 height: 200px;
             }
             > .other_topic {
-                background-color: #fcfcfd;
+                background-color: #f0f0f0;
                 width: 100%;
                 height: 100%;
                 word-break: break-word;
@@ -175,7 +177,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 18px;
-                    @include font-size-11($font-head-300);
+                    @include font-size-11($font-content-medium);
                 }
                 > .title {
                     margin-top: 5px;
@@ -189,6 +191,8 @@
                 }
             }
             > a {
+                line-height: 35px;
+                color: $status-post-need;
                 @include font-size-11($font-head-500);
             }
             > .other_topic_detail {
@@ -199,7 +203,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-head-300);
+                    @include font-size-11($font-content-medium);
                 }
             }
             > .bottom_medium_card_detail_footer {
@@ -247,7 +251,37 @@
     > .large_card {
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
+
+        > .type_post {
+            display: flex;
+            align-items: center;
+            margin: 10px 0px;
+            > .type {
+                width: 6pt;
+                height: 6pt;
+                border-radius: 50%;
+                margin-right: 5px;
+                &.need {
+                    background-color: $status-post-need;
+                }
+                &.general {
+                    background-color: $status-post-general;
+                }
+            }
+            > span {
+                @include font-size-11($font-head-400);
+            }
+            > .date_time {
+                @include font-size-11($font-content-medium);
+                color: #cacaca;
+            }
+            > .drot {
+                color: #cacaca;
+                margin: 0px 5px;
+            }
+        }
         > .top_large_card {
+            margin-bottom: 10px;
             width: 400px;
             height: 250px;
             > .image_base64 {
@@ -255,7 +289,7 @@
                 height: 250px;
             }
             > .other_topic {
-                background-color: #fcfcfd;
+                background-color: #f0f0f0;
                 width: 100%;
                 height: 100%;
                 word-break: break-word;
@@ -284,7 +318,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 18px;
-                    @include font-size-11($font-head-300);
+                    @include font-size-11($font-content-medium);
                 }
                 > .title {
                     margin-top: 5px;
@@ -298,6 +332,8 @@
                 }
             }
             > a {
+                line-height: 35px;
+                color: $status-post-need;
                 @include font-size-11($font-head-500);
             }
             > .other_topic_detail {
@@ -308,7 +344,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-head-300);
+                    @include font-size-11($font-content-medium);
                 }
             }
             > .bottom_large_card_detail_footer {
@@ -354,85 +390,16 @@
             }
         }
     }
-    > .extra_card {
-        background-color: rgb(255, 255, 255);
-        margin: 0px 10px;
-        > .top_extra_card {
-            width: 500px;
-            height: 250px;
-            > .image_base64 {
-                overflow: hidden;
-                height: 250px;
-            }
-            > .other_topic {
-                background-color: #fcfcfd;
-                width: 100%;
-                height: 100%;
-                word-break: break-word;
-                display: flex;
-                flex-direction: column;
-                text-align: center;
-                align-items: center;
-                justify-content: center;
-                > span {
-                    @include font-size-9($font-head-500);
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    width: 90%;
-                }
-            }
-        }
-        > .bottom_extra_card {
-            width: 500px;
-            height: 150px;
-            word-break: break-word;
+    > .event_card {
+        > .top_coverPage {
+            width: 450px;
+            height: 300px;
+            overflow: hidden;
             position: relative;
-            padding: 0px 5px;
-            > .bottom_extra_card_detail {
-                > span {
-                    margin-top: 5px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-11($font-head-300);
-                }
-                > .title {
-                    margin-top: 5px;
-                    margin-bottom: 10px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    line-height: 25px;
-                    @include font-size-9($font-head-500);
-                }
-            }
-            > .other_topic_detail {
-                > span {
-                    margin-top: 5px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-10($font-head-300);
-                }
-            }
-            > .bottom_extra_card_detail_footer {
+            > .teg_event {
                 position: absolute;
-                bottom: 0;
-                > .owner {
-                    color: #cacaca;
-                    @include font-size-11($font-head-500);
-                }
-                > .amount_social {
-                    color: rgb(44, 44, 44);
-                    @include font-size-11($font-head-400);
-                }
+            }
+            > img {
             }
         }
     }

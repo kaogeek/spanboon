@@ -569,6 +569,8 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.postCommentFacade.create(commentPosts, this.postStoryData._id).then((res: any) => {
       this.getComment();
       this.textComment = '';
+      this.commentCount++;
+      this.isComment = true
     }).catch((err: any) => {
     })
   }
@@ -619,6 +621,8 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.postFacade.like(this.postStoryData._id, this.asPage).then((res: any) => {
         this.postStoryData.isLike = res.isLike
         this.postStoryData.likeCount = res.likeCount
+        this.likeCount = this.postStoryData.likeCount
+        this.isLike = this.postStoryData.isLike
       }).catch((err: any) => {
         console.log(err)
       });

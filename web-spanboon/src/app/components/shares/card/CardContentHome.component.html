@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="card_content_home">
-    <div *ngIf="smallCard" class="small_card">
+    <div *ngIf="smallCard && postData" class="small_card">
         <div class="top_small_card">
             <div class="image_base64" *ngIf="postData.coverPageUrl;else other_topic">
                 <img width="140%" src="{{apiBaseURL+postData.coverPageUrl+'/image'}}">
@@ -18,7 +18,7 @@
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postData.coverPageUrl;else other_topic_detail">
-                <span [innerHTML]='postData.post.title'></span>
+                <span class="title" [innerHTML]='postData.post.title'></span>
                 <!-- <span>{{postData.post.detail}}</span> -->
             </div>
             <ng-template #other_topic_detail>
@@ -49,7 +49,7 @@
     </div>
 
 
-    <div *ngIf="mediumCard" class="medium_card">
+    <div *ngIf="mediumCard && postData" class="medium_card">
         <div class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
@@ -112,9 +112,15 @@
     </div>
 
 
-    <div *ngIf="largeCard" class="large_card">
-
-
+    <div *ngIf="largeCard && postData" class="large_card">
+        <div class="type_post">
+            <div class="type" [class.need]="postData.post.type === 'NEEDS'"
+                [class.general]="postData.post.type === 'GENERAL'"></div>
+            <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
+            <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
+            <span class="drot">•</span>
+            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+        </div>
         <div class="top_large_card">
             <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
                 <img width="150%" src={{postData.imageBase64}}>
@@ -170,35 +176,10 @@
     </div>
 
 
-    <div *ngIf="eventCard" class="extra_card">
-
-        <div class="top_extra_card">
-            <div class="image_base64" *ngIf="postData.imageBase64;else other_topic">
-                <img width="120%" src={{postData.imageBase64}}>
-            </div>
-            <ng-template #other_topic>
-                <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
-                </div>
-            </ng-template>
-        </div>
-        <div class="bottom_extra_card">
-            <div class="bottom_extra_card_detail" *ngIf="postData.imageBase64;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-            </div>
-            <ng-template #other_topic_detail>
-                <div class="other_topic_detail">
-                    <span>{{postData.post.detail}}</span>
-                </div>
-            </ng-template>
-            <div class="bottom_extra_card_detail_footer">
-                <div class="owner">
-                    <span>{{postData.owner.name}}</span>
-                </div>
-                <div class="amount_social">
-                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
-                </div>
-            </div>
+    <div *ngIf="eventCard && eventData" class="event_card">
+        <div class="top_coverPage">
+            <div class="teg_event">เหตุการณ์ด่วน</div>
+            <img width="120%" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
         </div>
     </div>
 </div>

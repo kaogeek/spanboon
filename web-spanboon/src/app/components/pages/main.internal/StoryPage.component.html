@@ -42,7 +42,8 @@
                     </div>
 
                     <span class="text-point"> • </span>
-                    <span class="text-count-desktop" [class.active]="isRepost">{{repostCount}} บอกต่อ</span>
+                    <span class="text-count-desktop" [matMenuTriggerFor]="menu"
+                        [class.active]="isRepost">{{repostCount}} บอกต่อ</span>
                     <div class="box-count" [matMenuTriggerFor]="menu">
                         <span class="text-count" [class.active]="isRepost">{{repostCount}}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.098" height="20.868"
@@ -64,7 +65,8 @@
                         </mat-menu>
                     </div>
                     <span class="text-point"> • </span>
-                    <span class="text-count-desktop" [class.active]="isLike">{{likeCount}} ถูกใจ</span>
+                    <span class="text-count-desktop" (click)="postLike()" [class.active]="isLike">{{likeCount}}
+                        ถูกใจ</span>
                     <div class="box-count" (click)="postLike()">
                         <span class="text-count" [class.active]="isLike">{{likeCount}}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20.85" height="20.58" viewBox="0 0 56.85 48.58">
@@ -127,13 +129,12 @@
                     </div>
                     <div class="controls">
                         <control-action [isAction]="'true'" [isBlack]="true"
-                            [comment]="postStoryData ? postStoryData.commentCount : 0 "
-                            [reboon]="postStoryData ? postStoryData.repostCount : 0"
-                            [like]="postStoryData ? postStoryData.likeCount : 0"
-                            [share]="postStoryData ? postStoryData.shareCount : 0"
-                            [userLike]="postStoryData ? isLike : false" [userReboon]="postStoryData ? isRepost : false"
-                            [accessPage]="pageUser" [userComment]="postStoryData ? isComment : false" [isPage]="true"
-                            [isShowUser]="true" (emitpage)="pageAction($event)" (submit)="postAction($event)">
+                            [comment]="commentCount ? commentCount : 0 "
+                            [reboon]="postStoryData ? postStoryData.repostCount : 0" [like]="likeCount ? likeCount : 0"
+                            [share]="postStoryData ? postStoryData.shareCount : 0" [userLike]="isLike ? isLike : false"
+                            [userReboon]="postStoryData ? isRepost : false" [accessPage]="pageUser"
+                            [userComment]="isComment ? isComment : false" [isPage]="true" [isShowUser]="true"
+                            (emitpage)="pageAction($event)" (submit)="postAction($event)">
                         </control-action>
                     </div>
                 </div>
