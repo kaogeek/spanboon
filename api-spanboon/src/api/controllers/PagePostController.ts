@@ -1536,7 +1536,14 @@ export class PagePostController {
                 }
 
                 for (const need of postNeeds) {
-                    const needId = need.id;
+                    let needId = undefined; 
+                    if (need._id !== null && need._id !== undefined && need._id !== '') {
+                        needId = need._id;
+                    }
+
+                    if (need.id !== null && need.id !== undefined && need.id !== '') {
+                        needId = need.id;
+                    }
                     const standardId = need.standardItemId;
                     const customName = need.itemName;
                     const customUnit = need.unit;
