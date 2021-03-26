@@ -509,7 +509,7 @@
           width: calc(100% - 24px - 2px - 10pt);
           border-radius: 25px;
           padding: 6pt 12pt;
-          @include font-size-10($font-content2-medium);
+          @include font-size-10($font-content-light);
         }
       }
     }

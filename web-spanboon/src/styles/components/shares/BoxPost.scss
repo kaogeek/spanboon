@@ -728,7 +728,7 @@
       border-radius: 30pt;
       @include pointer();
       padding: 0 10pt;
-      @include font-size-10($font-head-400);
+      @include font-size-10($font-content-light);
 
       &:hover {
         background: rgb($bg-grey, 0.7);
