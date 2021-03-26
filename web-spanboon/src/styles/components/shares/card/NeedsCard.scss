@@ -215,6 +215,10 @@
                                             padding: 0 7pt;
                                             height: 26pt !important;
                                         }
+
+                                        > .fulfill {
+                                            background-color: $status-post-fulfill !important;
+                                        }
                                     }
                                 }
                             }

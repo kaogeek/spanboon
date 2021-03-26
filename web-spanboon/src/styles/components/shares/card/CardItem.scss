@@ -26,7 +26,7 @@
                 @include font-size-9($font-head-500);
             }
             > .material-icons {
-                font-family: 'Material Icons' !important;
+                font-family: "Material Icons" !important;
                 @include pointer();
             }
 
@@ -44,7 +44,7 @@
             flex: 0 0 auto;
 
             > .material-icons {
-                font-family: 'Material Icons' !important;
+                font-family: "Material Icons" !important;
                 font-size: $font-size-icon-large;
                 @include pointer();
             }
@@ -395,6 +395,12 @@
         flex-direction: row;
         justify-content: flex-end;
         align-items: center;
+
+        > spanboon-button {
+            > .fulfill {
+                background-color: $status-post-fulfill !important;
+            }
+        }
 
         > .btn {
             width: 60pt;

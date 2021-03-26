@@ -423,8 +423,8 @@
         }
         > .post-title {
           width: 100%;
-          @include font-size-4($font-head-500);
-          word-break: break-all;
+          @include font-size-6($font-head-500);
+          word-break: break-word;
           line-height: 40px;
           margin-bottom: 20px;
           overflow: hidden;
@@ -434,10 +434,10 @@
           -webkit-box-orient: vertical;
         }
         > .post-content {
-          @include font-size-8($font-head-300);
+          @include font-size-9($font-head-300);
           width: 100%;
           line-height: 1.5;
-          word-break: break-all;
+          word-break: break-word;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -532,18 +532,18 @@
         width: 70%;
         height: auto;
         > .head {
-          width: calc(100% - 60px);
-          padding: 20px 30px;
+          // width: calc(100% - 60px);
+          padding: 10px;
           border-bottom: 1px solid #ebebeb;
           display: flex;
           align-items: center;
           > .img-user {
-            width: 80px;
+            width: 60px;
             border-radius: 50%;
           }
           > .page-display {
             width: auto;
-            margin: 0px 20px;
+            margin: 0px 10px;
             > .type {
               display: flex;
               align-items: center;
@@ -565,11 +565,24 @@
                 @include font-size-10($font-head-500);
               }
               > .time-display {
+                text-overflow: ellipsis;
+                word-break: break-word;
+                overflow: hidden;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                display: -webkit-box;
                 margin: 0px 5px;
                 @include font-size-10($font-head-300);
               }
             }
             > .user-display {
+              text-overflow: ellipsis;
+              word-break: break-word;
+              overflow: hidden;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+
               > span {
                 @include font-size-10($font-head-300);
               }
@@ -634,8 +647,10 @@
         > .user-comment {
           width: 100%;
           display: flex;
-          padding: 15px 0px;
+          padding: 10px 0px;
           border-bottom: 1px solid #ebebeb;
+          justify-content: center;
+          align-items: center;
           > .menu-user {
             display: flex;
             align-items: center;
@@ -652,10 +667,11 @@
           }
           > .input-comment {
             width: 80%;
-            margin: 0px 20px;
-            padding: 0px 20px;
+            margin: 0px 10px;
+            padding: 0px 10px;
             border-radius: 30px;
-            @include font-size-10($font-head-300);
+            @include font-size-10($font-content-light);
+            height: 35px;
             border: 1px solid #cdcdcd;
           }
         }
@@ -770,6 +786,7 @@
 @media (max-width: $xlarge) {
   .story {
     .content {
+      margin-top: 0;
       width: 95% !important;
     }
     .box-count {

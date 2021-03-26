@@ -261,8 +261,8 @@
         > label {
             position: absolute;
             left: 9pt;
-            @include font-size-8($font-head-500);
-            bottom: 2pt;
+            @include font-size-8($font-content-light);
+            bottom: 6pt;
         }
 
         > .input-data {
@@ -306,7 +306,7 @@
         border-radius: 4px;
         padding: 0 8pt;
         height: 26pt;
-        @include font-size-10($font-head-400);
+        @include font-size-10($font-content-light);
     }
 
     .textarea {
@@ -472,7 +472,7 @@
                 @include font-size-9($font-head-500);
                 > .card-detail {
                     > .input-data {
-                        @include font-size-10($font-head-500);
+                        @include font-size-10($font-content-light);
                     }
                     > .card-bottom {
                         > .card-title {
