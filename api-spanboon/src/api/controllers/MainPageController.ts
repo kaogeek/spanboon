@@ -1031,4 +1031,4 @@ export class MainPageController {
 
         return userResult;
     }
-} 
+}

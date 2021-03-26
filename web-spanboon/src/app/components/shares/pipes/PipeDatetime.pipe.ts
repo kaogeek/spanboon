@@ -13,7 +13,7 @@ import { Pipe, PipeTransform } from "@angular/core";
 })
 
 export class PipeDatetime implements PipeTransform {
-    transform(value: any, args?: any): any {
+    transform(value: any): any {
         if (value) {
             const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
 
@@ -23,7 +23,7 @@ export class PipeDatetime implements PipeTransform {
 
             const intervals = {
                 'ปี': 31536000,
-                'เดืิอน': 2592000,
+                'เดือน': 2592000,
                 'วัน': 86400,
                 'ชั่วโมง': 3600,
                 'นาที': 60,
