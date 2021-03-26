@@ -251,7 +251,7 @@
     > .mat-button-wrapper {
       > .material-icons {
         font-size: $font-size-icon-large;
-        font-family: 'Material Icons' !important;
+        font-family: "Material Icons" !important;
       }
     }
   }
@@ -475,7 +475,9 @@
       border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
       margin-top: 15px;
       padding: 8pt 0;
-
+      &.active {
+        justify-content: flex-end;
+      }
       > .left {
         flex: 1 1 0%;
         margin-right: 15pt;

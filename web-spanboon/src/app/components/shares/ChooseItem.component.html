@@ -688,7 +688,7 @@
                                             [ngStyle]="{'width': 'calc(100% - ' +listImg2.offsetWidth + 'px)'}">
                                             <input #itemName class="input-add" type="text"
                                                 id="itemNameCustomize{{index}}" [(ngModel)]="listItem.itemName"
-                                                placeholder="'สิ่งที่กำลัง'+PLATFORM_NEEDS_TEXT+'แบบกำหนดเอง'"
+                                                placeholder="สิ่งที่กำลัง{{PLATFORM_NEEDS_TEXT}}แบบกำหนดเอง"
                                                 (keyup)="keyUpText(itemName.value , index , 'name')" shake
                                                 [shake]="isName">
                                             <div class="list-category">

@@ -89,7 +89,7 @@
                 </span>
                 <div class="wrapper-option">
                     <div class="amount-looking-for">
-                        <div class="top">{{item.quantity}}</div>
+                        <div class="top">{{item.quantity | shortNumber}}</div>
                         <div class="bottom">{{item.unit}}</div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@
                             <div class="bottom-ob">
                                 <div class="name-ob">{{item.name}}</div>
                                 <div class="ob-flex">
-                                    <div class="ob-top">{{item.quantity}}</div>
+                                    <div class="ob-top">{{item.quantity | shortNumber }}</div>
                                     <div class="ob-bottom">{{item.unit}}</div>
                                 </div>
                             </div>
