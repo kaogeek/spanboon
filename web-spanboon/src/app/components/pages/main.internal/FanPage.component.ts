@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -73,6 +73,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private userEngagementFacade: UserEngagementFacade;
   private engagementService: Engagement;
   protected observManager: ObservableManager;
+  private recommendFacade: RecommendFacade;
 
   public resDataPage: any;
   public resPost: any = {};
@@ -113,6 +114,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public pathPostId: string;
   public isCheck: boolean = true;
   public countScroll: number;
+  public dataRecommend: any;
 
   public CheckPost: boolean = true;
 
@@ -123,7 +125,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement,recommendFacade: RecommendFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -137,6 +139,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.routeActivated = routeActivated;
     this.userEngagementFacade = userEngagementFacade;
     this.engagementService = engagementService;
+    this.recommendFacade = recommendFacade;
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
@@ -270,6 +273,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     $(window).resize(() => {
       this.setTab();
     });
+    this.getRecommend();
 
     if (this.isLogin()) {
       this.getProfileImage();
@@ -779,6 +783,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.isLoading = false
       }
     }).catch((err: any) => {
+      console.log('err ',err)
       if (err.error.status === 0) {
         if (err.error.message === 'Unable got Asset') {
           if (myType === "image") {
@@ -792,6 +797,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     });
   }
+
+  public getRecommend() {
+    let limit: number = 3;
+    let offset: number = 0;
+    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+      this.dataRecommend = res.data;
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
+  }
+
   public redirectSetting() {
     if (this.resDataPage.pageUsername !== undefined && this.resDataPage.pageUsername !== '' && this.resDataPage.pageUsername !== null) {
       return this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
@@ -914,28 +930,31 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public openDialogPost() {
-    let data = {
-      isListPage: true,
-      isHeaderPage: true,
-      isEdit: false,
-      isFulfill: false,
-      modeDoIng: true,
-      isMobileButton: true,
-      name: this.resDataPage
-    }
-
-    const dialogRef = this.dialog.open(DialogPost, {
-      width: 'auto',
-      data: data,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+  public openDialogPost(text?: any) {
+    console.log('text ',text)
+    if(text !== 'เรื่องราว'){
+      let data = {
+        isListPage: true,
+        isHeaderPage: true,
+        isEdit: false,
+        isFulfill: false,
+        modeDoIng: true,
+        isMobileButton: true,
+        name: this.resDataPage
       }
-      this.stopLoading();
-    });
+  
+      const dialogRef = this.dialog.open(DialogPost, {
+        width: 'auto',
+        data: data,
+        disableClose: true,
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== undefined) {
+        }
+        this.stopLoading();
+      });
+    } 
   }
 
   public showDialogGallery(data) {

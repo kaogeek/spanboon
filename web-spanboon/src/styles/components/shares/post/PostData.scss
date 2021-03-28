@@ -451,8 +451,9 @@
     }
 
     > .tag_div {
+      display: flex;
       width: 100%;
-      display: inline;
+      margin-top: 10pt;
 
       > .h_tag_list {
         width: max-content;

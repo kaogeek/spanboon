@@ -641,7 +641,7 @@
           left: 0;
         }
 
-        >.edit-post {
+        > .edit-post {
           color: $black;
           @include font-size-9($font-head-500);
         }
@@ -1110,7 +1110,6 @@
     }
   }
 }
-
 //snackbar
 .mat-simple-snackbar span {
   margin: auto;
@@ -1298,4 +1297,15 @@
       }
     }
   }
-} 
+
+  .sg-vertical-sub-menu + * .cdk-overlay-pane {
+    right: 0;
+    left: 0;
+    top: 0;
+  }
+  .sg-vertical-sub-menu + * .cdk-overlay-pane 
+  >.mat-menu-panel >.mat-menu-content 
+  {
+      height: 100% !important;
+  }
+}

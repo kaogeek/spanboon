@@ -191,6 +191,22 @@ export class PostData {
           }
         }
       }
+      if(this.itemPost && this.itemPost.title){
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.title.includes('#')) {
+              const hashTag: string[] = this.itemPost.title.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }, 1000);
   }
 

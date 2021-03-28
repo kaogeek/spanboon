@@ -223,6 +223,8 @@
 
 @media (max-width: $small) {
   .wrapper-body-objective {
+    width: unset;
+    height: 100%;
     >.wrapper-add-doing {
       >.wrapper-add-image {
         >.image-upload {

@@ -1070,7 +1070,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         if (tag.isTopic !== isTopic) {
           hashTag.push("#" + tag.name);
         } else {
-          this.listTag.splice(index, 1);
+          this.listTag.splice(index, 1); 
           index--;
         }
         index++;
@@ -1155,17 +1155,17 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onKeyupTopic(event) {
-    var limit = parseInt($('.header-story').attr('maxlength'));
-    var text = $('.header-story').html();
-    var chars = text.length;
-    if (chars > limit) {
-      $('.header-story').addClass('msg-error-shake');
-      text = text.substr(0, limit);
-    } else if (chars == 0) {
-      $('.header-story').removeClass('msg-error-shake');
-    } else {
-      $('.header-story').removeClass('msg-error-shake');
-    }
+    // var limit = parseInt($('.header-story').attr('maxlength'));
+    // var text = $('.header-story').html();
+    // var chars = text.length;
+    // if (chars > limit) {
+    //   $('.header-story').addClass('msg-error-shake');
+    //   text = text.substr(0, limit);
+    // } else if (chars == 0) {
+    //   $('.header-story').removeClass('msg-error-shake');
+    // } else {
+    //   $('.header-story').removeClass('msg-error-shake');
+    // }
 
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
@@ -1325,7 +1325,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isSharePost = true;
     } else {
       this.modeDoIng = true;
-      this.isSharePost = false;
+      this.isSharePost = false; 
       this.accessPageImage.imageURL = event.imageURL;
     }
     this.socialGetBindingTwitter();
@@ -1446,6 +1446,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       }
     }
+    console.log('this.listTag ',this.listTag)
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });

@@ -317,24 +317,24 @@
                         </ng-template>
                     </div>
                     <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
-                        (keydown)="$event.stopPropagation()">
+                        (keydown)="$event.stopPropagation()" backdropClass="sg-vertical-sub-menu">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
-                                <div class="create-doing">
-                                    <div class="wrapper-back">
-                                        <svg class="img-back" (click)="$event.stopPropagation()" id="back"
-                                            xmlns="http://www.w3.org/2000/svg" width="31" height="31"
-                                            viewBox="0 0 31 31" (click)="onBack()">
-                                            <g id="Group_1304" data-name="Group 1304">
-                                                <path id="Path_3213" data-name="Path 3213"
-                                                    d="M15.5,0A15.5,15.5,0,1,0,31,15.5,15.517,15.517,0,0,0,15.5,0ZM19,21.045a1.291,1.291,0,1,1-1.826,1.826l-6.458-6.458a1.29,1.29,0,0,1,0-1.826L17.17,8.128A1.291,1.291,0,1,1,19,9.955L13.451,15.5Z"
-                                                    fill="#bfbfbf" />
-                                            </g>
-                                        </svg>
-                                        <div class="btn-create-doing">
-                                            สร้างกำลังทำอยู่
-                                        </div>
+                                <div class="wrapper-back">
+                                    <svg class="img-back" (click)="$event.stopPropagation()" id="back"
+                                        xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
+                                        (click)="onBack()">
+                                        <g id="Group_1304" data-name="Group 1304">
+                                            <path id="Path_3213" data-name="Path 3213"
+                                                d="M15.5,0A15.5,15.5,0,1,0,31,15.5,15.517,15.517,0,0,0,15.5,0ZM19,21.045a1.291,1.291,0,1,1-1.826,1.826l-6.458-6.458a1.29,1.29,0,0,1,0-1.826L17.17,8.128A1.291,1.291,0,1,1,19,9.955L13.451,15.5Z"
+                                                fill="#bfbfbf" />
+                                        </g>
+                                    </svg>
+                                    <div class="btn-create-doing">
+                                        สร้างกำลังทำอยู่
                                     </div>
+                                </div>
+                                <div class="body-center">
                                     <div class="wrappper-body-upload" (click)="$event.stopPropagation()">
                                         <div class="wrapper-doing">
                                             <mat-form-field class="objective-category" appearance="none">
@@ -343,17 +343,17 @@
                                                     [(ngModel)]="selectedValue" name="objectCategory" required>
                                                     <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
                                                     </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory"
-                                                        [value]="item.name">
+                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.name">
                                                         {{item.name}}
                                                     </mat-option>
                                                 </mat-select>
                                             </mat-form-field>
                                             <div class="hash">
-                                                <span class="wrapper-hashTag">#</span>
+                                                <!-- <span class="wrapper-hashTag">#</span> -->
+                                                <label for="add-username">#</label>
                                                 <input type="text" class="input-hashTag" id="objective-doing-name"
-                                                    name="objective-doing-name" #objectiveDoingName
-                                                    placeholder="แฮชแท๊ค" required matInput>
+                                                    name="objective-doing-name" #objectiveDoingName placeholder="แฮชแท๊ค"
+                                                    required matInput>
                                             </div>
                                         </div>
                                         <div class="wrapper-doing">
@@ -362,8 +362,7 @@
                                                 required matInput>
                                         </div>
                                         <div class="wrapper-upload">
-                                            <ng-container
-                                                *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
+                                            <ng-container *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
                                                 <div class="div-image">
                                                     <img class="image-user"
                                                         src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
@@ -372,11 +371,10 @@
                                             </ng-container>
                                             <ng-template #elseShowImage>
                                                 <div class="div-image">
-                                                    <img class="image-user" src="../../../../assets/img/image.svg"
-                                                        alt="">
+                                                    <img class="image-user" src="../../../../assets/img/image.svg" alt="">
                                                 </div>
                                             </ng-template>
-
+    
                                             <div class="wrapper-field-upload">
                                                 <div class="top">
                                                     อัพโหลดรูปโปรไฟล์
@@ -402,6 +400,7 @@
                                         </div>
                                     </div>
                                 </div>
+                              
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
@@ -447,8 +446,9 @@
                                             <div class="wrapper-doing" id="wrapper-doing"
                                                 [class.active-click-doing]="selectedObjectiveId === item.id"
                                                 *ngFor="let item of resObjective ; let i = index"
-                                                (click)="clickCardObjective(i,item)"> 
-                                                <ng-container *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
+                                                (click)="clickCardObjective(i,item)">
+                                                <ng-container
+                                                    *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
                                                     <span class="loading-image">
                                                         <div class="linear-background">
                                                         </div>
@@ -810,7 +810,7 @@
                         </mat-select>
                     </mat-form-field>
                 </ng-container>
-                <ng-template #elseIsFulfill> 
+                <ng-template #elseIsFulfill>
                     <ng-container *ngIf="isEdit; else elseIsEdit">
                         <div class="edit-post" (click)="onClickGetDataPost()">
                             แก้ไขโพสต์
@@ -854,7 +854,7 @@
                                 </ng-template> -->
                             </mat-select>
                         </mat-form-field>
-                    </ng-template> 
+                    </ng-template>
                 </ng-template>
             </div>
         </div>
