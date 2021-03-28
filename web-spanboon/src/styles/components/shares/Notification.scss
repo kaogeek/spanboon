@@ -165,7 +165,7 @@
                             display: flex;
                             align-items: center;
                             color: $color-gray;
-                            @include font-size-11($font-head-400);
+                            @include font-size-11($font-head-100);
 
                             &:hover {
                                 color: rgba($brandcolor2, 0.95);

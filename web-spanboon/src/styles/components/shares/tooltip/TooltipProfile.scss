@@ -86,7 +86,7 @@
 
             > .name {
                 @include font-size-9($font-head-500);
-                line-height: 28px;
+                line-height: 1.5;
                 color: $black;
                 word-break: break-word;
 
@@ -96,11 +96,10 @@
             }
 
             > .sub-name {
-                @include font-size-10($font-head-500);
+                @include font-size-10($font-head-100);
                 @include pointer();
                 color: rgb($black, 0.5);
                 word-break: break-word;
-                margin-top: 5pt;
 
                 a {
                     color: rgb($black, 0.5);

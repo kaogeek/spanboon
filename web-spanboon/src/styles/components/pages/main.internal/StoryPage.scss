@@ -698,6 +698,7 @@
           position: relative;
           border-bottom: 1px solid #ebebeb;
           > span {
+            color: $color-black;
             @include font-size-9($font-head-500);
           }
           > a {
