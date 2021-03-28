@@ -46,10 +46,7 @@
                     <label for="add-username">@</label>
                     <input #pageUsername type="text" class="input-data" id="pageUsername" placeholder="ชื่อผู้ใช้"
                         [(ngModel)]="resDataPage && resDataPage.pageUsername" style="padding: 0 28pt;"
-                        (keyup)="checkUniquePageUsername(pageUsername.value)">
-                    <!-- <span class="material-icons icon-check">
-                        check
-                    </span> -->
+                        (keyup)="checkUniquePageUsername(pageUsername.value)"> 
                     <span class="material-icons icon-close" (click)="resetValue(pageUsername.value)">
                         close
                     </span>

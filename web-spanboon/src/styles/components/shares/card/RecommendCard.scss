@@ -54,6 +54,7 @@
           border-radius: 50%;
           background-color: $brandcolor2;
           color: $white;
+          flex: 0 0 auto;
           @include font-size-9($font-head-500);
         }
 
