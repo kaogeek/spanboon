@@ -51,7 +51,8 @@
                     </ng-template>
                 </ng-template>
                 <ng-container *ngIf="data.owner.type === 'PAGE'; else elseTemplatePageOrUser">
-                    <div class="sub-name">
+                    <div class="sub-name"
+                        *ngIf="data.owner.uniqueId !== null && data.owner.uniqueId !== undefined && data.owner.uniqueId !== ''">
                         <a class="name" href="page/{{data.owner.uniqueId}}">
                             @{{data.owner.uniqueId}}
                         </a>
@@ -86,7 +87,8 @@
                         </div>
                     </div>
                     <div class="follow">
-                        <div class="follow-left">
+                        <div class="follow-left"
+                            *ngIf="data.followUserCount !== null && data.followUserCount !== undefined && data.followUserCount !== ''">
                             <span class="fol-span">ผู้ติดตาม</span>
                             <svg class="new-cards-status" id="user_3_" data-name="user (3)"
                                 xmlns="http://www.w3.org/2000/svg" width="30.332" height="36.356"
@@ -101,8 +103,9 @@
                             <span class="count">{{data.followUserCount ? data.followUserCount : data.owner.followers}}
                                 คน</span>
                         </div>
-                        <span style="font-size: 24px; margin-right: 7pt;">•</span>
-                        <div class="follow-right">
+                        <span style="font-size: 24px; margin-right: 7pt;"
+                            *ngIf="fulfill !== null && fulfill !== undefined && fulfill !== ''">•</span>
+                        <div class="follow-right" *ngIf="fulfill !== null && fulfill !== undefined && fulfill !== ''">
                             <span class="fol-span">ผู้บริจาค</span>
                             <span class="count">{{fulfill}} คน</span>
                         </div>
@@ -166,7 +169,7 @@
                 <!-- <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send tool-dropdow" [matMenuTriggerFor]="menu"> -->
                 <button (click)="clickSend(data.owner)" mat-stroked-button class="but-send tool-dropdow">
                     <span class="material-icons">
-                        more_horiz
+                        redo
                     </span>
                 </button>
                 <mat-menu class="tool-sel" #menu="matMenu" [hasBackdrop]="'false'">

@@ -38,9 +38,9 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   @Input()
   public category: string = "ประเภท";
   @Input()
-  public following: string = "1";
+  public following: string = "";
   @Input()
-  public fulfill: string = "2";
+  public fulfill: string = "";
   @Input()
   public typePage: string;
 
@@ -66,7 +66,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   public ngOnInit(): void {
-
+    console.log("data >>>>>> ", this.data);
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
