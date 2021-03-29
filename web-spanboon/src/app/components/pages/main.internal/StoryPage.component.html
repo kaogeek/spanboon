@@ -116,7 +116,7 @@
                             <span class="time-display"> เมื่อ {{createdDate | dateFormat}}</span>
                         </div>
                         <div class="user-display">
-                            <span>เผยแพร่โดย :</span><a href={{linkPage}}> {{pageName}}</a>
+                            <span>เผยแพร่โดย:</span><a href={{linkPage}}> {{pageName}}</a>
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                 </div>
                 <div *ngIf="postStoryData ? needs.length > 0 : false" class="needs-display display-mobile">
                     <div class="text-needs">
-                        <span>สิ่งที่ กำลังมองหาอยู่</span>
+                        <span>สิ่งที่กำลังมองหาอยู่</span>
                     </div>
                     <needs-card [itemNeeds]="needs" [isFulfillQuantity]="true" [isFulfill]="false">
                     </needs-card>
@@ -163,7 +163,12 @@
                             </div>
                         </div>
                     </ng-template>
-                    <input class="input-comment" placeholder="แสดงความคิดเห็นที่นี้" id="textCom"
+                    <div class="send-button" (click)="onClickComment($event);">
+                        <span class="material-icons">
+                            send
+                        </span>
+                    </div>
+                    <input class="input-comment" placeholder="แสดงความคิดเห็นที่นี่" id="textCom"
                         (keyup.enter)="onClickComment($event);" [(ngModel)]="textComment" type="text">
                 </div>
                 <div class="list-comment">
@@ -177,13 +182,13 @@
                     </ng-container>
                 </div>
                 <div class="story-footer" *ngIf="recommendedStorys.length > 0">
-                    <span> สตอรี่อื่น ๆ ของ : </span>
+                    <span> สตอรี่อื่นๆ ของ: </span>
                     <a href={{linkPage}} target="_blank">{{pageName}}</a>
                     <post-swiper-card [itemNeeds]="recommendedStorys" [isFulfillQuantity]="true" [isFulfill]="'true'">
                     </post-swiper-card>
                 </div>
                 <div class="story-footer" *ngIf="recommendedStory.length > 0">
-                    <span> สตอรี่อื่น ๆ ที่คุณอาจสนใจ</span>
+                    <span> สตอรี่อื่นๆ ที่คุณอาจสนใจ</span>
                     <post-swiper-card [isFulfillQuantity]="true" [isFulfill]="'true'" [itemNeeds]="recommendedStory">
                     </post-swiper-card>
                 </div>

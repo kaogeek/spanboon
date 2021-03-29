@@ -635,7 +635,7 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 15px 0px;
+          padding: 8px 0px;
           border-bottom: 1px solid #ebebeb;
           > .event-tag {
             color: $brandcolor2;
@@ -651,6 +651,21 @@
           border-bottom: 1px solid #ebebeb;
           justify-content: center;
           align-items: center;
+
+          > .send-button {
+            position: absolute;
+            display: block;
+            right: 35px;
+            bottom: 16px;
+
+            > .material-icons {
+              &:hover {
+                color: $brandcolor2;
+                @include pointer();
+              }
+            }
+          }
+
           > .menu-user {
             display: flex;
             align-items: center;
