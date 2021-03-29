@@ -7,7 +7,7 @@
 
 <div class="box-post" (window:resize)="onResize()" [ngClass]="class">
     <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet" mat-dialog-content>
-        <div *ngIf="isRepost" class="box-story" #headerTop>
+        <div *ngIf="isRepost" class="box-story" #headerTop> 
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
@@ -18,7 +18,7 @@
                         <ng-template #elseAccessPage>
                             <div class="donator">
                                 <span>{{accessPageImage && ( accessPageImage.displayName || accessPageImage.name |
-                                    slice: 0:1 ) }}</span>
+                                    slice: 0:1 ) }}</span> 
                             </div>
                         </ng-template>
                         <mat-select [ngModelOptions]="{standalone: true}"
@@ -26,7 +26,7 @@
                             <ng-container *ngFor="let data of accessPage; let index = index">
                                 <mat-option *ngIf="index === 0 && data.user.type === 'user'"
                                     [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
-                                    (click)="selectAccessPage(data.user)">
+                                    (click)="selectAccessPage(data.user,'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -67,7 +67,7 @@
                 <span> ยกเลิก</span>
             </div>
             <div *ngIf="isListPage && isHeaderPage && isMobilePost" class="dropdown-page mobile-page">
-                <mat-form-field appearance="none">
+                <mat-form-field appearance="none" *ngIf="!isSelectOption">
                     <div class="selected-dropdown">
                         <ng-container
                             *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
@@ -84,7 +84,7 @@
                             <ng-container *ngFor="let data of accessPage; let index = index">
                                 <mat-option *ngIf="index === 0 && data.user.type === 'user'"
                                     [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
-                                    (click)="selectAccessPage(data.user)">
+                                    (click)="selectAccessPage(data.user, 'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -286,8 +286,8 @@
                         </div>
                     </mat-menu>
                 </div>
-
-                <div class="search-objective" *ngIf="modeShowDoing || ( accessPageImage && accessPageImage.name)">
+                 
+                <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"
                         (click)="clickObjectiveDoing();">

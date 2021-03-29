@@ -24,6 +24,7 @@ import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
 import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
 import { cpuUsage } from 'process';
+import { F } from '@angular/cdk/keycodes';
 
 declare var $: any;
 declare const window: any;
@@ -230,6 +231,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isAutoPostFacebook: any;
   private twitterService: TwitterService;
 
+  public isSelectOption: boolean;
+
   keyword = "hashTag";
   selectedIndex: number;
   selectedObjectiveId: string;
@@ -297,11 +300,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isListPage = false;
     this.isTablet = false;
     this.isButtonFulfill = false;
+    this.isSelectOption = true;
     this.router = router;
     this.data = {};
 
-    this.observManager.subscribe('authen.check', (data) => {
-      this.selectOption();
+    this.observManager.subscribe('authen.check', (data) => { 
     });
 
     this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
@@ -340,7 +343,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
-  ngOnChanges(changes: SimpleChanges): void { 
+  ngOnChanges(changes: SimpleChanges): void {
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
@@ -595,9 +598,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public searchAccessPage() {
-    this.userAccessFacade.getPageAccess().then((res: any) => {
+    this.userAccessFacade.getPageAccess().then((res: any) => { 
       if (res.length > 0) {
         let index = 0;
+        this.accessPage = res;
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
@@ -609,6 +613,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   } else {
                     data.user.imageURL = image.data
                   }
+                  this.accessPage = res;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
@@ -625,9 +630,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                 } else {
                   data.page.imageURL = image.data
                 }
-                setTimeout(() => {
-                  this.accessPage = res;
-                }, 1000);
+                this.accessPage = res; 
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -638,20 +641,22 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.accessPage = res;
           }
           index++;
-        }
-        this.selectOption();
+        } 
+        const cloneData = JSON.parse(JSON.stringify(this.accessPage))
+        this.selectOption(cloneData);
       }
     }).catch((err: any) => {
       console.log(err)
     });
   }
 
-  public selectOption() {
-    if (this.accessPage.length > 0) {
-      for (let data of this.accessPage) {
+  public selectOption(cloneData : any) { 
+    if (cloneData && cloneData.length > 0) {
+      for (let data of cloneData) {
         if (this.router.url.split('/')[1] === "page") {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
-            const cloneDataPage = JSON.parse(JSON.stringify(data.page));
+            const cloneDataPage = data.page;
+            // const cloneDataPage = JSON.parse(JSON.stringify(data.page));
             if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
               this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
                 if (image.status === 1) {
@@ -661,6 +666,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                     cloneDataPage.imageURL = image.data
                   }
                   this.accessPageImage = cloneDataPage;
+                  this.isSelectOption = false;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
@@ -669,13 +675,15 @@ export class BoxPost extends AbstractPage implements OnInit {
               });
             } else {
               this.accessPageImage = cloneDataPage;
+              this.isSelectOption = false;
             }
             this.dataPage = data.page.name;
             this.dataPageId = data.page;
-            this.modeDoIng = false;
+            this.modeDoIng = false; 
           }
         } else {
-          const cloneDataUser = JSON.parse(JSON.stringify(data.user));
+          const cloneDataUser = data.user; 
+          // const cloneDataUser = JSON.parse(JSON.stringify(data.user)); 
           this.dataPageId = data.user;
           if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
             this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
@@ -684,8 +692,9 @@ export class BoxPost extends AbstractPage implements OnInit {
                   cloneDataUser.imageURL = null
                 } else {
                   cloneDataUser.imageURL = image.data
-                }
+                } 
                 this.accessPageImage = cloneDataUser;
+                this.isSelectOption = false;
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -694,8 +703,11 @@ export class BoxPost extends AbstractPage implements OnInit {
             });
           } else {
             this.accessPageImage = cloneDataUser;
-          }
+            this.isSelectOption = false;
+          } 
+        
         }
+       
       }
     }
   }
@@ -1070,7 +1082,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         if (tag.isTopic !== isTopic) {
           hashTag.push("#" + tag.name);
         } else {
-          this.listTag.splice(index, 1); 
+          this.listTag.splice(index, 1);
           index--;
         }
         index++;
@@ -1318,15 +1330,21 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.pageId = event.id;
     this.dataPage = event.name || event.displayName;
     this.dataPageId = {};
-    this.dataPageId.id = event.id;
+    this.dataPageId.id = event.id;  
     if (type === 'PAGE') {
       this.modeDoIng = false;
-      this.accessPageImage = event;
       this.isSharePost = true;
-    } else {
+      this.modeShowDoing = true;
+      this.accessPageImage.name = event.name;
+      this.accessPageImage.imageURL = event.imageURL; 
+      this.accessPageImage.id = event.id; 
+    } else { 
       this.modeDoIng = true;
-      this.isSharePost = false; 
-      this.accessPageImage.imageURL = event.imageURL;
+      this.isSharePost = false;
+      this.modeShowDoing = false; 
+      this.accessPageImage.displayName = event.displayName;
+      this.accessPageImage.imageURL = event.imageURL; 
+      this.accessPageImage.id = event.id
     }
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
@@ -1446,7 +1464,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       }
     }
-    console.log('this.listTag ',this.listTag)
+    console.log('this.listTag ', this.listTag)
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
@@ -1891,7 +1909,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.getTextLength();
   }
 
-  public clickCardObjective(index: number, item: any) { 
+  public clickCardObjective(index: number, item: any) {
     if (this.elementCheck) {
       if (this.dataObjective && this.dataObjective.id === item.id) {
         this.dataObjective = {};
@@ -2046,7 +2064,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
     }, 500);
 
-    setTimeout(() => { 
+    setTimeout(() => {
       this.setTopobj();
     }, 0);
   }

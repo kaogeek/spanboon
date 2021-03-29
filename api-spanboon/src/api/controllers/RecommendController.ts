@@ -139,6 +139,7 @@ export class RecommendController {
 
             if (!isRandomPage && !isRandomUser) {
                 const stmt = [
+                    { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {

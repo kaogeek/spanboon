@@ -12,7 +12,6 @@ import * as $ from 'jquery';
 import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { AboutPages } from '../../../../models/AboutPages';
-import { D } from "@angular/cdk/keycodes";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
