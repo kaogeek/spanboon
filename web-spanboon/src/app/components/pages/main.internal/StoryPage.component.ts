@@ -306,6 +306,7 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.shareCount = this.postStoryData.shareCount;
       this.needs = this.postStoryData.needs;
       this.isLoding = false;
+      
     }, 3500);
 
   }
@@ -486,7 +487,6 @@ export class StoryPage extends AbstractPage implements OnInit {
       search.limit = 0
     }
     this.postCommentFacade.search(search, this.postStoryData._id).then((res: any) => {
-      console.log('res', res)
       for (let c of res) {
         c.isEdit = false
       }

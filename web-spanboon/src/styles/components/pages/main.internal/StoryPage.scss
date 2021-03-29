@@ -605,16 +605,22 @@
             width: 100%;
             height: auto;
             margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             @include font-size-9($font-content-light);
           }
           .ct-background-image {
             width: 100%;
             margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             background-size: 100%;
             height: auto;
           }
           .ct-background-video {
             width: 100%;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             margin: 10px 0px;
             height: auto;
             display: flex;

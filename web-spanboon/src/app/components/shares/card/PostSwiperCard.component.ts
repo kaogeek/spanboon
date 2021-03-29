@@ -68,7 +68,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
-      this.getNeeds(); 
+      this.getNeeds();
     }, 650);
   }
   ngAfterViewInit(): void {
@@ -169,8 +169,11 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
       676: {
         slidesPerView: 2.6,
       },
+      655: {
+        slidesPerView: 2.7,
+      },
       566: {
-        slidesPerView: 2.3,
+        slidesPerView: 2.6,
       },
       479: {
         slidesPerView: 1.4,
