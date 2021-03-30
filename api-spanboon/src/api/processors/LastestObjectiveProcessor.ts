@@ -13,6 +13,8 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
 // import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
+import { SUBJECT_TYPE } from '../../constants/FollowType';
 // import moment from 'moment';
 
 export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -58,6 +60,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
                 let userId = undefined;
+                let userObjId: ObjectID = undefined;
                 let clientId = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
@@ -126,7 +129,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
                 const result: SectionModel = new SectionModel();
                 result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
@@ -144,6 +147,21 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
                     contentModel.subtitle = row.name;
                     contentModel.iconUrl = row.iconURL;
+
+                    if (userId !== null && userId !== undefined && userId !== '') {
+                        userObjId = new ObjectID(userId);
+
+                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                            contentModel.isFollow = true;
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else {
+                        contentModel.isFollow = false;
+                    }
                     // contentModel.commentCount = row.commentCount;
                     // contentModel.repostCount = row.repostCount;
                     // contentModel.shareCount = row.shareCount;

@@ -14,6 +14,7 @@ import { UserFollowService } from '../services/UserFollowService';
 import { LastestLookingProcessorData } from './data/LastestLookingProcessorData';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
 
 /* 
 * Search The lasted Looking from database 
@@ -40,6 +41,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
             try {
                 // get data
                 let userId: string = undefined;
+                let userObjId: ObjectID = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                 }
@@ -97,6 +100,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
+
                 for (const row of searchResult) {
                     const pageString = (row.pageId) ? row.pageId + '' : undefined;
                     if (pageString === undefined) {
@@ -109,6 +113,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     }
 
                     const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+
                     const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
 
                     const contentModel = new ContentModel();
@@ -128,6 +133,21 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
                         contentModel.isShare = userAction.isShare;
+                    }
+
+                    if (userId !== null && userId !== undefined && userId !== '') {
+                        userObjId = new ObjectID(userId);
+
+                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                            contentModel.isFollow = true;
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else {
+                        contentModel.isFollow = false;
                     }
 
                     delete contentModel.post.story;

@@ -39,6 +39,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { Page } from '../models/Page';
 
 @JsonController('/post')
 export class PostsController {
@@ -462,9 +463,9 @@ export class PostsController {
                         }
                     },
                     {
-                        $project: { 
+                        $project: {
                             'ownerUser.username': 0,
-                            'ownerUser.password': 0, 
+                            'ownerUser.password': 0,
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
@@ -858,14 +859,20 @@ export class PostsController {
 
                 // noti to owner post
                 {
-                    const notificationText = req.user.displayName + ' กดถูกใจโพสต์ของคุณ';
+                    let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
+
+                    console.log('postObj >>>> ', postObj);
 
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {
                         // create noti for page
+                        const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
+
+                        notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
                         await this.pageNotificationService.notifyToPageUser(postObj.pageId, undefined, req.user.id + '', USER_TYPE.USER, NOTIFICATION_TYPE.LIKE, notificationText, link);
                     } else {
                         // create noti for user
+                        notificationText += ' กดถูกใจโพสต์ของคุณ';
                         await this.notificationService.createNotification(postObj.ownerUser + '', USER_TYPE.USER, req.user.id + '', USER_TYPE.USER, NOTIFICATION_TYPE.LIKE, notificationText, link);
                     }
                 }
@@ -1313,4 +1320,4 @@ export class PostsController {
             return res.status(200).send(ResponseUtil.getErrorResponse('Get Post HashTag Recommended Story Success', {}));
         }
     }
-} 
+}

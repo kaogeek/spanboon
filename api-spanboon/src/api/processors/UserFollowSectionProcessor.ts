@@ -17,6 +17,7 @@ import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 
 export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -62,6 +63,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
                 let userId = undefined;
                 let clientId = undefined;
+                let userObjId: ObjectID = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     clientId = this.data.clientId;
@@ -159,7 +161,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         uniqueId: page.pageUsername
                     };
                 }
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
@@ -204,6 +206,21 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
                         contentModel.isShare = userAction.isShare;
+                    }
+
+                    if (userId !== null && userId !== undefined && userId !== '') {
+                        userObjId = new ObjectID(userId);
+
+                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                            contentModel.isFollow = true;
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else {
+                        contentModel.isFollow = false;
                     }
 
                     delete contentModel.post.story;

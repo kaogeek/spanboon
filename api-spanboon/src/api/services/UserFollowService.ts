@@ -17,8 +17,8 @@ export class UserFollowService {
     constructor(@OrmRepository() private userFollowRepository: UserFollowRepository) { }
 
     // find userFollow
-    public async find(findCondition: any): Promise<any[]> {
-        return await this.userFollowRepository.find(findCondition);
+    public async find(findCondition: any): Promise<UserFollow[]> {
+        return this.userFollowRepository.find(findCondition);
     }
 
     // find userFollow

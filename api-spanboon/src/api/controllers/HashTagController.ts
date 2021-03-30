@@ -18,6 +18,7 @@ import { ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { SearchHashTagRequest } from './requests/SearchHashTagRequest';
 import { HashTag } from '../models/HashTag';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
+import moment from 'moment';
 
 @JsonController('/hashtag')
 export class HashTagController {
@@ -202,48 +203,53 @@ export class HashTagController {
         }
 
         const uId = req.header.userid;
+        const contentIdList = [];
         const hashTagList = [];
         const hashTagNameList = [];
         const hashTagTrends = await this.searchEngagementHashTag(uId, name, limit, offset, action);
 
         if (hashTagTrends !== null && hashTagTrends !== undefined && hashTagTrends.length > 0) {
             for (const hashTag of hashTagTrends) {
+                const contentId = hashTag.contentId;
                 const value = hashTag._id;
                 const label = '#' + value;
                 const type = hashTag.result.action;
                 const count = hashTag.count;
 
+                contentIdList.push(new ObjectID(contentId));
                 hashTagNameList.push(value);
                 hashTagList.push({ value, label, type, count });
             }
         }
 
         // search more ?
-        let isSearchMore = false;
-        if (limit !== undefined && hashTagList.length < limit) {
-            isSearchMore = true;
-            limit = limit - hashTagList.length;
-        }
+        // let isSearchMore = false;
+        // if (limit !== undefined && hashTagList.length < limit) {
+        //     isSearchMore = true;
+        //     limit = limit - hashTagList.length;
+        // }
 
-        if (isSearchMore) {
-            let hashTags;
+        // if (isSearchMore) {
+        //     let hashTags;
 
-            if (hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) {
-                hashTags = await this.searchMasterHashTag(name, limit, hashTagNameList);
-            } else {
-                hashTags = await this.searchMasterHashTag(name, limit);
-            }
+        //     if (hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) {
+        //         hashTags = await this.searchMasterHashTag(name, limit, hashTagNameList);
+        //     } else {
+        //         hashTags = await this.searchMasterHashTag(name, limit);
+        //     }
 
-            if (hashTags !== null && hashTags !== undefined && hashTags.length > 0) {
-                for (const hashTag of hashTags) {
-                    const value = hashTag.name;
-                    const label = '#' + value;
-                    const type = ENGAGEMENT_ACTION.TAG;
-                    const count = hashTag.count;
-                    hashTagList.push({ value, label, type, count });
-                }
-            }
-        }
+        //     console.log('hashTags >>>> ', hashTags);
+
+        //     if (hashTags !== null && hashTags !== undefined && hashTags.length > 0) {
+        //         for (const hashTag of hashTags) {
+        //             const value = hashTag.name;
+        //             const label = '#' + value;
+        //             const type = ENGAGEMENT_ACTION.TAG;
+        //             const count = hashTag.count;
+        //             hashTagList.push({ value, label, type, count });
+        //         }
+        //     }
+        // }
 
         if (hashTagList !== null && hashTagList !== undefined && hashTagList.length > 0) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Search Trend HashTag Success', hashTagList));
@@ -254,12 +260,13 @@ export class HashTagController {
 
     private async searchEngagementHashTag(uId: string, name: string, limit: number, offset: number, action: string): Promise<any> {
         const engStmt: any[] = [];
+        const date: Date = moment().subtract(7, 'd').toDate();
 
         if (uId !== null && uId !== undefined && uId !== '') {
             const userObjId = new ObjectID(uId);
-            engStmt.push({ $match: { userId: userObjId, action } });
+            engStmt.push({ $match: { userId: userObjId, createdDate: { $gte: date }, action } });
         } else {
-            engStmt.push({ $match: { action } });
+            engStmt.push({ $match: { action, createdDate: { $gte: date } } });
         }
 
         if (engStmt !== null && engStmt !== undefined && engStmt.length > 0) {

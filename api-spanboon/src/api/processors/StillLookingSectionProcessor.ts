@@ -14,6 +14,7 @@ import { NeedsService } from '../services/NeedsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
 
 export class StillLookingSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -37,6 +38,8 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
             try {
                 // get data
                 let userId: string = undefined;
+                let userObjId: ObjectID = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                 }
@@ -135,6 +138,21 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
                         contentModel.isShare = userAction.isShare;
+                    }
+
+                    if (userId !== null && userId !== undefined && userId !== '') {
+                        userObjId = new ObjectID(userId);
+
+                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                            contentModel.isFollow = true;
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else {
+                        contentModel.isFollow = false;
                     }
 
                     delete contentModel.post.story;
