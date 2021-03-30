@@ -57,7 +57,7 @@
                             @{{data.owner.uniqueId}}
                         </a>
                     </div>
-                    <div class="category">
+                    <!-- <div class="category">
                         <div class="text-category">
                             เพจ:
                         </div>
@@ -85,7 +85,7 @@
                         <div class="text-category">
                             {{data.owner.categoryName}}
                         </div>
-                    </div>
+                    </div> -->
                     <div class="follow">
                         <div class="follow-left"
                             *ngIf="data.followUserCount !== null && data.followUserCount !== undefined && data.followUserCount !== ''">
@@ -157,8 +157,8 @@
             </div>
         </div>
         <div class="tooltip-bottom">
-            <button-follow [bgColor]="'#FFFFFF'" [text]="data.owner && data.owner.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
-                (click)="clickFollow(data.owner)" [class.active]="data.owner && data.owner.isFollow">
+            <button-follow [bgColor]="'#FFFFFF'" [text]="data.owner && data.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
+                (click)="clickFollow(data.owner)" [class.active]="data.owner && data.isFollow">
             </button-follow>
             <div class="tooltip-bottom-right">
                 <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send">
@@ -168,9 +168,7 @@
                 </button>
                 <!-- <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send tool-dropdow" [matMenuTriggerFor]="menu"> -->
                 <button (click)="clickSend(data.owner)" mat-stroked-button class="but-send tool-dropdow">
-                    <span class="material-icons">
-                        redo
-                    </span>
+                    <i class="fa fa-external-link fa-3" aria-hidden="true"></i>
                 </button>
                 <mat-menu class="tool-sel" #menu="matMenu" [hasBackdrop]="'false'">
                     <button mat-menu-item *ngFor="let link of Links; let i = index">

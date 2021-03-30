@@ -93,9 +93,16 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   }
 
   public clickSend(page) {
+    if (page !== null && page !== undefined) {
+      let pageId = page.id;
+      let uniqueId = page.uniqueId;
 
-    this.router.navigate(["/page/" + page.id]);
-
+      if ((pageId !== null && pageId !== undefined && pageId !== '') && (uniqueId === null || uniqueId === undefined || uniqueId === '')) {
+        this.router.navigate(["/page/" + pageId]);
+      } else {
+        this.router.navigate(["/page/" + uniqueId]);
+      }
+    }
   }
 
   public clickMore(page) {
@@ -128,6 +135,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   ];
 
   public tooltipClose(event) {
+    console.log('event >>> ', event);
     let BUTTON_CLASS: string = "button-follow mat-ripple radius";
     let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
     let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";
