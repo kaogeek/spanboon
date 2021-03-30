@@ -379,8 +379,9 @@
                                     </a>
                                 </ng-template>
 
-                                <ng-container *ngIf="resDataPage && resDataPage.location; else elseTemplateLocation">
-                                    <a target="_blank" class="contact-social">
+                                <ng-container *ngIf="localtion; else elseTemplateLocation">
+                                    <a target="_blank" href="{{localtion}}" class="contact-social"
+                                    [class.active]="localtion !== undefined && localtion !== null && localtion !== '' ? true : false">
                                         <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
                                             height="16.146" viewBox="0 0 11.352 16.146">
                                             <g id="placeholder" transform="translate(-76)">
@@ -408,10 +409,9 @@
                                             </g>
                                         </svg>
                                     </a>
-                                </ng-template>
-
+                                </ng-template> 
                                 <ng-container *ngIf="resDataPage && resDataPage.mobileNo; else elseTemplateMobile">
-                                    <a target="_blank" class="contact-social"
+                                    <a href="tel:{{resDataPage.mobileNo}}" class="contact-social"
                                         [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
                                         <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
                                             height="12.552" viewBox="0 0 12.552 12.552">
@@ -430,10 +430,11 @@
                                                 fill="#ececec" />
                                         </svg>
                                     </a>
-                                </ng-template>
+                                </ng-template> 
 
-                                <ng-container *ngIf="resDataPage && resDataPage.message  ; else elseTemplateMessage">
-                                    <a target="_blank" class="contact-social">
+                                <ng-container *ngIf="resDataPage && resDataPage.email; else elseTemplateMessage">
+                                    <a href="mailto:{{resDataPage.email}}" target="_blank" class="contact-social"
+                                    [class.active]="resDataPage && resDataPage.email && resDataPage.email !== undefined && resDataPage.email !== null && resDataPage.email !== '' ? true : false">
                                         <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
                                             height="13.479" viewBox="0 0 18.87 13.479">
                                             <g id="email" transform="translate(0 -68.267)">
