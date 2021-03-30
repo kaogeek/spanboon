@@ -117,6 +117,12 @@
     > .fulfill-case-create-footer {
         display: flex;
         justify-content: flex-end;
+
+        spanboon-button {
+            .btn-view-post {
+                background-color: $brandcolor2 !important;
+            }
+        }
     }
 }
 @media (max-width: $xxlarge) {

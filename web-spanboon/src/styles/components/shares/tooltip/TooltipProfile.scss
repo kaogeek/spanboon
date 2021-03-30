@@ -272,6 +272,9 @@
 
         > .tooltip-bottom-right {
             flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             > .but-send {
                 height: 30pt;
@@ -296,6 +299,10 @@
                     > .material-icons {
                         font-size: 18pt;
                         font-family: "Material Icons" !important;
+                    }
+
+                    > .fa {
+                        font-size: 16pt;
                     }
                 }
             }

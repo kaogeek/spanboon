@@ -29,8 +29,8 @@
         position: relative;
         flex: 0 0 auto;
         border-bottom: 1px solid rgba($border-color, 0.7);
-        @include font-size-9($font-head-500);
-        height: 45pt;
+        @include font-size-10($font-head-500);
+        height: 35pt;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -165,7 +165,7 @@
                 margin-left: 8px;
 
                 > .material-icons {
-                    font-family: 'Material Icons' !important;
+                    font-family: "Material Icons" !important;
                     color: $brandcolor2;
                     font-weight: 900;
                     font-size: $font-size-icon-large;
@@ -218,7 +218,7 @@
                         margin-right: 8px;
 
                         > .material-icons {
-                            font-family: 'Material Icons' !important;
+                            font-family: "Material Icons" !important;
                             color: $brandcolor2;
                             font-weight: 900;
                             font-size: $font-size-icon-large;
@@ -362,14 +362,14 @@
                 border-radius: 25px;
                 border: 1px solid $border-color;
                 padding: 0 60pt 0 12pt;
-                @include font-size-10($font-content2-medium);
+                @include font-size-10($font-content-light);
                 height: calc(100% - 2px);
 
                 div,
                 &::-webkit-input-placeholder,
                 &:-ms-input-placeholder,
                 &::placeholder {
-                    @include font-size-10($font-content2-medium);
+                    @include font-size-10($font-content-light);
                 }
             }
 
@@ -413,7 +413,7 @@
             flex: 0 0 auto;
 
             .material-icons {
-                font-family: 'Material Icons' !important;
+                font-family: "Material Icons" !important;
                 font-size: 20pt;
                 color: $brandcolor2;
             }
@@ -451,7 +451,6 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -477,7 +476,6 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -505,7 +503,6 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -550,7 +547,6 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }

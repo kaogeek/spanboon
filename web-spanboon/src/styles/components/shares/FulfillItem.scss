@@ -398,6 +398,12 @@
         justify-content: flex-end;
         padding: 10pt 20pt;
 
+        spanboon-button {
+            .btn-fulfill {
+                background-color: $brandcolor3;
+            }
+        }
+
         > .close-dialog {
             margin-right: 5pt;
             &.active {
