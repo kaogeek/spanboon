@@ -5,10 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-.wrapper-body-objective { 
+.wrapper-body-objective {
   width: 50vw;
   background-color: $white;
-  box-shadow: 0px 1px 9px 0 #e5e3dd; 
+  box-shadow: 0px 1px 9px 0 #e5e3dd;
   min-width: 250pt;
   max-width: 550pt;
 
@@ -43,7 +43,7 @@
       }
     }
   }
-
+  
   > .wrapper-add-doing {
     border-bottom: $width-border solid $border-separator;
 
@@ -54,7 +54,16 @@
       align-items: center;
 
       > .page-doing {
+        display: flex;
         @include font-size-10($font-head-500);
+        span {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          max-width: 100%;
+          word-break: break-all;
+        }
       }
 
       > .image-upload {
@@ -63,7 +72,9 @@
         cursor: pointer;
         @include font-size-10($font-head-500);
         @include pointer();
-
+        >.add-label {
+          @include font-size-10($font-head-500);
+        }
         > .icon-add {
           width: 12pt;
           margin: 0 10pt;
@@ -95,6 +106,9 @@
       }
 
       > .wrapper-doing {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
         padding: 14pt;
         margin: 0;
@@ -139,6 +153,12 @@
           height: 60pt;
           border-radius: 50%;
         }
+        >.image-waste {
+          background-color: $bg-grey;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         > .loading-image {
           display: flex;
@@ -162,9 +182,7 @@
   }
 }
 
-.image-waste {
-  background-color: $bg-grey;
-}
+
 
 @keyframes placeHolderShimmer {
   0% {
@@ -193,9 +211,9 @@
 
 @media (max-width: $medium) {
   .wrapper-body-objective {
-    >.wrapper-choose-tag {
-      >.wrapper-body-doing {
-        >.wrapper-doing {
+    > .wrapper-choose-tag {
+      > .wrapper-body-doing {
+        > .wrapper-doing {
           width: calc(50% - 28pt);
         }
       }
@@ -205,9 +223,20 @@
 
 @media (max-width: $small) {
   .wrapper-body-objective {
-    >.wrapper-choose-tag {
-      >.wrapper-body-doing {
-        >.wrapper-doing {
+    width: unset;
+    height: 100%;
+    >.wrapper-add-doing {
+      >.wrapper-add-image {
+        >.image-upload {
+          >.add-label {
+            display: none;
+          }
+        }
+      }
+    }
+    > .wrapper-choose-tag {
+      > .wrapper-body-doing {
+        > .wrapper-doing {
           width: calc(50% - 28pt);
         }
       }

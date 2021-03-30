@@ -56,3 +56,6 @@ export const PLATFORM_STORY: string = 'สตอรี่';
 export const PLATFORM_STORY_TALE: string = 'เรื่องราว';
 export const PLATFORM_URL: string = 'www.spanboon.com';
 export const PLATFORM_SOPPORT_EMAIL: string = 'support@spanboon.com';
+
+//background image
+export const BACKGROUND_IMAGE: string = '../../../../assets/img/bg-cover.jpg';

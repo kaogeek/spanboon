@@ -6,45 +6,38 @@
  */
 
 .upload-image-doing {
-    // position: absolute;
     width: 520px;
     background-color: $white;
     box-shadow: 0px 1px 9px 0 #e5e3dd;
-    // left: 0;
-    // z-index: 10000;
 
     &.active {
         top: auto;
         bottom: 0;
     }
 
-    > .create-doing {
+    > .wrapper-back {
         display: flex;
-        flex-direction: column;
-        // align-items: center;
-        // padding: 0 10pt;
-        > .wrapper-back {
+        padding: 10pt;
+        border-bottom: $width-border solid $border-separator;
+        > .img-back {
+            padding: 0 10pt 0 0;
+            transition: 0.5s ease-in-out;
+            @include pointer();
+        }
+        > .btn-create-doing {
             display: flex;
-            padding: 10pt;
-            border-bottom: $width-border solid $border-separator;
-            > .img-back {
-                padding: 0 10pt 0 0;
-                transition: 0.5s ease-in-out;
-                @include pointer();
-            }
-            > .btn-create-doing {
-                display: flex;
-                align-items: center;
-                padding: 0 10pt;
-                color: $brandcolor2;
-                border-left: $width-border solid $border-separator;
-                @include font-size-9($font-head-500);
-                @include pointer();
-                > .img-add {
-                    margin: 0 5pt 0 0;
-                }
+            align-items: center;
+            padding: 0 10pt;
+            color: $brandcolor2;
+            border-left: $width-border solid $border-separator;
+            @include font-size-9($font-head-500);
+            @include pointer();
+            > .img-add {
+                margin: 0 5pt 0 0;
             }
         }
+    }
+    > .body-center {
         > .wrappper-body-upload {
             padding: 14pt 20pt;
             background-color: $bg-color1;
@@ -73,17 +66,19 @@
                 > .hash {
                     display: flex;
                     align-items: center;
-
+                    position: relative;
+                    > label {
+                        position: absolute;
+                        left: 9pt;
+                        @include font-size-8($font-head-500);
+                        bottom: 14pt;
+                    }
                     > .wrapper-hashTag {
-                        // display: flex;
-                        // align-items: center;
                         margin: 0 5pt;
                         flex: 0 0 auto;
                         @include font-size-9($font-head-500);
                     }
                     > .input-hashTag {
-                        // display: block;
-                        // width: calc(100% - 42pt);
                         width: unset;
                         flex: 1 1 0%;
                         height: 30pt;
@@ -263,6 +258,44 @@
                 width: 78pt;
                 padding: 10pt 5pt;
                 @include font-size-10($font-head-500);
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .upload-image-doing {
+        width: unset;
+        height: 100%; 
+        > .body-center {
+            height: calc(100% - 44pt);
+            overflow: scroll;
+            > .wrappper-body-upload {
+                > .wrapper-doing {
+                    flex-direction: column;
+                    > .hash {
+                        width: 100%;
+                        > .input-hashTag {
+                            padding: 2pt 28pt;
+                        }
+                    }
+                    > .objective-category {
+                        width: 100%;
+                        margin-left: unset;
+                        margin-right: unset;
+                    }
+                }
+                > .wrapper-upload {
+                    flex-direction: column;
+                    align-items: center;
+                    > .wrapper-field-upload {
+                        padding: 10pt;
+                        align-items: center;
+                        > .top {
+                            padding: 10pt 0;
+                        }
+                    }
+                }
             }
         }
     }

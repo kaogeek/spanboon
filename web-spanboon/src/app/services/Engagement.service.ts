@@ -26,8 +26,8 @@ export class Engagement extends AbstractFacade {
         this.baseURL = environment.apiBaseURL;
     }
 
-    public getDom(event: any) { 
-        return event.target.outerHTML || event.srcElement.outerHTML || event.currentTarget.outerHTML;
+    public getDom(event: any) {  
+        return event.target.innerText || event.srcElement.innerText || event.currentTarget.innerText;
     } 
 
     public getEngagement(event: any, id: string, contentType: string) {

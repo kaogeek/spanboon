@@ -107,4 +107,13 @@
         justify-content: center;
         align-items: center;
     }
+    > .preload-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        svg {
+            float: center;
+        }
+    }
 }

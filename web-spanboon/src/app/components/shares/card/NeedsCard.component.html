@@ -32,17 +32,17 @@
                                                 <span *ngIf="isFulfillQuantity">
                                                     <span
                                                         [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
-                                                        {{item.fulfillQuantity}} / </span>
+                                                        {{item.fulfillQuantity | shortNumber}} / </span>
                                                 </span>
                                                 <span *ngIf="!isFulfill"
                                                     [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                    {{item.quantity}}
+                                                    {{item.quantity | shortNumber}}
                                                 </span>
                                             </ng-container>
                                             <ng-template #elseTemplateQty>
                                                 <span
                                                     [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                    {{item.quantity}}
+                                                    {{item.quantity | shortNumber}}
                                                 </span>
                                             </ng-template>
 
