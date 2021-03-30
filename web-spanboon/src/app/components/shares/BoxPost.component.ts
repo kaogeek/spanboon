@@ -340,7 +340,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
-  ngOnChanges(changes: SimpleChanges): void { 
+  ngOnChanges(changes: SimpleChanges): void {
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
@@ -647,7 +647,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public selectOption() {
-    if (this.accessPage.length > 0) {
+    if (this.accessPage && this.accessPage.length > 0) {
       for (let data of this.accessPage) {
         if (this.router.url.split('/')[1] === "page") {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
@@ -1070,7 +1070,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         if (tag.isTopic !== isTopic) {
           hashTag.push("#" + tag.name);
         } else {
-          this.listTag.splice(index, 1); 
+          this.listTag.splice(index, 1);
           index--;
         }
         index++;
@@ -1325,7 +1325,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isSharePost = true;
     } else {
       this.modeDoIng = true;
-      this.isSharePost = false; 
+      this.isSharePost = false;
       this.accessPageImage.imageURL = event.imageURL;
     }
     this.socialGetBindingTwitter();
@@ -1446,7 +1446,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       }
     }
-    console.log('this.listTag ',this.listTag)
+    console.log('this.listTag ', this.listTag)
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
@@ -1891,7 +1891,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.getTextLength();
   }
 
-  public clickCardObjective(index: number, item: any) { 
+  public clickCardObjective(index: number, item: any) {
     if (this.elementCheck) {
       if (this.dataObjective && this.dataObjective.id === item.id) {
         this.dataObjective = {};
@@ -2046,7 +2046,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
     }, 500);
 
-    setTimeout(() => { 
+    setTimeout(() => {
       this.setTopobj();
     }, 0);
   }
