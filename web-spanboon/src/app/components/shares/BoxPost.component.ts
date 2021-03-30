@@ -304,7 +304,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.router = router;
     this.data = {};
 
-    this.observManager.subscribe('authen.check', (data) => { 
+    this.observManager.subscribe('authen.check', (data) => {
     });
 
     this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
@@ -598,7 +598,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public searchAccessPage() {
-    this.userAccessFacade.getPageAccess().then((res: any) => { 
+    this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
         let index = 0;
         this.accessPage = res;
@@ -630,7 +630,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                 } else {
                   data.page.imageURL = image.data
                 }
-                this.accessPage = res; 
+                this.accessPage = res;
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -641,7 +641,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.accessPage = res;
           }
           index++;
-        } 
+        }
         const cloneData = JSON.parse(JSON.stringify(this.accessPage))
         this.selectOption(cloneData);
       }
@@ -650,7 +650,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
-  public selectOption(cloneData : any) { 
+  public selectOption(cloneData: any) {
     if (cloneData && cloneData.length > 0) {
       for (let data of cloneData) {
         if (this.router.url.split('/')[1] === "page") {
@@ -679,10 +679,10 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
             this.dataPage = data.page.name;
             this.dataPageId = data.page;
-            this.modeDoIng = false; 
+            this.modeDoIng = false;
           }
         } else {
-          const cloneDataUser = data.user; 
+          const cloneDataUser = data.user;
           // const cloneDataUser = JSON.parse(JSON.stringify(data.user)); 
           this.dataPageId = data.user;
           if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
@@ -692,7 +692,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   cloneDataUser.imageURL = null
                 } else {
                   cloneDataUser.imageURL = image.data
-                } 
+                }
                 this.accessPageImage = cloneDataUser;
                 this.isSelectOption = false;
               }
@@ -704,10 +704,10 @@ export class BoxPost extends AbstractPage implements OnInit {
           } else {
             this.accessPageImage = cloneDataUser;
             this.isSelectOption = false;
-          } 
-        
+          }
+
         }
-       
+
       }
     }
   }
@@ -1330,20 +1330,20 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.pageId = event.id;
     this.dataPage = event.name || event.displayName;
     this.dataPageId = {};
-    this.dataPageId.id = event.id;  
+    this.dataPageId.id = event.id;
     if (type === 'PAGE') {
       this.modeDoIng = false;
       this.isSharePost = true;
       this.modeShowDoing = true;
       this.accessPageImage.name = event.name;
-      this.accessPageImage.imageURL = event.imageURL; 
-      this.accessPageImage.id = event.id; 
-    } else { 
+      this.accessPageImage.imageURL = event.imageURL;
+      this.accessPageImage.id = event.id;
+    } else {
       this.modeDoIng = true;
       this.isSharePost = false;
-      this.modeShowDoing = false; 
+      this.modeShowDoing = false;
       this.accessPageImage.displayName = event.displayName;
-      this.accessPageImage.imageURL = event.imageURL; 
+      this.accessPageImage.imageURL = event.imageURL;
       this.accessPageImage.id = event.id
     }
     this.socialGetBindingTwitter();
@@ -1448,6 +1448,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.imagesTimeline.length > 0) {
       this.dataImage = [];
       for (let [index, image] of this.imagesTimeline.entries()) {
+        // upload image
         const asset = new Asset();
         if (image && image.image) {
           let data = image.image.split(',')[0];
@@ -1460,11 +1461,24 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.dataImage.push({
             id: image.id,
             asset,
-          })
+          });
+        } else {
+          if (image.imageURL !== undefined && image.imageURL !== '' && image.imageURL !== null) {
+            image.ordering = index + 1;
+            asset.ordering = image.ordering;
+            this.dataImage.push({
+              fileId: image.fileId,
+              id : image._id,
+              postId : image.post,
+              asset
+            });
+          }
+
         }
       }
     }
-    console.log('this.listTag ', this.listTag)
+    console.log('this. ', this.dataImage)
+
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
@@ -2337,8 +2351,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(res => {
-      if (res !== undefined) {
-        console.log(res);
+      if (res !== undefined) { 
         this.imagesTimeline = res;
       }
     });

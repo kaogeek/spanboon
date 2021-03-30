@@ -85,6 +85,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public isBackdrop: boolean;
   public scrollMobile: boolean;
   public showLoading: boolean;
+  public isLoadMorePageCategory: boolean;
+  public isLoadMorePageEmergency: boolean;
+  public isLoadMoreObjective: boolean;
+  public isLoadMoreHashTag: boolean;
   public isLoadingClickTab: boolean;
   public imageCoverSize: number;
   public position: number;
@@ -650,10 +654,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public async searchEmergency() {
     this.isLoading = true;
+    this.isLoadMorePageEmergency = true;
     const keywordFilter: any = {
       filter: {
         limit: 5,
-        offset: SEARCH_OFFSET,
+        offset: SEARCH_OFFSET + (this.resEmergency && this.resEmergency.length > 0 ? this.resEmergency.length : 0),
         relation: [],
         whereConditions: {},
         count: false,
@@ -673,7 +678,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergency = data.id;
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
         if (this.emergency) {
           for (let [index, tag] of cloneEmergency.entries()) {
@@ -682,6 +687,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
+        this.isLoadMorePageEmergency = false;
       }
 
       this.isLoading = false;
@@ -704,6 +710,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       },
     };
     let cloneObject: any[] = this.resObjective;
+    this.isLoadMoreObjective = true;
     await this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.data) {
         for (let object of result.data) {
@@ -716,7 +723,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.objective = data.id;
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
         if (this.objective) {
           for (let [index, tag] of cloneObject.entries()) {
@@ -726,6 +733,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
         }
       }
+      this.isLoadMoreObjective = false;
     }).catch((err: any) => {
       console.log(err)
     })
@@ -738,20 +746,24 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     searchFilter.whereConditions = {};
     searchFilter.orderBy = {};
     let cloneHashtag: any[] = this.resHashTag;
+    this.isLoadMoreHashTag = true;
     this.hashTagFacade.searchTrend(searchFilter).then(res => {
-      for (let hashtag of res) {
-        cloneHashtag.push(hashtag);
-      }
-      if (this.matHashTag) {
-        for (let [index, tag] of cloneHashtag.entries()) {
-          for (let hashtag of this.matHashTag) {
-            if (tag.value === hashtag) {
-              Object.assign(cloneHashtag[index], { selected: true })
+      if (res && res.length > 0) {
+        for (let hashtag of res) {
+          cloneHashtag.push(hashtag);
+        }
+        if (this.matHashTag) {
+          for (let [index, tag] of cloneHashtag.entries()) {
+            for (let hashtag of this.matHashTag) {
+              if (tag.value === hashtag) {
+                Object.assign(cloneHashtag[index], { selected: true })
+              }
             }
           }
+          this.isLoadMoreHashTag = false;
         }
       }
-      this.resHashTag = cloneHashtag;
+      // this.resHashTag = cloneHashtag;
     }).catch(error => {
       console.log(error);
     });
@@ -765,7 +777,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
     this.createEngagement(dataEngagement);
 
   }
@@ -778,12 +790,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.outerHTML);
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
     this.createEngagement(dataEngagement);
   }
 
   public createEngagement(dataEngagement: UserEngagement) {
-    return this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
+    return this.userEngagementFacade.create(dataEngagement).then((res: any) => {
     }).catch((err: any) => {
       console.log('err ', err)
     });
@@ -828,7 +840,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.outerHTML);
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
     this.createEngagement(dataEngagement);
   }
 
@@ -1090,8 +1102,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public async searchPageCategory(page?: any) {
     let filter = new SearchFilter();
-    filter.limit = SEARCH_LIMIT;
-    filter.offset = SEARCH_OFFSET;
+    filter.limit = 5;
+    filter.offset = SEARCH_OFFSET + (this.resPageType && this.resPageType.length > 0 ? this.resPageType.length : 0);
     filter.relation = [];
     filter.whereConditions = {};
     filter.count = false;
@@ -1099,20 +1111,26 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       createdDate: "DESC",
     }
     this.isLoading = true;
+    this.isLoadMorePageCategory = true; 
+   
+    let clonePageCategory: any[] = this.resPageType;
     await this.pageCategoryFacade.search(filter).then((res: any) => {
-      if (res) {
-        this.resPageType = res;
+      if (res && res.length > 0) {
+        for (let hashtag of res) {
+          clonePageCategory.push(hashtag);
+        }
         if (this.pageCateUrl) {
           for (let data of this.resPageType) {
             for (let list of this.pageCateUrl) {
               if (list === data.name) {
-                this.page.push(data.id);
+                this.page.push(data.id); 
               }
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
-      }
+      } 
+        this.isLoadMorePageCategory = false;  
     }).catch((err: any) => {
       console.log(err)
     })
