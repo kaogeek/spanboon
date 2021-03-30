@@ -213,6 +213,9 @@ export class DialogPost extends AbstractPage {
           if (err && err.error && err.error.message === 'Objective was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
             this.showAlertDialogWarming(alertMessages, "none");
+          } else if (err && err.error && err.error.message === 'Emergency Event was not found.'){
+            alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.showAlertDialogWarming(alertMessages, "none");
           }
         })
       }
