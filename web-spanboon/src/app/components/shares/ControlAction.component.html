@@ -9,7 +9,9 @@
     <div class="collis">
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count"> {{comment | shortNumber }}</span>
+            <span class="label-count" [ngClass]="userComment ? 'icon-activate' : ''">
+                {{comment | shortNumber }}
+            </span>
             <ng-container *ngIf="userComment; else elseNotComment">
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="53.58" height="50.521" viewBox="0 0 53.58 50.521">
@@ -38,7 +40,9 @@
         </div>
         <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count">{{reboon | shortNumber}}</span>
+            <span class="label-count" [ngClass]="userReboon ? 'icon-activate' : ''">
+                {{reboon | shortNumber}}
+            </span>
             <ng-container *ngIf="userReboon; else elseNotReboon">
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
@@ -79,7 +83,9 @@
         </div>
         <div class="wrapper-action" *ngIf="isLike" (click)="postLike();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count"> {{like | shortNumber}} </span>
+            <span class="label-count" [ngClass]="userLike ? 'icon-activate' : ''">
+                {{like | shortNumber}}
+            </span>
             <ng-container *ngIf="userLike; else elseNotLike">
                 <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
@@ -99,7 +105,9 @@
         </div>
         <div class="wrapper-action" *ngIf="isShare" (click)="postShare();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count"> {{share | shortNumber }}</span>
+            <span class="label-count">
+                {{share | shortNumber }}
+            </span>
             <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                 xmlns="http://www.w3.org/2000/svg" width="40.107" height="44.3" viewBox="0 0 40.107 44.3">
                 <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3664"

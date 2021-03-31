@@ -275,7 +275,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     super.ngOnInit();
     this.checkLoginAndRedirection();
     this.setTab();
-    this.setCop(); 
+    this.setCop();
     $(window).resize(() => {
       this.setTab();
     });
@@ -349,23 +349,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     } else {
       return this.router.navigateByUrl('/page/' + this.url);
     }
-  } 
+  }
 
   public searchAboutPage() {
     let limit = 30;
     let offset = SEARCH_OFFSET;
     this.aboutPageFacade.searchPageAbout(this.resDataPage.id, offset, limit).then((res) => {
       if (res && res.length > 0) {
-        this.resAboutPage = res; 
+        this.resAboutPage = res;
         for (let data of this.resAboutPage) {
           if (data.label === 'ละติจูด') {
-            this.latitudeAboutPage = data; 
+            this.latitudeAboutPage = data;
           }
           if (data.label === 'ลองจิจูด') {
-            this.longtitudeAboutPage = data; 
+            this.longtitudeAboutPage = data;
           }
-          if(this.latitudeAboutPage && this.latitudeAboutPage.value !== '' && this.longtitudeAboutPage && this.longtitudeAboutPage.value !== ''){
-            this.localtion = 'https://www.google.com/maps/search/?api=1&query='+this.latitudeAboutPage.value+','+this.longtitudeAboutPage.value;
+          if (this.latitudeAboutPage && this.latitudeAboutPage.value !== '' && this.longtitudeAboutPage && this.longtitudeAboutPage.value !== '') {
+            this.localtion = 'https://www.google.com/maps/search/?api=1&query=' + this.latitudeAboutPage.value + ',' + this.longtitudeAboutPage.value;
           }
         }
       }
@@ -1174,7 +1174,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.postId = action.pageId
+    console.log('action2 >>>> ', action);
+    this.postId = action.post._id
     let pageInUser: any[]
     let data: RePost = new RePost();
     let dataPost: any
@@ -1249,7 +1250,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         });
       } else if (action.type === "NOTOPIC") {
-        data.pageId = null
+        if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
+          data.pageId = action.userAsPage.id
+        } else {
+          data.pageId = null
+        }
         dataPost = action.post._id
         this.postFacade.rePost(dataPost, data).then((res: any) => {
           this.resPost.posts[index].repostCount++
@@ -1275,7 +1280,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public getAaaPost(action: any, index: number) {
+    console.log('action >>>> ', action);
     let user = this.authenManager.getCurrentUser()
+    console.log('user >>>> ', user);
     if (action.userPage.id === user.id) {
       action.userPage.id = null
     }

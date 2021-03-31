@@ -19,7 +19,7 @@ import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
 import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
 import { MESSAGE } from '../../../../custom/variable';
-import { Router } from '@angular/router';  
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'post-data',
@@ -191,7 +191,7 @@ export class PostData {
           }
         }
       }
-      if(this.itemPost && this.itemPost.title){
+      if (this.itemPost && this.itemPost.title) {
         if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
           if (this.itemPost && this.itemPost.hashTags.length > 0) {
             if (this.itemPost.title.includes('#')) {
@@ -298,7 +298,7 @@ export class PostData {
       url += "objective=" + text.objectiveTag;
       type = "objective";
       eventId = text.objective.hashTag;
-    }   
+    }
     let click = this.engagementService.getEngagement(data.event, eventId, type);
     this.engagement.emit(click)
 
@@ -481,9 +481,9 @@ export class PostData {
     this.update.emit(itemPost)
   }
 
-  public onClickEngagement(event, id: any, contentType: string) { 
+  public onClickEngagement(event, id: any, contentType: string) {
     let data = this.engagementService.getEngagement(event, id, contentType);
-    this.engagement.emit(data); 
+    this.engagement.emit(data);
   }
 
   public fulfillEngagement(event, postId: string) {
