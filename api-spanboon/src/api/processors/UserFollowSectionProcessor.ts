@@ -173,19 +173,36 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         lastestDate = row.createdDate;
                     }
 
+                    const contentModel = new ContentModel();
                     let followUserCount = 0;
                     let followUsers = [];
-                    if (page !== undefined) {
+                    if (page !== null && page !== undefined) {
                         const pfSimple = await this.userFollowService.sampleUserFollow(rowPage._id, SUBJECT_TYPE.PAGE, 5);
                         followUserCount = pfSimple.count;
                         followUsers = pfSimple.followers;
-                    } else if (user !== undefined) {
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            if (page !== null && page !== undefined) {
+                                const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                                const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                                if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                    contentModel.isFollow = true;
+                                } else {
+                                    contentModel.isFollow = false;
+                                }
+                            }
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else if (user !== null && user !== undefined) {
                         const usrSimple = await this.userFollowService.sampleUserFollow(user._id, SUBJECT_TYPE.USER, 5);
                         followUserCount = usrSimple.count;
                         followUsers = usrSimple.followers;
                     }
 
-                    const contentModel = new ContentModel();
                     contentModel.commentCount = row.commentCount;
                     contentModel.repostCount = row.repostCount;
                     contentModel.shareCount = row.shareCount;
@@ -206,21 +223,6 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
                         contentModel.isShare = userAction.isShare;
-                    }
-
-                    if (userId !== null && userId !== undefined && userId !== '') {
-                        userObjId = new ObjectID(userId);
-
-                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
-
-                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
-                            contentModel.isFollow = true;
-                        } else {
-                            contentModel.isFollow = false;
-                        }
-                    } else {
-                        contentModel.isFollow = false;
                     }
 
                     delete contentModel.post.story;

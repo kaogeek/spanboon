@@ -112,20 +112,37 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         lastestDate = row.createdDate;
                     }
 
-                    const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-
-                    const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
-
                     const contentModel = new ContentModel();
-                    contentModel.commentCount = row.commentCount;
-                    contentModel.repostCount = row.repostCount;
-                    contentModel.shareCount = row.shareCount;
-                    contentModel.likeCount = row.likeCount;
-                    contentModel.viewCount = row.viewCount;
-                    contentModel.followUserCount = followUserCount; // count all userfollow
-                    contentModel.post = row;
-                    contentModel.dateTime = row.createdDate;
-                    contentModel.owner = this.parsePageField(page);
+
+                    if (page !== null && page !== undefined) {
+                        const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
+
+                        contentModel.commentCount = row.commentCount;
+                        contentModel.repostCount = row.repostCount;
+                        contentModel.shareCount = row.shareCount;
+                        contentModel.likeCount = row.likeCount;
+                        contentModel.viewCount = row.viewCount;
+                        contentModel.followUserCount = followUserCount; // count all userfollow
+                        contentModel.post = row;
+                        contentModel.dateTime = row.createdDate;
+                        contentModel.owner = this.parsePageField(page);
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    }
 
                     if (showUserAction) {
                         const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
@@ -133,21 +150,6 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
                         contentModel.isShare = userAction.isShare;
-                    }
-
-                    if (userId !== null && userId !== undefined && userId !== '') {
-                        userObjId = new ObjectID(userId);
-
-                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
-
-                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
-                            contentModel.isFollow = true;
-                        } else {
-                            contentModel.isFollow = false;
-                        }
-                    } else {
-                        contentModel.isFollow = false;
                     }
 
                     delete contentModel.post.story;

@@ -294,30 +294,30 @@ export class HashTagController {
         return await this.engagementService.aggregate(engStmt);
     }
 
-    private async searchMasterHashTag(name: string, limit: number, hashTagNameList?: any[]): Promise<any> {
-        const htStmt: any[] = [];
+    // private async searchMasterHashTag(name: string, limit: number, hashTagNameList?: any[]): Promise<any> {
+    //     const htStmt: any[] = [];
 
-        if (hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) {
-            htStmt.push({ $match: { name: { $not: { $in: hashTagNameList } } } });
-        }
+    //     if (hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) {
+    //         htStmt.push({ $match: { name: { $not: { $in: hashTagNameList } } } });
+    //     }
 
-        if (name !== null && name !== undefined && name !== '') {
-            htStmt.push({ $match: { name: { $regex: '.*' + name + '.*', $options: 'si' } } });
-        }
+    //     if (name !== null && name !== undefined && name !== '') {
+    //         htStmt.push({ $match: { name: { $regex: '.*' + name + '.*', $options: 'si' } } });
+    //     }
 
-        if ((hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) && (name !== null && name !== undefined && name !== '')) {
-            htStmt.push({ $match: { $and: [{ name: { $not: { $in: hashTagNameList } } }, { name: { $regex: '.*' + name + '.*', $options: 'si' } }] } });
-        }
+    //     if ((hashTagNameList !== null && hashTagNameList !== undefined && hashTagNameList.length > 0) && (name !== null && name !== undefined && name !== '')) {
+    //         htStmt.push({ $match: { $and: [{ name: { $not: { $in: hashTagNameList } } }, { name: { $regex: '.*' + name + '.*', $options: 'si' } }] } });
+    //     }
 
-        if (limit === 0 || limit === null || limit === undefined) {
-            limit = MAX_SEARCH_ROWS;
-            htStmt.push({ $limit: limit });
-        } else {
-            htStmt.push({ $limit: limit });
-        }
+    //     if (limit === 0 || limit === null || limit === undefined) {
+    //         limit = MAX_SEARCH_ROWS;
+    //         htStmt.push({ $limit: limit });
+    //     } else {
+    //         htStmt.push({ $limit: limit });
+    //     }
 
-        htStmt.push({ $sort: { lastActiveDate: -1 } });
+    //     htStmt.push({ $sort: { lastActiveDate: -1 } });
 
-        return await this.hashTagService.aggregate(htStmt);
-    }
+    //     return await this.hashTagService.aggregate(htStmt);
+    // }
 }

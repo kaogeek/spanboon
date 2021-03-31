@@ -241,26 +241,26 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         contentModel.isShare = userAction.isShare;
                     }
 
-                    if (userId !== null && userId !== undefined && userId !== '') {
-                        userObjId = new ObjectID(userId);
+                    contentModel.owner = {};
+                    if (page !== null && page !== undefined) {
+                        contentModel.owner = this.parsePageField(page);
+                        contentModel.owner.isHot = isHot;
 
-                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
 
-                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
-                            contentModel.isFollow = true;
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
                         } else {
                             contentModel.isFollow = false;
                         }
-                    } else {
-                        contentModel.isFollow = false;
-                    }
-
-                    contentModel.owner = {};
-                    if (page !== undefined) {
-                        contentModel.owner = this.parsePageField(page);
-                        contentModel.owner.isHot = isHot;
-                    } else if (user !== undefined) {
+                    } else if (user !== null && user !== undefined) {
                         contentModel.owner = this.parseUserField(user);
                     }
 

@@ -148,20 +148,23 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     contentModel.subtitle = row.name;
                     contentModel.iconUrl = row.iconURL;
 
-                    if (userId !== null && userId !== undefined && userId !== '') {
-                        userObjId = new ObjectID(userId);
+                    if (page !== null && page !== undefined) {
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
 
-                        const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                        const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
 
-                        if (currentUserFollow !== null && currentUserFollow !== undefined) {
-                            contentModel.isFollow = true;
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
                         } else {
                             contentModel.isFollow = false;
                         }
-                    } else {
-                        contentModel.isFollow = false;
                     }
+
                     // contentModel.commentCount = row.commentCount;
                     // contentModel.repostCount = row.repostCount;
                     // contentModel.shareCount = row.shareCount;
