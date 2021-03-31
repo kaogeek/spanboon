@@ -121,6 +121,10 @@ span:focus {
                     padding: 0 10pt;
                     text-align: right;
 
+                    > .quantity {
+                        @include font-size-10($font-head-100);
+                    }
+
                     > .option {
                         cursor: pointer;
                         @include pointer();

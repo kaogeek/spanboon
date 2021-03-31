@@ -446,7 +446,8 @@
       @include font-size-10($font-head-500);
 
       &:hover {
-        color: rgba($brandcolor2, 0.8);
+        // color: rgba($brandcolor2, 0.8);
+        color: darken($brandcolor2, 8%);
       }
     }
 
@@ -512,6 +513,7 @@
           display: block;
           right: 35px;
           bottom: 16px;
+          color: $color-gray;
 
           > .material-icons {
             &:hover {
