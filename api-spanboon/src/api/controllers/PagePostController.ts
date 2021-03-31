@@ -1078,9 +1078,10 @@ export class PagePostController {
                     },
                     {
                         $project: {
-                            'emergencyEvent._id': 0,
+                            // 'emergencyEvent._id': 0,
                             'emergencyEvent.title': 0,
                             'emergencyEvent.detail': 0,
+                            'emergencyEvent.hashTag': 0,
                             'emergencyEvent.coverPageURL': 0,
                             'emergencyEvent.createdDate': 0,
                             'emergencyEvent.isClose': 0,
@@ -1127,9 +1128,9 @@ export class PagePostController {
                         }
                     },
                     {
-                        $project: {  
+                        $project: {
                             'ownerUser.username': 0,
-                            'ownerUser.password': 0, 
+                            'ownerUser.password': 0,
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
@@ -1334,7 +1335,7 @@ export class PagePostController {
             let isDraft = postPages.isDraft;
             let story = postPages.story;
             let coverImage = postPages.coverImage;
-            // let postGallery = postPages.postGallery;
+            const postGallery = postPages.postGallery;
             const postNeeds = postPages.needs;
             const postHashTag = postPages.postsHashTags;
             const postUserTag = postPages.userTags;
@@ -1378,6 +1379,92 @@ export class PagePostController {
                 for (const user of userIdExists) {
                     userTags.push(new ObjectID(user.id));
                 }
+            }
+
+            let assetResultUpload: Asset;
+            let findPostGalleryImg;
+
+            if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
+
+                let isCreateAssetGallery = false;
+                let postIdGallery;
+                const deleteGalleryList = [];
+                const UpdateGalleryList = [];
+                const createGalleyList = [];
+
+                for (const image of postGallery) {
+                    postIdGallery = new ObjectID(image.postId);
+                    deleteGalleryList.push(new ObjectID(image.fileId));
+                    UpdateGalleryList.push(image);
+                }
+
+                // find post have not in image  
+                findPostGalleryImg = await this.postGalleryService.deleteMany({
+                    // where: {
+                    $and: [
+                        {
+                            post: postIdGallery
+                        }, {
+                            fileId: {
+                                $nin: deleteGalleryList
+                            }
+                        }
+                    ]
+                    // }
+                });
+
+                for (const data of UpdateGalleryList) { 
+                    // find gallery update ordering
+                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
+                    if (gallery.length > 0) {
+                        // const isContain = gallery.filter(object => {
+                        //     console.log('1 ', data.fileId) 
+                        //     console.log('2 ', new ObjectID(data.fileId)) 
+                        //     console.log('object ', new ObjectID(data.fileId) === object.fileId   ? true : false);
+
+                        //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
+                        // });
+                        // console.log(isContain);
+
+                        const updateImageQuery = { _id: new ObjectID(data.id) };
+                        const newImageValue = {
+                            $set: {
+                                ordering: data.asset.ordering,
+                            }
+                        };
+                        await this.postGalleryService.update(updateImageQuery, newImageValue);
+                    } else {
+                        createGalleyList.push(data);
+                        isCreateAssetGallery = true;
+                    }
+                }
+                if (isCreateAssetGallery) {
+                    for (const image of createGalleyList) {
+                        const newFileName = ownerUser + FileUtil.renameFile();
+                        const assetData = image.asset.data;
+                        const assetMimeType = image.asset.mimeType;
+                        const assetFileName = newFileName;
+                        const assetSize = image.asset.size;
+
+                        const galleryImageAsset = new Asset();
+                        galleryImageAsset.userId = ownerUser;
+                        galleryImageAsset.data = assetData;
+                        galleryImageAsset.mimeType = assetMimeType;
+                        galleryImageAsset.fileName = assetFileName;
+                        galleryImageAsset.size = assetSize;
+                        galleryImageAsset.expirationDate = null;
+                        galleryImageAsset.scope = ASSET_SCOPE.PUBLIC;
+                        assetResultUpload = await this.assetService.create(galleryImageAsset);
+
+                        const gallery = new PostsGallery();
+                        gallery.fileId = new ObjectID(image.id);
+                        gallery.post = post.id;
+                        gallery.imageURL = assetResultUpload ? ASSET_PATH + assetResultUpload.id : '';
+                        gallery.ordering = image.asset.ordering;
+                        await this.postGalleryService.create(gallery);
+                    }
+                }
+
             }
 
             let assetResult: Asset;
@@ -1536,7 +1623,7 @@ export class PagePostController {
                 }
 
                 for (const need of postNeeds) {
-                    let needId = undefined; 
+                    let needId = undefined;
                     if (need._id !== null && need._id !== undefined && need._id !== '') {
                         needId = need._id;
                     }
