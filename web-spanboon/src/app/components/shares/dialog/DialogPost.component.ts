@@ -80,11 +80,11 @@ export class DialogPost extends AbstractPage {
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
-      if(this.data && !this.data.isSharePost){
+      if(this.data && !this.data.isSharePost){ 
         this.isSharePost = this.data.isSharePost;
-      } else { 
+      } else {  
         this.isSharePost = true;
-      } 
+      }  
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {

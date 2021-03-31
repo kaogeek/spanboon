@@ -716,7 +716,7 @@
                                     accept="image/*" multiple />
                             </div>
                         </ng-template>
-                    </div>
+                    </div> 
                     <ng-container *ngIf="isSharePost">
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
                             <svg class="icon-social"
@@ -747,10 +747,9 @@
                                             </g>
                                         </svg>
                                     </div>
-                                </div>
+                                </div> 
                                 <div class="body-list">
-                                    <div class="checklist"
-                                        *ngIf="facebookConection && !facebookConection.data && twitterConection && !twitterConection.data">
+                                    <div class="checklist" *ngIf="(facebookConection && !facebookConection.data) && (twitterConection && !twitterConection.data)">
                                         <span class="list-found">ไม่พบเพจหรือบัญชีผู้ใช้</span>
                                     </div>
                                     <div class="checklist" *ngIf="facebookConection && facebookConection.data">
