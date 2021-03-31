@@ -52,7 +52,7 @@ export class PostsGalleryService {
     }
 
     // delete postGallery
-    public async deleteMany(query: any, options?: any): Promise<any> {
+    public async deleteMany(query: any, options?: any): Promise<any> { 
         return await this.postGalleryRepository.deleteMany(query, options);
     }
 
