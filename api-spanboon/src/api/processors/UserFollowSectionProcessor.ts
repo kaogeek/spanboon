@@ -184,23 +184,21 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         if (userId !== null && userId !== undefined && userId !== '') {
                             userObjId = new ObjectID(userId);
 
-                            if (page !== null && page !== undefined) {
-                                const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                                const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
 
-                                if (currentUserFollow !== null && currentUserFollow !== undefined) {
-                                    contentModel.isFollow = true;
-                                } else {
-                                    contentModel.isFollow = false;
-                                }
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
                             }
-                        } else {
-                            contentModel.isFollow = false;
                         }
                     } else if (user !== null && user !== undefined) {
                         const usrSimple = await this.userFollowService.sampleUserFollow(user._id, SUBJECT_TYPE.USER, 5);
                         followUserCount = usrSimple.count;
                         followUsers = usrSimple.followers;
+                    } else {
+                        contentModel.isFollow = false;
                     }
 
                     contentModel.commentCount = row.commentCount;

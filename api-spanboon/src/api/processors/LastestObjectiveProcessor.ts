@@ -11,7 +11,7 @@ import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { LastestObjectiveProcessorData } from './data/LastestObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
-import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+// import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 // import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
