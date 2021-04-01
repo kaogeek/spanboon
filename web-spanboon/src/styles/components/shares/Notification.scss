@@ -112,7 +112,7 @@
 
             &:hover {
                 transition: 0.5s;
-                background-color: rgb(243, 243, 243);
+                background-color: $background-hover;
             }
 
             &.active {

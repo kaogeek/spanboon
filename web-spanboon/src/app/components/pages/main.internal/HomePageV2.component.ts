@@ -49,6 +49,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public lookingSectionModels: any;
   public viewSectionModels: any;
 
+  public isLoding: boolean = true;
+
   tag = {
     hashtag: {
       "coverPageUrl": "/file/5f8e46d9a554f760422bc274",
@@ -671,6 +673,11 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     // console.log('this.doingEvents', this.doingEventsNo1);
     // console.log('this.emergencyEventsArrTitle', this.emergencyEventsArrTitle);
     // console.log('this.aroundSectionModels', this.aroundSectionModels);
+
+    setTimeout(() => {
+      this.isLoding = false;
+
+    }, 3500);
 
   }
 

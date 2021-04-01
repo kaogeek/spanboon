@@ -241,6 +241,9 @@
                             }
                         }
                     }
+                    > .fulfill-name {
+                        display: none;
+                    }
 
                     > .contact-head {
                         @include font-size-8($font-head-500);
@@ -977,7 +980,7 @@
                             }
                         }
                     }
-                    > .story-left {
+                    > .story-left { 
                         > .story-category {
                             > .lookfor {
                                 @include font-size-10($font-head-500);
@@ -985,7 +988,8 @@
                             > .date {
                                 @include font-size-10($font-head-500);
                             }
-                        }
+                        } 
+
                         > .contact-head {
                             @include font-size-7($font-head-500);
                             margin-top: unset;
@@ -1392,7 +1396,7 @@
                             }
                         }
                     }
-                    > .story-left {
+                    > .story-left { 
                         > .story-category {
                             // display: none;
                             > .lookfor {
@@ -1409,13 +1413,38 @@
                                     overflow: hidden;
                                 }
                             }
+                            >.date {
+                                &:last-child {
+                                    display: none;
+                                }
+                            }
                         }
-                        > .contact-head {
-                            @include font-size-7($font-head-500);
-                            margin-top: unset;
+
+                        > .fulfill-name {
+                            display: flex;
+                            > .date {
+                                @include font-size-10($font-head-300);
+                                color: rgb($black, 0.5);
+                                margin-left: 5px;
+
+                                a {
+                                    color: #a5a5a6;
+
+                                    &:hover {
+                                        color: rgba($brandcolor2, 0.95);
+                                    }
+                                }
+                            }
+                        }
+
+                        > .contact-head { 
+                            margin-top: unset; 
                         }
                         > .contact-hashtag {
-                            padding: unset;
+                            padding: unset; 
+                            >.date {
+                                @include font-size-10($font-head-300);
+                            }
                             > .contact-content {
                                 max-width: unset;
                             }
