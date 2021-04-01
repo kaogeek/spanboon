@@ -39,7 +39,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <span>{{postData.owner.name}}</span>
+                    <a (click)="clickDialogDiverlop()">{{postData.owner.name}}</a>
                 </div>
                 <div class="amount_social">
                     <!-- <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์ -->
@@ -57,7 +57,7 @@
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
             <span class="drot">•</span>
-            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+            <a (click)="clickDialogDiverlop()" class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
         <div class="top_medium_card">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
@@ -74,7 +74,7 @@
                 <span class="title">{{postData.post.title}}</span>
                 <span class="detail">{{postData.post.detail}}</span>
             </div>
-            <a>อ่านต่อ...</a>
+            <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
                     <span>{{postData.post.detail}}</span>
@@ -120,7 +120,7 @@
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
             <span class="drot">•</span>
-            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+            <a (click)="clickDialogDiverlop()" class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
         <div class="top_large_card">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
@@ -137,7 +137,7 @@
                 <span class="title">{{postData.post.title}}</span>
                 <span>{{postData.post.detail}}</span>
             </div>
-            <a>อ่านต่อ...</a>
+            <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
                     <span>{{postData.post.detail}}</span>
@@ -213,7 +213,7 @@
         </div>
         <div class="body_card">
             <div class="title">
-                <span class="event_title">{{eventTitle}}</span>
+                <a (click)="clickDataSearch(eventTitle)" class="event_title">{{eventTitle}}</a>
                 <span class="date_time">{{dateTime | dateFormat}}</span>
             </div>
             <span class="description">{{eventDescription}}</span>
@@ -278,7 +278,8 @@
             </div>
         </div>
         <div class="other_teg_event">
-            <div class="teg_event_list" *ngFor="let event of eventData; let index = index">
+            <div class="teg_event_list" (click)="clickDataSearch(event.title)"
+                *ngFor="let event of eventData; let index = index">
                 <div class="title">
                     <span>{{event.title}}</span>
                     <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -367,11 +368,11 @@
             <div class="page_info">
                 <div class="page_logo"></div>
                 <div class="hashtag_user">
-                    <span class="hashtag">{{tagData.hashtag.title}}</span>
+                    <a class="hashtag" (click)="clickDataSearch(tagData.hashtag.title)">{{tagData.hashtag.title}}</a>
                     <div class="user">
                         <span>โดย: </span>
                         <div class="page_name">
-                            <span>{{tagData.page.name}}</span>
+                            <span (click)="clickDialogDiverlop()">{{tagData.page.name}}</span>
                         </div>
                         <span class="drot">•</span>
                         <span>ผู้ติดตาม </span>
@@ -401,7 +402,8 @@
         </div>
         <div class="body">
             <div class="left">
-                <div class="post_card_list" *ngFor="let item of datahashTagArrPosts | slice:0:2; let i=index">
+                <div class="post_card_list" (click)="clickDialogDiverlop()"
+                    *ngFor="let item of datahashTagArrPosts | slice:0:2; let i=index">
                     <div class="type" [class.need]="item.type === 'NEEDS'" [class.general]="item.type === 'GENERAL'">
                     </div>
                     <div class="text">

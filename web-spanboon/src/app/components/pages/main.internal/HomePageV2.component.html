@@ -32,6 +32,9 @@
         </div>
     </div>
 </div> -->
+<div *ngIf="isLoding" class="loding">
+    <loading></loading>
+</div>
 
 <div class="hoem_page_v2">
     <div class="hoem_page_body">
@@ -41,11 +44,13 @@
         <div class="events_tag_top">
             <div class="left">
                 <span class="text">มาใหม่ :</span>
-                <a class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                <a class="tag" (click)="clickDataSearch(item)"
+                    *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
             </div>
             <div class="right">
                 <span class="text">มาแรง :</span>
-                <a class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                <a class="tag" (click)="clickDataSearch(item)"
+                    *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
             </div>
         </div>
 
@@ -171,7 +176,4 @@
             </div>
         </div>
 
-    </div>
-    <div *ngIf="isLoding" class="loding">
-        <loading></loading>
     </div>

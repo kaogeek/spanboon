@@ -5,16 +5,21 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { MatPaginator, MatDialog } from '@angular/material';
 import { publish } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { AuthenManager } from '../../../services/services';
+import { Router } from '@angular/router';
+import { AbstractPage } from '../../pages/AbstractPage';
 
 @Component({
     selector: 'card-contant-home',
     templateUrl: './CardContentHome.component.html'
 })
-export class CardContentHome {
+export class CardContentHome extends AbstractPage implements OnInit {
 
+    protected router: Router;
 
     @Input()
     public postData: any;
@@ -75,6 +80,10 @@ export class CardContentHome {
 
     public isLoad: boolean = true;
 
+    constructor(router: Router, authenManager: AuthenManager, dialog: MatDialog) {
+        super(null, authenManager, dialog, router);
+    }
+
     ngOnInit(): void {
         setTimeout(() => {
 
@@ -130,6 +139,14 @@ export class CardContentHome {
     ngOnChanges(changes: SimpleChanges): void {
     }
 
+    public clickDataSearch(data) {
+        this.router.navigateByUrl('/search?hashtag=' + data);
+    }
+
+    public clickDialogDiverlop() {
+        this.showAlertDevelopDialog();
+    }
+
     isDerTy(value): boolean {
 
         return (value !== null && value !== undefined && value !== '')
@@ -169,6 +186,22 @@ export class CardContentHome {
 
         // }
 
+    }
+
+
+    /// PUBLIC
+
+    isPageDirty(): boolean {
+        // throw new Error('Method not implemented.');
+        return false;
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+        // throw new Error('Method not implemented.');
+        return;
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+        // throw new Error('Method not implemented.');
+        return;
     }
 
 }
