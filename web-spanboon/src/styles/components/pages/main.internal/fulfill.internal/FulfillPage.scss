@@ -263,7 +263,7 @@
                         flex-wrap: wrap;
                         padding: 3pt 0;
                         > .date {
-                            @include font-size-10($font-head-300);
+                            @include font-size-10($font-head-100);
                             color: rgb($black, 0.5);
 
                             a {

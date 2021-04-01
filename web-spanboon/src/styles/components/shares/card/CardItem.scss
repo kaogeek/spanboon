@@ -43,6 +43,13 @@
         div {
             flex: 0 0 auto;
 
+            spanboon-button {
+                .btn-fulfill {
+                    background-color: $brandcolor3 !important;
+                    color: $white !important;
+                }
+            }
+
             > .material-icons {
                 font-family: "Material Icons" !important;
                 font-size: $font-size-icon-large;
