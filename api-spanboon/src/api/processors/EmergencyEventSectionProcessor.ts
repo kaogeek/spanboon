@@ -120,10 +120,68 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     }
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
+                    let searchResults: any[] = [];
+
+                    const lastestFilter: SearchFilter = new SearchFilter();
+                    lastestFilter.limit = limit;
+                    lastestFilter.offset = offset;
+                    lastestFilter.orderBy = {
+                        createdDate: 'DESC'
+                    };
+
+                    if (lastestFilter.whereConditions === undefined) {
+                        lastestFilter.whereConditions = {};
+                    }
+                    lastestFilter.whereConditions.isDraft = false;
+                    lastestFilter.whereConditions.deleted = false;
+                    lastestFilter.whereConditions.hidden = false;
+                    lastestFilter.whereConditions.emergencyEventTag = { $eq: hashtag.name };
+
+                    const matchStmt = lastestFilter.whereConditions;
+
+                    const postStmt = [
+                        { $match: matchStmt },
+                        { $limit: limit },
+                        { $skip: offset },
+                        { $sort: { createdDate: -1 } },
+                        {
+                            $project: {
+                                story: 0
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        }
+                    ];
+
+                    searchResults = await this.postsService.aggregate(postStmt);
+
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
                     contentModel.postCount = postSearchCount;
+                    contentModel.post = searchResults;
                     contentModel.commentCount = postCommentCount;
                     contentModel.repostCount = postRepostCount;
                     contentModel.shareCount = postShareCount;

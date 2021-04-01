@@ -667,7 +667,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     await this.getMainPageModel();
-    console.log('this.pageModel', this.pageModel);
     // console.log('this.emergencyEvents', this.emergencyEvents);
     // console.log('this.doingEvents', this.doingEventsNo1);
     // console.log('this.emergencyEventsArrTitle', this.emergencyEventsArrTitle);
@@ -680,6 +679,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   private async getMainPageModel(userId?) {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
+
+    console.log('model', model);
     this.pageModel = this.jsonParseData(model);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
     this.aroundSectionModels = this.jsonParseData(this.pageModel.sectionModels[2]);

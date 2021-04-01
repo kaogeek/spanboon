@@ -23,6 +23,10 @@ export class CardContentHome {
     @Input()
     public tagData: any;
 
+    // keyOBJ Array
+    @Input()
+    public keyObjArr: any;
+
     @Input()
     public smallCard: boolean;
     @Input()
@@ -42,6 +46,12 @@ export class CardContentHome {
     public isOfficial: boolean = true;
     public apiBaseURL = environment.apiBaseURL;
 
+    // card //
+
+    public postCardCoverPageUrl: string = '';
+    public postCardTitle: string = '';
+    public postCardDescription: string = '';
+
     // event //
     public eventCoverPageUrl: string = '';
     public eventTitle: string = '';
@@ -54,7 +64,6 @@ export class CardContentHome {
 
     public dateTime: any;
 
-
     // hashTag //
     public datahashTagArrPosts: any;
     public datahashTagPost: any;
@@ -64,36 +73,15 @@ export class CardContentHome {
     public hashTagCommentCount: number;
     public hashTagShareCount: number;
 
-
-
-    public testObj: any = [
-        {
-            name: "P.Nut"
-        },
-        {
-            name: "P.B"
-        },
-        {
-            name: "P.O"
-        },
-        {
-            name: "P.T",
-            needs: [
-                { name: "AA" },
-                { name: "BB" },
-                { name: "CC" },
-                { name: "DD" },
-            ]
-        },
-    ]
-
-
     public isLoad: boolean = true;
 
     ngOnInit(): void {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
+                if (this.keyObjArr !== undefined && this.keyObjArr !== null && this.keyObjArr !== '') {
+                    this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
+                }
                 this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
             }
 
@@ -135,7 +123,7 @@ export class CardContentHome {
     }
 
     ngAfterViewInit(): void {
-        this.duplicateObjFunction(this.testObj, 'name');
+
 
     }
 
@@ -147,13 +135,39 @@ export class CardContentHome {
         return (value !== null && value !== undefined && value !== '')
     }
 
-    duplicateObjFunction(ArrayObj, keyObj) {
+    duplicateObjFunction(Obj, keyObjs: any[]): any {
 
-        for (let arr of ArrayObj) [
-        ]
+        let indexKey: number = 1;
+        let lastObj: any
 
-        console.log(ArrayObj[0][keyObj] ? ArrayObj[0][keyObj] : "sadasd");
-        console.log(ArrayObj[keyObj] ? ArrayObj[keyObj] : "und");
+        for (let key of keyObjs) {
+
+            // for (let arr of ArrayObj) {
+
+            if (indexKey === keyObjs.length) {
+                if (indexKey === 1) {
+                    return Obj[key];
+                } else {
+
+                    return lastObj[key];
+                }
+
+            } else {
+                if (typeof Obj[key] == "object") {
+                    lastObj = Obj[key];
+                }
+            }
+            // }
+            indexKey++
+        }
+
+        return "Not found"
+
+        // console.log(ArrayObj[0][keyObj] ? ArrayObj[0][keyObj] : "sadasd");
+        // console.log(ArrayObj[keyObj] ? ArrayObj[keyObj] : "und");
+
+
+        // }
 
     }
 

@@ -56,7 +56,7 @@ export class MainPageController {
         private postsService: PostsService,
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
-        private pageObjectiveService: PageObjectiveService,
+        private pageObjectiveService: PageObjectiveService
     ) { }
 
     // Find Page API
@@ -167,6 +167,7 @@ export class MainPageController {
         // const result: any = this.getResponsesData();
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
+        result.objectiveEvents = userPageLookingSectionModel;
         result.lastest = lastestLookSectionModel;
         result.looking = stillLKSectionModel;
         result.viewSection = userRecSectionModel;
@@ -1031,4 +1032,4 @@ export class MainPageController {
 
         return userResult;
     }
-} 
+}
