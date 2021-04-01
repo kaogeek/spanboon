@@ -141,7 +141,7 @@ export class MainPageController {
         userPageLookingSectionModel2.isList = true;
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
         lastestObjProcessor.setData({
             userId
         });
@@ -150,6 +150,7 @@ export class MainPageController {
             showUserAction: true
         });
         const lastestObjModel = await lastestObjProcessor.process();
+        // const userPageObjectiveLookingSectionModel = await lastestObjProcessor.processByPosts();
         lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
 
         // const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
@@ -167,7 +168,7 @@ export class MainPageController {
         // const result: any = this.getResponsesData();
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
-        result.objectiveEvents = userPageLookingSectionModel;
+        // result.objectiveEvents = userPageObjectiveLookingSectionModel;
         result.lastest = lastestLookSectionModel;
         result.looking = stillLKSectionModel;
         result.viewSection = userRecSectionModel;

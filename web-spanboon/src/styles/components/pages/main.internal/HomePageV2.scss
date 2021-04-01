@@ -292,6 +292,16 @@
     }
 }
 
+.loding {
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    color: black;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+}
+
 @media (max-width: $large) {
     .hoem_page_v2 > .hoem_page_body {
         width: 900px;

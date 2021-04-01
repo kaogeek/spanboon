@@ -1676,6 +1676,61 @@
     "name": "PostApiAllocateSearch"
   },
   {
+    "type": "delete",
+    "url": "/api/temp",
+    "title": "Delete temp API",
+    "group": "Asset",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "examples": [
+        {
+          "title": "Input",
+          "content": "{\n     \"id\" : \"\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success",
+          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete temp.\",\n\"status\": \"1\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "/api/temp"
+      }
+    ],
+    "error": {
+      "examples": [
+        {
+          "title": "Delete temp Error",
+          "content": "HTTP/1.1 500 Internal Server Error",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/controllers/AssetsController.ts",
+    "groupTitle": "Asset",
+    "name": "DeleteApiTemp"
+  },
+  {
     "type": "get",
     "url": "/api/file/:id",
     "title": "Find Asset API",
@@ -2830,61 +2885,6 @@
     "filename": "src/api/controllers/FulfillmentCaseController.ts",
     "groupTitle": "FulfillmentCase",
     "name": "DeleteApiFulfillment_caseId"
-  },
-  {
-    "type": "delete",
-    "url": "/api/fulfillment/:id",
-    "title": "Delete Fulfillment API",
-    "group": "Fulfillment",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete Fulfillment.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment/:id"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Delete Fulfillment Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/AssetsController.ts",
-    "groupTitle": "Fulfillment",
-    "name": "DeleteApiFulfillmentId"
   },
   {
     "type": "delete",
