@@ -654,8 +654,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = null
                 } else {
                   data.page.imageURL = image.data
-                }
-                this.accessPage = res;
+                } 
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {

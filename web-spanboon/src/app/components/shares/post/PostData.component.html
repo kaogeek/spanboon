@@ -81,8 +81,7 @@
                                     </a>
                                     <ng-container *ngIf="isUserPage"> 
                                         <a target="_blank" class="post-name" (click)="onClickEngagement($event, itemPost._id, 'profile')" href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                            เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
-                                                itemPost.ownerUser.name}}</span>
+                                            <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}</span>
                                         </a> 
                                     </ng-container>
                                 </div>
@@ -113,7 +112,7 @@
                         <ng-container *ngIf="isUserPage"> 
                             <a class="post-name" target="_blank" (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                 href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
                                     itemPost.ownerUser.name}}</span>
                             </a>
                         </ng-container>
@@ -201,7 +200,7 @@
                                         <ng-container *ngIf="isUserPage"> 
                                             <a class="post-name" target="_blank" (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                                 href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                                เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                                <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
                                                     itemPost.ownerUser.name}}</span>
                                             </a>
                                         </ng-container>
@@ -233,7 +232,7 @@
                             <ng-container *ngIf="isUserPage"> 
                                 <a class="post-name" target="_blank" (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                     href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                    เผยแพร่โดย :<span>{{itemPost.ownerUser.displayName ||
+                                     <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
                                         itemPost.ownerUser.name}}</span>
                                 </a>
                             </ng-container>
@@ -336,7 +335,7 @@
                             <ng-container *ngIf="isUserPage">
                                 <a class="post-name" target="_blank" (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                     href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                    เผยแพร่โดย :<span>{{ itemPost.ownerUser && itemPost.ownerUser.displayName ||
+                                    <span>เผยแพร่โดย : {{ itemPost.ownerUser && itemPost.ownerUser.displayName ||
                                         itemPost.ownerUser && itemPost.ownerUser.name}}</span>
                                 </a>
                             </ng-container>

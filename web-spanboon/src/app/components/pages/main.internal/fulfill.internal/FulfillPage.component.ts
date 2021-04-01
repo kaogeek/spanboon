@@ -10,7 +10,7 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MESSAGE } from '../../../../../custom/variable';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade } from '../../../../services/services';
+import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade, ProfileFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
@@ -107,6 +107,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
     private chatMessage: CheckMessageManager;
+    private profileFacade: ProfileFacade;
     //
     public isAuthen: boolean;
     public isCaseActive: boolean;
@@ -131,6 +132,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public isBackArrow: boolean;
     public isRead: boolean;
     public isPreloadLoad: boolean;
+    public isAsPage: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -176,7 +178,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public ganX: any;
 
     constructor(authenManager: AuthenManager, router: Router,
-        activatedRoute: ActivatedRoute, observManager: ObservableManager,
+        activatedRoute: ActivatedRoute, observManager: ObservableManager, profileFacade: ProfileFacade,
         dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, pageFacade: PageFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
         userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
@@ -194,6 +196,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.chatFacade = chatFacade;
         this.chatRoomFacade = chatRoomFacade;
         this.chatMessage = chatMessage;
+        this.profileFacade = profileFacade;
         this.isAuthen = false;
         this.isCaseActive = true;
         this.showLoading = true;
@@ -376,10 +379,32 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public searchAccessPage() {
         this.accessValue = this.getCurrentUser();
         this.showLoading = true;
-
+       
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
+                let index = 0;
                 for (let data of res) {
+                    if (data.user) {
+                        if (index === 0) {
+                            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+                                this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
+                                    if (image.status === 1) {
+                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                                            data.user.imageBase64 = null;
+                                        } else {
+                                            data.user.imageBase64 = image.data;
+                                        }
+                                        this.accessPage = res;
+                                    }
+                                }).catch((err: any) => {
+                                    if (err.error.message === "Unable got Asset") {
+                                        data.user.imageBase64 = '';
+                                    }
+                                });
+                            }
+                        }
+                    }
+
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
                             if (image.status === 1) {
@@ -387,18 +412,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     data.page.imageBase64 = null;
                                 } else {
                                     data.page.imageBase64 = image.data;
-                                }
-
+                                } 
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
                                 data.page.imageBase64 = '';
                             }
                         });
-                    }
-                    setTimeout(() => {
+                    } else {
                         this.accessPage = res;
-                    }, 1000);
+                    } 
+                    index++; 
                 }
 
                 setTimeout(() => {
@@ -415,6 +439,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
                 this.accessPage.push(data);
             }
+
         }).catch((err: any) => {
             console.log(err);
         });
@@ -525,8 +550,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
+                this.isAsPage = false;
+                this.getProfileChatByFulfillmentCase(fulfill.userId);
             } else {
                 this.sender = fulfill.pageName;
+                this.isAsPage = true;
+                this.getPageByFulfillmentCase(fulfill.pageId);
             }
 
             for (const ff of this.fulfillCase) {
@@ -694,13 +723,21 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }, 1000);
         }
         setTimeout(() => {
-            this.getPageByFulfillmentCase();
             this.clickActiveCss();
         }, 0);
     }
 
-    public getPageByFulfillmentCase() {
+    public getPageByFulfillmentCase(pageId: string) {
         this.pageFacade.getProfilePage(this.pageId).then((res) => {
+            this.ProfilePage = { owner: res.data };
+        }).catch((error) => {
+            console.log('error >>>> ', error.mesage);
+        });
+
+    }
+
+    public getProfileChatByFulfillmentCase(userId: string) {
+        this.profileFacade.getProfile(userId).then((res) => {
             this.ProfilePage = { owner: res.data };
         }).catch((error) => {
             console.log('error >>>> ', error.mesage);
@@ -747,7 +784,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             });
 
             this.showDialogWithOptions({
-                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการ"' + this.PLATFORM_FULFILL_TEXT + '"นี้ ?',
+                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST.replace('?', '') + ' "' + fulfill.name + '" ออกจากรายการ ' + this.PLATFORM_FULFILL_TEXT.replace(/("|')/g, "") + 'นี้ ?',
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                 bottomColorText2: "black",

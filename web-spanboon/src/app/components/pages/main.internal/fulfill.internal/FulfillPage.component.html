@@ -19,7 +19,7 @@
                         <div class="box-profile">
                             <ng-container
                                 *ngIf="accessValue.imageBase64 !== '' && accessValue.imageBase64 !== undefined && accessValue.imageBase64 !== null ; else elseImage">
-                                <img src="{{accessValue.imageBase64 || accessValue.imageBase64}}" alt="">
+                                <img src="{{accessValue.imageBase64}}" alt="">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="donator">
@@ -42,8 +42,9 @@
                                 <button mat-menu-item *ngIf="index === 0" class="page-list"
                                     (click)="changeAccess(data.user,'user')">
                                     <ng-container
-                                        *ngIf="data.user && data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile1">
-                                        <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile">
+                                        *ngIf="data.user && data.user.imageBase64 !== '' && data.user.imageBase64 !== undefined && data.user.imageBase64 !== null; else elseImageProfile1">
+                                        <img src="{{data.user.imageBase64}}" alt="" class="profile">
+                                        <!-- <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile"> -->
                                     </ng-container>
                                     <ng-template #elseImageProfile1>
                                         <div class="donator"> {{ data.user.displayName | slice: 0:1 }} </div>
@@ -175,6 +176,11 @@
                                         {{postDates | dateFormat}}
                                     </a>
                                 </span>
+                                <span class="date">
+                                    {{name ? name:uniqueId}} ต้องการ{{PLATFORM_FULFILL_TEXT}}ให้กับ
+                                </span>
+                            </div>
+                            <div class="fulfill-name">
                                 <span class="date">
                                     {{name ? name:uniqueId}} ต้องการ{{PLATFORM_FULFILL_TEXT}}ให้กับ
                                 </span>
@@ -356,7 +362,7 @@
                     <div class="body-story" [class.active]="isCaseHasPost">
                         <div class="body-story-left" [class.active]="isListItem">
                             <chat-message [ProfilePage]="ProfilePage" [data]="chatData" [pageId]="pageId"
-                                [postId]="postId" [linkUser]="linkUser" [linkPage]="linkPage"
+                                [postId]="postId" [linkUser]="linkUser" [linkPage]="linkPage" [isAsPage]="isAsPage"
                                 [imageURL]="asPage ? pageImageURL : userImageURL" [pageName]="pageName"
                                 [isCaseConfirmed]="isCaseConfirmed" [isCaseHasPost]="isCaseHasPost" [sender]="sender"
                                 [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()"
