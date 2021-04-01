@@ -600,11 +600,11 @@
 
                     <div class="wrapper-feed-fan-page">
                         <div class="do-tablet">
-                            <!-- <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">  -->
+                            <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0"> 
                             <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
                                 [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
                             </card-item>
-                            <!-- </ng-container> -->
+                            </ng-container>
                         </div>
 
                         <div *ngIf="!showLoading" class="wrapper-feed-menu">
@@ -627,8 +627,7 @@
                         </div>
                         <div *ngIf="!showLoading" class="wrapper-feed">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
-                                <div *ngIf="!isPost" class="main-feed">
-                                    {{isNotAccess}}
+                                <div *ngIf="!isPost" class="main-feed"> 
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
@@ -680,8 +679,7 @@
                                 </div>
                             </ng-template>
                             <div class="side-feed" #sidefeedHeight>
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
+                                <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
                                     <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
                                         [statusLable]="'กำลังทำอยู่'"></card-item>
                                 </ng-container>

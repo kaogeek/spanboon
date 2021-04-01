@@ -774,7 +774,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
               n.imageURL = needs.imageURL
             }).catch((err: any) => {
-            })
+            });
           }
         }
       }
@@ -1172,8 +1172,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public async actionComment(action: any, index: number) {
-    this.postId = action.pageId
+  public async actionComment(action: any, index: number) { 
+    // this.postId = action.postData.pageId
     let pageInUser: any[]
     let data: RePost = new RePost();
     let dataPost: any
