@@ -81,7 +81,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isHeaderPage: any;
   @Input()
-  public isRepost: boolean;
+  public accessDataPage: any;
+  @Input()
+  public isRepost: boolean; 
   @Input()
   public isListPage: boolean;
   @Input()
@@ -150,7 +152,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public snackBar: MatSnackBar;
 
-  private masterSelected: boolean;
+  private masterSelected: boolean; 
 
   public httpItems: Observable<any[]>;
   public isShowEmergency: boolean;
@@ -307,33 +309,26 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.observManager.subscribe('authen.check', (data) => {
     });
 
-    this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
-      console.log('config ', config)
-      if (config.value !== undefined) {
-        // this.isShowFacebook = (config.value.toLowerCase() === 'true');
-      }
-    }).catch((error: any) => {
-      // console.log(error) 
-    });
-
+    // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
+    //   if (config.value !== undefined) {
+    //     // this.isShowFacebook = (config.value.toLowerCase() === 'true');
+    //   }
+    // }).catch((error: any) => {
+    //   // console.log(error) 
+    // }); 
   }
-
+ 
   public ngOnInit(): void {
     this.searchAccessPage();
-    // this.getImage();
     this.checkTabs();
     this.onResize();
     this.setContentStory();
-    this.socialGetBindingTwitter();
-    this.socialGetBindingFacebook();
-    this.getConfigTwitter();
-    this.getConfigFacebook();
     setTimeout(() => {
       this.keyUpSearchEmergencyEvent("", true);
       this.keyUpSearchObjective("");
       this.keyUpSearchHashTag("", false);
       this.searchObjectivePageCategory();
-    }, 500);
+    }, 1000);
   }
 
   public setContentStory() {
@@ -343,12 +338,14 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isStoryResultData = false
     }
   }
-  ngOnChanges(changes: SimpleChanges): void {
+
+  public ngOnChanges(changes: SimpleChanges): void {
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
     this.getConfigFacebook();
   }
+
   public ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.isListPage) {
@@ -566,20 +563,32 @@ export class BoxPost extends AbstractPage implements OnInit {
       return false;
     });
 
+    setTimeout(() => {
+      if (this.accessDataPage !== undefined) {
+        const cloneData = JSON.parse(JSON.stringify(this.accessDataPage))
+        this.cloneDataCheck(cloneData);
+      }
+      this.socialGetBindingTwitter();
+      this.socialGetBindingFacebook();
+      this.getConfigTwitter();
+      this.getConfigFacebook(); 
+    }, 0);
   }
 
   public ngOnDestroy(): void {
-    super.ngOnDestroy();
+    super.ngOnDestroy(); 
   }
 
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
   }
+
   onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
   }
+
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
@@ -601,7 +610,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
         let index = 0;
-        this.accessPage = res;
+        // this.accessPage = res;
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
@@ -642,21 +651,18 @@ export class BoxPost extends AbstractPage implements OnInit {
           }
           index++;
         }
-        const cloneData = JSON.parse(JSON.stringify(this.accessPage))
-        this.selectOption(cloneData);
       }
     }).catch((err: any) => {
       console.log(err)
     });
   }
 
-  public selectOption(cloneData: any) {
+  public cloneDataCheck(cloneData: any) {
     if (cloneData && cloneData.length > 0) {
       for (let data of cloneData) {
         if (this.router.url.split('/')[1] === "page") {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
-            // const cloneDataPage = JSON.parse(JSON.stringify(data.page));
             if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
               this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
                 if (image.status === 1) {
@@ -680,35 +686,46 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.dataPage = data.page.name;
             this.dataPageId = data.page;
             this.modeDoIng = false;
+            break;
+          } else {
+            // mode user 
+            // if (!this.isNotAccess) {
+              this.userCheck(data);
+              this.dataPage = data.user.displayName;
+              this.dataPageId = data.user;
+              this.modeDoIng = true;
+              this.isSharePost = false;
+            // }
           }
         } else {
-          const cloneDataUser = data.user;
-          // const cloneDataUser = JSON.parse(JSON.stringify(data.user)); 
-          this.dataPageId = data.user;
-          if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
-            this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
-              if (image.status === 1) {
-                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                  cloneDataUser.imageURL = null
-                } else {
-                  cloneDataUser.imageURL = image.data
-                }
-                this.accessPageImage = cloneDataUser;
-                this.isSelectOption = false;
-              }
-            }).catch((err: any) => {
-              if (err.error.message === "Unable got Asset") {
-                cloneDataUser.imageURL = ''
-              }
-            });
-          } else {
-            this.accessPageImage = cloneDataUser;
-            this.isSelectOption = false;
-          }
-
+          this.userCheck(data);
         }
-
       }
+    }
+  }
+
+  public userCheck(data: any) {
+    const cloneDataUser = data.user;
+    this.dataPageId = data.user;
+    if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
+      this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
+        if (image.status === 1) {
+          if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+            cloneDataUser.imageURL = null
+          } else {
+            cloneDataUser.imageURL = image.data
+          }
+          this.accessPageImage = cloneDataUser;
+          this.isSelectOption = false;
+        }
+      }).catch((err: any) => {
+        if (err.error.message === "Unable got Asset") {
+          cloneDataUser.imageURL = ''
+        }
+      });
+    } else {
+      this.accessPageImage = cloneDataUser;
+      this.isSelectOption = false;
     }
   }
 
@@ -765,10 +782,6 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public onChangeSlide(event?: MatSlideToggleChange) {
     this.isStory = event.checked;
-    // duration: 10000000,
-    // verticalPosition: 'bottom',
-    // horizontalPosition: 'center',
-    // panelClass: customize
     if (!this.isStory) {
       if (window.innerWidth <= 1024) {
         this.snackBarToast("ปิดสตอรี่", 1000);
@@ -1468,8 +1481,8 @@ export class BoxPost extends AbstractPage implements OnInit {
             asset.ordering = image.ordering;
             this.dataImage.push({
               fileId: image.fileId,
-              id : image._id,
-              postId : image.post,
+              id: image._id,
+              postId: image.post,
               asset
             });
           }
@@ -2351,7 +2364,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(res => {
-      if (res !== undefined) { 
+      if (res !== undefined) {
         this.imagesTimeline = res;
       }
     });
@@ -2761,5 +2774,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
     }
+    this.dialog.closeAll();
   }
 }

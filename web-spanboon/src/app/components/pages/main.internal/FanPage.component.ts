@@ -540,13 +540,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.pageFacade.getAccess(pageId).then((res: any) => {
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true;
+          this.isNotAccess = true; 
         }
       }
 
-    }).catch((err: any) => {
+    }).catch((err: any) => { 
       if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false;
+        this.isNotAccess = false; 
       }
     })
   }
@@ -819,7 +819,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     }).catch((err: any) => {
       console.log('err ', err)
-      if (err.error.status === 0) {
+      if (err && err.error && err.error.status === 0) {
         if (err.error.message === 'Unable got Asset') {
           if (myType === "image") {
             Object.assign(this.resDataPage, { imageBase64: '' });
@@ -965,8 +965,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public openDialogPost(text?: any) {
-    console.log('text ', text)
+  public openDialogPost(text?: any) { 
     if (text !== 'เรื่องราว') {
       let data = {
         isListPage: true,

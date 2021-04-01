@@ -16,7 +16,7 @@
     <ng-template #elseIsFulfill>
         <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix"
             (submitClose)="onClose($event)" (submitResizeClose)="onResizeClose($event)" [modeDoIng]="data.modeDoIng"
-            [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage"
+            [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage" [accessDataPage]="data.accessDataPage"
             [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage" (selectedInformation)="selectedInformation($event)"
             [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost" >
         </box-post>
