@@ -197,41 +197,33 @@ export class PageController {
                     }
                 },
                 { $match: { 'postObj.type': POST_TYPE.NEEDS, 'postObj.deleted': false } },
-                // {
-                //     $group: {
-                //         _id: {
-                //             $cond: {
-                //                 if: { $and: [{ $not: { $eq: ['$standardItemId', null] } }, { $eq: ['$customItemId', null] }] },
-                //                 then: '$standardItemId',
-                //                 else: {
-                //                     $cond: [{
-                //                         $and: [{ $not: { $eq: ['$customItemId', null] } }, { $not: { $eq: ['$standardItemId', null] } }]
-                //                     }, '$customItemId', '$name']
-                //                 }
-                //             }
-                //         },
-                //         result: { $mergeObjects: '$$ROOT' },
-                //         quantity: { $sum: '$quantity' },
-                //         fulfillQuantity: { $sum: '$fulfillQuantity' },
-                //     }
-                // },
-                // { $replaceRoot: { newRoot: { $mergeObjects: ['$result', '$$ROOT'] } } },
-                // { $project: { result: 0 } },
-                // { $sort: { quantity: -1, createdDate: -1 } },
+                {
+                    $group: {
+                        _id: {
+                            $cond: {
+                                if: { $and: [{ $not: { $eq: ['$standardItemId', null] } }, { $eq: ['$customItemId', null] }] },
+                                then: '$standardItemId',
+                                else: {
+                                    $cond: [{
+                                        $and: [{ $not: { $eq: ['$customItemId', null] } }, { $not: { $eq: ['$standardItemId', null] } }]
+                                    }, '$customItemId', '$name']
+                                }
+                            }
+                        },
+                        result: { $mergeObjects: '$$ROOT' },
+                        quantity: { $sum: '$quantity' },
+                        fulfillQuantity: { $sum: '$fulfillQuantity' },
+                    }
+                },
+                { $replaceRoot: { newRoot: { $mergeObjects: ['$result', '$$ROOT'] } } },
+                { $project: { result: 0 } },
+                { $sort: { quantity: -1, createdDate: -1 } },
                 { $limit: limit }
             ];
-            const needs: Needs[] = await this.needsService.aggregate(pageNeedsStmt);
+            const needs: Needs[] = await this.needsService.aggregateEntity(pageNeedsStmt);
 
             if (needs !== null && needs !== undefined && needs.length > 0) {
-                // const stdItemIdList: ObjectID[] = [];
-                // const customItemIdList: ObjectID[] = [];
-                const stdItemMap = {};
-
-                for (const need of needs) {
-                    const stdItemId = need.standardItemId;
-                    stdItemMap[stdItemId] = need;
-                }
-                result.needs = stdItemMap;
+                result.needs = needs;
             } else {
                 result.needs = [];
             }
@@ -392,7 +384,7 @@ export class PageController {
                     * {token: string, expires_in: number as a second to expired, type: string as type of token} 
                     */
                     pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
-                } else if (pageAccessToken !== undefined) {
+                } else if(pageAccessToken !== undefined){
                     pageAccessToken = await this.facebookService.extendsAccessToken(pageAccessToken);
                 }
             } catch (err) {
