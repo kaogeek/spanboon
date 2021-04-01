@@ -219,7 +219,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.getRecommend();
     if (this.isLogin()) {
       this.getProfileImage();
-    }
+    } 
 // this.searchPostById('6051c688fb3585b175ab4765')
     $(window).resize(() => {
       this.setTab();

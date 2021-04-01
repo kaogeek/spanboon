@@ -487,8 +487,8 @@
                 itemPost.casePostId !== '' ?
                 'โพสต์' : 'เพจ' }} </a>
         </div>
-        <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
-            <repost-data [itemPost]="itemPost.referencePostObject"
+        <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">  
+            <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
                 [ngStyle]="{'margin-top': itemPost.referencePostObject ? '10pt' : 'unset' , 'display' : itemPost.referencePostObject ? 'block' : 'unset'}">
             </repost-data>
         </ng-container>
@@ -508,7 +508,7 @@
                     target="_blank">#{{hashTag.name}}</a>
             </div>
         </div>
-        <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
+        <needs-card *ngIf="itemPost.needs && itemPost.needs.length > 0" [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
             [isPendingFulfill]="isPendingFulfill" (clickFulfill)="fulfillEngagement($event , itemPost._id)"
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
@@ -561,12 +561,10 @@
                         </mat-menu>
                     </div>
                 </ng-template>
-            </div>
-
-        </ng-container>
-
-        <div class="wrapper-footer-post">
-            <div class="left">
+            </div> 
+        </ng-container>  
+        <div class="wrapper-footer-post" [class.active]="!(isEmptyObject(itemPost.emergencyEvent) && isEmptyObject(itemPost.objective))">
+            <div class="left" *ngIf="isEmptyObject(itemPost.emergencyEvent) || isEmptyObject(itemPost.objective)">
                 <tag-event
                     [isShowEmergency]="isEmptyObject(itemPost.emergencyEvent) && itemPost.emergencyEvent && itemPost.emergencyEventTag ? true : false"
                     [isNameEmergency]="isEmptyObject(itemPost.emergencyEvent) && itemPost.emergencyEvent && itemPost.emergencyEventTag ? true : false"

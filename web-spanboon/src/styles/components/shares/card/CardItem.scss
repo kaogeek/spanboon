@@ -119,6 +119,14 @@
             justify-content: center;
             align-items: center;
         }
+        >.doing-found {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            height: 150pt;
+            @include pointer();
+        }
     }
 
     > .doing-swipper {

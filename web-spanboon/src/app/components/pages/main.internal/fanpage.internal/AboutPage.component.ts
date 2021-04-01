@@ -80,6 +80,9 @@ export class AboutPage extends AbstractPage implements OnInit {
     public cloneData: any;
     public arrAboutPage: any[] = [];
     public cloneAboutPage: any;
+    public dataAboutPage: any;
+    public longtitudeAboutPage: any;
+    public latitudeAboutPage: any;
     public uuid: boolean;
     public indexCard: number;
 
@@ -365,11 +368,22 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.aboutPageFacade.searchPageAbout(this.pageId, offset, limit).then((res) => {
             if (res && res.length > 0) {
                 this.resAboutPage = res;
+                for (let data of this.resAboutPage) {
+                    if (data.label === 'หน่วยงาน') {
+                        this.dataAboutPage = data;
+                    }
+                    if(data.label === 'ละติจูด'){
+                        this.latitudeAboutPage = data;
+                    }   
+                    if(data.label === 'ลองจิจูด'){
+                        this.longtitudeAboutPage = data;
+                    }  
+
+                }
                 this.cloneAboutPage = JSON.parse(JSON.stringify(this.resAboutPage));
             }
         }).catch((err) => {
             console.log('error ', err)
-            console.log('err ', err)
             if (err.error.status === 0) {
                 if (err.error.message === 'Unable got Page') {
                     this.showAlertDialog('ไม่พบเพจ');
@@ -712,7 +726,7 @@ export class AboutPage extends AbstractPage implements OnInit {
             arr.push(aboutPage);
 
             this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
-                let indexValue = Number(this.indexCard);
+                let indexValue = Number(index);
                 this.closeCard(indexValue);
             }).catch((err: any) => {
                 console.log('ere ', err)
@@ -750,14 +764,14 @@ export class AboutPage extends AbstractPage implements OnInit {
                 this.arrAboutPage.push(aboutPage1);
             }
 
-            // if (this.arrAboutPage.length > 0) {
-            // this.aboutPageFacade.create(this.pageId, this.arrAboutPage).then((res: any) => {
-            //     let indexValue = Number(this.indexCard);
-            //     this.closeCard(indexValue);
-            // }).catch((err: any) => {
-            //     console.log('ere ', err)
-            // })
-            // } 
+            if (this.arrAboutPage.length > 0) {
+                this.aboutPageFacade.create(this.pageId, this.arrAboutPage).then((res: any) => {
+                    let indexValue = Number(this.indexCard);
+                    this.closeCard(indexValue);
+                }).catch((err: any) => {
+                    console.log('ere ', err)
+                })
+            }
         }
     }
 

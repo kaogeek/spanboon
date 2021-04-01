@@ -858,7 +858,7 @@ export class PostsController {
 
                 // noti to owner post
                 {
-                    const notificationText = req.user.displayName + ' กดถูกใจโพสของคุณ';
+                    const notificationText = req.user.displayName + ' กดถูกใจโพสต์ของคุณ';
                     const link = '/post/' + userLike.subjectId;
 
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {

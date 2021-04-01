@@ -36,8 +36,7 @@
     </ng-container>
     <ng-template #elseCheckBox>
         <div class="wrapper-card">
-            <ng-container *ngFor="let item of data let index = index"> 
-                <!-- <ng-container *ngIf="index <= 4">  -->
+            <ng-container *ngFor="let item of data let index = index">  
                     <ng-container *ngIf="isMutipleCheckbox; else elseisMutiple">  
                         <div class="card-follow checkbox" >
                             <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()" [(ngModel)]="item.selected"
@@ -79,12 +78,17 @@
                                 </ng-template>
                             </mat-checkbox>
                         </div>
-                    </ng-template> 
-                <!-- </ng-container> -->
+                    </ng-template>  
             </ng-container>
         </div>
     </ng-template> 
-    <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)">
-        เพิ่มเติม
+    <ng-container *ngIf="!isLoadMorePageCategory || !isLoadMorePageEmergency || !isLoadMoreObjective || !isLoadMoreHashTag">
+        <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)">
+            เพิ่มเติม
+        </div>
+    </ng-container>  
+    <div *ngIf="isLoadMorePageCategory || isLoadMorePageEmergency || isLoadMoreObjective || isLoadMoreHashTag" class="follow-all preload-spinner">
+        <mat-spinner  [diameter]="25" ></mat-spinner>
     </div>
+
 </div>

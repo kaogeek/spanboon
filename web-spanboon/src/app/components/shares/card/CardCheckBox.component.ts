@@ -50,6 +50,14 @@ export class CardCheckBox {
     public isMutipleCheckbox: boolean = false;
     @Input()
     protected isDoIng: boolean = false;
+    @Input()
+    public isLoadMorePageCategory: boolean = false;
+    @Input()
+    public isLoadMorePageEmergency: boolean = false;
+    @Input()
+    public isLoadMoreObjective: boolean = false;
+    @Input()
+    public isLoadMoreHashTag: boolean = false;
     @Output()
     public submit: EventEmitter<any> = new EventEmitter();
     @Output()
@@ -67,7 +75,7 @@ export class CardCheckBox {
 
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void { 
     }
 
     ngOnChanges(changes: SimpleChanges): void {

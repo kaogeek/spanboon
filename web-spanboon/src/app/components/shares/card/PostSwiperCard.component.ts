@@ -69,7 +69,6 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
       this.getNeeds();
-      console.log('itemNeeds', this.itemNeeds);
     }, 650);
   }
   ngAfterViewInit(): void {
@@ -151,7 +150,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 2.5,
+    slidesPerView: 4.6,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,
@@ -162,19 +161,22 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 2.5,
+        slidesPerView: 4.6,
       },
       899: {
-        slidesPerView: 2.5,
+        slidesPerView: 3.3,
       },
       676: {
-        slidesPerView: 1.5,
+        slidesPerView: 2.6,
+      },
+      655: {
+        slidesPerView: 2.7,
       },
       566: {
-        slidesPerView: 1.5,
+        slidesPerView: 2.6,
       },
       479: {
-        slidesPerView: 1.5,
+        slidesPerView: 1.4,
       },
     },
   }

@@ -51,7 +51,7 @@
                         <span *ngIf="!image">{{pageName | slice: 0:1 }}</span>
                     </div>
                     <div class="new-card-createdBy">
-                        <div class="new-card-icon" #showTooltip (mouseover)="Tooltip(showTooltip , data)">
+                        <div class="new-card-icon" (mouseleave)="TooltipClose($event)" #showTooltip (mouseover)="Tooltip(showTooltip , data)">
                             <svg class="icon-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
                                 height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isOfficial">
                                 <g id="Group_88" data-name="Group 88" transform="translate(0)">

@@ -7,6 +7,8 @@
 
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatCheckbox } from '@angular/material';
+import { Router } from '@angular/router';
+
 
 
 @Component({
@@ -14,6 +16,8 @@ import { MatCheckbox } from '@angular/material';
     templateUrl: './CardConcerned.component.html'
 })
 export class CardConcerned {
+
+    public router: Router;
 
     @ViewChild('checkbox', { static: false }) checkbox: MatCheckbox;
 
@@ -25,13 +29,18 @@ export class CardConcerned {
     public likeCount: number;
     public shareCount: number;
 
-    constructor() {
+    constructor(router: Router) {
+        this.router = router;
     }
 
     ngOnInit(): void {
     }
 
     ngAfterViewInit(): void {
+    }
+
+    public clickDataSearch(data) {
+        this.router.navigateByUrl('/search?hashtag=' + data);
     }
 
 

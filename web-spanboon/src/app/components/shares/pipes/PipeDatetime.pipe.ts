@@ -23,7 +23,7 @@ export class PipeDatetime implements PipeTransform {
 
             const intervals = {
                 'ปี': 31536000,
-                'เดืิอน': 2592000,
+                'เดือน': 2592000,
                 'วัน': 86400,
                 'ชั่วโมง': 3600,
                 'นาที': 60,

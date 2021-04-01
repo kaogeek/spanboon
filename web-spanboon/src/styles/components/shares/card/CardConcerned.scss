@@ -31,6 +31,9 @@
         flex-direction: column;
         padding: 10px 20px;
         @include font-size-9($font-head-400);
+        &:hover {
+            background-color: #f1f1f1d9;
+        }
         .text-top {
             @include font-size-11($font-head-400);
             color: gray;
