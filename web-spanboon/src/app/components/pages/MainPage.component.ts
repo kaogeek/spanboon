@@ -267,21 +267,21 @@ export class MainPage extends AbstractPage implements OnInit {
         dataName = this.user.displayName
       }
 
-      
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
-      this.data.isFulfill = false;
-      this.data.modeDoIng = true;
+      this.data.isFulfill = false; 
       this.data.isMobileButton = true;
       this.data.id = this.user.id; 
       this.data.accessDataPage = await this.searchAccessPage(); 
       if (this.router.url.split('/')[1] === 'page') {
         this.data.name = this.router.url.split('/')[2];
         this.data.isSharePost = true;
+        this.data.modeDoIng = true;
       } else {
         this.data.name = dataName;
         this.data.isSharePost = false;
+        this.data.modeDoIng = false;
       }
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',

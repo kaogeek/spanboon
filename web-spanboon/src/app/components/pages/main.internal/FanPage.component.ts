@@ -275,7 +275,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     super.ngOnInit();
     this.checkLoginAndRedirection();
     this.setTab();
-    this.setCop();
+    this.setCop(); 
     $(window).resize(() => {
       this.setTab();
     });
@@ -349,23 +349,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     } else {
       return this.router.navigateByUrl('/page/' + this.url);
     }
-  }
+  } 
 
   public searchAboutPage() {
     let limit = 30;
     let offset = SEARCH_OFFSET;
     this.aboutPageFacade.searchPageAbout(this.resDataPage.id, offset, limit).then((res) => {
       if (res && res.length > 0) {
-        this.resAboutPage = res;
+        this.resAboutPage = res; 
         for (let data of this.resAboutPage) {
           if (data.label === 'ละติจูด') {
-            this.latitudeAboutPage = data;
+            this.latitudeAboutPage = data; 
           }
           if (data.label === 'ลองจิจูด') {
-            this.longtitudeAboutPage = data;
+            this.longtitudeAboutPage = data; 
           }
-          if (this.latitudeAboutPage && this.latitudeAboutPage.value !== '' && this.longtitudeAboutPage && this.longtitudeAboutPage.value !== '') {
-            this.localtion = 'https://www.google.com/maps/search/?api=1&query=' + this.latitudeAboutPage.value + ',' + this.longtitudeAboutPage.value;
+          if(this.latitudeAboutPage && this.latitudeAboutPage.value !== '' && this.longtitudeAboutPage && this.longtitudeAboutPage.value !== ''){
+            this.localtion = 'https://www.google.com/maps/search/?api=1&query='+this.latitudeAboutPage.value+','+this.longtitudeAboutPage.value;
           }
         }
       }
@@ -540,13 +540,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.pageFacade.getAccess(pageId).then((res: any) => {
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true;
+          this.isNotAccess = true; 
         }
       }
 
-    }).catch((err: any) => {
+    }).catch((err: any) => { 
       if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false;
+        this.isNotAccess = false; 
       }
     })
   }
@@ -774,7 +774,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
               n.imageURL = needs.imageURL
             }).catch((err: any) => {
-            })
+            });
           }
         }
       }
@@ -965,7 +965,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public openDialogPost(text?: any) {
+  public openDialogPost(text?: any) { 
     if (text !== 'เรื่องราว') {
       let data = {
         isListPage: true,
@@ -1172,8 +1172,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public async actionComment(action: any, index: number) {
-    console.log('action2 >>>> ', action);
+  public async actionComment(action: any, index: number) { 
     // this.postId = action.postData.pageId
     let pageInUser: any[]
     let data: RePost = new RePost();
@@ -1249,11 +1248,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         });
       } else if (action.type === "NOTOPIC") {
-        if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-          data.pageId = action.userAsPage.id
-        } else {
-          data.pageId = null
-        }
+        data.pageId = null
         dataPost = action.post._id
         this.postFacade.rePost(dataPost, data).then((res: any) => {
           this.resPost.posts[index].repostCount++
@@ -1279,9 +1274,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public getAaaPost(action: any, index: number) {
-    console.log('action >>>> ', action);
     let user = this.authenManager.getCurrentUser()
-    console.log('user >>>> ', user);
     if (action.userPage.id === user.id) {
       action.userPage.id = null
     }
