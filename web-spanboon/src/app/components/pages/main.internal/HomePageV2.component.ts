@@ -703,6 +703,15 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+
+  public clickDataSearch(data) {
+    this.router.navigateByUrl('/search?hashtag=' + data);
+  }
+
+  public hashtagUrl(data): string {
+    return ('/search?hashtag=' + data)
+  }
+
   private setDoingEventsFormat(arr, index?): any {
 
     let arrDoingEvents: any[] = []
