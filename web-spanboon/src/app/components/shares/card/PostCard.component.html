@@ -82,7 +82,7 @@
                     </div>
                     <div class="right" #pageNameDiv style="position: relative;"
                         (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
-                        (mouseover)="Tooltip(showTooltip , data)">
+                        (mouseover)="Tooltip(showTooltip , data)" (mouseleave)="TooltipClose($event)">
                         <!-- <div matTooltipShowDelay="{{800}}" matTooltip="{{pageName}}" class="TooltipShow"
                             [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
                         </div> -->
