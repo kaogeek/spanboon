@@ -13,7 +13,6 @@
     display: flex;
     justify-content: center;
     > .hoem_page_body {
-        max-width: 1700px;
         height: auto;
         > .events_tag_top {
             // width: calc(100% - 40px);
@@ -152,6 +151,12 @@
             }
             > .body {
                 display: flex;
+                > .isMobile {
+                    display: none;
+                }
+                > .isDesktop {
+                    display: block;
+                }
             }
         }
 
@@ -176,6 +181,12 @@
             }
             > .body {
                 display: flex;
+                > .isMobile {
+                    display: none;
+                }
+                > .isDesktop {
+                    display: block;
+                }
             }
         }
 
@@ -200,24 +211,97 @@
             }
             > .body {
                 display: flex;
+                > .isMobile {
+                    display: none;
+                }
+                > .isDesktop {
+                    display: block;
+                }
             }
         }
     }
 }
 
-@media (max-width: $xxlarge) {
+@media (max-width: $xxlarge + 10px) {
+    .hoem_page_v2 > .hoem_page_body {
+        width: 1440px;
+        zoom: 0.8;
+    }
 }
 
 @media (max-width: $xlarge) {
 }
 
 @media (max-width: $xlarge - 80px) {
+    .hoem_page_v2 > .hoem_page_body {
+        width: 1000px;
+        zoom: 1;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .right > .tagCardRight {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top {
+        display: flex;
+        justify-content: center;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .right > .tagCard {
+        display: flex;
+        flex-direction: column;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .body {
+        display: flex;
+        justify-content: center;
+        > .isMobile {
+            display: block;
+        }
+        > .isDesktop {
+            display: none;
+        }
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .body {
+        display: flex;
+        justify-content: center;
+        > .isMobile {
+            display: block;
+        }
+        > .isDesktop {
+            display: none;
+        }
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .body {
+        display: flex;
+        justify-content: center;
+        > .isMobile {
+            display: block;
+        }
+        > .isDesktop {
+            display: none;
+        }
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .top > .line {
+        width: 70%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .top > .line {
+        width: 70%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .top > .line {
+        width: 70%;
+    }
+    .card_content_home > .event_card > .social_control > .amount_social {
+        display: none;
+    }
 }
 
 @media (max-width: $large) {
+    .hoem_page_v2 > .hoem_page_body {
+        width: 900px;
+    }
 }
 
 @media (max-width: $lmedium) {
+    .hoem_page_v2 > .hoem_page_body {
+        width: 800px;
+    }
 }
 
 @media (max-width: $medium) {
