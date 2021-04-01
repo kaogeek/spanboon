@@ -49,6 +49,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public lookingSectionModels: any;
   public viewSectionModels: any;
 
+  public isLoding: boolean = true;
+
   tag = {
     hashtag: {
       "coverPageUrl": "/file/5f8e46d9a554f760422bc274",
@@ -667,11 +669,15 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     await this.getMainPageModel();
-    console.log('this.pageModel', this.pageModel);
     // console.log('this.emergencyEvents', this.emergencyEvents);
     // console.log('this.doingEvents', this.doingEventsNo1);
     // console.log('this.emergencyEventsArrTitle', this.emergencyEventsArrTitle);
     // console.log('this.aroundSectionModels', this.aroundSectionModels);
+
+    setTimeout(() => {
+      this.isLoding = false;
+
+    }, 3500);
 
   }
 
@@ -680,6 +686,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   private async getMainPageModel(userId?) {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
+
+    console.log('model', model);
     this.pageModel = this.jsonParseData(model);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
     this.aroundSectionModels = this.jsonParseData(this.pageModel.sectionModels[2]);

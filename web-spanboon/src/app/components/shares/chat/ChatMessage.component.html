@@ -16,7 +16,8 @@
             <span class="label-taking"> การพูดคุยกับ:</span>
             <a href="{{asPage ? linkUser : linkPage}}" target="_blank">
                 <span #pageNameDiv style="position: relative;" (mousemove)="onMouseEnter($event, pageNameDiv)"
-                    #showTooltip (mouseover)="Tooltip(showTooltip , ProfilePage)" class="user-name">
+                    #showTooltip (mouseover)="Tooltip(showTooltip , ProfilePage)" (mouseleave)="TooltipClose($event)"
+                    class="user-name">
                     {{sender}}
                 </span>
             </a>

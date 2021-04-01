@@ -7,8 +7,8 @@
 <div class="card_content_home">
     <div *ngIf="smallCard && postData && !isLoad" class="small_card">
         <div class="top_small_card">
-            <div class="image_base64" *ngIf="postData.iconUrl;else other_topic">
-                <img width="110%" src="{{apiBaseURL+postData.iconUrl+'/image'}}">
+            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img width="110%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -17,7 +17,7 @@
             </ng-template>
         </div>
         <div class="bottom_small_card">
-            <div class="bottom_small_card_detail" *ngIf="postData.iconUrl;else other_topic_detail">
+            <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title" [innerHTML]='postData.title'></span>
                 <!-- <span>{{postData.post.detail}}</span> -->
             </div>
@@ -60,8 +60,8 @@
             <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
         </div>
         <div class="top_medium_card">
-            <div class="image_base64" *ngIf="postData.coverPageUrl;else other_topic">
-                <img width="150%" src="{{apiBaseURL+postData.coverPageUrl+'/image'}}">
+            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img width="150%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -70,7 +70,7 @@
             </ng-template>
         </div>
         <div class="bottom_medium_card">
-            <div class="bottom_medium_card_detail" *ngIf="postData.coverPageUrl;else other_topic_detail">
+            <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title">{{postData.post.title}}</span>
                 <span class="detail">{{postData.post.detail}}</span>
             </div>
@@ -123,8 +123,8 @@
             <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
         </div>
         <div class="top_large_card">
-            <div class="image_base64" *ngIf="postData.coverPageUrl;else other_topic">
-                <img width="150%" src="{{apiBaseURL+postData.coverPageUrl+'/image'}}">
+            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img width="150%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -133,7 +133,7 @@
             </ng-template>
         </div>
         <div class="bottom_large_card">
-            <div class="bottom_large_card_detail" *ngIf="postData.coverPageUrl;else other_topic_detail">
+            <div class="bottom_large_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title">{{postData.post.title}}</span>
                 <span>{{postData.post.detail}}</span>
             </div>

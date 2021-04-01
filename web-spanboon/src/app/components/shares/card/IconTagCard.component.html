@@ -35,7 +35,7 @@
                             </g>
                         </svg>
                     </ng-container>
-                    <a style="flex: 1 1 0; margin-right: 10pt;" href={{linkPage}} target="_blank" #showTooltip
+                    <a style="flex: 1 1 0; margin-right: 10pt;" href={{linkPage}} target="_blank" (mouseleave)="TooltipClose($event)" #showTooltip
                         (mouseover)="Tooltip(showTooltip , data)">
                         <div class="page-name">
                             {{pageName}}
