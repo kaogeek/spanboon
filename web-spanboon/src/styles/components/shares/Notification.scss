@@ -24,7 +24,8 @@
 
     &.active {
         svg {
-            path {
+            
+            g,path {
                 fill: $brandcolor2 !important;
             }
         }

@@ -39,7 +39,7 @@ export class Notification extends AbstractPage implements OnInit {
 
   public notiisRead: any[] = []
   public linkPost: string;
-  public preload: boolean;
+  public preload: boolean; 
   public notiOrigin: any[] = [];
 
   private mainPostLink: string = window.location.origin
@@ -137,7 +137,7 @@ export class Notification extends AbstractPage implements OnInit {
     this.showAlertDevelopDialog();
   }
 
-  public isOpened() {
+  public isOpened() { 
     if (this.notiOrigin && this.notiOrigin.length > 0) {
       for (let msg of this.notiOrigin) {
         this.notificationFacade.markRead(msg.notification.id);

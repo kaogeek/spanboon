@@ -506,7 +506,21 @@
 
       > .input-comment {
         flex: 1 1 0%;
+        position: relative;
+        > .send-button {
+          display: flex;
+          position: absolute; 
+          right: 15pt;
+          top: 6pt;
+          color: $color-gray;
 
+          > .material-icons {
+            &:hover {
+              color: $brandcolor2;
+              @include pointer();
+            }
+          }
+        }
         > .comment-text {
           border: 1px solid rgb($black, 0.1);
           width: calc(100% - 24px - 2px - 10pt);
