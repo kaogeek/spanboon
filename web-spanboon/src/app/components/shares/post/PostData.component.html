@@ -631,9 +631,8 @@
                     </ng-template>
                 </div>
                 <div class="input-comment">
-                    <div class="send-button">
-                        <span class="material-icons"> send </span>
-                    </div>
+                    <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span></div>
+
                     <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
                         [(ngModel)]="value" type="text">
                 </div>

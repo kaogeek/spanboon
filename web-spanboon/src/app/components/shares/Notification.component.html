@@ -33,16 +33,33 @@
         </svg>
     </ng-container>
     <ng-template #elseTemplateIcons>
-        <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
-            <g id="Group_2389" data-name="Group 2389" transform="translate(1680.568 -3303.088)">
-                <path id="Path_3521" data-name="Path 3521"
-                    d="M264.982,150.047h-34.04a6.512,6.512,0,0,1-4.234-11.457,10.916,10.916,0,0,0,3.918-8.383v-5.752A17.473,17.473,0,0,1,243,107.86l0-.049a4.965,4.965,0,0,1,9.918,0l0,.049A17.471,17.471,0,0,1,265.3,124.45v5.757a10.891,10.891,0,0,0,3.874,8.352h0a6.511,6.511,0,0,1-4.2,11.487m-17.016-37.233-1.646.239a11.614,11.614,0,0,0-9.89,11.407v5.747a16.693,16.693,0,0,1-5.967,12.809.707.707,0,0,0,.479,1.227H264.98a.707.707,0,0,0,.708-.706.707.707,0,0,0-.251-.541A16.681,16.681,0,0,1,259.5,130.2v-5.749a11.613,11.613,0,0,0-9.891-11.4Z"
-                    transform="translate(-1905 3200)" fill="#474747" />
-                <path id="Path_3522" data-name="Path 3522"
-                    d="M247.958,158.49a7.756,7.756,0,0,0,7.579-6.188H240.381a7.758,7.758,0,0,0,7.577,6.188"
-                    transform="translate(-1905 3200)" fill="#474747" />
-            </g>
-        </svg>
+        <ng-container *ngIf="isActive(); else elseTemplateOpen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
+                <g id="Group_493" data-name="Group 493" transform="translate(-407.878 -248.869)">
+                    <g id="Path_263" data-name="Path 263">
+                        <path id="Path_3640" data-name="Path 3640"
+                            d="M448.428,295.828h-34.04a6.512,6.512,0,0,1-4.234-11.457,10.919,10.919,0,0,0,3.918-8.383v-5.752a17.472,17.472,0,0,1,12.378-16.6l0-.048a4.965,4.965,0,0,1,9.918,0l0,.048A17.471,17.471,0,0,1,448.75,270.23v5.758a10.892,10.892,0,0,0,3.875,8.352h0a6.512,6.512,0,0,1-4.2,11.488Z"
+                            fill="#474747" />
+                    </g>
+                    <path id="Path_264" data-name="Path 264"
+                        d="M431.4,304.271a7.757,7.757,0,0,0,7.58-6.188H423.827A7.756,7.756,0,0,0,431.4,304.271Z"
+                        fill="#474747" />
+                </g>
+            </svg>
+        </ng-container>
+        <ng-template #elseTemplateOpen>
+            <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
+                <g id="Group_2389" data-name="Group 2389" transform="translate(1680.568 -3303.088)">
+                    <path id="Path_3521" data-name="Path 3521"
+                        d="M264.982,150.047h-34.04a6.512,6.512,0,0,1-4.234-11.457,10.916,10.916,0,0,0,3.918-8.383v-5.752A17.473,17.473,0,0,1,243,107.86l0-.049a4.965,4.965,0,0,1,9.918,0l0,.049A17.471,17.471,0,0,1,265.3,124.45v5.757a10.891,10.891,0,0,0,3.874,8.352h0a6.511,6.511,0,0,1-4.2,11.487m-17.016-37.233-1.646.239a11.614,11.614,0,0,0-9.89,11.407v5.747a16.693,16.693,0,0,1-5.967,12.809.707.707,0,0,0,.479,1.227H264.98a.707.707,0,0,0,.708-.706.707.707,0,0,0-.251-.541A16.681,16.681,0,0,1,259.5,130.2v-5.749a11.613,11.613,0,0,0-9.891-11.4Z"
+                        transform="translate(-1905 3200)" fill="#474747" />
+                    <path id="Path_3522" data-name="Path 3522"
+                        d="M247.958,158.49a7.756,7.756,0,0,0,7.579-6.188H240.381a7.758,7.758,0,0,0,7.577,6.188"
+                        transform="translate(-1905 3200)" fill="#474747" />
+                </g>
+            </svg>
+        </ng-template> 
+
     </ng-template>
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
@@ -111,13 +128,11 @@
                 <preload-data *ngFor="let item of [0 , 1 , 2 , 3]" [isShowCard1]="true" [isShowCard2]="false"
                     class="wrapper-list preload"></preload-data>
             </div>
-            <div class="eorror" > 
+            <div class="eorror">
                 <span>ยังไม่มีการแจ้งเตือนใหม่</span>
             </div>
 
         </ng-template>
-
-
     </div>
     <div (click)="markReadNotiAll();" class="wrapper-all-footer">
         ดูทั้งหมด

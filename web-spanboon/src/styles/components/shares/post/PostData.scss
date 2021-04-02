@@ -25,7 +25,7 @@
     > .left {
       display: flex;
       align-items: center;
-      @include font-size-11($font-head-500);
+      @include font-size-10($font-head-500);
       color: $black;
       position: relative;
       margin-right: 15pt;
@@ -54,8 +54,8 @@
       }
 
       .icon-feed {
-        width: 6pt;
-        height: 6pt;
+        width: 8pt;
+        height: 8pt;
         border-radius: 50%;
         flex: 0 0 auto;
         background-color: $color-gray;
@@ -94,7 +94,7 @@
             > span {
               cursor: pointer;
               color: $color-gray;
-              @include font-size-11($font-head-200);
+              @include font-size-10($font-head-200);
 
               &:hover {
                 color: rgba($brandcolor2, 0.95);
@@ -104,7 +104,7 @@
         }
 
         > .post-name {
-          @include font-size-11($font-head-200);
+          @include font-size-10($font-head-200);
           color: #a5a5a6;
           span {
             &:hover {
@@ -446,8 +446,7 @@
       @include font-size-10($font-head-500);
 
       &:hover {
-        // color: rgba($brandcolor2, 0.8);
-        color: darken($brandcolor2, 8%);
+        color: rgba($brandcolor2, 0.95);
       }
     }
 
@@ -507,12 +506,12 @@
 
       > .input-comment {
         flex: 1 1 0%;
-
+        position: relative;
         > .send-button {
-          position: absolute;
-          display: block;
-          right: 35px;
-          bottom: 16px;
+          display: flex;
+          position: absolute; 
+          right: 15pt;
+          top: 6pt;
           color: $color-gray;
 
           > .material-icons {
@@ -522,13 +521,12 @@
             }
           }
         }
-
         > .comment-text {
           border: 1px solid rgb($black, 0.1);
           width: calc(100% - 24px - 2px - 10pt);
           border-radius: 25px;
           padding: 6pt 12pt;
-          @include font-size-10($font-content-light);
+          @include font-size-10($font-content2-medium);
         }
       }
     }
@@ -890,10 +888,10 @@
   .card-feed-post {
     margin: 9pt 0;
     > .header-post {
-      padding: 12pt;
+      padding: 15pt 10pt;
     }
     > .dropdown {
-      top: 8pt;
+      top: 12pt;
     }
     > .wrapper-content {
       padding: 15pt 10pt 0 10pt;
