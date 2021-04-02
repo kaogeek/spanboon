@@ -38,9 +38,9 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   @Input()
   public category: string = "ประเภท";
   @Input()
-  public following: string = "";
+  public following: string = "1";
   @Input()
-  public fulfill: string = "";
+  public fulfill: string = "2";
   @Input()
   public typePage: string;
 
@@ -65,9 +65,10 @@ export class TooltipProfile extends AbstractPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
-  public ngOnInit(): void {
-    console.log("data >>>>>> ", this.data);
+  public ngOnInit(): void { 
+    Object.assign(this.data.owner, { followers: this.data.followUserCount });
   }
+
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
@@ -86,9 +87,13 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   }
 
   public async clickFollow(page) {
+    let follow = await this.pageFacade.follow(page.id); 
 
-    let follow = await this.pageFacade.follow(page.id);
-    this.data.owner.isFollow = !this.data.owner.isFollow
+    this.data.owner.followUserCount = follow.data.followers;
+    this.data.owner.isFollow = follow.data.isFollow;
+    //
+    this.data.followUserCount = follow.data.followers;
+    this.data.isFollow = follow.data.isFollow;
 
   }
 
@@ -135,7 +140,6 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   ];
 
   public tooltipClose(event) {
-    console.log('event >>> ', event);
     let BUTTON_CLASS: string = "button-follow mat-ripple radius";
     let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
     let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";
@@ -146,7 +150,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
     let ICON_CLASS: string = "material-icons";
     let TOOL_DROP_CLASS: string = "but-send tool-dropdow mat-stroked-button mat-button-base";
 
-    if (event.toElement.className !== TOOL_DROP_CLASS && event.toElement.className !== ICON_CLASS && event.toElement.className !== MAT_BUTTON_CLASS && event.toElement.className !== TOOLTIP_BUTTON_CLASS && event.toElement.className !== TOOLTIP_CLASS && event.toElement.className !== ARROW_CLASS && event.toElement.className !== BUTTON_CLASS && event.toElement.className !== BUTTON_CLASS_RIGHT && event.toElement.className !== BUTTON_CLASS_SEND) {
+    if (event.toElement && event.toElement.className && event.toElement.className !== TOOL_DROP_CLASS && event.toElement.className !== ICON_CLASS && event.toElement.className !== MAT_BUTTON_CLASS && event.toElement.className !== TOOLTIP_BUTTON_CLASS && event.toElement.className !== TOOLTIP_CLASS && event.toElement.className !== ARROW_CLASS && event.toElement.className !== BUTTON_CLASS && event.toElement.className !== BUTTON_CLASS_RIGHT && event.toElement.className !== BUTTON_CLASS_SEND) {
 
       this.popupService.close(undefined);
 
