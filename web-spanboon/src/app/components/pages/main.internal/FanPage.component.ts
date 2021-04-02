@@ -1172,7 +1172,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public async actionComment(action: any, index: number) { 
+  public async actionComment(action: any, index: number) {
     // this.postId = action.postData.pageId
     let pageInUser: any[]
     let data: RePost = new RePost();
@@ -1181,10 +1181,19 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (action.mod === 'REBOON') {
       this.isLoginCh();
       if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-        userAsPage = action.userAsPage.id
+        userAsPage = action.userAsPage.id;
       } else {
-        userAsPage = null
+        userAsPage = null;
       }
+
+      if (userAsPage !== null && userAsPage !== undefined && userAsPage !== '') {
+        data.postAsPage = userAsPage;
+        data.pageId = userAsPage;
+      } else {
+        data.postAsPage = null;
+        data.pageId = null;
+      }
+
       if (action.type === "TOPIC") {
         let search: SearchFilter = new SearchFilter();
         search.limit = 10;
@@ -1240,28 +1249,29 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             if (result.hashTag !== undefined && result.hashTag !== null) {
               data.hashTag = result.hashTag
             }
-            this.postFacade.rePost(dataPost, data).then((res: any) => {
-              this.resPost.posts[index].repostCount++
-            }).catch((err: any) => {
-              console.log(err)
-            })
+            // this.postFacade.rePost(dataPost, data).then((res: any) => {
+            //   this.resPost.posts[index].repostCount++
+            // }).catch((err: any) => {
+            //   console.log(err)
+            // })
           }
         });
       } else if (action.type === "NOTOPIC") {
-        data.pageId = null
-        dataPost = action.post._id
+        dataPost = action.post._id;
         this.postFacade.rePost(dataPost, data).then((res: any) => {
-          this.resPost.posts[index].repostCount++
-          this.resPost.posts[index].isRepost = true
+          this.resPost.posts[index].repostCount++;
+          this.resPost.posts[index].isRepost = true;
         }).catch((err: any) => {
-          console.log(err)
+          console.log(err);
         })
       } else if (action.type === "UNDOTOPIC") {
         this.postFacade.undoPost(action.post._id).then((res: any) => {
+          this.resPost.posts[index].repostCount--;
+          this.resPost.posts[index].isRepost = false;
         }).catch((err: any) => {
+          console.log(err);
         })
       }
-
     } else if (action.mod === 'LIKE') {
       this.isLoginCh();
       this.postLike(action, index);
