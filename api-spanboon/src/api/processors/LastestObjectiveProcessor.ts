@@ -13,6 +13,7 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
 // import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 // import moment from 'moment';
 
 export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -126,7 +127,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
                 const result: SectionModel = new SectionModel();
                 result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
