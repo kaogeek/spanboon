@@ -184,7 +184,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         if (userId !== null && userId !== undefined && userId !== '') {
                             userObjId = new ObjectID(userId);
 
-                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page.id, subjectType: SUBJECT_TYPE.PAGE };
                             const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
 
                             if (currentUserFollow !== null && currentUserFollow !== undefined) {
