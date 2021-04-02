@@ -155,7 +155,7 @@
     </div>
 
     <div class="wrapper-content"
-        [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === '' || itemPost.detail === ''))">
+        [class.active]="(itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && (itemPost.gallery.length === 0 ) || (itemPost.gallery.length > 0 || itemPost.title === ''  || itemPost.detail === ''))">
         <!-- <ng-container *ngIf="itemPost.type === 'NEEDS';">
             <div class="left">
                 <div class="icon-feed looking"></div>
@@ -176,10 +176,10 @@
                 </div>
             </div>
         </ng-container> -->
-        <div class="title" *ngIf="itemPost && itemPost.title">
-            {{itemPost && itemPost.title}}
+        <div class="title" *ngIf="itemPost && itemPost.title" [innerHTML]="itemPost.title | highlight">
+            <!-- {{itemPost && itemPost.title}} -->
         </div>
-        <div class="content" *ngIf="itemPost && itemPost.detail" [innerHTML]="itemPost && itemPost.detail">
+        <div class="content" *ngIf="itemPost && itemPost.detail" [innerHTML]="itemPost && itemPost.detail | highlight">
         </div>
         <div class="page-give" *ngIf="isFulfill"
             [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
@@ -200,13 +200,14 @@
 
         <ng-container *ngIf="itemPost.story">
             <div (click)="storyTeb(itemPost)" class="content-sub">
-                อ่านเพิ่มเติม<span style="margin-left: 1px;">...</span>
+                อ่านสตอรี่<span style="margin-left: 1px;">...</span>
             </div>
         </ng-container>
 
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0" [routerLink]="'/'">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
-                <a class="highlight-text" href="/hashtag/{{hashTag}}">#{{hashTag.name}}</a>
+                <a style="color: gray !important;" class="highlight-text"
+                    href="/hashtag/{{hashTag}}">#{{hashTag.name}}</a>
             </div>
         </div>
 
