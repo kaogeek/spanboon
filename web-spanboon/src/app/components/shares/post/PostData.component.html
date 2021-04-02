@@ -508,7 +508,7 @@
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
-                [ngStyle]="{'margin-top': itemPost.referencePostObject ? '10pt' : 'unset' , 'display' : itemPost.referencePostObject ? 'block' : 'unset'}">
+                [ngStyle]="{'margin-top': itemPost.detail ? '10pt' : 'unset' , 'display' : itemPost.detail ? 'block' : 'unset'}">
             </repost-data>
         </ng-container>
         <ng-template #elseNullPost>
@@ -631,7 +631,8 @@
                     </ng-template>
                 </div>
                 <div class="input-comment">
-                    <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span></div>
+                    <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span>
+                    </div>
 
                     <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
                         [(ngModel)]="value" type="text">
