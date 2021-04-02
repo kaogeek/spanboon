@@ -1505,8 +1505,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         }
       }
-    }
-    console.log('this. ', this.dataImage)
+    } 
 
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);

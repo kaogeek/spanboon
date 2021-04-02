@@ -1214,7 +1214,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
         });
 
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().subscribe(result => { 
           if (!result) {
             return
           }
@@ -1249,11 +1249,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             if (result.hashTag !== undefined && result.hashTag !== null) {
               data.hashTag = result.hashTag
             }
-            // this.postFacade.rePost(dataPost, data).then((res: any) => {
-            //   this.resPost.posts[index].repostCount++
-            // }).catch((err: any) => {
-            //   console.log(err)
-            // })
+            this.postFacade.rePost(dataPost, data).then((res: any) => { 
+              this.resPost.posts[index].repostCount++
+            }).catch((err: any) => {
+              console.log(err)
+            })
           }
         });
       } else if (action.type === "NOTOPIC") {
