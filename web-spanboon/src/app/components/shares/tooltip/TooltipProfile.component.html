@@ -157,8 +157,9 @@
             </div>
         </div>
         <div class="tooltip-bottom">
-            <button-follow [bgColor]="'#FFFFFF'" [text]="data.owner && data.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
-                (click)="clickFollow(data.owner)" [class.active]="data.owner && data.isFollow">
+            <button-follow [bgColor]="'#FFFFFF'"
+                [text]="data.owner && (data.isFollow || data.owner.isFollow) ? 'กำลังติดตาม' : 'ติดตาม'"
+                (click)="clickFollow(data.owner)" [class.active]="data.owner && (data.isFollow || data.owner.isFollow)">
             </button-follow>
             <div class="tooltip-bottom-right">
                 <button (click)="clickMore(data.owner)" mat-stroked-button class="but-send">
