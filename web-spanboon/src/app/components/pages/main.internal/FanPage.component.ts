@@ -1251,6 +1251,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
             this.postFacade.rePost(dataPost, data).then((res: any) => { 
               this.resPost.posts[index].repostCount++
+              this.resPost.posts[index].isRepost = false;
             }).catch((err: any) => {
               console.log(err)
             })
