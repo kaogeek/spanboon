@@ -89,6 +89,22 @@
 
       > .wrapper-btn-follow {
         > button-follow {
+          > .button-follow {
+            &:hover {
+              background-color: rgba($brandcolor2, 0.1) !important;
+            }
+          }
+
+          &.active {
+            > .button-follow {
+              background-color: $brandcolor2 !important;
+              color: $white !important;
+
+              &:hover {
+                background-color: rgba($brandcolor2, 0.95) !important;
+              }
+            }
+          }
         }
       }
     }
