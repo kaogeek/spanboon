@@ -20,7 +20,10 @@ export class AppComponent {
   public router: Router;
 
   constructor(router: Router) {
-    this.router = router; 
-  }
-  
+    this.router = router;
+    this.router.events.subscribe((event) => { 
+      window.scroll(0,0);
+    });
+  } 
+
 }

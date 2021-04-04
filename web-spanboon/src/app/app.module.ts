@@ -198,6 +198,7 @@ import {
   NotificationManager,
   CheckMessageManager,
   Engagement,
+  SeoService,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -414,6 +415,7 @@ const SERVICE_CLASSES: any[] = [
   NotificationManager,
   CheckMessageManager,
   Engagement,
+  SeoService,
   // facade 
   PostFacade,
   AllocateFacade,
