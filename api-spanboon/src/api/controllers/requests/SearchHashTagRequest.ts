@@ -8,7 +8,8 @@
 import 'reflect-metadata';
 import { SearchFilter } from './SearchFilterRequest';
 
-export class SearchHashTagRequest extends SearchFilter {
+export class SearchHashTagRequest {
 
     public userId: string;
+    public filter: SearchFilter;
 }
