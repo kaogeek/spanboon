@@ -58,9 +58,12 @@ export class RecommendCard {
     });
   }
 
-  public onClick(index){ 
-    this.isFollow = !this.isFollow;
-    this.submitFollow.emit(index);
+  public onClick(index: number, recommed: any){ 
+    let data = {
+      index : index,
+      recommed
+    } 
+    this.submitFollow.emit(data);
   }
 
 

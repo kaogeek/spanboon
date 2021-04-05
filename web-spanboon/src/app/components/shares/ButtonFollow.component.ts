@@ -29,6 +29,8 @@ export class ButtonFollow {
   @Input()
   public fontSize: string = "14px";
   @Input()
+  public inputId: string;
+  @Input()
   public link: string;
   @Input()
   public isRadius: boolean = true;

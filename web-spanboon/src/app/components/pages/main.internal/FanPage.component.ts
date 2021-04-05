@@ -6,8 +6,8 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService } from '../../../services/services';
-import { MatDialog } from '@angular/material';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade } from '../../../services/services';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
 import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
@@ -77,6 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private recommendFacade: RecommendFacade;
   private aboutPageFacade: AboutPageFacade;
   private seoService: SeoService;
+  private profileFacade: ProfileFacade; 
 
   public resDataPage: any;
   public resPost: any = {};
@@ -125,7 +126,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public selectedIndex: number;
 
   public CheckPost: boolean = true;
-  public isFollow: boolean;
 
   private coverImageoldValue = 50;
   public index: number;
@@ -134,7 +134,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade,
+    ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -151,6 +152,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.recommendFacade = recommendFacade;
     this.aboutPageFacade = aboutPageFacade;
     this.seoService = seoService;
+    this.profileFacade = profileFacade; 
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
@@ -704,36 +706,83 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       })
     }
   }
-  public clickFollowPage() {
-    // const a = document.getElementById('aa');
-    // console.log(a)
-    this.followData();
+  
+  public async clickFollowPage() {
+    let pageId = this.resDataPage.id;
+    const follow = await this.followPage(pageId);
+    if (follow) {
+      if (follow.message === "Unfollow Page Success") {
+        this.resDataPage.isFollow = follow.data.isFollow;
+        this.resDataPage.followers = follow.data.followers;
+      } else {
+        this.resDataPage.isFollow = follow.data.isFollow;
+        this.resDataPage.followers = follow.data.followers;
+      }
+    }
   }
 
-  public clickFollow(index: number) {
-    // this.followData(index);
-    // this.selectedIndex = index;
+  public async clickFollow(data: any) { 
+    if (data.recommed.type === 'USER') {
+      const followUser = await this.followUser(data.recommed._id); 
+      if (followUser) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followUser.message === "Unfollow User Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { follow: true });
+                }
+                this.dialog.closeAll();
+              });
+            } else {
+              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+            }
+          }
+        }
+        this.selectedIndex = data.index;
+      }
+    } else {
+      const followPage = await this.followPage(data.recommed._id);
+      if (followPage) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followPage.message === "Unfollow Page Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { follow: true });
+                }
+                this.dialog.closeAll();
+              }); 
+            } else {
+              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+            }
+          }
+        } 
+
+        this.selectedIndex = data.index;
+      }
+    }
   }
 
-  public followData(index?: number) {
+  public async followPage(pageId: string) {
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/page/" + this.resDataPage.id);
     } else {
-      let pageId = this.resDataPage.id;
-      this.pageFacade.follow(pageId).then((res) => {
-        if (res.message === "Unfollow Page Success") {
-          this.resDataPage.isFollow = res.data.isFollow;
-          this.resDataPage.followers = res.data.followers;
-          this.isFollow = false;
-        } else {
-          this.resDataPage.isFollow = res.data.isFollow;
-          this.resDataPage.followers = res.data.followers;
-          this.isFollow = true;
-        }
+      return this.pageFacade.follow(pageId);
+    }
+  }
 
-      }).catch((err: any) => {
-        console.log(err);
-      });
+  public async followUser(userId: string) {
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+    } else {
+      return this.profileFacade.follow(userId);
     }
   }
 
