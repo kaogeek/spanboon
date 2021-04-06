@@ -191,23 +191,24 @@ export class HashTagController {
         let name;
         let limit;
         let offset;
-        const action = ENGAGEMENT_ACTION.TAG;
-
+        const action = ENGAGEMENT_ACTION.TAG;  
+        
         if (search !== null && search !== undefined) {
-            limit = search.limit;
-            offset = search.offset;
+            limit = search.filter.limit;
+            offset = search.filter.offset;
 
-            if (search.whereConditions !== null && search.whereConditions !== undefined) {
-                name = search.whereConditions.name;
+            if (search.filter.whereConditions !== null && search.filter.whereConditions !== undefined) {
+                name = search.filter.whereConditions.name;
             }
         }
 
         const uId = req.header.userid;
         const contentIdList = [];
         const hashTagList = [];
-        const hashTagNameList = [];
+        const hashTagNameList = []; 
+        
         const hashTagTrends = await this.searchEngagementHashTag(uId, name, limit, offset, action);
-
+         
         if (hashTagTrends !== null && hashTagTrends !== undefined && hashTagTrends.length > 0) {
             for (const hashTag of hashTagTrends) {
                 const contentId = hashTag.contentId;

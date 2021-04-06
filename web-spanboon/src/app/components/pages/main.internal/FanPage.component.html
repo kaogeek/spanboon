@@ -189,7 +189,7 @@
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                                <button-follow id="aa" [bgColor]="'#FFFFFF'"
+                            <button-follow  [bgColor]="'#FFFFFF'" [inputId]="'follow'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
                                     (click)="clickFollowPage()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
@@ -682,9 +682,9 @@
                                 <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
                                     <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
                                         [statusLable]="'กำลังทำอยู่'"></card-item>
-                                </ng-container>
+                                </ng-container> 
                                 <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend" 
-                                (submitFollow)="clickFollow($event)" [isFollow]="isFollow" [selectedIndex]="selectedIndex"></recommend-card>
+                                (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex"></recommend-card>
                             </div>
                         </div>
                         <ng-container *ngIf="isCheck === true">

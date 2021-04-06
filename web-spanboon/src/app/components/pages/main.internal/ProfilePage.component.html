@@ -369,7 +369,7 @@
                 </div>
                 <div class="side-follow" #sidefeedHeight>
                     <recommend-card *ngIf="!showLoading" [title]="'คนที่คุณอาจรู้จัก'" [data]="dataRecommend"
-                        (submitFollow)="clickFollowUser()"></recommend-card>
+                        (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex"></recommend-card>
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
                     </Preload-card>
                     <ng-container *ngIf="resProfile && resProfile.provideItems && resProfile.provideItems.length > 0">
