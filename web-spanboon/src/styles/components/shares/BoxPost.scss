@@ -605,7 +605,7 @@
 
               &.active {
                 path {
-                  fill: #e65857;
+                  fill: $brandcolor2;
                 }
               }
             }
@@ -1100,7 +1100,7 @@
 
                 > .list-found {
                   color: $color-gray;
-                  @include font-size-9($font-head-500);
+                  @include font-size-9($font-head-100);
                 }
               }
             }
