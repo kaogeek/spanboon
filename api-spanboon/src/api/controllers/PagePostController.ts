@@ -56,6 +56,7 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
+import _ from 'lodash';
 
 @JsonController('/page')
 export class PagePostController {
@@ -67,6 +68,7 @@ export class PagePostController {
         private postGalleryService: PostsGalleryService,
         private fulfillmentService: FulfillmentService,
         private emergencyService: EmergencyEventService,
+        private stdItemService: StandardItemService,
         private needsService: NeedsService,
         private userService: UserService,
         private userEngagementService: UserEngagementService,
@@ -108,12 +110,20 @@ export class PagePostController {
         }
 
         // pagePosts = await this.postsService.find({ where: { $and: [{ pageId: pageObjId }, { hidden: false }, { deleted: false }] } });
-        const pagePosts: Posts[] = await this.postsService.aggregate(
+        const pagePosts: any[] = await this.postsService.aggregate(
             [
                 { $match: { pageId: pageObjId, isDraft: false, hidden: false, deleted: false } },
                 { $sort: { startDateTime: -1 } },
                 { $skip: offset },
                 { $limit: limit },
+                {
+                    $lookup: {
+                        from: 'Page',
+                        localField: 'pageId',
+                        foreignField: '_id',
+                        as: 'page'
+                    }
+                },
                 {
                     $lookup: {
                         from: 'PageObjective',
@@ -221,7 +231,61 @@ export class PagePostController {
             ]
         );
 
-        if (pagePosts) {
+        if (pagePosts !== null && pagePosts !== undefined && pagePosts.length > 0) {
+            let needs: any[] = [];
+
+            for (const post of pagePosts) {
+                needs = post.needs;
+            }
+
+            if (needs !== null && needs !== undefined && needs.length > 0) {
+                const needsResultList: Needs[] = [];
+                const needsMap: any = {};
+
+                for (const need of needs) {
+                    const customNeeds = need;
+                    const standardItemId = need.standardItemId;
+                    const customItemId = need.customItemId;
+
+                    if (standardItemId !== null && standardItemId !== undefined && standardItemId !== '') {
+                        if (!needsMap[standardItemId]) {
+                            const stdItems: StandardItem = await this.stdItemService.findOne({ _id: new ObjectID(standardItemId) });
+
+                            if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
+                                customNeeds.name = stdItems.name;
+                                customNeeds.unit = stdItems.unit;
+                            }
+
+                            needsMap[standardItemId] = customNeeds;
+                        } else {
+                            const resultNeeds = _.find(needsResultList, ['standardItemId', standardItemId]);
+
+                            if (resultNeeds !== null && resultNeeds !== undefined) {
+                                resultNeeds.quantity += customNeeds.quantity;
+                                continue;
+                            }
+                        }
+                    }
+
+                    const finalNeeds = new Needs();
+                    finalNeeds.id = customNeeds._id;
+                    finalNeeds.standardItemId = standardItemId;
+                    finalNeeds.customItemId = customItemId;
+                    finalNeeds.name = customNeeds.name;
+                    finalNeeds.quantity = customNeeds.quantity;
+                    finalNeeds.unit = customNeeds.unit;
+                    finalNeeds.createdDate = customNeeds.createdDate;
+                    finalNeeds.pageId = customNeeds.pageId;
+                    finalNeeds.post = customNeeds.post;
+                    finalNeeds.active = customNeeds.active;
+                    finalNeeds.fullfilled = customNeeds.fullfilled;
+                    finalNeeds.fulfillQuantity = customNeeds.fulfillQuantity;
+                    finalNeeds.pendingQuantity = customNeeds.pendingQuantity;
+
+                    needsResultList.push(finalNeeds);
+                }
+            }
+
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PagePost', pagePosts);
             return res.status(200).send(successResponse);
         } else {
@@ -924,6 +988,20 @@ export class PagePostController {
                     { $limit: limit },
                     {
                         $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'PostsComment',
                             localField: '_id',
                             foreignField: 'post',
@@ -1217,10 +1295,10 @@ export class PagePostController {
                                     const likeAsPage = like.likeAsPage;
 
                                     if (postId !== null && postId !== undefined && postId !== '') {
-                                        userLikeMap[postId] = like;
-
                                         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
                                             likeAsPageMap[postId] = like;
+                                        } else {
+                                            userLikeMap[postId] = like;
                                         }
                                     }
                                 }
@@ -1236,7 +1314,11 @@ export class PagePostController {
                         }
                     }
 
+                    result.userLikeMap = userLikeMap;
+                    result.likeAsPageMap = likeAsPageMap;
+
                     pagePostLists.map(async (data) => {
+                        console.log('data >>>> ', data);
                         const postId = data._id;
                         const story = data.story;
                         const dataKey = postId + ':' + uId;
@@ -1272,6 +1354,31 @@ export class PagePostController {
                         } else {
                             data.isComment = false;
                         }
+
+                        // const userLike: UserLike = await this.userLikeService.findOne({ userId: userObjId, subjectId: new ObjectID(postId), subjectType: LIKE_TYPE.POST });
+
+                        // console.log('userLike >>> ', userLike);
+
+                        // if (userLike !== null && userLike !== undefined) {
+                        //     const likeAsPage = userLike.likeAsPage;
+
+                        //     if (userLikeMap[postId]) {
+                        //         data.isLike = true;
+                        //     } else {
+                        //         data.isLike = false;
+                        //     }
+
+                        //     if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                        //         if (likeAsPageMap[postId + ':' + likeAsPage]) {
+                        //             data.likeAsPage = true;
+                        //         }
+                        //     } else {
+                        //         data.likeAsPage = false;
+                        //     }
+                        // } else {
+                        //     data.isLike = false;
+                        //     data.likeAsPage = false;
+                        // }
                     });
 
                     result.posts = pagePostLists;
@@ -1830,6 +1937,19 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            const referencePost = new ObjectID(posts.referencePost);
+
+            const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
+
+            if (undoRepost !== null && undoRepost !== undefined) {
+                const originPost: Posts = await this.postsService.findOne({ _id: referencePost });
+
+                if (originPost !== null && originPost !== undefined) {
+                    const repostCount = originPost.repostCount;
+                    await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
+                }
+            }
+
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);

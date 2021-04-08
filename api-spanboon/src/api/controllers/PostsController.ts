@@ -261,6 +261,14 @@ export class PostsController {
                     { $match: { _id: { $in: postIdList }, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
                     {
                         $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'PostsComment',
                             localField: '_id',
                             foreignField: 'post',
