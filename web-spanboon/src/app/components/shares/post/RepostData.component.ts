@@ -71,7 +71,7 @@ export class RepostData {
     this.isComment = false
     this.isRepost = false
 
-    setTimeout(() => {
+    setTimeout(() => { 
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
       }
@@ -119,6 +119,44 @@ export class RepostData {
     }, 1500);
   }
 
+  ngAfterViewInit(): void { 
+    setTimeout(() => { 
+      if (this.itemPost && this.itemPost.detail) {
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.detail.includes('#')) {
+              const hashTag: string[] = this.itemPost.detail.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if (this.itemPost && this.itemPost.title) {
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.title.includes('#')) {
+              const hashTag: string[] = this.itemPost.title.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } 
+     
+    }, 1000);
+  }
+  
   public getImgURL(url: any, type: boolean) {
     if (type) {
       this.assetFacade.getPathFile(url).then((cover: any) => {
@@ -152,7 +190,6 @@ export class RepostData {
     }).catch((err: any) => {
     });
   }
-
 
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
