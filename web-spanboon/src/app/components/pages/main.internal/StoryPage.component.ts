@@ -245,6 +245,18 @@ export class StoryPage extends AbstractPage implements OnInit {
           this.postStoryData.pageData = page
         }).catch((err: any) => {
         });
+
+        console.log('this.postStoryData >>> ', this.postStoryData.pageId);
+
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          console.log(page)
+          if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+            this.linkPage = (this.mainPageLink + page.data.uniqueId)
+          } else if (page.data.id !== undefined && page.data.id !== null) {
+            this.linkPage = (this.mainPageLink + page.data.id)
+          }
+        }).catch((err: any) => {
+        });
       }
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
@@ -306,7 +318,7 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.shareCount = this.postStoryData.shareCount;
       this.needs = this.postStoryData.needs;
       this.isLoding = false;
-      
+
     }, 3500);
 
   }
@@ -596,15 +608,22 @@ export class StoryPage extends AbstractPage implements OnInit {
     });
 
     setTimeout(() => {
-      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        console.log(page)
-        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
-          this.linkPage = (this.mainPageLink + page.data.uniqueId)
-        } else if (page.data.id !== undefined && page.data.id !== null) {
-          this.linkPage = (this.mainPageLink + page.data.id)
-        }
-      }).catch((err: any) => {
-      });
+      if (this.postStoryData.pageId !== null && this.postStoryData.pageId !== undefined) {
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          this.postStoryData.pageData = page
+        }).catch((err: any) => {
+        });
+
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          console.log(page)
+          if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+            this.linkPage = (this.mainPageLink + page.data.uniqueId)
+          } else if (page.data.id !== undefined && page.data.id !== null) {
+            this.linkPage = (this.mainPageLink + page.data.id)
+          }
+        }).catch((err: any) => {
+        });
+      }
     }, 2000);
   }
 

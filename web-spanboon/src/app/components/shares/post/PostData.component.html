@@ -155,12 +155,16 @@
                         transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
                 </svg>
                 <ng-container *ngIf="isUserPage; else UserPage">
-                    <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                        ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </ng-container>
                 <ng-template #UserPage>
-                    <span
-                        *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                        || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate">
+                        <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-container>
+                    <ng-template #elseTemplate>
+                        <span>{{itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-template>
                 </ng-template>
             </div>
         </div>
@@ -486,7 +490,7 @@
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
-    </div> 
+    </div>
     <div class="wrapper-content"
         [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
         <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->

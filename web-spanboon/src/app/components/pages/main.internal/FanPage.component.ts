@@ -77,7 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private recommendFacade: RecommendFacade;
   private aboutPageFacade: AboutPageFacade;
   private seoService: SeoService;
-  private profileFacade: ProfileFacade; 
+  private profileFacade: ProfileFacade;
 
   public resDataPage: any;
   public resPost: any = {};
@@ -135,7 +135,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade,
-    ) {
+  ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -152,7 +152,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.recommendFacade = recommendFacade;
     this.aboutPageFacade = aboutPageFacade;
     this.seoService = seoService;
-    this.profileFacade = profileFacade; 
+    this.profileFacade = profileFacade;
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
@@ -421,6 +421,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.resPost.posts = originalpost
         for (let post of this.resPost.posts) {
+          console.log('post >>>> ', post);
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
             let search: SearchFilter = new SearchFilter();
             search.limit = 5;
@@ -706,7 +707,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       })
     }
   }
-  
+
   public async clickFollowPage() {
     let pageId = this.resDataPage.id;
     const follow = await this.followPage(pageId);
@@ -721,9 +722,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public async clickFollow(data: any) { 
+  public async clickFollow(data: any) {
     if (data.recommed.type === 'USER') {
-      const followUser = await this.followUser(data.recommed._id); 
+      const followUser = await this.followUser(data.recommed._id);
       if (followUser) {
         for (let [index, recommend] of this.dataRecommend.entries()) {
           if (recommend._id === data.recommed._id) {
@@ -758,12 +759,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
                   Object.assign(this.dataRecommend[index], { follow: true });
                 }
                 this.dialog.closeAll();
-              }); 
+              });
             } else {
               Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
             }
           }
-        } 
+        }
 
         this.selectedIndex = data.index;
       }
@@ -1360,6 +1361,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       action.userPage.id = null
     }
     this.postFacade.getAaaPost(action.postData, action.userPage.id).then((pages: any) => {
+      console.log('pages >>> ', pages);
       this.resPost.posts[index].isComment = pages.isComment
       this.resPost.posts[index].isLike = pages.isLike
       this.resPost.posts[index].isRepost = pages.isRepost
