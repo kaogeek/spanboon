@@ -93,17 +93,18 @@
                                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                                         </div>
                                     </a>
-                                    <!-- <ng-container *ngIf="isUserPage">
+                                    {{isUserPage}}
+                                    <ng-container *ngIf="isUserPage">
+                                        {{1}}
                                         <a target="_blank" class="post-name"
                                             (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
                                             <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
                                                 itemPost.ownerUser.name}}</span>
                                         </a>
-                                    </ng-container> -->
-                                    <ng-container *ngIf="isUserPage; else UserPage">
-                                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName ||
-                                            itemPost.ownerUser.name}}
+                                    </ng-container>
+                                    <!-- <ng-container *ngIf="isUserPage; else UserPage">
+                                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
                                             ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                                     </ng-container>
                                     <ng-template #UserPage>
@@ -113,7 +114,7 @@
                                         <ng-template #elseTemplate>
                                             <span>{{itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                                         </ng-template>
-                                    </ng-template>
+                                    </ng-template> -->
 
                                 </div>
                             </div>
@@ -167,27 +168,54 @@
                                 itemPost.ownerUser.name}}</span>
                         </a>
                     </ng-container>
+                    <!-- <ng-container *ngIf="isUserPage; else UserPages">
+                        {{2}}
+                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                            ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-container>
+                    <ng-template #UserPages>
+                        <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate5">
+                            <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                        </ng-container>
+                        <ng-template #elseTemplate5>
+                            <span>{{itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                        </ng-template>
+                    </ng-template> -->
                 </div>
             </ng-container>
         </div>
-        <div class="repost-re"
-            *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
-            <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
-                viewBox="0 0 56.105 47.887">
-                <path id="Path_3601" data-name="Path 3601"
-                    d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
-                    transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
-            </svg>
+        <div class="repost-re"  *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+           
             <ng-container *ngIf="isUserPage; else UserPage">
+                <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
+                    viewBox="0 0 56.105 47.887">
+                    <path id="Path_3601" data-name="Path 3601"
+                        d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
+                        transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
+                </svg>
                 <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
                     ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
             </ng-container>
-            <ng-template #UserPage>
+            <ng-template #UserPage> 
                 <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate">
+                    <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
+                        viewBox="0 0 56.105 47.887">
+                        <path id="Path_3601" data-name="Path 3601"
+                            d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
+                            transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
+                    </svg>
                     <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </ng-container>
                 <ng-template #elseTemplate>
-                    <span>{{itemPost.page && itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    <ng-container *ngIf="itemPost && itemPost.page && itemPost.page.name">
+                        <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
+                            viewBox="0 0 56.105 47.887">
+                            <path id="Path_3601" data-name="Path 3601"
+                                d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
+                                transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
+                        </svg>
+                        <span>{{itemPost.page && itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-container>
                 </ng-template>
             </ng-template>
         </div>
