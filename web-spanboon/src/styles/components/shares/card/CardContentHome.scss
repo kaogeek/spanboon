@@ -418,7 +418,7 @@
         height: auto;
         > .top_coverPage {
             width: auto;
-            height: 350px;
+            height: auto;
             overflow: hidden;
             position: relative;
             > .teg_event {
@@ -721,4 +721,57 @@
     > Preload-card {
         position: absolute;
     }
+}
+
+@media (max-width: $xlarge) {
+}
+
+@media (max-width: $large) {
+    .card_content_home > .event_card > .top_coverPage > .teg_event {
+        width: 100%;
+    }
+    .card_content_home > .event_card > .other_teg_event > .teg_event_list > .social > .date_time {
+        display: none;
+    }
+}
+
+@media (max-width: $lmedium) {
+}
+
+@media (max-width: $medium) {
+    .card_content_home > .medium_card > .top_medium_card {
+        width: 100%;
+        min-width: 360px;
+        margin-bottom: 10px;
+        height: 300px;
+    }
+    .card_content_home > .large_card > .top_large_card {
+        width: 100%;
+        min-width: 360px;
+        margin-bottom: 10px;
+        height: 300px;
+    }
+    .card_content_home > .large_card > .bottom_large_card {
+        width: 100%;
+        min-width: 360px;
+        height: 190px;
+    }
+    .card_content_home > .medium_card > .bottom_medium_card {
+        width: 100%;
+        min-width: 360px;
+        height: 150px;
+    }
+    .card_content_home > .medium_card {
+        margin: 0px 10px;
+        border-top: 1px solid #00000024;
+        margin-top: 15px;
+    }
+    .card_content_home > .large_card {
+        margin: 0px 10px;
+        border-top: 1px solid #00000024;
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: $small) {
 }
