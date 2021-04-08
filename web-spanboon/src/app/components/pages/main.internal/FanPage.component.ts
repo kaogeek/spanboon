@@ -24,9 +24,7 @@ import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
-import { UserEngagement } from '../../../models/models';
-import { ENGAGEMENT_ACTION } from '../../../UserTypeEngagement';
-import { Title } from '@angular/platform-browser';
+import { UserEngagement } from '../../../models/models';  
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -517,6 +515,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     }).catch((err: any) => {
     });
+  }
+
+  public async searchById(postId: string) {
+    let search: SearchFilter = new SearchFilter();
+    search.whereConditions = { _id: postId };
+    return this.postFacade.search(search);
   }
 
   public isLogin(): boolean {
@@ -1330,16 +1334,54 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         });
       } else if (action.type === "NOTOPIC") {
         dataPost = action.post._id;
-        this.postFacade.rePost(dataPost, data).then((res: any) => {
-          this.resPost.posts[index].repostCount++;
-          this.resPost.posts[index].isRepost = true;
+        this.postFacade.rePost(dataPost, data).then(async (res: any) => {
+          let searchPost = await this.searchById(res.id);
+          if (searchPost) {
+            let postIndex: number = 0
+            let galleryIndex = 0;
+            if (searchPost[0].gallery.length > 0) {
+              for (let img of searchPost[0].gallery) {
+                if (img.imageURL !== '') {
+                  this.getDataGallery(img.imageURL, postIndex, galleryIndex);
+                  galleryIndex++
+                }
+              }
+              postIndex++;
+            }
+
+            if (searchPost[0].referencePost !== null && searchPost[0].referencePost !== undefined && searchPost[0].referencePost !== '') {
+              let search: SearchFilter = new SearchFilter();
+              search.count = false;
+              search.whereConditions = { _id: searchPost[0].referencePost };
+              this.postFacade.search(search).then((res: any) => {
+                if (res.length !== 0) {
+                  searchPost[0].referencePostObject = res[0];
+                } else {
+                  searchPost[0].referencePostObject = 'UNDEFINED PAGE';
+                }
+              }).catch((err: any) => {
+              });
+            } 
+            this.resPost.posts.push(searchPost[0]);
+            if (this.resPost.posts && this.resPost.posts && this.resPost.posts.length > 0) {
+              this.resPost.posts = this.resPost.posts.sort((a, b) => new Date(b.startDateTime).valueOf() - new Date(a.startDateTime).valueOf());
+              this.resPost.posts[index].repostCount++;
+              this.resPost.posts[index].isRepost = true;
+            } 
+          }
         }).catch((err: any) => {
           console.log(err);
         })
-      } else if (action.type === "UNDOTOPIC") {
-        this.postFacade.undoPost(action.post._id).then((res: any) => {
-          this.resPost.posts[index].repostCount--;
-          this.resPost.posts[index].isRepost = false;
+      } else if (action.type === "UNDOTOPIC") { 
+        this.postFacade.undoPost(action.post._id).then((res: any) => { 
+          for(let [ i ,data] of this.resPost.posts.entries()){
+            if(data.referencePostObject._id === action.post._id){ 
+              this.resPost.posts[index].repostCount--;
+              this.resPost.posts[index].isRepost = false;
+              this.resPost.posts.splice(i,1);
+              break;
+            }
+          } 
         }).catch((err: any) => {
           console.log(err);
         })

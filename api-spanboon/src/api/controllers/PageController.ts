@@ -66,9 +66,9 @@ import { PageConfigService } from '../services/PageConfigService';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
 import { PageConfig } from '../models/PageConfig';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
-import { StandardItemService } from '../services/StandardItemService';
-import { StandardItem } from '../models/StandardItem';
 import lodash from 'lodash';
+import { StandardItem } from '../models/StandardItem';
+import { StandardItemService } from '../services/StandardItemService';
 
 @JsonController('/page')
 export class PageController {
@@ -83,7 +83,6 @@ export class PageController {
         private postGalleryService: PostsGalleryService,
         private fulfillmentService: FulfillmentService,
         private needsService: NeedsService,
-        private stdItemService: StandardItemService,
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
         private userEngagementService: UserEngagementService,
@@ -94,7 +93,8 @@ export class PageController {
         private facebookService: FacebookService,
         private twitterService: TwitterService,
         private pageConfigService: PageConfigService,
-        private authenService: AuthenticationIdService
+        private authenService: AuthenticationIdService,
+        private stdItemService: StandardItemService
     ) { }
 
     // Find Page API
@@ -414,7 +414,7 @@ export class PageController {
                     * {token: string, expires_in: number as a second to expired, type: string as type of token} 
                     */
                     pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
-                } else if (pageAccessToken !== undefined) {
+                } else if(pageAccessToken !== undefined){
                     pageAccessToken = await this.facebookService.extendsAccessToken(pageAccessToken);
                 }
             } catch (err) {
