@@ -48,8 +48,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     public resDataPage: any;
     public cloneData: any;
     public uuid: boolean;
-    public selected: any; 
-    public paramsSub: Subscription;
+    public selected: any;  
 
     public links = [
         {
@@ -71,14 +70,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.routeActivated = routeActivated;
         this.dirtyCancelEvent = new EventEmitter();   
-        
-        this.paramsSub = this.routeActivated.params.subscribe(async (params) => { 
-            this.pageId = params['id'];  
-            // this.cloneData = this.pageId;
-            // if(this.cloneData !== this.pageId){ 
-            //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-            // }
-        }); 
+         
         this.selected = this.links[0].label; 
     }
 
@@ -86,8 +78,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     }
 
     public ngOnDestroy(): void {
-        super.ngOnDestroy();
-        this.paramsSub.unsubscribe();
+        super.ngOnDestroy(); 
     }
 
     isPageDirty(): boolean {
