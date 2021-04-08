@@ -347,4 +347,16 @@ export class ChatMessage extends AbstractPage implements OnInit {
       });
   }
 
+  
+  public TooltipClose($event) {
+
+    setTimeout(() => {
+
+      if ($event.toElement.className !== "ng-star-inserted") {
+        this.popupService.close(null);
+      }
+
+    }, 400);
+  }
+
 }

@@ -32,6 +32,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   @Input()
   public allPost: string = "ดูโพสต์";
   @Input()
+  public keyItem: string ;
+  @Input()
   public itemNeeds: any[];
   @Input()
   public isClose: boolean = false;
@@ -68,7 +70,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
-      this.getNeeds(); 
+      this.getNeeds();
     }, 650);
   }
   ngAfterViewInit(): void {
@@ -150,8 +152,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 5,
-    spaceBetween: 10,
+    slidesPerView: 6.4,
+    spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
     scrollbar: false,
@@ -161,19 +163,22 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 5,
+        slidesPerView: 4.6,
       },
       899: {
-        slidesPerView: 5,
+        slidesPerView: 3.3,
       },
       676: {
-        slidesPerView: 1.5,
+        slidesPerView: 2.6,
+      },
+      655: {
+        slidesPerView: 2.7,
       },
       566: {
-        slidesPerView: 1.5,
+        slidesPerView: 2.6,
       },
       479: {
-        slidesPerView: 1.5,
+        slidesPerView: 1.4,
       },
     },
   }

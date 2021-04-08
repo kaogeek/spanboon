@@ -117,8 +117,8 @@ export class AssetController {
     }
 
     /**
-     * @api {delete} /api/fulfillment/:id Delete Fulfillment API
-     * @apiGroup Fulfillment
+     * @api {delete} /api/temp Delete temp API
+     * @apiGroup Asset
      * @apiHeader {String} Authorization
      * @apiParamExample {json} Input
      * {
@@ -127,11 +127,11 @@ export class AssetController {
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     * "message": "Successfully Delete Fulfillment.",
+     * "message": "Successfully Delete temp.",
      * "status": "1"
      * }
-     * @apiSampleRequest /api/fulfillment/:id
-     * @apiErrorExample {json} Delete Fulfillment Error
+     * @apiSampleRequest /api/temp
+     * @apiErrorExample {json} Delete temp Error
      * HTTP/1.1 500 Internal Server Error
      */
     @Delete('/temp')

@@ -607,6 +607,7 @@
 @media (max-width: $xxlarge) {
     .choose-item {
         > .center {
+            min-height: 470px;
             > .center-left {
                 > .body-list-item {
                     .list-search-doing {

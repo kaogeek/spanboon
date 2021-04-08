@@ -13,6 +13,7 @@ import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
+import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -27,7 +28,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public hide = true;
   public url: any;
-  public indexPage: any;
+  public indexPage: any; 
   public email: string = '';
   public password: string = '';
   public isclickmenu: boolean;
@@ -43,15 +44,17 @@ export class MainPage extends AbstractPage implements OnInit {
 
   private observManager: ObservableManager;
   private routeActivated: ActivatedRoute;
+  private userAccessFacade: UserAccessFacade;
   loadLogin: boolean = false;
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog) {
+  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog ,userAccessFacade: UserAccessFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
     this.routeActivated = routeActivated;
+    this.userAccessFacade = userAccessFacade;
     this.data = {};
 
     this.observManager.subscribe('menu.click', (clickmenu) => {
@@ -78,14 +81,13 @@ export class MainPage extends AbstractPage implements OnInit {
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
         if (url === "/home" || '/' + path === "/page" || '/' + path === "/profile" || url === "/recommend") {
-          this.isPost = true;
+          this.isPost = true; 
         }
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
         }
       }
-    });
-
+    }); 
 
     this.observManager.createSubject('scroll.buttom');
     this.observManager.createSubject('scroll.fix');
@@ -96,6 +98,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     this.isLogin();
+    this.searchAccessPage();
 
     const dev = sessionStorage.getItem('isDev');
     if (dev) {
@@ -169,7 +172,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isdivtop = false;
       this.isPost = false;
     } else {
-      this.isPost = true;
+      this.isPost = true; 
       if ($(window).scrollTop() + $(window).height() == $(document).height()) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
@@ -253,7 +256,7 @@ export class MainPage extends AbstractPage implements OnInit {
     return this.user !== undefined && this.user !== null;
   }
 
-  public dialogPost() {
+  public async dialogPost() {
     if (this.isLogin()) {
       let dataName;
       if (this.user && this.user.name) {
@@ -264,17 +267,21 @@ export class MainPage extends AbstractPage implements OnInit {
         dataName = this.user.displayName
       }
 
+      
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
       this.data.isFulfill = false;
       this.data.modeDoIng = true;
       this.data.isMobileButton = true;
-      this.data.id = this.user.id;
+      this.data.id = this.user.id; 
+      this.data.accessDataPage = await this.searchAccessPage(); 
       if (this.router.url.split('/')[1] === 'page') {
         this.data.name = this.router.url.split('/')[2];
+        this.data.isSharePost = true;
       } else {
         this.data.name = dataName;
+        this.data.isSharePost = false;
       }
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
@@ -289,6 +296,10 @@ export class MainPage extends AbstractPage implements OnInit {
     } else {
       this.router.navigateByUrl('/login')
     }
+  }
+
+  public async searchAccessPage() {
+    return await this.userAccessFacade.getPageAccess();
   }
 
   private stopLoading(): void {

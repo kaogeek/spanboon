@@ -190,8 +190,8 @@
                                 <a style="pointer-events: none;">เพจ</a>
                                 <a #pageNameDiv style="position: relative;"
                                     (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
-                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" href="{{linkPage}}"
-                                    target="_blank">
+                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" (mouseleave)="TooltipClose($event)"
+                                    href="{{linkPage}}" target="_blank">
                                     {{pageName ? pageName:uniqueId}}
                                 </a>
                             </div>

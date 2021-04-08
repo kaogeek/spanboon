@@ -8,14 +8,14 @@
 import { SectionModel } from '../models/SectionModel';
 import { ContentModel } from '../models/ContentModel';
 import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
-import { LastestObjectiveProcessorData } from './data/LastestObjectiveProcessorData';
+import { ObjectiveProcessorData } from './data/ObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
-// import { PostsService } from '../services/PostsService';
+import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
-// import moment from 'moment';
+import moment from 'moment';
 
-export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
+export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
     private DEFAULT_SEARCH_LIMIT = 5;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -23,12 +23,12 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        // private postsService: PostsService,
+        private postsService: PostsService,
     ) {
         super();
     }
 
-    public setData(data: LastestObjectiveProcessorData): void {
+    public setData(data: ObjectiveProcessorData): void {
         this.data = data;
     }
 
@@ -134,71 +134,70 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 const hashtagNames = [];
                 const hastagRowMap = {};
                 for (const row of searchResult) {
-                    const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
-                    const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
+                    if (row) {
+                        const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
+                        const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
-                    if (lastestDate === null) {
-                        lastestDate = row.createdDate;
-                    }
-                    const contentModel = new ContentModel();
-                    contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
-                    contentModel.subtitle = row.name;
-                    contentModel.iconUrl = row.iconURL;
-                    // contentModel.commentCount = row.commentCount;
-                    // contentModel.repostCount = row.repostCount;
-                    // contentModel.shareCount = row.shareCount;
-                    // contentModel.likeCount = row.likeCount;
-                    // contentModel.viewCount = row.viewCount;
+                        if (lastestDate === null) {
+                            lastestDate = row.createdDate;
+                        }
+                        const contentModel = new ContentModel();
+                        contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
+                        contentModel.subtitle = row.name;
+                        contentModel.iconUrl = row.iconURL;
 
-                    // if (showUserAction) {
-                    //     const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
-                    //     contentModel.isLike = userAction.isLike;
-                    //     contentModel.isRepost = userAction.isRepost;
-                    //     contentModel.isComment = userAction.isComment;
-                    //     contentModel.isShare = userAction.isShare;
-                    // }
+                        hastagRowMap[row.hashTag] = row;
+                        hashtagNames.push(row.hashTag);
 
-                    hastagRowMap[row.hashTag] = row;
-                    hashtagNames.push(row.hashTag);
+                        contentModel.owner = {};
+                        if (page !== undefined) {
+                            contentModel.owner = this.parsePageField(page);
+                        }
 
-                    contentModel.owner = {};
-                    if (page !== undefined) {
-                        contentModel.owner = this.parsePageField(page);
-                    }
+                        if (row.hashTagObj.length > 0) {
 
-                    result.contents.push(contentModel);
-                }
-                result.dateTime = lastestDate;
+                            // saerch all post with objective hashtag
+                            if (hashtagNames.length > 0) {
+                                const today = moment().toDate();
+                                const postMatchStmt: any = {
+                                    isDraft: false,
+                                    deleted: false,
+                                    hidden: false,
+                                    startDateTime: { $lte: today },
+                                    // objectiveTag: new ObjectID(row.hashTagObj[0].name)
+                                    objectiveTag: row.hashTagObj[0].name
+                                };
+                                const postStmt = [
+                                    { $match: postMatchStmt },
+                                    { $limit: limit },
+                                    { $sort: { createdDate: -1 } },
+                                    { $addFields: { objectiveId: { $toObjectId: '$objective' } } },
+                                    {
+                                        $lookup: {
+                                            from: 'PageObjective',
+                                            localField: 'objectiveId',
+                                            foreignField: '_id',
+                                            as: 'objectives'
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            story: 0
+                                        }
 
-                /*
-                // saerch all post with objective hashtag
-                if (hashtagNames.length > 0) {
-                    console.log(hashtagNames);
-                    const today = moment().toDate();
-                    const postMatchStmt: any = {
-                        isDraft: false,
-                        deleted: false,
-                        hidden: false,
-                        startDateTime: { $lte: today },
-                        objective: { $gt: {}} // search only objective not null
-                    };
-                    const postStmt = [
-                        { $match: postMatchStmt },
-                        { $limit: limit },
-                        { $sort: { createdDate: -1 } },
-                        { $addFields: { objectiveId: { $toObjectId: '$objective' }}},
-                        {
-                            $lookup: {
-                                from: 'PageObjective',
-                                localField: 'objectiveId',
-                                foreignField: '_id',
-                                as: 'objectives'
+                                    }
+                                ];
+                                const postAggregate = await this.postsService.aggregate(postStmt);
+                                contentModel.post = postAggregate;
                             }
-                        },
-                    ];
-                    const postAggregate = await this.postsService.aggregate(postStmt);
-                    console.log(postAggregate);
-                }*/
+
+                        }
+
+                        result.contents.push(contentModel);
+                    }
+                }
+
+                result.dateTime = lastestDate;
 
                 resolve(result);
             } catch (error) {

@@ -18,7 +18,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 15pt;
+    padding: 10pt 12pt;
     &.active {
       justify-content: unset;
     }
@@ -231,7 +231,7 @@
 
   > .dropdown {
     position: absolute;
-    top: 12pt;
+    top: 8pt;
     // top: 7pt;
     right: 14px;
     width: 30px;
@@ -251,7 +251,7 @@
     > .mat-button-wrapper {
       > .material-icons {
         font-size: $font-size-icon-large;
-        font-family: 'Material Icons' !important;
+        font-family: "Material Icons" !important;
       }
     }
   }
@@ -451,8 +451,9 @@
     }
 
     > .tag_div {
+      display: flex;
       width: 100%;
-      display: inline;
+      margin-top: 10pt;
 
       > .h_tag_list {
         width: max-content;
@@ -475,7 +476,9 @@
       border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
       margin-top: 15px;
       padding: 8pt 0;
-
+      &.active {
+        justify-content: flex-end;
+      }
       > .left {
         flex: 1 1 0%;
         margin-right: 15pt;

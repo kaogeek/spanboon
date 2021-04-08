@@ -121,12 +121,11 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
     const result = this.engagementService.getEngagement(event, data.label, "hashTag");
     const dataEngagement: UserEngagement = this.engagementService.engagementPost(result.contentType, result.contentId, result.dom);
-
-    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
-      console.log('engagement ', res)
+    console.log('vdataEngagement ', dataEngagement)
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
     }).catch((err: any) => {
       console.log('err ', err)
-    }); 
+    });
   }
 
   public clickLoadmore() {

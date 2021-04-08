@@ -591,16 +591,22 @@
             width: 100%;
             height: auto;
             margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             @include font-size-9($font-content-light);
           }
           .ct-background-image {
             width: 100%;
             margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             background-size: 100%;
             height: auto;
           }
           .ct-background-video {
             width: 100%;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
             margin: 10px 0px;
             height: auto;
             display: flex;
@@ -767,59 +773,61 @@
 }
 
 @media (max-width: $xlarge) {
-  .content {
-    width: 95% !important;
-  }
-  .box-count {
-    display: flex !important;
-    @include font-size-10($font-head-500);
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    height: 40px;
-    margin: 0px 10px;
-    svg {
-      margin: 0px 6px;
+  .story {
+    .content {
+      width: 95% !important;
     }
-  }
-  .text-count-desktop {
-    display: none !important;
-  }
-  .left {
-    width: 100% !important;
-  }
-  .right {
-    display: none !important;
-  }
-  .type-display {
-    @include font-size-10($font-head-500);
-  }
-  .time-display {
-    @include font-size-10($font-head-300);
-  }
-  .ct-background-text {
-    text-align: center !important;
-  }
-  .display-mobile {
-    display: block !important;
-  }
-
-  .post-story-not-found {
-    > .box {
-      > .text {
-        @include font-size-6($font-head-500);
-        text-align: center;
+    .box-count {
+      display: flex !important;
+      @include font-size-10($font-head-500);
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: 40px;
+      margin: 0px 10px;
+      svg {
+        margin: 0px 6px;
       }
-      > .sub-text {
-        @include font-size-9($font-head-400);
-        text-align: center;
-        color: #a5a5a6;
-        display: unset;
-        > a {
-          color: $brandcolor2;
-          cursor: unset;
+    }
+    .text-count-desktop {
+      display: none !important;
+    }
+    .left {
+      width: 100% !important;
+    }
+    .right {
+      display: none !important;
+    }
+    .type-display {
+      @include font-size-10($font-head-500);
+    }
+    .time-display {
+      @include font-size-10($font-head-300);
+    }
+    .ct-background-text {
+      text-align: center !important;
+    }
+    .display-mobile {
+      display: block !important;
+    }
+
+    .post-story-not-found {
+      > .box {
+        > .text {
+          @include font-size-6($font-head-500);
+          text-align: center;
         }
-        > spanboon-button {
+        > .sub-text {
+          @include font-size-9($font-head-400);
+          text-align: center;
+          color: #a5a5a6;
+          display: unset;
+          > a {
+            color: $brandcolor2;
+            cursor: unset;
+          }
+          > spanboon-button {
+          }
         }
       }
     }

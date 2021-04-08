@@ -63,7 +63,7 @@
                                 </ng-container>
                                 <ng-template #elseOwner>
                                     <div class="wrapper-cover-image image-not-edit">
-                                        <img class="image-cover" alt="">
+                                        <img class="image-cover" src="{{BACKGROUND_IMAGE}}" alt="">
                                     </div>
                                 </ng-template>
                             </ng-container>
@@ -379,10 +379,11 @@
                                     </a>
                                 </ng-template>
 
-                                <ng-container *ngIf="resDataPage && resDataPage.location; else elseTemplateLocation">
-                                    <a target="_blank" class="contact-social">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="11.352" height="16.146"
-                                            viewBox="0 0 11.352 16.146">
+                                <ng-container *ngIf="localtion; else elseTemplateLocation">
+                                    <a target="_blank" href="{{localtion}}" class="contact-social"
+                                    [class.active]="localtion !== undefined && localtion !== null && localtion !== '' ? true : false">
+                                        <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
+                                            height="16.146" viewBox="0 0 11.352 16.146">
                                             <g id="placeholder" transform="translate(-76)">
                                                 <path id="Path_3258" data-name="Path 3258"
                                                     d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
@@ -396,8 +397,8 @@
                                 </ng-container>
                                 <ng-template #elseTemplateLocation>
                                     <a class="contact-social">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="11.352" height="16.146"
-                                            viewBox="0 0 11.352 16.146">
+                                        <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
+                                            height="16.146" viewBox="0 0 11.352 16.146">
                                             <g id="placeholder" transform="translate(-76)">
                                                 <path id="Path_3258" data-name="Path 3258"
                                                     d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
@@ -408,10 +409,9 @@
                                             </g>
                                         </svg>
                                     </a>
-                                </ng-template>
-
+                                </ng-template> 
                                 <ng-container *ngIf="resDataPage && resDataPage.mobileNo; else elseTemplateMobile">
-                                    <a target="_blank" class="contact-social"
+                                    <a href="tel:{{resDataPage.mobileNo}}" class="contact-social"
                                         [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
                                         <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
                                             height="12.552" viewBox="0 0 12.552 12.552">
@@ -430,12 +430,13 @@
                                                 fill="#ececec" />
                                         </svg>
                                     </a>
-                                </ng-template>
+                                </ng-template> 
 
-                                <ng-container *ngIf="resDataPage && resDataPage.message  ; else elseTemplateMessage">
-                                    <a target="_blank" class="contact-social">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18.87" height="13.479"
-                                            viewBox="0 0 18.87 13.479">
+                                <ng-container *ngIf="resDataPage && resDataPage.email; else elseTemplateMessage">
+                                    <a href="mailto:{{resDataPage.email}}" target="_blank" class="contact-social"
+                                    [class.active]="resDataPage && resDataPage.email && resDataPage.email !== undefined && resDataPage.email !== null && resDataPage.email !== '' ? true : false">
+                                        <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
+                                            height="13.479" viewBox="0 0 18.87 13.479">
                                             <g id="email" transform="translate(0 -68.267)">
                                                 <g id="Group_1359" data-name="Group 1359"
                                                     transform="translate(0.674 68.267)">
@@ -461,8 +462,8 @@
                                 </ng-container>
                                 <ng-template #elseTemplateMessage>
                                     <a class="contact-social">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18.87" height="13.479"
-                                            viewBox="0 0 18.87 13.479">
+                                        <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
+                                            height="13.479" viewBox="0 0 18.87 13.479">
                                             <g id="email" transform="translate(0 -68.267)">
                                                 <g id="Group_1359" data-name="Group 1359"
                                                     transform="translate(0.674 68.267)">
@@ -599,14 +600,11 @@
 
                     <div class="wrapper-feed-fan-page">
                         <div class="do-tablet">
-                            <ng-container
-                                *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                <ng-container>
-                                    <card-item [isDevelop]="true" [itemData]="resDataPage.pageObjectives"
-                                        [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
-                                    </card-item>
-                                </ng-container>
-                            </ng-container>
+                            <!-- <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">  -->
+                            <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
+                                [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
+                            </card-item>
+                            <!-- </ng-container> -->
                         </div>
 
                         <div *ngIf="!showLoading" class="wrapper-feed-menu">
@@ -630,13 +628,14 @@
                         <div *ngIf="!showLoading" class="wrapper-feed">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
                                 <div *ngIf="!isPost" class="main-feed">
+                                    {{isNotAccess}}
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
                                         [isShowTablet]="'true'" [isShowMaxWidth]="'899'"
                                         (createPost)="createPost($event)" style="display: block; padding: 5pt 0;">
                                     </box-post>
-                                    <div class="title-feed" (click)="openDialogPost()">
+                                    <div class="title-feed" (click)="openDialogPost(PLATFORM_STORY_TALE)">
                                         {{ resPost && resPost.posts && resPost.posts.length > 0 && !isLoadingClickTab ?
                                         PLATFORM_STORY_TALE :
                                         'คุณสามารถเพิ่ม'+PLATFORM_STORY_TALE+'ได้ที่นี่' }}
@@ -649,7 +648,7 @@
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
                                             <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage._id+'/post/' "
+                                                    [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
@@ -670,12 +669,12 @@
                                 <div class="main-feed">
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage"  
+                                            <post-data [itemPost]="itemPost" [user]="userImage"
                                                 (action)="actionComment($event,index)" (comment)="createComment($event)"
                                                 [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage._id+'/post/' "
-                                                (delete)="deletePost($event,index)"
-                                                (engagement)="engagement($event)"></post-data>
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
+                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
+                                            </post-data>
                                         </ng-container>
                                     </ng-container>
                                 </div>
@@ -683,11 +682,11 @@
                             <div class="side-feed" #sidefeedHeight>
                                 <ng-container
                                     *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                    <ng-container>
-                                        <card-item [itemData]="resDataPage.pageObjectives" [isDoIng]="'true'"
-                                            [statusLable]="'กำลังทำอยู่'"></card-item>
-                                    </ng-container>
+                                    <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
+                                        [statusLable]="'กำลังทำอยู่'"></card-item>
                                 </ng-container>
+                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"
+                                (submitFollow)="clickFollow()"></recommend-card>
                             </div>
                         </div>
                         <ng-container *ngIf="isCheck === true">

@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -73,6 +73,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private userEngagementFacade: UserEngagementFacade;
   private engagementService: Engagement;
   protected observManager: ObservableManager;
+  private recommendFacade: RecommendFacade;
+  private aboutPageFacade: AboutPageFacade;
 
   public resDataPage: any;
   public resPost: any = {};
@@ -113,6 +115,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public pathPostId: string;
   public isCheck: boolean = true;
   public countScroll: number;
+  public dataRecommend: any;
+  public resAboutPage: any;
+  public latitudeAboutPage: any;
+  public longtitudeAboutPage: any;
+  public localtion: any;
 
   public CheckPost: boolean = true;
 
@@ -123,7 +130,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -137,6 +144,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.routeActivated = routeActivated;
     this.userEngagementFacade = userEngagementFacade;
     this.engagementService = engagementService;
+    this.recommendFacade = recommendFacade;
+    this.aboutPageFacade = aboutPageFacade;
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
@@ -266,10 +275,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     super.ngOnInit();
     this.checkLoginAndRedirection();
     this.setTab();
-    this.setCop();
+    this.setCop(); 
     $(window).resize(() => {
       this.setTab();
     });
+    this.getRecommend();
 
     if (this.isLogin()) {
       this.getProfileImage();
@@ -339,6 +349,34 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     } else {
       return this.router.navigateByUrl('/page/' + this.url);
     }
+  } 
+
+  public searchAboutPage() {
+    let limit = 30;
+    let offset = SEARCH_OFFSET;
+    this.aboutPageFacade.searchPageAbout(this.resDataPage.id, offset, limit).then((res) => {
+      if (res && res.length > 0) {
+        this.resAboutPage = res; 
+        for (let data of this.resAboutPage) {
+          if (data.label === 'ละติจูด') {
+            this.latitudeAboutPage = data; 
+          }
+          if (data.label === 'ลองจิจูด') {
+            this.longtitudeAboutPage = data; 
+          }
+          if(this.latitudeAboutPage && this.latitudeAboutPage.value !== '' && this.longtitudeAboutPage && this.longtitudeAboutPage.value !== ''){
+            this.localtion = 'https://www.google.com/maps/search/?api=1&query='+this.latitudeAboutPage.value+','+this.longtitudeAboutPage.value;
+          }
+        }
+      }
+    }).catch((err) => {
+      console.log('error ', err)
+      if (err.error.status === 0) {
+        if (err.error.message === 'Unable got Page') {
+          this.showAlertDialog('ไม่พบเพจ');
+        }
+      }
+    });
   }
 
   public searchPostPageType(data, offset?: boolean) {
@@ -502,13 +540,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.pageFacade.getAccess(pageId).then((res: any) => {
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true;
+          this.isNotAccess = true; 
         }
       }
 
-    }).catch((err: any) => {
+    }).catch((err: any) => { 
       if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false;
+        this.isNotAccess = false; 
       }
     })
   }
@@ -721,6 +759,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         } else if (this.resDataPage.displayName) {
           this.name = this.resDataPage.displayName
         }
+        this.searchAboutPage();
 
         setTimeout(() => {
           this.isLoading = false;
@@ -779,7 +818,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.isLoading = false
       }
     }).catch((err: any) => {
-      if (err.error.status === 0) {
+      console.log('err ', err)
+      if (err && err.error && err.error.status === 0) {
         if (err.error.message === 'Unable got Asset') {
           if (myType === "image") {
             Object.assign(this.resDataPage, { imageBase64: '' });
@@ -792,6 +832,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     });
   }
+
+  public getRecommend() {
+    let limit: number = 3;
+    let offset: number = 0;
+    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+      this.dataRecommend = res.data;
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
+  }
+
   public redirectSetting() {
     if (this.resDataPage.pageUsername !== undefined && this.resDataPage.pageUsername !== '' && this.resDataPage.pageUsername !== null) {
       return this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
@@ -914,28 +965,30 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public openDialogPost() {
-    let data = {
-      isListPage: true,
-      isHeaderPage: true,
-      isEdit: false,
-      isFulfill: false,
-      modeDoIng: true,
-      isMobileButton: true,
-      name: this.resDataPage
-    }
-
-    const dialogRef = this.dialog.open(DialogPost, {
-      width: 'auto',
-      data: data,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+  public openDialogPost(text?: any) { 
+    if (text !== 'เรื่องราว') {
+      let data = {
+        isListPage: true,
+        isHeaderPage: true,
+        isEdit: false,
+        isFulfill: false,
+        modeDoIng: true,
+        isMobileButton: true,
+        name: this.resDataPage
       }
-      this.stopLoading();
-    });
+
+      const dialogRef = this.dialog.open(DialogPost, {
+        width: 'auto',
+        data: data,
+        disableClose: true,
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== undefined) {
+        }
+        this.stopLoading();
+      });
+    }
   }
 
   public showDialogGallery(data) {
@@ -1329,11 +1382,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     const dataEngagement: UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
 
     this.userEngagementFacade.create(dataEngagement).then((res: any) => {
-      console.log('engagement ', res)
     }).catch((err: any) => {
       console.log('err ', err)
     })
-    console.log('engagement ', dataEngagement)
   }
 }
 

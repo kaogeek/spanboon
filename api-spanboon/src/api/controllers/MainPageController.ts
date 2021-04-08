@@ -26,6 +26,7 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { LastestLookingSectionProcessor } from '../processors/LastestLookingSectionProcessor';
 import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
+import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { UserRecommendSectionProcessor } from '../processors/UserRecommendSectionProcessor';
@@ -120,6 +121,16 @@ export class MainPageController {
             limit: 4,
             showUserAction: true
         });
+
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+        objectiveProcessor.setData({
+            userId
+        });
+        objectiveProcessor.setConfig({
+            showUserAction: true
+        });
+
+        const objectiveSectionModel = await objectiveProcessor.process();
         const userFollowSectionModel = await userFollowProcessor.process();
         userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
         userFollowSectionModel.isList = true;
@@ -167,6 +178,7 @@ export class MainPageController {
         // const result: any = this.getResponsesData();
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
+        result.objectiveEvents = objectiveSectionModel;
         result.lastest = lastestLookSectionModel;
         result.looking = stillLKSectionModel;
         result.viewSection = userRecSectionModel;
@@ -1031,4 +1043,4 @@ export class MainPageController {
 
         return userResult;
     }
-} 
+}

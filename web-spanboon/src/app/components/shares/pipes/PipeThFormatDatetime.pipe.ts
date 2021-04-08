@@ -17,14 +17,16 @@ export class PipeThFormatDatetime implements PipeTransform {
         if (value) {
             const seconds = new Date(value);
 
-            const result = seconds.toLocaleDateString('th-TH', {
-                year: 'numeric',
+            const date = seconds.toLocaleDateString('th-TH', {
                 month: 'long',
                 day: 'numeric',
-                weekday: 'long',
             })
 
-            return result;
+            const time = seconds.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+
+            const dateTime = (date + " เวลา " + time + " น.")
+
+            return dateTime;
         }
 
     }

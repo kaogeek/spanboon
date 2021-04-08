@@ -9,13 +9,18 @@
     <div class="concerned-text-h">
         <span>ที่เกี่ยวข้อง</span>
     </div>
-    <div *ngFor="let hashtag of dataStoryHashtag;let index = index" class="concerned-text">
-        <span class="text-top">กำลังมาแรงมากๆ</span>
-        <span class="text-center">{{hashtag.title}}</span>
+    <div (click)="clickDataSearch(hashtag.title)" *ngFor="let hashtag of dataStoryHashtag;let index = index"
+        class="concerned-text">
+        <!-- <span class="text-top">กำลังมาแรงมากๆ</span> -->
+        <a class="text-center">{{hashtag.title}}</a>
         <div class="text-bottom">
-            <span style="margin-right: 10px;">{{likeCount}} ถูกใจ</span>
+            <span style="margin-right: 10px;">{{hashtag.commentCount}} ความเห็น</span>
             <span class="drot">•</span>
-            <span style="margin-left: 10px;">{{shareCount}} บอกต่อ</span>
+            <span style="margin: 0px 10px;">{{hashtag.repostCount}} บอกต่อ</span>
+            <span class="drot">•</span>
+            <span style="margin: 0px 10px;">{{hashtag.likeCount}} ถูกใจ</span>
+            <span class="drot">•</span>
+            <span style="margin: 0px 10px;">{{hashtag.shareCount}} แชร์</span>
         </div>
     </div>
 </div>
