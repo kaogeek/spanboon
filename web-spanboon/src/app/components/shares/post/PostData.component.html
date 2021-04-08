@@ -24,7 +24,7 @@
                 </button>
             </mat-menu>
         </ng-container>
-    </ng-container> 
+    </ng-container>
 
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
         <div class="left"
@@ -43,7 +43,8 @@
                             </ng-template>
                         </ng-container>
                         <ng-template #elseImage>
-                            <ng-container *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
+                            <ng-container
+                                *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
                                 <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
                                     alt="">
                             </ng-container>
@@ -74,7 +75,7 @@
                                     <div class="icon-feed looking"></div>
                                     <span>
                                         {{PLATFORM_NEEDS_TEXT}}
-                                    </span> 
+                                    </span>
                                 </ng-template>
                                 <div class="post-to">
                                     <a href={{linkPost}} target="_blank"
@@ -101,7 +102,8 @@
                                         </a>
                                     </ng-container> -->
                                     <ng-container *ngIf="isUserPage; else UserPage">
-                                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName ||
+                                            itemPost.ownerUser.name}}
                                             ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                                     </ng-container>
                                     <ng-template #UserPage>
@@ -156,8 +158,8 @@
                             </svg>
                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                         </div>
-                    </a> 
-                    <ng-container *ngIf="isUserPage"> 
+                    </a>
+                    <ng-container *ngIf="isUserPage">
                         <a class="post-name" target="_blank"
                             (click)="onClickEngagement($event, itemPost._id, 'profile')"
                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
@@ -168,7 +170,8 @@
                 </div>
             </ng-container>
         </div>
-        <div class="repost-re" *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+        <div class="repost-re"
+            *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
             <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
                 viewBox="0 0 56.105 47.887">
                 <path id="Path_3601" data-name="Path 3601"
@@ -188,7 +191,7 @@
                 </ng-template>
             </ng-template>
         </div>
-    </div>  
+    </div>
     <div class="fulfill-profile" *ngIf="itemPost.type === 'FULFILLMENT'"
         [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
@@ -342,7 +345,7 @@
             (clickFulfill)="fulfillEngagement($event , itemPost._id)"
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
-        <!-- shared post to facebook or twitter --> 
+        <!-- shared post to facebook or twitter -->
         <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
             <div class="social-share">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
@@ -352,7 +355,8 @@
                         fill="#a5a5a6" />
                 </svg>
 
-                <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length === 1; else elseTemplateSocialPost">
+                <ng-container
+                    *ngIf="itemPost.socialPosts && itemPost.socialPosts.length === 1; else elseTemplateSocialPost">
                     <span>โพสต์นี้ถูกเผยแพร่ไปยัง</span>
                     <ng-container *ngFor="let item of itemPost.socialPosts">
                         <ng-container *ngIf="item.socialType === 'TWITTER'; else elseTemplateShareSocial">
@@ -408,7 +412,7 @@
                     [nameObjective]="itemPost.objectiveTag" (emergencyClick)="clickDevelop($event , itemPost)"
                     (objectiveClick)="clickDevelop($event , itemPost)"></tag-event>
             </div>
-            <div class="right">  
+            <div class="right">
                 <control-action [isAction]="'true'" [comment]="itemPost.commentCount ? itemPost.commentCount : 0 "
                     [reboon]="itemPost.repostCount !== -1 ? itemPost.repostCount : 0"
                     [like]="itemPost.likeCount ? itemPost.likeCount : 0"
