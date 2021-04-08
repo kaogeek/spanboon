@@ -32,6 +32,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   @Input()
   public allPost: string = "ดูโพสต์";
   @Input()
+  public keyItem: string ;
+  @Input()
   public itemNeeds: any[];
   @Input()
   public isClose: boolean = false;
@@ -150,8 +152,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 4.6,
-    spaceBetween: 10,
+    slidesPerView: 6.4,
+    spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
     scrollbar: false,

@@ -65,6 +65,7 @@
 
         > .swiper-wrapper {
             > .swiper-slide {
+                width: auto !important;
                 .wp-block-cover {
                     position: relative;
                     background-size: cover;

@@ -668,7 +668,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public async ngOnInit(): Promise<void> {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
-    await this.getMainPageModel();
+    await this.getMainPageModel(this.userCloneDatas.id);
     // console.log('this.emergencyEvents', this.emergencyEvents);
     // console.log('this.doingEvents', this.doingEventsNo1);
     // console.log('this.emergencyEventsArrTitle', this.emergencyEventsArrTitle);
@@ -697,8 +697,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
 
     this.doingEventsNo1 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 1);
-    this.doingEventsNo2 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 2);
-    this.doingEventsNo3 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 3);
+    this.doingEventsNo2 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 1);
+    this.doingEventsNo3 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 1);
     this.emergencyEventsArrTitle = this.getEmergencyEventsTitle(this.pageModel.emergencyEvents.contents);
 
   }
@@ -777,135 +777,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
           },
 
         ]
-      }, {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "/file/5f8e46d9a554f760422bc274",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      },
-      {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "/file/5f8e46d9a554f760422bc274",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      },
-      {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
       }
-
-
-
       ]
     }
 

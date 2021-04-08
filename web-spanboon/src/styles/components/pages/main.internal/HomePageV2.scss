@@ -122,7 +122,6 @@
                 }
             }
             > .body {
-                display: flex;
                 margin: 25px 0px;
                 > .card {
                 }
@@ -151,11 +150,18 @@
             }
             > .body {
                 display: flex;
+                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
                 > .isDesktop {
                     display: block;
+                }
+                > .footer_mobile {
+                    display: none;
+                }
+                > .footer_mobile_button {
+                    display: none;
                 }
             }
         }
@@ -181,11 +187,18 @@
             }
             > .body {
                 display: flex;
+                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
                 > .isDesktop {
                     display: block;
+                }
+                > .footer_mobile {
+                    display: none;
+                }
+                > .footer_mobile_button {
+                    display: none;
                 }
             }
         }
@@ -211,11 +224,18 @@
             }
             > .body {
                 display: flex;
+                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
                 > .isDesktop {
                     display: block;
+                }
+                > .footer_mobile {
+                    display: none;
+                }
+                > .footer_mobile_button {
+                    display: none;
                 }
             }
         }
@@ -306,19 +326,160 @@
     .hoem_page_v2 > .hoem_page_body {
         width: 900px;
     }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .left {
+        padding: 15px;
+        width: calc(500px - 30px);
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .right {
+        width: 400px;
+    }
 }
 
 @media (max-width: $lmedium) {
     .hoem_page_v2 > .hoem_page_body {
-        width: 800px;
+        width: 100vw;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .right {
+        width: 300px;
     }
 }
 
 @media (max-width: $medium) {
-}
+    .hoem_page_v2 > .hoem_page_body > .around_section {
+        margin: 20px 0px;
+        padding: 10px 0px;
+        overflow: hidden;
+        width: calc(100% - 20px);
+    }
+    .hoem_page_v2 > .hoem_page_body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .right {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .left {
+        padding: 15px;
+        width: calc(90% - 30px);
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top > .right {
+        width: calc(90% - 30px);
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .top > .line {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .top > .more {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .top > .line {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .top > .more {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .top > .line {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .top > .more {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section {
+        border: 1px solid #00000024;
+        border-radius: 5px;
+        width: 90%;
+        padding: 10px;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section {
+        border: 1px solid #00000024;
+        border-radius: 5px;
+        width: 90%;
+        padding: 10px;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section {
+        border: 1px solid #00000024;
+        border-radius: 5px;
+        width: 90%;
+        padding: 10px;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .body > .footer_mobile {
+        border-top: 1px solid #00000024;
+        width: 100%;
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        height: 100px;
+        justify-content: center;
+        align-items: center;
+        > span {
+            @include font-size-10($font-head-500);
+        }
+    }
 
-@media (max-width: $small + 97px) {
-}
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .body > .footer_mobile_button {
+        display: block;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile {
+        border-top: 1px solid #00000024;
+        width: 100%;
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        height: 100px;
+        justify-content: center;
+        align-items: center;
+        > span {
+            @include font-size-10($font-head-500);
+        }
+    }
 
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile_button {
+        display: block;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile {
+        border-top: 1px solid #00000024;
+        width: 100%;
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        height: 100px;
+        justify-content: center;
+        align-items: center;
+        > span {
+            @include font-size-10($font-head-500);
+        }
+    }
+
+    .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile_button {
+        display: block;
+        width: 100%;
+    }
+}
 @media (max-width: $small) {
 }
