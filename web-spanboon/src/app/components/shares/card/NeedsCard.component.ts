@@ -45,6 +45,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
+  @Input()
+  public isNeedBoxPost: boolean = true;
 
   @Output()
   public close: EventEmitter<any> = new EventEmitter();

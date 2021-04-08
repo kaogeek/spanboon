@@ -7,7 +7,7 @@
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
 import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade } from '../../../services/services';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileHandle } from '../../shares/directive/directives';
@@ -60,7 +60,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private recommendFacade: RecommendFacade;
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
-  public dialog: MatDialog;
+  public dialog: MatDialog; 
 
   public isLoading: boolean;
   public isEditCover: boolean;
@@ -88,11 +88,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public name: any;
   public splitTpyeClone: any;
   public dataRecommend: any;
+  public selectedIndex: number;
   public pathPostId: string;
 
   public postId: any
   public userCloneDatas: any
-  public Tab: boolean = true; 
+  public Tab: boolean = true;
   public CheckPost: boolean = true;
 
   private coverImageoldValue = 50;
@@ -105,7 +106,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement,userEngagementFacade: UserEngagementFacade) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -119,10 +120,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.postCommentFacade = postCommentFacade;
     this.recommendFacade = recommendFacade;
     this.engagementService = engagementService;
-    this.userEngagementFacade = userEngagementFacade;
+    this.userEngagementFacade = userEngagementFacade; 
     this.msgUserNotFound = false;
     this.isFiles = false;
-    this.showLoading = true
+    this.showLoading = true;
     this.userImage = {};
     this.resPost.posts = [];
 
@@ -177,8 +178,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           const splitTextId = replaceCommentURL.split('/')[0];
           this.subPage = replaceCommentURL.split('/')[1];
           if (splitTextId !== undefined && splitTextId !== null) {
-            this.url = splitTextId; 
-            if (!this.resProfile) { 
+            this.url = splitTextId;
+            if (!this.resProfile) {
               this.showProfile(this.url);
             } else {
               if (this.resProfile && this.resProfile.uniqueId !== splitTextId && this.resProfile.id !== splitTextId) {
@@ -198,7 +199,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
           const pathPost = url && url.split('/')[3];
           this.pathPostId = url && url.split('/')[4];
-          if (pathPost !== undefined && pathPost !== null) { 
+          if (pathPost !== undefined && pathPost !== null) {
             this.initPage(pathPost)
           }
         }
@@ -219,8 +220,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.getRecommend();
     if (this.isLogin()) {
       this.getProfileImage();
-    } 
-// this.searchPostById('6051c688fb3585b175ab4765')
+    }
+    // this.searchPostById('6051c688fb3585b175ab4765')
     $(window).resize(() => {
       this.setTab();
     });
@@ -440,7 +441,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public showProfile(url: string): void {
-    this.isLoading = true; 
+    this.isLoading = true;
     this.profileFacade.getProfile(url).then((res) => {
       if (res.status === 1 && res.data) {
         let user = {
@@ -836,23 +837,83 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     document.getElementById("feed-to").scrollIntoView();
   }
 
-  public clickFollowUser() {
+  public async clickFollowUser() {
+    let pageId = this.resProfile.id;
+    const follow = await this.followPage(pageId);
+    if (follow) {
+      if (follow.message === "Unfollow User Success") {
+        this.resProfile.isFollow = follow.data.isFollow
+        this.resProfile.followers = follow.data.followers;
+      } else {
+        this.resProfile.isFollow = follow.data.isFollow;
+        this.resProfile.followers = follow.data.followers;
+      }
+    }
+  }
+
+
+  public async clickFollow(data: any) {
+    if (data.recommed.type === 'USER') {
+      const followUser = await this.followUser(data.recommed._id);
+      if (followUser) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followUser.message === "Unfollow User Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
+              dialog.afterClosed().subscribe((res) => {
+                console.log('res ',res)
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { follow: true });
+                }
+                this.dialog.closeAll();
+              });
+            } else {
+              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+            }
+          }
+        }
+        this.selectedIndex = data.index;
+      }
+    } else {
+      const followPage = await this.followPage(data.recommed._id);
+      if (followPage) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followPage.message === "Unfollow Page Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { follow: true });
+                }
+                this.dialog.closeAll();
+              });
+            } else {
+              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+            }
+          }
+        }
+        this.selectedIndex = data.index;
+      }
+    }
+  }
+
+  public async followPage(pageId: string) {
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/profile/" + this.resProfile.id);
     } else {
-      let userId = this.resProfile.id;
-      this.profileFacade.follow(userId).then((res) => {
-        if (res.message === "Unfollow User Success") {
-          this.resProfile.isFollow = res.data.isFollow
-          this.resProfile.followers = res.data.followers;
-        } else {
-          this.resProfile.isFollow = res.data.isFollow;
-          this.resProfile.followers = res.data.followers;
-        }
+      return this.pageFacade.follow(pageId);
+    }
+  }
 
-      }).catch((err: any) => {
-        console.log(err);
-      })
+  public async followUser(userId: string) {
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/profile/" + this.resProfile.id);
+    } else {
+      return this.profileFacade.follow(userId);
     }
   }
 
@@ -1098,14 +1159,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.pageUser.reverse();
     }).catch((err: any) => {
     });
-    if(this.pageUser){
+    if (this.pageUser) {
       for (let p of this.pageUser) {
         var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
           p.img64 = res.data
         }).catch((err: any) => {
         });
       }
-    } 
+    }
   }
 
 
@@ -1146,7 +1207,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     search.count = false;
     search.whereConditions = { _id: postId };
     this.postFacade.search(search).then((res: any) => {
-      this.resPost.posts = res; 
+      this.resPost.posts = res;
       if (this.resProfile.length === 0) {
         this.msgUserNotFound = true;
         // this.labelStatus = 'ไม่พบโพสต์';
@@ -1181,17 +1242,17 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             });
           }
         }
-      }   
+      }
     }).catch((err: any) => {
     });
   }
 
-  public engagement(event) { 
-    const dataEngagement : UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
-    this.userEngagementFacade.create(dataEngagement).then((res : any)=>{ 
-    }).catch((err : any)=>{
-      console.log('err ',err)
-    }) 
+  public engagement(event) {
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost(event.contentType, event.contentId, event.dom);
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+    }).catch((err: any) => {
+      console.log('err ', err)
+    })
   }
 
 }

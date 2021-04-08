@@ -200,7 +200,7 @@
             </div>
         </div>
         <needs-card #needsCard style="padding-left: 15pt; padding-right: 15pt; display: block;" [isClose]="true"
-            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
+            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill" [isNeedBoxPost]="false"
             [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
@@ -285,8 +285,7 @@
                             </div>
                         </div>
                     </mat-menu>
-                </div>
-                 
+                </div>  
                 <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"

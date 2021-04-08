@@ -122,8 +122,8 @@ export class RecommendController {
 
             if (isRandomPage) {
                 const stmt = [];
-                // stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
-                stmt.push({ $match: { _id: { $nin: orPageConditions } } },
+                stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
+                // stmt.push({ $match: { _id: { $nin: orPageConditions } } },
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {

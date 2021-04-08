@@ -162,6 +162,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isMouseEnter: boolean;
   public isChecked: boolean;
   public isSelect: boolean;
+  public isNotAccess: boolean;
   public isShowCheckboxTag: boolean;
   public isShowUserTag: boolean;
   public isMsgNeeds: boolean;
@@ -354,7 +355,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.prefix_button = 'box-file-input';
       }
     }, 0);
-    if (this.isListPage && this.content) {
+    if (this.isListPage && this.content) { 
       setTimeout(() => {
         let detail = this.content && (this.content.content || this.content.detail) ? (this.content.content || this.content.detail) : '';
         if (detail.includes('#')) {
@@ -606,11 +607,26 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
+  public async checkAccessPage(pageId: string) { 
+    await this.pageFacade.getAccess(pageId).then((res: any) => { 
+      for (let dataPage of res.data) {
+        if (dataPage.level === 'OWNER') {
+          this.isNotAccess = true; 
+        }
+      }
+
+    }).catch((err: any) => { 
+      if (err.error.message === 'Unable to get User Page Access List') {
+        this.isNotAccess = false; 
+      }
+    })
+  }
+
+
   public searchAccessPage() {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
-        let index = 0;
-        // this.accessPage = res;
+        let index = 0; 
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
@@ -638,8 +654,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = null
                 } else {
                   data.page.imageURL = image.data
-                }
-                this.accessPage = res;
+                } 
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -660,9 +675,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   public cloneDataCheck(cloneData: any) {
     if (cloneData && cloneData.length > 0) {
       for (let data of cloneData) {
-        if (this.router.url.split('/')[1] === "page") {
+        if (this.router.url.split('/')[1] === "page") { 
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
+            this.modeShowDoing = true;
             if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
               this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
                 if (image.status === 1) {
@@ -689,13 +705,13 @@ export class BoxPost extends AbstractPage implements OnInit {
             break;
           } else {
             // mode user 
-            // if (!this.isNotAccess) {
+            if (!this.isNotAccess) {
               this.userCheck(data);
               this.dataPage = data.user.displayName;
               this.dataPageId = data.user;
               this.modeDoIng = true;
               this.isSharePost = false;
-            // }
+            }
           }
         } else {
           this.userCheck(data);
@@ -1489,8 +1505,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         }
       }
-    }
-    console.log('this. ', this.dataImage)
+    } 
 
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);

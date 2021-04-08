@@ -61,6 +61,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
   @Input()
   public isBackArrow: boolean = false;
   @Input()
+  public isAsPage: boolean = false;
+  @Input()
   public ProfilePage: any;
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
@@ -99,7 +101,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public ganX: any;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
-    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, private popupService: MenuContextualService,private viewContainerRef: ViewContainerRef, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
+    chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.observManager = observManager;
@@ -339,7 +341,12 @@ export class ChatMessage extends AbstractPage implements OnInit {
   }
 
   public Tooltip(origin: any, data) {
-    data.owner = Object.assign(data.owner, { type: "PAGE" });
+    if (!this.isAsPage) {
+      console.log('data ',data)
+      data.owner = Object.assign(data.owner, { type: "USER" });
+    } else {
+      data.owner = Object.assign(data.owner, { type: "PAGE" });
+    }
     this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
       data: data,
     })

@@ -66,6 +66,9 @@ import { PageConfigService } from '../services/PageConfigService';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
 import { PageConfig } from '../models/PageConfig';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import lodash from 'lodash';
+import { StandardItem } from '../models/StandardItem';
+import { StandardItemService } from '../services/StandardItemService';
 
 @JsonController('/page')
 export class PageController {
@@ -90,7 +93,8 @@ export class PageController {
         private facebookService: FacebookService,
         private twitterService: TwitterService,
         private pageConfigService: PageConfigService,
-        private authenService: AuthenticationIdService
+        private authenService: AuthenticationIdService,
+        private stdItemService: StandardItemService
     ) { }
 
     // Find Page API
@@ -197,33 +201,59 @@ export class PageController {
                     }
                 },
                 { $match: { 'postObj.type': POST_TYPE.NEEDS, 'postObj.deleted': false } },
-                {
-                    $group: {
-                        _id: {
-                            $cond: {
-                                if: { $and: [{ $not: { $eq: ['$standardItemId', null] } }, { $eq: ['$customItemId', null] }] },
-                                then: '$standardItemId',
-                                else: {
-                                    $cond: [{
-                                        $and: [{ $not: { $eq: ['$customItemId', null] } }, { $not: { $eq: ['$standardItemId', null] } }]
-                                    }, '$customItemId', '$name']
-                                }
-                            }
-                        },
-                        result: { $mergeObjects: '$$ROOT' },
-                        quantity: { $sum: '$quantity' },
-                        fulfillQuantity: { $sum: '$fulfillQuantity' },
-                    }
-                },
-                { $replaceRoot: { newRoot: { $mergeObjects: ['$result', '$$ROOT'] } } },
-                { $project: { result: 0 } },
                 { $sort: { quantity: -1, createdDate: -1 } },
                 { $limit: limit }
             ];
-            const needs: Needs[] = await this.needsService.aggregateEntity(pageNeedsStmt);
+            const needs: any[] = await this.needsService.aggregate(pageNeedsStmt);
 
             if (needs !== null && needs !== undefined && needs.length > 0) {
-                result.needs = needs;
+                const needsResultList: Needs[] = [];
+                const needsMap: any = {};
+
+                for (const need of needs) {
+                    const customNeeds = need;
+                    const standardItemId = need.standardItemId;
+                    const customItemId = need.customItemId;
+
+                    if (standardItemId !== null && standardItemId !== undefined && standardItemId !== '') {
+                        if (!needsMap[standardItemId]) {
+                            const stdItems: StandardItem = await this.stdItemService.findOne({ _id: new ObjectID(standardItemId) });
+
+                            if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
+                                customNeeds.name = stdItems.name;
+                                customNeeds.unit = stdItems.unit;
+                            }
+
+                            needsMap[standardItemId] = customNeeds;
+                        } else {
+                            const resultNeeds = lodash.find(needsResultList, ['standardItemId', standardItemId]);
+
+                            if (resultNeeds !== null && resultNeeds !== undefined) {
+                                resultNeeds.quantity += customNeeds.quantity;
+                                continue;
+                            }
+                        }
+                    }
+
+                    const finalNeeds = new Needs();
+                    finalNeeds.id = customNeeds._id;
+                    finalNeeds.standardItemId = standardItemId;
+                    finalNeeds.customItemId = customItemId;
+                    finalNeeds.name = customNeeds.name;
+                    finalNeeds.quantity = customNeeds.quantity;
+                    finalNeeds.unit = customNeeds.unit;
+                    finalNeeds.createdDate = customNeeds.createdDate;
+                    finalNeeds.pageId = customNeeds.pageId;
+                    finalNeeds.post = customNeeds.post;
+                    finalNeeds.active = customNeeds.active;
+                    finalNeeds.fullfilled = customNeeds.fullfilled;
+                    finalNeeds.fulfillQuantity = customNeeds.fulfillQuantity;
+                    finalNeeds.pendingQuantity = customNeeds.pendingQuantity;
+
+                    needsResultList.push(finalNeeds);
+                }
+
+                result.needs = needsResultList;
             } else {
                 result.needs = [];
             }
