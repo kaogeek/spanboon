@@ -40,6 +40,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public largeCard: boolean;
     @Input()
     public eventCard: boolean;
+    @Input()
+    public isData: boolean;
 
     @Input()
     public tagCard: boolean;
@@ -48,6 +50,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
+    public selectIndex: number = 0;
     public isOfficial: boolean = true;
     public apiBaseURL = environment.apiBaseURL;
 
@@ -112,7 +115,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     }
                 }
             }
-
+            console.log('tagData', this.tagData)
             if (this.isDerTy(this.tagData)) {
                 this.datahashTagArrPosts = this.tagData.posts
                 if (this.tagCardIsOpenRight) {
@@ -139,8 +142,12 @@ export class CardContentHome extends AbstractPage implements OnInit {
     ngOnChanges(changes: SimpleChanges): void {
     }
 
-    public clickDataSearch(data) {
-        this.router.navigateByUrl('/search?hashtag=' + data);
+    public clickDataSearch(data, index?) {
+        if (this.isData) {
+            this.router.navigateByUrl('/search?hashtag=' + data);
+        } else {
+            this.selectIndex = index
+        }
     }
 
     public clickDialogDiverlop() {
