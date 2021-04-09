@@ -5,9 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { publish } from 'rxjs/operators';
+import { MenuContextualService } from 'src/app/services/services';
+import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import { environment } from 'src/environments/environment';
 import { AuthenManager } from '../../../services/services';
 import { Router } from '@angular/router';
@@ -51,8 +53,26 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
     public selectIndex: number = 0;
-    public isOfficial: boolean = true;
+
+    // LINK //
+
+    public linkUserPage: string;
+    public linkPost: string;
+
+    // USER //
+
+    public isUserOfficial: boolean = true;
+    public userId: string;
+    public userType: string;
+    public userName: string;
+    public userUniqueId: string;
+    public userImageURL: string;
+
+    public postId: string;
+
     public apiBaseURL = environment.apiBaseURL;
+    private mainPostLink: string = window.location.origin + '/post/'
+    private mainPageLink: string = window.location.origin + '/page/'
 
     // card //
 
@@ -83,7 +103,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public isLoad: boolean = true;
 
-    constructor(router: Router, authenManager: AuthenManager, dialog: MatDialog) {
+    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, dialog: MatDialog, private viewContainerRef: ViewContainerRef) {
         super(null, authenManager, dialog, router);
     }
 
@@ -91,9 +111,15 @@ export class CardContentHome extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
+                this.postId = this.postData.post._id;
+
+                if (this.isDerTy(this.postData.owner)) {
+                    this.getUserData(this.postData.owner);
+                }
                 if (this.keyObjArr !== undefined && this.keyObjArr !== null && this.keyObjArr !== '') {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 }
+
                 this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
             }
 
@@ -115,7 +141,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     }
                 }
             }
-            console.log('tagData', this.tagData)
             if (this.isDerTy(this.tagData)) {
                 this.datahashTagArrPosts = this.tagData.posts
                 if (this.tagCardIsOpenRight) {
@@ -126,6 +151,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.hashTagShareCount = this.tagData.posts[0].shareCount;
                 }
             }
+
 
             setTimeout(() => {
                 this.isLoad = false;
@@ -142,11 +168,36 @@ export class CardContentHome extends AbstractPage implements OnInit {
     ngOnChanges(changes: SimpleChanges): void {
     }
 
+    public getUserData(owner): any {
+        this.isUserOfficial = owner.isOfficial;
+        this.userId = owner.id;
+        this.userImageURL = owner.imageURL;
+        this.userName = owner.name;
+        this.userType = owner.type;
+        if (this.isDerTy(owner.uniqueId)) {
+            this.userUniqueId = owner.uniqueId;
+        }
+
+        this.linkPost = (this.mainPostLink + this.postId);
+        if (this.isDerTy(this.userUniqueId)) {
+            this.linkUserPage = (this.mainPageLink + this.userUniqueId)
+        } else if (this.isDerTy(this.userId)) {
+            this.linkUserPage = (this.mainPageLink + this.linkUserPage)
+        }
+    }
+
     public clickDataSearch(data, index?) {
         if (this.isData) {
             this.router.navigateByUrl('/search?hashtag=' + data);
+        } else if (!index) {
+            this.router.navigateByUrl('/search?hashtag=' + data);
         } else {
-            this.selectIndex = index
+            if (this.selectIndex !== index) {
+                this.selectIndex = index
+            } else {
+                this.router.navigateByUrl('/search?hashtag=' + data);
+
+            }
         }
     }
 
@@ -157,6 +208,25 @@ export class CardContentHome extends AbstractPage implements OnInit {
     isDerTy(value): boolean {
 
         return (value !== null && value !== undefined && value !== '')
+    }
+
+    public Tooltip(origin: any, data) {
+        this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+            data: data,
+        })
+            .subscribe(res => {
+            });
+    }
+
+    public TooltipClose($event) {
+
+        setTimeout(() => {
+
+            if ($event.toElement.className !== "ng-star-inserted") {
+                this.popupService.close(null);
+            }
+
+        }, 400);
     }
 
     duplicateObjFunction(Obj, keyObjs: any[]): any {
@@ -186,12 +256,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
         }
 
         return "Not found"
-
-        // console.log(ArrayObj[0][keyObj] ? ArrayObj[0][keyObj] : "sadasd");
-        // console.log(ArrayObj[keyObj] ? ArrayObj[keyObj] : "und");
-
-
-        // }
 
     }
 

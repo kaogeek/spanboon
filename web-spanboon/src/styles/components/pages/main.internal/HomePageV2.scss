@@ -120,6 +120,7 @@
         > .around_section {
             margin: 20px 0px;
             padding: 10px 0px;
+            min-width: 80%;
             > .top {
                 width: 100%;
                 display: flex;
@@ -163,7 +164,7 @@
         > .needs_section {
             margin: 10px 0px;
             padding: 10px 0px;
-
+            min-width: 80%;
             > .top {
                 display: flex;
                 align-items: baseline;
@@ -237,6 +238,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
+            min-width: 80%;
             > .top {
                 display: flex;
                 align-items: baseline;
