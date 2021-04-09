@@ -124,6 +124,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
+                    contentModel.description = row.detail;
                     contentModel.postCount = postSearchCount;
                     contentModel.commentCount = postCommentCount;
                     contentModel.repostCount = postRepostCount;

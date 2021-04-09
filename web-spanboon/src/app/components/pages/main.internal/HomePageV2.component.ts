@@ -50,6 +50,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public viewSectionModels: any;
 
   public isLoding: boolean = true;
+  public isDoing: boolean;
 
   tag = {
     hashtag: {
@@ -668,11 +669,12 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public async ngOnInit(): Promise<void> {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
-    await this.getMainPageModel();
-    // console.log('this.emergencyEvents', this.emergencyEvents);
-    // console.log('this.doingEvents', this.doingEventsNo1);
-    // console.log('this.emergencyEventsArrTitle', this.emergencyEventsArrTitle);
-    // console.log('this.aroundSectionModels', this.aroundSectionModels);
+
+    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
+      await this.getMainPageModel(this.userCloneDatas.id);
+    } else {
+      await this.getMainPageModel();
+    }
 
     setTimeout(() => {
       this.isLoding = false;
@@ -688,17 +690,33 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
 
     console.log('model', model);
+
     this.pageModel = this.jsonParseData(model);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
-    this.aroundSectionModels = this.jsonParseData(this.pageModel.sectionModels[2]);
 
     this.needsSectionModels = this.jsonParseData(this.pageModel.sectionModels[0]);
     this.lookingSectionModels = this.jsonParseData(this.pageModel.looking);
     this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
 
-    this.doingEventsNo1 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 1);
-    this.doingEventsNo2 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 2);
-    this.doingEventsNo3 = this.setDoingEventsFormat(this.jsonParseData(this.pageModel.sectionModels[2].contents), 3);
+    if (this.pageModel.objectiveEvents.contents.length > 0) {
+      this.isDoing = true
+      this.aroundSectionModels = this.jsonParseData(this.pageModel.objectiveEvents);
+
+      let dataAroundSection = this.postInDoing(this.pageModel.objectiveEvents.contents);
+
+      if (dataAroundSection.length > 0) {
+        this.doingEventsNo1 = this.setDoingEventsFormat(this.jsonParseData(dataAroundSection), 0);
+
+      } if (dataAroundSection.length > 1) {
+        this.doingEventsNo2 = this.setDoingEventsFormat(this.jsonParseData(dataAroundSection), 1);
+
+      } if (dataAroundSection.length > 2) {
+        this.doingEventsNo3 = this.setDoingEventsFormat(this.jsonParseData(dataAroundSection), 2);
+
+      }
+
+    }
+
     this.emergencyEventsArrTitle = this.getEmergencyEventsTitle(this.pageModel.emergencyEvents.contents);
 
   }
@@ -712,7 +730,25 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     return ('/search?hashtag=' + data)
   }
 
+  private postInDoing(arr): any {
+    let doings: any[] = []
+
+    for (let h of arr) {
+
+      if (h.post.length > 0) {
+
+        doings.push(h)
+
+      }
+
+    }
+
+    return doings
+
+  }
+
   private setDoingEventsFormat(arr, index?): any {
+    console.log('arr[index]', arr[index]);
 
     let arrDoingEvents: any[] = []
 
@@ -720,193 +756,10 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     let data: any = {
       hashtag: {
         "coverPageUrl": arr[index].iconUrl,
-        "title": arr[index].title,
-        "description": "ในแต่ละปีมีสัตว์กว่า 6.5 ล้านตัวที่ต้องลงเอยด้วยการไปอยู่ในศูนย์พักพิง โดยมีเหตุผลหลากหลายที่ทำให้พวกมันถูกทิ้ง ไม่ว่าจะเป็นเรื่องนิสัยก้าวร้าว ตัวโตเกินคาด ปัญหาสุขภาพ และอื่นๆ\n\nแต่โชคดีที่ครึ่งหนึ่งของสัตว์ในศูนย์พักพิงเหล่านั้นถูกรับเลี้ยงและมีครอบครัวใหม่ที่อบอุ่น พวกมันจึงมีชีวิตใหม่ที่สดใส และทำให้โลกรู้ว่าการให้โอกาสสัตว์ถูกทอดทิ้งเหล่านี้มันคุ้มค่าแค่ไหน",
-        "postCount": 0,
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "dateTime": "2020-10-20T02:09:29.542Z",
+        "title": arr[index].title
       },
-      page: {
-        "name": arr[index].owner.name,
-        "imageURL": arr[index].owner.imageURL,
-        "uniqueId": arr[index].owner.uniqueId
-
-      },
-      posts: [{
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "/file/5f8e46d9a554f760422bc274",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      }, {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "/file/5f8e46d9a554f760422bc274",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      },
-      {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "/file/5f8e46d9a554f760422bc274",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      },
-      {
-        "_id": "604af19c260e1b65ff897f62",
-        "title": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "detail": "เมื่อเวลา 11.00 น. วันที่ 27 มี.ค.2564 เฟซบุ๊ก ศูนย์ข้อมูล COVID-19 รายงานสถานการณ์การแพร่ระบาดของโรคติดเชื้อไวรัสโคโรนา2019 หรือ โควิด-19 ในประเทศไทย ว่า มีผู้ป่วยรายใหม่ 80 ราย แบ่งเป็นผู้ป่วยจากระบบเฝ้าระวังและบริการ 41 ราย ผู้ป่วยจากการคัดกรองเชิงรุก 32 ราย และผู้เดินทางมาจากต่างประเทศและเข้าสถานกักกันโรค 7 ราย รวมสะสม 28,657 ราย แบ่งเป็นการติดเชื้อในประเทศ 25,629 ราย และเป็นผู้เดินทางมาจากต่างประเทศ 3,028 ราย รักษาหายป่วยแล้ว 27,136 ราย ยังรักษาอยู่ในโรงพยาบาล 1,428 ราย ผู้เสียชีวิตเพิ่ม 1 ราย สะสม 93 ราย",
-        "isDraft": false,
-        "hidden": false,
-        "type": "GENERAL",
-        "userTags": [],
-        "coverImage": "",
-        "pinned": false,
-        "deleted": false,
-        "ownerUser": "5f5edb857bf54660ddb1f860",
-        "commentCount": 0,
-        "repostCount": 0,
-        "shareCount": 0,
-        "likeCount": 0,
-        "viewCount": 0,
-        "createdDate": "2021-03-12T04:44:12.347Z",
-        "startDateTime": "2021-03-12T04:44:12.340Z",
-        "story": null,
-        "pageId": "5f9fc4b4ace1e52ed8c1dc18",
-        "referencePost": null,
-        "rootReferencePost": null,
-        "visibility": null,
-        "ranges": null,
-        "updateDate": "2021-03-12T04:44:12.347Z",
-        "gallery": [],
-        "needs": [],
-        "fulfillment": [],
-        "hashTags": [
-          {
-            "name": "ช่วยเหลือ"
-          },
-          {
-            "name": "เดินทาง"
-          },
-          {
-            "name": "แบ่งปัน"
-          },
-
-        ]
-      }
-
-
-
-      ]
+      page: arr[index].owner,
+      posts: arr[index].post,
     }
 
     arrDoingEvents = data
