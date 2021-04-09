@@ -134,12 +134,14 @@
                         <div class="list-popular">
                             <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
                                 (click)="searchHashTag(trend,index);clickOpenLink(trend)">
-                                <div class="tag-popular">
-                                    {{trend.label}}
-                                </div>
-                                <div class="count-participate">
-                                    {{trend.count | shortNumber }} ครั้ง
-                                </div>
+                                <ng-container *ngIf="trend.label !== '' && trend.label !== undefined && trend.label !== null">
+                                    <div class="tag-popular">
+                                        {{trend.label}}
+                                    </div>
+                                    <div class="count-participate">
+                                        {{trend.count | shortNumber }} ครั้ง
+                                    </div>
+                                </ng-container> 
                             </div>
                             <div class="wrapper-allPost" (click)="loadMoreHashTag()">
                                 ดูเพิ่มเติม
@@ -148,7 +150,7 @@
                     </ng-container>
                     <ng-template #elseTemplatedataTrend>
                         <div class="list-popular data-found">
-                            ไม่ค้นพบข้อมูล 
+                            ไม่ค้นพบข้อมูล
                         </div>
                     </ng-template>
 
@@ -277,7 +279,7 @@
                                 <div class="date-time">{{item.createdDate | dateFormat}}</div>
                             </div>
                         </div>
-                        <div class="list-footer">
+                        <div class="list-footer" (click)="loadHistory()">
                             ดูเพิ่มเติม
                         </div>
                     </div>

@@ -39,7 +39,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
 
-
   private objectiveFacade: ObjectiveFacade;
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;

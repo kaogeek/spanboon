@@ -152,8 +152,7 @@ export class RepostData {
             }
           }
         }
-      } 
-     
+      }  
     }, 1000);
   }
   
