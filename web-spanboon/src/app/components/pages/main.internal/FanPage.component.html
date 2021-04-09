@@ -189,9 +189,9 @@
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                                <button-follow [bgColor]="'#FFFFFF'"
+                            <button-follow  [bgColor]="'#FFFFFF'" [inputId]="'follow'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
-                                    (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
+                                    (click)="clickFollowPage()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
                             </div>
                             <div class="btn-follow-about btn_fa">
@@ -600,11 +600,11 @@
 
                     <div class="wrapper-feed-fan-page">
                         <div class="do-tablet">
-                            <!-- <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">  -->
+                            <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0"> 
                             <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
                                 [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
                             </card-item>
-                            <!-- </ng-container> -->
+                            </ng-container>
                         </div>
 
                         <div *ngIf="!showLoading" class="wrapper-feed-menu">
@@ -627,8 +627,7 @@
                         </div>
                         <div *ngIf="!showLoading" class="wrapper-feed">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
-                                <div *ngIf="!isPost" class="main-feed">
-                                    {{isNotAccess}}
+                                <div *ngIf="!isPost" class="main-feed"> 
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
@@ -680,13 +679,12 @@
                                 </div>
                             </ng-template>
                             <div class="side-feed" #sidefeedHeight>
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
+                                <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
                                     <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
                                         [statusLable]="'กำลังทำอยู่'"></card-item>
-                                </ng-container>
-                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"
-                                (submitFollow)="clickFollow()"></recommend-card>
+                                </ng-container> 
+                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend" 
+                                (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex"></recommend-card>
                             </div>
                         </div>
                         <ng-container *ngIf="isCheck === true">

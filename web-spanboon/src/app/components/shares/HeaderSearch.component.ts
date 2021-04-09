@@ -61,7 +61,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public isMouseLeave: boolean;
   public isMsgHistory: boolean;
   public isLoadingMore: boolean;
-  private currentOffset: number;
   public searchRecent: any[] = [];
   public searchRecentName: any[] = [];
   public dataTrend: any[] = [];
@@ -86,7 +85,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     this.searchHashTagFacade = searchHashTagFacade;
     this.assetFacade = assetFacade;
     this.isMsgHistory = false;
-    this.currentOffset = SEARCH_OFFSET;
     this.isLoadingMore = false;
   }
 
@@ -327,11 +325,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       filter,
       userId: this.getCurrentUserId()
     }
-    if (this.getCurrentUserId) {
+    if (!this.getCurrentUserId()) {
       delete data.userId
     }
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
-      this.dataTrend = res
+      this.dataTrend = res;
+      console.log('this.dataTrend ', this.dataTrend)
     }).catch((err: any) => {
       console.log(err)
     })
@@ -386,13 +385,13 @@ export class HeaderSearch extends AbstractPage implements OnInit {
 
   public clickOpenLink(data: any, isEnter?: boolean) {
     let result;
-    let isPass , dataList;
+    let isPass, dataList;
     if (isEnter) {
       if (this.resSearch && this.resSearch.length > 0) {
         const isData = this.resSearch.find(keyword => {
           return keyword.label === data
-        }); 
-        if(isData){
+        });
+        if (isData) {
           isPass = isData.type;
           dataList = data;
         }
@@ -483,17 +482,29 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
   public loadMoreHashTag(): void {
     this.isOpen = true;
-    this.currentOffset = this.currentOffset + SEARCH_LIMIT;
 
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
-    filter.offset = this.currentOffset;
+    filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
     filter.whereConditions = {};
     filter.count = false;
     filter.orderBy = {}
+    let data = {
+      filter,
+      userId: this.getCurrentUserId()
+    }
+    if (!this.getCurrentUserId()) {
+      delete data.userId
+    }
     this.isLoadingMore = true;
-    this.searchHashTagFacade.searchTopTrend(filter).then((res: any) => {
+    let originalTrend: any[] = this.dataTrend;
+    this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       this.isLoadingMore = false;
+      if (originalTrend.length > 0) {
+        for (let hashtag of res) {
+          originalTrend.push(hashtag);
+        }
+      }
     }).catch((err: any) => {
       console.log(err)
     })

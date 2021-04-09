@@ -76,7 +76,7 @@
           }
 
           > .follow-name-eng {
-            @include font-size-10($font-head-500);
+            @include font-size-10($font-head-300);
             color: $color-gray;
             display: -webkit-box;
             -webkit-line-clamp: 1;
@@ -89,6 +89,22 @@
 
       > .wrapper-btn-follow {
         > button-follow {
+          > .button-follow {
+            &:hover {
+              background-color: rgba($brandcolor2, 0.1) !important;
+            }
+          }
+
+          &.active {
+            > .button-follow {
+              background-color: $brandcolor2 !important;
+              color: $white !important;
+
+              &:hover {
+                background-color: rgba($brandcolor2, 0.95) !important;
+              }
+            }
+          }
         }
       }
     }

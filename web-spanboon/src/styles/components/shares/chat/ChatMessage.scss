@@ -540,7 +540,7 @@
     .chat-spanboon {
         > .header {
             height: 34pt;
-            padding: 0 25pt;
+            padding: 0 32pt;
 
             > .back-arrow {
                 display: none;
@@ -550,7 +550,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    @include font-size-6($font-head-500);
+                    font-family: 'Material Icons' !important;
                     @include pointer();
                 }
             }

@@ -84,7 +84,7 @@ export class DialogPost extends AbstractPage {
         this.isSharePost = this.data.isSharePost;
       } else {  
         this.isSharePost = true;
-      }  
+      }   
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {

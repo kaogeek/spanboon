@@ -10,7 +10,7 @@
         {{title}}
     </div>
     <div class="wrapper-card" *ngIf="data && data.length > 0">
-        <div class="card-follow" *ngFor="let recommed of data">
+        <div class="card-follow" *ngFor="let recommed of data; let index = index;">
             <div class="follow">
                 <ng-container *ngIf="recommed && recommed.imageURL !== '' && recommed.imageURL !== null && recommed.imageURL !== undefined; else elseTemplateImageURL">
                     <img class="img-user" src="{{apiBaseURL + recommed.imageURL +'/image'}}">
@@ -19,9 +19,7 @@
                     <div class="label-image">
                         {{recommed.name || recommed.displayName  | slice : 0 : 1}}
                     </div>
-                </ng-template>
-
-
+                </ng-template> 
                 <ng-container *ngIf="recommed.type === 'PAGE'; else elseTemplate">
                     <div class="list-follow-name">
                         <div class="follow-name">
@@ -56,8 +54,8 @@
                     </div>
                 </ng-template>
             </div>
-            <div class="wrapper-btn-follow">
-                <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'" (submitFollow)="onClick()"></button-follow>
+            <div class="wrapper-btn-follow"> 
+                <button-follow [class.active]="recommed && recommed.follow" [bgColor]="'#FFFFFF'" [text]="recommed && recommed.follow ? 'กำลังติดตาม' :'ติดตาม'" (click)="onClick(index,recommed)"></button-follow>
             </div>
         </div> 
     </div>

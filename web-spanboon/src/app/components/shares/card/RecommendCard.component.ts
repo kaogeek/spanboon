@@ -24,6 +24,11 @@ export class RecommendCard {
   public data: any;
   @Input()
   public title: string;
+  @Input()
+  public isFollow: boolean = false;
+  @Input()
+  public selectedIndex: number;
+
   public isIconPage: boolean;
 
   public apiBaseURL = environment.apiBaseURL;
@@ -53,8 +58,12 @@ export class RecommendCard {
     });
   }
 
-  public onClick(){
-    this.submitFollow.emit();
+  public onClick(index: number, recommed: any){ 
+    let data = {
+      index : index,
+      recommed
+    } 
+    this.submitFollow.emit(data);
   }
 
 
