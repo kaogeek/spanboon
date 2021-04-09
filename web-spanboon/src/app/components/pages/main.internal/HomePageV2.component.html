@@ -16,23 +16,32 @@
         <div class="events_tag_top">
             <div class="left">
                 <span class="text">มาใหม่ :</span>
-                <a class="tag" (click)="clickDataSearch(item)"
-                    *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                <div class="tag_list">
+                    <a class="tag" (click)="clickDataSearch(item)"
+                        *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                </div>
+                <div class="tag_list_moblie">
+                    <a class="tag" (click)="clickDataSearch(item)"
+                        *ngFor="let item of emergencyEventsArrTitle | slice:0:2; let i=index">{{item}}</a>
+                </div>
             </div>
             <div class="right">
                 <span class="text">มาแรง :</span>
-                <a class="tag" (click)="clickDataSearch(item)"
-                    *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                <div class="tag_list">
+                    <a class="tag" (click)="clickDataSearch(item)"
+                        *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                </div>
             </div>
         </div>
 
         <!-- ///////////////////////// -->
 
-        <div class="events_top">
-            <div class="left">
-                <card-contant-home [eventCard]='true' [eventData]='emergencyEvents'></card-contant-home>
+        <div class="events_top" [class.full]="!isDoing">
+            <div class="left" [class.full]="!isDoing">
+                <card-contant-home [eventCard]='true' [isData]="isDoing" [eventData]='emergencyEvents'>
+                </card-contant-home>
             </div>
-            <div class="right">
+            <div class="right" [class.dis]="!isDoing">
                 <div class="tagCardRight">
                     <card-contant-home [tagCard]='true' [tagCardIsOpenRight]='true' [tagData]='doingEventsNo2'>
                     </card-contant-home>
@@ -48,7 +57,7 @@
         <!-- ///////////////////////// -->
 
 
-        <div class="around_section">
+        <div class="around_section" *ngIf="aroundSectionModels">
             <div class="top">
                 <div class="text_svg">
                     <div class="svg">
@@ -82,7 +91,8 @@
             </div>
             <div class="body">
                 <div class="card">
-                    <post-swiper-card [isFulfillQuantity]="true" [isFulfill]="'true'" [keyItem]='["owner", "imageURL"]' [itemNeeds]="aroundSectionModels.contents">
+                    <post-swiper-card [isFulfillQuantity]="true" [isFulfill]="'true'" [keyItem]='["owner", "imageURL"]'
+                        [itemNeeds]="aroundSectionModels.contents">
                     </post-swiper-card>
                 </div>
             </div>
@@ -97,12 +107,14 @@
             <div class="body">
                 <div class="isDesktop"
                     *ngFor="let dataViewSection of needsSectionModels.contents | slice:0:3;let index = index">
-                    <card-contant-home [largeCard]='true' [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'>
+                    <card-contant-home [largeCard]='true' [keyObjArr]='["post","coverImage"]'
+                        [postData]='dataViewSection'>
                     </card-contant-home>
                 </div>
                 <div class="isMobile"
                     *ngFor="let dataViewSection of needsSectionModels.contents | slice:0:2;let index = index">
-                    <card-contant-home [largeCard]='true' [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'>
+                    <card-contant-home [largeCard]='true' [keyObjArr]='["post","coverImage"]'
+                        [postData]='dataViewSection'>
                     </card-contant-home>
                 </div>
                 <div class="footer_mobile">
