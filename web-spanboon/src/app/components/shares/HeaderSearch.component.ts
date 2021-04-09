@@ -198,18 +198,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.heightSearch = true;
 
-      if (this.heightSearch === true) {
-        // if (this.tabs !== undefined && this.tabs !== null) {
-        //   if (this.tabs.nativeElement !== undefined && this.tabs.nativeElement !== null) {
-        // setTimeout(() => {
-        //   $("#popular").css({
-        //     height: "calc(100% - " + this.tabs.nativeElement.offsetHeight + "px)"
-        //   });
-
-        //   $("#history").css({
-        //     height: "calc(100% - " + this.tabs.nativeElement.offsetHeight + "px)"
-        //   });
-        // }, 100);
+      if (this.heightSearch === true) { 
         setTimeout(() => {
           if (this.isTabClick === 'popular') {
             if (document.getElementById("defaultOpen1") !== null && document.getElementById("defaultOpen1") !== undefined) {
@@ -220,9 +209,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
               document.getElementById("defaultOpen2").click();
             }
           }
-        }, 50);
-        //   }
-        // }
+        }, 50); 
       }
     }
 
@@ -284,6 +271,42 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           this.isMsgHistory = true;
         }
       }
+    })
+  }
+
+  public loadHistory(){
+    let filter = new SearchFilter();
+    filter.limit = SEARCH_LIMIT;
+    filter.offset = SEARCH_OFFSET + (this.searchRecentName && this.searchRecentName.length > 0 ? this.searchRecent.length : 0);;
+    filter.whereConditions = {
+      type: ["KEYWORD"],
+      userId: this.getCurrentUserId()
+    };
+    if (!this.isLogin()) {
+      delete filter.whereConditions.userId
+    }
+    filter.count = false;
+    filter.orderBy = {} 
+    this.isLoading = true;
+    let originalRecentName: any[] = this.searchRecentName;
+    this.searchHistoryFacade.search(filter).then((res: any) => {
+      console.log('<<<< ', res);
+      
+      this.isLoadingMore = false; 
+      if (originalRecentName.length > 0) {
+        for (let history of res) {
+          const isHistory = this.searchRecentName.find(h =>{
+            return h.label === history.label
+          });
+          if(isHistory){  
+            continue;
+          } else {
+            originalRecentName.push(history);
+          }
+        }
+      }
+    }).catch((err: any) => {
+      console.log(err)
     })
   }
 
@@ -480,9 +503,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       console.log(err)
     })
   }
-  public loadMoreHashTag(): void {
-    this.isOpen = true;
-
+  public loadMoreHashTag(): void {  
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
@@ -502,7 +523,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.isLoadingMore = false;
       if (originalTrend.length > 0) {
         for (let hashtag of res) {
-          originalTrend.push(hashtag);
+          const isHashtag = this.dataTrend.find(h =>{
+            return h.value === hashtag.value
+          });
+          if(isHashtag){  
+            continue;
+          } else {
+            originalTrend.push(hashtag);
+          }
+         
         }
       }
     }).catch((err: any) => {

@@ -24,7 +24,7 @@ import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
-import { UserEngagement } from '../../../models/models';  
+import { UserEngagement } from '../../../models/models';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -469,13 +469,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public searchPostById(postId: string) {
+  public async searchPostById(postId: string) {
     let search: SearchFilter = new SearchFilter();
     search.limit = 10;
     search.count = false;
     search.whereConditions = { _id: postId };
-    this.postFacade.search(search).then((res: any) => {
-      this.resDataPost = res;
+    let res = await this.searchById(search); 
+    this.resDataPost = res;
+    if (res) {
       if (this.resDataPost.length === 0) {
         this.msgPageNotFound = true;
         this.labelStatus = 'ไม่พบโพสต์';
@@ -513,13 +514,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }
-    }).catch((err: any) => {
-    });
+    }
   }
 
-  public async searchById(postId: string) {
-    let search: SearchFilter = new SearchFilter();
-    search.whereConditions = { _id: postId };
+  public async searchById(search: any) {
     return this.postFacade.search(search);
   }
 
@@ -1335,7 +1333,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else if (action.type === "NOTOPIC") {
         dataPost = action.post._id;
         this.postFacade.rePost(dataPost, data).then(async (res: any) => {
-          let searchPost = await this.searchById(res.id);
+          let searchWherePost: SearchFilter = new SearchFilter();
+          searchWherePost.whereConditions = { _id: res.id };
+          let searchPost = await this.searchById(searchWherePost);
           if (searchPost) {
             let postIndex: number = 0
             let galleryIndex = 0;
@@ -1361,27 +1361,27 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
                 }
               }).catch((err: any) => {
               });
-            } 
+            }
             this.resPost.posts.push(searchPost[0]);
             if (this.resPost.posts && this.resPost.posts && this.resPost.posts.length > 0) {
               this.resPost.posts = this.resPost.posts.sort((a, b) => new Date(b.startDateTime).valueOf() - new Date(a.startDateTime).valueOf());
               this.resPost.posts[index].repostCount++;
               this.resPost.posts[index].isRepost = true;
-            } 
+            }
           }
         }).catch((err: any) => {
           console.log(err);
         })
-      } else if (action.type === "UNDOTOPIC") { 
-        this.postFacade.undoPost(action.post._id).then((res: any) => { 
-          for(let [ i ,data] of this.resPost.posts.entries()){
-            if(data.referencePostObject._id === action.post._id){ 
+      } else if (action.type === "UNDOTOPIC") {
+        this.postFacade.undoPost(action.post._id).then((res: any) => {
+          for (let [i, data] of this.resPost.posts.entries()) {
+            if (data.referencePostObject._id === action.post._id) {
               this.resPost.posts[index].repostCount--;
               this.resPost.posts[index].isRepost = false;
-              this.resPost.posts.splice(i,1);
+              this.resPost.posts.splice(i, 1);
               break;
             }
-          } 
+          }
         }).catch((err: any) => {
           console.log(err);
         })
