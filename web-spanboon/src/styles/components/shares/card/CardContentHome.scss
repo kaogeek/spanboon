@@ -64,7 +64,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -213,7 +213,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -246,7 +246,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                 }
             }
             > .bottom_medium_card_detail_footer {
@@ -377,7 +377,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -403,7 +403,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                 }
             }
             > .bottom_large_card_detail_footer {
@@ -506,7 +506,7 @@
                     }
                 }
                 > .description {
-                    @include font-size-11($font-content-medium);
+                    @include font-size-11($font-content-light);
                     display: -webkit-box;
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
@@ -612,7 +612,7 @@
                     > .description {
                         > span {
                             margin: 15px 0px;
-                            @include font-size-11($font-content-medium);
+                            @include font-size-11($font-content-light);
                             display: -webkit-box;
                             -webkit-line-clamp: 3;
                             -webkit-box-orient: vertical;
@@ -840,7 +840,7 @@
                         text-align: center;
                     }
                     > .text-deteil {
-                        @include font-size-8($font-content-medium);
+                        @include font-size-8($font-content-light);
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
