@@ -1,5 +1,61 @@
 define({ "api": [
   {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "src/api/apidoc/main.js",
+    "group": "/Users/nattawadee/absolute/sapanboon-git/api-spanboon/src/api/apidoc/main.js",
+    "groupTitle": "/Users/nattawadee/absolute/sapanboon-git/api-spanboon/src/api/apidoc/main.js",
+    "name": ""
+  },
+  {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "src/public/apidoc/main.js",
+    "group": "/Users/nattawadee/absolute/sapanboon-git/api-spanboon/src/public/apidoc/main.js",
+    "groupTitle": "/Users/nattawadee/absolute/sapanboon-git/api-spanboon/src/public/apidoc/main.js",
+    "name": ""
+  },
+  {
     "type": "post",
     "url": "/api/admin/user/:id/ban",
     "title": "Ban Page API",
@@ -1610,127 +1666,6 @@ define({ "api": [
     "name": "DeleteApiAdminItem_requestId"
   },
   {
-    "type": "post",
-    "url": "/api/allocate",
-    "title": "Calculate Allocate API",
-    "group": "Allocate",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Calculate Allocate\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/allocate/calculate"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Calculate Allocate error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/AllocateController.ts",
-    "groupTitle": "Allocate",
-    "name": "PostApiAllocate"
-  },
-  {
-    "type": "post",
-    "url": "/api/allocate/search",
-    "title": "Search Allocate API",
-    "group": "Allocate",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Search Allocate\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/allocate/search"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Search Allocate error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/AllocateController.ts",
-    "groupTitle": "Allocate",
-    "name": "PostApiAllocateSearch"
-  },
-  {
-    "type": "delete",
-    "url": "/api/temp",
-    "title": "Delete temp API",
-    "group": "Asset",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete temp.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/temp"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Delete temp Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/AssetsController.ts",
-    "groupTitle": "Asset",
-    "name": "DeleteApiTemp"
-  },
-  {
     "type": "get",
     "url": "/api/file/:id",
     "title": "Find Asset API",
@@ -1762,154 +1697,6 @@ define({ "api": [
     "filename": "src/api/controllers/AssetsController.ts",
     "groupTitle": "Asset",
     "name": "GetApiFileId"
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "src/api/apidoc/main.js",
-    "group": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\api\\apidoc\\main.js",
-    "groupTitle": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\api\\apidoc\\main.js",
-    "name": ""
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "src/public/apidoc/main.js",
-    "group": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\public\\apidoc\\main.js",
-    "groupTitle": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\public\\apidoc\\main.js",
-    "name": ""
-  },
-  {
-    "type": "post",
-    "url": "/api/chat/:id",
-    "title": "Create Chat Message to User room",
-    "group": "Chat",
-    "parameter": {
-      "fields": {
-        "Request body": [
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully Created chat message\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/chat/user/:id"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "chat message error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/ChatController.ts",
-    "groupTitle": "Chat",
-    "name": "PostApiChatId"
-  },
-  {
-    "type": "post",
-    "url": "/api/chat/read",
-    "title": "Mark Read Chat Message",
-    "group": "Chat",
-    "parameter": {
-      "fields": {
-        "Request body": [
-          {
-            "group": "Request body",
-            "type": "String[]",
-            "optional": false,
-            "field": "messageId",
-            "description": "<p>messageId</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully Created chat message\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/chat/read"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "chat message error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/ChatController.ts",
-    "groupTitle": "Chat",
-    "name": "PostApiChatRead"
   },
   {
     "type": "get",
@@ -2066,52 +1853,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/chatroom/check_unread",
-    "title": "Check Chat Room unread message",
-    "group": "ChatRoom",
-    "parameter": {
-      "fields": {
-        "Request body": [
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "roomIds",
-            "description": "<p>roomIds</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully Check Chat Room unread Message\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/chatroom/check_unread"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "chat message error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/ChatRoomController.ts",
-    "groupTitle": "ChatRoom",
-    "name": "PostApiChatroomCheck_unread"
-  },
-  {
-    "type": "post",
     "url": "/api/chatroom/:id",
     "title": "Create Chat Message to User room",
     "group": "ChatRoom",
@@ -2202,6 +1943,66 @@ define({ "api": [
     "filename": "src/api/controllers/ConfigController.ts",
     "groupTitle": "Config",
     "name": "GetApiConfigName"
+  },
+  {
+    "type": "post",
+    "url": "/api/chat/user/:id",
+    "title": "Create Chat Message to User room",
+    "group": "Config",
+    "parameter": {
+      "fields": {
+        "Request body": [
+          {
+            "group": "Request body",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message</p>"
+          },
+          {
+            "group": "Request body",
+            "type": "any",
+            "optional": false,
+            "field": "asset",
+            "description": "<p>asset</p>"
+          },
+          {
+            "group": "Request body",
+            "type": "String",
+            "optional": false,
+            "field": "videoURL",
+            "description": "<p>videoURL</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success",
+          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully Created chat message\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "/api/chat/user/:id"
+      }
+    ],
+    "error": {
+      "examples": [
+        {
+          "title": "chat message error",
+          "content": "HTTP/1.1 500 Internal Server Error",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/controllers/ChatController.ts",
+    "groupTitle": "Config",
+    "name": "PostApiChatUserId"
   },
   {
     "type": "post",
@@ -2937,6 +2738,61 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
+    "filename": "src/api/controllers/AssetsController.ts",
+    "groupTitle": "Fulfillment",
+    "name": "DeleteApiFulfillmentId"
+  },
+  {
+    "type": "delete",
+    "url": "/api/fulfillment/:id",
+    "title": "Delete Fulfillment API",
+    "group": "Fulfillment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "examples": [
+        {
+          "title": "Input",
+          "content": "{\n     \"id\" : \"\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success",
+          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete Fulfillment.\",\n\"status\": \"1\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "/api/fulfillment/:id"
+      }
+    ],
+    "error": {
+      "examples": [
+        {
+          "title": "Delete Fulfillment Error",
+          "content": "HTTP/1.1 500 Internal Server Error",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
     "filename": "src/api/controllers/FulfillmentController.ts",
     "groupTitle": "Fulfillment",
     "name": "DeleteApiFulfillmentId"
@@ -3208,39 +3064,6 @@ define({ "api": [
     "name": "DeleteApiFulfillment_caseCaseidRequestRequestid"
   },
   {
-    "type": "delete",
-    "url": "/api/fulfillment_case/:caseId/confirm",
-    "title": "Cancel Confirm FulfillmentCase API",
-    "group": "Fulfillment_Case",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Cancel Confirm FulfillmentCase Success\",\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment_case/:caseId/confirm"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Create FulfillmentCase Failed",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/FulfillmentCaseController.ts",
-    "groupTitle": "Fulfillment_Case",
-    "name": "DeleteApiFulfillment_caseCaseidConfirm"
-  },
-  {
     "type": "post",
     "url": "/api/fulfillment_case",
     "title": "Create FulfillmentCase API",
@@ -3275,107 +3098,8 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/fulfillment_case/:caseId/allocate_confirm",
-    "title": "Confirm FulfillmentCase API for page mode",
-    "group": "Fulfillment_Case",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Confirm FulfillmentCase Success\",\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment_case/:caseId/allocate_confirm"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Confirm FulfillmentCase Failed",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/FulfillmentCaseController.ts",
-    "groupTitle": "Fulfillment_Case",
-    "name": "PostApiFulfillment_caseCaseidAllocate_confirm"
-  },
-  {
-    "type": "post",
-    "url": "/api/fulfillment_case/:caseId/cancel",
-    "title": "Cancel FulfillmentCase API",
-    "group": "Fulfillment_Case",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Cancel FulfillmentCase Success\",\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment_case/:caseId/cancel"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Cancel FulfillmentCase Failed",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/FulfillmentCaseController.ts",
-    "groupTitle": "Fulfillment_Case",
-    "name": "PostApiFulfillment_caseCaseidCancel"
-  },
-  {
-    "type": "post",
-    "url": "/api/fulfillment_case/:caseId/confirm",
-    "title": "Confirm FulfillmentCase API for Post mode",
-    "group": "Fulfillment_Case",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Confirm FulfillmentCase Success\",\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment_case/:caseId/confirm"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Confirm FulfillmentCase Failed",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/FulfillmentCaseController.ts",
-    "groupTitle": "Fulfillment_Case",
-    "name": "PostApiFulfillment_caseCaseidConfirm"
-  },
-  {
-    "type": "post",
-    "url": "/api/fulfillment_case/:caseId/fulfill",
-    "title": "Create Fulfillment From case API",
+    "url": "/api/fulfillment_case",
+    "title": "Create FulfillmentCase API",
     "group": "Fulfillment_Case",
     "success": {
       "examples": [
@@ -3388,7 +3112,7 @@ define({ "api": [
     },
     "sampleRequest": [
       {
-        "url": "/api/fulfillment_case/:caseId/fulfill"
+        "url": "/api/fulfillment_case"
       }
     ],
     "error": {
@@ -3403,7 +3127,7 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/controllers/FulfillmentCaseController.ts",
     "groupTitle": "Fulfillment_Case",
-    "name": "PostApiFulfillment_caseCaseidFulfill"
+    "name": "PostApiFulfillment_case"
   },
   {
     "type": "post",
@@ -4097,72 +3821,6 @@ define({ "api": [
     "name": "PostApiHashtagTrend"
   },
   {
-    "type": "post",
-    "url": "/api/jobs/extended_token",
-    "title": "Extended page token API",
-    "group": "Jobs",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully request token\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/twitter/request_token"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "config error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/JobsController.ts",
-    "groupTitle": "Jobs",
-    "name": "PostApiJobsExtended_token"
-  },
-  {
-    "type": "get",
-    "url": "/api/fulfillment_case/:caseId",
-    "title": "Find Main Page Data API",
-    "group": "MainPage",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully get Page\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/fulfillment_case/:caseId"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Page error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/FulfillmentCaseController.ts",
-    "groupTitle": "MainPage",
-    "name": "GetApiFulfillment_caseCaseid"
-  },
-  {
     "type": "get",
     "url": "/api/fulfillment_case/list",
     "title": "Find Main Page Data API",
@@ -4230,7 +3888,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/fulfillment_case/post/:postId",
+    "url": "/api/fulfillment_case/list",
     "title": "Find Main Page Data API",
     "group": "MainPage",
     "success": {
@@ -4244,7 +3902,7 @@ define({ "api": [
     },
     "sampleRequest": [
       {
-        "url": "/api/fulfillment_case/post/:postId"
+        "url": "/api/fulfillment_case/list"
       }
     ],
     "error": {
@@ -4259,7 +3917,7 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/controllers/FulfillmentCaseController.ts",
     "groupTitle": "MainPage",
-    "name": "GetApiFulfillment_casePostPostid"
+    "name": "GetApiFulfillment_caseList"
   },
   {
     "type": "get",
@@ -4950,215 +4608,6 @@ define({ "api": [
     "name": "DeleteApiPageId"
   },
   {
-    "type": "delete",
-    "url": "/api/page/:id/access/:accessid",
-    "title": "Delete Page API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully remove User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/access/:accessid"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Page error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "DeleteApiPageIdAccessAccessid"
-  },
-  {
-    "type": "delete",
-    "url": "/api/page/:id/config/:name",
-    "title": "Delete Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Delete Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "DeleteApiPageIdConfigName"
-  },
-  {
-    "type": "Delete",
-    "url": "/api/page/:id/social/facebook",
-    "title": "Unbinding Page Social API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Unbinding Page Social\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/facebook"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable to Unbinding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "DeleteApiPageIdSocialFacebook"
-  },
-  {
-    "type": "delete",
-    "url": "/api/page/:id/social/twitter",
-    "title": "UnBinding Page Social API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully UnBinding Page Social\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/twitter"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Binding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "DeleteApiPageIdSocialTwitter"
-  },
-  {
-    "type": "delete",
-    "url": "/api/user/config/:name",
-    "title": "Delete Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/user/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Delete Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/UserController.ts",
-    "groupTitle": "Page",
-    "name": "DeleteApiUserConfigName"
-  },
-  {
     "type": "get",
     "url": "/api/page/:id",
     "title": "Find Page API",
@@ -5256,160 +4705,6 @@ define({ "api": [
     "filename": "src/api/controllers/PageController.ts",
     "groupTitle": "Page",
     "name": "GetApiPageIdAccesslv"
-  },
-  {
-    "type": "get",
-    "url": "/api/page/:id/config",
-    "title": "Get Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Get Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/config"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Get Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "GetApiPageIdConfig"
-  },
-  {
-    "type": "get",
-    "url": "/api/page/:id/needs",
-    "title": "Get Page Needs API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Get Page Needs\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/needs"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Get Page Needs",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "GetApiPageIdNeeds"
-  },
-  {
-    "type": "Get",
-    "url": "/api/page/:id/social/facebook/check",
-    "title": "Check if Page Social Facebook binding API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Facebook Page Acount found\",\n     \"data\": true\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/facebook/check"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Binding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "GetApiPageIdSocialFacebookCheck"
-  },
-  {
-    "type": "Get",
-    "url": "/api/page/:id/social/twitter/check",
-    "title": "Check if Page Social Twitter binding API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Twitter Page Acount found\",\n     \"data\": true\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/twitter/check"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Binding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "GetApiPageIdSocialTwitterCheck"
   },
   {
     "type": "delete",
@@ -6191,7 +5486,7 @@ define({ "api": [
   {
     "type": "post",
     "url": "/api/page/:id/access",
-    "title": "Add Page Access API",
+    "title": "Find Page API",
     "group": "Page",
     "success": {
       "examples": [
@@ -6224,13 +5519,13 @@ define({ "api": [
   {
     "type": "post",
     "url": "/api/page/:id/access",
-    "title": "Delete Page API",
+    "title": "Find Page API",
     "group": "Page",
     "success": {
       "examples": [
         {
           "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully remove User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully add User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
           "type": "json"
         }
       ]
@@ -6253,61 +5548,6 @@ define({ "api": [
     "filename": "src/api/controllers/PageController.ts",
     "groupTitle": "Page",
     "name": "PostApiPageIdAccess"
-  },
-  {
-    "type": "post",
-    "url": "/api/page/:id/config/:name",
-    "title": "Create Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Create Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Create Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "PostApiPageIdConfigName"
   },
   {
     "type": "post",
@@ -6341,6 +5581,39 @@ define({ "api": [
     "filename": "src/api/controllers/PageController.ts",
     "groupTitle": "Page",
     "name": "PostApiPageIdFollow"
+  },
+  {
+    "type": "post",
+    "url": "/api/page/:id/needs",
+    "title": "Get Page Needs API",
+    "group": "Page",
+    "success": {
+      "examples": [
+        {
+          "title": "Success",
+          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Get Page Needs\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "/api/page/:id/needs"
+      }
+    ],
+    "error": {
+      "examples": [
+        {
+          "title": "Unable Get Page Needs",
+          "content": "HTTP/1.1 500 Internal Server Error",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/controllers/PageController.ts",
+    "groupTitle": "Page",
+    "name": "PostApiPageIdNeeds"
   },
   {
     "type": "post",
@@ -6455,72 +5728,6 @@ define({ "api": [
     "filename": "src/api/controllers/PagePostController.ts",
     "groupTitle": "Page",
     "name": "PostApiPageIdPostSearch"
-  },
-  {
-    "type": "post",
-    "url": "/api/page/:id/social/facebook",
-    "title": "Binding Page Social API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Binding Page Social\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/facebook"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Binding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "PostApiPageIdSocialFacebook"
-  },
-  {
-    "type": "post",
-    "url": "/api/page/:id/social/twitter",
-    "title": "Binding Page Social API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully Binding Page Social\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/social/twitter"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Unable Binding Page Social",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "PostApiPageIdSocialTwitter"
   },
   {
     "type": "post",
@@ -6994,185 +6201,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/post/:postId/needs",
-    "title": "Get PagePost Needs API",
-    "group": "PagePost",
-    "parameter": {
-      "fields": {
-        "Request body": [
-          {
-            "group": "Request body",
-            "type": "String[]",
-            "optional": false,
-            "field": "needs",
-            "description": "<p>needs</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"needs\": [\"\"]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Remove PagePost Needs Successful\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/post/:postId/needs"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Cannot Remove PagePost Needs",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PostsController.ts",
-    "groupTitle": "PagePost",
-    "name": "GetApiPostPostidNeeds"
-  },
-  {
-    "type": "get",
-    "url": "/api/post/:postId/recommended_hashtag",
-    "title": "Get PagePost Needs API",
-    "group": "PagePost",
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"needs\": [\"\"]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Get PagePost Recommended Story Successful\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/post/:postId/recommended_hashtag"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Cannot get PagePost Recommended Story",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PostsController.ts",
-    "groupTitle": "PagePost",
-    "name": "GetApiPostPostidRecommended_hashtag"
-  },
-  {
-    "type": "get",
-    "url": "/api/post/:postId/recommended_story",
-    "title": "Get PagePost Needs API",
-    "group": "PagePost",
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"needs\": [\"\"]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Get PagePost Recommended Story Successful\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/post/:postId/recommended_story"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Cannot get PagePost Recommended Story",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PostsController.ts",
-    "groupTitle": "PagePost",
-    "name": "GetApiPostPostidRecommended_story"
-  },
-  {
-    "type": "get",
-    "url": "/api/recommend/story",
-    "title": "Get Page story API",
-    "group": "PagePost",
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"needs\": [\"\"]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Get PagePost Recommended Story Successful\",\n     \"data\": \"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/recommend/story"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Cannot get PagePost Recommended Story",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/RecommendController.ts",
-    "groupTitle": "PagePost",
-    "name": "GetApiRecommendStory"
-  },
-  {
-    "type": "get",
     "url": "/api/user",
     "title": "User List API",
     "group": "PagePost",
@@ -7633,149 +6661,6 @@ define({ "api": [
     "filename": "src/api/controllers/PageController.ts",
     "groupTitle": "Page",
     "name": "PutApiPageId"
-  },
-  {
-    "type": "put",
-    "url": "/api/page/:id/access/:accessid",
-    "title": "Edit Page Access API",
-    "group": "Page",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully adding User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/access/:accessid"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Page error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "PutApiPageIdAccessAccessid"
-  },
-  {
-    "type": "put",
-    "url": "/api/page/:id/config/:name",
-    "title": "Edit Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Edit Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/page/:id/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Edit Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageController.ts",
-    "groupTitle": "Page",
-    "name": "PutApiPageIdConfigName"
-  },
-  {
-    "type": "put",
-    "url": "/api/user/config/:name",
-    "title": "Edit Page Config API",
-    "group": "Page",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Edit Page.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/user/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Edit Page Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/UserController.ts",
-    "groupTitle": "Page",
-    "name": "PutApiUserConfigName"
   },
   {
     "type": "get",
@@ -9653,105 +8538,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/twitter/access_token",
-    "title": "Search Config API",
-    "group": "Twitter",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully get access token\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/twitter/access_token"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "config error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/TwitterController.ts",
-    "groupTitle": "Twitter",
-    "name": "GetApiTwitterAccess_token"
-  },
-  {
-    "type": "post",
-    "url": "/api/twitter/account_verify",
-    "title": "account_verify API",
-    "group": "Twitter",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully get account_verify\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/twitter/account_verify"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "config error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/TwitterController.ts",
-    "groupTitle": "Twitter",
-    "name": "PostApiTwitterAccount_verify"
-  },
-  {
-    "type": "post",
-    "url": "/api/twitter/request_token",
-    "title": "Search Config API",
-    "group": "Twitter",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Successfully request token\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/twitter/request_token"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "config error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/TwitterController.ts",
-    "groupTitle": "Twitter",
-    "name": "PostApiTwitterRequest_token"
-  },
-  {
-    "type": "get",
     "url": "/api/recommend/",
     "title": "Get Recommend API",
     "group": "UserAccess",
@@ -9848,128 +8634,6 @@ define({ "api": [
     "filename": "src/api/controllers/UserAccountController.ts",
     "groupTitle": "UserAccount",
     "name": "GetApiUserIdAccount"
-  },
-  {
-    "type": "post",
-    "url": "/api/engagement",
-    "title": "Create UserEngagement API",
-    "group": "UserEngagement",
-    "parameter": {
-      "fields": {
-        "Request body": [
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "contentId",
-            "description": "<p>contentId</p>"
-          },
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "contentType",
-            "description": "<p>contentType</p>"
-          },
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "action",
-            "description": "<p>action</p>"
-          },
-          {
-            "group": "Request body",
-            "type": "String",
-            "optional": false,
-            "field": "reference",
-            "description": "<p>reference</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Create UserEngagement\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/engagement"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "UserEngagement error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/UserEngagementController.ts",
-    "groupTitle": "UserEngagement",
-    "name": "PostApiEngagement"
-  },
-  {
-    "type": "get",
-    "url": "/api/user/config/:name",
-    "title": "Get User Config API",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Get User Config.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/user/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Get User Config Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/UserController.ts",
-    "groupTitle": "User",
-    "name": "GetApiUserConfigName"
   },
   {
     "type": "delete",
@@ -10242,61 +8906,6 @@ define({ "api": [
     "filename": "src/api/controllers/UserNotificationController.ts",
     "groupTitle": "UserNotifications",
     "name": "PostApiNotificationSearch"
-  },
-  {
-    "type": "post",
-    "url": "/api/user/config/:name",
-    "title": "Create User Config API",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Create User Config.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/user/config/:name"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Create User Config Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/UserController.ts",
-    "groupTitle": "User",
-    "name": "PostApiUserConfigName"
   },
   {
     "type": "post",

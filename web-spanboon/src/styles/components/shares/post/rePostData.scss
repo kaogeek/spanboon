@@ -14,7 +14,7 @@ repost-data {
   > .repost-data-card {
     border: 0.7px solid $border-color;
     background-color: $white;
-    margin: 5pt 10pt;
+    // margin: 5pt 10pt;
     border-radius: 4px;
     position: relative;
     height: auto;
@@ -177,7 +177,7 @@ repost-data {
       > .mat-button-wrapper {
         > .material-icons {
           font-size: $font-size-icon-large;
-          font-family: 'Material Icons' !important;
+          font-family: "Material Icons" !important;
         }
       }
     }
@@ -261,11 +261,12 @@ repost-data {
     }
 
     > .wrapper-content {
-      padding: 10pt 10pt 10pt 15pt;
-      // padding: 10pt 15pt;
-      word-break: break-all;
+      padding: 10pt 15pt 0 15pt;
+      word-break: break-word;
+
       &.active {
-        padding: 0 10pt 10pt 15pt;
+        // padding: 0 15pt 0 15pt;
+        padding: 10pt 15pt 10pt 15pt;
       }
       > .post-to {
         display: flex;
@@ -285,12 +286,12 @@ repost-data {
       }
 
       > .title {
-        @include font-size-8($font-head-300);
+        @include font-size-8($font-head-500);
+        line-height: 26px;
       }
 
       > .content {
         white-space: pre-wrap;
-        word-break: break-word;
         color: $color-black;
         @include font-size-10($font-content-light);
         min-height: unset;
@@ -313,6 +314,7 @@ repost-data {
       }
 
       > .content-sub {
+        margin-top: 10pt;
         white-space: pre-wrap;
         display: inline-block;
         cursor: pointer;
@@ -343,6 +345,7 @@ repost-data {
         display: flex;
         flex-direction: row;
         white-space: nowrap;
+        margin-top: 10pt;
 
         > .h_tag_list {
           width: max-content;

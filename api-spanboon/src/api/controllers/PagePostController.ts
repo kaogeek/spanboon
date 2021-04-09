@@ -1831,6 +1831,19 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            const referencePost = new ObjectID(posts.referencePost);
+
+            const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
+
+            if (undoRepost !== null && undoRepost !== undefined) {
+                const originPost: Posts = await this.postsService.findOne({ _id: referencePost });
+
+                if (originPost !== null && originPost !== undefined) {
+                    const repostCount = originPost.repostCount;
+                    await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
+                }
+            } 
+            
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);

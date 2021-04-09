@@ -14,6 +14,7 @@ import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
+import { Subscription } from 'rxjs';
 
 const PAGE_NAME: string = 'settings';
 const URL_PATH: string = '/page/';
@@ -44,6 +45,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     public isMobile: boolean;
     public isLoadImage: boolean;
     public bindingSocialTwitter: any;
+    public paramsSub: Subscription;
 
     @Input()
     public dirtyCancelEvent: EventEmitter<any>;
@@ -146,28 +148,34 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             }
         });
 
-        this.router.events.subscribe((event) => {
+        this.paramsSub = this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
-                const url: string = decodeURI(this.router.url);
+                const url: string = decodeURI(this.router.url); 
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
                     const replaceCommentURL: string = substringPage.replace('/page/', '');
                     this.pageId = replaceCommentURL.split('/')[0];
                     const splitTextId = replaceCommentURL.split('?tab=')[1];
+                    this.isLoadImage = true;
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
                     } else if (splitTextId === 'account') {
                         this.selected = 'ข้อมูลเพจ';
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
-                    }
-                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) {
-                        this.getAccessPage();
+                    } 
+                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) { 
+                        this.getAccessPage(this.pageId);
                     }
                 }
             }
         });
+
+        // this.routeActivated.params.subscribe(async (params) => {
+        //     // this.pageId = params['id'];  
+        //     this.getAccessPage(params['id']); 
+        // });
     }
 
     public ngOnInit(): void {
@@ -178,6 +186,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.paramsSub.unsubscribe();
     }
 
     isPageDirty(): boolean {
@@ -219,9 +228,9 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getAccessPage() {
+    public getAccessPage(pageId : string) {
         this.isLoadImage = false;
-        this.pageFacade.getProfilePage(this.pageId).then((res) => {
+        this.pageFacade.getProfilePage(pageId).then((res) => {
             if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
                 this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
                     if (image.status === 1) {

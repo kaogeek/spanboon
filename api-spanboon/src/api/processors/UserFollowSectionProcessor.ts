@@ -17,6 +17,7 @@ import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 
 export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -62,6 +63,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
                 let userId = undefined;
                 let clientId = undefined;
+                let userObjId: ObjectID = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     clientId = this.data.clientId;
@@ -159,7 +161,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         uniqueId: page.pageUsername
                     };
                 }
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
@@ -171,19 +173,34 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         lastestDate = row.createdDate;
                     }
 
+                    const contentModel = new ContentModel();
                     let followUserCount = 0;
                     let followUsers = [];
-                    if (page !== undefined) {
+                    if (page !== null && page !== undefined) {
                         const pfSimple = await this.userFollowService.sampleUserFollow(rowPage._id, SUBJECT_TYPE.PAGE, 5);
                         followUserCount = pfSimple.count;
                         followUsers = pfSimple.followers;
-                    } else if (user !== undefined) {
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page.id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
+                        }
+                    } else if (user !== null && user !== undefined) {
                         const usrSimple = await this.userFollowService.sampleUserFollow(user._id, SUBJECT_TYPE.USER, 5);
                         followUserCount = usrSimple.count;
                         followUsers = usrSimple.followers;
+                    } else {
+                        contentModel.isFollow = false;
                     }
 
-                    const contentModel = new ContentModel();
                     contentModel.commentCount = row.commentCount;
                     contentModel.repostCount = row.repostCount;
                     contentModel.shareCount = row.shareCount;

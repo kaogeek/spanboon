@@ -169,12 +169,12 @@ export class PostData {
           this.itemPost.needs.push(fulfill)
         }
       }
-      this.linkPost = (this.mainPostLink + this.itemPost._id)
-      this.isLoading = false
+      this.linkPost = (this.mainPostLink + this.itemPost._id);
+      this.isLoading = false;
     }, 1000);
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void {  
     setTimeout(() => {
       if (this.itemPost && this.itemPost.detail) {
         if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
@@ -207,8 +207,7 @@ export class PostData {
             }
           }
         }
-      }
-
+      } 
       // ordering image
       if (this.itemPost && this.itemPost.gallery && this.itemPost.gallery.length > 0) {
         this.itemPost.gallery = this.itemPost.gallery.sort((a, b) => a.ordering - b.ordering) 
@@ -440,7 +439,7 @@ export class PostData {
     this.delete.emit(post);
   }
 
-  public checkPost(post): boolean {
+  public checkPost(post): boolean { 
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {

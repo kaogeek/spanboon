@@ -61,7 +61,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public isMouseLeave: boolean;
   public isMsgHistory: boolean;
   public isLoadingMore: boolean;
-  private currentOffset: number;
   public searchRecent: any[] = [];
   public searchRecentName: any[] = [];
   public dataTrend: any[] = [];
@@ -86,7 +85,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     this.searchHashTagFacade = searchHashTagFacade;
     this.assetFacade = assetFacade;
     this.isMsgHistory = false;
-    this.currentOffset = SEARCH_OFFSET;
     this.isLoadingMore = false;
   }
 
@@ -200,18 +198,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.heightSearch = true;
 
-      if (this.heightSearch === true) {
-        // if (this.tabs !== undefined && this.tabs !== null) {
-        //   if (this.tabs.nativeElement !== undefined && this.tabs.nativeElement !== null) {
-        // setTimeout(() => {
-        //   $("#popular").css({
-        //     height: "calc(100% - " + this.tabs.nativeElement.offsetHeight + "px)"
-        //   });
-
-        //   $("#history").css({
-        //     height: "calc(100% - " + this.tabs.nativeElement.offsetHeight + "px)"
-        //   });
-        // }, 100);
+      if (this.heightSearch === true) { 
         setTimeout(() => {
           if (this.isTabClick === 'popular') {
             if (document.getElementById("defaultOpen1") !== null && document.getElementById("defaultOpen1") !== undefined) {
@@ -222,9 +209,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
               document.getElementById("defaultOpen2").click();
             }
           }
-        }, 50);
-        //   }
-        // }
+        }, 50); 
       }
     }
 
@@ -289,6 +274,42 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     })
   }
 
+  public loadHistory(){
+    let filter = new SearchFilter();
+    filter.limit = SEARCH_LIMIT;
+    filter.offset = SEARCH_OFFSET + (this.searchRecentName && this.searchRecentName.length > 0 ? this.searchRecent.length : 0);;
+    filter.whereConditions = {
+      type: ["KEYWORD"],
+      userId: this.getCurrentUserId()
+    };
+    if (!this.isLogin()) {
+      delete filter.whereConditions.userId
+    }
+    filter.count = false;
+    filter.orderBy = {} 
+    this.isLoading = true;
+    let originalRecentName: any[] = this.searchRecentName;
+    this.searchHistoryFacade.search(filter).then((res: any) => {
+      console.log('<<<< ', res);
+      
+      this.isLoadingMore = false; 
+      if (originalRecentName.length > 0) {
+        for (let history of res) {
+          const isHistory = this.searchRecentName.find(h =>{
+            return h.label === history.label
+          });
+          if(isHistory){  
+            continue;
+          } else {
+            originalRecentName.push(history);
+          }
+        }
+      }
+    }).catch((err: any) => {
+      console.log(err)
+    })
+  }
+
   public searchRecentNames() {
     let userId = this.getCurrentUserId();
     let filter = new SearchFilter();
@@ -327,11 +348,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       filter,
       userId: this.getCurrentUserId()
     }
-    if (this.getCurrentUserId) {
+    if (!this.getCurrentUserId()) {
       delete data.userId
     }
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
-      this.dataTrend = res
+      this.dataTrend = res;
+      console.log('this.dataTrend ', this.dataTrend)
     }).catch((err: any) => {
       console.log(err)
     })
@@ -386,13 +408,13 @@ export class HeaderSearch extends AbstractPage implements OnInit {
 
   public clickOpenLink(data: any, isEnter?: boolean) {
     let result;
-    let isPass , dataList;
+    let isPass, dataList;
     if (isEnter) {
       if (this.resSearch && this.resSearch.length > 0) {
         const isData = this.resSearch.find(keyword => {
           return keyword.label === data
-        }); 
-        if(isData){
+        });
+        if (isData) {
           isPass = isData.type;
           dataList = data;
         }
@@ -481,19 +503,37 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       console.log(err)
     })
   }
-  public loadMoreHashTag(): void {
-    this.isOpen = true;
-    this.currentOffset = this.currentOffset + SEARCH_LIMIT;
-
+  public loadMoreHashTag(): void {  
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
-    filter.offset = this.currentOffset;
+    filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
     filter.whereConditions = {};
     filter.count = false;
     filter.orderBy = {}
+    let data = {
+      filter,
+      userId: this.getCurrentUserId()
+    }
+    if (!this.getCurrentUserId()) {
+      delete data.userId
+    }
     this.isLoadingMore = true;
-    this.searchHashTagFacade.searchTopTrend(filter).then((res: any) => {
+    let originalTrend: any[] = this.dataTrend;
+    this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       this.isLoadingMore = false;
+      if (originalTrend.length > 0) {
+        for (let hashtag of res) {
+          const isHashtag = this.dataTrend.find(h =>{
+            return h.value === hashtag.value
+          });
+          if(isHashtag){  
+            continue;
+          } else {
+            originalTrend.push(hashtag);
+          }
+         
+        }
+      }
     }).catch((err: any) => {
       console.log(err)
     })
