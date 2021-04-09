@@ -345,8 +345,7 @@
                 {{itemPost.casePostId && itemPost.casePostId !== undefined &&
                 itemPost.casePostId !== '' ?
                 'โพสต์' : 'เพจ' }} </a>
-        </div>
-        {{itemPost.referencePostObject && itemPost.referencePostObject.length}}
+        </div> 
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
                 [ngStyle]="{'margin-top': itemPost.referencePostObject ? '10pt' : 'unset' , 'display' : itemPost.referencePostObject ? 'block' : 'unset'}">

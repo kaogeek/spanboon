@@ -1332,6 +1332,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else if (action.type === "NOTOPIC") {
         dataPost = action.post._id;
         this.postFacade.rePost(dataPost, data).then(async (res: any) => {
+          this.resPost.posts[index].repostCount++;
+          this.resPost.posts[index].isRepost = true;
+
+          if(data.pageId === null && data.postAsPage == null){
+            return;
+          }
           let searchWherePost: SearchFilter = new SearchFilter();
           searchWherePost.whereConditions = { _id: res.id };
           let searchPost = await this.searchById(searchWherePost);
@@ -1360,12 +1366,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
                 }
               }).catch((err: any) => {
               });
-            }
+            } 
             this.resPost.posts.push(searchPost[0]);
             if (this.resPost.posts && this.resPost.posts && this.resPost.posts.length > 0) {
-              this.resPost.posts = this.resPost.posts.sort((a, b) => new Date(b.startDateTime).valueOf() - new Date(a.startDateTime).valueOf());
-              this.resPost.posts[index].repostCount++;
-              this.resPost.posts[index].isRepost = true;
+              this.resPost.posts = this.resPost.posts.sort((a, b) => new Date(b.startDateTime).valueOf() - new Date(a.startDateTime).valueOf()); 
             }
           }
         }).catch((err: any) => {
@@ -1373,13 +1377,15 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         })
       } else if (action.type === "UNDOTOPIC") {
         this.postFacade.undoPost(action.post._id).then((res: any) => {
-          for (let [i, data] of this.resPost.posts.entries()) {
-            if (data.referencePostObject._id === action.post._id) {
-              this.resPost.posts[index].repostCount--;
-              this.resPost.posts[index].isRepost = false;
-              this.resPost.posts.splice(i, 1);
-              break;
-            }
+          this.resPost.posts[index].repostCount--;
+          this.resPost.posts[index].isRepost = false;
+          for (let [i, data] of this.resPost.posts.entries()) { 
+            if(data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== ''){
+              if (data.referencePostObject._id === action.post._id) {
+                this.resPost.posts.splice(i, 1);
+                break;
+              }
+            } 
           }
         }).catch((err: any) => {
           console.log(err);
