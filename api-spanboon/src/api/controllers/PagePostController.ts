@@ -1206,8 +1206,6 @@ export class PagePostController {
                         }
                     }
 
-                    result.postsMap = postsMap;
-
                     let userObjId;
                     const userLikeMap: any = {};
                     const likeAsPageMap: any = {};
@@ -1407,6 +1405,7 @@ export class PagePostController {
             }
 
             let assetResultUpload: Asset;
+            let findPostGalleryImg;
 
             if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
 
@@ -1423,7 +1422,7 @@ export class PagePostController {
                 }
 
                 // find post have not in image  
-                await this.postGalleryService.deleteMany({
+                findPostGalleryImg = await this.postGalleryService.deleteMany({
                     // where: {
                     $and: [
                         {
@@ -1436,18 +1435,22 @@ export class PagePostController {
                     ]
                     // }
                 });
-
-                for (const data of UpdateGalleryList) {
+                
+                for (const data of UpdateGalleryList) { 
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
                     if (gallery.length > 0) {
-                        // const isContain = gallery.filter(object => {
-                        //     console.log('1 ', data.fileId) 
-                        //     console.log('2 ', new ObjectID(data.fileId)) 
-                        //     console.log('object ', new ObjectID(data.fileId) === object.fileId   ? true : false);
-
+                        // const isContain = gallery.find(object => {  
+                        //     console.log('object.fileId ',object.fileId)
+                        //     console.log('data.fileId ',data.fileId)
+                        //     console.log('>>> ',new ObjectID(object.fileId) === new ObjectID(data.fileId) ? 'true' : 'false')
                         //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
                         // });
+                        // if(isContain){
+                        //     continue;
+                        // } else {
+                        //     console.log('isContain ',data)
+                        // }
                         // console.log(isContain);
 
                         const updateImageQuery = { _id: new ObjectID(data.id) };
@@ -1866,8 +1869,8 @@ export class PagePostController {
                     const repostCount = originPost.repostCount;
                     await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
                 }
-            }
-
+            } 
+            
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);
@@ -1988,4 +1991,4 @@ export class PagePostController {
     public async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }
-}
+} 
