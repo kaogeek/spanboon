@@ -239,6 +239,7 @@ export class PostsController {
 
         const postLists: any = await this.postsService.search(filter);
         const userLikeMap: any = {};
+        const likeAsPageMap: any = {};
         const postsCommentMap: any = {};
         let result = [];
 
@@ -528,7 +529,15 @@ export class PostsController {
                     if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
                         for (const like of userLikes) {
                             const postId = like.subjectId;
-                            userLikeMap[postId] = like;
+                            const likeAsPage = like.likeAsPage;
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                                    likeAsPageMap[postId] = like;
+                                } else {
+                                    userLikeMap[postId] = like;
+                                }
+                            }
                         }
                     }
 
@@ -549,7 +558,8 @@ export class PostsController {
                     const postId = data._id;
                     const story = data.story;
                     const ownerUser = data.ownerUser;
-                    const dataKey = postId + ':' + ownerUser;
+                    const postAsPage = data.postAsPage;
+                    let dataKey;
 
                     if (isHideStory === true) {
                         if (story !== null && story !== undefined) {
@@ -559,21 +569,44 @@ export class PostsController {
                         }
                     }
 
-                    if (userLikeMap[postId]) {
-                        data.isLike = true;
-                    } else {
-                        data.isLike = false;
-                    }
+                    if (postId !== null && postId !== undefined && postId !== '') {
+                        if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
+                            dataKey = postAsPage + ':' + postId + ':' + ownerUser;
+                        } else {
+                            dataKey = postId + ':' + ownerUser;
+                        }
 
-                    if (postsMap[dataKey]) {
-                        data.isRepost = true;
+                        if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                            if (postsMap[dataKey]) {
+                                data.isRepost = true;
+                            } else {
+                                data.isRepost = false;
+                            }
+                        } else {
+                            data.isRepost = false;
+                        }
+
+                        if (userLikeMap[postId]) {
+                            data.isLike = true;
+                        } else {
+                            data.isLike = false;
+                        }
+
+                        if (likeAsPageMap[postId]) {
+                            data.likeAsPage = true;
+                        } else {
+                            data.likeAsPage = false;
+                        }
+
+                        if (postsCommentMap[postId]) {
+                            data.isComment = true;
+                        } else {
+                            data.isComment = false;
+                        }
                     } else {
                         data.isRepost = false;
-                    }
-
-                    if (postsCommentMap[postId]) {
-                        data.isComment = true;
-                    } else {
+                        data.isLike = false;
+                        data.likeAsPage = false;
                         data.isComment = false;
                     }
                 });

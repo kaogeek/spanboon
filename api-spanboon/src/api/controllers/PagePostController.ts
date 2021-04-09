@@ -1195,11 +1195,18 @@ export class PagePostController {
 
                         if (postsReference !== null && postsReference !== undefined && postsReference.length > 0) {
                             for (const posts of postsReference) {
-                                const postId = posts.referencePost;
-                                postsMap[postId + ':' + uId] = posts;
+                                const pageId = posts.pageId;
+                                const referencePost = posts.referencePost;
+                                if (pageId !== null && pageId !== undefined && pageId !== '') {
+                                    postsMap[pageId + ':' + referencePost + ':' + uId] = posts;
+                                } else {
+                                    postsMap[referencePost + ':' + uId] = posts;
+                                }
                             }
                         }
                     }
+
+                    result.postsMap = postsMap;
 
                     let userObjId;
                     const userLikeMap: any = {};
@@ -1217,10 +1224,10 @@ export class PagePostController {
                                     const likeAsPage = like.likeAsPage;
 
                                     if (postId !== null && postId !== undefined && postId !== '') {
-                                        userLikeMap[postId] = like;
-
                                         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
                                             likeAsPageMap[postId] = like;
+                                        } else {
+                                            userLikeMap[postId] = like;
                                         }
                                     }
                                 }
@@ -1238,8 +1245,9 @@ export class PagePostController {
 
                     pagePostLists.map(async (data) => {
                         const postId = data._id;
+                        const postAsPage = data.postAsPage;
                         const story = data.story;
-                        const dataKey = postId + ':' + uId;
+                        let dataKey;
 
                         if (isHideStory === true) {
                             if (story !== null && story !== undefined) {
@@ -1249,27 +1257,44 @@ export class PagePostController {
                             }
                         }
 
-                        if (userLikeMap[postId]) {
-                            data.isLike = true;
-                        } else {
-                            data.isLike = false;
-                        }
+                        if (postId !== null && postId !== undefined && postId !== '') {
+                            if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
+                                dataKey = postAsPage + ':' + postId + ':' + uId;
+                            } else {
+                                dataKey = postId + ':' + uId;
+                            }
 
-                        if (likeAsPageMap[postId]) {
-                            data.likeAsPage = true;
-                        } else {
-                            data.likeAsPage = false;
-                        }
+                            if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                                if (postsMap[dataKey]) {
+                                    data.isRepost = true;
+                                } else {
+                                    data.isRepost = false;
+                                }
+                            } else {
+                                data.isRepost = false;
+                            }
 
-                        if (postsMap[dataKey]) {
-                            data.isRepost = true;
+                            if (userLikeMap[postId]) {
+                                data.isLike = true;
+                            } else {
+                                data.isLike = false;
+                            }
+
+                            if (likeAsPageMap[postId]) {
+                                data.likeAsPage = true;
+                            } else {
+                                data.likeAsPage = false;
+                            }
+
+                            if (postsCommentMap[postId]) {
+                                data.isComment = true;
+                            } else {
+                                data.isComment = false;
+                            }
                         } else {
                             data.isRepost = false;
-                        }
-
-                        if (postsCommentMap[postId]) {
-                            data.isComment = true;
-                        } else {
+                            data.isLike = false;
+                            data.likeAsPage = false;
                             data.isComment = false;
                         }
                     });
@@ -1382,7 +1407,6 @@ export class PagePostController {
             }
 
             let assetResultUpload: Asset;
-            let findPostGalleryImg;
 
             if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
 
@@ -1399,7 +1423,7 @@ export class PagePostController {
                 }
 
                 // find post have not in image  
-                findPostGalleryImg = await this.postGalleryService.deleteMany({
+                await this.postGalleryService.deleteMany({
                     // where: {
                     $and: [
                         {
@@ -1413,7 +1437,7 @@ export class PagePostController {
                     // }
                 });
 
-                for (const data of UpdateGalleryList) { 
+                for (const data of UpdateGalleryList) {
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
                     if (gallery.length > 0) {
@@ -1842,8 +1866,8 @@ export class PagePostController {
                     const repostCount = originPost.repostCount;
                     await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
                 }
-            } 
-            
+            }
+
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);
@@ -1964,4 +1988,4 @@ export class PagePostController {
     public async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }
-} 
+}
