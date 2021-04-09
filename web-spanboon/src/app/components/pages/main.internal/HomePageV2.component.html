@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        <div class="needs_section">
+        <div class="needs_section" *ngIf="needsSectionModels.contents">
             <div class="top">
                 <span class="title">กำลังมองหาล่าสุด</span>
                 <div class="line"></div>
@@ -127,7 +127,7 @@
             </div>
         </div>
 
-        <div class="rated_section">
+        <div class="rated_section" *ngIf="lookingSectionModels.contents">
             <div class="top">
                 <span class="title">{{lookingSectionModels.title}}</span>
                 <div class="line"></div>
@@ -154,7 +154,7 @@
             </div>
         </div>
 
-        <div class="other_section">
+        <div class="other_section" *ngIf="viewSectionModels.contents">
             <div class="top">
                 <span class="title">{{viewSectionModels.title}}</span>
                 <div class="line"></div>

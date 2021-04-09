@@ -113,6 +113,7 @@
                         }
                     }
                     > a {
+                        color: #cacaca;
                         @include font-size-11($font-head-500);
                         &:hover {
                             transition: 0.1s;
@@ -260,6 +261,14 @@
                     line-height: 18px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
+                    > a {
+                        color: #cacaca;
+                        @include font-size-11($font-head-500);
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
+                    }
                     > .new-cards-offical {
                         display: flex;
                         width: 14px;
@@ -417,6 +426,14 @@
                     line-height: 18px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
+                    > a {
+                        color: #cacaca;
+                        @include font-size-11($font-head-500);
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
+                    }
                     > .new-cards-offical {
                         display: flex;
                         width: 14px;
@@ -473,6 +490,7 @@
                     padding: 8px;
                     display: flex;
                     background-color: #000000c7;
+                    z-index: 3;
                     align-items: center;
                     color: white;
                     @include font-size-9($font-head-400);
@@ -500,6 +518,10 @@
                     margin: 12px 0px;
                     > .event_title {
                         @include font-size-7($font-head-500);
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
                     }
                     > .date_time {
                         @include font-size-11($font-head-400);
@@ -595,6 +617,13 @@
                     > .title {
                         display: flex;
                         justify-content: space-between;
+                        > a {
+                            @include font-size-10($font-head-500);
+                            &:hover {
+                                transition: 0.1s;
+                                color: $brandcolor2;
+                            }
+                        }
                         > span {
                             color: black;
                             &:hover {
@@ -905,6 +934,9 @@
     }
     .card_content_home > .event_card > .top > .top_coverPage.full {
         height: 450px;
+    }
+    .card_content_home > .event_card > .top > .top_coverPage > .teg_event {
+        width: 100%;
     }
 }
 
