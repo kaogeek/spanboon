@@ -14,6 +14,9 @@
     justify-content: center;
     > .hoem_page_body {
         height: auto;
+        flex-direction: column;
+        align-items: center;
+        display: flex;
         > .events_tag_top {
             // width: calc(100% - 40px);
             width: 100%;
@@ -22,44 +25,63 @@
             align-items: center;
             justify-content: center;
             > .left {
-                width: calc(400px - 40px);
                 padding: 0px 20px;
-                align-items: center;
+                align-items: flex-start;
                 display: flex;
+                word-break: break-word;
                 justify-content: center;
                 @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
                     margin-right: 10px;
+                    width: 72px;
                 }
-                > .tag {
-                    cursor: pointer;
-                    padding: 0px 10px;
-                    border-right: solid 0.5px #d3d3d3;
-                    &:hover {
-                        transition: 0.1s;
-                        color: $brandcolor2;
+                > .tag_list {
+                    display: block;
+                    > .tag {
+                        cursor: pointer;
+                        padding: 0px 10px;
+                        border-right: solid 0.5px #d3d3d3;
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
+                    }
+                }
+                > .tag_list_moblie {
+                    display: none;
+                    > .tag {
+                        cursor: pointer;
+                        padding: 0px 10px;
+                        border-right: solid 0.5px #d3d3d3;
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
                     }
                 }
             }
             > .right {
-                width: calc(400px - 40px);
                 padding: 0px 20px;
-                align-items: center;
+                align-items: flex-start;
                 display: flex;
+                word-break: break-word;
                 justify-content: center;
                 @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
                     margin-right: 10px;
+                    width: 72px;
                 }
-                > .tag {
-                    cursor: pointer;
-                    padding: 0px 10px;
-                    border-right: solid 0.5px #d3d3d3;
-                    &:hover {
-                        transition: 0.1s;
-                        color: $brandcolor2;
+                > .tag_list {
+                    > .tag {
+                        cursor: pointer;
+                        padding: 0px 10px;
+                        border-right: solid 0.5px #d3d3d3;
+                        &:hover {
+                            transition: 0.1s;
+                            color: $brandcolor2;
+                        }
                     }
                 }
             }
@@ -67,11 +89,18 @@
 
         > .events_top {
             width: auto;
+            // width: 80%;
             display: flex;
+            &.full {
+                width: 80%;
+            }
             border-bottom: solid 0.5px #d3d3d3;
             > .left {
                 padding: 15px;
                 width: calc(600px - 30px);
+                &.full {
+                    width: 100%;
+                }
             }
             > .right {
                 padding: 15px;
@@ -81,6 +110,9 @@
                 > .tagCard {
                     display: flex;
                     width: 100%;
+                }
+                &.dis {
+                    display: none;
                 }
             }
         }
@@ -150,7 +182,6 @@
             }
             > .body {
                 display: flex;
-                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
@@ -169,6 +200,7 @@
         > .rated_section {
             margin: 10px 0px;
             padding: 10px 0px;
+            min-width: 80%;
             > .top {
                 display: flex;
                 align-items: baseline;
@@ -187,7 +219,6 @@
             }
             > .body {
                 display: flex;
-                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
@@ -224,7 +255,6 @@
             }
             > .body {
                 display: flex;
-                justify-content: center;
                 > .isMobile {
                     display: none;
                 }
@@ -250,6 +280,9 @@
 }
 
 @media (max-width: $xlarge) {
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .right {
+        display: none;
+    }
 }
 
 @media (max-width: $xlarge - 80px) {
@@ -263,6 +296,9 @@
     .hoem_page_v2 > .hoem_page_body > .events_top {
         display: flex;
         justify-content: center;
+        &.full {
+            width: 100%;
+        }
     }
     .hoem_page_v2 > .hoem_page_body > .events_top > .right > .tagCard {
         display: flex;
@@ -355,9 +391,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .right {
-        display: none;
     }
     .hoem_page_v2 > .hoem_page_body > .events_top {
         display: flex;
@@ -479,6 +512,15 @@
     .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile_button {
         display: block;
         width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left {
+        word-break: unset;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
+        display: none;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list_moblie {
+        display: block;
     }
 }
 @media (max-width: $small) {
