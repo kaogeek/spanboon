@@ -6,29 +6,35 @@
 -->
 
 <div class="repost-data-card" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
-    <div class="profile-page" *ngIf="!itemPost.requester"> 
-        <ng-container *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
-            <div class="menu-user" (click)="menuProfile();">
-                <img class="image-profile" src="{{itemPost.pageId.imageURL}}" alt="">
+    <div class="profile-page" *ngIf="!itemPost.requester">
+        <ng-container *ngIf="(itemPost.pageObject && itemPost.pageObject.imageURL && itemPost.pageObject.imageURL !== undefined && itemPost.pageObject.imageURL !== null && itemPost.pageObject.imageURL !== '') ||
+        (!itemPost.pageObject); else elseImage">
+            <div class="menu-user" (click)="menuProfile();"> 
+                <img class="image-profile" *ngIf="itemPost.pageObject" src="{{itemPost.pageObject.imageURL }}" alt="">  
+                <img class="image-profile" *ngIf="!itemPost.pageObject && itemPost.ownerUser.imageURL !== '' " src="{{itemPost.ownerUser.imageURL}}" alt="">
             </div>
         </ng-container>
         <ng-template #elseImage>
-            <div *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId && itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId !== ''"
-                class="menu-user displayName">
-                <div class="donator">
-                    {{itemPost.pageId.name | slice: 0:1 }}
+            <div class="menu-user displayName">
+                <div class="donator" *ngIf="itemPost.pageObject"> 
+                    {{itemPost.pageObject.name | slice: 0:1 }}
+                </div>
+                <div class="donator" *ngIf="!itemPost.pageObject"> 
+                    {{itemPost.ownerUser.displayName | slice: 0:1 }}
                 </div>
             </div>
         </ng-template>
-        <div *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId && itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId !== ''"
+        <div *ngIf="(itemPost.pageObject && itemPost.pageObject !== undefined && itemPost.pageObject !== null && itemPost.pageObject !== '') || 
+        (itemPost.ownerUser && itemPost.ownerUser !== undefined && itemPost.ownerUser !== null && itemPost.ownerUser !== '')"
             class="profile-page-name">
-            {{itemPost.pageId.name}}
+            <span *ngIf="itemPost.pageObject">{{itemPost.pageObject.name}}</span>
+            <span *ngIf="!itemPost.pageObject">{{itemPost.ownerUser.displayName}}</span> 
             <span class="profile-page-name-sub" (click)="postTeb(itemPost)">{{itemPost && itemPost.createdDate |
                 dateFormat}}</span>
         </div>
     </div>
     <div class="fulfill-profile" *ngIf="itemPost.requester"
-        [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' "> 
+        [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
             <div class="left">
                 <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
@@ -97,7 +103,8 @@
                 </div>
                 <a href="/page/{{itemPost.pageId}}" target="_blank">
                     <div class="profile-right">
-                        <ng-container *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
+                        <ng-container
+                            *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
                             <img class="post-data-profile"
                                 src="{{apiBaseURL + itemPost.fulfillmentPage.imageURL+'/image'}}" alt="">
                         </ng-container>
@@ -107,12 +114,13 @@
                         <div class="name-top">
                             <div class="fulfill-name">{{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
                             </div>
-                            <ng-container *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
+                            <ng-container
+                                *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
                                 <div class="text">สิ่งที่กำลังทำ</div>
                             </ng-container>
                             <ng-template #elseTemplateObjective>
                                 <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
-                            </ng-template> 
+                            </ng-template>
                         </div>
                     </div>
                 </a>
@@ -144,14 +152,15 @@
     </ng-container>
 
     <div class="topic-name" [class.active]="itemPost.referencePostObject"
-        *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+        *ngIf="itemPost.requester && (itemPost.title === '' || itemPost.title === undefined || itemPost.title === null)">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>
-    
-    <div class="wrapper-content" [class.active]="(itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && (itemPost.gallery.length === 0 ) || (itemPost.gallery.length > 0 || itemPost.title === ''  || itemPost.detail === ''))">
+
+    <div class="wrapper-content"
+        [class.active]="(itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && (itemPost.gallery.length === 0 ) || (itemPost.gallery.length > 0 || itemPost.title === ''  || itemPost.detail === ''))">
         <div class="title" *ngIf="itemPost && itemPost.title" [innerHTML]="itemPost.title | highlight">
         </div>
         <div class="content" *ngIf="itemPost && itemPost.detail" [innerHTML]="itemPost && itemPost.detail | highlight">
@@ -177,7 +186,7 @@
             <div (click)="storyTeb(itemPost)" class="content-sub">
                 อ่านสตอรี่<span style="margin-left: 1px;">...</span>
             </div>
-        </ng-container> 
+        </ng-container>
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0" [routerLink]="'/'">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                 <a style="color: gray !important;" class="highlight-text"
@@ -187,23 +196,26 @@
 
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
             [isPendingFulfill]="isPendingFulfill"
-            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card> 
+            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
         <ng-template #elseNullPost>
             <ng-container>
                 <null-data></null-data>
             </ng-container>
-        </ng-template> 
+        </ng-template>
 
         <ng-container *ngIf="isNotAccess;">
-            <div style="display: flex;height: 50pt;justify-content: space-between;align-items: center;border-top: 0.7px solid rgba(229, 229, 229, 0.7);">
+            <div
+                style="display: flex;height: 50pt;justify-content: space-between;align-items: center;border-top: 0.7px solid rgba(229, 229, 229, 0.7);">
                 <div style="width: 6%;">
-                    <ng-container *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
+                    <ng-container
+                        *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
                             <img class="image-profile" src="{{user.imageURL}}" alt="">
                         </div>
                     </ng-container>
-                    <ng-template #elseImage> 
-                        <div class="menu-user displayName" *ngIf="user && user.displayName && user.displayName !== undefined && user.displayName !== null && user.displayName !== '' || user.name && user.name !== null && user.name !== '' && user.name !== undefined ">
+                    <ng-template #elseImage>
+                        <div class="menu-user displayName"
+                            *ngIf="user && user.displayName && user.displayName !== undefined && user.displayName !== null && user.displayName !== '' || user.name && user.name !== null && user.name !== '' && user.name !== undefined ">
                             <div class="donator">
                                 {{ user.name || user.displayName | slice: 0:1 }}
                             </div>
@@ -211,6 +223,6 @@
                     </ng-template>
                 </div>
             </div>
-        </ng-container> 
+        </ng-container>
     </div>
 </div>
