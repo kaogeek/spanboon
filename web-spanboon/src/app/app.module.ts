@@ -199,6 +199,7 @@ import {
   CheckMessageManager,
   Engagement,
   SeoService,
+  PostActionService,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -416,6 +417,7 @@ const SERVICE_CLASSES: any[] = [
   CheckMessageManager,
   Engagement,
   SeoService,
+  PostActionService,
   // facade 
   PostFacade,
   AllocateFacade,
