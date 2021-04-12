@@ -268,7 +268,12 @@ export class UserProfileController {
                                 const postId = posts.id;
                                 const ownerUser = posts.ownerUser;
                                 postIdList.push(new ObjectID(postId));
-                                postsMap[pageId + ':' + postId + ':' + ownerUser] = posts;
+
+                                if (pageId !== null && pageId !== undefined && pageId !== '') {
+                                    postsMap[pageId + ':' + postId + ':' + ownerUser] = posts;
+                                } else {
+                                    postsMap[postId + ':' + ownerUser] = posts;
+                                }
                             }
                         }
                     }
@@ -314,7 +319,7 @@ export class UserProfileController {
                         const pageId = data.pageId;
                         const story = data.story;
                         const ownerUser = data.ownerUser;
-                        const dataKey = pageId + ':' + postId + ':' + ownerUser;
+                        let dataKey;
 
                         if (isHideStory === true) {
                             if (story !== null && story !== undefined) {
@@ -324,27 +329,44 @@ export class UserProfileController {
                             }
                         }
 
-                        if (userLikeMap[postId]) {
-                            data.isLike = true;
-                        } else {
-                            data.isLike = false;
-                        }
+                        if (postId !== null && postId !== undefined && postId !== '') {
+                            if (pageId !== null && pageId !== undefined && pageId !== '') {
+                                dataKey = pageId + ':' + postId + ':' + ownerUser;
+                            } else {
+                                dataKey = postId + ':' + ownerUser;
+                            }
 
-                        if (likeAsPageMap[postId]) {
-                            data.likeAsPage = true;
-                        } else {
-                            data.likeAsPage = false;
-                        }
+                            if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                                if (postsMap[dataKey]) {
+                                    data.isRepost = true;
+                                } else {
+                                    data.isRepost = false;
+                                }
+                            } else {
+                                data.isRepost = false;
+                            }
 
-                        if (postsMap[dataKey]) {
-                            data.isRepost = true;
+                            if (userLikeMap[postId]) {
+                                data.isLike = true;
+                            } else {
+                                data.isLike = false;
+                            }
+
+                            if (likeAsPageMap[postId]) {
+                                data.likeAsPage = true;
+                            } else {
+                                data.likeAsPage = false;
+                            }
+
+                            if (postsCommentMap[postId]) {
+                                data.isComment = true;
+                            } else {
+                                data.isComment = false;
+                            }
                         } else {
                             data.isRepost = false;
-                        }
-
-                        if (postsCommentMap[postId]) {
-                            data.isComment = true;
-                        } else {
+                            data.isLike = false;
+                            data.likeAsPage = false;
                             data.isComment = false;
                         }
                     });
