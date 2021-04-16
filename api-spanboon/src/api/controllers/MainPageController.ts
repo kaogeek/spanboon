@@ -285,7 +285,7 @@ export class MainPageController {
             // const result: any = this.getResponsesData();
             const result: any = {};
             result.emergencyEvents = emerSectionModel;
-            result.postSectionModel = postSectionModel;
+            // result.postSectionModel = postSectionModel;
             result.objectiveEvents = objectiveSectionModel;
             result.lastest = lastestLookSectionModel;
             result.looking = stillLKSectionModel;
