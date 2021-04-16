@@ -7,7 +7,6 @@
 
 import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { SectionModel } from '../models/SectionModel';
-import { ContentModel } from '../models/ContentModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import moment from 'moment';

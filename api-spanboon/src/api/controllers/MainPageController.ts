@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Body, Post, Req, QueryParam, QueryParams } from 'routing-controllers';
+import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
 import MainPageResponse from './responses/MainPageResponse';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
@@ -45,7 +45,6 @@ import { Page } from '../models/Page';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
-import { LastestNeedsParam } from './params/LastestNeedsParam';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 
 @JsonController('/main')
@@ -219,7 +218,7 @@ export class MainPageController {
             const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
             const emergencyPinModel = await emergencyPinProcessor.process();
 
-            const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+            const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
             objectiveProcessor.setData({
                 userId
             });
