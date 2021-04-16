@@ -206,8 +206,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
         }
       }
-    });
-
+    }); 
   }
 
   public ngOnDestroy() {

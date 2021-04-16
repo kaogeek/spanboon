@@ -635,7 +635,7 @@
                                             }
                                         }
                                         > .material-icons {
-                                            font-family: 'Material Icons' !important;
+                                            font-family: "Material Icons" !important;
                                             font-size: $font-size-icon-small;
                                             @include pointer();
                                         }
@@ -665,12 +665,23 @@
                                         display: flex;
                                         padding: 5pt 0;
                                         align-items: center;
+
                                         > .img-user {
                                             width: 40pt;
                                             height: 40pt;
                                             border-radius: 50%;
                                             object-fit: cover;
                                         }
+
+                                        > .img-user-displayname {
+                                            background-color: $brandcolor2;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            @include font-size-9($font-head-500);
+                                            color: $white;
+                                        }
+
                                         > .list-follow-name {
                                             margin-left: 5pt;
                                             > .follow-name {
@@ -804,6 +815,16 @@
                                         height: 40pt;
                                         border-radius: 50%;
                                         object-fit: cover;
+                                    }
+
+                                    > .img-user-displayname {
+                                        background-color: $brandcolor2;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        @include font-size-9($font-head-500);
+                                        color: $white;
+                                        flex: 0 0 auto;
                                     }
 
                                     > .list-follow-name {
