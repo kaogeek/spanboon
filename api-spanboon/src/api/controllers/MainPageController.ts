@@ -85,6 +85,7 @@ export class MainPageController {
         const Date = date;
 
         if (Offset !== undefined || Date !== undefined) {
+            console.log('Offset', Offset);
 
             if (Section === 'EMERGENCYEVENT') {
 
@@ -106,8 +107,7 @@ export class MainPageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }
-            if (Section === 'LASTEST') {
+            } else if (Section === 'LASTEST') {
 
                 const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
                 lastestLKProcessor.setData({
@@ -130,8 +130,7 @@ export class MainPageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }
-            if (Section === 'STILLLOOKING') {
+            } else if (Section === 'STILLLOOKING') {
 
                 const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
                 stillLKProcessor.setData({
@@ -153,8 +152,7 @@ export class MainPageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }
-            if (Section === 'RECOMMEND') {
+            } else if (Section === 'RECOMMEND') {
                 const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
                 userRecProcessor.setData({
                     userId
@@ -177,9 +175,13 @@ export class MainPageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                     return res.status(400).send(errorResponse);
                 }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                return res.status(400).send(errorResponse);
             }
 
         } else {
+            console.log('isOffset', Offset);
 
             const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
             const emerSectionModel = await emerProcessor.process();
@@ -284,7 +286,7 @@ export class MainPageController {
             // const result: any = this.getResponsesData();
             const result: any = {};
             result.emergencyEvents = emerSectionModel;
-            // result.postSectionModel = postSectionModel;
+            result.postSectionModel = postSectionModel;
             result.objectiveEvents = objectiveSectionModel;
             result.lastest = lastestLookSectionModel;
             result.looking = stillLKSectionModel;
