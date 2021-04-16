@@ -158,8 +158,7 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.observManager.publish('scroll.buttom', null);
     // }
     // var scrolltotop = document.getElementById("menubottom"); 
-    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 40)) {
-      console.log('1111')
+    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 40)) { 
       this.observManager.publish('scroll.buttom', null);
     }
 
