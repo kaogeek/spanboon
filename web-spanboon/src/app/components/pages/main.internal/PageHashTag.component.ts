@@ -1164,6 +1164,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag();
     }
   }
+  
   public removeCard(card: any, index: number) {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
@@ -1236,8 +1237,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     $("#menubottom").css({
       'overflow-y': "hidden"
-    });
-
+    }); 
   }
 
   public async actionComment(action: any, index: number) {
