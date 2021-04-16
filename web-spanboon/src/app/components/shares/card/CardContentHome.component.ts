@@ -50,6 +50,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     @Input()
     public tagCardIsOpenRight: boolean;
 
+    @Output()
+    public clickEvent: EventEmitter<any> = new EventEmitter();
+
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
     public selectIndex: number = 0;
@@ -111,8 +114,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
-                this.postId = this.postData.post._id;
-
+                if (this.isDerTy(this.postData.post)) {
+                    this.postId = this.postData.post._id;
+                }
                 if (this.isDerTy(this.postData.owner)) {
                     this.getUserData(this.postData.owner);
                 }
@@ -187,22 +191,27 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(data, index?) {
-        if (this.isData) {
-            this.router.navigateByUrl('/search?hashtag=' + data);
-        } else if (!index) {
-            this.router.navigateByUrl('/search?hashtag=' + data);
-        } else {
-            if (this.selectIndex !== index) {
-                this.selectIndex = index
-            } else {
-                this.router.navigateByUrl('/search?hashtag=' + data);
+        this.router.navigateByUrl('/search?hashtag=' + data);
+        // if (this.isData) {
+        //     this.router.navigateByUrl('/search?hashtag=' + data);
+        // } else if (!index) {
+        //     this.router.navigateByUrl('/search?hashtag=' + data);
+        // } else {
+        //     if (this.selectIndex !== index) {
+        //         this.selectIndex = index
+        //     } else { 
+        //         this.router.navigateByUrl('/search?hashtag=' + data);
 
-            }
-        }
+        //     }
+        // }
     }
 
     public clickDialogDiverlop() {
         this.showAlertDevelopDialog();
+    }
+
+    public clickEventEmit() {
+        this.clickEvent.emit(this.postData);
     }
 
     isDerTy(value): boolean {
@@ -243,7 +252,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     return Obj[key];
                 } else {
 
-                    return lastObj[key];
+                    return Obj[key];
                 }
 
             } else {

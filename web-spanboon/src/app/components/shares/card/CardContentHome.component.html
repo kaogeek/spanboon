@@ -6,7 +6,7 @@
 -->
 <div class="card_content_home">
     <div *ngIf="smallCard && postData && !isLoad" class="small_card">
-        <div class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
+        <div (click)="clickEventEmit()" class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
                 <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
@@ -66,7 +66,8 @@
             </svg>
             <a href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
-        <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
+        <div (click)="clickEventEmit()" class="top_medium_card"
+            [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
                 <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
@@ -139,7 +140,7 @@
             </svg>
             <a href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
-        <div class="top_large_card"
+        <div (click)="clickEventEmit()" class="top_large_card"
             [class.title]="postCardCoverPageUrl === undefined || postCardCoverPageUrl === null || postCardCoverPageUrl === ''">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
                 <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
@@ -198,7 +199,7 @@
 
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.full]="!isData">
-            <div class="top_coverPage" [class.full]="!isData">
+            <div (click)="clickDataSearch(eventTitle)" class="top_coverPage" [class.full]="!isData">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">

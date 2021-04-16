@@ -44,14 +44,15 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
                 const searchFilter: SearchFilter = new SearchFilter();
-                searchFilter.limit = limit;
                 searchFilter.offset = offset;
+                searchFilter.limit = limit;
                 searchFilter.orderBy = {
                     createdDate: 'DESC'
                 };
                 searchFilter.whereConditions = {
                     isClose: false
                 };
+
                 const searchResult = await this.emergencyEvent.aggregate([
                     { $match: searchFilter.whereConditions },
                     { $sort: { createdDate: -1 } },
@@ -96,6 +97,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'เหตุการณ์ด่วน' : this.config.title;
                 result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'กำลังมองหา' : this.config.subtitle;
                 result.description = '';
+                result.type = 'EMERGENCYEVENT';
                 result.iconUrl = '';
                 result.contents = [];
                 result.contentCount = countAllResult; // count of all emergency event.
