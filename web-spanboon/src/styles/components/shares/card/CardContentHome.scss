@@ -40,7 +40,7 @@
                 text-align: center;
                 align-items: center;
                 justify-content: center;
-                > span {
+                > div {
                     @include font-size-9($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
@@ -196,7 +196,7 @@
                 text-align: center;
                 align-items: center;
                 justify-content: center;
-                > span {
+                > div {
                     @include font-size-9($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
@@ -368,7 +368,7 @@
                 text-align: center;
                 align-items: center;
                 justify-content: center;
-                > span {
+                > div {
                     @include font-size-9($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
@@ -853,7 +853,7 @@
                             text-align: center;
                             align-items: center;
                             justify-content: center;
-                            > span {
+                            > div {
                                 @include font-size-9($font-head-500);
                                 display: -webkit-box;
                                 -webkit-line-clamp: 3;

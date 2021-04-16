@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Get, Body, Post, Req, QueryParam, QueryParams } from 'routing-controllers';
 import MainPageResponse from './responses/MainPageResponse';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
@@ -45,6 +45,7 @@ import { Page } from '../models/Page';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
+import { LastestNeedsParam } from './params/LastestNeedsParam';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 
 @JsonController('/main')
@@ -78,14 +79,12 @@ export class MainPageController {
      */
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
-
         const userId = req.headers.userid;
         const Offset = offset;
         const Section = section;
         const Date = date;
 
         if (Offset !== undefined || Date !== undefined) {
-            console.log('Offset', Offset);
 
             if (Section === 'EMERGENCYEVENT') {
 
@@ -181,7 +180,6 @@ export class MainPageController {
             }
 
         } else {
-            console.log('isOffset', Offset);
 
             const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
             const emerSectionModel = await emerProcessor.process();
@@ -190,27 +188,33 @@ export class MainPageController {
             const postSectionModel = await postProcessor.process();
 
             const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-            lastestLKProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                lastestLKProcessor.setData({
+                    userId
+                });
+            }
             lastestLKProcessor.setConfig({
                 showUserAction: true
             });
             const lastestLookSectionModel = await lastestLKProcessor.process();
 
             const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-            stillLKProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                stillLKProcessor.setData({
+                    userId
+                });
+            }
             stillLKProcessor.setConfig({
                 showUserAction: true
             });
             const stillLKSectionModel = await stillLKProcessor.process();
 
             const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
-            userRecProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                userRecProcessor.setData({
+                    userId
+                });
+            }
             userRecProcessor.setConfig({
                 showUserAction: true
             });
@@ -220,10 +224,12 @@ export class MainPageController {
             const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
             const emergencyPinModel = await emergencyPinProcessor.process();
 
-            const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
-            objectiveProcessor.setData({
-                userId
-            });
+            const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+            if (userId !== undefined) {
+                objectiveProcessor.setData({
+                    userId
+                });
+            }
             objectiveProcessor.setConfig({
                 showUserAction: true
             });
@@ -231,9 +237,11 @@ export class MainPageController {
             const objectiveSectionModel = await objectiveProcessor.process();
 
             const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-            userFollowProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                userFollowProcessor.setData({
+                    userId
+                });
+            }
             userFollowProcessor.setConfig({
                 limit: 4,
                 showUserAction: true
@@ -244,9 +252,11 @@ export class MainPageController {
             userFollowSectionModel.isList = true;
 
             const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
-            userPageLookingProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                userPageLookingProcessor.setData({
+                    userId
+                });
+            }
             userPageLookingProcessor.setConfig({
                 limit: 2,
                 showUserAction: true
@@ -261,29 +271,17 @@ export class MainPageController {
 
             // open when main icon template show
             const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-            lastestObjProcessor.setData({
-                userId
-            });
+            if (userId !== undefined) {
+                lastestObjProcessor.setData({
+                    userId
+                });
+            }
             lastestObjProcessor.setConfig({
                 limit: 5,
                 showUserAction: true
             });
             const lastestObjModel = await lastestObjProcessor.process();
             lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
-
-            // const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-            // lastestObjProcessor2.setData({
-            //     userId
-            // });
-            // lastestObjProcessor2.setConfig({
-            //     limit: 5,
-            //     showUserAction: true
-            // });
-            // const lastestObjModel2 = await lastestObjProcessor2.process();
-            // lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
-            // lastestObjModel2.isList = true;
-
-            // const result: any = this.getResponsesData();
             const result: any = {};
             result.emergencyEvents = emerSectionModel;
             result.postSectionModel = postSectionModel;
@@ -292,7 +290,6 @@ export class MainPageController {
             result.looking = stillLKSectionModel;
             result.viewSection = userRecSectionModel;
             result.emergencyPin = emergencyPinModel;
-            // result.sectionModels = [userFollowSectionModel, userPageLookingSectionModel, lastestObjModel];
             result.sectionModels = [];
 
             if (userFollowSectionModel.contents.length > 0) {

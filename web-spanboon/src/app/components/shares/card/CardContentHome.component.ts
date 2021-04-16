@@ -112,6 +112,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
+    }
+
+    ngAfterViewInit(): void {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
@@ -129,7 +132,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
             }
 
             if (this.isDerTy(this.eventData)) {
-                console.log('this.eventData', this.eventData);
                 this.eventDataAct = this.eventData[0];
                 this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
@@ -164,10 +166,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.isLoad = false;
             }, 1000);
 
-        }, 2000);
-    }
-
-    ngAfterViewInit(): void {
+        }, 3000);
 
 
     }

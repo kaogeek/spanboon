@@ -55,6 +55,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public isLoding: boolean = true;
   public isDoing: boolean;
   public isNotAccess: boolean;
+  public isLodingMore: boolean = false;
 
   constructor(router: Router, authenManager: AuthenManager, mainPageModelFacade: MainPageSlideFacade, dialog: MatDialog) {
     super(null, authenManager, dialog, router);
@@ -163,10 +164,11 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   public async getMore(length, type,) {
 
+    this.isLodingMore = true;
     let userId = undefined;
     let arrData: any[] = [];
 
-    if (this.userCloneDatas !== undefined) {
+    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       userId = this.userCloneDatas.id;
     }
 
@@ -181,7 +183,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
     if (type === 'STILLLOOKING') {
-      console.log('getMoreModel', getMoreModel)
       if (getMoreModel.contents.length > 0) {
         arrData = this.lookingSectionModels.contents
         for await (const post of getMoreModel.contents) {
@@ -198,6 +199,9 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
 
+    setTimeout(() => {
+      this.isLodingMore = false;
+    }, 3000);
 
   }
 

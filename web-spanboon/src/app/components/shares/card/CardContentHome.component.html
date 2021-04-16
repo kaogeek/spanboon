@@ -73,7 +73,7 @@
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
+                    <div [innerHTML]='postData.post.title | highlight'></div>
                 </div>
             </ng-template>
         </div>
@@ -147,7 +147,7 @@
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
+                    <div [innerHTML]='postData.post.title | highlight'></div>
                 </div>
             </ng-template>
         </div>
@@ -281,7 +281,7 @@
                                 d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
                                 transform="translate(-120.208 -945.977)" class="svg-home-color" />
                         </svg>
-                        <span>0 โพสต์</span>
+                        <span>{{eventPostCount}} โพสต์</span>
                         <!-- <span>{{countSpanboon}}</span> -->
                     </div>
                 </div>
