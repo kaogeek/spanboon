@@ -87,6 +87,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public eventCoverPageUrl: string = '';
     public eventTitle: string = '';
     public eventDescription: string = '';
+    public eventPostCount: string = '';
 
     public eventRepostCount: number;
     public eventLikeCount: number;
@@ -128,12 +129,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
             }
 
             if (this.isDerTy(this.eventData)) {
+                console.log('this.eventData', this.eventData);
                 this.eventDataAct = this.eventData[0];
                 this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
                 this.eventDescription = this.eventData[0].description;
                 this.dateTime = this.eventData[0].dateTime;
                 this.eventRepostCount = this.eventData[0].repostCount;
+                this.eventPostCount = this.eventData[0].postCount;
                 this.eventLikeCount = this.eventData[0].likeCount;
                 this.eventCommentCount = this.eventData[0].commentCount;
                 this.eventShareCount = this.eventData[0].shareCount;
