@@ -71,7 +71,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 const needStmt = [
                     { $group: { '_id': { 'post': '$post' } } },
                     { $sort: { createdDate: -1 } },
-                    { $limit: limit }
+                    { $skip: offset },
+                    { $limit: 3 }
                 ];
                 const postIds: any[] = [];
                 const needSearchResult = await this.needsService.aggregateEntity(needStmt);
@@ -99,6 +100,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 result.subtitle = 'กำลังมองหา';
                 result.description = '';
                 result.iconUrl = '';
+                result.type = 'LASTEST';
                 result.contents = [];
 
                 for (const row of searchResult) {

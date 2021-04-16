@@ -45,6 +45,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let limit: number = undefined;
                 let offset: number = undefined;
                 let showUserAction = false;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -85,8 +86,8 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
                     { $skip: offset },
+                    { $limit: limit },
                     { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
@@ -134,6 +135,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'เรื่องราวที่คุณอาจพลาดไป';
+                result.type = 'RECOMMEND';
                 result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.iconUrl = '';
@@ -228,7 +230,6 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         if (rootRefFirstImg) {
                             contentModel.coverPageUrl = rootRefFirstImg.imageURL;
                         }
-                        console.log('rootRefPost: ' + rootRefPost);
                         contentModel.rootReferencePost = rootRefPost;
                         this.removePostField(contentModel.rootReferencePost);
                     }

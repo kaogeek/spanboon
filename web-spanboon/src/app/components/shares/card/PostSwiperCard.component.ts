@@ -152,7 +152,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 6.4,
+    slidesPerView: 7,
     spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
