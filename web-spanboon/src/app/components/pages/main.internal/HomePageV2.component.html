@@ -99,7 +99,10 @@
             <div class="top">
                 <span class="title">{{needsSectionModels.title}}</span>
                 <div class="line"></div>
-                <a class="more"
+                <div *ngIf="isLodingMore" class="spinner">
+                    <spinners></spinners>
+                </div>
+                <a *ngIf="!isLodingMore" class="more"
                     (click)="getMore(needsSectionModels.contents.length,needsSectionModels.type)">ดูเพิ่มเติม</a>
             </div>
             <div class="body">
@@ -117,7 +120,11 @@
                     <span>ยังมี {{needsSectionModels.title}} ในตอนนี้อีกมากมาย</span>
                 </div>
                 <div class="footer_mobile_button">
-                    <spanboon-button (click)="getMore(needsSectionModels.contents.length,needsSectionModels.type)"
+                    <div *ngIf="isLodingMore">
+                        <spinners></spinners>
+                    </div>
+                    <spanboon-button *ngIf="!isLodingMore"
+                        (click)="getMore(needsSectionModels.contents.length,needsSectionModels.type)"
                         [text]="'ดูเพิ่มเติม'" [bgColor]="'white'" [color]="'rgba(253, 84, 84, 0.95)'" [radius]="'5px'"
                         [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
@@ -128,7 +135,10 @@
             <div class="top">
                 <span class="title">{{lookingSectionModels.title}}</span>
                 <div class="line"></div>
-                <a class="more"
+                <div *ngIf="isLodingMore" class="spinner">
+                    <spinners></spinners>
+                </div>
+                <a *ngIf="!isLodingMore" class="more"
                     (click)="getMore(lookingSectionModels.contents.length,lookingSectionModels.type)">ดูเพิ่มเติม</a>
             </div>
             <div class="body">
@@ -145,8 +155,12 @@
                         {{lookingSectionModels.title}} ในตอนนี้อีกมากมาย</span>
                 </div>
                 <div class="footer_mobile_button">
-                    <spanboon-button [text]="'ดูเพิ่มเติม'" [bgColor]="'white'" [color]="'rgba(253, 84, 84, 0.95)'"
-                        [radius]="'5px'" [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
+                    <div *ngIf="isLodingMore">
+                        <spinners></spinners>
+                    </div>
+                    <spanboon-button *ngIf="!isLodingMore" [text]="'ดูเพิ่มเติม'" [bgColor]="'white'"
+                        [color]="'rgba(253, 84, 84, 0.95)'" [radius]="'5px'"
+                        [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
             </div>
         </div>
@@ -155,7 +169,10 @@
             <div class="top">
                 <span class="title">{{viewSectionModels.title}}</span>
                 <div class="line"></div>
-                <a class="more"
+                <div *ngIf="isLodingMore" class="spinner">
+                    <spinners></spinners>
+                </div>
+                <a *ngIf="!isLodingMore" class="more"
                     (click)="getMore(viewSectionModels.contents.length,viewSectionModels.type)">ดูเพิ่มเติม</a>
             </div>
             <div class="body">
@@ -171,7 +188,11 @@
                     <span>ยังมี {{viewSectionModels.title}} ในตอนนี้อีกมากมาย</span>
                 </div>
                 <div class="footer_mobile_button">
-                    <spanboon-button (click)="getMore(viewSectionModels.contents.length,viewSectionModels.type)"
+                    <div *ngIf="isLodingMore">
+                        <spinners></spinners>
+                    </div>
+                    <spanboon-button *ngIf="!isLodingMore"
+                        (click)="getMore(viewSectionModels.contents.length,viewSectionModels.type)"
                         [text]="'ดูเพิ่มเติม'" [bgColor]="'white'" [color]="'rgba(253, 84, 84, 0.95)'" [radius]="'5px'"
                         [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
@@ -196,10 +217,6 @@
                 </div>
                 <div class="footer_mobile">
                     <span>ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>
-                </div>
-                <div class="footer_mobile_button">
-                    <spanboon-button [text]="'ดูเพิ่มเติม'" [bgColor]="'white'" [color]="'rgba(253, 84, 84, 0.95)'"
-                        [radius]="'5px'" [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
             </div>
         </div>
