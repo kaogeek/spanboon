@@ -127,8 +127,7 @@
                 </div>
                 <div class="wrapper-feed-profile">
                     <div *ngIf="!showLoading" class="profile-background">
-                        <ng-container
-                            *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
+                        <ng-container *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
                             <div class="cover-img preload-background"></div>
                         </ng-container>
                         <ng-template #elseisLoading>

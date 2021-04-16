@@ -28,7 +28,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public hide = true;
   public url: any;
-  public indexPage: any; 
+  public indexPage: any;
   public email: string = '';
   public password: string = '';
   public isclickmenu: boolean;
@@ -49,7 +49,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog ,userAccessFacade: UserAccessFacade) {
+  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
@@ -81,13 +81,13 @@ export class MainPage extends AbstractPage implements OnInit {
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
         if (url === "/home" || '/' + path === "/page" || '/' + path === "/profile" || url === "/recommend") {
-          this.isPost = true; 
+          this.isPost = true;
         }
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
         }
       }
-    }); 
+    });
 
     this.observManager.createSubject('scroll.buttom');
     this.observManager.createSubject('scroll.fix');
@@ -157,9 +157,9 @@ export class MainPage extends AbstractPage implements OnInit {
     // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
     //   this.observManager.publish('scroll.buttom', null);
     // }
-    // var scrolltotop = document.getElementById("menubottom");
-
-    if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+    // var scrolltotop = document.getElementById("menubottom"); 
+    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 40)) {
+      console.log('1111')
       this.observManager.publish('scroll.buttom', null);
     }
 
@@ -172,7 +172,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isdivtop = false;
       this.isPost = false;
     } else {
-      this.isPost = true; 
+      this.isPost = true;
       if ($(window).scrollTop() + $(window).height() == $(document).height()) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
@@ -270,10 +270,10 @@ export class MainPage extends AbstractPage implements OnInit {
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
-      this.data.isFulfill = false; 
+      this.data.isFulfill = false;
       this.data.isMobileButton = true;
-      this.data.id = this.user.id; 
-      this.data.accessDataPage = await this.searchAccessPage(); 
+      this.data.id = this.user.id;
+      this.data.accessDataPage = await this.searchAccessPage();
       if (this.router.url.split('/')[1] === 'page') {
         this.data.name = this.router.url.split('/')[2];
         this.data.isSharePost = true;
