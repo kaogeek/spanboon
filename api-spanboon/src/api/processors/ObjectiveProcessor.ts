@@ -39,101 +39,62 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
-                // let showUserAction = false;
-                if (this.config !== undefined && this.config !== null) {
-                    if (typeof this.config.limit === 'number') {
-                        limit = this.config.limit;
-                    }
-
-                    if (typeof this.config.offset === 'number') {
-                        offset = this.config.offset;
-                    }
-
-                    // if (typeof this.config.showUserAction === 'boolean') {
-                    //     showUserAction = this.config.showUserAction;
-                    // }
-                }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
-                let userId = undefined;
-                let clientId = undefined;
-                if (this.data !== undefined && this.data !== null) {
-                    userId = this.data.userId;
-                    clientId = this.data.clientId;
-                }
-
-                const pageFollowIds: any[] = [];
-                if (userId !== undefined) {
-                    const followStmt = [
-                        { $match: { userId: new ObjectID(userId + '') } },
-                        { $sample: { size: 5 } },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                localField: 'subjectId',
-                                foreignField: '_id',
-                                as: 'page'
-                            }
-                        }
-                    ];
-                    const followSearchResult = await this.userFollowService.aggregate(followStmt);
-                    for (const ff of followSearchResult) {
-                        if (ff.page[0] === undefined) {
-                            continue;
-                        }
-                        pageFollowIds.push(ff.page[0]._id);
-                    }
-                } else if (clientId !== undefined) {
-                    // ! impl
-                }
-
                 const matchStmt: any = {
                 };
 
-                if (pageFollowIds.length > 0) {
-                    matchStmt.pageId = {
-                        $in: pageFollowIds
-                    };
-                }
+                const pageObjectiveResult: any[] = [];
+                for (let index = 0; pageObjectiveResult.length < 5; index++) {
 
-                const pageObjStmt = [
-                    { $match: matchStmt },
-                    { $skip: offset },
-                    { $limit: limit },
-                    { $sort: { createdDate: -1 } },
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
-                            as: 'page'
+                    const pageObjStmt = [
+                        { $match: matchStmt },
+                        { $skip: offset },
+                        { $limit: limit },
+                        { $sort: { createdDate: -1 } },
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'HashTag',
+                                localField: 'hashTag',
+                                foreignField: '_id',
+                                as: 'hashTagObj'
+                            }
                         }
-                    },
-                    {
-                        $lookup: {
-                            from: 'HashTag',
-                            localField: 'hashTag',
-                            foreignField: '_id',
-                            as: 'hashTagObj'
+                    ];
+                    const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+
+                    for await (const iterator of searchResult) {
+                        if (iterator.hashTagObj.length > 0) {
+                            pageObjectiveResult.push(iterator);
                         }
                     }
-                ];
-                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+                    offset = (offset + searchResult.length);
+
+                }
 
                 let lastestDate = null;
 
                 const result: SectionModel = new SectionModel();
                 result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
                 result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.type = 'OBJECTIVE';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
 
                 const hashtagNames = [];
                 const hastagRowMap = {};
-                for (const row of searchResult) {
+                for (const row of pageObjectiveResult) {
                     if (row) {
                         const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                         const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;

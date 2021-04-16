@@ -127,6 +127,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 const result: SectionModel = new SectionModel();
                 result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
                 result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.type = 'SMALL';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];

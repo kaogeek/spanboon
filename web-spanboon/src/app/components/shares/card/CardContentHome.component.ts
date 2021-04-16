@@ -50,6 +50,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     @Input()
     public tagCardIsOpenRight: boolean;
 
+    @Output()
+    public clickEvent: EventEmitter<any> = new EventEmitter();
+
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
     public selectIndex: number = 0;
@@ -84,6 +87,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public eventCoverPageUrl: string = '';
     public eventTitle: string = '';
     public eventDescription: string = '';
+    public eventPostCount: string = '';
 
     public eventRepostCount: number;
     public eventLikeCount: number;
@@ -111,8 +115,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
-                this.postId = this.postData.post._id;
-
+                if (this.isDerTy(this.postData.post)) {
+                    this.postId = this.postData.post._id;
+                }
                 if (this.isDerTy(this.postData.owner)) {
                     this.getUserData(this.postData.owner);
                 }
@@ -124,12 +129,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
             }
 
             if (this.isDerTy(this.eventData)) {
+                console.log('this.eventData', this.eventData);
                 this.eventDataAct = this.eventData[0];
                 this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
                 this.eventDescription = this.eventData[0].description;
                 this.dateTime = this.eventData[0].dateTime;
                 this.eventRepostCount = this.eventData[0].repostCount;
+                this.eventPostCount = this.eventData[0].postCount;
                 this.eventLikeCount = this.eventData[0].likeCount;
                 this.eventCommentCount = this.eventData[0].commentCount;
                 this.eventShareCount = this.eventData[0].shareCount;
@@ -187,22 +194,27 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(data, index?) {
-        if (this.isData) {
-            this.router.navigateByUrl('/search?hashtag=' + data);
-        } else if (!index) {
-            this.router.navigateByUrl('/search?hashtag=' + data);
-        } else {
-            if (this.selectIndex !== index) {
-                this.selectIndex = index
-            } else {
-                this.router.navigateByUrl('/search?hashtag=' + data);
+        this.router.navigateByUrl('/search?hashtag=' + data);
+        // if (this.isData) {
+        //     this.router.navigateByUrl('/search?hashtag=' + data);
+        // } else if (!index) {
+        //     this.router.navigateByUrl('/search?hashtag=' + data);
+        // } else {
+        //     if (this.selectIndex !== index) {
+        //         this.selectIndex = index
+        //     } else { 
+        //         this.router.navigateByUrl('/search?hashtag=' + data);
 
-            }
-        }
+        //     }
+        // }
     }
 
     public clickDialogDiverlop() {
         this.showAlertDevelopDialog();
+    }
+
+    public clickEventEmit() {
+        this.clickEvent.emit(this.postData);
     }
 
     isDerTy(value): boolean {
@@ -243,7 +255,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     return Obj[key];
                 } else {
 
-                    return lastObj[key];
+                    return Obj[key];
                 }
 
             } else {
