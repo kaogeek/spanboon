@@ -79,7 +79,8 @@ export class RecommendController {
             for (const followObj of followResult) {
                 if (followObj.subjectType === SUBJECT_TYPE.USER) {
                     orUserConditions.push(new ObjectID(followObj.subjectId));
-                } else if (followObj.subjectType === SUBJECT_TYPE.PAGE) {
+                }
+                if (followObj.subjectType === SUBJECT_TYPE.PAGE) {
                     orPageConditions.push(new ObjectID(followObj.subjectId));
                 }
             }
@@ -122,8 +123,8 @@ export class RecommendController {
 
             if (isRandomPage) {
                 const stmt = [];
-                stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
-                // stmt.push({ $match: { _id: { $nin: orPageConditions } } },
+                // stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
+                stmt.push({ $match: { _id: { $nin: orPageConditions } } },
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
@@ -139,7 +140,8 @@ export class RecommendController {
 
             if (!isRandomPage && !isRandomUser) {
                 const stmt = [
-                    { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
+                    // { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
+                    { $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
