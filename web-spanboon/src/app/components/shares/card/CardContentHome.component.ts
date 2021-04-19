@@ -128,7 +128,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 }
 
-                this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
+                this.amountSocial = (this.postData.post.likeCount ? this.postData.post.likeCount : this.postData.likeCount + this.postData.post.repostCount ? this.postData.post.repostCount : this.postData.repostCount + this.postData.post.shareCount ? this.postData.post.shareCount : this.postData.shareCount);
             }
 
             if (this.isDerTy(this.eventData)) {

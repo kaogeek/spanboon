@@ -66,8 +66,17 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                 };
                 const postStmt = [
                     { $match: postMatchStmt },
+                    { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: 10 },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
                     {
                         $lookup: {
                             from: 'Page',
@@ -75,6 +84,12 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                             foreignField: '_id',
                             as: 'ownerUser'
                         }
+                    },
+                    {
+                        $project: {
+                            story: 0
+                        }
+
                     }
                 ];
                 const postAggregate = await this.postsService.aggregate(postStmt);
@@ -86,10 +101,13 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
+
                 for (const row of postAggregate) {
-                    row.owner = row.ownerUser[0];
-                    row.owner.isUserOfficial = row.owner.isOfficial;
-                    result.contents.push(row);
+                    const contents: any = {};
+                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                    contents.owner = row.ownerUser;
+                    contents.post = row;
+                    result.contents.push(contents);
                 }
                 result.dateTime = lastestDate;
 

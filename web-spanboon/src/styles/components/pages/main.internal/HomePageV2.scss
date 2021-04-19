@@ -34,7 +34,6 @@
                 @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
-                    margin-right: 10px;
                     width: 72px;
                 }
                 > .tag_list {
@@ -169,10 +168,13 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
+                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                position: relative;
+                position: sticky;
+                position: -webkit-sticky;
+                top: 0; /* required */
                 > .title {
                     background-color: white;
                     padding-right: 20px;
@@ -229,6 +231,7 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
+                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -289,6 +292,7 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
+                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -562,7 +566,7 @@
 
     .hoem_page_v2 > .hoem_page_body > .needs_section > .body > .footer_mobile_button {
         display: block;
-        width: 100%;
+        width: 90%;
     }
     .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile {
         border-top: 1px solid #00000024;
@@ -580,7 +584,7 @@
 
     .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile_button {
         display: block;
-        width: 100%;
+        width: 90%;
     }
     .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile {
         border-top: 1px solid #00000024;
@@ -598,10 +602,11 @@
 
     .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile_button {
         display: block;
-        width: 100%;
+        width: 90%;
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
+        
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
         display: none;

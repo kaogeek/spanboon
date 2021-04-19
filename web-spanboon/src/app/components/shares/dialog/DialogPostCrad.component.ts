@@ -8,9 +8,10 @@
 import { Component, OnInit, Input, Inject, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { SearchFilter, Asset } from '../../../models/models';
-import { PageCategoryFacade, PageFacade, AuthenManager, AssetFacade, ObservableManager, HashTagFacade, PostFacade, PostCommentFacade } from '../../../services/services';
+import { PageFacade, AuthenManager, AssetFacade, PostFacade, PostCommentFacade } from '../../../services/services';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { AbstractPage } from '../../pages/AbstractPage';
+import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { Router } from '@angular/router';
 import { FileHandle } from '../directive/DragAndDrop.directive';
 import * as moment from 'moment';
@@ -36,6 +37,8 @@ export class DialogPostCrad extends AbstractPage {
   public dialog: MatDialog;
 
   private postFacade: PostFacade;
+  private pageFacade: PageFacade;
+  private assetFacade: AssetFacade;
   private postCommentFacade: PostCommentFacade;
 
   public isLoading: boolean;
@@ -49,16 +52,16 @@ export class DialogPostCrad extends AbstractPage {
 
   files: FileHandle[] = [];
 
-  constructor(public dialogRef: MatDialogRef<DialogPostCrad>, @Inject(MAT_DIALOG_DATA) public data: any, postCommentFacade: PostCommentFacade, postFacade: PostFacade,
+  constructor(public dialogRef: MatDialogRef<DialogPostCrad>, @Inject(MAT_DIALOG_DATA) public data: any, postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade,
     dialog: MatDialog, authenManager: AuthenManager, router: Router) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.authenManager = authenManager;
     this.postCommentFacade = postCommentFacade;
+    this.pageFacade = pageFacade;
+    this.assetFacade = assetFacade;
     this.postFacade = postFacade;
     this.imageCover = {}
-
-    console.log('this.data', this.data)
 
   }
 
@@ -69,6 +72,7 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public async actionComment(action: any, index?: number) {
+    console.log('action', action)
     this.isLoginCh();
     // this.postId = action.postData.pageId
     let pageInUser: any[]
@@ -76,99 +80,99 @@ export class DialogPostCrad extends AbstractPage {
     let dataPost: any
     let userAsPage: any
     if (action.mod === 'REBOON') {
-      // if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-      //   userAsPage = action.userAsPage.id;
-      // } else {
-      //   userAsPage = null;
-      // }
+      if (action.userAsPage !== undefined && action.userAsPage !== null) {
+        userAsPage = action.userAsPage.id;
+      } else {
+        userAsPage = null;
+      }
 
-      // if (userAsPage !== null && userAsPage !== undefined && userAsPage !== '') {
-      //   data.postAsPage = userAsPage;
-      //   data.pageId = userAsPage;
-      // } else {
-      //   data.postAsPage = null;
-      //   data.pageId = null;
-      // }
+      if (userAsPage !== null && userAsPage !== undefined && userAsPage !== '') {
+        data.postAsPage = userAsPage;
+        data.pageId = userAsPage;
+      } else {
+        data.postAsPage = null;
+        data.pageId = null;
+      }
 
-      // if (action.type === "TOPIC") {
-      //   let search: SearchFilter = new SearchFilter();
-      //   search.limit = 10;
-      //   search.count = false;
-      //   search.whereConditions = { ownerUser: this.userCloneDatas.id };
-      //   var aw = await this.pageFacade.search(search).then((pages: any) => {
-      //     pageInUser = pages
-      //   }).catch((err: any) => {
-      //   })
-      //   for (let p of pageInUser) {
-      //     var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-      //       p.img64 = res.data
-      //     }).catch((err: any) => {
-      //     });
-      //   }
-      //   const dialogRef = this.dialog.open(DialogReboonTopic, {
-      //     width: '550pt',
-      //     data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
-      //   });
+      if (action.type === "TOPIC") {
+        let search: SearchFilter = new SearchFilter();
+        search.limit = 10;
+        search.count = false;
+        search.whereConditions = { ownerUser: this.data.user.id };
+        var aw = await this.pageFacade.search(search).then((pages: any) => {
+          pageInUser = pages
+        }).catch((err: any) => {
+        })
+        for (let p of pageInUser) {
+          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+          });
+        }
+        const dialogRef = this.dialog.open(DialogReboonTopic, {
+          width: '550pt',
+          data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
+        });
 
-      //   dialogRef.afterClosed().subscribe(result => {
-      //     if (!result) {
-      //       return
-      //     }
-      //     if (result.isConfirm) {
-      //       if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
-      //         data.pageId = null
-      //         if (result.text === "") {
-      //           if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-      //             dataPost = action.post.referencePost._id
-      //           } else {
-      //             dataPost = action.post._id
-      //           }
-      //         } else {
-      //           dataPost = action.post._id
-      //         }
-      //       } else {
-      //         data.pageId = result.pageId
-      //         if (result.text === "") {
-      //           if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-      //             dataPost = action.post.referencePost._id
-      //           } else {
-      //             dataPost = action.post._id
-      //           }
-      //         } else {
-      //           dataPost = action.post._id
-      //         }
-      //       }
-      //       data.detail = result.text
-      //       if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-      //         data.postAsPage = action.userAsPage.id
-      //       }
-      //       if (result.hashTag !== undefined && result.hashTag !== null) {
-      //         data.hashTag = result.hashTag
-      //       }
-      //       this.postFacade.rePost(dataPost, data).then((res: any) => {
-      //         this.resPost.posts[index].repostCount++
-      //         this.resPost.posts[index].isRepost = false;
-      //       }).catch((err: any) => {
-      //         console.log(err)
-      //       })
-      //     }
-      //   });
-      // } else if (action.type === "NOTOPIC") {
-      //   dataPost = action.post._id;
-      //   this.postFacade.rePost(dataPost, data).then((res: any) => {
-      //     this.resPost.posts[index].repostCount++;
-      //     this.resPost.posts[index].isRepost = true;
-      //   }).catch((err: any) => {
-      //     console.log(err);
-      //   })
-      // } else if (action.type === "UNDOTOPIC") {
-      //   this.postFacade.undoPost(action.post._id).then((res: any) => {
-      //     this.resPost.posts[index].repostCount--;
-      //     this.resPost.posts[index].isRepost = false;
-      //   }).catch((err: any) => {
-      //     console.log(err);
-      //   })
-      // }
+        dialogRef.afterClosed().subscribe(result => {
+          if (!result) {
+            return
+          }
+          if (result.isConfirm) {
+            if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
+              data.pageId = null
+              if (result.text === "") {
+                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
+                  dataPost = action.post.referencePost._id
+                } else {
+                  dataPost = action.post._id
+                }
+              } else {
+                dataPost = action.post._id
+              }
+            } else {
+              data.pageId = result.pageId
+              if (result.text === "") {
+                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
+                  dataPost = action.post.referencePost._id
+                } else {
+                  dataPost = action.post._id
+                }
+              } else {
+                dataPost = action.post._id
+              }
+            }
+            data.detail = result.text
+            if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
+              data.postAsPage = action.userAsPage.id
+            }
+            if (result.hashTag !== undefined && result.hashTag !== null) {
+              data.hashTag = result.hashTag
+            }
+            this.postFacade.rePost(dataPost, data).then((res: any) => {
+              this.data.post[index].repostCount++
+              this.data.post[index].isRepost = false;
+            }).catch((err: any) => {
+              console.log(err)
+            })
+          }
+        });
+      } else if (action.type === "NOTOPIC") {
+        dataPost = action.post._id;
+        this.postFacade.rePost(dataPost, data).then((res: any) => {
+          this.data.post[index].repostCount++;
+          this.data.post[index].isRepost = true;
+        }).catch((err: any) => {
+          console.log(err);
+        })
+      } else if (action.type === "UNDOTOPIC") {
+        this.postFacade.undoPost(action.post._id).then((res: any) => {
+          this.data.post[index].repostCount--;
+          this.data.post[index].isRepost = false;
+        }).catch((err: any) => {
+          console.log(err);
+        })
+      }
     } else if (action.mod === 'LIKE') {
       this.postLike(action, index);
     } else if (action.mod === 'SHARE') {
