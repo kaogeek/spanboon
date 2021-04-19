@@ -8,7 +8,7 @@
     <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
         <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let item of itemNeeds; let index = index;">
-                <card-contant-home [keyObjArr]='["owner", "imageURL"]' [smallCard]='true' [postData]='item'>
+                <card-contant-home (clickEvent)="clickEvent($event)" [keyObjArr]='keyItem' [smallCard]='true' [postData]='item'>
                 </card-contant-home>
             </div>
 

@@ -44,7 +44,7 @@ export class DialogReboonTopic {
     }
     if (this.data !== undefined && this.data !== null) {
       this.content = this.data.options;
-    } if (this.data.options.pageUserAsPage.name !== null && this.data.options.pageUserAsPage.name !== undefined) {
+    } if (this.data.options.pageUserAsPage !== null && this.data.options.pageUserAsPage !== undefined) {
       this.pageUserAsPage = (' ไปยัง ' + this.data.options.pageUserAsPage.name)
     }
   }

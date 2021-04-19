@@ -8,9 +8,10 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener, EventEmitter } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
-import { AuthenManager, MainPageSlideFacade } from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, PageFacade, AssetFacade } from '../../../services/services';
 import { NgxGalleryOptions, NgxGalleryImage } from 'ngx-gallery';
 import { AbstractPage } from '../AbstractPage';
+import { SearchFilter } from '../../../models/SearchFilter';
 import { Router } from '@angular/router';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 declare var $: any;
@@ -25,6 +26,8 @@ const PAGE_SIZE: number = 6;
 export class HomePageV2 extends AbstractPage implements OnInit {
 
   private mainPageModelFacade: MainPageSlideFacade;
+  private pageFacade: PageFacade;
+  private assetFacade: AssetFacade;
 
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
@@ -34,6 +37,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   // Data User
   private userCloneDatas: any;
+  public pageUser: any;
 
   // Data Page
   public pageModel: any;
@@ -55,22 +59,26 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public isLoding: boolean = true;
   public isDoing: boolean;
   public isNotAccess: boolean;
+  public isLodingMore: boolean = false;
 
-  constructor(router: Router, authenManager: AuthenManager, mainPageModelFacade: MainPageSlideFacade, dialog: MatDialog) {
+  constructor(router: Router, authenManager: AuthenManager, pageFacade: PageFacade, mainPageModelFacade: MainPageSlideFacade, assetFacade: AssetFacade, dialog: MatDialog) {
     super(null, authenManager, dialog, router);
 
     this.mainPageModelFacade = mainPageModelFacade;
+    this.pageFacade = pageFacade;
+    this.assetFacade = assetFacade;
 
   }
 
   public async ngOnInit(): Promise<void> {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
-
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       await this.getMainPageModel(this.userCloneDatas.id);
+      this.searchPageInUser(this.userCloneDatas.id);
     } else {
       await this.getMainPageModel();
+      this.searchPageInUser();
     }
 
     setTimeout(() => {
@@ -120,6 +128,31 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+  public async searchPageInUser(userId?) {
+    if (userId) {
+      let search: SearchFilter = new SearchFilter();
+      search.limit = 10;
+      search.count = false;
+      search.whereConditions = { ownerUser: userId };
+      var aw = await this.pageFacade.search(search).then((pages: any) => {
+        this.pageUser = pages
+        this.pageUser.push(this.userCloneDatas)
+        this.pageUser.reverse();
+      }).catch((err: any) => {
+      });
+      if (this.pageUser.length > 0) {
+        for (let p of this.pageUser) {
+          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+          });
+        }
+      }
+    }
+
+    console.log('this.pageUser', this.pageUser);
+
+  }
 
   public clickDataSearch(data) {
     this.router.navigateByUrl('/search?hashtag=' + data);
@@ -153,6 +186,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
         post: $event.post,
         isNotAccess: this.isNotAccess,
         user: this.userCloneDatas,
+        pageUser: this.pageUser,
       }
     });
 
@@ -161,12 +195,28 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+  public checkAccessPage(pageId: string) {
+    this.pageFacade.getAccess(pageId).then((res: any) => {
+      for (let dataPage of res.data) {
+        if (dataPage.level === 'OWNER') {
+          this.isNotAccess = true;
+        }
+      }
+
+    }).catch((err: any) => {
+      if (err.error.message === 'Unable to get User Page Access List') {
+        this.isNotAccess = false;
+      }
+    })
+  }
+
   public async getMore(length, type,) {
 
+    this.isLodingMore = true;
     let userId = undefined;
     let arrData: any[] = [];
 
-    if (this.userCloneDatas !== undefined) {
+    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       userId = this.userCloneDatas.id;
     }
 
@@ -181,7 +231,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
     if (type === 'STILLLOOKING') {
-      console.log('getMoreModel', getMoreModel)
       if (getMoreModel.contents.length > 0) {
         arrData = this.lookingSectionModels.contents
         for await (const post of getMoreModel.contents) {
@@ -198,6 +247,9 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
 
+    setTimeout(() => {
+      this.isLodingMore = false;
+    }, 3000);
 
   }
 

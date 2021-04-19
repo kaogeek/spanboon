@@ -112,6 +112,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
+    }
+
+    ngAfterViewInit(): void {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
@@ -125,11 +128,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 }
 
-                this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
+                this.amountSocial = (this.postData.post.likeCount ? this.postData.post.likeCount : this.postData.likeCount + this.postData.post.repostCount ? this.postData.post.repostCount : this.postData.repostCount + this.postData.post.shareCount ? this.postData.post.shareCount : this.postData.shareCount);
             }
 
             if (this.isDerTy(this.eventData)) {
-                console.log('this.eventData', this.eventData);
                 this.eventDataAct = this.eventData[0];
                 this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
@@ -164,10 +166,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.isLoad = false;
             }, 1000);
 
-        }, 2000);
-    }
-
-    ngAfterViewInit(): void {
+        }, 3000);
 
 
     }

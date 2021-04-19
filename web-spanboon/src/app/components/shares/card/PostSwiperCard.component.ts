@@ -32,7 +32,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   @Input()
   public allPost: string = "ดูโพสต์";
   @Input()
-  public keyItem: string ;
+  public keyItem: string;
   @Input()
   public itemNeeds: any[];
   @Input()
@@ -49,7 +49,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public isButtonFulfill: boolean = true;
 
   @Output()
-  public close: EventEmitter<any> = new EventEmitter();
+  public clickEventA: EventEmitter<any> = new EventEmitter();
 
   public index: any;
   public needs: any[] = [];
@@ -122,6 +122,10 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public getOffsetHeight() {
     return this.listNeeds && this.listNeeds.nativeElement.offsetHeight;
+  }
+
+  public clickEvent(event) {
+    this.clickEventA.emit(event);
   }
 
   public next(type: string, index: number) {
