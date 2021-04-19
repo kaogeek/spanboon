@@ -41,7 +41,7 @@
                 align-items: center;
                 justify-content: center;
                 > div {
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
@@ -63,8 +63,8 @@
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -74,7 +74,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                 }
             }
             > .other_topic_detail {
@@ -84,8 +84,8 @@
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-10($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
             }
             > .bottom_small_card_detail_footer {
@@ -97,7 +97,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
+                    line-height: 25px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > .new-cards-offical {
@@ -197,7 +197,7 @@
                 align-items: center;
                 justify-content: center;
                 > div {
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
@@ -215,8 +215,8 @@
             > .bottom_medium_card_detail {
                 > span {
                     margin-top: 5px;
-                    line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -226,7 +226,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                 }
                 > .detail {
                     display: -webkit-box;
@@ -248,8 +248,8 @@
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
             }
             > .bottom_medium_card_detail_footer {
@@ -260,7 +260,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
+                    line-height: 25px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > a {
@@ -369,7 +369,7 @@
                 align-items: center;
                 justify-content: center;
                 > div {
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
@@ -387,8 +387,8 @@
             > .bottom_large_card_detail {
                 > span {
                     margin-top: 5px;
-                    line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -398,7 +398,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                 }
             }
             > a {
@@ -413,8 +413,8 @@
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
-                    @include font-size-11($font-content-medium);
+                    line-height: 25px;
+                    @include font-size-10($font-content-light);
                 }
             }
             > .bottom_large_card_detail_footer {
@@ -425,7 +425,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 18px;
+                    line-height: 25px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > a {
@@ -531,7 +531,7 @@
                     }
                 }
                 > .description {
-                    @include font-size-11($font-content-medium);
+                    @include font-size-10($font-content-light);
                     display: -webkit-box;
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
@@ -644,7 +644,7 @@
                     > .description {
                         > span {
                             margin: 15px 0px;
-                            @include font-size-11($font-content-medium);
+                            @include font-size-10($font-content-light);
                             display: -webkit-box;
                             -webkit-line-clamp: 3;
                             -webkit-box-orient: vertical;
@@ -854,7 +854,7 @@
                             align-items: center;
                             justify-content: center;
                             > div {
-                                @include font-size-9($font-head-500);
+                                @include font-size-7($font-head-500);
                                 display: -webkit-box;
                                 -webkit-line-clamp: 3;
                                 -webkit-box-orient: vertical;
@@ -872,7 +872,7 @@
                         text-align: center;
                     }
                     > .text-deteil {
-                        @include font-size-8($font-content-medium);
+                        @include font-size-8($font-content-light);
                         display: -webkit-box;
                         -webkit-line-clamp: 2;
                         -webkit-box-orient: vertical;
@@ -980,6 +980,29 @@
     .card_content_home > .event_card > .bottom.full {
         width: calc(100% - 30px);
         padding: 0px 15px;
+    }
+    .hoem_page_v2 {
+        background-color: #fafafa;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_tag_top {
+        background-color: white;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .events_top {
+        background-color: white;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .needs_section {
+        background-color: white;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section {
+        background-color: white;
+        width: 100%;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section {
+        background-color: white;
+        width: 100%;
     }
 }
 

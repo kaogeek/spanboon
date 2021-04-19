@@ -23,8 +23,8 @@
         (userpage)="getAaaPost($event,index)" (delete)="deletePost($event,index)" (update)="editPost($event)"
         (engagement)="engagement($event)">
     </post-data> -->
-    <post-data [itemPost]="data.post" [isComments]="isLogin()" [isUserPage]="isLogin() && data.isNotAccess"
-        [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
-        (action)="actionComment($event)" (comment)="createComment($event)">
+    <post-data [itemPost]="data.post" [isComments]="isLogin()" [isUserPage]="isLogin()" [isShowUser]="true"
+        [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess" (action)="actionComment($event)"
+        [pageUser]="data.pageUser" (comment)="createComment($event)">
     </post-data>
 </div>

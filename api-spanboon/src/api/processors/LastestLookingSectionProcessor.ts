@@ -90,6 +90,22 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                             foreignField: '_id',
                             as: 'page'
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
                     }
                 ];
                 const searchResult = await this.postsService.aggregate(postStmt);
@@ -114,6 +130,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         lastestDate = row.createdDate;
                     }
 
+                    const coverImageUrl = (row.coverImage) ? row.coverImage : undefined;
+
                     const contentModel = new ContentModel();
 
                     if (page !== null && page !== undefined) {
@@ -127,6 +145,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.viewCount = row.viewCount;
                         contentModel.followUserCount = followUserCount; // count all userfollow
                         contentModel.post = row;
+                        contentModel.coverPageUrl = coverImageUrl;
                         contentModel.dateTime = row.createdDate;
                         contentModel.owner = this.parsePageField(page);
 

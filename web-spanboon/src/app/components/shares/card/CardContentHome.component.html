@@ -12,13 +12,13 @@
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span [innerHTML]='postData.title'></span>
+                    <span [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" [innerHTML]='postData.title'></span>
+                <span class="title" [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
             </div>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
@@ -41,8 +41,8 @@
                     <a href={{linkUserPage}}>{{postData.owner.name}}</a>
                 </div>
                 <div class="amount_social">
-                    <!-- <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์ -->
-                    <span>34</span> การมีส่วนร่วมกับโพสต์
+                    <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์
+                    <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
                 </div>
             </div>
         </div>
