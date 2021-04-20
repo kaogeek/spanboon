@@ -53,6 +53,7 @@
         > .onClose {
             @include pointer();
             display: flex;
+            z-index: 2;
             justify-content: center;
             align-items: center;
 
