@@ -249,7 +249,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     setTimeout(() => {
       this.isLodingMore = false;
-    }, 3000);
+    }, 3500);
 
   }
 

@@ -168,7 +168,6 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
-                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -231,7 +230,6 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
-                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -292,7 +290,6 @@
             min-width: 80vw;
             max-width: 80vw;
             > .top {
-                padding: 0px 10px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -499,6 +496,15 @@
         align-items: center;
         flex-direction: column;
     }
+    .hoem_page_v2 > .hoem_page_body > .needs_section > .top {
+        padding: 0px 10px;
+    }
+    .hoem_page_v2 > .hoem_page_body > .rated_section > .top {
+        padding: 0px 10px;
+    }
+    .hoem_page_v2 > .hoem_page_body > .other_section > .top {
+        padding: 0px 10px;
+    }
     .hoem_page_v2 > .hoem_page_body > .needs_section > .top > .line {
         display: none;
     }
@@ -606,7 +612,6 @@
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
-        
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
         display: none;
