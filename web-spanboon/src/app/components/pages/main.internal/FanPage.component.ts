@@ -5,21 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService } from '../../../services/services';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Asset } from '../../../models/Asset';
 import { CommentPosts } from '../../../models/CommentPosts';
-import { Router, ActivatedRoute, NavigationEnd, ActivationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
@@ -421,7 +419,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.resPost.posts = originalpost
         for (let post of this.resPost.posts) {
-          console.log('post >>>> ', post);
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
             let search: SearchFilter = new SearchFilter();
             search.limit = 5;
@@ -1248,14 +1245,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.isLoginCh(); 
+    this.isLoginCh();
     await this.postActionService.actionPost(action, index, this.resPost, "PAGE").then((res: any) => {
       //repost
-      if (res && res.type === "NOTOPIC") { 
+      if (res && res.type === "NOTOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") { 
+      } else if (res.type === "TOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") { 
+      } else if (res.type === "UNDOTOPIC") {
         for (let [i, data] of this.resPost.posts.entries()) {
           if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
             if (data.referencePostObject._id === action.post._id) {
@@ -1272,7 +1269,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     }).catch((err: any) => {
       console.log('err ', err)
-    }); 
+    });
   }
 
   public getAaaPost(action: any, index: number) {
@@ -1281,7 +1278,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       action.userPage.id = null
     }
     this.postFacade.getAaaPost(action.postData, action.userPage.id).then((pages: any) => {
-      console.log('pages >>> ', pages);
       this.resPost.posts[index].isComment = pages.isComment
       this.resPost.posts[index].isLike = pages.isLike
       this.resPost.posts[index].isRepost = pages.isRepost
@@ -1390,9 +1386,3 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     })
   }
 }
-
-
-
-
-
-

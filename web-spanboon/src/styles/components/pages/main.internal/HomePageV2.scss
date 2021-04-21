@@ -12,6 +12,10 @@
     height: auto;
     display: flex;
     justify-content: center;
+    &:hide {
+        height: 80vh;
+        overflow: hidden;
+    }
     > .hoem_page_body {
         height: auto;
         flex-direction: column;
@@ -120,8 +124,7 @@
         > .around_section {
             margin: 20px 0px;
             padding: 10px 0px;
-            min-width: 80vw;
-            max-width: 80vw;
+            width: 1533px;
             > .top {
                 width: 100%;
                 display: flex;
@@ -165,8 +168,7 @@
         > .needs_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            min-width: 80vw;
-            max-width: 80vw;
+            width: 1533px;
             > .top {
                 display: flex;
                 align-items: center;
@@ -227,8 +229,7 @@
         > .rated_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            min-width: 80vw;
-            max-width: 80vw;
+            width: 1533px;
             > .top {
                 display: flex;
                 align-items: center;
@@ -287,8 +288,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            min-width: 80vw;
-            max-width: 80vw;
+            width: 1533px;
             > .top {
                 display: flex;
                 align-items: center;
@@ -349,6 +349,42 @@
     }
 }
 
+.loding {
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    color: black;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    > .top {
+        width: 80%;
+        display: flex;
+        margin-top: 80px;
+        align-content: flex-start;
+        justify-content: center;
+        > .top_for_loding {
+            width: 50%;
+            padding: 15px;
+        }
+    }
+    > .buttom {
+        width: 80%;
+        display: flex;
+        align-content: flex-start;
+        justify-content: center;
+        > .buttom_for_loding {
+            padding: 15px;
+            width: calc(25% - 30px);
+        }
+    }
+}
 @media (max-width: $xxlarge + 10px) {
     .hoem_page_v2 > .hoem_page_body {
         width: 1440px;
@@ -419,16 +455,6 @@
     }
 }
 
-.loding {
-    width: 100vw;
-    height: 100vh;
-    background-color: white;
-    color: black;
-    position: fixed;
-    top: 0;
-    z-index: 10;
-}
-
 @media (max-width: $large) {
     .hoem_page_v2 > .hoem_page_body {
         width: 900px;
@@ -497,13 +523,16 @@
         flex-direction: column;
     }
     .hoem_page_v2 > .hoem_page_body > .needs_section > .top {
-        padding: 0px 10px;
+        padding: 10px 10px;
+        color: $brandcolor2;
     }
     .hoem_page_v2 > .hoem_page_body > .rated_section > .top {
-        padding: 0px 10px;
+        padding: 10px 10px;
+        color: $brandcolor2;
     }
     .hoem_page_v2 > .hoem_page_body > .other_section > .top {
-        padding: 0px 10px;
+        padding: 10px 10px;
+        color: $brandcolor2;
     }
     .hoem_page_v2 > .hoem_page_body > .needs_section > .top > .line {
         display: none;
@@ -562,7 +591,7 @@
         margin-top: 15px;
         display: flex;
         flex-direction: column;
-        height: 100px;
+        height: 70px;
         justify-content: center;
         align-items: center;
         > span {
@@ -573,6 +602,7 @@
     .hoem_page_v2 > .hoem_page_body > .needs_section > .body > .footer_mobile_button {
         display: block;
         width: 90%;
+        margin-bottom: 20px;
     }
     .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile {
         border-top: 1px solid #00000024;
@@ -580,7 +610,7 @@
         margin-top: 15px;
         display: flex;
         flex-direction: column;
-        height: 100px;
+        height: 70px;
         justify-content: center;
         align-items: center;
         > span {
@@ -591,6 +621,7 @@
     .hoem_page_v2 > .hoem_page_body > .rated_section > .body > .footer_mobile_button {
         display: block;
         width: 90%;
+        margin-bottom: 20px;
     }
     .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile {
         border-top: 1px solid #00000024;
@@ -598,7 +629,7 @@
         margin-top: 15px;
         display: flex;
         flex-direction: column;
-        height: 100px;
+        height: 70px;
         justify-content: center;
         align-items: center;
         > span {
@@ -609,6 +640,7 @@
     .hoem_page_v2 > .hoem_page_body > .other_section > .body > .footer_mobile_button {
         display: block;
         width: 90%;
+        margin-bottom: 20px;
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
@@ -618,6 +650,18 @@
     }
     .hoem_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list_moblie {
         display: block;
+    }
+    .loding > .buttom {
+        display: none;
+    }
+    .loding > .top > .top_for_loding {
+        width: 100%;
+        padding: unset;
+    }
+    .loding > .top {
+        display: flex;
+        flex-direction: column;
+        width: 95%;
     }
 }
 @media (max-width: $small) {
