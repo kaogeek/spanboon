@@ -85,7 +85,7 @@
                                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                                         </div>
                                     </a>
-                                    <ng-container *ngIf="isUserPage">
+                                    <ng-container *ngIf="itemPost.ownerUser">
                                         <a target="_blank" class="post-name"
                                             (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
@@ -119,7 +119,7 @@
                                 <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                             </div>
                         </a>
-                        <ng-container *ngIf="isUserPage">
+                        <ng-container *ngIf="itemPost.ownerUser">
                             <a class="post-name" target="_blank"
                                 (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                 href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
