@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="hoem_page_v2" [class.hide]="!isLoding">
+<div class="home_page_v2" [class.hide]="!isLoding">
     <div class="hoem_page_body">
 
         <!-- ///////////////////////// -->
@@ -71,7 +71,7 @@
 
 
         <div class="around_section" *ngIf="aroundSectionModels">
-            <div class="top">
+            <div class="top fix-hompage-bar">
                 <div class="text_svg">
                     <div class="svg">
                         <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
@@ -109,7 +109,7 @@
         </div>
 
         <div class="needs_section" *ngIf="needsSectionModels">
-            <div class="top">
+            <div class="top fix-hompage-bar">
                 <span class="title">{{needsSectionModels.title}}</span>
                 <div class="line"></div>
                 <div *ngIf="isLodingMore" class="spinner">
@@ -145,7 +145,7 @@
         </div>
 
         <div class="rated_section" *ngIf="lookingSectionModels">
-            <div class="top">
+            <div class="top fix-hompage-bar">
                 <span class="title">{{lookingSectionModels.title}}</span>
                 <div class="line"></div>
                 <div *ngIf="isLodingMore" class="spinner">
@@ -179,7 +179,7 @@
         </div>
 
         <div class="other_section" *ngIf="viewSectionModels">
-            <div class="top">
+            <div class="top fix-hompage-bar">
                 <span class="title">{{viewSectionModels.title}}</span>
                 <div class="line"></div>
                 <div *ngIf="isLodingMore" class="spinner">
@@ -215,7 +215,7 @@
 
         <div class="other_section" [class.dis]="item.title === ''"
             *ngFor=" let item of sectionModels| slice:0:1;let index = index">
-            <div class="top">
+            <div class="top fix-hompage-bar">
                 <span class="title">{{item.title}}</span>
                 <div class="line"></div>
                 <!-- <a class="more">ดูเพิ่มเติม</a> -->
@@ -236,7 +236,7 @@
         </div>
 
         <div class="around_section" *ngIf="postSectionModel">
-            <div class="top">
+            <div class="top" fix-hompage-bar>
                 <div class="text_svg">
                     <div class="svg">
                         <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
