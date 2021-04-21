@@ -43,6 +43,8 @@ export class DialogPostCrad extends AbstractPage {
 
   public isLoading: boolean;
   public isShowCheckboxTag: boolean;
+  public showLoading: boolean = true;
+
   public imageCover: any;
   public config: any;
   public setTimeoutAutocomp: any;
@@ -66,13 +68,15 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   ngOnInit() {
+    setTimeout(() => {
+      this.showLoading = false
+    }, 1500);
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
 
   public async actionComment(action: any, index?: number) {
-    console.log('action', action)
     this.isLoginCh();
     // this.postId = action.postData.pageId
     let pageInUser: any[]
@@ -110,7 +114,7 @@ export class DialogPostCrad extends AbstractPage {
           });
         }
         const dialogRef = this.dialog.open(DialogReboonTopic, {
-          width: '550pt',
+          width: '450pt',
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
         });
 
@@ -208,11 +212,10 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public createComment(comment: any, index?: number) {
-    console.log('comment', comment)
     let commentPosts = new CommentPosts
-    // if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
-    //   commentPosts.commentAsPage = comment.userAsPage.id
-    // }
+    if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
+      commentPosts.commentAsPage = comment.userAsPage.id
+    }
     commentPosts.comment = comment.value
     commentPosts.asset = undefined
     this.postCommentFacade.create(commentPosts, comment.pageId).then((res: any) => {

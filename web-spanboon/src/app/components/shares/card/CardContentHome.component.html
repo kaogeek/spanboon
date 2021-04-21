@@ -200,6 +200,7 @@
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.full]="!isData">
             <div (click)="clickDataSearch(eventTitle)" class="top_coverPage" [class.full]="!isData">
+                <img class="top_coverPage_cover" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
@@ -306,6 +307,7 @@
                 <div class="teg_event_list" (click)="clickDataSearch(event.title,index)"
                     *ngFor="let event of eventData; let index = index">
                     <div class="img_box" [class.open]="index === selectIndex && !isData">
+                        <img class="bottom_coverPage_cover" src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
                         <img src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
                     </div>
                     <div class="title">

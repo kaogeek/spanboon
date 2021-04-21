@@ -150,8 +150,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
 
-    console.log('this.pageUser', this.pageUser);
-
   }
 
   public clickDataSearch(data) {
@@ -225,7 +223,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'RECOMMEND') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.viewSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -233,7 +231,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'STILLLOOKING') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.lookingSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -241,7 +239,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'LASTEST') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.needsSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -249,7 +247,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     setTimeout(() => {
       this.isLodingMore = false;
-    }, 3500);
+    }, 6000);
 
   }
 

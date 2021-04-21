@@ -1005,7 +1005,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           });
         }
         const dialogRef = this.dialog.open(DialogReboonTopic, {
-          width: '550pt',
+          width: '450pt',
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage } }
         });
 

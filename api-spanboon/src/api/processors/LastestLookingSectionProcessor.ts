@@ -72,7 +72,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     { $group: { '_id': { 'post': '$post' } } },
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
-                    { $limit: 3 }
+                    { $limit: 4 }
                 ];
                 const postIds: any[] = [];
                 const needSearchResult = await this.needsService.aggregateEntity(needStmt);
