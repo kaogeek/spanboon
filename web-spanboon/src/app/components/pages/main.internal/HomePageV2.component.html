@@ -26,7 +26,9 @@
 
         <div class="events_tag_top">
             <div class="left">
-                <span class="text">มาใหม่ :</span>
+                <div class="text_h">
+                    <span class="text">มาใหม่ :</span>
+                </div>
                 <div class="tag_list">
                     <a class="tag" (click)="clickDataSearch(item)"
                         *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>

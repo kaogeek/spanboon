@@ -124,7 +124,7 @@
                 }
                 > .amount_social {
                     color: #a1a1a1;
-                    margin-top: 5px;
+                    margin: 10px 0px;
                     @include font-size-11($font-head-400);
                 }
             }
@@ -955,12 +955,14 @@
         align-items: center;
     }
     .card_content_home > .event_card > .top.full {
-        width: calc(80% - 30px);
-        padding: 0px 15px;
+        // width: calc(80% - 30px);
+        // padding: 0px 15px;
+        width: 100%;
     }
     .card_content_home > .event_card > .bottom.full {
-        width: calc(80% - 30px);
-        padding: 0px 15px;
+        // width: calc(80% - 30px);
+        // padding: 0px 15px;
+        width: 100%;
     }
     .card_content_home > .event_card > .bottom > .other_teg_event > .teg_event_list > .img_box.open {
         height: 350px;
