@@ -83,23 +83,50 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 } else if (clientId !== undefined) {
                     // ! impl
                 }
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: today }
-                };
+
                 const postStmt = [
-                    { $match: postMatchStmt },
-                    { $limit: limit },
+                    { $match: matchStmt },
+                    { $skip: offset },
+                    { $limit: 4 },
                     { $sort: { createdDate: -1 } },
-                    { $addFields: { objectiveId: { $toObjectId: '$objective' } } },
                     {
                         $lookup: {
-                            from: 'PageObjective',
-                            localField: 'objectiveId',
+                            from: 'Page',
+                            localField: 'pageId',
                             foreignField: '_id',
-                            as: 'objectives'
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Posts',
+                            localField: 'rootReferencePost',
+                            foreignField: '_id',
+                            as: 'rootRefPost'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: 'rootReferencePost',
+                            foreignField: 'post',
+                            as: 'rootRefGallery'
                         }
                     }
                 ];
