@@ -459,6 +459,15 @@
 }
 
 @media (max-width: $lmedium) {
+    .loding > .top > .top_for_loding {
+        width: 100%;
+        padding: unset;
+    }
+    .loding > .top {
+        display: flex;
+        flex-direction: column;
+        width: 95%;
+    }
     .hoem_page_v2 > .hoem_page_body {
         width: 100vw;
     }

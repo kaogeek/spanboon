@@ -120,13 +120,13 @@
             </div>
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of needsSectionModels.contents;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [largeCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'>
+                    <card-contant-home (clickEvent)="testCrad($event)" [largeCard]='true' [keyObjArr]='["coverPageUrl"]'
+                        [postData]='dataViewSection'>
                     </card-contant-home>
                 </div>
                 <div class="isMobile" *ngFor="let dataViewSection of needsSectionModels.contents;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [largeCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'>
+                    <card-contant-home (clickEvent)="testCrad($event)" [largeCard]='true' [keyObjArr]='["coverPageUrl"]'
+                        [postData]='dataViewSection'>
                     </card-contant-home>
                 </div>
                 <div class="footer_mobile" *ngIf="!isLodingMore && needsSectionModels.contents.length > 3">
@@ -157,11 +157,11 @@
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of lookingSectionModels.contents;let index = index">
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <div class="isMobile" *ngFor="let dataViewSection of lookingSectionModels.contents;let index = index">
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <div class="footer_mobile" *ngIf="!isLodingMore && lookingSectionModels.contents.length > 4">
                     <span (click)="getMore(lookingSectionModels.contents.length,lookingSectionModels.type)">ยังมี
@@ -191,11 +191,11 @@
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of viewSectionModels.contents;let index = index">
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <div class="isMobile" *ngFor="let dataViewSection of viewSectionModels.contents;let index = index">
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["post","coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <div *ngIf="isLodingMore" style="width: 94%; margin: 20px;">
                     <Preload-card [isShowCard1]="true" [isShowCard2]="true">
