@@ -106,7 +106,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
 
     if (this.pageModel.objectiveEvents.contents.length > 0) {
-      this.isDoing = true
+      this.isDoing = false
       this.aroundSectionModels = this.jsonParseData(this.pageModel.objectiveEvents);
 
       let dataAroundSection = this.postInDoing(this.pageModel.objectiveEvents.contents);
