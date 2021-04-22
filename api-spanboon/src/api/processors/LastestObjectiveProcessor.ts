@@ -11,9 +11,9 @@ import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { LastestObjectiveProcessorData } from './data/LastestObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 // import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
-import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 // import moment from 'moment';
 
 export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -126,7 +126,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
 
                 const result: SectionModel = new SectionModel();
-                result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
+                result.title = 'สิ่งที่กำลังเกิดขึ้นรอบตัวคุณ';
                 result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.type = 'SMALL';
                 result.description = '';

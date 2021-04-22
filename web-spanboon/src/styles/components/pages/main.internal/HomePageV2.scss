@@ -98,11 +98,11 @@
             // width: 80%;
             display: flex;
             &.full {
-                width: 80%;
+                width: 1533px;
             }
             border-bottom: solid 0.5px #d3d3d3;
             > .left {
-                padding: 15px;
+                padding: 15px 0px;
                 width: calc(600px - 30px);
                 &.full {
                     width: 100%;
@@ -534,6 +534,7 @@
         background-color: white;
         max-width: unset;
         min-width: calc(360px - 20px);
+        border: 1px solid #00000024;
     }
     .home_page_v2 > .hoem_page_body {
         display: flex;
