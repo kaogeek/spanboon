@@ -156,6 +156,10 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.router.navigateByUrl('/search?hashtag=' + data);
   }
 
+  public clickDataSearchTodo(data) {
+    this.router.navigateByUrl('/search?hashtag=' + data.title);
+  }
+
   public smallType(data): boolean {
     if (data === "SMALL") {
       return true

@@ -22,7 +22,7 @@ import { MESSAGE } from '../../../../custom/variable';
 
 declare var $: any;
 
-const PAGE_NAME: string = 'homeOriginal';
+const PAGE_NAME: string = 'homeV2';
 const PAGE_SIZE: number = 6;
 
 @Component({
