@@ -87,7 +87,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 const postStmt = [
                     { $match: matchStmt },
                     { $skip: offset },
-                    { $limit: limit },
+                    { $limit: 4 },
                     { $sort: { createdDate: -1 } },
                     {
                         $lookup: {

@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 declare var $: any;
 
-const PAGE_NAME: string = 'homeV2';
+const PAGE_NAME: string = 'home';
 const PAGE_SIZE: number = 6;
 
 @Component({
@@ -106,7 +106,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
 
     if (this.pageModel.objectiveEvents.contents.length > 0) {
-      this.isDoing = true
+      this.isDoing = false
       this.aroundSectionModels = this.jsonParseData(this.pageModel.objectiveEvents);
 
       let dataAroundSection = this.postInDoing(this.pageModel.objectiveEvents.contents);
@@ -150,12 +150,14 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       }
     }
 
-    console.log('this.pageUser', this.pageUser);
-
   }
 
   public clickDataSearch(data) {
     this.router.navigateByUrl('/search?hashtag=' + data);
+  }
+
+  public clickDataSearchTodo(data) {
+    this.router.navigateByUrl('/search?hashtag=' + data.title);
   }
 
   public smallType(data): boolean {
@@ -225,7 +227,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'RECOMMEND') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.viewSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -233,7 +235,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'STILLLOOKING') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.lookingSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -241,7 +243,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     if (type === 'LASTEST') {
       if (getMoreModel.contents.length > 0) {
         arrData = this.needsSectionModels.contents
-        for await (const post of getMoreModel.contents) {
+        for (const post of getMoreModel.contents) {
           arrData.push(post)
         }
       }
@@ -249,7 +251,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     setTimeout(() => {
       this.isLodingMore = false;
-    }, 3500);
+    }, 6000);
 
   }
 

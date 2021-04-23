@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade } from '../../../services/services';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -25,6 +25,8 @@ import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
+import { ENGAGEMENT_ACTION } from '../../../UserTypeEngagement';
+import { Title } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -75,8 +77,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private recommendFacade: RecommendFacade;
   private aboutPageFacade: AboutPageFacade;
   private seoService: SeoService;
-  private profileFacade: ProfileFacade;
-  private postActionService: PostActionService;
+  private profileFacade: ProfileFacade; 
 
   public resDataPage: any;
   public resPost: any = {};
@@ -133,8 +134,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade, postActionService: PostActionService
-  ) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade,
+    ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.pageFacade = pageFacade;
@@ -151,14 +152,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.recommendFacade = recommendFacade;
     this.aboutPageFacade = aboutPageFacade;
     this.seoService = seoService;
-    this.profileFacade = profileFacade;
+    this.profileFacade = profileFacade; 
     this.isFiles = false;
     this.isPost = false;
     this.isLoadingPost = false;
     this.isMaxLoadingPost = false;
     this.showLoading = true;
     this.cacheConfigInfo = cacheConfigInfo;
-    this.postActionService = postActionService;
     this.userImage = {};
     this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
@@ -470,14 +470,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public async searchPostById(postId: string) {
+  public searchPostById(postId: string) {
     let search: SearchFilter = new SearchFilter();
     search.limit = 10;
     search.count = false;
     search.whereConditions = { _id: postId };
-    let res = await this.searchById(search);
-    this.resDataPost = res;
-    if (res) {
+    this.postFacade.search(search).then((res: any) => {
+      this.resDataPost = res;
       if (this.resDataPost.length === 0) {
         this.msgPageNotFound = true;
         this.labelStatus = 'ไม่พบโพสต์';
@@ -515,11 +514,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }
-    }
-  }
-
-  public async searchById(search: any) {
-    return this.postFacade.search(search);
+    }).catch((err: any) => {
+    });
   }
 
   public isLogin(): boolean {
@@ -710,7 +706,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       })
     }
   }
-
+  
   public async clickFollowPage() {
     let pageId = this.resDataPage.id;
     const follow = await this.followPage(pageId);
@@ -725,9 +721,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public async clickFollow(data: any) {
+  public async clickFollow(data: any) { 
     if (data.recommed.type === 'USER') {
-      const followUser = await this.followUser(data.recommed._id);
+      const followUser = await this.followUser(data.recommed._id); 
       if (followUser) {
         for (let [index, recommend] of this.dataRecommend.entries()) {
           if (recommend._id === data.recommed._id) {
@@ -762,12 +758,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
                   Object.assign(this.dataRecommend[index], { follow: true });
                 }
                 this.dialog.closeAll();
-              });
+              }); 
             } else {
               Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
             }
           }
-        }
+        } 
 
         this.selectedIndex = data.index;
       }
@@ -977,7 +973,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public postLike(data: any, index: number) {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+      this.showAlertLoginDialog("/profile/" + this.resDataPage.id);
     } else {
       this.resPost.posts[index].isLike = true;
       this.resPost.posts[index].likeCount = 1;
@@ -1247,31 +1243,115 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.isLoginCh(); 
-    await this.postActionService.actionPost(action, index, this.resPost, "PAGE").then((res: any) => {
-      //repost
-      if (res && res.type === "NOTOPIC") { 
-        this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") { 
-        this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") { 
-        for (let [i, data] of this.resPost.posts.entries()) {
-          if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
-            if (data.referencePostObject._id === action.post._id) {
-              this.resPost.posts.splice(i, 1);
-              break;
-            }
-          }
-        }
-      } else if (res.type === "POST") {
-        this.router.navigateByUrl('/post/' + action.pageId);
-      } else if (action.mod === 'LIKE') {
-        this.isLoginCh();
-        this.postLike(action, index);
+    // this.postId = action.postData.pageId
+    let pageInUser: any[]
+    let data: RePost = new RePost();
+    let dataPost: any
+    let userAsPage: any
+    if (action.mod === 'REBOON') {
+      this.isLoginCh();
+      if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
+        userAsPage = action.userAsPage.id;
+      } else {
+        userAsPage = null;
       }
-    }).catch((err: any) => {
-      console.log('err ', err)
-    }); 
+
+      if (userAsPage !== null && userAsPage !== undefined && userAsPage !== '') {
+        data.postAsPage = userAsPage;
+        data.pageId = userAsPage;
+      } else {
+        data.postAsPage = null;
+        data.pageId = null;
+      }
+
+      if (action.type === "TOPIC") {
+        let search: SearchFilter = new SearchFilter();
+        search.limit = 10;
+        search.count = false;
+        search.whereConditions = { ownerUser: this.userCloneDatas.id };
+        var aw = await this.pageFacade.search(search).then((pages: any) => {
+          pageInUser = pages
+        }).catch((err: any) => {
+        })
+        for (let p of pageInUser) {
+          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+          });
+        }
+        const dialogRef = this.dialog.open(DialogReboonTopic, {
+          width: '450pt',
+          data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (!result) {
+            return
+          }
+          if (result.isConfirm) {
+            if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
+              data.pageId = null
+              if (result.text === "") {
+                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
+                  dataPost = action.post.referencePost._id
+                } else {
+                  dataPost = action.post._id
+                }
+              } else {
+                dataPost = action.post._id
+              }
+            } else {
+              data.pageId = result.pageId
+              if (result.text === "") {
+                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
+                  dataPost = action.post.referencePost._id
+                } else {
+                  dataPost = action.post._id
+                }
+              } else {
+                dataPost = action.post._id
+              }
+            }
+            data.detail = result.text
+            if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
+              data.postAsPage = action.userAsPage.id
+            }
+            if (result.hashTag !== undefined && result.hashTag !== null) {
+              data.hashTag = result.hashTag
+            }
+            this.postFacade.rePost(dataPost, data).then((res: any) => {
+              this.resPost.posts[index].repostCount++
+              this.resPost.posts[index].isRepost = false;
+            }).catch((err: any) => {
+              console.log(err)
+            })
+          }
+        });
+      } else if (action.type === "NOTOPIC") {
+        dataPost = action.post._id;
+        this.postFacade.rePost(dataPost, data).then((res: any) => {
+          this.resPost.posts[index].repostCount++;
+          this.resPost.posts[index].isRepost = true;
+        }).catch((err: any) => {
+          console.log(err);
+        })
+      } else if (action.type === "UNDOTOPIC") {
+        this.postFacade.undoPost(action.post._id).then((res: any) => {
+          this.resPost.posts[index].repostCount--;
+          this.resPost.posts[index].isRepost = false;
+        }).catch((err: any) => {
+          console.log(err);
+        })
+      }
+    } else if (action.mod === 'LIKE') {
+      this.isLoginCh();
+      this.postLike(action, index);
+    } else if (action.mod === 'SHARE') {
+    } else if (action.mod === 'COMMENT') {
+      this.isLoginCh();
+    } else if (action.mod === 'POST') {
+      this.router.navigateByUrl('/post/' + action.pageId);
+    }
   }
 
   public getAaaPost(action: any, index: number) {
