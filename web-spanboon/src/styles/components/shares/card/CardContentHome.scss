@@ -11,6 +11,11 @@
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
         cursor: pointer;
+        transition: 0.1s;
+        border: solid 0.5px #d3d3d300;
+        &:hover {
+            border: solid 0.5px $brandcolor2;
+        }
         > .top_small_card {
             width: 200px;
             margin-bottom: 10px;
@@ -65,7 +70,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -76,6 +81,11 @@
                     overflow: hidden;
                     line-height: 25px;
                     @include font-size-7($font-head-500);
+
+                    &:hover {
+                        transition: 0.1s;
+                        color: $brandcolor2;
+                    }
                 }
             }
             > .other_topic_detail {
@@ -86,7 +96,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
             }
             > .bottom_small_card_detail_footer {
@@ -98,7 +108,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 25px;
+                    line-height: 20px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > .new-cards-offical {
@@ -124,7 +134,6 @@
                 }
                 > .amount_social {
                     color: #a1a1a1;
-                    margin: 10px 0px;
                     @include font-size-11($font-head-400);
                 }
             }
@@ -134,6 +143,7 @@
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
         width: 360px;
+        cursor: pointer;
         > .type_post {
             display: flex;
             align-items: center;
@@ -219,7 +229,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -252,7 +262,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
             }
             > .bottom_medium_card_detail_footer {
@@ -263,7 +273,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 25px;
+                    line-height: 20px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > a {
@@ -288,7 +298,6 @@
                     }
                 }
                 > .amount_social {
-                    margin-top: 5px;
                     color: #a1a1a1;
                     @include font-size-11($font-head-400);
                     > .count-aontrol {
@@ -384,7 +393,7 @@
         }
         > .bottom_large_card {
             width: 400px;
-            height: 150px;
+            height: 200px;
             word-break: break-word;
             position: relative;
             padding: 0px 5px;
@@ -392,7 +401,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -418,7 +427,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                 }
             }
             > .bottom_large_card_detail_footer {
@@ -429,7 +438,7 @@
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 25px;
+                    line-height: 20px;
                     color: #cacaca;
                     @include font-size-11($font-head-500);
                     > a {
@@ -455,7 +464,6 @@
                 }
 
                 > .amount_social {
-                    margin-top: 5px;
                     color: #a1a1a1;
                     @include font-size-11($font-head-400);
                     > .count-aontrol {
@@ -475,6 +483,7 @@
     > .event_card {
         width: auto;
         height: auto;
+        cursor: pointer;
         &.full {
             display: flex;
         }
@@ -501,10 +510,9 @@
                     height: 100%;
                     -o-object-fit: scale-down;
                     object-fit: cover;
-                    opacity: 0.4;
                     z-index: 1;
-                    filter: blur(5px);
-                    -webkit-filter: blur(5px);
+                    filter: blur(15px);
+                    -webkit-filter: blur(15px);
                 }
                 > .teg_event {
                     position: absolute;
@@ -529,7 +537,7 @@
             }
             > .body_card {
                 width: auto;
-                height: 130px;
+                height: auto;
                 display: flex;
                 flex-direction: column;
                 // padding: 0px 15px;
@@ -539,7 +547,7 @@
                     align-items: center;
                     margin: 12px 0px;
                     > .event_title {
-                        @include font-size-7($font-head-500);
+                        @include font-size-6($font-head-500);
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
@@ -550,15 +558,16 @@
                     }
                 }
                 > .description {
-                    @include font-size-10($font-content-light);
+                    @include font-size-9($font-content-light);
                     display: -webkit-box;
                     -webkit-line-clamp: 4;
+                    line-height: 26px;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                 }
             }
             > .social_control {
-                padding: 15px 15px;
+                padding: 15px 0px;
                 display: flex;
                 align-items: flex-end;
                 border-bottom: solid 0.5px #d3d3d3;
@@ -580,9 +589,7 @@
                 }
 
                 > .amount_social {
-                    padding-left: 15px;
                     color: #a1a1a1;
-                    border-left: solid 0.5px #d3d3d3;
                     margin-top: 5px;
                     @include font-size-11($font-head-400);
                     > .count-aontrol {
@@ -635,10 +642,9 @@
                             height: 100%;
                             -o-object-fit: scale-down;
                             object-fit: cover;
-                            opacity: 0.4;
                             z-index: 1;
-                            filter: blur(5px);
-                            -webkit-filter: blur(5px);
+                            filter: blur(15px);
+                            -webkit-filter: blur(15px);
                         }
                         > img {
                             z-index: 2;
@@ -655,7 +661,7 @@
                         display: flex;
                         justify-content: space-between;
                         > a {
-                            @include font-size-10($font-head-500);
+                            @include font-size-8($font-head-500);
                             &:hover {
                                 transition: 0.1s;
                                 color: $brandcolor2;
@@ -678,9 +684,10 @@
                     > .description {
                         > span {
                             margin: 15px 0px;
-                            @include font-size-10($font-content-light);
+                            @include font-size-9($font-content-light);
                             display: -webkit-box;
                             -webkit-line-clamp: 3;
+                            line-height: 26px;
                             -webkit-box-orient: vertical;
                             overflow: hidden;
                             &.full {
@@ -694,20 +701,20 @@
                         > .social_control {
                             display: flex;
                             align-items: flex-end;
-                            > .drot {
-                                margin: 0px 5px;
-                                color: rgb(202, 202, 202);
-                            }
-                            > .social {
-                                align-items: center;
-                                display: flex;
+                            > .amount_social {
+                                color: #a1a1a1;
+                                margin-top: 5px;
                                 @include font-size-11($font-head-400);
-                                color: rgb(202, 202, 202);
-                                > svg {
-                                    margin: 0px 5px;
+                                > .count-aontrol {
                                 }
-                            }
-                            > .control {
+
+                                > .title-control {
+                                    margin-left: 2px;
+                                }
+
+                                > .drot {
+                                    margin: 0 5pt;
+                                }
                             }
                         }
                         > .date_time {
@@ -1001,14 +1008,14 @@
         height: 150px;
     }
     .card_content_home > .medium_card {
+        padding: 15px 0px;
         margin: 0px 10px;
-        border-top: 1px solid #00000024;
-        margin-top: 15px;
+        // border-bottom: 1px solid #00000024;
     }
     .card_content_home > .large_card {
+        padding: 15px 0px;
         margin: 0px 10px;
-        border-top: 1px solid #00000024;
-        margin-top: 15px;
+        // border-bottom: 1px solid #00000024;
     }
     .card_content_home > .event_card > .top.full {
         width: calc(100% - 30px);
@@ -1032,17 +1039,17 @@
     }
     .home_page_v2 > .hoem_page_body > .needs_section {
         background-color: white;
-        width: 100%;
+        width: calc(100% - 2px);
         padding: unset;
     }
     .home_page_v2 > .hoem_page_body > .rated_section {
         background-color: white;
-        width: 100%;
+        width: calc(100% - 2px);
         padding: unset;
     }
     .home_page_v2 > .hoem_page_body > .other_section {
         background-color: white;
-        width: 100%;
+        width: calc(100% - 2px);
         padding: unset;
     }
 }
