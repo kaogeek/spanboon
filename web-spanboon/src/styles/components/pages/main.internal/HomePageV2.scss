@@ -59,6 +59,7 @@
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
+                        width: 110px;
                         border-right: solid 0.5px #d3d3d3;
                         &:hover {
                             transition: 0.1s;
@@ -394,8 +395,23 @@
 }
 @media (max-width: $xxlarge + 10px) {
     .home_page_v2 > .hoem_page_body {
-        width: 1440px;
-        zoom: 0.8;
+        width: 100%;
+        // zoom: 0.8;
+    }
+    .home_page_v2 > .hoem_page_body > .events_top.full {
+        width: 90%;
+    }
+    .home_page_v2 > .hoem_page_body > .around_section {
+        width: 90%;
+    }
+    .home_page_v2 > .hoem_page_body > .needs_section {
+        width: 90%;
+    }
+    .home_page_v2 > .hoem_page_body > .rated_section {
+        width: 90%;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section {
+        width: 90%;
     }
 }
 
@@ -408,7 +424,7 @@
 @media (max-width: $xlarge - 80px) {
     .home_page_v2 > .hoem_page_body {
         width: 1200px;
-        zoom: 0.8;
+        // zoom: 0.8;
     }
     .home_page_v2 > .hoem_page_body > .events_top > .right > .tagCardRight {
         display: none;
@@ -546,7 +562,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        zoom: 1;
     }
     .home_page_v2 > .hoem_page_body > .events_top {
         display: flex;
@@ -709,7 +724,8 @@
         display: none;
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list_moblie {
-        display: block;
+        display: flex;
+        overflow: scroll;
     }
     .loding > .buttom {
         display: none;

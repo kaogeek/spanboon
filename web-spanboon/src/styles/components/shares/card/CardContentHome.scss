@@ -26,6 +26,12 @@
                 overflow: hidden;
                 height: 150px;
                 position: relative;
+                &.is_objective {
+                    display: flex;
+                    align-content: center;
+                    justify-content: center;
+                    align-items: center;
+                }
                 > img {
                     position: absolute;
                     top: 0;
@@ -34,6 +40,12 @@
                     height: 100%;
                     -o-object-fit: cover;
                     object-fit: cover;
+                    &.is_objective {
+                        position: unset !important;
+                        border-radius: 100% !important;
+                        width: 100pt !important;
+                        height: 100pt !important;
+                    }
                 }
             }
             > .other_topic {
@@ -71,6 +83,9 @@
                     overflow: hidden;
                     line-height: 25px;
                     @include font-size-9($font-content-light);
+                    &.is_objective {
+                        text-align: center;
+                    }
                 }
                 > .title {
                     margin-top: 5px;
