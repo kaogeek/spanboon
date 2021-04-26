@@ -49,6 +49,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public tagCard: boolean;
     @Input()
     public tagCardIsOpenRight: boolean;
+    @Input()
+    public isObjective: boolean;
 
     @Output()
     public clickEvent: EventEmitter<any> = new EventEmitter();

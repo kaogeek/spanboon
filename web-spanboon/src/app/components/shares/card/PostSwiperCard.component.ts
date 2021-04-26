@@ -47,6 +47,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
+  @Input()
+  public isObjective: boolean;
 
   @Output()
   public clickEventA: EventEmitter<any> = new EventEmitter();

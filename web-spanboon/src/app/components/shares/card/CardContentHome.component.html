@@ -7,8 +7,8 @@
 <div class="card_content_home">
     <div *ngIf="smallCard && postData && !isLoad" class="small_card">
         <div (click)="clickEventEmit()" class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
-            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+            <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -18,7 +18,8 @@
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
+                <span class="title" [class.is_objective]="isObjective"
+                    [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
             </div>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
