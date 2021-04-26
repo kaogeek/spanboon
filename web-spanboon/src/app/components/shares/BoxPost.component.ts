@@ -2659,61 +2659,62 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialBinding(socialBind: boolean, platform: string) {
-    if (platform === 'twitter' && !this.twitterConection) {
-      if (!socialBind) {
-        this.unbindTwitter();
-      } else {
-        let callback = environment.webBaseURL + "/callback";
-        this.twitterService.requestToken(callback).then((result: any) => {
-          this.authorizeLink += '?' + result;
-          window.open(this.authorizeLink);
-          window.bindTwitter = (resultTwitter) => {
-            if (resultTwitter !== undefined && resultTwitter !== null) {
-              const twitter = new PageSocialTW();
-              twitter.twitterOauthToken = resultTwitter.token;
-              twitter.twitterTokenSecret = resultTwitter.token_secret;
-              twitter.twitterUserId = resultTwitter.userId;
+    this.setAutoPostSocial(socialBind, platform);
+    // if (platform === 'twitter' && !this.twitterConection) {
+    //   // if (!socialBind) {
+    //   //   this.unbindTwitter();
+    //   // } else { 
+    //   //   let callback = environment.webBaseURL + "/callback";
+    //   //   this.twitterService.requestToken(callback).then((result: any) => {
+    //   //     this.authorizeLink += '?' + result;
+    //   //     window.open(this.authorizeLink);
+    //   //     window.bindTwitter = (resultTwitter) => {
+    //   //       if (resultTwitter !== undefined && resultTwitter !== null) {
+    //   //         const twitter = new PageSocialTW();
+    //   //         twitter.twitterOauthToken = resultTwitter.token;
+    //   //         twitter.twitterTokenSecret = resultTwitter.token_secret;
+    //   //         twitter.twitterUserId = resultTwitter.userId;
 
-              this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
-                if (res.data) {
-                  this.twitterConection = res.data;
-                  if (this.twitterConection) {
-                    let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
+    //   //         this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
+    //   //           if (res.data) {
+    //   //             this.twitterConection = res.data;
+    //   //             if (this.twitterConection) {
+    //   //               let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
 
-                    const confirmEventEmitter = new EventEmitter<any>();
-                    confirmEventEmitter.subscribe(() => {
-                      this.submitDialog.emit();
-                    });
-                    const canCelEventEmitter = new EventEmitter<any>();
-                    canCelEventEmitter.subscribe(() => {
-                      this.submitCanCelDialog.emit();
-                    });
+    //   //               const confirmEventEmitter = new EventEmitter<any>();
+    //   //               confirmEventEmitter.subscribe(() => {
+    //   //                 this.submitDialog.emit();
+    //   //               });
+    //   //               const canCelEventEmitter = new EventEmitter<any>();
+    //   //               canCelEventEmitter.subscribe(() => {
+    //   //                 this.submitCanCelDialog.emit();
+    //   //               });
 
-                    let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
-                    dialog.afterClosed().subscribe((res) => {
-                      if (res) {
-                        this.setAutoPostSocial(true, 'twitter')
-                      } else {
-                        this.isAutoPostTwitter = false;
-                      }
-                    });
-                  }
-                }
-              }).catch((err: any) => {
-                if (err.error.message === 'This page was binding with Twitter Account.') {
-                  this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
-                }
-              });
-            }
-          }
-        }).catch((error: any) => {
-          console.log(error);
-          this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
-        });
-      }
-    } else {
-      this.setAutoPostSocial(socialBind, platform);
-    }
+    //   //               let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    //   //               dialog.afterClosed().subscribe((res) => {
+    //   //                 if (res) {
+    //   //                   this.setAutoPostSocial(true, 'twitter')
+    //   //                 } else {
+    //   //                   this.isAutoPostTwitter = false;
+    //   //                 }
+    //   //               });
+    //   //             }
+    //   //           }
+    //   //         }).catch((err: any) => {
+    //   //           if (err.error.message === 'This page was binding with Twitter Account.') {
+    //   //             this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+    //   //           }
+    //   //         });
+    //   //       }
+    //   //     }
+    //   //   }).catch((error: any) => {
+    //   //     console.log(error);
+    //   //     this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    //   //   });
+    //   // }
+    // } else {
+    //   this.setAutoPostSocial(socialBind, platform);
+    // }
   }
 
   public popup(url, title, width, height, scroll) {
