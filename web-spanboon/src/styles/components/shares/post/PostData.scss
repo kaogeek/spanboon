@@ -18,15 +18,14 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 15pt;
+    padding: 10pt 12pt;
     &.active {
       justify-content: unset;
     }
     > .left {
       display: flex;
       align-items: center;
-      font-family: "Kanit-500";
-      font-size: 14px;
+      @include font-size-10($font-head-500);
       color: $black;
       position: relative;
       margin-right: 15pt;
@@ -59,15 +58,15 @@
         height: 8pt;
         border-radius: 50%;
         flex: 0 0 auto;
-        background-color: $koalaGray;
+        background-color: $color-gray;
       }
 
       .looking {
-        background-color: $brandcolor2;
+        background-color: $status-post-need;
       }
 
       .fulfill {
-        background-color: $green;
+        background-color: $status-post-fulfill;
       }
 
       span {
@@ -94,27 +93,31 @@
 
             > span {
               cursor: pointer;
-              color: $koalaGray;
+              color: $color-gray;
+              @include font-size-10($font-head-200);
 
               &:hover {
-                text-decoration: underline;
+                color: rgba($brandcolor2, 0.95);
               }
             }
           }
         }
 
         > .post-name {
-          font-family: "Kanit-500";
-          font-size: 14px;
+          @include font-size-10($font-head-200);
           color: #a5a5a6;
+          span {
+            &:hover {
+              color: $brandcolor2;
+            }
+          }
         }
       }
     }
 
     > .repost-re {
       flex: 0 0 auto;
-      font-family: "Kanit-400";
-      font-size: 14px;
+      @include font-size-10($font-head-400);
       color: #a5a5a6;
       display: flex;
       align-items: center;
@@ -166,14 +169,12 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 width: 100%;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 word-break: break-word;
               }
 
               > .text {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 color: $bg-color4;
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
@@ -185,7 +186,7 @@
 
             &:last-child {
               .text {
-                color: $color-warm-red;
+                color: $brandcolor2;
               }
             }
           }
@@ -222,8 +223,7 @@
   > .topic-name {
     display: flex;
     padding: 10pt 15pt 10pt 15pt;
-    font-family: "Kanit-400";
-    font-size: 20px;
+    @include font-size-8($font-head-400);
     &.active {
       display: none;
     }
@@ -231,7 +231,7 @@
 
   > .dropdown {
     position: absolute;
-    top: 12pt;
+    top: 8pt;
     // top: 7pt;
     right: 14px;
     width: 30px;
@@ -250,7 +250,8 @@
 
     > .mat-button-wrapper {
       > .material-icons {
-        font-size: 26px;
+        font-size: $font-size-icon-large;
+        font-family: "Material Icons" !important;
       }
     }
   }
@@ -319,8 +320,7 @@
           height: 100%;
           left: 0;
           top: 0;
-          font-family: "Kanit-500";
-          font-size: 18px;
+          @include font-size-9($font-head-500);
           color: $white;
           background-color: $black;
           opacity: 0.5;
@@ -337,9 +337,46 @@
   > .wrapper-content {
     padding: 10pt 15pt 0 15pt;
     word-break: break-word;
- 
+
     &.active {
       padding: 0 15pt 0 15pt;
+    }
+
+    > .social-share {
+      display: flex;
+      align-items: center;
+      padding-top: 10pt;
+
+      > .img-action {
+        height: 10pt;
+        width: 10pt;
+      }
+
+      span {
+        @include font-size-10($font-head-400);
+        padding: 0 5pt;
+        color: $color-gray;
+      }
+
+      a {
+        @include font-size-10($font-head-400);
+        color: $black;
+        &:hover {
+          color: $brandcolor2;
+        }
+      }
+
+      .wrapper-action {
+        > .other-social {
+          @include font-size-10($font-head-300);
+          color: $black;
+          @include pointer();
+
+          &:hover {
+            color: $brandcolor2;
+          }
+        }
+      }
     }
 
     > .post-to {
@@ -353,40 +390,36 @@
         align-items: center;
 
         > .date-time {
-          font-family: "Kanit-500";
-          font-size: 12px;
+          @include font-size-11($font-head-300);
           color: $black;
           margin-right: 7px;
 
           > span {
             cursor: pointer;
-            color: $koalaGray;
+            color: $color-gray;
 
             &:hover {
-              text-decoration: underline;
+              color: rgba($brandcolor2, 0.95);
             }
           }
         }
       }
 
       > .post-name {
-        font-family: "Kanit-500";
-        font-size: 12px;
-        color: $koalaGray;
+        @include font-size-11($font-head-200);
+        color: $color-gray;
       }
     }
 
     > .title {
-      font-family: "Kanit-400";
-      font-size: 20px;
+      @include font-size-8($font-head-500);
       line-height: 26px;
     }
 
     > .content {
       white-space: pre-wrap;
       color: $color-black;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-10($font-content-light);
       min-height: unset;
     }
     > .page-give {
@@ -394,15 +427,14 @@
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      font-family: "Kanit-500";
-      font-size: 16px;
+      @include font-size-10($font-head-500);
 
       &.active {
         padding-top: 10pt;
       }
 
       > a {
-        color: $color-warm-red;
+        color: $brandcolor2;
       }
     }
 
@@ -410,29 +442,28 @@
       margin-top: 10pt;
       display: inline-block;
       cursor: pointer;
-      color: $color-warm-red;
-      font-family: "Kanit-300";
-      font-size: 16px;
+      color: $brandcolor2;
+      @include font-size-10($font-head-500);
 
       &:hover {
-        text-decoration: underline;
+        color: rgba($brandcolor2, 0.95);
       }
     }
 
     > .tag_div {
+      display: flex;
       width: 100%;
-      display: inline;
+      margin-top: 10pt;
 
       > .h_tag_list {
         width: max-content;
-        font-family: "Sarabun-Light";
-        font-size: 16px;
+        @include font-size-10($font-content-light);
         @include pointer();
         display: inline;
         margin: 0 7pt 7pt 0;
 
         &:hover {
-          text-decoration: underline;
+          color: rgba($brandcolor2, 0.95);
         }
       }
     }
@@ -445,7 +476,9 @@
       border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
       margin-top: 15px;
       padding: 8pt 0;
-
+      &.active {
+        justify-content: flex-end;
+      }
       > .left {
         flex: 1 1 0%;
         margin-right: 15pt;
@@ -473,14 +506,27 @@
 
       > .input-comment {
         flex: 1 1 0%;
+        position: relative;
+        > .send-button {
+          display: flex;
+          position: absolute;
+          right: 15pt;
+          top: 6pt;
+          color: $color-gray;
 
+          > .material-icons {
+            &:hover {
+              color: $brandcolor2;
+              @include pointer();
+            }
+          }
+        }
         > .comment-text {
           border: 1px solid rgb($black, 0.1);
           width: calc(100% - 24px - 2px - 10pt);
           border-radius: 25px;
           padding: 6pt 12pt;
-          font-family: "Sarabun-Medium";
-          font-size: 16px;
+          @include font-size-10($font-content2-medium);
         }
       }
     }
@@ -561,8 +607,7 @@
         background: rgba($bg-fog-gray, 0.8);
         padding: 6pt;
         @include pointer();
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
         border-radius: $border-radius-4px;
         margin: 5pt 0;
         transform: scale(1, 1);
@@ -611,8 +656,7 @@
             height: 25pt;
 
             > .text-h {
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
               line-height: 15px;
               color: #717886;
               overflow: hidden;
@@ -635,8 +679,7 @@
                 flex-direction: column;
 
                 > .unit-num {
-                  font-family: "Kanit-500";
-                  font-size: 16px;
+                  @include font-size-9($font-head-500);
                   overflow: hidden;
                   text-overflow: ellipsis;
                   display: -webkit-box;
@@ -645,8 +688,7 @@
                 }
 
                 > .unit-sub {
-                  font-family: "Kanit-500";
-                  font-size: 14px;
+                  @include font-size-11($font-head-500);
                   color: #717886;
                   overflow: hidden;
                   text-overflow: ellipsis;
@@ -668,7 +710,7 @@
     > .group-event {
       display: flex;
       align-items: center;
-      color: $color-warm-red;
+      color: $brandcolor2;
       @include pointer();
 
       > .event-tag,
@@ -682,8 +724,7 @@
         }
 
         > span {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9($font-head-500);
         }
       }
     }
@@ -691,8 +732,7 @@
     > .left {
       display: flex;
       align-items: center;
-      font-family: "Kanit-400";
-      font-size: 14px;
+      @include font-size-10($font-head-400);
       color: $black;
 
       > .post-to {
@@ -710,10 +750,10 @@
 
             > span {
               cursor: pointer;
-              color: $koalaGray;
+              color: $color-gray;
 
               &:hover {
-                text-decoration: underline;
+                color: rgba($brandcolor2, 0.95);
               }
             }
           }
@@ -727,15 +767,15 @@
         width: 8pt;
         height: 8pt;
         border-radius: 50%;
-        background-color: $koalaGray;
+        background-color: $color-gray;
       }
 
       > .looking {
-        background-color: $brandcolor2;
+        background-color: $brandcolor3;
       }
 
       > .fulfill {
-        background-color: $green;
+        background-color: $home-page-activate-color;
       }
 
       span {
@@ -763,25 +803,35 @@
 }
 
 .repost-title {
-  font-family: "Kanit-500";
-  font-size: 18px;
+  @include font-size-9($font-head-500);
 }
 
 .repost-sub-title {
-  font-family: "Kanit-200";
-  font-size: 16px;
+  @include font-size-9($font-head-200);
 }
 
 .more-comment {
   width: 100%;
   height: 30pt;
-  font-family: "Kanit-400";
-  font-size: 16px;
+  @include font-size-9($font-head-400);
   cursor: pointer;
   line-height: unset;
 
   &:hover {
-    text-decoration: underline;
+    color: rgba($brandcolor2, 0.95);
+  }
+}
+
+.social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
+  min-height: unset;
+  height: auto;
+  > .mat-menu-content {
+    > .mat-menu-item {
+      @include font-size-9($font-head-500);
+      > a {
+        color: black;
+      }
+    }
   }
 }
 
@@ -848,8 +898,9 @@
       &.active {
         padding: 0 10pt 0 10pt;
       }
+
       > .wrapper-footer-post {
-        padding : unset;
+        padding: unset;
         > .right {
           padding: 5pt 0;
           > control-action {
@@ -857,7 +908,7 @@
               > .collis {
                 > .wrapper-action {
                   > .label-count {
-                    display: none;
+                    // display: none;
                   }
                   > .img-action {
                     width: 14pt !important;

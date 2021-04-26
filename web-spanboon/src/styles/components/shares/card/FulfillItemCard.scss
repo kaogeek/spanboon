@@ -42,8 +42,7 @@
     }
 
     > .name-list {
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         color: rgb($black, 0.5);
     }
 
@@ -55,21 +54,18 @@
 
         > .bottom-left {
             > .number {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 color: $black;
             }
 
             > .unit {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 color: rgb($black, 0.5);
             }
         }
 
         > .item-edit {
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10($font-head-500);
             line-height: 30px;
             padding: 0 24px;
         }

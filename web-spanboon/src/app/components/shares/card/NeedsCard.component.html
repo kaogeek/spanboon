@@ -5,17 +5,6 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="list-needs-for" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
-    <!-- <div class="list-needs-for" [class.active]="isFulfill" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds> -->
-    <!-- <div class="item" *ngIf="isFulfill">
-        <div class="left" [class.active]="!isButtonFulfill">
-            <span>รายการเติมเต็ม</span>
-            <span class="count-fufill"> {{itemNeeds.length}} รายการ</span>
-        </div> 
-        <div class="right" *ngIf="isButtonFulfill">
-            <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'ร่วมเติมเต็ม'" [radius]="'4px'">
-            </spanboon-button>
-        </div>
-    </div> -->
     <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
         <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let item of needs; let index = index;">
@@ -38,23 +27,24 @@
                             <div class="needs-data-body" [class.active]="isFulfill">
                                 <div class="unit" [class.active]="isFulfill">
                                     <div class="unit-box">
-                                        <div class="unit-num"> 
+                                        <div class="unit-num">
                                             <ng-container *ngIf="isPendingFulfill; else elseTemplateQty">
                                                 <span *ngIf="isFulfillQuantity">
-                                                    <span [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
-                                                        {{item.fulfillQuantity}} / </span>
+                                                    <span
+                                                        [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                        {{item.fulfillQuantity | shortNumber}} / </span>
                                                 </span>
                                                 <span *ngIf="!isFulfill"
                                                     [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                    {{item.quantity}}
+                                                    {{item.quantity | shortNumber}}
                                                 </span>
                                             </ng-container>
                                             <ng-template #elseTemplateQty>
-                                                <span [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                    {{item.quantity}}
+                                                <span
+                                                    [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                    {{item.quantity | shortNumber}}
                                                 </span>
                                             </ng-template>
-
 
                                             <!-- <span *ngIf="!isFulfill"
                                                 [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
@@ -64,21 +54,22 @@
 
                                         <div class="unit-sub">{{item.unit}}</div>
                                     </div>
-                                </div>
-                                <div class="unit-bt-box" *ngIf="!isFulfill">
-                                    <ng-container
-                                        *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
-                                        <div class="limit">
-                                            <span class="material-icons"> done </span>
-                                            ครบแล้ว
-                                        </div>
-                                    </ng-container>
-                                    <ng-template #elseTemplateUnLimit>
-                                        <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="'เติมเต็ม'"
-                                            [radius]="'4px'" (click)="fulfillNeeds(item)">
-                                        </spanboon-button>
-                                    </ng-template>
-                                </div>
+                                </div>  
+                                <ng-container *ngIf="isNeedBoxPost"> 
+                                    <div class="unit-bt-box" *ngIf="!isFulfill">
+                                        <ng-container
+                                            *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
+                                            <div class="limit">
+                                                <span class="material-icons"> done </span>
+                                                ครบแล้ว
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseTemplateUnLimit>
+                                            <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"  (click)="fulfillNeeds($event,item)">
+                                            </spanboon-button>
+                                        </ng-template>
+                                    </div>
+                                </ng-container>  
                             </div>
                         </div>
                         <ng-container *ngIf="isFulfill">

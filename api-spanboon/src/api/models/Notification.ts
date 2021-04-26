@@ -46,6 +46,9 @@ export class Notification extends BaseModel {
     @Column({ name: 'deleted' })
     public deleted: boolean;
 
+    @Column({ name: 'data' })
+    public data: any;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

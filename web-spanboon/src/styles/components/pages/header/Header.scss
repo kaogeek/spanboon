@@ -24,8 +24,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: $color-warm-red;
-    font-family: "Kanit-500";
+    color: $brandcolor2;
+    font-family: $font-head-500;
     font-size: 1.5em;
     @include pointer();
 
@@ -50,7 +50,7 @@
     > .wrapper-home {
       display: flex;
       align-items: center;
-      font-family: "Kanit-400";
+      font-family: $font-head-400;
       font-size: 1.15em;
       margin: 0 auto;
       pointer-events: auto;
@@ -70,14 +70,14 @@
         &:hover {
           background-color: $background-hover;
           border-radius: 8pt;
-          color: $color-warm-red;
+          color: $brandcolor2;
 
           svg,
           circle,
           path,
           g {
             opacity: 1;
-            fill: $color-warm-red;
+            fill: $brandcolor2;
           }
         }
 

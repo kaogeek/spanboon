@@ -32,6 +32,9 @@ export class PageSocialAccount {
     @Column({ name: 'providerPageId' })
     public providerPageId: any;
 
+    @Column({ name: 'providerPageName' })
+    public providerPageName: any;
+
     @Column({ name: 'storedCredentials' })
     public storedCredentials: string;
 

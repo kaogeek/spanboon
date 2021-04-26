@@ -146,8 +146,10 @@ export class DialogCreatePage extends AbstractPage {
         this.resPageType = res;
         let index = 0;
         for (let dataImage of res) {
-          this.getDataIcon(dataImage.iconURL, index);
-          index++;
+          if(dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null){
+            this.getDataIcon(dataImage.iconURL, index);
+            index++;
+          }
         }
         setTimeout(() => {
           this.isLoading = false;
@@ -205,7 +207,7 @@ export class DialogCreatePage extends AbstractPage {
       let dataPage = {
         name: pageName,
         category: this.typeId,
-        pageUserName: urlPage,
+        pageUsername: urlPage,
         mobileNo: this.mobile,
         websiteURL: this.web,
         email: this.email,

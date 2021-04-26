@@ -19,9 +19,10 @@
         justify-content: flex-end;
         align-items: center;
         height: 30pt;
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
         > .material-icons {
             display: flex;
+            font-family: 'Material Icons' !important;
             justify-content: flex-end;
             cursor: pointer;
             color: $white;
@@ -48,7 +49,7 @@
                 cursor: pointer;
                 // &.active-click {
                 //     path {
-                //         fill: $color-warm-red;
+                //         fill: $brandcolor2;
                 //     }
                 // }
             }
@@ -97,7 +98,7 @@
                                     height: 25pt;
                                     color: $color-black;
                                     padding: 0 17pt;
-                                    @include font-size-10-100("Anakotmai-Medium");
+                                    @include font-size-10($font-content2-medium);
                                     box-shadow: 0px 1px 9px 0 #e5e3dd;
                                     > .mat-form-field-label-wrapper {
                                     }

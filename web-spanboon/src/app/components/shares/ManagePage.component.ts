@@ -14,6 +14,7 @@ import { SearchFilter } from '../../models/models';
 import { AbstractPage } from '../pages/AbstractPage';
 import { Router } from '@angular/router';
 import { DialogCreatePage } from './dialog/DialogCreatePage.component';
+import { MESSAGE } from '../../../custom/variable';
 import { DialogAlert } from './dialog/DialogAlert.component';
 
 const SEARCH_LIMIT: number = 10;
@@ -53,9 +54,11 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.userAccessFacade = userAccessFacade;
         this.dialog = dialog;
+
         this.observManager.subscribe('authen.createPage', (data: any) => {
             this.searchAllPage();
         });
+
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAllPage();
         });
@@ -99,15 +102,15 @@ export class ManagePage extends AbstractPage implements OnInit {
         // dialogRef.afterClosed().subscribe(res => {
         //     console.log(res)
         // });
-        this.clickSystemDevelopment();
+        // this.clickSystemDevelopment();
     }
 
     public clickSystemDevelopment(): void {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา",
-                bottomText2: "ตกลง",
+                text: MESSAGE.TEXT_DEVERLOP,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                 bottomColorText2: "black",
                 btDisplay1: "none"
             }

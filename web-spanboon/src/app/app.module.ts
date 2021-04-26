@@ -42,7 +42,7 @@ import {
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import {
-  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, HighlightText
+  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime, HighlightText
 } from './components/shares/pipes/pipes';
 
 import {
@@ -67,6 +67,7 @@ import {
 
   // page
   HomePage,
+  HomePageV2,
   LoginPage,
   ProfilePage,
   forgotPasswordPage,
@@ -109,6 +110,7 @@ import {
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -119,6 +121,7 @@ import {
   ButtonSocial,
   ButtonFollow,
   Slider,
+  Spinners,
   //
   NewConButtonSave,
   NewConButtonLoadMore,
@@ -142,6 +145,7 @@ import {
   DisplayImage,
   NewCard,
   PostCard,
+  PostSwiperCard,
   NewCards,
   ControlAction,
   IconTagCard,
@@ -172,6 +176,8 @@ import {
   DialogFulfill,
   DialogCheckFulfill,
   DialogConfirmFulfill,
+  DialogListFacebook,
+  DialogPostCrad,
   FulfillItem,
   FulFillMenu,
   DialogInput,
@@ -192,6 +198,9 @@ import {
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
+  SeoService,
+  PostActionService,
   // Facade 
   PostFacade,
   HashTagFacade,
@@ -218,7 +227,9 @@ import {
   ChatRoomFacade,
   ChatFacade,
   AboutPageFacade,
-  TwitterService
+  TwitterService,
+  RecommendFacade,
+  UserEngagementFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -256,6 +267,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  HomePageV2,
   LoginPage,
   RegisterPage,
   ProfilePage,
@@ -295,6 +307,8 @@ const COMPONENTS: any[] = [
   DialogFulfill,
   DialogCheckFulfill,
   DialogConfirmFulfill,
+  DialogListFacebook,
+  DialogPostCrad,
   DialogInput,
   DialogFulfillAllocate,
   DialogPreview,
@@ -303,6 +317,7 @@ const COMPONENTS: any[] = [
   PreloadCard,
   PreloadData,
   CardContact,
+  CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
   ChatMessage,
@@ -313,6 +328,7 @@ const COMPONENTS: any[] = [
   ButtonSocial,
   ButtonFollow,
   Slider,
+  Spinners,
   //
   NewConButtonSave,
   NewConButtonLoadMore,
@@ -332,6 +348,7 @@ const COMPONENTS: any[] = [
   NullPostData,
   //
   ImageCard,
+  PostSwiperCard,
   DisplayGallery,
   DisplayImage,
   NewCard,
@@ -376,6 +393,7 @@ const PIPE_CLASSES: any[] = [
   ShortNumberPipe,
   PrefixNumberPipe,
   PipeDatetime,
+  PipeThFormatDatetime,
   HighlightText,
   SafePipe,
   RemoveBadWords
@@ -399,6 +417,9 @@ const SERVICE_CLASSES: any[] = [
   CacheConfigInfo,
   NotificationManager,
   CheckMessageManager,
+  Engagement,
+  SeoService,
+  PostActionService,
   // facade 
   PostFacade,
   AllocateFacade,
@@ -426,6 +447,8 @@ const SERVICE_CLASSES: any[] = [
   ChatFacade,
   AboutPageFacade,
   TwitterService,
+  RecommendFacade,
+  UserEngagementFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

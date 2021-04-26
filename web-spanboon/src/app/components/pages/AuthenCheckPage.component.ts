@@ -63,7 +63,7 @@ export class AuthenCheckPage implements OnInit {
     }
 
     if (token !== undefined && token !== null) {
-      this.authenMgr.checkAccountStatus(token, mode, { updateUser: true }).then((res) => { 
+      this.authenMgr.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {  
         if (!res.user) { 
           this.authenMgr.clearStorage();
         }

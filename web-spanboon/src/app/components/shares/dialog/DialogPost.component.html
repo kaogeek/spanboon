@@ -3,9 +3,9 @@
     (c) 2020-2021 KaoGeek. http://kaogeek.dev
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
--->
+--> 
 
-<div class="dialog-post">
+<div class="dialog dialog-post">
     <Preload-card *ngIf="isPreload && !isFulfill" [isShowCard1]="true" [isShowCard2]="false">
     </Preload-card>
     <ng-container *ngIf="isFulfill; else elseIsFulfill">
@@ -16,9 +16,9 @@
     <ng-template #elseIsFulfill>
         <box-post #boxPost [dataPage]="data.name" [dataPageId]="data.pageId" [content]="data" [prefix]="prefix"
             (submitClose)="onClose($event)" (submitResizeClose)="onResizeClose($event)" [modeDoIng]="data.modeDoIng"
-            [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage"
-            [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage"
-            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost">
+            [isMobilePost]="data.isMobilePost" [isMobileText]="data.isMobileText" [isListPage]="isListPage" [accessDataPage]="data.accessDataPage"
+            [isEdit]="isEdit" (createPost)="createPost($event)" [isHeaderPage]="data.isHeaderPage" (selectedInformation)="selectedInformation($event)"
+            [modeShowDoing]="data.modeShowDoing" [isMobileButton]="data.isMobileButton" [isSharePost]="isSharePost" >
         </box-post>
     </ng-template>
 </div>

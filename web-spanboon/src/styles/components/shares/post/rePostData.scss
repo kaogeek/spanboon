@@ -14,7 +14,7 @@ repost-data {
   > .repost-data-card {
     border: 0.7px solid $border-color;
     background-color: $white;
-    margin: 5pt 10pt;
+    // margin: 5pt 10pt;
     border-radius: 4px;
     position: relative;
     height: auto;
@@ -37,9 +37,8 @@ repost-data {
 
       .donator {
         color: $white;
-        background: $color-warm-red;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        background: $brandcolor2;
+        @include font-size-10($font-head-500);
       }
 
       .image-profile {
@@ -52,16 +51,14 @@ repost-data {
       .profile-page-name {
         display: flex;
         flex-direction: column;
-        color: $color-warm-red;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        color: $brandcolor2;
+        @include font-size-10($font-head-500);
         margin-left: 7pt;
       }
 
       .profile-page-name-sub {
         color: $black;
-        font-family: "Kanit-400";
-        font-size: 14px;
+        @include font-size-10($font-head-400);
       }
     }
     > .fulfill-profile {
@@ -103,14 +100,12 @@ repost-data {
                   -webkit-box-orient: vertical;
                   overflow: hidden;
                   width: 100%;
-                  font-family: "Kanit-500";
-                  font-size: 16px;
+                  @include font-size-10($font-head-500);
                   word-break: break-word;
                 }
 
                 > .text {
-                  font-family: "Kanit-500";
-                  font-size: 14px;
+                  @include font-size-10($font-head-500);
                   color: $bg-color4;
                   display: -webkit-box;
                   -webkit-line-clamp: 1;
@@ -122,7 +117,7 @@ repost-data {
 
               &:last-child {
                 .text {
-                  color: $color-warm-red;
+                  color: $brandcolor2;
                 }
               }
             }
@@ -159,8 +154,7 @@ repost-data {
     > .topic-name {
       display: flex;
       padding: 10pt 15pt 10pt 15pt;
-      font-family: "Kanit-400";
-      font-size: 20px;
+      @include font-size-8($font-head-400);
       &.active {
         display: none;
       }
@@ -182,7 +176,8 @@ repost-data {
 
       > .mat-button-wrapper {
         > .material-icons {
-          font-size: 26px;
+          font-size: $font-size-icon-large;
+          font-family: "Material Icons" !important;
         }
       }
     }
@@ -251,8 +246,7 @@ repost-data {
             height: 100%;
             left: 0;
             top: 0;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             color: $white;
             background-color: $black;
             opacity: 0.5;
@@ -267,11 +261,12 @@ repost-data {
     }
 
     > .wrapper-content {
-      padding: 10pt 10pt 10pt 15pt;
-      // padding: 10pt 15pt;
-      word-break: break-all;
+      padding: 10pt 15pt 0 15pt;
+      word-break: break-word;
+
       &.active {
-        padding: 0 10pt 10pt 15pt;
+        // padding: 0 15pt 0 15pt;
+        padding: 10pt 15pt 10pt 15pt;
       }
       > .post-to {
         display: flex;
@@ -279,30 +274,26 @@ repost-data {
         align-items: center;
 
         > .date-time {
-          font-family: "Kanit-500";
-          font-size: 12px;
+          @include font-size-11($font-head-300);
           color: $black;
           margin-right: 7px;
         }
 
         > .post-name {
-          font-family: "Kanit-400";
-          font-size: 12px;
-          color: $koalaGray;
+          @include font-size-11($font-head-200);
+          color: $color-gray;
         }
       }
 
       > .title {
-        font-family: "Kanit-300";
-        font-size: 20px;
+        @include font-size-8($font-head-500);
+        line-height: 26px;
       }
 
       > .content {
         white-space: pre-wrap;
-        word-break: break-word;
         color: $color-black;
-        font-family: "Sarabun-Light";
-        font-size: 16px;
+        @include font-size-10($font-content-light);
         min-height: unset;
       }
 
@@ -311,28 +302,27 @@ repost-data {
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
 
         &.active {
           padding-top: 10pt;
         }
 
         > a {
-          color: $color-warm-red;
+          color: $brandcolor2;
         }
       }
 
       > .content-sub {
+        margin-top: 10pt;
         white-space: pre-wrap;
         display: inline-block;
         cursor: pointer;
-        color: $color-warm-red;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        color: $brandcolor2;
+        @include font-size-10($font-head-500);
 
         &:hover {
-          text-decoration: underline;
+          color: rgba($brandcolor2, 0.95);
         }
       }
 
@@ -342,12 +332,11 @@ repost-data {
           display: inline-block;
           margin-top: 10pt;
           cursor: pointer;
-          color: $color-warm-red;
-          font-family: "Kanit-500";
-          font-size: 16px;
+          color: $brandcolor2;
+          @include font-size-10($font-head-500);
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
           }
         }
       }
@@ -356,16 +345,16 @@ repost-data {
         display: flex;
         flex-direction: row;
         white-space: nowrap;
+        margin-top: 10pt;
 
         > .h_tag_list {
           width: max-content;
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-10($font-head-500);
           @include pointer();
           margin: 0 7pt 7pt 0;
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
           }
         }
       }
@@ -412,14 +401,12 @@ repost-data {
                 .top {
                   display: flex;
                   flex-direction: column;
-                  font-family: "Kanit-500";
-                  font-size: 14px;
+                  @include font-size-10($font-head-500);
                 }
 
                 .bottom {
-                  font-family: "Kanit-500";
-                  font-size: 14px;
-                  color: $koalaGray;
+                  @include font-size-10($font-head-500);
+                  color: $color-gray;
                 }
               }
             }
@@ -435,13 +422,11 @@ repost-data {
                 .top {
                   display: flex;
                   flex-direction: column;
-                  font-family: "Kanit-500";
-                  font-size: 14px;
+                  @include font-size-10($font-head-500);
                 }
                 .bottom {
-                  font-family: "Kanit-500";
-                  font-size: 14px;
-                  color: $koalaGray;
+                  @include font-size-10($font-head-500);
+                  color: $color-gray;
                 }
               }
             }
@@ -455,8 +440,7 @@ repost-data {
           background: rgba($bg-fog-gray, 0.8);
           padding: 6pt;
           @include pointer();
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-10($font-head-500);
           border-radius: $border-radius-4px;
           margin: 5pt 0;
           transform: scale(1, 1);
@@ -501,8 +485,7 @@ repost-data {
               width: 100%;
               height: 25pt;
               > .text-h {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 line-height: 15px;
                 color: #717886;
               }
@@ -516,12 +499,10 @@ repost-data {
                   display: flex;
                   flex-direction: column;
                   > .unit-num {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                   }
                   > .unit-sub {
-                    font-family: "Kani-500";
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                     color: #717886;
                   }
                 }
@@ -537,7 +518,7 @@ repost-data {
       > .group-event {
         display: flex;
         align-items: center;
-        color: $color-warm-red;
+        color: $brandcolor2;
         @include pointer();
         // margin-top: 8pt;
 
@@ -553,8 +534,7 @@ repost-data {
           }
 
           > span {
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
           }
         }
       }
@@ -562,8 +542,7 @@ repost-data {
       > .left {
         display: flex;
         align-items: center;
-        font-family: "Kanit-400";
-        font-size: 14px;
+        @include font-size-10($font-head-400);
         color: $black;
 
         > .post-to {
@@ -583,15 +562,15 @@ repost-data {
           width: 10pt;
           height: 10pt;
           border-radius: 50%;
-          background-color: $koalaGray;
+          background-color: $color-gray;
         }
 
         > .looking {
-          background-color: $brandcolor2;
+          background-color: $brandcolor3;
         }
 
         > .fulfill {
-          background-color: $green;
+          background-color: $home-page-activate-color;
         }
 
         span {
@@ -609,7 +588,6 @@ repost-data {
         //   align-items: center;
         //   margin-left: 10pt;
         //   font-family: "Kanit-500";
-        // font-size: 16px;
 
         //   &:first-of-type {
         //     margin-left: unset;
@@ -634,14 +612,13 @@ repost-data {
         > .left {
           display: flex;
           align-items: center;
-          font-family: "Kanit-500";
-          font-size: 16px;
-          color: $koalaGray;
+          @include font-size-10($font-head-500);
+          color: $color-gray;
 
           > .group-event {
             display: flex;
             align-items: center;
-            color: $color-warm-red;
+            color: $brandcolor2;
             @include pointer();
             // margin-top: 8pt;
 
@@ -658,8 +635,7 @@ repost-data {
               }
 
               > span {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
               }
             }
           }
@@ -668,15 +644,15 @@ repost-data {
             width: 10pt;
             height: 10pt;
             border-radius: 50%;
-            background-color: $koalaGray;
+            background-color: $color-gray;
           }
 
           > .looking {
-            background-color: $brandcolor2;
+            background-color: $brandcolor3;
           }
 
           > .fulfill {
-            background-color: $green;
+            background-color: $home-page-activate-color;
           }
 
           span {
@@ -694,7 +670,6 @@ repost-data {
           //   align-items: center;
           //   margin-left: 10pt;
           //   font-family: "Kanit-500";
-          // font-size: 16px;
 
           //   &:first-of-type {
           //     margin-left: unset;
@@ -724,13 +699,11 @@ repost-data {
   }
 
   .repost-title {
-    font-family: "Kanit-500";
-    font-size: 18px;
+    @include font-size-9($font-head-500);
   }
 
   .repost-sub-title {
-    font-family: "Kanit-200";
-    font-size: 16px;
+    @include font-size-10($font-head-200);
   }
 }
 
@@ -767,7 +740,7 @@ repost-data {
               > .post-data-profile {
                 // width: 32pt;
                 // height: 32pt;
-              } 
+              }
             }
           }
 

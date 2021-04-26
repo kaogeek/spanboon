@@ -10,7 +10,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {
   // Pages
-  LoginPage, MainPage, HomePage, ProfilePage,
+  LoginPage, MainPage, HomePage, HomePageV2, ProfilePage,
   FanPage,
   StoryPage,
   PostPage,
@@ -43,9 +43,17 @@ export const APP_ROUTES: Routes = [
         component: HomePage,
       },
       {
+        path: HomePageV2.PAGE_NAME,
+        component: HomePageV2,
+      },
+      {
         path: ProfilePage.PAGE_NAME + "/:id",
         component: ProfilePage,
         children: [
+          {
+            path: "post/:postId",
+            component: ProfilePage,
+          },
           {
             path: 'timeline',
             component: ProfilePage,
@@ -64,6 +72,10 @@ export const APP_ROUTES: Routes = [
         path: FanPage.PAGE_NAME + "/:id",
         component: FanPage,
         children: [
+          {
+            path: "post/:postId",
+            component: FanPage,
+          },
           {
             path: 'timeline',
             component: FanPage,
@@ -96,21 +108,21 @@ export const APP_ROUTES: Routes = [
       },
       {
         path: FanPage.PAGE_NAME + "/:id/settings",
-        component: SettingsFanPage, 
-        // children: [
-        //   {
-        //     path: 'person',
-        //     component: AboutPage,
-        //   },
-        //   {
-        //     path: 'roles',
-        //     component: SettingsAdminRoles,
-        //   },
-        //   {
-        //     path: 'connect',
-        //     component: SecurityInfo,
-        //   },
-        // ] 
+        component: SettingsFanPage,
+        children: [
+          {
+            path: 'account',
+            component: AboutPage,
+          },
+          {
+            path: 'roles',
+            component: SettingsAdminRoles,
+          },
+          {
+            path: 'connect',
+            component: SecurityInfo,
+          },
+        ]
       },
       {
         path: SettingAccount.PAGE_NAME + "/settings",
@@ -129,29 +141,28 @@ export const APP_ROUTES: Routes = [
       {
         path: PageHashTag.PAGE_NAME,
         component: PageHashTag,
-      },
-      {
-        path: PageHashTag.PAGE_NAME + "/hashtag",
-        component: PageHashTag,
         children: [
           {
-            path: '**',
+            path: PageHashTag.PAGE_NAME + "/hashtag",
             component: PageHashTag,
-          }
+            children: [
+              {
+                path: '**',
+                component: PageHashTag,
+              }
+            ]
+          },
         ]
       },
+
       {
         path: PageRecommended.PAGE_NAME,
         component: PageRecommended,
       },
-      {
-        path: PageRecommended.PAGE_NAME + "/:recomend",
-        component: PageRecommended,
-      },
       // {
-      //   path: FanPage.PAGE_NAME + "/:id/:subPage",
-      //   component: FanPage,
-      // },
+      //   path: PageRecommended.PAGE_NAME + "/:recomend",
+      //   component: PageRecommended,
+      // }, 
       {
         path: LoginPage.PAGE_NAME,
         component: LoginPage,
@@ -193,19 +204,25 @@ export const APP_ROUTES: Routes = [
       {
         path: FulfillPage.PAGE_NAME,
         component: FulfillPage,
+        children: [
+          {
+            path: ':fulfillId',
+            component: FulfillPage
+          }
+        ]
       },
-      {
-        path: FulfillPage.PAGE_NAME + "/:fulfillId",
-        component: FulfillPage
-      }, 
+      // {
+      //   path: FulfillPage.PAGE_NAME + "/:fulfillId",
+      //   component: FulfillPage
+      // },
       {
         path: Redirect.PAGE_NAME,
         component: Redirect,
-      }, 
+      },
       {
         path: Redirect.PAGE_NAME + ':id',
         component: Redirect,
-      },  
+      },
     ]
   },
   {

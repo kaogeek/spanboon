@@ -1,0 +1,144 @@
+.dialog-list-facebook {
+    display: flex;
+    flex-direction: column; 
+    overflow: hidden;
+
+    > .dialog-facebook {
+        > .facebook-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: auto;
+            height: 20pt;
+            background-color: #fd5454;
+            border-bottom: whitesmoke 2px solid;
+            padding: 10pt;
+            // display: flex;
+            // align-items: center;
+            // flex-direction: inherit;
+            // position: relative;
+            overflow: hidden;
+
+            > .material-icons {
+                color: $white;
+                @include pointer();
+                font-family: 'Material Icons' !important;
+            }
+        }
+    }
+    > .mat-dialog-content {
+        margin: unset;
+        padding: unset;
+        padding: 20pt 20pt 0 20pt; 
+        span {
+            @include font-size-9($font-head-500);
+        }
+        > .box-social {
+            position: relative;
+            display: flex; 
+            align-items: center;
+            justify-content: space-between;
+            padding: 10pt 0;
+
+            > .left {
+                display: flex;
+                align-items: center;
+                @include font-size-9($font-head-500);
+                flex: 1 1 0%;
+                margin-right: 10pt;
+
+                > .icon-left {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 5pt;
+                    width: 20pt;
+                    height: 20pt;
+                    margin-right: 7pt;
+                    background-color: $color-gray;
+                    flex: 0 0 auto;
+                    
+                    &.facebook {
+                        background-color: #2851a3;
+                    }
+
+                    &.twitter {
+                        background-color: #1da1f3;
+                    }
+
+                    &.share-page {
+                        border-radius: 50%;
+                        background-color: $brandcolor2;
+                        color: $white;
+                        width: 35pt;
+                        height: 35pt;
+                        flex: 0 0 auto;
+                    }
+                    > .icon {
+                        height: 20px;
+                        width: 20px;
+                    }
+                    > .display-name {
+                    }
+                }
+            }
+
+            .link-connect {
+                @include font-size-9($font-head-500);
+                color: $color-gray;
+
+                &:hover {
+                    color: rgba($brandcolor2, 0.95);
+                    color: $brandcolor2;
+                    @include pointer();
+                }
+
+                &.active {
+                    color: $brandcolor2;
+                }
+
+                &.hide {
+                    display: none;
+                }
+
+                > .preload-spinner {
+                    svg {
+                        float: right;
+                    }
+                }
+            }
+        }
+    }
+    > .mat-dialog-actions {
+        border-top: 0.3px solid $border-color;
+        padding: 8px 20px;
+        margin-bottom: unset;
+        > .mat-button:last-child {
+            border: 0.3px solid $brandcolor2;
+            color: $white;
+            background-color: $brandcolor2;
+            > .mat-button-wrapper {
+                @include font-size-9($font-head-500);
+            }
+        }
+        > .mat-button:first-child {
+            border: 0.3px solid $border-color;
+            margin-right: 5pt;
+            > .mat-button-wrapper {
+                @include font-size-9($font-head-500);
+            }
+        }
+    }
+}
+
+@media (max-width: $large){
+    .dialog-list-facebook {
+        width: 100vw !important;
+        >.dialog-facebook {
+
+        }
+        >.mat-dialog-content {
+            height: 100vh;
+        }
+    }
+}

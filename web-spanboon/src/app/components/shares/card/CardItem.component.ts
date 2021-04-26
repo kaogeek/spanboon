@@ -52,6 +52,8 @@ export class CardItem extends AbstractPage implements OnInit {
     @Input()
     private isDevelop: boolean;
 
+    public apiBaseURL = environment.apiBaseURL;
+
     @ViewChild(SwiperComponent, { static: false }) componentRef: SwiperComponent;
     @ViewChild(SwiperDirective, { static: false }) directiveRef: SwiperDirective;
 
@@ -63,20 +65,16 @@ export class CardItem extends AbstractPage implements OnInit {
     public index: number;
     public item: any;
 
-
-    public apiBaseURL = environment.apiBaseURL;
-
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.authenManager = authenManager;
         this.dialog = dialog;
-        this.router = router;
-
+        this.router = router; 
     }
 
     ngOnInit(): void {
-        this.checkResp();
+        this.checkResp(); 
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -99,11 +97,7 @@ export class CardItem extends AbstractPage implements OnInit {
     public showDialogEdit() {
         this.submit.emit();
     }
-    public fulfillNeeds(item: any, index: number) {
-        // if (this.isDevelop) {
-        //     this.showAlertDevelopDialog();
-        //     return
-        // }
+    public fulfillNeeds(item: any, index: number) { 
         if (!this.isLogin()) {
             this.showAlertLoginDialog(this.router.url);
         } else {
@@ -148,12 +142,12 @@ export class CardItem extends AbstractPage implements OnInit {
                 slidesPerView: 1.5,
             }
             ,
-            360: {
-                slidesPerView: 1.6,
-            },
-            320: {
-                slidesPerView: 1.7,
-            },
+            // 360: {
+            //     slidesPerView: 1.6,
+            // },
+            // 320: {
+            //     slidesPerView: 1.7,
+            // },
         },
     }
 

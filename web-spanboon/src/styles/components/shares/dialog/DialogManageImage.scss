@@ -52,7 +52,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 10pt;
-            @include font-size-8-100("Anakotmai-Medium");
+            @include font-size-8($font-content2-medium);
             > .title-name {
             }
             .image-upload > input {
@@ -63,13 +63,13 @@
             //     align-items: center;
             //     margin: 0 5pt;
             //     cursor: pointer;
-            //     @include font-size-9-100("Anakotmai-Medium");
+            //     @include font-size-9($font-content2-medium);
             // }
             #file-image {
                 display: flex;
                 align-items: center;
                 cursor: pointer;
-                @include font-size-9-100("Anakotmai-Medium");
+                @include font-size-9($font-content2-medium);
                 > .icon-add-image {
                     margin: 0 5pt;
                 }
@@ -117,7 +117,7 @@
                 background: transparent;
                 opacity: 0.8;
                 color: #e5e3dd;
-                @include font-size-5-100("Anakotmai-Medium");
+                @include font-size-5($font-content2-medium);
 
                 &:hover {
                     opacity: 1;
@@ -153,7 +153,7 @@
             > .butt {
                 border-radius: 25px;
                 padding: 2pt 0;
-                @include font-size-10-100("Anakotmai-Medium");
+                @include font-size-10($font-content2-medium);
                 cursor: pointer;
                 width: 80pt;
                 height: 22pt;
@@ -177,7 +177,7 @@
             }
 
             > .but-confirmed {
-                background: $color-warm-red;
+                background: $brandcolor2;
             }
         }
     }
@@ -223,6 +223,7 @@
         > .material-icons {
             display: flex;
             justify-content: flex-end;
+            font-family: 'Material Icons' !important;
             cursor: pointer;
             color: $white;
             opacity: 0.4;

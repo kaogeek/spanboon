@@ -14,14 +14,17 @@
                 [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
             </status-bar>
         </ng-container>
-        <div class="swiper-container" [swiper]="config"
+        <ng-container
             *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
-            <div class="swiper-wrapper">
-                <ng-container *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
-                    <ng-container *ngIf="index > 0 && index <= 5">
-                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="showLoading"
-                            [data]="dataEmergency" [hashTag]="dataEmergency.title" [name]="dataEmergency.owner"
-                            [isWhite]="true" [countFacebook]="dataEmergency.facebookCount  | shortNumber"
+            <div class="swiper-container" [swiper]="config">
+                <div class="swiper-wrapper"
+                    *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
+                    <ng-container *ngIf="index === 0 || index <= 5">
+                        <!-- <ng-container *ngIf="index === 0 || index <= 5">  -->
+                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="isLoadingImage"
+                            [images]="dataEmergency.coverBase64" [hashTag]="dataEmergency.title"
+                            [name]="dataEmergency.owner" [isWhite]="true"
+                            [countFacebook]="dataEmergency.facebookCount  | shortNumber"
                             [countTwitter]="dataEmergency.twitterCount  | shortNumber"
                             [comment]="dataEmergency.commentCount | shortNumber "
                             [reboon]="dataEmergency.repostCount | shortNumber "
@@ -33,23 +36,25 @@
                             [isShowtext]="false" [isShowtext2]="true" [showSottomSocial]="true"
                             [linkMore]="'/search?hashtag='+ dataEmergency.title.substring(1)">
                         </image-card>
+                        <!-- </ng-container> -->
                     </ng-container>
-                </ng-container>
-                <ng-template #elseEmercency>
+                    <ng-template #elseEmercency>
 
-                </ng-template>
-            </div>
-            <div class="swiper-button-prev">
-                <div class="material-icons">
-                    chevron_left
+                    </ng-template>
+                </div>
+                <div class="swiper-button-prev">
+                    <div class="material-icons">
+                        chevron_left
+                    </div>
+                </div>
+                <div class="swiper-button-next">
+                    <div class="material-icons">
+                        chevron_right
+                    </div>
                 </div>
             </div>
-            <div class="swiper-button-next">
-                <div class="material-icons">
-                    chevron_right
-                </div>
-            </div>
-        </div>
+        </ng-container>
+
     </section>
     <!-- Header - End -->
 
@@ -61,7 +66,8 @@
                 [createDate]="dataMainPage.lastest.dateTime | dateFormat " [isStausDate]="'true'"
                 [isStatusIcon]="'true'"></status-bar-looking>
             <ng-container *ngIf="dataMainPage.lastest.contents; else elseLastest">
-                <new-card class="wrapper-new-card" *ngFor="let dataLastests of dataMainPage.lastest.contents; "
+                <new-card class="wrapper-new-card"
+                    *ngFor="let dataLastests of dataMainPage.lastest.contents| slice:0:1; "
                     (submit)="actionComment($event,index,'NEWCARD')" [data]="dataLastests" [showLoading]="showLoading"
                     [topic]="dataLastests.post.title" [content]="dataLastests.post.detail"
                     [countUserFollow]="dataLastests.followUserCount | shortNumber"
@@ -133,9 +139,8 @@
                         [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
                         [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
                         [images]="dataViewSection.imageBase64" [isWhite]="true"
-                        [username]="dataViewSection.owner.displayName ? dataViewSection.owner.displayName : dataViewSection.owner.uniqueId"
-                        [pageName]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
-                        [username]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                        [pageName]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
+                        [username]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
                         [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
                         [countUserFollow]="dataViewSection.followUserCount | shortNumber"
                         [userLike]="dataViewSection.isLike" [userComment]="dataViewSection.isComment"
@@ -198,6 +203,7 @@
                 <image-card class="card-img-pin-tag" [widthImg]="'100%'" [isPin]="'true'" [isWhite]="true"
                     [showLoading]="showLoading" [data]="cardPin" [countFacebook]="cardPin.facebookCount | shortNumber"
                     [countTwitter]="cardPin.twitterCount | shortNumber"
+                    [images]="apiBaseURL+cardPin.coverPageUrl+'/image'"
                     [countSpanboon]="cardPin.postCount | shortNumber" [hashTag]="cardPin.title" [name]="cardPin.owner">
                 </image-card>
                 <div class="wrapper-pin-img">
@@ -224,7 +230,7 @@
                     </div>
                     <div *ngIf="!showLoading" class="btn-follow">
                         <spanboon-button (click)="showAlertDialog()" [width]="'90pt'" [height]="'30pt'"
-                            [bgColor]="'#c62634'" [text]="'ติดตาม'">
+                            [text]="'ติดตาม'">
                         </spanboon-button>
                     </div>
                     <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
@@ -250,8 +256,8 @@
                                 (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
                                 [showLoading]="showLoading" [title]="cardSide.title"
                                 [comment]="cardSide.commentCount | shortNumber "
-                                [pageName]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                [username]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                [pageName]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                [username]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
                                 [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
                                 [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
                                 [reboon]="cardSide.rePostCount | shortNumber "
@@ -271,8 +277,8 @@
                                     (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
                                     [showLoading]="showLoading" [title]="cardSide.title"
                                     [comment]="cardSide.commentCount | shortNumber "
-                                    [pageName]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                    [username]="cardSide.owner.uniqueId ? cardSide.owner.uniqueId : cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                    [pageName]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
+                                    [username]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
                                     [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
                                     [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
                                     [reboon]="cardSide.rePostCount | shortNumber "
@@ -374,8 +380,8 @@
                                     [data]="cardTwin" (submit)="actionComment($event,index,'POSTCARD3')"
                                     [title]="cardTwin.post.title" [content]="cardTwin.post.detail"
                                     [images]="cardTwin.post && cardTwin.imageBase64"
-                                    [pageName]="cardTwin.owner.uniqueId ? cardTwin.owner.uniqueId : cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
-                                    [username]="cardTwin.owner.uniqueId ? cardTwin.owner.uniqueId : cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
+                                    [pageName]="cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
+                                    [username]="cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
                                     [isOfficial]="cardTwin.owner.isOfficial ? cardTwin.owner.isOfficial : false "
                                     [countUserFollow]="cardTwin.followUserCount | shortNumber "
                                     [comment]="cardTwin.commentCount | shortNumber "

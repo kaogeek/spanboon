@@ -29,8 +29,7 @@
         position: relative;
         flex: 0 0 auto;
         border-bottom: 1px solid rgba($border-color, 0.7);
-        font-family: "Kanit-500";
-        font-size: 18px;
+        @include font-size-9($font-head-500);
         height: 45pt;
         display: flex;
         justify-content: center;
@@ -57,12 +56,12 @@
                     overflow: hidden;
 
                     &:hover {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                     }
                 }
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -87,11 +86,11 @@
         }
 
         &::-webkit-scrollbar-thumb {
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         > .talking-y {
@@ -117,9 +116,8 @@
                     box-shadow: 2.5px 0px 0px 0 #ffffff;
                     overflow: hidden;
                     color: $brandcolor;
-                    background: $color-warm-red;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    background: $brandcolor2;
+                    @include font-size-10($font-head-500);
                 }
                 > .sender {
                     margin-right: 10pt;
@@ -141,8 +139,7 @@
                 background: $bg-grey;
                 border-radius: 6px;
                 padding: 10px 15px;
-                font-family: "Kanit-400";
-                font-size: 16px;
+                @include font-size-10($font-head-400);
                 position: relative;
                 color: $black;
                 max-width: 100%;
@@ -168,15 +165,15 @@
                 margin-left: 8px;
 
                 > .material-icons {
-                    color: $color-warm-red;
+                    font-family: 'Material Icons' !important;
+                    color: $brandcolor2;
                     font-weight: 900;
-                    font-size: 20px;
+                    font-size: $font-size-icon-large;
                 }
 
                 > .time {
                     margin-top: -4px;
-                    font-family: "Kanit-400";
-                    font-size: 14px;
+                    @include font-size-10($font-head-400);
                     color: rgb($black, 0.7);
                 }
             }
@@ -204,9 +201,8 @@
                             box-shadow: 2.5px 0px 0px 0 #ffffff;
                             overflow: hidden;
                             color: $brandcolor;
-                            background: $color-warm-red;
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            background: $brandcolor2;
+                            @include font-size-10($font-head-500);
                         }
                         > .user {
                             margin-left: 10pt;
@@ -222,15 +218,15 @@
                         margin-right: 8px;
 
                         > .material-icons {
-                            color: $color-warm-red;
+                            font-family: 'Material Icons' !important;
+                            color: $brandcolor2;
                             font-weight: 900;
-                            font-size: 20px;
+                            font-size: $font-size-icon-large;
                         }
 
                         > .time {
                             margin-top: -4px;
-                            font-family: "Kanit-400";
-                            font-size: 14px;
+                            @include font-size-10($font-head-400);
                             color: rgb($black, 0.7);
                         }
                     }
@@ -240,8 +236,7 @@
                             background: $bg-grey;
                             border-radius: 6px;
                             padding: 15px;
-                            font-family: "Kanit-400";
-                            font-size: 16px;
+                            @include font-size-10($font-head-400);
                             position: relative;
 
                             &::before {
@@ -261,8 +256,7 @@
                         background: rgb($blue, 0.8);
                         border-radius: 6px;
                         padding: 10px 15px;
-                        font-family: "Kanit-400";
-                        font-size: 16px;
+                        @include font-size-10($font-head-400);
                         position: relative;
                         color: $white;
                         max-width: 55%;
@@ -296,8 +290,7 @@
         > .case-confirm {
             display: flex;
             justify-content: center;
-            font-family: "Kanit-400";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             padding: 10pt 0;
             > .case-div {
                 > .confirm-text {
@@ -309,7 +302,7 @@
                     padding: 0 10pt;
 
                     > .click-post {
-                        color: $color-warm-red;
+                        color: $brandcolor2;
                         padding-left: 5pt;
                         @include pointer();
                     }
@@ -342,9 +335,8 @@
             box-shadow: 2.5px 0px 0px 0 #ffffff;
             overflow: hidden;
             color: $brandcolor;
-            background: $color-warm-red;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            background: $brandcolor2;
+            @include font-size-9($font-head-500);
         }
 
         > .img-profile {
@@ -370,16 +362,14 @@
                 border-radius: 25px;
                 border: 1px solid $border-color;
                 padding: 0 60pt 0 12pt;
-                font-family: "Sarabun-Medium";
-                font-size: 14px;
+                @include font-size-10($font-content2-medium);
                 height: calc(100% - 2px);
 
                 div,
                 &::-webkit-input-placeholder,
                 &:-ms-input-placeholder,
                 &::placeholder {
-                    font-family: "Sarabun-Medium" !important;
-                    font-size: 14px !important;
+                    @include font-size-10($font-content2-medium);
                 }
             }
 
@@ -423,8 +413,9 @@
             flex: 0 0 auto;
 
             .material-icons {
+                font-family: 'Material Icons' !important;
                 font-size: 20pt;
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
     }
@@ -460,7 +451,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -486,7 +477,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -514,7 +505,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                     @include pointer();
                 }
             }
@@ -549,7 +540,7 @@
     .chat-spanboon {
         > .header {
             height: 34pt;
-            padding: 0 25pt;
+            padding: 0 32pt;
 
             > .back-arrow {
                 display: none;
@@ -559,7 +550,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-size: 26px;
+                    font-family: 'Material Icons' !important;
                     @include pointer();
                 }
             }

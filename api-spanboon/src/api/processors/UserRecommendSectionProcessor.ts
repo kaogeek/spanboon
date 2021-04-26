@@ -13,6 +13,8 @@ import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import moment from 'moment';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
+import { ObjectID } from 'mongodb';
 
 export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -43,6 +45,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let limit: number = undefined;
                 let offset: number = undefined;
                 let showUserAction = false;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -62,6 +65,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                 let userId = undefined;
                 let clientId = undefined;
+                let userObjId: ObjectID = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     clientId = this.data.clientId;
@@ -82,8 +86,8 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
                     { $skip: offset },
+                    { $limit: 4 },
                     { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
@@ -131,7 +135,8 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'เรื่องราวที่คุณอาจพลาดไป';
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.type = 'RECOMMEND';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
@@ -225,7 +230,6 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         if (rootRefFirstImg) {
                             contentModel.coverPageUrl = rootRefFirstImg.imageURL;
                         }
-                        console.log('rootRefPost: ' + rootRefPost);
                         contentModel.rootReferencePost = rootRefPost;
                         this.removePostField(contentModel.rootReferencePost);
                     }
@@ -239,10 +243,25 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     }
 
                     contentModel.owner = {};
-                    if (page !== undefined) {
+                    if (page !== null && page !== undefined) {
                         contentModel.owner = this.parsePageField(page);
                         contentModel.owner.isHot = isHot;
-                    } else if (user !== undefined) {
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else if (user !== null && user !== undefined) {
                         contentModel.owner = this.parseUserField(user);
                     }
 

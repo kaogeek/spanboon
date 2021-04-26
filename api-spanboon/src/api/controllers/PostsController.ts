@@ -462,11 +462,9 @@ export class PostsController {
                         }
                     },
                     {
-                        $project: {
-                            'ownerUser._id': 0,
+                        $project: { 
                             'ownerUser.username': 0,
-                            'ownerUser.password': 0,
-                            'ownerUser.uniqueId': 0,
+                            'ownerUser.password': 0, 
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
@@ -860,7 +858,7 @@ export class PostsController {
 
                 // noti to owner post
                 {
-                    const notificationText = req.user.displayName + ' กดถูกใจโพสของคุณ';
+                    const notificationText = req.user.displayName + ' กดถูกใจโพสต์ของคุณ';
                     const link = '/post/' + userLike.subjectId;
 
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {

@@ -51,7 +51,7 @@
         }
 
         &:hover {
-            background: rgba($color-warm-red, 0.2);
+            background: rgba($brandcolor2, 0.2);
 
             > .icon {
                 > g,
@@ -63,17 +63,17 @@
         }
 
         &.active {
-            background: rgba($color-warm-red, 0.2);
+            background: rgba($brandcolor2, 0.2);
 
             > .icon {
                 > g,
                 path,
                 rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                 }
             }
             &:hover {
-                background: rgba($color-warm-red, 0.25);
+                background: rgba($brandcolor2, 0.25);
             }
         }
     }

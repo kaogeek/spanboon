@@ -47,7 +47,7 @@ span:focus {
 }
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: $color-warm-red;
+    background-color: $brandcolor2;
 }
 
 ::-webkit-scrollbar-button {
@@ -89,14 +89,12 @@ span:focus {
             .top {
                 display: flex;
                 flex-direction: column;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
             }
 
             .bottom {
-                font-family: "Kanit-500";
-                font-size: 14px;
-                color: $koalaGray;
+                @include font-size-10($font-head-500);
+                color: $color-gray;
             }
 
             span {
@@ -135,14 +133,14 @@ span:focus {
     .wrapper-icon {
         display: flex;
         align-items: center;
-        color: $koalaGray;
+        color: $color-gray;
 
         > .icon-active {
             flex: 0 0 auto;
             width: 8pt;
             height: 8pt;
             border-radius: 50%;
-            background-color: $koalaGray;
+            background-color: $color-gray;
 
             &.new-card {
                 width: 7pt;
@@ -156,21 +154,20 @@ span:focus {
         }
 
         > .looking {
-            background-color: $brandcolor2;
+            background-color: $status-post-need;
         }
 
         > .lookingWhite {
-            background-color: transparent;
+            background-color: $status-post-need;
             border: 0.7pt solid $white;
         }
 
         > .fulfill {
-            background-color: $green;
+            background-color: $status-post-fulfill;
         }
 
         span {
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             margin-left: 5pt;
         }
     }
@@ -179,11 +176,10 @@ span:focus {
         display: flex;
         color: $bg-fog-gray;
         align-items: center;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10($font-head-500);
 
         &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
         }
     }
 
@@ -196,7 +192,7 @@ span:focus {
             color: $color-7;
 
             &:hover {
-                text-decoration: underline;
+                color: rgba($brandcolor2, 0.95);
             }
         }
 
@@ -233,7 +229,7 @@ span:focus {
 
         &:hover {
             transform: scale3d(1.1, 1.1, 1.1);
-            background: $color-warm-red;
+            background: $brandcolor2;
         }
 
         > .to-top {
@@ -257,7 +253,7 @@ span:focus {
         justify-content: center;
         width: 40pt;
         height: 40pt;
-        background: $color-warm-red;
+        background: $brandcolor2;
         right: 11px;
         bottom: 10pt;
         border-radius: 50%;
@@ -268,7 +264,7 @@ span:focus {
         transition: all 0.3s ease;
 
         &:hover {
-            background: rgba($color-warm-red, 0.95);
+            color: rgba($brandcolor2, 0.95);
         }
 
         > .button-post {
@@ -282,6 +278,7 @@ span:focus {
 
     > .wrapper-content-page {
         min-height: calc(100% - 105pt);
+        // overflow: hidden;
     }
 
     .wrapper-body-doing {
@@ -332,8 +329,7 @@ span:focus {
             padding: 20pt;
 
             > .top {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 color: $bg-color2;
                 text-align: left;
             }
@@ -348,8 +344,7 @@ span:focus {
                     vertical-align: middle;
                     background-size: 18px;
                     box-shadow: 0px 1px 9px 0 #e5e3dd;
-                    font-family: "Kanit-500";
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                     border: unset;
                     color: $color-black;
                     border-radius: 25pt;
@@ -395,7 +390,7 @@ span:focus {
     }
 
     .tribute-container {
-        color: $color-warm-red;
+        color: $brandcolor2;
         padding: 3pt 5pt;
         border-radius: 25px;
     }
@@ -479,7 +474,7 @@ span:focus {
         color: rgb(27, 149, 224);
 
         &:hover {
-            text-decoration: underline !important;
+            color: rgba($brandcolor2, 0.95);
         }
     }
 
@@ -843,12 +838,12 @@ span:focus {
 }
 
 .content {
-    margin-top: 5pt;
+    margin-top: 10pt;
     min-height: 40px;
     color: $color-11;
 }
 
-$fuschia: $color-warm-red;
+$fuschia: $brandcolor2;
 $button-bg: $fuschia;
 $button-text-color: $white;
 $baby-blue: #f8faff;
@@ -975,16 +970,14 @@ $baby-blue: #f8faff;
     padding: 12px 20px;
 
     > span {
-        font-family: "Kanit-300";
-        font-size: 18px;
+        @include font-size-9($font-head-300);
         color: $white;
         margin-right: 20px;
     }
 
     > button {
         flex: 0 0 auto;
-        font-family: "Kanit-400";
-        font-size: 16px;
+        @include font-size-9($font-head-500);
         // padding: 2pt 15pt;
         background: $white;
         color: $black;
@@ -994,11 +987,11 @@ $baby-blue: #f8faff;
 @media (max-width: $medium) {
     .tool-developer {
         > span {
-            font-size: 16px;
+            @include font-size-9($font-head-500);
         }
 
         > button {
-            font-size: 15px;
+            @include font-size-10($font-head-500);
         }
     }
 }
@@ -1006,11 +999,11 @@ $baby-blue: #f8faff;
 @media (max-width: $small) {
     .tool-developer {
         > span {
-            font-size: 15px;
+            @include font-size-10($font-head-500);
         }
 
         > button {
-            font-size: 14px;
+            @include font-size-10($font-head-500);
         }
     }
 }

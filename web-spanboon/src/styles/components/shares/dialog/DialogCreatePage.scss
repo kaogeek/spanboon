@@ -20,6 +20,7 @@
         border-radius: 4px;
         top: 1%;
         right: 1%;
+        z-index: 2;
         @include pointer();
         display: flex;
         justify-content: center;
@@ -33,7 +34,7 @@
     > .create-left {
         width: 300pt;
         height: 100%;
-        background: $color-warm-red;
+        background: $brandcolor2;
         flex: 0 0 auto;
         display: flex;
         align-items: center;
@@ -52,8 +53,7 @@
 
             > .title {
                 margin-top: 20pt;
-                font-family: "Kanit-300";
-                font-size: 18px;
+                @include font-size-9($font-head-300);
                 color: rgb($white, 0.5);
             }
         }
@@ -66,8 +66,7 @@
         flex-direction: column;
 
         .mat-stroked-button {
-            font-family: "Kanit-400";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             min-width: 75pt;
             height: 30pt;
             padding: 0 20pt;
@@ -80,13 +79,12 @@
             flex: 0 0 auto;
 
             > .create-help {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 @include pointer();
-                color: $color-warm-red;
+                color: $brandcolor2;
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -112,13 +110,11 @@
 
                 > .box-header {
                     > .header {
-                        font-family: "Kanit-500";
-                        font-size: 26px;
+                        @include font-size-6($font-head-500);
                     }
 
                     > .title {
-                        font-family: "Kanit-300";
-                        font-size: 18px;
+                        @include font-size-9($font-head-300);
                         color: rgb($black, 0.5);
                     }
                 }
@@ -127,6 +123,7 @@
                     flex: 1 1 0%;
                     // overflow-y: auto;
                     margin-top: 20pt;
+                    overflow: auto;
 
                     &.box-confirm {
                         margin-top: unset;
@@ -141,7 +138,7 @@
                         @include pointer();
 
                         &.active {
-                            border: 2px solid $color-warm-red;
+                            border: 2px solid $brandcolor2;
                         }
 
                         &:first-child {
@@ -179,8 +176,7 @@
                                 display: flex;
                                 justify-content: flex-start;
                                 align-items: center;
-                                font-family: "Kanit-500";
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                                 color: rgba($black, 0.6);
 
                                 > span {
@@ -216,7 +212,8 @@
 
                                 > .material-icons {
                                     font-weight: 700;
-                                    color: $color-warm-red;
+                                    font-family: "Material Icons" !important;
+                                    color: $brandcolor2;
                                 }
                             }
                         }
@@ -300,8 +297,7 @@
                         }
 
                         > .title {
-                            font-family: "Kanit-500";
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                             color: rgba($black, 0.7);
                             margin: 0 auto 0 0;
                         }
@@ -318,9 +314,9 @@
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
-                                font-family: "Kanit-500";
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                                 margin-top: -2pt;
+                                color: black;
                             }
 
                             > .input-page {
@@ -330,8 +326,7 @@
                                 border-radius: 7px;
                                 background: $white;
                                 border: 1px solid rgba($black, 0.1);
-                                font-family: "Kanit-300";
-                                font-size: 16px;
+                                @include font-size-10($font-head-300);
 
                                 &.add-to-page {
                                     width: calc(100% - 39pt - 2px);
@@ -368,8 +363,7 @@
                         > .label-show-error {
                             margin-top: 2pt;
                             color: red;
-                            font-family: "Kanit-300";
-                            font-size: 14px;
+                            @include font-size-10($font-head-500);
                             margin: 2pt auto 0 0;
                         }
                     }
@@ -392,8 +386,7 @@
                             }
 
                             > .title {
-                                font-family: "Kanit-300";
-                                font-size: 18px;
+                                @include font-size-9($font-head-300);
                                 color: rgb($black, 0.5);
                             }
                         }
@@ -426,21 +419,18 @@
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                background-color: $color-warm-red;
-                                font-family: "Kanit-500";
-                                font-size: 24px;
+                                background-color: $brandcolor2;
+                                @include font-size-6($font-head-500);
                                 color: $white;
                             }
 
                             > .username {
-                                color: $color-warm-red;
-                                font-family: "Kanit-500";
-                                font-size: 24px;
+                                color: $brandcolor2;
+                                @include font-size-6($font-head-500);
                             }
 
                             > .sub-name {
-                                font-family: "Kanit-300";
-                                font-size: 18px;
+                                @include font-size-9($font-head-300);
                             }
                         }
 
@@ -449,8 +439,7 @@
                             flex-wrap: wrap;
 
                             > .head-confirm {
-                                font-family: "Kanit-500";
-                                font-size: 24px;
+                                @include font-size-6($font-head-500);
                             }
 
                             > .detail-confirm {
@@ -458,8 +447,7 @@
 
                                 > .agreement {
                                     .agreement-title {
-                                        font-family: "Kanit-300";
-                                        font-size: 18px;
+                                        @include font-size-9($font-head-300);
                                         color: rgb($black, 0.6);
                                     }
 
@@ -467,8 +455,7 @@
                                         margin-top: 1em;
 
                                         > .header-agreement {
-                                            font-family: "Kanit-500";
-                                            font-size: 18px;
+                                            @include font-size-9($font-head-500);
                                             color: rgb($black, 0.6);
 
                                             > .check-true {
@@ -493,15 +480,13 @@
                                             margin-bottom: 1.5em;
 
                                             > li {
-                                                font-family: "Kanit-300";
-                                                font-size: 16px;
+                                                @include font-size-10($font-head-300);
                                                 margin-bottom: 1em;
                                                 color: rgb($black, 0.5);
 
                                                 > p {
-                                                    font-family: "Kanit-300";
-                                                    font-size: 18px;
-                                                    color: $color-warm-red;
+                                                    @include font-size-9($font-head-300);
+                                                    color: $brandcolor2;
                                                 }
                                             }
                                         }
@@ -583,7 +568,7 @@
                 > .but-conf {
                     margin-left: 15pt;
                     color: $white;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     &.active {
                         opacity: 0.7;
                         pointer-events: none;
@@ -619,7 +604,7 @@
                                 }
 
                                 > .title {
-                                    font-size: 16px;
+                                    @include font-size-10($font-head-500);
                                 }
                             }
 
@@ -628,11 +613,11 @@
                                 padding: 70pt 10pt 25pt 10pt;
 
                                 > .username {
-                                    font-size: 22px;
+                                    @include font-size-7($font-head-500);
                                 }
 
                                 > .sub-name {
-                                    font-size: 16px;
+                                    @include font-size-10($font-head-500);
                                 }
                             }
                         }
@@ -749,8 +734,9 @@
 @media (max-width: $lmedium) {
     .dialog-create-page {
         max-width: 100vw;
-        max-height: 100vh;
-        height: 100vh;
+        max-height: unset;
+        height: unset;
+        overflow: auto;
     }
 }
 
@@ -816,18 +802,18 @@
 
                             > .page-confirm {
                                 > .head-confirm {
-                                    font-size: 20px;
+                                    @include font-size-8($font-head-500);
                                 }
 
                                 > .detail-confirm {
                                     > .agreement {
                                         > .agreement-title {
-                                            font-size: 16px;
+                                            @include font-size-10($font-head-500);
                                         }
 
                                         > .grop-agreement {
                                             > .header-agreement {
-                                                font-size: 16px;
+                                                @include font-size-10($font-head-500);
 
                                                 > .check-true {
                                                     > mat-checkbox {
@@ -838,10 +824,10 @@
 
                                             > ul {
                                                 > li {
-                                                    font-size: 14px;
+                                                    @include font-size-10($font-head-500);
 
                                                     > p {
-                                                        font-size: 16px;
+                                                        @include font-size-10($font-head-500);
                                                     }
                                                 }
                                             }
@@ -878,11 +864,11 @@
                 padding: 15pt;
 
                 > .header {
-                    font-size: 26px;
+                    @include font-size-6($font-head-500);
                 }
 
                 > .title {
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                     margin-top: 10pt;
                 }
             }
@@ -905,11 +891,11 @@
                 > .box-create {
                     > .box-header {
                         > .header {
-                            font-size: 20px;
+                            @include font-size-8($font-head-500);
                         }
 
                         > .title {
-                            font-size: 16px;
+                            @include font-size-10($font-head-500);
                         }
                     }
 
@@ -937,6 +923,7 @@
 
                                 > .type-arrow {
                                     > .material-icons {
+                                        font-family: "Material Icons" !important;
                                     }
                                 }
                             }
@@ -970,7 +957,7 @@
                             }
 
                             > .title {
-                                font-size: 16px;
+                                @include font-size-10($font-head-500);
                             }
 
                             > .drop-input {
@@ -1003,7 +990,7 @@
                                 }
 
                                 > .title {
-                                    font-size: 16px;
+                                    @include font-size-10($font-head-500);
                                 }
                             }
 

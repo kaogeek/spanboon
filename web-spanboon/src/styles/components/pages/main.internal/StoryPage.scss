@@ -5,563 +5,449 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-.story-container {
-  background: white;
+.story {
+  width: 100%;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: relative;
-  .wp-block-cover-image {
+
+  > .story-background {
     position: relative;
     background-size: cover;
-    background-position: 80%;
-    min-height: 50vh;
+    height: 50vh;
     width: 100%;
-    margin: 0 0 1.5em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .background-text {
-      transition: 0.3s;
-      width: 550px;
+
+    > .text-box-overlay {
+      width: 100%;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      padding: 40px;
-      z-index: 10;
-      .background-text-h {
-        @include font-size-5-100("Kanit-500");
-        color: white;
-        line-height: 35px;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .background-text-h-s {
-        @include font-size-8-100("Kanit-300");
-        color: rgb(201, 201, 201);
-        text-align: center;
-        margin-bottom: 20px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-      .line {
-        width: 20%;
-        height: 5pt;
-        background-color: white;
-        margin-bottom: 20px;
-      }
-      .background-text-score {
-        width: 100%;
-        height: auto;
-        display: flex;
-        flex-direction: initial;
-        justify-content: center;
-
-        .text-score {
-          @include font-size-8-100("Kanit-500");
-          color: #c9c9c9;
-          text-align: center;
-          margin: 0px 10px 0px 10px;
-        }
-        .text-point {
-          @include font-size-8-100("Kanit-500");
-          color: #c9c9c9;
-          text-align: center;
-        }
-      }
-    }
-  }
-
-  .dis-container {
-    padding: 15px;
-    width: 80%;
-    display: flex;
-    height: auto;
-    .left {
-      width: 70%;
-      padding: 10px;
-      position: relative;
-      .dis-sub-name-page {
-        padding: 20px 0px;
-        border-bottom: 1px solid #efefef;
-        margin-bottom: 20px;
-        display: flex;
-        .dis-sub-img-page {
-          width: 10%;
-          .img-user {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            overflow: hidden;
-            background-color: #747743;
-          }
-        }
-        .dis-sub-name-text-page {
-          width: 90%;
-          display: flex;
-          align-items: center;
-        }
-      }
-      .user {
-        @include font-size-8-100("Kanit-400");
+      justify-content: center;
+      height: 100%;
+      background-color: rgb(0 0 0 / 43%);
+      > .text-box {
         display: flex;
         flex-direction: column;
-        .user-name {
-          display: flex;
-          align-items: center;
-          .point {
-            width: 10px;
-            height: 10px;
-            border-radius: 5px;
-            background-color: gray;
-            margin-right: 10px;
-          }
-          .type {
-            font-size: 14px;
-            margin-right: 15px;
-          }
-          .date {
-            font-size: 12px;
-            color: gray;
-          }
+        align-items: center;
+        max-width: 70%;
+        text-align: center;
+        width: auto;
+        span {
+          color: white;
         }
-      }
-      .ct-container {
-        width: 100%;
-        height: auto;
-        position: relative;
-        .ct-background-text {
+        > .post-title {
           width: 100%;
-          height: auto;
-          margin: 10px 0px;
-          @include font-size-9-100("Sarabun-Light");
+          @include font-size-6($font-head-500);
+          word-break: break-all;
+          line-height: 40px;
+          margin-bottom: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
-        .ct-background-image {
+        > .post-content {
+          @include font-size-8($font-head-300);
           width: 100%;
-          margin: 10px 0px;
-          background-size: 100%;
-          height: auto;
+          line-height: 20px;
+          word-break: break-all;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
         }
-        .ct-background-video {
-          width: 100%;
-          margin: 10px 0px;
-          height: auto;
-          display: flex;
-          justify-content: center;
-        }
-      }
-      .ct-needs {
-        display: none;
-      }
-      .control {
-        display: flex;
-        border-top: solid 1px #f3f3f3;
-        padding: 10px 0px;
-        .even {
+        > .line {
           width: 60%;
-          @include font-size-8-100("Kanit-400");
-          color: #e65857;
-          font-size: 15px;
+          background-color: white;
+          height: 5px;
+          margin: 30px;
+        }
+        > .count {
           display: flex;
           align-items: center;
-        }
-        .controls {
-          width: 40%;
-        }
-      }
-      .comment {
-        padding: 10px 20px;
-        display: flex;
-        // border: 1px solid #efefef;
-        border-radius: 4px;
-        .img-user {
-          width: 34px;
-          height: 34px;
-          border-radius: 20px;
-          overflow: hidden;
-          background-color: #747743;
-        }
-        > .input-comment {
-          width: calc(100% - 60pt);
-          display: flex;
-          border: 1px solid #f0f0f0;
-          border-radius: 25px;
-          overflow: hidden;
-          margin-left: 20px;
-        }
-      }
-    }
-    .right {
-      width: 30%;
-      padding: 10px;
-      position: relative;
-      .sticky {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 60pt;
-      }
-      .card-item-looking-for > .btn-donate {
-        display: none !important;
-      }
-    }
-  }
+          @include font-size-9($font-head-300);
+          > .text-count-desktop {
+            margin: 0px 10px;
+            @include font-size-9($font-head-500);
+            cursor: pointer;
 
-  .story-footer {
-    width: 100%;
-    height: auto;
-    z-index: 0;
-    > .swiper-container {
-      > .swiper-wrapper {
-        > .swiper-slide {
-          height: 300pt;
+            &.active {
+              color: $brandcolor2 !important;
 
-          > preload-card {
-            display: block;
-            height: 100%;
+              &:hover {
+                color: $brandcolor2 !important;
+              }
+            }
+          }
+          > .text-point {
+            margin: 0px 3px;
+          }
+          > .box-count {
+            display: none;
+            &.active {
+              color: $brandcolor2 !important;
+            }
+            cursor: pointer;
+            &:hover {
+              > svg {
+                > .svg-box-count {
+                  color: $brandcolor2 !important;
+                  fill: rgba($brandcolor2, 0.95) !important;
+                }
+              }
+              > .text-count {
+                color: $brandcolor2 !important;
+              }
+            }
 
-            > .preload-card {
-              height: 100%;
-
-              > .postcard {
-                height: calc(100% - 30pt - 1.4px - 2px);
-                margin: 1px 0;
-
-                > .post-card-center {
-                  flex: 1 1 0%;
-
-                  > .div-preload {
-                    height: 100% !important;
-                  }
+            > .text-count {
+              margin: 0px 5px;
+              &.active {
+                color: $brandcolor2 !important;
+              }
+            }
+            > svg {
+              > .svg-box-count {
+                &.active {
+                  fill: $brandcolor2 !important;
                 }
               }
             }
           }
         }
-      }
-
-      > .swiper-button-prev {
-      }
-
-      > .swiper-button-next {
-      }
-
-      > .swiper-button-prev,
-      > .swiper-button-next {
-        &.swiper-button-disabled {
-        }
-
-        &:hover {
-        }
-
-        > .material-icons {
+        > .need-count {
+          @include font-size-10($font-head-400);
+          line-height: 20px;
+          word-break: break-all;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          margin: 15px 0px;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
         }
       }
     }
-    .text {
-      padding: 30px 50px;
-      @include font-size-7-100("Kanit-500");
-      color: #000000;
-    }
-    .more-story {
-      display: flex;
-    }
   }
-
-  .story-footer-teb {
-    width: 100%;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "Kanit-500";
-    font-size: 18px;
-    > .text {
-      margin: 0px 10px;
-      color: #000;
-      &:hover {
-        text-decoration: underline !important;
-      }
-    }
-  }
-
-  Preload-card {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    z-index: 10;
-    height: 100%;
-    background-color: white;
-  }
-
-  //////////////////////////////////////////////////////////////
-
-  .wp-block-cover-image .wp-block-cover-image-text,
-  .wp-block-cover-image h2 {
-    color: #fff;
-    font-size: 2em;
-    line-height: 1.25;
-    z-index: 1;
-    margin-bottom: 0;
-    max-width: 610px;
-    padding: 14px;
-    text-align: center;
-  }
-
-  .wp-block-cover-image.has-background-dim:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-  .wp-block-cover-image {
-    background-attachment: fixed;
-    background-position: 50% 0;
-  }
-
-  .wp-block-cover {
+  > .story-body {
     position: relative;
-    background-size: cover;
-    background-position: 80%;
-    min-height: 100%;
-    width: calc(100% - 20px);
-    margin: 10px;
+    width: 100%;
+    height: auto;
     display: flex;
-    justify-content: center;
     align-items: center;
-    .background-text {
-      transition: 0.3s;
-      width: 550px;
+    justify-content: center;
+    > .content {
+      width: 80%;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-      z-index: 10;
-      .background-text-h {
-        @include font-size-7-100("Kanit-500");
-        color: white;
-        line-height: 35px;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .background-text-h-s {
-        @include font-size-10-100("Kanit-300");
-        color: rgb(201, 201, 201);
-        text-align: center;
-        margin-bottom: 20px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-      .line {
-        width: 20%;
-        height: 5pt;
-        background-color: white;
-        margin-bottom: 20px;
-      }
-      .background-text-score {
-        width: 100%;
+      position: relative;
+      > .left {
+        width: 70%;
         height: auto;
-        display: flex;
-        flex-direction: initial;
-        justify-content: center;
+        > .head {
+          width: calc(100% - 60px);
+          padding: 20px 30px;
+          border-bottom: 1px solid #ebebeb;
+          display: flex;
+          align-items: center;
+          > .img-user {
+            width: 80px;
+            border-radius: 50%;
+          }
+          > .page-display {
+            width: auto;
+            margin: 0px 20px;
+            > .type {
+              display: flex;
+              align-items: center;
+              > .type-status-needs {
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background-color: $status-post-need;
+              }
+              > .type-status-general {
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background-color: $status-post-general;
+              }
+              > .type-display {
+                margin: 0px 10px;
+                @include font-size-9($font-head-500);
+              }
+              > .time-display {
+                margin: 0px 5px;
+                @include font-size-9($font-head-300);
+              }
+            }
+            > .user-display {
+              > span {
+                @include font-size-9($font-head-300);
+              }
+              > a {
+                @include font-size-9($font-head-500);
+                color: $color-gray;
 
-        .text-score {
-          @include font-size-9-100("Kanit-500");
-          color: #c9c9c9;
-          text-align: center;
-          margin: 0px 10px 0px 10px;
+                &:hover {
+                  color: rgba($brandcolor2, 0.95);
+                }
+              }
+            }
+          }
         }
-        .text-point {
-          @include font-size-9-100("Kanit-500");
-          color: #c9c9c9;
-          text-align: center;
+        > .story-display {
+          width: 100%;
+          position: relative;
+          border-bottom: 1px solid #ebebeb;
+          .ct-background-text {
+            width: 100%;
+            height: auto;
+            margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
+            @include font-size-9($font-content-light);
+          }
+          .ct-background-image {
+            width: 100%;
+            margin: 10px 0px;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
+            background-size: 100%;
+            height: auto;
+          }
+          .ct-background-video {
+            width: 100%;
+            -webkit-user-modify: read-write;
+            -moz-user-modify: read-write;
+            margin: 10px 0px;
+            height: auto;
+            display: flex;
+            justify-content: center;
+          }
         }
+        > .needs-display {
+          width: 100%;
+          position: relative;
+          padding: 15px 0px;
+          border-bottom: 1px solid #ebebeb;
+          .text-needs {
+            @include font-size-9($font-head-500);
+          }
+        }
+        > .comment {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 15px 0px;
+          border-bottom: 1px solid #ebebeb;
+          > .event-tag {
+            color: $brandcolor2;
+            @include font-size-9($font-head-500);
+          }
+          > .controls {
+          }
+        }
+        > .user-comment {
+          width: 100%;
+          display: flex;
+          padding: 15px 0px;
+          border-bottom: 1px solid #ebebeb;
+          > .menu-user {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+          }
+          > .input-comment {
+            width: 80%;
+            margin: 0px 20px;
+            padding: 0px 20px;
+            border-radius: 30px;
+            @include font-size-10($font-head-300);
+            border: 1px solid #cdcdcd;
+          }
+        }
+        > .list-comment {
+          width: 100%;
+          padding: 15px 0px;
+          border-bottom: 1px solid #ebebeb;
+          > span {
+            @include font-size-10($font-head-500);
+          }
+          > .comment {
+            display: flex;
+            height: auto;
+            padding: 15px 0px;
+            justify-content: space-between;
+            align-items: center;
+            word-break: break-word;
+            overflow: hidden;
+          }
+        }
+        > .story-footer {
+          width: 100%;
+          padding: 15px 0px;
+          position: relative;
+          border-bottom: 1px solid #ebebeb;
+          > span {
+            @include font-size-9($font-head-500);
+          }
+          > a {
+            @include font-size-9($font-head-500);
+            color: $color-gray;
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
+          }
+        }
+      }
+      > .right {
+        width: 30%;
+        padding: 0px 50px;
+        height: 600px;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 60pt;
       }
     }
+    .comDelet {
+      display: none !important;
+    }
+    .cdk-drag-handle {
+      display: none !important;
+    }
   }
-  .comDelet {
-    display: none !important;
-  }
-  .cdk-drag-handle {
-    display: none !important;
+}
+
+.display-mobile {
+  display: none !important;
+}
+
+.loding {
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  color: black;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  top: 0;
+  z-index: 10;
+}
+
+.post-story-not-found {
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  display: flex;
+  width: 100vw;
+  top: 0;
+  z-index: 9;
+  height: 100vh;
+  background-color: $bg-grey;
+  > .box {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    align-items: center;
+    justify-content: center;
+    > .text {
+      @include font-size-5($font-head-500);
+    }
+    > .sub-text {
+      @include font-size-8($font-head-400);
+      color: #a5a5a6;
+      display: flex;
+      align-items: center;
+      margin: 7px 0px;
+      > spanboon-button {
+        width: 100px;
+        margin: 0px 10px;
+      }
+      > a {
+        @include font-size-7($font-head-400);
+        margin: 0px 5px;
+        color: $brandcolor2;
+        cursor: unset;
+      }
+    }
   }
 }
 
 @media (max-width: $xxlarge) {
-  .story-container {
-    .wp-block-cover-image {
-      .background-text {
-        transition: 0.3s;
-        width: 450px;
-        .background-text-h {
-        }
-        .background-text-h-s {
-        }
-      }
-    }
-
-    .dis-container {
-      transition: 0.3s;
-      .left {
-        .dis-sub-name-page {
-          .dis-sub-img-page {
-            width: 20%;
-            .img-user {
-            }
-          }
-          .dis-sub-name-text-page {
-            width: 80%;
-          }
-        }
-        .user {
-          .user-name {
-            .point {
-            }
-            .type {
-            }
-            .date {
-            }
-          }
-        }
-        .ct-container {
-          .ct-background-text {
-          }
-          .ct-background-image {
-          }
-          .ct-background-video {
-          }
-        }
-        .ct-needs {
-          display: none;
-        }
-        .control {
-          .even {
-          }
-          .controls {
-          }
-        }
-        .comment {
-          .img-user {
-          }
-          > .input-comment {
-          }
-        }
-      }
-      .right {
-      }
-    }
-  }
 }
 
 @media (max-width: $xlarge) {
-  .story-container {
-    .wp-block-cover-image {
-      .background-text {
-        transition: 0.3s;
-        width: 450px;
-        .background-text-h {
-        }
-        .background-text-h-s {
-        }
+  .story {
+    .content {
+      width: 95% !important;
+    }
+    .box-count {
+      display: flex !important;
+      @include font-size-10($font-head-500);
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: 40px;
+      margin: 0px 10px;
+      svg {
+        margin: 0px 6px;
       }
     }
+    .text-count-desktop {
+      display: none !important;
+    }
+    .left {
+      width: 100% !important;
+    }
+    .right {
+      display: none !important;
+    }
+    .type-display {
+      @include font-size-10($font-head-500);
+    }
+    .time-display {
+      @include font-size-10($font-head-300);
+    }
+    .ct-background-text {
+      text-align: center !important;
+    }
+    .display-mobile {
+      display: block !important;
+    }
 
-    .dis-container {
-      transition: 0.6s;
-      width: 90%;
-      .left {
-        width: 100%;
-        .dis-sub-name-page {
-          .dis-sub-img-page {
-            .img-user {
-            }
+    .post-story-not-found {
+      > .box {
+        > .text {
+          @include font-size-6($font-head-500);
+          text-align: center;
+        }
+        > .sub-text {
+          @include font-size-9($font-head-400);
+          text-align: center;
+          color: #a5a5a6;
+          display: unset;
+          > a {
+            color: $brandcolor2;
+            cursor: unset;
           }
-          .dis-sub-name-text-page {
+          > spanboon-button {
           }
         }
-        .user {
-          .user-name {
-            .point {
-            }
-            .type {
-            }
-            .date {
-            }
-          }
-        }
-        .ct-container {
-          .ct-background-text {
-          }
-          .ct-background-image {
-          }
-          .ct-background-video {
-          }
-        }
-        .ct-needs {
-          display: inline;
-        }
-        .control {
-          .even {
-            width: 25%;
-          }
-          .controls {
-            width: 75%;
-          }
-        }
-        .comment {
-          .img-user {
-          }
-          > .input-comment {
-          }
-        }
-      }
-
-      .right {
-        display: none;
       }
     }
   }
 }
 
 @media (max-width: $small) {
-  .story-container {
-    .wp-block-cover-image {
-      height: 50vh;
-      align-items: center;
-      .background-text {
-        transition: 0.6s;
-        width: 350px;
-        .background-text-h {
-          font-size: 28px;
-        }
-        .background-text-h-s {
-          font-size: 14px;
-        }
-      }
-    }
-    .dis-container {
-      transition: 0.6s;
-      width: 100%;
-      padding: 0;
-      .dis-sub-name-page {
-      }
-      .ct-container {
-        .ct-background-text {
-          font-size: 16px;
-        }
-        .ct-background-image {
-          font-size: 16px;
-        }
-      }
-    }
-  }
 }

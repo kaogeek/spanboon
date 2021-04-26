@@ -38,6 +38,7 @@
     "@types/express-ejs-layouts": "^2.3.2",
     "@types/express-session": "^1.17.0",
     "@types/express-validator": "^3.0.0",
+    "@types/lodash": "^4.14.168",
     "@types/lusca": "^1.6.2",
     "@types/passport": "^1.0.4",
     "@types/paypal-rest-sdk": "^1.7.5",
@@ -138,6 +139,15 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "^7.0.2",
+    "husky": "^4.3.0",
+    "jest": "^26.6.3",
+    "mock-express-request": "^0.2.2",
+    "mock-express-response": "^0.2.2",
+    "ncp": "^2.0.0",
+    "nock": "13.0.4",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^26.4.3",
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.33",
     "@types/chalk": "^2.2.0",
@@ -155,16 +165,7 @@
     "@types/serve-favicon": "^2.5.1",
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.3.0",
-    "@types/winston": "^2.4.4",
-    "cross-env": "^7.0.2",
-    "husky": "^4.3.0",
-    "jest": "^26.6.3",
-    "mock-express-request": "^0.2.2",
-    "mock-express-response": "^0.2.2",
-    "ncp": "^2.0.0",
-    "nock": "13.0.4",
-    "pre-commit": "^1.2.2",
-    "ts-jest": "^26.4.3"
+    "@types/winston": "^2.4.4"
   },
   "author": "KaoGeek",
   "license": "MIT"

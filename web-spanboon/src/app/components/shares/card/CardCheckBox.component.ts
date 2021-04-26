@@ -50,6 +50,14 @@ export class CardCheckBox {
     public isMutipleCheckbox: boolean = false;
     @Input()
     protected isDoIng: boolean = false;
+    @Input()
+    public isLoadMorePageCategory: boolean = false;
+    @Input()
+    public isLoadMorePageEmergency: boolean = false;
+    @Input()
+    public isLoadMoreObjective: boolean = false;
+    @Input()
+    public isLoadMoreHashTag: boolean = false;
     @Output()
     public submit: EventEmitter<any> = new EventEmitter();
     @Output()
@@ -67,7 +75,7 @@ export class CardCheckBox {
 
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void { 
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -128,6 +136,10 @@ export class CardCheckBox {
     }
 
     public checkBoxvalue(event, item, i) { 
+        let data = {
+            event,
+            item
+        }
         if (typeof (this.index) === 'number') {
             if (this.index !== i) {
                 Object.assign(this.data[this.index], { selected: false });
@@ -136,11 +148,15 @@ export class CardCheckBox {
         } else {
             this.index = i
         }
-        this.click.emit(item);
+        this.click.emit(data);
     }
 
     public checkBoxMutiple(event, item, i) {
-        this.clickMutiple.emit(item);
+        let data = {
+            event,
+            item
+        }
+        this.clickMutiple.emit(data);
     }
 
     public showDialogEdit() {

@@ -34,3 +34,5 @@ export * from './ChatFacade.service';
 export * from './ChatRoomFacade.service';
 export * from './AboutPageFacade.service';
 export * from './TwitterService.service';
+export * from './RecommendFacade.service';
+export * from './UserEngagementFacade.service';

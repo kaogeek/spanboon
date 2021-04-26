@@ -85,20 +85,18 @@
             margin-left: 12pt;
 
             > .name {
-                font-family: "Kanit-500";
-                font-size: 22px;
+                @include font-size-7($font-head-500);
                 line-height: 28px;
                 color: $black;
                 word-break: break-word;
 
                 &:hover {
-                    text-decoration: underline !important;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
 
             > .sub-name {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 color: rgb($black, 0.5);
                 word-break: break-word;
                 margin-top: 5pt;
@@ -117,8 +115,7 @@
                 }
 
                 > .text-category {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                     color: $black;
                 }
             }
@@ -146,8 +143,7 @@
                     padding-right: 7pt;
 
                     > .fol-span {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-10($font-head-500);
                         color: $black;
                     }
 
@@ -164,8 +160,7 @@
 
                     > .count {
                         margin-left: 5pt;
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-10($font-head-500);
                         color: $black;
                     }
                 }
@@ -189,10 +184,9 @@
                     flex: 0 0 auto;
                     overflow: hidden;
                     box-shadow: 2.5px 0px 0px 0 $white;
-                    font-size: 14px;
-                    font-family: "Kanit-500";
+                    @include font-size-10($font-head-500);
                     margin-left: -6pt;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     color: $white;
                     @include pointer();
 
@@ -212,14 +206,12 @@
                 margin-top: 5pt;
 
                 > .user-birthday {
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                 }
 
                 > .user-follow {
                     margin-top: 3pt;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                     display: flex;
                     flex-direction: row;
                     align-items: center;
@@ -262,13 +254,13 @@
                 font-size: 16px !important;
 
                 &:hover {
-                    background: rgb($color-warm-red, 0.1) !important;
+                    background: rgb($brandcolor2, 0.1) !important;
                 }
             }
 
             &.active {
                 > .button-follow {
-                    background-color: $color-warm-red !important;
+                    background-color: $brandcolor2 !important;
                     color: $white !important;
                 }
             }
@@ -276,6 +268,9 @@
 
         > .tooltip-bottom-right {
             flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             > .but-send {
                 height: 30pt;
@@ -299,6 +294,11 @@
 
                     > .material-icons {
                         font-size: 18pt;
+                        font-family: "Material Icons" !important;
+                    }
+
+                    > .fa {
+                        font-size: 16pt;
                     }
                 }
             }
@@ -318,8 +318,7 @@
             }
 
             > .text-label {
-                font-family: "Kanit-400";
-                font-size: 14px;
+                @include font-size-10($font-head-400);
                 padding-right: 15pt;
             }
         }

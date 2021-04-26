@@ -6,7 +6,7 @@
  */
 
 .dialog-create-story {
-  @include font-size-9-100("Kanit-400");
+  @include font-size-9($font-head-400);
   max-width: 100%;
   max-height: 100%;
   // min-width: 1200px;
@@ -52,7 +52,7 @@
       .box-create-story-editbackground-sub {
         margin-bottom: 10px;
         color: white;
-        font-size: 16px;
+        @include font-size-10($font-head-500);
         padding: 5px 10px;
         border-radius: 40px;
         border: solid 1px #e0e0e06b;
@@ -182,7 +182,7 @@
             }
           }
           .user {
-            @include font-size-8-100("Kanit-400");
+            @include font-size-8($font-head-400);
             display: flex;
             flex-direction: column;
             .user-name {
@@ -196,11 +196,11 @@
                 margin-right: 10px;
               }
               .type {
-                font-size: 14px;
+                @include font-size-10($font-head-400);
                 margin-right: 15px;
               }
               .date {
-                font-size: 12px;
+                @include font-size-11($font-head-400);
                 color: gray;
               }
             }
@@ -307,10 +307,9 @@
           align-items: center;
           position: relative;
           .mat-checkbox-layout .mat-checkbox-label {
-            @include font-size-9-100("Kanit-400");
+            @include font-size-9($font-head-400);
             border-bottom: 1px solid #eaeaea;
             line-height: 24px;
-            font-size: 12px;
           }
           &.active {
             transition: 0.3s;
@@ -332,7 +331,6 @@
             justify-content: center;
             transition: 0.5s;
             font-size: 15px;
-            font-weight: 600;
             &:hover {
               transition: 0.5s;
               background-color: rgb(228, 228, 228);
@@ -370,10 +368,9 @@
           align-items: center;
           position: relative;
           .mat-checkbox-layout .mat-checkbox-label {
-            @include font-size-9-100("Kanit-400");
+            @include font-size-9($font-head-400);
             border-bottom: 1px solid #eaeaea;
             line-height: 24px;
-            font-size: 12px;
           }
           &.active {
             transition: 0.3s;
@@ -394,8 +391,7 @@
             height: 100%;
             justify-content: center;
             transition: 0.5s;
-            font-size: 15px;
-            font-weight: 600;
+            @include font-size-10($font-head-600);
             &:hover {
               transition: 0.5s;
               background-color: rgb(228, 228, 228);
@@ -455,7 +451,7 @@
               text-align: end;
               padding: 0px 10px;
               width: auto;
-              color: $color-warm-red;
+              color: $brandcolor2;
               cursor: pointer;
               &:hover {
                 text-decoration-line: underline;
@@ -467,14 +463,16 @@
           width: calc(100% - 40px);
           height: auto;
           padding: 20px;
-          font-size: 12px;
+          display: flex;
+          flex-direction: column;
+          @include font-size-11($font-head-400);
 
           &.active {
             border: dashed 1px gray;
           }
 
           .textarea-story-editor {
-            font-size: 16px;
+            @include font-size-10($font-head-400);
           }
           .box-create-add-com {
             cursor: pointer;
@@ -488,7 +486,7 @@
             border: dashed 1px rgba(128, 128, 128, 0);
             ::selection {
               color: white;
-              background: $color-warm-red;
+              background: $brandcolor2;
             }
             &:hover {
               border: dashed 1px gray;
@@ -510,7 +508,7 @@
               display: none;
             }
             .ct-background-text {
-              font-size: 16px;
+              @include font-size-10($font-head-500);
             }
             .ct-background-image {
             }
@@ -592,21 +590,28 @@
         }
         .background-story {
           width: 100%;
-          min-height: 250pt;
+          min-height: 500px;
           background-size: cover;
           background-position: 50% 40%;
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
-          background-color: rgb(168, 168, 168);
+          background-color: #5e5454;
           .text-h {
-            font-size: 16px;
+            @include font-size-8($font-head-500);
             width: 40%;
             display: flex;
             color: white;
             flex-direction: column;
             align-items: center;
+            .h {
+              @include font-size-5($font-head-500);
+            }
+            .s {
+              @include font-size-8($font-head-300);
+              color: #cecece;
+            }
             .line {
               width: 40%;
               height: 3px;
@@ -618,13 +623,16 @@
               height: auto;
               display: flex;
               flex-direction: initial;
-              font-weight: 600;
+              @include font-size-8($font-head-300);
               justify-content: center;
 
               .text-score {
                 color: #c9c9c9;
                 text-align: center;
                 margin: 0px 10px 0px 10px;
+              }
+              .text-count {
+                display: none;
               }
               .text-point {
                 color: #c9c9c9;
@@ -867,7 +875,7 @@
           &.active {
             transition: 0.5s;
             transform: rotate(45deg);
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
           }
         }
       }
@@ -886,13 +894,13 @@
         object-fit: cover;
         transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
         box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-        border: solid 5px $color-warm-red;
+        border: solid 5px $brandcolor2;
         &:hover {
           transition: 0.3s;
-          border: solid 5px $color-warm-red;
+          border: solid 5px $brandcolor2;
         }
         &.select {
-          border: solid 5px $color-warm-red;
+          border: solid 5px $brandcolor2;
         }
       }
     }
@@ -915,7 +923,7 @@
       right: 0px;
       width: 20px;
       align-items: center;
-      font-size: 20px;
+      @include font-size-8($font-head-500);
       justify-content: center;
       display: none;
       border-radius: 4px;
@@ -935,7 +943,7 @@
         right: 0px;
         width: 20px;
         align-items: center;
-        font-size: 20px;
+        @include font-size-8($font-head-500);
         justify-content: center;
         display: flex;
         border-radius: 4px;
@@ -975,7 +983,7 @@
         right: 0px;
         width: 20px;
         align-items: center;
-        font-size: 20px;
+        @include font-size-8($font-head-500);
         justify-content: center;
         display: flex;
         border-radius: 4px;
@@ -1120,7 +1128,7 @@ a.palette-item {
 
 @media (max-width: $xlarge) {
   .dialog-create-story .create-story .create-story-b .create-story-b-story .background-story .text-h {
-    font-size: 14px;
+    @include font-size-10($font-head-500);
     width: 80%;
   }
   .dialog-create-story .create-story .create-story-b .create-story-b-story .box-create-user {
@@ -1144,6 +1152,41 @@ a.palette-item {
   .dialog-create-story .create-story .create-story-b .create-story-b-story .box-create-body {
     padding: unset !important;
     width: unset !important;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score
+    .text-score {
+    display: none;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score
+    .text-count {
+    display: block;
+    color: #c9c9c9;
+    text-align: center;
+    margin: 0px 10px 0px 10px;
+  }
+  .dialog-create-story
+    .create-story
+    .create-story-b
+    .create-story-b-story
+    .background-story
+    .text-h
+    .background-text-score {
+    align-items: center;
+    svg {
+      margin: 0px 10px;
+    }
   }
 }
 

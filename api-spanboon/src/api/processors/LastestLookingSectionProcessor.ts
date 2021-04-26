@@ -14,6 +14,7 @@ import { UserFollowService } from '../services/UserFollowService';
 import { LastestLookingProcessorData } from './data/LastestLookingProcessorData';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
 
 /* 
 * Search The lasted Looking from database 
@@ -40,6 +41,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
             try {
                 // get data
                 let userId: string = undefined;
+                let userObjId: ObjectID = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                 }
@@ -68,7 +71,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 const needStmt = [
                     { $group: { '_id': { 'post': '$post' } } },
                     { $sort: { createdDate: -1 } },
-                    { $limit: limit }
+                    { $skip: offset },
+                    { $limit: 4 }
                 ];
                 const postIds: any[] = [];
                 const needSearchResult = await this.needsService.aggregateEntity(needStmt);
@@ -86,6 +90,22 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                             foreignField: '_id',
                             as: 'page'
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
                     }
                 ];
                 const searchResult = await this.postsService.aggregate(postStmt);
@@ -96,7 +116,9 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 result.subtitle = 'กำลังมองหา';
                 result.description = '';
                 result.iconUrl = '';
+                result.type = 'LASTEST';
                 result.contents = [];
+
                 for (const row of searchResult) {
                     const pageString = (row.pageId) ? row.pageId + '' : undefined;
                     if (pageString === undefined) {
@@ -108,19 +130,40 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         lastestDate = row.createdDate;
                     }
 
-                    const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
-                    const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
+                    const coverImageUrl = (row.coverImage) ? row.coverImage : undefined;
 
                     const contentModel = new ContentModel();
-                    contentModel.commentCount = row.commentCount;
-                    contentModel.repostCount = row.repostCount;
-                    contentModel.shareCount = row.shareCount;
-                    contentModel.likeCount = row.likeCount;
-                    contentModel.viewCount = row.viewCount;
-                    contentModel.followUserCount = followUserCount; // count all userfollow
-                    contentModel.post = row;
-                    contentModel.dateTime = row.createdDate;
-                    contentModel.owner = this.parsePageField(page);
+
+                    if (page !== null && page !== undefined) {
+                        const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                        const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
+
+                        contentModel.commentCount = row.commentCount;
+                        contentModel.repostCount = row.repostCount;
+                        contentModel.shareCount = row.shareCount;
+                        contentModel.likeCount = row.likeCount;
+                        contentModel.viewCount = row.viewCount;
+                        contentModel.followUserCount = followUserCount; // count all userfollow
+                        contentModel.post = row;
+                        contentModel.coverPageUrl = coverImageUrl;
+                        contentModel.dateTime = row.createdDate;
+                        contentModel.owner = this.parsePageField(page);
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    }
 
                     if (showUserAction) {
                         const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);

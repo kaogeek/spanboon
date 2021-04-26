@@ -11,6 +11,7 @@ export * from './Postcode';
 export * from './MainPageVideo';
 export * from './MainPageSlide';
 export * from './Config';
+export * from '../../custom/variable';
 export * from './CommentPosts';
 //
 export * from './ActionLog';
@@ -41,4 +42,6 @@ export * from './FulfillmentRequest';
 export * from './Storycomponent';
 export * from './AboutPages';
 export * from './TextStoryFont';
-export * from './PageSocailTW';
+export * from './PageSocialTW';
+export * from './PageSocialFB';
+export * from './UserEngagement';

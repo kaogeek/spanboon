@@ -45,10 +45,10 @@
                 display: flex;
                 color: $black;
                 font-family: "Kanit-500";
-                font-size: 24px;
+                ;
 
                 &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                 }
             }
         }
@@ -60,8 +60,7 @@
                 display: flex;
                 align-items: center;
                 margin-top: 5pt;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
 
                 > .page-by {
                     padding-right: 5pt;
@@ -84,9 +83,9 @@
                             -webkit-line-clamp: 1;
                             -webkit-box-orient: vertical;
                             overflow: hidden;
-                            color: $green;
+                            color: $home-page-activate-color;
                             &:hover {
-                                text-decoration: underline;
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
                     }
@@ -100,7 +99,7 @@
                 }
 
                 > .count-user {
-                    color: $koalaGray;
+                    color: $color-gray;
                 }
             }
 
@@ -129,7 +128,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 22px;
+                    @include font-size-7($font-head-500);
                 }
             }
         }
@@ -153,7 +152,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
             }
         }
@@ -177,7 +176,7 @@
         > .wrapper-entity {
             > a {
                 > .wrapper-tag {
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }

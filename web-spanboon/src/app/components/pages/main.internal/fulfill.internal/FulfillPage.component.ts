@@ -5,12 +5,12 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MESSAGE } from '../../../../AlertMessage';
+import { MESSAGE } from '../../../../../custom/variable';
 import { FulfillItemCard } from '../../../../components/shares/card/FulfillItemCard.component';
-import { AssetFacade, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade } from '../../../../services/services';
+import { AssetFacade, MenuContextualService, AuthenManager, ChatFacade, ChatRoomFacade, CheckMessageManager, FulfillFacade, ObservableManager, PostFacade, UserAccessFacade, PageFacade, ProfileFacade } from '../../../../services/services';
 import { FULFILL_GROUP, FULFILL_ORDER_BY } from '../../../../FulfillSort';
 import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 import { AbstractPage } from '../../AbstractPage';
@@ -19,6 +19,7 @@ import { FULFILLMENT_STATUS } from '../../../../FulfillmentStatus';
 import { DialogFulfill } from '../../../../components/shares/dialog/DialogFulfill.component';
 import { DialogAlert, DialogCheckFulfill, DialogConfirmFulfill, DialogFulfillAllocate } from '../../../../components/shares/shares';
 import { environment } from '../../../../../environments/environment';
+import { TooltipProfile } from '../../../shares/tooltip/TooltipProfile.component';
 import * as $ from 'jquery';
 import * as moment from 'moment';
 
@@ -102,9 +103,11 @@ export class FulfillPage extends AbstractPage implements OnInit {
     private fulFillFacade: FulfillFacade;
     private userAccessFacade: UserAccessFacade;
     private assetFacade: AssetFacade;
+    private pageFacade: PageFacade;
     private chatFacade: ChatFacade;
     private chatRoomFacade: ChatRoomFacade;
     private chatMessage: CheckMessageManager;
+    private profileFacade: ProfileFacade;
     //
     public isAuthen: boolean;
     public isCaseActive: boolean;
@@ -129,6 +132,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public isBackArrow: boolean;
     public isRead: boolean;
     public isPreloadLoad: boolean;
+    public isAsPage: boolean;
     //
     public needsFromState: any;
     public sorting: any;
@@ -160,18 +164,23 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public name: string;
     public title: string;
     public postDate: any;
+    public postDates: any
     public pageId: string;
     public postId: string;
+    public roomId: string;
     public uniqueId: string;
     public fulfillmentPost: string;
     public chatRoomId: string;
     public chatDate: any;
     public approveDate: any;
+    public ProfilePage: any;
+    public ganY: any;
+    public ganX: any;
 
     constructor(authenManager: AuthenManager, router: Router,
-        activatedRoute: ActivatedRoute, observManager: ObservableManager,
-        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
-        userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
+        activatedRoute: ActivatedRoute, observManager: ObservableManager, profileFacade: ProfileFacade,
+        dialog: MatDialog, snackBar: MatSnackBar, postFacade: PostFacade, pageFacade: PageFacade, fulFillFacade: FulfillFacade, chatMessage: CheckMessageManager,
+        userAccessFacade: UserAccessFacade, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, chatFacade: ChatFacade, chatRoomFacade: ChatRoomFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.observManager = observManager;
@@ -180,12 +189,14 @@ export class FulfillPage extends AbstractPage implements OnInit {
         this.dialog = dialog;
         this.snackBar = snackBar;
         this.postFacade = postFacade;
+        this.pageFacade = pageFacade;
         this.fulFillFacade = fulFillFacade;
         this.userAccessFacade = userAccessFacade;
         this.assetFacade = assetFacade;
         this.chatFacade = chatFacade;
         this.chatRoomFacade = chatRoomFacade;
         this.chatMessage = chatMessage;
+        this.profileFacade = profileFacade;
         this.isAuthen = false;
         this.isCaseActive = true;
         this.showLoading = true;
@@ -227,6 +238,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         });
 
         this.needsFromState = this.router.getCurrentNavigation().extras.state;
+        if (this.needsFromState && this.needsFromState.room) {
+            this.roomId = this.needsFromState.room.roomId;
+        }
 
         this.observManager.subscribe('authen.check', (data: any) => {
             this.searchAccessPage();
@@ -251,6 +265,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             caseData.cases[index].unreadMessageCount = data.count;
                             caseData.cases[index].chatMessage = data.message;
                             caseData.cases[index].isRead = false;
+                            this.observManager.createSubject('chat_message');
+                            if (this.fulfillCaseId === caseData.cases[index].fulfillCaseId) {
+                                caseData.cases[index].isRead = true;
+                                caseData.cases[index].unreadMessageCount = 0
+                                this.observManager.publish('chat_message', caseData.cases[index].chatRoom)
+                            }
                         }
                     }
 
@@ -294,8 +314,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
 
                 if (result !== null && result !== undefined) {
-                    if (this.needsFromState !== null && this.needsFromState !== undefined) {
+                    if (this.needsFromState && this.needsFromState.data && this.needsFromState.data !== null && this.needsFromState.data !== undefined) {
                         this.createFulfillCaseFromPost(this.needsFromState);
+                    } else if (this.roomId !== '' && this.roomId !== undefined && this.roomId !== null) {
+                        for (let value of result) {
+                            for (let chat of value.cases) {
+                                if (chat.chatRoom === this.roomId) {
+                                    console.log('chat ', chat)
+                                    this.getChatRoom(chat, this.asPage);
+                                }
+                            }
+                        }
                     }
                 }
             }).catch((err) => {
@@ -350,10 +379,32 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public searchAccessPage() {
         this.accessValue = this.getCurrentUser();
         this.showLoading = true;
-
+       
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
+                let index = 0;
                 for (let data of res) {
+                    if (data.user) {
+                        if (index === 0) {
+                            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+                                this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
+                                    if (image.status === 1) {
+                                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                                            data.user.imageBase64 = null;
+                                        } else {
+                                            data.user.imageBase64 = image.data;
+                                        }
+                                        this.accessPage = res;
+                                    }
+                                }).catch((err: any) => {
+                                    if (err.error.message === "Unable got Asset") {
+                                        data.user.imageBase64 = '';
+                                    }
+                                });
+                            }
+                        }
+                    }
+
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
                         this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
                             if (image.status === 1) {
@@ -361,18 +412,17 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     data.page.imageBase64 = null;
                                 } else {
                                     data.page.imageBase64 = image.data;
-                                }
-
+                                } 
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
                                 data.page.imageBase64 = '';
                             }
                         });
-                    }
-                    setTimeout(() => {
+                    } else {
                         this.accessPage = res;
-                    }, 1000);
+                    } 
+                    index++; 
                 }
 
                 setTimeout(() => {
@@ -389,6 +439,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }
                 this.accessPage.push(data);
             }
+
         }).catch((err: any) => {
             console.log(err);
         });
@@ -438,7 +489,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 }, 1000);
                 resolve(this.fulfillCase);
             } else {
-                console.log('2', fulfillList);
                 this.fulfillCase = [];
                 this.isPreloadLoad = false;
                 resolve(this.fulfillCase);
@@ -470,7 +520,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe((result) => {
             if (result !== null && result !== undefined) {
 
-                this.snackBar.open("สร้างโพสต์เติมเต็มสำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
+                this.snackBar.open("สร้างโพสต์" + this.PLATFORM_FULFILL_TEXT + "สำเร็จ", "ไปที่โพสต์").onAction().subscribe(() => {
                     this.router.navigate([]).then(() => {
                         window.open('/post/' + result.id, '_blank');
                     });
@@ -500,8 +550,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
                 this.sender = fulfill.name;
+                this.isAsPage = false;
+                this.getProfileChatByFulfillmentCase(fulfill.userId);
             } else {
                 this.sender = fulfill.pageName;
+                this.isAsPage = true;
+                this.getPageByFulfillmentCase(fulfill.pageId);
             }
 
             for (const ff of this.fulfillCase) {
@@ -563,10 +617,12 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.pageImageURL = fulfill.pageImageURL;
             this.name = fulfill.name;
             this.postDate = fulfill.createdDate;
+            this.postDates = fulfill.postDate;
             this.chatDate = fulfill.chatDate;
             this.approveDate = fulfill && fulfill.approveDateTime ? moment(fulfill.approveDateTime).format('DD/MM/YYYY') : '';
 
             this.fulFillFacade.getFulfillmentCase(fulfill.fulfillCaseId, asPage).then((res) => {
+
                 if (res !== null && res !== undefined) {
                     this.showChatRoom = true;
 
@@ -657,7 +713,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 this.showChatRoom = false;
                 this.canAccessCase = false;
                 this.canAccessChatRoom = false;
-                console.log(error.name);
+                console.log(error);
             });
         } else {
             setTimeout(() => {
@@ -669,6 +725,24 @@ export class FulfillPage extends AbstractPage implements OnInit {
         setTimeout(() => {
             this.clickActiveCss();
         }, 0);
+    }
+
+    public getPageByFulfillmentCase(pageId: string) {
+        this.pageFacade.getProfilePage(this.pageId).then((res) => {
+            this.ProfilePage = { owner: res.data };
+        }).catch((error) => {
+            console.log('error >>>> ', error.mesage);
+        });
+
+    }
+
+    public getProfileChatByFulfillmentCase(userId: string) {
+        this.profileFacade.getProfile(userId).then((res) => {
+            this.ProfilePage = { owner: res.data };
+        }).catch((error) => {
+            console.log('error >>>> ', error.mesage);
+        });
+
     }
 
     public cancelFulfillmentCase(caseId: string, asPage?: string) {
@@ -710,7 +784,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
             });
 
             this.showDialogWithOptions({
-                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST + ' "' + fulfill.name + '" ออกจากรายการเติมเต็มนี้ ?',
+                text: MESSAGE.TEXT_DELETE_FULFILL_REQUEST.replace('?', '') + ' "' + fulfill.name + '" ออกจากรายการ ' + this.PLATFORM_FULFILL_TEXT.replace(/("|')/g, "") + 'นี้ ?',
                 bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
                 bottomColorText2: "black",
@@ -1118,10 +1192,10 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
     private async createFulfillmentCase(data: any) {
         this.fulFillFacade.createFulfillmentCase(data).then((createResult) => {
-            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult.id, true);
+            this.listFulfillmentCase(this.fulfullCaseStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET, createResult && createResult.id, true);
         }).catch((createError) => {
-            if (createError.error.error.message === "Create FulfillmentCase Error") {
-                this.showAlertDialog('ไม่สามารถสร้างเคสเติมเต็มได้');
+            if (createError && createError.error.error.message === "Create FulfillmentCase Error") {
+                this.showAlertDialog('ไม่สามารถสร้างเคส' + this.PLATFORM_FULFILL_TEXT + 'ได้');
             }
         });
     }
@@ -1350,9 +1424,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-                bottomText2: "ตกลง",
-                bottomText1: "ยกเลิก",
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomColorText2: "black",
                 // btDisplay1: "none"
             }
@@ -1363,4 +1437,32 @@ export class FulfillPage extends AbstractPage implements OnInit {
             }
         });
     }
+
+    onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {
+        const bounds = outerDiv.getBoundingClientRect();
+        this.ganX = (event.clientX - bounds.left + 'px');
+        this.ganY = (event.clientY - bounds.top + 'px');
+    }
+
+    public Tooltip(origin: any, data, isRight?: boolean) {
+        data.owner = Object.assign(data.owner, { type: "PAGE" });
+        this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+            data: data,
+        }, isRight)
+            .subscribe(res => {
+            });
+    }
+
+    public TooltipClose($event) {
+
+        setTimeout(() => {
+
+            if ($event.toElement.className !== "ng-star-inserted") {
+                this.popupService.close(null);
+            }
+
+
+        }, 400);
+    }
+
 }

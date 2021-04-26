@@ -21,13 +21,16 @@
         > .wrapper-action {
             display: flex;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
 
             > .label-count {
                 text-align: center;
                 min-width: 9pt;
                 user-select: none;
+
+                &.activate {
+                    color: $brandcolor2;
+                }
             }
 
             > .img-action {
@@ -37,7 +40,7 @@
 
                 &:hover {
                     border-radius: 5pt;
-                    background-color: #ffd3d38a;
+                    background-color: rgb($brandcolor2, 50%);
                 }
             }
 
@@ -60,8 +63,7 @@
         color: rgb($white, 0.7);
 
         > .list-items {
-            font-family: "Kanit-400";
-            font-size: 14px;
+            @include font-size-10($font-head-400);
 
             &:nth-child(5) {
                 display: none;
@@ -122,7 +124,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $color-warm-red;
+    background-color: $brandcolor2;
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -130,22 +132,7 @@
     overflow: hidden;
     color: $white;
     @include pointer();
-    font-size: 16px;
-    font-family: "Kanit-500";
-}
-
-.social-dropdown + * .cdk-overlay-pane > .mat-menu-panel {
-    min-height: unset;
-    height: auto;
-    >.mat-menu-content {
-        >.mat-menu-item {
-            font-size: 16px;
-            font-family: "Kanit-500"; 
-            >a {
-                color: black;
-            }
-        }
-    } 
+    @include font-size-9($font-head-500);
 }
 
 @media (max-width: $xlarge) {

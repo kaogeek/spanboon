@@ -9,10 +9,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { PostCommentFacade, PageFacade, NeedsFacade } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
-import { ProfileFacade } from '../../../services/facade/ProfileFacade.service'; 
+import { ProfileFacade } from '../../../services/facade/ProfileFacade.service';
 import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
+import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,12 +26,15 @@ export class RepostData {
   private pageFacade: PageFacade;
   private postFacade: PostFacade;
   private needsFacade: NeedsFacade;
+  private profileFacade: ProfileFacade;
   public dialog: MatDialog;
 
-  public commentpost: any[] = []
-  public isComment: boolean
-  public referencePost: any
-  public reboonData: any
+  public commentpost: any[] = [];
+  public isComment: boolean;
+  public referencePost: any;
+  public reboonData: any;
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+  public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
 
   @Input()
   public isRepost: boolean
@@ -59,16 +63,19 @@ export class RepostData {
   public webBaseURL = environment.webBaseURL;
   private mainPostLink: string = window.location.origin + '/post/'
 
-  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade,needsFacade: NeedsFacade) {
+  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade, needsFacade: NeedsFacade) {
     this.dialog = dialog;
-    this.assetFacade = assetFacade
-    this.pageFacade = pageFacade
-    this.postFacade = postFacade
-    this.needsFacade = needsFacade
+    this.assetFacade = assetFacade;
+    this.pageFacade = pageFacade;
+    this.postFacade = postFacade;
+    this.needsFacade = needsFacade;
+    this.profileFacade = profileFacade;
     this.isComment = false
     this.isRepost = false
+  }
 
-    setTimeout(() => {  
+  ngAfterViewInit(): void {
+    setTimeout(() => {
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
         this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
       }
@@ -84,13 +91,22 @@ export class RepostData {
         }
       }
       if (this.itemPost && this.itemPost.pageId !== undefined && this.itemPost.pageId !== null) {
-        this.pageFacade.getProfilePage(this.itemPost.pageId).then((page: any) => {
-          this.itemPost.pageId = page.data
-          if(page.data && page.data.imageURL !== ''  && page.data.imageURL !== undefined  && page.data.imageURL !== null){
-            this.getImgURL(page.data.imageURL, false);
+        this.pageFacade.getProfilePage(this.itemPost.pageId).then(async (page: any) => {
+          Object.assign(this.itemPost, { pageObject: page.data });
+          if (page.data && page.data.imageURL !== '' && page.data.imageURL !== undefined && page.data.imageURL !== null) {
+            await this.getImgURL(page.data.imageURL, false);
           }
         }).catch((err: any) => {
         });
+      } else {
+        if (this.itemPost.ownerUser && this.itemPost.ownerUser.imageURL !== '' && this.itemPost.ownerUser.imageURL !== undefined && this.itemPost.ownerUser.imageURL !== null) {
+          this.assetFacade.getPathFile(this.itemPost.ownerUser.imageURL).then(async (img: any) => {
+            if (img !== null && img !== undefined && img !== "") {
+              this.itemPost.ownerUser.imageURL = img.data
+            }
+          }).catch((err: any) => {
+          });
+        }
       }
       if (this.itemPost && this.itemPost.caseFulfillment && this.itemPost.caseFulfillment.length > 0 && this.itemPost.caseFulfillment !== undefined && this.itemPost.caseFulfillment !== null) {
         this.isFulfill = true;
@@ -113,8 +129,41 @@ export class RepostData {
           this.itemPost.needs.push(fulfill)
         }
       }
-    }, 1500);
-  } 
+
+      if (this.itemPost && this.itemPost.detail) {
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.detail.includes('#')) {
+              const hashTag: string[] = this.itemPost.detail.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if (this.itemPost && this.itemPost.title) {
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.title.includes('#')) {
+              const hashTag: string[] = this.itemPost.title.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }, 1000);
+  }
 
   public getImgURL(url: any, type: boolean) {
     if (type) {
@@ -125,7 +174,7 @@ export class RepostData {
     } else {
       this.assetFacade.getPathFile(url).then((img: any) => {
         if (img !== null && img !== undefined && img !== "") {
-          this.itemPost.pageId.imageURL = img.data
+          this.itemPost.pageObject.imageURL = img.data
         }
       }).catch((err: any) => {
       });
@@ -149,7 +198,6 @@ export class RepostData {
     }).catch((err: any) => {
     });
   }
-
 
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));

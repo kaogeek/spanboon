@@ -230,17 +230,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     dataSource = new MatTableDataSource(this.resHashTag);
 
     chooseStory: any[] = [
-        { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-        { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
-        // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+        { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+        { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
     ];
     chooseStorys: any[] = [
-        // { value: 'เลือกประเภทเรื่องราว', viewValue: 'เลือกประเภทเรื่องราว' },
-        { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-        // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+        { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
     ];
 
-    selected: string = "ทั่วไป";
+    selected: string = this.PLATFORM_GENERAL_TEXT;
     selected1: string = "โพสต์"
     selected2: string = "โพสต์"
     selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
@@ -326,11 +323,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                     limit: 10,
                     callbacks: {
                         remoteFilter: (query, callback) => {
-                            let searchFilter: SearchFilter = new SearchFilter();
-                            searchFilter.whereConditions = {
+                            let filter : SearchFilter = new SearchFilter();
+                            filter.whereConditions = {
                                 name: query
                             };
-                            this.hashTagFacade.searchTrend(searchFilter).then(res => {
+                            let data = {
+                                filter
+                            }
+                            this.hashTagFacade.searchTrend(data).then(res => {
                                 callback(res);
                                 this.choiceTag = res;
                             }).catch(error => {
@@ -437,7 +437,10 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         filter.whereConditions = {
                             name: hTag.substring(1)
                         };
-                        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+                        let data = {
+                            filter
+                        }
+                        this.hashTagFacade.searchTrend(data).then((res: any) => {
                             if (res) {
                                 this.resHashTag = res;
                                 const isData = this.resHashTag.find(data => {
@@ -467,7 +470,10 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         filter.whereConditions = {
                             name: hTag.substring(1)
                         };
-                        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+                        let data = {
+                            filter
+                        }
+                        this.hashTagFacade.searchTrend(data).then((res: any) => {
                             if (res) {
                                 this.resHashTag = res;
                                 const isData = this.resHashTag.find(data => {
@@ -499,7 +505,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         }
                     }
                     if (this.content.type === POST_TYPE.NEEDS) {
-                        this.selected = "มองหา";
+                        this.selected = this.PLATFORM_NEEDS_TEXT;
                         if (this.content.needs && this.content.needs.length > 0) {
                             let index = 0;
                             for (let needs of this.content.needs) {
@@ -513,7 +519,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                             index++;
                         }
                     } else {
-                        this.selected = "ทั่วไป"
+                        this.selected = this.PLATFORM_GENERAL_TEXT
                     }
                     if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
                         this.modeShowDoing = true
@@ -687,9 +693,9 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
     }
 
     public selectType(value) {
-        if (value === "เติมเต็ม") {
+        if (value === this.PLATFORM_FULFILL_TEXT) {
             this.typeStroy = POST_TYPE.FULFILLMENT;
-        } else if (value === "มองหา") {
+        } else if (value === this.PLATFORM_NEEDS_TEXT) {
             this.typeStroy = POST_TYPE.NEEDS;
             this.showDialogDoing();
 
@@ -711,7 +717,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                     this.submitCanCelDialog.emit(this.dataStroy);
                 });
 
-                let dialog = this.showDialogWarming("คุณต้องการปิดการสร้างสตอรี่โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+                let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
                 dialog.afterClosed().subscribe((res) => {
                     if (res) {
                         this.dataStroy.storyPost = "";
@@ -1511,7 +1517,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         this.listTag = [];
         this.userTag = [];
         this.textLimit = 0;
-        this.selected = "ทั่วไป";
+        this.selected = this.PLATFORM_GENERAL_TEXT;
         this.selected1 = "โพสต์";
         this.isShowImage = false;
         this.isChecked = false;
@@ -1597,8 +1603,11 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         filter.count = false;
         filter.orderBy = {}
         this.resHashTag = [];
+        let result = {
+            filter
+        }
         this.isLoading = true;
-        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+        this.hashTagFacade.searchTrend(result).then((res: any) => {
             if (res) {
 
                 this.resHashTag = res;

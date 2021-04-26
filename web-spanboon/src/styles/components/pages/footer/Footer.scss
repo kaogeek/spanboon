@@ -11,14 +11,14 @@
   justify-content: flex-end;
   align-items: center;
   position: relative;
-  background-color: $color-warm-red;
+  background-color: $brandcolor2;
   color: $brandcolor;
   width: 100%;
   height: 50pt;
   > .wrapper-menu {
     display: flex;
     > .menu {
-      @include font-size-9-100("Anakotmai-Medium");
+      @include font-size-9($font-content2-medium);
       padding: 0 10pt;
       cursor: pointer;
       font-weight: 300;
@@ -36,7 +36,7 @@
     }
   }
   > .logo-spanboon {
-    @include font-size-7-100("Kanit-500");
+    @include font-size-7($font-head-500);
     text-align: right;
     padding: 0 40pt;
   }
@@ -73,15 +73,28 @@ spanboon-footer-mobile {
   }
 
   .fix-hompage-bar {
-    transition: all 0.8s ease-in-out;
-    -webkit-transition: all 0.8s ease-in-out;
-    -moz-transition: all 0.8s ease-in-out;
-    -ms-transition: all 0.8s ease-in-out;
-    top: 39pt !important;
+    transition: all 0.49s ease-in-out;
+    -webkit-transition: all 0.49s ease-in-out;
+    -moz-transition: all 0.49s ease-in-out;
+    -ms-transition: all 0.49s ease-in-out;
+    top: 38pt !important;
   }
 
   .fix-hompage-bar.hidden {
-    top: 0pt !important;
+    top: 15pt !important;
+    font-size: 20px !important;
+  }
+
+  .hompage-title {
+    transition: all 0.49s ease-in-out;
+    -webkit-transition: all 0.49s ease-in-out;
+    -moz-transition: all 0.49s ease-in-out;
+    -ms-transition: all 0.49s ease-in-out;
+    font-size: 25px !important;
+  }
+
+  .hompage-title.hidden {
+    font-size: 20px !important;
   }
 
   header-top {

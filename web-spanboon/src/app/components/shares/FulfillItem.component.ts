@@ -16,7 +16,7 @@ import { AbstractPage } from '../pages/AbstractPage';
 import { DialogFulfill } from './dialog/DialogFulfill.component';
 import * as $ from 'jquery';
 import { DialogConfirmFulfill } from './dialog/DialogConfirmFulfill.component';
-import { MESSAGE } from '../../AlertMessage';
+import { MESSAGE } from '../../../custom/variable';
 import { DialogAlert } from './dialog/dialog';
 
 const PAGE_NAME: string = 'fulfill-item';
@@ -30,7 +30,7 @@ const SEARCH_OFFSET: number = 0;
 export class FulfillItem extends AbstractPage implements OnInit {
 
     @Input()
-    public statusLabel: string = "สิ่งที่คุณต้องการเติมเต็ม";
+    public statusLabel: string = "สิ่งที่คุณต้องการ" + this.PLATFORM_FULFILL_TEXT;
     @Input()
     public data: any;
     @Output()
@@ -50,7 +50,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     @ViewChild('bodyList', { static: false }) bodyList: ElementRef;
 
     public apiBaseURL = environment.apiBaseURL;
-    public dataList: any = [{ name: 'เติมเต็ม', id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
+    public dataList: any = [{ name: this.PLATFORM_FULFILL_TEXT, id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
     // Facade
     private fulfillFacade: FulfillFacade;
     // Variable
@@ -526,18 +526,18 @@ export class FulfillItem extends AbstractPage implements OnInit {
                 if (isFrom === 'POST') {
                     // this.dialogRef.close(); 
                     let needs = {
-                        item : needsResult,
-                        bottomText1 : "ย้อนกลับ",
+                        item: needsResult,
+                        bottomText1: MESSAGE.TEXT_BUTTON_BACK,
                         text: MESSAGE.TEXT_CONFIRM_FULFILL_REQUEST,
-                        isConfirmFullFill : true
+                        isConfirmFullFill: true
                     }
                     let dialog = this.dialog.open(DialogAlert, { data: needs });
 
                     dialog.afterClosed().subscribe((res) => {
                         if (res) {
-                            this.dialogRef.close(); 
-                            this.router.navigateByUrl('/fulfill', { state: { data: needsResult } }); 
-                        } 
+                            this.dialogRef.close();
+                            this.router.navigateByUrl('/fulfill', { state: { data: needsResult } });
+                        }
                     });
                 } else if (isFrom === 'FULFILL') {
                     if (this.isPage) {

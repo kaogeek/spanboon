@@ -8,7 +8,7 @@
 .new-card {
   width: 100%;
   height: 100%;
-  background-color: brown;
+  background-color: $home-page-card-color;
 
   > .new-card-body {
     display: flex;
@@ -36,11 +36,10 @@
             display: flex;
             color: $brandcolor;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-10($font-head-500);
 
             &:hover {
-              text-decoration: underline;
+              color: rgba($brandcolor2, 0.95);
             }
 
             > .icon-img {
@@ -55,8 +54,7 @@
       > .new-card-topic {
         color: $brandcolor;
         margin: 10pt 0;
-        font-family: "Kanit-500";
-        font-size: 26px;
+        @include font-size-6($font-head-500);
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -66,8 +64,7 @@
       > .new-card-content {
         display: flex;
         flex-direction: column;
-        font-family: "Sarabun-Light";
-        font-size: 20px;
+        @include font-size-8($font-content-light);
         color: rgba($brandcolor, 0.5);
         min-height: 55pt;
         white-space: break-spaces;
@@ -80,7 +77,7 @@
           white-space: break-spaces;
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
           }
         }
       }
@@ -97,8 +94,7 @@
         justify-content: space-between;
         padding: 18pt 0 0 0;
         border-top: $width-border solid $brandcolor;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10($font-head-500);
 
         > .wrapper-page {
           display: flex;
@@ -110,9 +106,8 @@
             height: 60px;
             border-radius: 50%;
             object-fit: cover;
-            color: $color-warm-red;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            color: $brandcolor2;
+            @include font-size-9($font-head-500);
             overflow: hidden;
             background-color: $bg-grey;
             display: flex;
@@ -129,8 +124,7 @@
             // flex: 1 1 0%;
             margin: 5pt 10pt;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
 
             > .new-card-icon {
               display: flex;
@@ -151,8 +145,7 @@
               > a {
                 > .new-card-pageName {
                   color: $brandcolor;
-                  font-family: "Kanit-500";
-                  font-size: 18px;
+                  @include font-size-9($font-head-500);
                   flex: 1 1 0%;
                   display: -webkit-box;
                   -webkit-line-clamp: 1;
@@ -162,7 +155,7 @@
                   word-break: break-all;
 
                   &:hover {
-                    text-decoration: underline;
+                    color: rgba($brandcolor2, 0.95);
                   }
                 }
               }
@@ -191,6 +184,11 @@
           align-items: center;
 
           > a {
+            spanboon-button {
+              .spanboon-button {
+                background-color: $button-home-card !important;
+              }
+            }
             > .btn {
               > .spanboon-button {
               }
@@ -207,11 +205,11 @@
     > .new-card-body {
       > .wrapper-top {
         > .new-card-topic {
-          font-size: 24px;
+          @include font-size-6($font-head-500);
         }
 
         > .new-card-content {
-          font-size: 19px;
+          @include font-size-8($font-head-500);
         }
       }
 
@@ -236,11 +234,11 @@
     > .new-card-body {
       > .wrapper-top {
         > .new-card-topic {
-          font-size: 22px;
+          @include font-size-7($font-head-500);
         }
 
         > .new-card-content {
-          font-size: 18px;
+          @include font-size-9($font-head-500);
         }
       }
 
@@ -268,11 +266,11 @@
     > .new-card-body {
       > .wrapper-top {
         > .new-card-topic {
-          font-size: 20px;
+          @include font-size-8($font-head-500);
         }
 
         > .new-card-content {
-          font-size: 18px;
+          @include font-size-9($font-head-500);
         }
       }
 
@@ -306,7 +304,7 @@
         > .new-card-status {
           > .wrapper-icon {
             > span {
-              font-size: 16px;
+              @include font-size-9($font-head-500);
             }
           }
 
@@ -315,11 +313,11 @@
         }
 
         > .new-card-topic {
-          font-size: 18px;
+          @include font-size-9($font-head-500);
         }
 
         > .new-card-content {
-          font-size: 16px;
+          @include font-size-10($font-content-light);
         }
       }
 
@@ -331,8 +329,8 @@
               height: 50px;
             }
 
-            > .new-card-createdBy{
-              font-size: 16px;
+            > .new-card-createdBy {
+              @include font-size-10($font-head-500);
             }
           }
 
@@ -342,7 +340,7 @@
                 > .spanboon-button {
                   height: 30pt !important;
                   width: 74pt !important;
-                  font-size: 14px !important;
+                  @include font-size-10($font-head-500);
                 }
               }
             }
@@ -359,13 +357,13 @@
       padding: 10pt;
 
       > .wrapper-bottom {
-        > .wrapper-favorite{
-          >.control-action{
-            >.collis{
-              >.wrapper-action{
+        > .wrapper-favorite {
+          > .control-action {
+            > .collis {
+              > .wrapper-action {
                 margin-right: 6pt !important;
-  
-                >.img-action{
+
+                > .img-action {
                   width: 14pt !important;
                   height: 14pt !important;
                 }
@@ -380,10 +378,10 @@
               width: 40px;
               height: 40px;
             }
-            
-            > .new-card-createdBy{
+
+            > .new-card-createdBy {
               margin: 5pt;
-              font-size: 14px;
+              @include font-size-10($font-head-500);
             }
           }
 

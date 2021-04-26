@@ -66,6 +66,9 @@ import { PageConfigService } from '../services/PageConfigService';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
 import { PageConfig } from '../models/PageConfig';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import lodash from 'lodash';
+import { StandardItem } from '../models/StandardItem';
+import { StandardItemService } from '../services/StandardItemService';
 
 @JsonController('/page')
 export class PageController {
@@ -90,7 +93,8 @@ export class PageController {
         private facebookService: FacebookService,
         private twitterService: TwitterService,
         private pageConfigService: PageConfigService,
-        private authenService: AuthenticationIdService
+        private authenService: AuthenticationIdService,
+        private stdItemService: StandardItemService
     ) { }
 
     // Find Page API
@@ -197,33 +201,59 @@ export class PageController {
                     }
                 },
                 { $match: { 'postObj.type': POST_TYPE.NEEDS, 'postObj.deleted': false } },
-                {
-                    $group: {
-                        _id: {
-                            $cond: {
-                                if: { $and: [{ $not: { $eq: ['$standardItemId', null] } }, { $eq: ['$customItemId', null] }] },
-                                then: '$standardItemId',
-                                else: {
-                                    $cond: [{
-                                        $and: [{ $not: { $eq: ['$customItemId', null] } }, { $not: { $eq: ['$standardItemId', null] } }]
-                                    }, '$customItemId', '$name']
-                                }
-                            }
-                        },
-                        result: { $mergeObjects: '$$ROOT' },
-                        quantity: { $sum: '$quantity' },
-                        fulfillQuantity: { $sum: '$fulfillQuantity' },
-                    }
-                },
-                { $replaceRoot: { newRoot: { $mergeObjects: ['$result', '$$ROOT'] } } },
-                { $project: { result: 0 } },
                 { $sort: { quantity: -1, createdDate: -1 } },
                 { $limit: limit }
             ];
-            const needs: Needs[] = await this.needsService.aggregateEntity(pageNeedsStmt);
+            const needs: any[] = await this.needsService.aggregate(pageNeedsStmt);
 
             if (needs !== null && needs !== undefined && needs.length > 0) {
-                result.needs = needs;
+                const needsResultList: Needs[] = [];
+                const needsMap: any = {};
+
+                for (const need of needs) {
+                    const customNeeds = need;
+                    const standardItemId = need.standardItemId;
+                    const customItemId = need.customItemId;
+
+                    if (standardItemId !== null && standardItemId !== undefined && standardItemId !== '') {
+                        if (!needsMap[standardItemId]) {
+                            const stdItems: StandardItem = await this.stdItemService.findOne({ _id: new ObjectID(standardItemId) });
+
+                            if (customItemId !== null && customItemId !== undefined && customItemId !== '') {
+                                customNeeds.name = stdItems.name;
+                                customNeeds.unit = stdItems.unit;
+                            }
+
+                            needsMap[standardItemId] = customNeeds;
+                        } else {
+                            const resultNeeds = lodash.find(needsResultList, ['standardItemId', standardItemId]);
+
+                            if (resultNeeds !== null && resultNeeds !== undefined) {
+                                resultNeeds.quantity += customNeeds.quantity;
+                                continue;
+                            }
+                        }
+                    }
+
+                    const finalNeeds = new Needs();
+                    finalNeeds.id = customNeeds._id;
+                    finalNeeds.standardItemId = standardItemId;
+                    finalNeeds.customItemId = customItemId;
+                    finalNeeds.name = customNeeds.name;
+                    finalNeeds.quantity = customNeeds.quantity;
+                    finalNeeds.unit = customNeeds.unit;
+                    finalNeeds.createdDate = customNeeds.createdDate;
+                    finalNeeds.pageId = customNeeds.pageId;
+                    finalNeeds.post = customNeeds.post;
+                    finalNeeds.active = customNeeds.active;
+                    finalNeeds.fullfilled = customNeeds.fullfilled;
+                    finalNeeds.fulfillQuantity = customNeeds.fulfillQuantity;
+                    finalNeeds.pendingQuantity = customNeeds.pendingQuantity;
+
+                    needsResultList.push(finalNeeds);
+                }
+
+                result.needs = needsResultList;
             } else {
                 result.needs = [];
             }
@@ -364,27 +394,40 @@ export class PageController {
             }
 
             // try to register
-            // search for user Authen
-            const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
-
+            let registPageAccessToken = undefined;
             let pageAccessToken = undefined;
+            // search for user Authen
+            if (socialBinding.pageAccessToken !== undefined && socialBinding.pageAccessToken !== '') {
+                pageAccessToken = socialBinding.pageAccessToken;
+            } else {
+                // user mode
+                const userFBAccount = await this.authenService.findOne({ user: userId, providerName: PROVIDER.FACEBOOK });
+                if (userFBAccount !== undefined) {
+                    registPageAccessToken = userFBAccount.storedCredentials;
+                }
+            }
+
             try {
-                /*
-                * check accessible and get page token with extended.
-                * {token: string, expires_in: number as a second to expired, type: string as type of token} 
-                */
-                pageAccessToken = await this.facebookService.extendsPageAccountToken(userFBAccount.storedCredentials, socialBinding.facebookPageId);
+                if (registPageAccessToken !== undefined) {
+                    /*
+                    * check accessible and get page token with extended.
+                    * {token: string, expires_in: number as a second to expired, type: string as type of token} 
+                    */
+                    pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
+                } else if(pageAccessToken !== undefined){
+                    pageAccessToken = await this.facebookService.extendsAccessToken(pageAccessToken);
+                }
             } catch (err) {
                 return res.status(400).send(err);
             }
 
             if (pageAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'You cannot access the pacebook page.' };
+                const errorResponse: any = { status: 0, message: 'You cannot access the facebook page.' };
                 return res.status(400).send(errorResponse);
             }
 
-            const properties = { 
-                token: pageAccessToken.token, 
+            const properties = {
+                token: pageAccessToken.token,
                 type: pageAccessToken.type,
                 expires_in: pageAccessToken.expires_in,
                 expires: pageAccessToken.expires
@@ -396,6 +439,7 @@ export class PageController {
             pageSocialAccount.providerName = PROVIDER.FACEBOOK;
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
+            pageSocialAccount.providerPageName = socialBinding.facebookPageName;
 
             await this.pageSocialAccountService.create(pageSocialAccount);
 
@@ -470,6 +514,7 @@ export class PageController {
             pageSocialAccount.providerName = PROVIDER.TWITTER;
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
+            pageSocialAccount.providerPageName = socialBinding.twitterPageName;
 
             await this.pageSocialAccountService.create(pageSocialAccount);
 
@@ -587,9 +632,56 @@ export class PageController {
             // check if page was registed.
             const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
             if (pageTwitter !== null && pageTwitter !== undefined) {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', true));
+                const result = this.createCheckSocialBindingObj(pageTwitter, true);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account found.', result));
             } else {
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', false));
+                const result = {
+                    data: false
+                };
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Twitter Page Account not found.', result));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
+        }
+    }
+
+    /**
+     * @api {Get} /api/page/:id/social/facebook/check Check if Page Social Facebook binding API
+     * @apiGroup Page
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully Facebook Page Acount found",
+     *      "data": true
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/page/:id/social/facebook/check
+     * @apiErrorExample {json} Unable Binding Page Social
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id/social/facebook/check')
+    @Authorized('user')
+    public async getPageFacebookAccount(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjId = new ObjectID(pageId);
+        const userId = new ObjectID(req.user.id);
+        const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (pageData) {
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+            }
+
+            // check if page was registed.
+            const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
+            if (pageFacebook !== null && pageFacebook !== undefined) {
+                const result = this.createCheckSocialBindingObj(pageFacebook, true);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account found.', result));
+            } else {
+                const result = {
+                    data: false
+                };
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Facebook Page Account not found.', result));
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
@@ -1454,6 +1546,7 @@ export class PageController {
         page.coverPosition = pages.coverPosition;
         page.color = pages.color;
         page.backgroundStory = page.backgroundStory;
+        page.email = pages.email;
         page.category = (pageCategory !== null && pageCategory !== undefined) ? new ObjectID(pageCategory.id) : null;
         page.isOfficial = false;
         page.banned = false;
@@ -1867,6 +1960,7 @@ export class PageController {
             let pageAddress = pages.address;
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
+            let pageEmail = pages.email;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -1913,6 +2007,10 @@ export class PageController {
 
             if (pageTwitterURL === null || pageTwitterURL === undefined) {
                 pageTwitterURL = pageUpdate.twitterURL;
+            }
+
+            if (pageEmail === null || pageEmail === undefined) {
+                pageEmail = pageUpdate.email;
             }
 
             // let updateImageAsset;
@@ -2014,7 +2112,8 @@ export class PageController {
                     websiteURL: pageWebsiteURL,
                     mobileNo: pageMobileNo,
                     address: pageAddress,
-                    twitterURL: pageTwitterURL
+                    twitterURL: pageTwitterURL,
+                    email: pageEmail
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
@@ -2606,75 +2705,17 @@ export class PageController {
         return true;
     }
 
-    /*
-    private async checkUniqueIdValid(id: string, pageUsername: string): Promise<any> {
-        let findPageIdQuery;
-        let findOtherPageQuery;
-
-        if (id !== null && id !== undefined && id !== '') {
-            const objectid = new ObjectID(id);
-            findPageIdQuery = { where: { _id: objectid } };
-            const checkPageId: Page = await this.pageService.findOne(findPageIdQuery);
-
-            if (checkPageId) {
-                if (pageUsername !== null && pageUsername !== undefined && pageUsername !== '') {
-                    if (pageUsername.match(/\s/g)) {
-                        return ResponseUtil.getErrorResponse('Spacebar is not allowed', undefined);
-                    }
-                    if (checkPageId.pageUsername === pageUsername) {
-                        return ResponseUtil.getSuccessResponse('Own pageUsername', true);
-                    }
-
-                    const checkUniqueIdUserQuey = { where: { uniqueId: pageUsername } };
-                    const checkUniqueIdUser: User = await this.userService.findOne(checkUniqueIdUserQuey);
-
-                    findOtherPageQuery = { where: { _id: { $ne: objectid }, pageUsername } };
-                    const checkOtherPage: Page = await this.pageService.findOne(findOtherPageQuery);
-                    if ((checkOtherPage !== null && checkOtherPage !== undefined) || (checkUniqueIdUser !== null && checkUniqueIdUser !== undefined)) {
-                        return ResponseUtil.getSuccessResponse('pageUsername can not use', false);
-                    } else {
-                        return ResponseUtil.getSuccessResponse('pageUsername can use', true);
-                    }
-                } else {
-                    return ResponseUtil.getErrorResponse('pageUsername is required', undefined);
-                }
-            } else {
-                return ResponseUtil.getErrorResponse('Page not found', undefined);
-            }
-        } else {
-            return ResponseUtil.getErrorResponse('Invalid pageId', undefined);
+    private createCheckSocialBindingObj(socialAccount: PageSocialAccount, isValid: boolean): any {
+        if (socialAccount === undefined) {
+            return undefined;
         }
-    }*/
 
-    // private async getPageNeedStandardItem(pageId: string, standardItemId: string): Promise<Needs> {
-    //     const stmt = {
-    //         pageId: new ObjectID(pageId),
-    //         post: { $exists: false },
-    //         standardItemId: new ObjectID(standardItemId)
-    //     };
-
-    //     return await this.needsService.findOne(stmt);
-    // }
-
-    // private async getPageNeedCustomItemByName(pageId: string, customItemName: string): Promise<Needs> {
-    //     const stmt = {
-    //         pageId: new ObjectID(pageId),
-    //         post: { $exists: false },
-    //         customItemId: { $exists: true },
-    //         name: customItemName
-    //     };
-
-    //     return await this.needsService.findOne(stmt);
-    // }
-
-    /*
-    private async getPageNeedCustomItem(pageId: string, customItemId: string): Promise<Needs> {
-        const stmt = {
-            pageId: new ObjectID(pageId),
-            post: { $exists: false },
-            customItemId: new ObjectID(customItemId)
+        const result = {
+            providerPageId: socialAccount.providerPageId,
+            providerPageName: socialAccount.providerPageName,
+            data: isValid
         };
 
-        return await this.needsService.findOne(stmt);
-    }*/
+        return result;
+    }
 }

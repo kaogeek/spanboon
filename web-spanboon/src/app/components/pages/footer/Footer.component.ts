@@ -6,7 +6,8 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service'; 
+import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
+import { PLATFORM_NAME_TH } from '../../../../custom/variable';
 
 @Component({
   selector: 'spanboon-footer',
@@ -14,6 +15,8 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 
 })
 export class Footer {
+
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH
 
   public isProfile: boolean = false;
   public isLogout: boolean = false;
@@ -33,6 +36,6 @@ export class Footer {
   constructor(cacheConfigInfo: CacheConfigInfo) {
     this.cacheConfigInfo = cacheConfigInfo;
     this.isShowInstagramurl = false;
-    this.isShowFollow = true; 
+    this.isShowFollow = true;
   }
 }

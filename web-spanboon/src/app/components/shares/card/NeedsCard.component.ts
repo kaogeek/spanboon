@@ -45,9 +45,13 @@ export class NeedsCard extends AbstractPage implements OnInit {
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
+  @Input()
+  public isNeedBoxPost: boolean = true;
 
   @Output()
   public close: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public clickFulfill: EventEmitter<any> = new EventEmitter();
 
   public index: any;
   public needs: any[] = [];
@@ -98,7 +102,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.originalNeeds = []
     if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
-        Data.push(needs) 
+        Data.push(needs)
       }
       if (Data.length > 0) {
         this.originalNeeds.push({ needs: Data });
@@ -108,7 +112,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
           this.indexNeed--
         }
         this.needs = this.originalNeeds[this.indexNeed].needs
-      } 
+      }
       this.getOffsetHeight();
     }
 
@@ -147,9 +151,9 @@ export class NeedsCard extends AbstractPage implements OnInit {
     }
   }
 
-  public fulfillNeeds(item: any) { 
+  public fulfillNeeds(event, item: any) {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog(this.router.url); 
+      this.showAlertLoginDialog(this.router.url);
     } else {
       let needsList: any[] = [];
 
@@ -167,10 +171,11 @@ export class NeedsCard extends AbstractPage implements OnInit {
         },
         disableClose: false
       });
-      dialog.afterClosed().subscribe((res) => { 
+      dialog.afterClosed().subscribe((res) => {
         needsList = [];
       });
     }
+    this.clickFulfill.emit(event)
   }
 
   public onClose(item, index: number) {
@@ -263,8 +268,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
         slidesPerView: 2.2,
       },
       479: {
-        slidesPerView: 1.8,
-      }, 
+        slidesPerView: 1.7,
+      },
     },
   }
 }

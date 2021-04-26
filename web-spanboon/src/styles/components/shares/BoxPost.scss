@@ -11,6 +11,11 @@
   position: relative;
   background-color: $bg-fog-gray2;
 
+  > .mat-dialog-content {
+    margin: unset;
+    padding: unset;
+  }
+
   > .box {
     width: calc(100% - 1.4px);
     height: $height-box-post;
@@ -37,9 +42,8 @@
       }
       > .mobile-post {
         border-right: unset;
-        color: $color-warm-red;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        color: $brandcolor2;
+        @include font-size-10($font-head-500);
         @include pointer();
         text-align: center;
       }
@@ -54,7 +58,7 @@
                   > .mat-select {
                     > .mat-select-trigger {
                       > .mat-select-value {
-                        display: none;
+                        // display: none;
                       }
                     }
                   }
@@ -70,8 +74,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10($font-head-500);
       }
 
       .mat-slide-toggle {
@@ -147,8 +150,7 @@
             height: 100%;
             left: 0;
             top: 0;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
             color: $white;
             background-color: $black;
             opacity: 0.5;
@@ -166,16 +168,14 @@
       width: calc(100% - 40pt);
       padding: 10pt 20pt;
       border: unset;
-      font-family: "Kanit-500";
-      font-size: 20px;
+      @include font-size-8($font-head-500);
     }
 
     [contenteditable="true"].header-story:empty:before {
       content: attr(placeholder);
       pointer-events: none;
       display: block; /* For Firefox */
-      font-family: "Kanit-500";
-      font-size: 18px;
+      @include font-size-9($font-head-500);
     }
 
     [contenteditable="true"].header-story {
@@ -199,31 +199,28 @@
       overflow-y: auto;
       overflow-x: hidden;
       word-break: break-word;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9($font-content-light);
     }
 
     [contenteditable="true"]:empty:before {
       content: attr(placeholder);
       pointer-events: none;
       display: block;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9($font-content-light);
     }
 
     > .wrapper-selector-tag {
       display: flex;
       flex-wrap: wrap;
       padding: 0 20pt;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9($font-content-light);
 
       > .keyword-tag {
         display: flex;
         height: 23pt;
         width: auto;
         align-items: center;
-        padding: 5pt 5pt 5pt 0;
+        padding: 5pt 0 0 0;
         @include pointer();
 
         a {
@@ -232,10 +229,12 @@
 
         > .material-icons,
         .space-icon {
+          font-family: "Material Icons" !important;
           width: 15pt;
         }
 
         > .material-icons {
+          font-family: "Material Icons" !important;
           display: none;
           color: $color-black;
           opacity: 0.4;
@@ -247,6 +246,7 @@
           opacity: 0.8;
 
           > .material-icons {
+            font-family: "Material Icons" !important;
             display: flex;
             align-items: center;
           }
@@ -263,6 +263,7 @@
 
       .mat-form-field-wrapper {
         padding-bottom: 0;
+        display: flex;
 
         .mat-form-field-flex {
           .mat-form-field-infix {
@@ -270,8 +271,8 @@
             border-top: unset !important;
 
             > .mat-select {
-              font-family: "Kanit-500";
-              font-size: 16px;
+              @include font-size-9($font-head-500);
+              line-height: 2;
 
               > .mat-select-trigger {
                 > .mat-select-value {
@@ -304,8 +305,7 @@
             display: flex;
             padding: 0 10pt;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-10($font-head-500);
             @include pointer();
 
             &.active-tag1 {
@@ -313,7 +313,7 @@
                 g {
                   path,
                   rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                   }
                 }
               }
@@ -343,8 +343,7 @@
           > .objective-doing {
             display: flex;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-10($font-head-500);
             @include pointer();
 
             &.active-tag {
@@ -352,7 +351,7 @@
                 g {
                   path,
                   rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                   }
                 }
               }
@@ -382,19 +381,18 @@
           display: flex;
           align-items: center;
           padding: 0 0 0 10pt;
-          font-family: "Kanit-500";
-          font-size: 14px;
+          @include font-size-10($font-head-500);
           @include pointer();
           &:hover {
-            text-decoration: underline;
-            color: $color-warm-red;
+            color: rgba($brandcolor2, 0.95);
+            color: $brandcolor2;
           }
           > .edit-story {
           }
           > .label-needs {
             &:hover {
-              text-decoration: underline;
-              color: $color-warm-red;
+              color: rgba($brandcolor2, 0.95);
+              color: $brandcolor2;
             }
           }
         }
@@ -403,8 +401,7 @@
         > .text-limit {
           padding: 0 10pt;
           @include pointer();
-          font-family: "Kanit-500";
-          font-size: 14px;
+          @include font-size-10($font-head-500);
 
           &.validate {
             color: $brandcolor2;
@@ -415,6 +412,12 @@
         }
       }
     }
+    > .mat-dialog-actions {
+      padding: unset;
+      flex-wrap: unset;
+      margin-bottom: unset;
+      align-items: unset;
+    }
 
     > .wrapper-tool-post {
       display: flex;
@@ -422,7 +425,7 @@
       height: $height-wrapper-tool-post;
       border-top: $width-border solid $border-color;
 
-      > .left {
+      > .box-left {
         display: flex;
         width: calc(25% - #{$padding-side-wrapper-tool-post});
         padding: 0 $padding-side-wrapper-tool-post;
@@ -442,7 +445,7 @@
         }
       }
 
-      > .center {
+      > .box-center {
         display: flex;
         width: calc(50% - #{$padding-side-wrapper-tool-post});
         padding: 0 $padding-side-wrapper-tool-post;
@@ -461,7 +464,7 @@
         }
 
         > .wrapper-action {
-          position: relative;
+          // position: relative;
           display: flex;
           align-items: center;
 
@@ -477,7 +480,7 @@
             }
 
             .active-click path {
-              fill: $color-warm-red;
+              fill: $brandcolor2;
             }
 
             > .search-field {
@@ -521,13 +524,11 @@
                     padding: 10pt;
                     align-items: center;
                     border-bottom: $width-border solid $border-color;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-head-500);
 
                     > .list-checkBox {
                       > .name-tag {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                       }
                     }
 
@@ -585,7 +586,7 @@
 
               &.active-click {
                 path {
-                  fill: $color-warm-red;
+                  fill: $brandcolor2;
                 }
               }
             }
@@ -612,7 +613,7 @@
         }
       }
 
-      > .right {
+      > .box-right {
         display: flex;
         position: relative;
         width: calc(25% - #{$padding-side-wrapper-tool-post});
@@ -621,10 +622,14 @@
         align-items: center;
         border-left: $width-border solid $border-color;
         color: $brandcolor2;
+        &.isClickPostPreLoad {
+          pointer-events: none;
+          opacity: 0.6;
+        }
 
         .mat-option {
           width: 2000pt !important;
-          color: $color-warm-red !important;
+          color: $brandcolor2 !important;
         }
 
         .div-gatdata-post {
@@ -636,9 +641,30 @@
           left: 0;
         }
 
+        > .edit-post {
+          color: $black;
+          @include font-size-9($font-head-500);
+        }
+
         mat-form-field {
           z-index: 1;
           position: relative;
+          // >.mat-form-field-wrapper {
+          //   >.mat-form-field-flex {
+          //     >.mat-form-field-infix {
+          //       >.mat-select {
+          //         >.mat-select-trigger {
+
+          //         }
+          //         >.mat-select-arrow-wrapper {
+          //           &.active {
+          //             display: none;
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
         }
       }
     }
@@ -691,6 +717,7 @@
     }
 
     > .to-dialog-post {
+      width: 100%;
       flex: 1 1 0%;
       display: flex;
       align-items: center;
@@ -700,11 +727,18 @@
       border-radius: 30pt;
       @include pointer();
       padding: 0 10pt;
-      font-family: "Kanit-400";
-      font-size: 16px;
+      @include font-size-9($font-head-400);
 
       &:hover {
         background: rgb($bg-grey, 0.7);
+      }
+
+      > .mobile {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-all;
       }
     }
   }
@@ -712,8 +746,7 @@
 
 .mat-option {
   > .mat-option-text {
-    font-family: "Kanit-500";
-    font-size: 16px;
+    @include font-size-9($font-head-500);
 
     > .wrapper-body-action {
       display: flex;
@@ -725,11 +758,11 @@
         border-radius: 50%;
         margin: 0 5pt;
         border: 1px solid $white;
-        background-color: $koalaGray;
+        background-color: $color-gray;
       }
 
       > .looking {
-        background-color: $brandcolor2;
+        background-color: $brandcolor3;
       }
 
       > .lookingWhite {
@@ -738,7 +771,7 @@
       }
 
       > .fulfill {
-        background-color: $green;
+        background-color: $status-post-fulfill;
       }
     }
   }
@@ -769,8 +802,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0 10pt;
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10($font-head-500);
       }
     }
   }
@@ -781,8 +813,7 @@
     > .mat-form-field-flex {
       > .mat-form-field-infix {
         .mat-select {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-10($font-head-500);
         }
 
         > .selected-dropdown {
@@ -806,11 +837,10 @@
             margin-right: 5pt;
             border-radius: 50%;
             box-shadow: 2.5px 0px 0px 0 #ffffff;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
             overflow: hidden;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 14px;
+            @include font-size-10($font-head-500);
           }
         }
       }
@@ -834,6 +864,12 @@
           height: 28pt;
           border-radius: 50%;
           object-fit: cover;
+        }
+        > .profile-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: $brandcolor2;
         }
       }
 
@@ -901,17 +937,16 @@
                       > .mat-tab-link {
                         color: $color-black;
                         @include pointer();
-                        font-family: "Kanit-400";
-                        font-size: 16px;
+                        @include font-size-9($font-head-400);
                         opacity: 1;
 
                         &:hover {
-                          color: $color-warm-red;
-                          background: rgba($color-warm-red, 0.1);
+                          color: $brandcolor2;
+                          background: rgba($brandcolor2, 0.1);
                         }
 
                         &.mat-tab-label-active {
-                          color: $color-warm-red;
+                          color: $brandcolor2;
                         }
                       }
                     }
@@ -930,7 +965,7 @@
               overflow-y: auto;
 
               > .mat-uncheck {
-                color: $color-warm-red;
+                color: $brandcolor2;
               }
 
               > .list {
@@ -943,16 +978,14 @@
                     align-items: center;
                     justify-content: space-between;
                     padding: 0 10pt;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-head-500);
                   }
 
                   > .list-checkbox {
                     > .mat-checkbox {
                       display: block;
                       padding: 0 10pt;
-                      font-family: "Kanit-500";
-                      font-size: 16px;
+                      @include font-size-9($font-head-500);
 
                       > .mat-checkbox-layout {
                         width: 100%;
@@ -1005,15 +1038,14 @@
               min-width: 145pt;
               justify-content: space-between;
               > .left {
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
               }
-              > .setting-all { 
+              > .setting-all {
                 display: flex;
                 align-items: center;
                 @include pointer();
-                svg { 
-                  color: $color-warm-red;  
+                svg {
+                  color: $brandcolor2;
                 }
               }
             }
@@ -1028,7 +1060,7 @@
                     > .mat-checkbox-inner-container {
                       > .mat-checkbox-frame {
                         &.active {
-                          border: 2px solid $color-warm-red;
+                          border: 2px solid $brandcolor2;
                         }
                       }
                     }
@@ -1058,13 +1090,17 @@
                         }
                       }
                       > .middle {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                       }
                     }
                   }
                 }
-              } 
+
+                > .list-found {
+                  color: $color-gray;
+                  @include font-size-9($font-head-300);
+                }
+              }
             }
           }
         }
@@ -1072,111 +1108,157 @@
     }
   }
 }
+//snackbar
+.mat-simple-snackbar span {
+  margin: auto;
+  text-align: center;
+}
+.my-custom-snackbar {
+  // margin: 0 !important;
+  // position: absolute;
+  // right: 0;
+  // left: 0;
+  // top: 50%;
+}
+.mat-snack-bar-container {
+  color: $brandcolor2;
+}
 
-// @media (max-width: $large) {
-//   .box-post {
-//     > .box {
-//       > .box-story {
-//         > .box-toggle {
-//           font-family: "Kanit-500";
-// font-size: 16px;
-//         }
-//       }
+@media (max-width: $large) {
+  .box-post {
+    > .mat-dialog-content {
+      max-height: unset;
+    }
+    > .box {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
 
-//       > .wrapper-event-tag {
-//         > .wrapper-left {
-//           > .search-tag-emergency {
-//             > .event-tag {
-//               font-family: "Kanit-500";
-// font-size: 16px;
-//             }
-//           }
+      > .mat-dialog-actions {
+        padding: unset;
+        flex-wrap: unset;
+        margin-bottom: unset;
+        align-items: unset;
+      }
+      > .box-story {
+        flex: 0 0 auto;
+        > .mobile-post {
+          padding: 0 19pt;
+        }
+      }
 
-//           > .search-objective {
-//             > .objective-doing {
-//               font-family: "Kanit-500";
-// font-size: 16px;
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
+      > .textarea-editor {
+        flex: 1 1 0%;
+      }
+      > .wrapper-event-tag {
+        flex: unset;
+      }
+    }
+  }
+}
 
 @media (max-width: $medium) {
   .box-post > .box > .box-story > .box-toggle {
-    width: 50%;
+    width: unset;
   }
 }
 
 @media (max-width: $small) {
   .box-post {
+    > .mat-dialog-content {
+      margin: unset;
+      padding: unset;
+    }
     > .box {
       border-bottom: unset;
-      > .header-story {
+
+      > .box-story {
+        flex: 0 0 auto;
+
+        > .box-toggle {
+          width: unset;
+        }
+
+        > .mobile-post {
+          width: calc(20% - 14pt);
+          padding: 0 7pt;
+        }
+        > .mobile-page {
+          width: calc(59% - 10pt - 0.7px);
+        }
       }
 
       > .textarea-editor {
-        // max-height: 783px;
+        flex: 1 1 0%;
       }
 
       > .wrapper-event-tag {
         padding: 10pt 0 5pt;
+        flex: unset;
         &.active {
           flex-direction: column;
           align-items: unset;
         }
 
         > .wrapper-right {
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9($font-head-500);
         }
 
         > .wrapper-middle {
           padding-top: 5pt;
           > .wrapper-edit-story {
             padding: 0 0 0 15pt;
-            font-size: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
           }
         }
 
         > .wrapper-left {
           > .search-tag-emergency {
             max-width: 50%;
+            > .event-tag {
+              @include font-size-10($font-head-500);
+            }
           }
           > .search-objective {
             max-width: 50%;
+            > .objective-doing {
+              @include font-size-10($font-head-500);
+            }
           }
         }
       }
 
       > .wrapper-tool-post {
         height: unset;
-        > .left {
+        > .box-left {
         }
-        > .center {
+        > .box-center {
         }
-        > .right {
+        > .box-right {
         }
+      }
+      > .mat-dialog-actions {
+        padding: unset;
+        margin-bottom: unset;
       }
       .m-tool-post {
         flex-wrap: wrap;
+        flex: 0 0 auto;
       }
       .m-left {
         width: calc(50% - 30pt - 1.4px) !important;
-        padding: 10pt 15pt !important;
+        padding: 7pt 15pt !important;
       }
       .m-center {
         width: calc(50% - 30pt) !important;
       }
       .m-right {
+        display: flex !important;
         width: calc(100% - 30pt) !important;
         border-left: unset !important;
         border-top: 0.7px solid #e5e5e5;
-        color: $color-warm-red !important;
-        padding: 15pt 15pt !important;
+        color: $brandcolor2 !important;
+        padding: 12pt 15pt !important;
         > .div-gatdata-post {
           width: 100%;
         }
@@ -1184,8 +1266,8 @@
           &.active {
             border-radius: 25pt;
             border: 0.7px solid;
-            padding: 8pt 8pt;
-            background-color: $color-warm-red;
+            padding: 3pt 5pt;
+            background-color: $brandcolor2;
           }
           > .mat-form-field-wrapper {
             > .mat-form-field-flex {
@@ -1212,5 +1294,16 @@
         }
       }
     }
+  }
+
+  .sg-vertical-sub-menu + * .cdk-overlay-pane {
+    right: 0;
+    left: 0;
+    top: 0;
+  }
+  .sg-vertical-sub-menu + * .cdk-overlay-pane 
+  >.mat-menu-panel >.mat-menu-content 
+  {
+      height: 100% !important;
   }
 }

@@ -22,8 +22,7 @@
 
     > .header {
       color: $brandcolor2;
-      font-family: "Kanit-500";
-      font-size: 24px;
+      @include font-size-6($font-head-500);
     }
 
     > .wrapper-upload {
@@ -78,10 +77,9 @@
 
           > label {
             position: absolute;
-            top: 0.5pt;
+            top: 4.5pt;
             left: 9pt;
-            font-family: "Kanit-500";
-            font-size: 24px;
+            @include font-size-8($font-head-500);
             user-select: none;
           }
 
@@ -94,15 +92,13 @@
             box-shadow: 0px 1px 9px 0 #00000020;
             border: unset;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-10($font-head-400);
             border: 2px solid transparent;
           }
 
           > .display-name {
             margin-top: 3px;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             word-break: break-all;
             padding: 0 13px;
           }
@@ -134,8 +130,7 @@
         box-shadow: 0px 1px 9px 0 #00000020;
         border: unset;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-400);
         margin-bottom: 10pt;
       }
 
@@ -151,8 +146,7 @@
       }
 
       > .title-label {
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-9($font-head-500);
         margin: 10pt 0 8pt 0;
       }
 
@@ -194,8 +188,7 @@
                 height: 25pt;
                 color: $color-black;
                 padding: 2pt 20pt 2pt 13pt;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 box-shadow: 0px 1px 9px 0 #00000020;
                 > .mat-form-field-label-wrapper {
                 }
@@ -271,19 +264,17 @@
 
             > .mat-radio-label-content {
               color: $color-black;
-              font-family: "Kanit-500";
-              font-size: 14px;
+              @include font-size-10($font-head-500);
             }
           }
         }
       }
 
       > .wrapper-policy {
-        color: $koalaGray;
+        color: $color-gray;
         text-align: left;
         margin: 15pt;
-        font-family: "Kanit-300";
-        font-size: 14px;
+        @include font-size-10($font-head-300);
         span {
           font-family: "Kanit-500";
         }
@@ -294,7 +285,7 @@
           cursor: pointer;
 
           &:hover {
-            text-decoration: underline;
+            color: rgba($brandcolor2, 0.95);
           }
         }
       }
@@ -302,13 +293,12 @@
       > .policy {
         display: flex;
         justify-content: center;
-        font-size: 14px;
-        font-family: "Kanit-300";
+        @include font-size-10($font-head-300);
         padding-top: 5px;
         @include pointer();
-        color: $koalaGray;
+        color: $color-gray;
         &:hover {
-          text-decoration: underline;
+          color: rgba($brandcolor2, 0.95);
         }
       }
 

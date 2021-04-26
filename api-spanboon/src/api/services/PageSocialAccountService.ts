@@ -74,6 +74,41 @@ export class PageSocialAccountService {
         }
     }
 
+    // extends page social account token and save to db
+    public async extendsPageSocialAccount(pageId: string, ignoreTwitter?: boolean, ignoreFacebook?: boolean): Promise<any> {
+        // !implement here
+        let isTwitterExtend = false;
+        const twitterAccount = await this.getTwitterPageAccount(pageId);
+        if (!ignoreTwitter && twitterAccount !== undefined) {
+            isTwitterExtend = true;
+        }
+
+        let isFBExtend = false;
+        const facebookAccount = await this.getFacebookPageAccount(pageId);
+        if (!ignoreFacebook && facebookAccount !== undefined) {
+            try {
+                const accessToken = facebookAccount.storedCredentials;
+                if (accessToken !== undefined) {
+                    const extendedObject = await this.facebookService.extendsAccessToken(accessToken);
+
+                    await this.update({ _id: facebookAccount.id }, {
+                        $set: {
+                            storedCredentials: extendedObject.token,
+                            properties: extendedObject
+                        }
+                    });
+                    isFBExtend = true;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        if (isTwitterExtend || isFBExtend) {
+            return pageId;
+        }
+    }
+
     public async pagePostToTwitter(postId: string, postByPageId?: string): Promise<boolean> {
         if (postId === undefined || postId === null || postId === '') {
             return false;

@@ -10,7 +10,7 @@
         <div class="box-hrader">
             <div class="left">
                 <span *ngIf="indexWizardPage === 0">
-                    จัดการรายการเติมเต็ม
+                    จัดการรายการ{{PLATFORM_FULFILL_TEXT}}
                 </span>
                 <span *ngIf="indexWizardPage === 1">
                     เลือกรายการที่ต้องการจัดสรร
@@ -381,7 +381,7 @@
                                 </button>
                             </mat-menu>
                         </div>
-                        <div (click)="clearItem()" class="icon">
+                        <div (click)="clearItem()" class="icon-delete">
                             <svg height="25" viewBox="0 0 16 16" width="25" xmlns="http://www.w3.org/2000/svg"
                                 xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <defs>
@@ -403,6 +403,7 @@
                         </div>
                         <div (click)="autoAllocate(true)" class="icon"
                             [class.dis]="selectNeedItem[indexItem].fulfillQuantity === 0">
+                            <loading *ngIf="isSpinner"></loading>
                             <svg id="Group_2322" data-name="Group 2322" xmlns="http://www.w3.org/2000/svg" width="25"
                                 height="25" viewBox="0 0 30.539 30.539" class="icon">
                                 <g id="Group_3314" data-name="Group 3314" transform="translate(-100 -94.414)">
@@ -528,10 +529,10 @@
                                             style="margin: 0px 4px;" width="8pt" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                             <path
                                                 d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                         </svg>
                                         <a style="color: #4e4e4e !important;" href='{{mainPostLink}}{{item.posts._id}}'
                                             target="_blank">{{item.posts.createdDate |
@@ -689,6 +690,7 @@
                     </div>
                     <div (click)="autoAllocate(false)" [class.active]="selectNeedItem.length > 0"
                         class="list-item-Next">
+                        <loading *ngIf="isSpinner"></loading>
                         <span>จัดสรรอัตโนมัติ</span>
                     </div>
                 </div>
@@ -759,6 +761,7 @@
                     </div>
 
                     <div (click)="confirmAllocate()" [class.active]="true" class="list-item-Next">
+                        <loading *ngIf="isSpinner"></loading>
                         <span>ยืนยัน</span>
                     </div>
                 </div>
@@ -769,7 +772,7 @@
                             <div class="left">
                                 <div class="detail">
                                     <div class="date">
-                                        <div style="    background-color: #fd545a;
+                                        <div style="background-color: #fd545a;
                                     width: 10px;
                                     height: 10px;
                                     border-radius: 5px;
@@ -779,12 +782,15 @@
                                             style="margin: 0px 4px;" width="8pt" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                             <path
                                                 d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                         </svg>
-                                        <span>{{item.post.createdDate | dateFormat}}</span>
+                                        <a style="color: #4e4e4e !important;cursor: pointer;"
+                                            href='{{mainPostLink}}{{item.post._id}}'
+                                            target="_blank">{{item.post.createdDate |
+                                            dateFormat}}</a>
                                     </div>
                                     <span class="detail-h">{{item.post.title}}</span>
                                     <span class="detail-d">{{item.post.detail}}</span>
@@ -826,8 +832,8 @@
                                                     fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span
-                                            *ngIf="item.post.emergencyEventTag">#{{item.post.emergencyEventTag}}</span>
+                                        <span *ngIf="item.post.emergencyEventTag"
+                                            (click)="clickDevelop(1,item.post.emergencyEventTag)">#{{item.post.emergencyEventTag}}</span>
                                         <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;"
                                             class="img-objective" xmlns="http://www.w3.org/2000/svg" width="12.887"
                                             height="12.982" viewBox="0 0 22.899 22.899">
@@ -846,7 +852,8 @@
                                                     transform="translate(-248.03 -228.703)" fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.objectiveTag">#{{item.post.objectiveTag}}</span>
+                                        <span *ngIf="item.post.objectiveTag"
+                                            (click)="clickDevelop(2,item.post.objectiveTag)">#{{item.post.objectiveTag}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -868,7 +875,7 @@
                                             </div>
                                             <div *ngIf="item.isMn" class="quantity">
                                                 <span
-                                                    [ngStyle]="{'color': item.isAuto ? 'red' : 'gray'}">{{item.amount}}</span>/{{item.quantity|
+                                                    [ngStyle]="{'color': item.isAuto ? '#84b572' : 'gray'}">{{item.amount}}</span>/{{item.quantity|
                                                 shortNumber}}
                                             </div>
                                         </div>
@@ -891,12 +898,15 @@
                                             style="margin: 0px 4px;" width="8pt" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                             <path
                                                 d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                fill="#A5A5A6" />
+                                                class="svg-color-gray" />
                                         </svg>
-                                        <span>{{item.post.createdDate | dateFormat}}</span>
+                                        <a style="color: #4e4e4e !important;cursor: pointer;"
+                                            href='{{mainPostLink}}{{item.post._id}}'
+                                            target="_blank">{{item.post.createdDate |
+                                            dateFormat}}</a>
                                     </div>
                                     <span class="detail-h">{{item.post.title}}</span>
                                     <span class="detail-d">{{item.post.detail}}</span>
@@ -938,7 +948,8 @@
                                                     fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.emergencyEventTag">{{item.post.emergencyEventTag}}</span>
+                                        <span *ngIf="item.post.emergencyEventTag"
+                                            (click)="clickDevelop(1,item.post.emergencyEventTag)">{{item.post.emergencyEventTag}}</span>
                                         <svg *ngIf="item.post.objectiveTag" style="margin:0px 7px;"
                                             class="img-objective" xmlns="http://www.w3.org/2000/svg" width="12.887"
                                             height="12.982" viewBox="0 0 22.899 22.899">
@@ -957,7 +968,8 @@
                                                     transform="translate(-248.03 -228.703)" fill="#747474" />
                                             </g>
                                         </svg>
-                                        <span *ngIf="item.post.objectiveTag">{{item.post.objectiveTag}}</span>
+                                        <span *ngIf="item.post.objectiveTag"
+                                            (click)="clickDevelop(2,item.post.objectiveTag)">{{item.post.objectiveTag}}</span>
                                     </div>
                                 </div>
                             </div>

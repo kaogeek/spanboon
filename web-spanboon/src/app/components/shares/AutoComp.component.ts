@@ -12,6 +12,7 @@ import { Observable, fromEvent } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAlert } from './dialog/dialog';
+import { MESSAGE } from '../../../custom/variable';
 import { MatAutocompleteTrigger } from '@angular/material';
 
 @Component({

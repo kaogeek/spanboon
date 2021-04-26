@@ -6,13 +6,15 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage'; 
-import { FileHandle } from '../../shares/directive/directives'; 
+import { AbstractPage } from '../AbstractPage';
+import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost } from '../../shares/shares';
 import { SearchFilter } from '../../../models/SearchFilter';
+import { UserEngagement } from '../../../models/UserEngagement';
+import { environment } from '../../../../environments/environment';
 
 const PAGE_NAME: string = 'recommended';
 const SEARCH_LIMIT: number = 20;
@@ -32,21 +34,24 @@ export class PageRecommended extends AbstractPage implements OnInit {
   @Input()
   public text: string = "ข้อความ";
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'กำลังมองหา', keyword: 'needs' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: 'กำลัง' + this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
 
-
   private objectiveFacade: ObjectiveFacade;
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
   private searchHashTagFacade: HashTagFacade;
+  private engagementService: Engagement;
+  private userEngagementFacade: UserEngagementFacade;
   protected observManager: ObservableManager;
+  private recommendFacade: RecommendFacade;
 
   public resDataPage: any;
   public resObjective: any;
+  public dataRecommend: any;
   public url: string;
   public subPage: string;
   public isLoading: boolean;
@@ -61,9 +66,12 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
   mySubscription: any;
 
+  public apiBaseURL = environment.apiBaseURL;
+
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade,
+    recommendFacade: RecommendFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -71,21 +79,26 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.observManager = observManager;
     this.routeActivated = routeActivated;
     this.searchHashTagFacade = searchHashTagFacade;
+    this.engagementService = engagementService;
+    this.userEngagementFacade = userEngagementFacade;
+    this.recommendFacade = recommendFacade;
     this.whereConditions = ["name"]
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
-  });
+    });
   }
 
   public ngOnInit(): void {
     this.searchTrendTag();
-    this.openLoading(); 
+    this.openLoading();
+    this.getRecommend();
   }
+
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -98,11 +111,11 @@ export class PageRecommended extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
-  
+
   public checkPath(): boolean {
     return this.router.url.includes('hashtag');
   }
- 
+
   private openLoading() {
     this.isloading = true;
   }
@@ -111,16 +124,22 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.isloading = false;
   }
 
-  public clickDataSearch(data) {
-    this.router.navigateByUrl('/search?hashtag='+ data.label.substring(1))
-    // this.router.navigateByUrl('/search/' + data.label)
+  public clickDataSearch(event: any, data) {
+    this.router.navigateByUrl('/search?hashtag=' + data.label.substring(1));
+
+    const result = this.engagementService.getEngagement(event, data.label, "hashTag");
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost(result.contentType, result.contentId, result.dom);
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
   }
 
   public clickLoadmore() {
 
   }
 
-public heightWindow() {
+  public heightWindow() {
     var resizeWin = window.innerHeight;
     var recommended = this.recommendedRight.nativeElement.offsetHeight;
     var maxrecommended = recommended + 100;
@@ -128,12 +147,12 @@ public heightWindow() {
     var maxcount = count + 60;
 
     if (maxrecommended > resizeWin) {
-        this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
+      this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
     } else {
-        this.recommendedRight.nativeElement.style.top = '55pt';
+      this.recommendedRight.nativeElement.style.top = '55pt';
     }
-}
+  }
 
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
@@ -158,11 +177,22 @@ public heightWindow() {
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       setTimeout(() => {
         this.closeLoading();
-      }, 1000); 
-      this.dataTrend = res 
+      }, 1000);
+      this.dataTrend = res
     }).catch((err: any) => {
       console.log(err)
     })
+  }
+
+  public getRecommend() {
+    let limit: number = 3;
+    let offset: number = 0;
+    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+      this.dataRecommend = res.data;
+      console.log('dataRecommend ',this.dataRecommend)
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
   }
 }
 

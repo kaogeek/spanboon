@@ -21,11 +21,12 @@
     <div class="create-left">
         <div class="create-teaser">
             <div class="header">
-                สร้างเพจสะพานบุญ
+                สร้างเพจ{{PLATFORM_NAME_TH}}
             </div>
             <div class="title">
-                สร้างเพจสะพานบุญให้กับตัวคุณ หรือองค์กรของคุณ เพื่อบอกต่อเรื่องราว และความต้องการที่คุณกำลังมองหา
-                แล้วคุณจะแปลกใจที่รู้ว่ายังมีอีกหลายคนบนโลกใบนี้ที่พร้อมเติมเต็มให้กับคุณผ่านแพลตฟอร์มสะพานบุญเพื่อสร้างสรรค์สิ่งดีๆ
+                สร้างเพจ{{PLATFORM_NAME_TH}}ให้กับตัวคุณ หรือองค์กรของคุณ เพื่อบอกต่อ{{PLATFORM_STORY_TALE}}
+                และความต้องการที่คุณกำลัง{{PLATFORM_NEEDS_TEXT}}
+                แล้วคุณจะแปลกใจที่รู้ว่ายังมีอีกหลายคนบนโลกใบนี้ที่พร้อม{{PLATFORM_FULFILL_TEXT}}ให้กับคุณผ่านแพลตฟอร์ม{{PLATFORM_NAME_TH}}เพื่อสร้างสรรค์สิ่งดีๆ
                 ให้เกิดขึ้นบนโลกใบนี้
             </div>
         </div>
@@ -43,7 +44,7 @@
                         เลือกประเภทขององค์กรของคุณ
                     </div>
                     <div class="title">
-                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                        เลือกประเภทองค์กรที่ตรงกับคุณมากที่สุด
                     </div>
                 </div>
                 <div class="box-center">
@@ -104,19 +105,19 @@
                         ตั้งโปรไฟล์ของเพจ
                     </div>
                     <div class="title">
-                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                        เลือกประเภทองค์กรที่ตรงกับคุณมากที่สุด
                     </div>
                 </div>
                 <div class="box-center">
                     <div class="profile-page">
                         <div class="set-profile-page">
-                            <!-- <ng-container *ngIf="resProfilePage && resProfilePage.image ; else elseTemplateProfile">
+                            <ng-container *ngIf="resProfilePage && resProfilePage.image ; else elseTemplateProfile">
                                 <img class="image-user" name="image" src="{{resProfilePage.image}}" alt="">
                             </ng-container>
                             <ng-template #elseTemplateProfile>
                                 <img class="image-user" src="../../../../assets/img/profile.svg" alt="">
-                            </ng-template> -->
-                            <img class="image-user" src="../../../../assets/img/profile.svg" alt="">
+                            </ng-template>
+                            <!-- <img class="image-user" src="../../../../assets/img/profile.svg" alt=""> -->
                             <div class="open-img" (click)="showDialogImage()">
                                 <svg class="icon-image" height="14.996" viewBox="0 0 20.071 14.996" width="20.071"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -165,7 +166,7 @@
                         ตั้งโปรไฟล์ของเพจ
                     </div>
                     <div class="title">
-                        เลือกหน่วยงานที่ตรงกับคุณมากที่สุด
+                        เลือกประเภทองค์กรที่ตรงกับคุณมากที่สุด
                     </div>
                 </div>
                 <div class="box-center">
@@ -317,11 +318,12 @@
                             <div class="detail-confirm">
                                 <div class="agreement">
                                     <div class="agreement-title">
-                                        ยินดีต้อนรับสู่ เพจสะพานบุญ
+                                        ยินดีต้อนรับสู่ เพจ{{PLATFORM_NAME_TH}}
                                     </div>
                                     <div class="grop-agreement">
                                         <div class="header-agreement">
-                                            ในการสร้างเพจของสะพานบุญ คุณจะต้องยอมรับข้อกำหนดในการให้บริการด้านล่าง
+                                            ในการสร้างเพจของ{{PLATFORM_NAME_TH}}
+                                            คุณจะต้องยอมรับข้อกำหนดในการให้บริการด้านล่าง
                                         </div>
                                         <ul>
                                             <li>
@@ -342,14 +344,15 @@
                                             <li>
                                                 <p>การจูงใจ</p>
                                                 เพจ กลุ่ม และงานกิจกรรมต้องไม่จูงใจเพื่อโน้มน้าวผู้คนให้ใช้ฟีเจอร์
-                                                หรือฟังก์ชั่นของ สะพานบุญ ในทางที่ผิด
+                                                หรือฟังก์ชั่นของ {{PLATFORM_NAME_TH}} ในทางที่ผิด
                                             </li>
                                         </ul>
                                         <div class="header-agreement">
                                             <div class="check-true" (click)="checkedClick()">
-                                                <mat-checkbox [disableRipple]="'true'" [(ngModel)]="checkedCon">
+                                                <mat-checkbox (click)="checkedClick()" [disableRipple]="'true'" [(ngModel)]="checkedCon">
                                                 </mat-checkbox>
-                                                <span>ฉันได้อ่านข้อความที่กล่าวมา และยินยอมตามข้อกำหนดของสะพานบุญ</span>
+                                                <span>ฉันได้อ่านข้อความที่กล่าวมา
+                                                    และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -363,8 +366,8 @@
             <div class="box-create">
                 <div class="box-center">
                     <div class="page-success">
-                        <div class="top">
-                            
+                        <div class="top">.createpage-temporary span
+
                             <div class="header">
                                 <div class="circle-border"></div>
                                 <div class="circle">

@@ -13,6 +13,7 @@ import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
+import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -43,15 +44,17 @@ export class MainPage extends AbstractPage implements OnInit {
 
   private observManager: ObservableManager;
   private routeActivated: ActivatedRoute;
+  private userAccessFacade: UserAccessFacade;
   loadLogin: boolean = false;
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog) {
+  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
     this.routeActivated = routeActivated;
+    this.userAccessFacade = userAccessFacade;
     this.data = {};
 
     this.observManager.subscribe('menu.click', (clickmenu) => {
@@ -86,7 +89,6 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-
     this.observManager.createSubject('scroll.buttom');
     this.observManager.createSubject('scroll.fix');
     this.observManager.createSubject('scroll');
@@ -96,6 +98,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     this.isLogin();
+    this.searchAccessPage();
 
     const dev = sessionStorage.getItem('isDev');
     if (dev) {
@@ -116,6 +119,7 @@ export class MainPage extends AbstractPage implements OnInit {
       // var scrollTop = spanboonHome.scrollTop();  
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
       $('.header-top').toggleClass('hidden', scrollTop > prev);
+      // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
       $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
       // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
@@ -154,9 +158,8 @@ export class MainPage extends AbstractPage implements OnInit {
     // if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1) {
     //   this.observManager.publish('scroll.buttom', null);
     // }
-    // var scrolltotop = document.getElementById("menubottom");
-
-    if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+    // var scrolltotop = document.getElementById("menubottom"); 
+    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 40)) { 
       this.observManager.publish('scroll.buttom', null);
     }
 
@@ -253,7 +256,7 @@ export class MainPage extends AbstractPage implements OnInit {
     return this.user !== undefined && this.user !== null;
   }
 
-  public dialogPost() {
+  public async dialogPost() {
     if (this.isLogin()) {
       let dataName;
       if (this.user && this.user.name) {
@@ -263,27 +266,40 @@ export class MainPage extends AbstractPage implements OnInit {
       } else if (this.user.displayName) {
         dataName = this.user.displayName
       }
-      this.data.name = dataName;
+
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;
       this.data.isFulfill = false;
-      this.data.modeDoIng = true;
       this.data.isMobileButton = true;
       this.data.id = this.user.id;
-
+      this.data.accessDataPage = await this.searchAccessPage();
+      if (this.router.url.split('/')[1] === 'page') {
+        this.data.name = this.router.url.split('/')[2];
+        this.data.isSharePost = true;
+        this.data.modeDoIng = true;
+      } else {
+        this.data.name = dataName;
+        this.data.isSharePost = false;
+        this.data.modeDoIng = false;
+      }
       const dialogRef = this.dialog.open(DialogPost, {
         width: 'auto',
         data: this.data,
+        panelClass: 'customize-dialog',
         disableClose: false,
       });
 
-      dialogRef.afterClosed().subscribe(result => { 
+      dialogRef.afterClosed().subscribe(result => {
         this.stopLoading();
       });
     } else {
       this.router.navigateByUrl('/login')
     }
+  }
+
+  public async searchAccessPage() {
+    return await this.userAccessFacade.getPageAccess();
   }
 
   private stopLoading(): void {
@@ -296,6 +312,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
 export * from './main.internal/HomePage.component';
+export * from './main.internal/HomePageV2.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
 export * from './main.internal/ForgotPasswordPage.component';
@@ -310,4 +327,4 @@ export * from './main.internal/register.internal/MenuRegister.component';
 export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
-export * from './main.internal/fulfill.internal/fulfill'; 
+export * from './main.internal/fulfill.internal/fulfill';

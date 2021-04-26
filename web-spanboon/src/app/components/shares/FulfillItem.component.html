@@ -11,7 +11,7 @@
             {{statusLabel}}
         </div>
         <div class="title">
-            โปรดเลือกของที่คุณต้องการเติมเต็ม
+            โปรดเลือกของที่คุณต้องการ{{PLATFORM_FULFILL_TEXT}}
         </div>
     </div>
     <div class="tab" #tab>
@@ -112,7 +112,8 @@
                                             [searchTerm]="query_conversation" [caseSensitive]="false">
                                             {{item.name}}
                                         </span>
-                                        <ng-container *ngIf="item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
+                                        <ng-container
+                                            *ngIf="item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
                                             <div class="limit-fulfill">
                                                 <span class="material-icons"> done </span>
                                                 ได้รับครบแล้ว
@@ -123,13 +124,13 @@
                                                 <span [class.active]="item.fulfillQuantity > item.quantity">
                                                     {{item.fulfillQuantity}} </span> / {{item.quantity}}
                                             </div>
-                                        </ng-template>  
+                                        </ng-template>
                                     </div>
                                 </ng-container>
                             </ng-container>
                             <ng-template #elseNotFound>
                                 <div class="body-data-category">
-                                    <span class="label-item">ไม่พบรายการเติมเต็ม</span>
+                                    <span class="label-item">ไม่พบรายการ{{PLATFORM_FULFILL_TEXT}}</span>
                                 </div>
                             </ng-template>
                         </ng-template>
@@ -140,7 +141,7 @@
         <div class="center-right fulfill" [class.active]="isListItem" id="centerright">
             <div class="fulfill-items">
                 <div class="label-fulfill-left">
-                    รายการสิ่งที่เติมเต็ม
+                    รายการสิ่งที่{{PLATFORM_FULFILL_TEXT}}
                 </div>
                 <div class="fulfill-count-item">
                     {{arrListItem.length}} รายการ
@@ -282,16 +283,16 @@
                     </div>
                 </ng-container>
                 <ng-template #elseBodyListItems>
-                    <!-- <div class="empty-data" >กรุณาเลือกสิ่งที่คุณต้องการเติมเต็ม</div> -->
+                    <!-- <div class="empty-data" >กรุณาเลือกสิ่งที่คุณต้องการ{{PLATFORM_FULFILL_TEXT}}</div> -->
                 </ng-template>
             </div>
         </div>
     </div>
     <div class="bottom" #bottomConfirm>
-        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [border]="'0.7pt solid #e5e5e5'" [isShaDow]="false" [width]="'80pt'"
-            [color]="'#212721'" (click)="onClose()">
+        <spanboon-button class="close-dialog" [bgColor]="'white'" [text]="'ยกเลิก'" [border]="'0.7pt solid #e5e5e5'"
+            [isShaDow]="false" [width]="'80pt'" [color]="'#212721'" (click)="onClose()">
         </spanboon-button>
-        <spanboon-button [text]="'เติมเต็ม'" [bgColor]="'#7AAF67'" [width]="'80pt'" (click)="onConfirm(isFrom)"
+        <spanboon-button [text]="PLATFORM_FULFILL_TEXT" [bgColor]="'#7AAF67'" [width]="'80pt'" (click)="onConfirm(isFrom)"
             [ngStyle]="{'pointer-events': isListItem || arrListItem.length > 0 ? 'auto': 'none','opacity': isListItem || arrListItem.length > 0 ? '1': '0.7'}">
         </spanboon-button>
     </div>

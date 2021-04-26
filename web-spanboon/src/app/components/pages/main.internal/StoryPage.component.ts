@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Renderer2, EventEmitter, Output } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
@@ -16,6 +16,7 @@ import { Asset } from '../../../models/Asset';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { BoxPost, DialogMedia, DialogAlert, DialogReboonTopic } from '../../shares/shares';
+import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from 'src/app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
@@ -40,7 +41,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'กำลังมองหา', keyword: 'needs' }];
+  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: 'กำลัง' + this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -49,6 +50,7 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   protected observManager: ObservableManager;
   protected assetFacade: AssetFacade;
+  protected myElement: ElementRef;
   protected pageFacade: PageFacade;
   protected postCommentFacade: PostCommentFacade;
   protected postFacade: PostFacade;
@@ -69,27 +71,48 @@ export class StoryPage extends AbstractPage implements OnInit {
   public dataTypeM: any = { type: '' };
   public position: any
   public dataNeeds: any;
-  public test: any;
+  public type: string;
   public pageUser: any
-  public userCloneDatas: any
-  public url: any
-  public user: any
-  public asPage: any
-  public recommendedStory: any
-  public recommendedStorys: any
-  public recommendedStoryHashtag: any
+  public userCloneDatas: any;
+  public url: any;
+  public user: any;
+  public asPage: any;
+  public recommendedStory: any = [];
+  public recommendedStorys: any = [];
+  public recommendedStoryHashtag: any;
+
+  public story: any;
+  public title: any;
+
+  public emergencyEventTag: any
+  public objectiveTag: any
+  public createdDate: any
+  public ownerUser: any
+  public userId: any
+
   public linkPage: any
 
   public loding: boolean;
-  public isComment: boolean
+  public isStoryData: boolean;
   public isPreload: boolean = true;
+  public isLoding: boolean = true;
+  public isPendingFulfill: boolean = false;
   public isSearchHashTag: boolean
   public apiBaseURL = environment.apiBaseURL;
   public h: number
+
+  public needs: any = [];
+
+  public isComment: boolean;
+  public isRepost: boolean;
+  public isLike: boolean;
+  public isShare: boolean;
   public commentCount: number;
   public repostCount: number;
   public likeCount: number;
   public shareCount: number;
+
+  public pageName: string;
 
 
   public config: SwiperConfigInterface = {
@@ -186,7 +209,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  constructor(router: Router, postCommentFacade: PostCommentFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
+  constructor(router: Router, postCommentFacade: PostCommentFacade, private renderer: Renderer2, postFacade: PostFacade, dialog: MatDialog, myElement: ElementRef, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
@@ -195,76 +218,50 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.routeActivated = routeActivated;
     this.postCommentFacade = postCommentFacade;
     this.postFacade = postFacade;
-    this.isComment = false
     this.isSearchHashTag = false
+    this.isLoding = true;
     this.position = "50% 80%"
     this.h = 80
-    this.test = [1, 2, 3]
-    this.dataNeeds = [
-      {
-        "id": "วัตถุดิบ(ปลาหมึก)",
-        "createdDate": "2020-10-22T04:19:24.469Z",
-        "customItemId": "5f91084ca23f15136bd56350",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "วัตถุดิบ(ปลาหมึก)",
-        "active": true,
-        "quantity": 10,
-        "unit": "กิโล",
-        "post": "5f91084ca23f15136bd5634c"
-      },
-      {
-        "id": "5f4349d1669c480f8bb67f20",
-        "createdDate": "2020-10-25T16:36:51.480Z",
-        "standardItemId": "5f4349d1669c480f8bb67f20",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "ข้าวสาร",
-        "active": true,
-        "fullfilled": false,
-        "quantity": 5,
-        "unit": "กิโลกรัม",
-        "post": "5f95a9a3b5184e606cec452e",
-        "fulfillQuantity": 0,
-        "pendingQuantity": 0
-      },
-      {
-        "id": "5f4349e8669c480f8bb67f23",
-        "createdDate": "2020-10-22T04:19:24.471Z",
-        "standardItemId": "5f4349e8669c480f8bb67f23",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "ปลากระป๋อง",
-        "active": true,
-        "quantity": 4,
-        "unit": "กระป๋อง",
-        "post": "5f91084ca23f15136bd5634c"
-      },
-      {
-        "id": "อาหารแห้ง",
-        "createdDate": "2020-10-22T04:19:24.465Z",
-        "customItemId": "5f91084ca23f15136bd5634e",
-        "pageId": "5f8e6b11a554f760422bc347",
-        "name": "อาหารแห้ง",
-        "active": true,
-        "quantity": 4,
-        "unit": "ชุด",
-        "post": "5f91084ca23f15136bd5634c"
-      }
-    ]
+    this.dataNeeds = []
 
-    // let users = this.authenManager.getCurrentUser()
+    this.setStoryData()
 
+  }
+
+  public ngOnDestroy(): void {
+    super.ngOnDestroy();
+  }
+
+  public scrollFulfill() {
+    try {
+      const errorField = this.renderer.selectRootElement('.needs-display');
+      errorField.scrollIntoTop();
+    } catch (err) {
+    }
+  }
+
+  public async setStoryData() {
     this.routeActivated.params.subscribe((params) => {
       this.url = params['postId']
     })
-    // var dataPageObj = JSON.parse(sessionStorage.dataPage);
-
-    // this.pageId = dataPageObj.pageId
     let imgGallery: any[]
     let search: SearchFilter = new SearchFilter();
     search.limit = 5;
     search.count = false;
     search.whereConditions = { _id: this.url };
-    this.postFacade.searchPostStory(search).then((res: any) => {
+    await this.postFacade.searchPostStory(search).then((res: any) => {
       this.postStoryData = res[0]
+      this.type = this.postStoryData.type
+      this.objectiveTag = this.postStoryData.objectiveTag
+      this.emergencyEventTag = this.postStoryData.emergencyEventTag
+      this.createdDate = this.postStoryData.createdDate;
+      this.ownerUser = this.postStoryData.ownerUser;
+      if (this.postStoryData.pageId !== null && this.postStoryData.pageId !== undefined) {
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          this.postStoryData.pageData = page
+        }).catch((err: any) => {
+        });
+      }
       this.assetFacade.getPathFile(this.postStoryData.coverImage).then((res: any) => {
         this.imageCover = res.data
       }).catch((err: any) => {
@@ -286,15 +283,14 @@ export class StoryPage extends AbstractPage implements OnInit {
           }
           this.postStoryData.gallery = imgGallery
         }).catch((err: any) => {
+          console.log('err', err)
         });
       }
-      setTimeout(() => {
-        this.loding = false
-        this.getRecommendedStory();
-        this.getRecommendedStorys();
-        this.getRecommendedHashtag();
-        this.setCardSilder();
-      }, 1500);
+      this.loding = false
+      this.getRecommendedStory();
+      this.getRecommendedStorys();
+      this.getRecommendedHashtag();
+      this.setCardSilder();
       setTimeout(() => {
         this.isPreload = false
       }, 500);
@@ -303,19 +299,46 @@ export class StoryPage extends AbstractPage implements OnInit {
 
       console.log(err)
     })
+
     this.user = this.authenManager.getCurrentUser();
     if (this.user !== undefined && this.user !== null) {
       this.getProfileImage(this.user);
       this.searchPageInUser(this.user.id)
+      this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
+      this.userId = this.userCloneDatas.id
     }
-    this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
 
+    setTimeout(() => {
+
+
+      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+        console.log(page)
+        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+          this.linkPage = (this.mainPageLink + page.data.uniqueId)
+        } else if (page.data.id !== undefined && page.data.id !== null) {
+          this.linkPage = (this.mainPageLink + page.data.id)
+        }
+      }).catch((err: any) => {
+      });
+
+      this.pageName = this.postStoryData.pageData.data.name;
+      this.story = this.postStoryData.story;
+      this.title = this.postStoryData.title;
+
+      this.isComment = this.postStoryData.isComment;
+      this.isRepost = this.postStoryData.isRepost;
+      this.isLike = this.postStoryData.isLike;
+      this.isShare = this.postStoryData.isShare;
+      this.commentCount = this.postStoryData.commentCount;
+      this.repostCount = this.postStoryData.repostCount;
+      this.likeCount = this.postStoryData.likeCount;
+      this.shareCount = this.postStoryData.shareCount;
+      this.needs = this.postStoryData.needs;
+      this.isLoding = false;
+
+
+    }, 6500);
   }
-
-  public ngOnDestroy(): void {
-    super.ngOnDestroy();
-  }
-
 
   private setCardSilder() {
     this.config = {
@@ -336,12 +359,6 @@ export class StoryPage extends AbstractPage implements OnInit {
         loadPrevNextAmount: 2,
       },
       breakpoints: {
-        // 479: {
-        //   slidesPerView: 1,
-        //   spaceBetween: 0,
-        // },
-        // 768: {
-        // },
         991: {
           slidesPerView: 1,
           spaceBetween: 5,
@@ -389,21 +406,34 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   isPageDirty(): boolean {
-    // throw new Error('Method not implemented.');
     return false;
   }
   onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
-    // throw new Error('Method not implemented.');
     return;
   }
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
-    // throw new Error('Method not implemented.');
     return;
+  }
+
+  public toStory($event) {
+    this.isLoding = true
+    this.router.navigate(["/story/" + $event.post._id]);
+    setTimeout(() => {
+      location.reload();
+    }, 500);
   }
 
   public menuProfile() { }
 
+  public checkAccessCustom(): boolean {
+    return this.userCloneDatas.id === this.postStoryData.id;
+  }
+
   public commentAction(data: any) {
+    if (!this.isLogin()) {
+      return this.showAlertLoginDialog("/story/" + this.postStoryData._id);
+    }
+
     if (data.action === "LIKE") {
       if (this.user.id !== undefined && this.user.id !== null) {
         this.postCommentFacade.like(this.postStoryData._id, data.commentdata, this.user.id).then((res: any) => {
@@ -422,8 +452,8 @@ export class StoryPage extends AbstractPage implements OnInit {
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: "ต้องการลบความคิดเห็น ?",
-          bottomText2: "ตกลง",
+          text: MESSAGE.TEXT_TITLE_DELETE_COMMENT_CONFIRM,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
           bottomColorText2: "black",
         }
       });
@@ -446,28 +476,11 @@ export class StoryPage extends AbstractPage implements OnInit {
       } else {
         this.commentpost[data.index].isEdit = true;
       }
-      // let dialog = this.dialog.open(DialogAlert, {
-      //   disableClose: true,
-      //   data: {
-      //     text: "ระบบอยู่ในระหว่างการพัฒนา",
-      //     bottomText2: "ตกลง",
-      //     bottomColorText2: "black",
-      //     btDisplay1: "none"
-      //   }
-      // });
-      // dialog.afterClosed().subscribe((res) => {
-      // });
     } else if (data.action === 'CANCEL') {
       this.commentpost[data.index].isEdit = false;
     }
   }
 
-  public getRecommendedStory() {
-    this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
-      this.recommendedStory = res.data
-    }).catch((err: any) => {
-    })
-  }
 
   public getRecommendedHashtag() {
     this.postFacade.recommendedHashtag(this.postStoryData._id).then((res: any) => {
@@ -476,9 +489,16 @@ export class StoryPage extends AbstractPage implements OnInit {
     })
   }
 
+  public getRecommendedStory() {
+    this.postFacade.recommendedStory(this.postStoryData._id).then((res: any) => {
+      this.recommendedStory = res.data.contents;
+    }).catch((err: any) => {
+    })
+  }
+
   public getRecommendedStorys() {
     this.postFacade.recommendedStorys(this.postStoryData._id, this.postStoryData.pageId).then((res: any) => {
-      this.recommendedStorys = res.data
+      this.recommendedStorys = res.data.contents;
     }).catch((err: any) => {
     })
   }
@@ -573,6 +593,8 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.postCommentFacade.create(commentPosts, this.postStoryData._id).then((res: any) => {
       this.getComment();
       this.textComment = '';
+      this.commentCount++;
+      this.isComment = true
     }).catch((err: any) => {
     })
   }
@@ -596,34 +618,23 @@ export class StoryPage extends AbstractPage implements OnInit {
       }
       scroll = scrolls
     });
-
-    setTimeout(() => {
-      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        console.log(page)
-        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
-          this.linkPage = (this.mainPageLink + page.data.uniqueId)
-        } else if (page.data.id !== undefined && page.data.id !== null) {
-          this.linkPage = (this.mainPageLink + page.data.id)
-        }
-      }).catch((err: any) => {
-      });
-    }, 2000);
   }
 
   private isLoginUser() {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
-      return
+      return this.showAlertLoginDialog("/story/" + this.postStoryData._id);
     }
   }
 
   public postLike() {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+      this.showAlertLoginDialog("/story/" + this.postStoryData._id);
     } else {
       this.postFacade.like(this.postStoryData._id, this.asPage).then((res: any) => {
         this.postStoryData.isLike = res.isLike
         this.postStoryData.likeCount = res.likeCount
+        this.likeCount = this.postStoryData.likeCount
+        this.isLike = this.postStoryData.isLike
       }).catch((err: any) => {
         console.log(err)
       });
@@ -631,6 +642,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public async postAction(action: any) {
+    this.isLoginUser();
     let userAsPage: any
     let pageInUser: any[]
     let search: SearchFilter = new SearchFilter();
@@ -641,7 +653,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     if (action.mod === 'COMMENT') {
     } else if (action.mod === 'LIKE') {
       this.postLike();
-      // this.action.emit({ mod: action.mod, postData: this.postStoryData, userAsPage: this.user });
     } else if (action.mod === 'REBOON') {
       this.isLoginUser();
       if (this.user.id !== undefined && this.user.id !== null) {
@@ -661,85 +672,27 @@ export class StoryPage extends AbstractPage implements OnInit {
           });
         }
         const dialogRef = this.dialog.open(DialogReboonTopic, {
-          width: '550pt',
+          width: '450pt',
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: this.user } }
         });
-
-        // dialogRef.afterClosed().subscribe(result => {
-        //   if (!result) {
-        //     return
-        //   }
-        //   if (result.isConfirm) {
-        //     if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
-        //       data.pageId = null
-        //       if (result.text === "") {
-        //         if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-        //           dataPost = action.post.referencePost._id
-        //         } else {
-        //           dataPost = action.post._id
-        //         }
-        //       } else {
-        //         dataPost = action.post._id
-        //       }
-        //     } else {
-        //       data.pageId = result.pageId
-        //       if (result.text === "") {
-        //         if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-        //           dataPost = action.post.referencePost._id
-        //         } else {
-        //           dataPost = action.post._id
-        //         }
-        //       } else {
-        //         dataPost = action.post._id
-        //       }
-        //     }
-        //     data.detail = result.text
-        //     if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-        //       data.postAsPage = action.userAsPage.id
-        //     }
-        //     if (result.hashTag !== undefined && result.hashTag !== null) {
-        //       data.hashTag = result.hashTag
-        //     }
-        //     this.postFacade.rePost(dataPost, data).then((res: any) => {
-        //       this.resPost.posts[index].repostCount++
-        //     }).catch((err: any) => {
-        //       console.log(err)
-        //     })
-        //   }
-        // });
       } else if (action.type === "NOTOPIC") {
-        // data.pageId = null
-        // dataPost = action.post._id
-        // this.postFacade.rePost(dataPost, data).then((res: any) => {
-        //   this.resPost.posts[index].repostCount++
-        //   this.resPost.posts[index].isRepost = true
-        // }).catch((err: any) => {
-        //   console.log(err)
-        // })
       } else if (action.type === "UNDOTOPIC") {
         this.postFacade.undoPost(action.post._id).then((res: any) => {
         }).catch((err: any) => {
         })
       }
-      // this.action.emit({ mod: action.mod, postData: this.postStoryData._id, type: action.type, post: this.postStoryData, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
       this.action.emit({ mod: action.mod });
     }
   }
 
   public pageAction(action: any) {
-    let comments: any[] = []
     this.userCloneDatas = action
     if (action.ownerUser !== undefined && action.ownerUser !== null) {
       this.asPage = action.id
     } else {
       this.asPage = undefined
     }
-    // if (this.commentpost.length !== 0) {
-    //   for (let c of this.commentpost) {
-    //     comments.push(c.id)
-    //   }
-    // }
     this.postFacade.getAaaPost(this.postStoryData._id, this.asPage).then((pages: any) => {
       this.postStoryData.isComment = pages.isComment
       this.postStoryData.isLike = pages.isLike
@@ -747,6 +700,38 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.postStoryData.isShare = pages.isShare
     }).catch((err: any) => {
     })
+  }
+
+  public navigateHomePage() {
+
+    this.router.navigate(["/home"]);
+
+  }
+
+  public developDialog() {
+    this.showAlertDevelopDialog();
+  }
+
+  public convertTextType(text): string {
+    if (text === "GENERAL") {
+      return "ทั่วไป"
+    } else if (text === "NEEDS") {
+      return "มองหา"
+    }
+  }
+
+  public typeStatusGeneral(type): boolean {
+    if (type === "GENERAL") {
+      return true
+    } else
+      return false
+  }
+
+  public typeStatusNeeds(type): boolean {
+    if (type === "NEEDS") {
+      return true
+    } else
+      return false
   }
 
 }

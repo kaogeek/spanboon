@@ -1,0 +1,27 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+<div class="post-swiper-for" *ngIf="itemNeeds && itemNeeds.length > 0" #listNeeds>
+    <div class="swiper-container" [class.active]="isImage" [swiper]="configSlider1" [(index)]="index">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" *ngFor="let item of itemNeeds; let index = index;">
+                <card-contant-home (clickEvent)="clickEvent($event)" [keyObjArr]='keyItem' [smallCard]='true' [postData]='item'>
+                </card-contant-home>
+            </div>
+
+        </div>
+        <div class="swiper-button-prev">
+            <div class="material-icons">
+                chevron_left
+            </div>
+        </div>
+        <div class="swiper-button-next">
+            <div class="material-icons">
+                chevron_right
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,6 +33,7 @@ dialog-fulfill {
             top: 1%;
             right: 1%;
             @include pointer();
+            z-index: 2;
             display: flex;
             justify-content: center;
             align-items: center;

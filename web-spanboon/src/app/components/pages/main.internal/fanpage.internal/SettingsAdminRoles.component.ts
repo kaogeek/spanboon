@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router'; 
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { POST_TYPE, USER_LEVEL } from '../../../../TypePost';
@@ -51,10 +51,12 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public submitDialog: EventEmitter<any> = new EventEmitter();
     @Output()
     public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
+    @Input()
+    public pageId: any;
 
     public isHow: boolean = true;
     public isEdit: boolean = false;
-    public isCancel: boolean = false; 
+    public isCancel: boolean = false;
     public isLoading: boolean = false;
     public isActive: boolean = false;
     public isButtonActive: boolean = false;
@@ -70,7 +72,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public resListPage: any;
     public dataUser: any;
     public accessPage: any;
-    public pageId: string;
+    // public pageIdUrl: string;
 
     @ViewChild('formfield', { static: false }) formfield: ElementRef;
     @ViewChild('selectroles', { static: false }) selectroles: ElementRef;
@@ -80,7 +82,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public selected: string = "ผู้ดูแล";
     public selectedPostModerator: string = "ผู้จัดการโพสต์";
     public selectedChatModerator: string = "ผู้จัดการแชท";
-    public selectedFulFillModerator: string = "ผู้จัดการเติมเต็ม";
+    public selectedFulFillModerator: string = "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT;
     public selectedEdit: string;
 
     states: State[] = [
@@ -130,11 +132,11 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             title: "ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
         },
         {
-            label: "ผู้จัดการเติมเต็ม",
+            label: "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT,
             keyword: "FULFILLMENT_MODERATOR",
             value: 4,
             check: false,
-            title: "สามารถส่งข้อความ จัดการโพสต์ที่เติมเต็มได้",
+            title: "สามารถส่งข้อความ จัดการโพสต์ที่" + this.PLATFORM_FULFILL_TEXT + "ได้",
         },
         {
             label: "ผู้จัดการแชท",
@@ -185,7 +187,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         this.dirtyCancelEvent = new EventEmitter();
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void { 
         if (this.isLogin) {
             this.getAccessPage();
         }
@@ -197,20 +199,20 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-      }
-       
-      isPageDirty(): boolean {
+    }
+
+    isPageDirty(): boolean {
         // throw new Error('Method not implemented.');
         return false;
-      }
-      onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    }
+    onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return this.dirtyConfirmEvent;
-      }
-      onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    }
+    onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return this.dirtyCancelEvent;
-      }
+    }
 
     public clickChange(data) {
         this.valueSt = data;
@@ -295,7 +297,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
                 }
             }
 
-        }).catch((err: any) => { 
+        }).catch((err: any) => {
             if (err.error.message === "Unable got Asset") {
                 dataImage.imageURL = '';
             }
@@ -362,14 +364,16 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         return base64Image && regex.test(base64Image) ? true : false;
     }
 
-    public addUserLevel() {
+    public addUserLevel() { 
+        if(this.valueSt === ''){
+            return;
+        }
         this.isActive = true;
-        let levelUser = this.getLevelUser(this.selectPower.label);
-
+        let levelUser = this.getLevelUser(this.selectPower.label); 
         let access = {
             level: levelUser,
             user: this.valueSt.id || this.valueSt.uniqueId
-        }
+        } 
         this.pageFacade.addAccess(this.pageId, access).then((res) => {
             if (res.message === "Successfully adding User Page Access") {
                 this.clearInputData();
@@ -459,7 +463,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public clickcancel() {
-        this.isCancel = true;  
+        this.isCancel = true;
 
     }
 }

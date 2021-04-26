@@ -5,14 +5,14 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
-import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger } from '@angular/material';
+import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { PageSocailTW, SearchFilter } from '../../models/models';
+import { PageSocialTW, SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -23,6 +23,8 @@ import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
 import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
+import { cpuUsage } from 'process';
+import { F } from '@angular/cdk/keycodes';
 
 declare var $: any;
 declare const window: any;
@@ -79,9 +81,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isHeaderPage: any;
   @Input()
-  public isRepost: boolean;
+  public accessDataPage: any;
+  @Input()
+  public isRepost: boolean; 
   @Input()
   public isListPage: boolean;
+  @Input()
+  public isClickPostPreLoad: boolean = false;
   @Input()
   public isEdit: boolean = false;
   @Input()
@@ -128,6 +134,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public submitClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public selectedInformation: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -142,7 +150,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   private pageFacade: PageFacade;
   private cacheConfigInfo: CacheConfigInfo;
 
-  private masterSelected: boolean;
+  public snackBar: MatSnackBar;
+
+  private masterSelected: boolean; 
 
   public httpItems: Observable<any[]>;
   public isShowEmergency: boolean;
@@ -152,6 +162,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isMouseEnter: boolean;
   public isChecked: boolean;
   public isSelect: boolean;
+  public isNotAccess: boolean;
   public isShowCheckboxTag: boolean;
   public isShowUserTag: boolean;
   public isMsgNeeds: boolean;
@@ -163,6 +174,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isDataStroy: boolean;
   public isTablet: boolean;
   public isButtonFulfill: boolean;
+  public isShowText: boolean;
   public isTypeNeed: boolean = true;
   public typeStroy: any;
   public dataAutoComp: any; // 2: click, 1: totic, 0: content
@@ -219,8 +231,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   public twitterConection: any;
   public facebookConection: any;
   public isAutoPostTwitter: any;
-  public isAutoPostFacebook: any; 
+  public isAutoPostFacebook: any;
   private twitterService: TwitterService;
+
+  public isSelectOption: boolean;
 
   keyword = "hashTag";
   selectedIndex: number;
@@ -235,28 +249,25 @@ export class BoxPost extends AbstractPage implements OnInit {
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
   chooseStory: any[] = [
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
-    // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
-    // { value: 'เลือกประเภทเรื่องราว', viewValue: 'เลือกประเภทเรื่องราว' },
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    // { value: 'เติมเต็ม', viewValue: 'เติมเต็ม', class: 'icon-feed fulfill' }
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
   ];
 
-  selected: string = "ทั่วไป";
+  selected: string = this.PLATFORM_GENERAL_TEXT;
   selected1: string = "โพสต์"
   selected2: string = "โพสต์"
   selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
   selectedValue: string = "เลือกหมวดหมู่";
 
-  private apiBaseURL = environment.apiBaseURL;
-  private webBaseURL = environment.webBaseURL;
+  public apiBaseURL = environment.apiBaseURL;
+  public webBaseURL = environment.webBaseURL;
 
   constructor(dialog: MatDialog, postFacade: PostFacade, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, authenManager: AuthenManager, pageFacade: PageFacade,
     objectiveFacade: ObjectiveFacade, assetFacade: AssetFacade, userFacade: UserFacade, observManager: ObservableManager, userAccessFacade: UserAccessFacade, needsFacade: NeedsFacade,
-    router: Router, twitterService: TwitterService, cacheConfigInfo: CacheConfigInfo) {
+    router: Router, twitterService: TwitterService, cacheConfigInfo: CacheConfigInfo, snackBar: MatSnackBar) {
     super(null, authenManager, dialog, router);
     this.isRepost = true
     this.dialog = dialog
@@ -271,6 +282,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.pageFacade = pageFacade;
     this.twitterService = twitterService;
     this.cacheConfigInfo = cacheConfigInfo;
+    this.snackBar = snackBar;
     this.isLoading = false;
     this.masterSelected = false;
     this.onPost = false;
@@ -291,37 +303,33 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isListPage = false;
     this.isTablet = false;
     this.isButtonFulfill = false;
+    this.isSelectOption = true;
     this.router = router;
     this.data = {};
 
     this.observManager.subscribe('authen.check', (data) => {
-      this.getImage();
     });
 
-    this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => {
-      console.log('config ', config)
-      if (config.value !== undefined) {
-        // this.isShowFacebook = (config.value.toLowerCase() === 'true');
-      }
-    }).catch((error: any) => {
-      // console.log(error) 
-    });
+    // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
+    //   if (config.value !== undefined) {
+    //     // this.isShowFacebook = (config.value.toLowerCase() === 'true');
+    //   }
+    // }).catch((error: any) => {
+    //   // console.log(error) 
+    // }); 
   }
-
+ 
   public ngOnInit(): void {
     this.searchAccessPage();
-    this.getImage();
     this.checkTabs();
     this.onResize();
     this.setContentStory();
-    this.socialGetBindingTwitter();
-    this.getConfigTwitter();
     setTimeout(() => {
       this.keyUpSearchEmergencyEvent("", true);
       this.keyUpSearchObjective("");
       this.keyUpSearchHashTag("", false);
       this.searchObjectivePageCategory();
-    }, 500);
+    }, 1000);
   }
 
   public setContentStory() {
@@ -332,7 +340,14 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
   }
 
-  ngAfterViewInit(): void {
+  public ngOnChanges(changes: SimpleChanges): void {
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+  }
+
+  public ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
@@ -340,7 +355,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.prefix_button = 'box-file-input';
       }
     }, 0);
-    if (this.isListPage && this.content) {
+    if (this.isListPage && this.content) { 
       setTimeout(() => {
         let detail = this.content && (this.content.content || this.content.detail) ? (this.content.content || this.content.detail) : '';
         if (detail.includes('#')) {
@@ -351,7 +366,10 @@ export class BoxPost extends AbstractPage implements OnInit {
             filter.whereConditions = {
               name: hTag.substring(1)
             };
-            this.hashTagFacade.searchTrend(filter).then((res: any) => {
+            let data = {
+              filter
+            }
+            this.hashTagFacade.searchTrend(data).then((res: any) => {
               if (res) {
                 this.resHashTag = res;
                 const isData = this.resHashTag.find(data => {
@@ -381,7 +399,10 @@ export class BoxPost extends AbstractPage implements OnInit {
             filter.whereConditions = {
               name: hTag.substring(1)
             };
-            this.hashTagFacade.searchTrend(filter).then((res: any) => {
+            let data = {
+              filter
+            }
+            this.hashTagFacade.searchTrend(data).then((res: any) => {
               if (res) {
                 this.resHashTag = res;
                 const isData = this.resHashTag.find(data => {
@@ -413,7 +434,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
           }
           if (this.content.type === POST_TYPE.NEEDS) {
-            this.selected = "มองหา";
+            this.selected = this.PLATFORM_NEEDS_TEXT;
             if (this.content.needs && this.content.needs.length > 0) {
               let index = 0;
               for (let needs of this.content.needs) {
@@ -427,10 +448,10 @@ export class BoxPost extends AbstractPage implements OnInit {
               index++;
             }
           } else {
-            this.selected = "ทั่วไป"
+            this.selected = this.PLATFORM_GENERAL_TEXT
           }
           if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
-            this.modeShowDoing = true
+            this.modeShowDoing = true;
           }
           if (this.content && this.content.objectiveTag !== '' && this.content.objectiveTag !== undefined && this.content.objectiveTag !== null) {
             this.dataObjective.hashTag = this.content.objectiveTag
@@ -505,11 +526,14 @@ export class BoxPost extends AbstractPage implements OnInit {
         limit: 10,
         callbacks: {
           remoteFilter: (query, callback) => {
-            let searchFilter: SearchFilter = new SearchFilter();
-            searchFilter.whereConditions = {
+            let filter : SearchFilter = new SearchFilter();
+            filter.whereConditions = {
               name: query
             };
-            this.hashTagFacade.searchTrend(searchFilter).then(res => {
+            let data = {
+              filter
+            }
+            this.hashTagFacade.searchTrend(data).then(res => {
               callback(res);
               this.choiceTag = res;
             }).catch(error => {
@@ -549,20 +573,32 @@ export class BoxPost extends AbstractPage implements OnInit {
       return false;
     });
 
+    setTimeout(() => {
+      if (this.accessDataPage !== undefined) {
+        const cloneData = JSON.parse(JSON.stringify(this.accessDataPage))
+        this.cloneDataCheck(cloneData);
+      }
+      this.socialGetBindingTwitter();
+      this.socialGetBindingFacebook();
+      this.getConfigTwitter();
+      this.getConfigFacebook(); 
+    }, 0);
   }
 
   public ngOnDestroy(): void {
-    super.ngOnDestroy();
+    super.ngOnDestroy(); 
   }
 
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
   }
+
   onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
   }
+
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
@@ -570,7 +606,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public updateText() {
     document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake') {
+      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake' || evt.srcElement.className === 'textarea-editor msg-error-shake'
+        || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake') {
         evt.preventDefault();
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
@@ -579,27 +616,45 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
+  public async checkAccessPage(pageId: string) { 
+    await this.pageFacade.getAccess(pageId).then((res: any) => { 
+      for (let dataPage of res.data) {
+        if (dataPage.level === 'OWNER') {
+          this.isNotAccess = true; 
+        }
+      }
+
+    }).catch((err: any) => { 
+      if (err.error.message === 'Unable to get User Page Access List') {
+        this.isNotAccess = false; 
+      }
+    })
+  }
+
+
   public searchAccessPage() {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
+        let index = 0; 
         for (let data of res) {
-          if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
-            this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
-              if (image.status === 1) {
-                if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                  data.user.imageURL = null
-                } else {
-                  data.user.imageURL = image.data
-                  // this.accessPageImage = image.data
+          if (index === 0) {
+            Object.assign(data.user, { type: 'user' });
+            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+              this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
+                if (image.status === 1) {
+                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                    data.user.imageURL = null
+                  } else {
+                    data.user.imageURL = image.data
+                  }
+                  this.accessPage = res;
                 }
-              }
-            }).catch((err: any) => {
-              if (err.error.message === "Unable got Asset") {
-                data.user.imageURL = ''
-              }
-            })
-          } else {
-            // this.accessPageImage = data.user 
+              }).catch((err: any) => {
+                if (err.error.message === "Unable got Asset") {
+                  data.user.imageURL = ''
+                }
+              })
+            }
           }
           if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
             this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
@@ -608,10 +663,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = null
                 } else {
                   data.page.imageURL = image.data
-                }
-                setTimeout(() => {
-                  this.accessPage = res
-                }, 1000);
+                } 
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -619,13 +671,87 @@ export class BoxPost extends AbstractPage implements OnInit {
               }
             })
           } else {
-            this.accessPage = res
+            this.accessPage = res;
           }
+          index++;
         }
       }
     }).catch((err: any) => {
       console.log(err)
     });
+  }
+
+  public cloneDataCheck(cloneData: any) {
+    if (cloneData && cloneData.length > 0) {
+      for (let data of cloneData) {
+        if (this.router.url.split('/')[1] === "page") { 
+          if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
+            const cloneDataPage = data.page;
+            this.modeShowDoing = true;
+            if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
+              this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
+                if (image.status === 1) {
+                  if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                    cloneDataPage.imageURL = null
+                  } else {
+                    cloneDataPage.imageURL = image.data
+                  }
+                  this.accessPageImage = cloneDataPage;
+                  this.isSelectOption = false;
+                }
+              }).catch((err: any) => {
+                if (err.error.message === "Unable got Asset") {
+                  cloneDataPage.imageURL = ''
+                }
+              });
+            } else {
+              this.accessPageImage = cloneDataPage;
+              this.isSelectOption = false;
+            }
+            this.dataPage = data.page.name;
+            this.dataPageId = data.page;
+            this.modeDoIng = false;
+            break;
+          } else {
+            // mode user 
+            if (!this.isNotAccess) {
+              this.userCheck(data);
+              this.dataPage = data.user.displayName;
+              this.dataPageId = data.user;
+              this.modeDoIng = true;
+              this.isSharePost = false;
+            }
+          }
+        } else {
+          this.userCheck(data);
+        }
+      }
+    }
+  }
+
+  public userCheck(data: any) {
+    const cloneDataUser = data.user;
+    this.dataPageId = data.user;
+    if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
+      this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
+        if (image.status === 1) {
+          if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+            cloneDataUser.imageURL = null
+          } else {
+            cloneDataUser.imageURL = image.data
+          }
+          this.accessPageImage = cloneDataUser;
+          this.isSelectOption = false;
+        }
+      }).catch((err: any) => {
+        if (err.error.message === "Unable got Asset") {
+          cloneDataUser.imageURL = ''
+        }
+      });
+    } else {
+      this.accessPageImage = cloneDataUser;
+      this.isSelectOption = false;
+    }
   }
 
   private clickAddHashtag(tag: string) {
@@ -668,9 +794,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public selectType(value) {
-    if (value === "เติมเต็ม") {
+    if (value === this.PLATFORM_FULFILL_TEXT) {
       this.typeStroy = POST_TYPE.FULFILLMENT;
-    } else if (value === "มองหา") {
+    } else if (value === this.PLATFORM_NEEDS_TEXT) {
       this.typeStroy = POST_TYPE.NEEDS;
       this.showDialogDoing();
 
@@ -682,7 +808,11 @@ export class BoxPost extends AbstractPage implements OnInit {
   public onChangeSlide(event?: MatSlideToggleChange) {
     this.isStory = event.checked;
     if (!this.isStory) {
-      if (this.dataStroy && this.dataStroy.storyPost !== "") {
+      if (window.innerWidth <= 1024) {
+        this.snackBarToast("ปิดสตอรี่", 1000);
+      }
+
+      if (!(Object.keys(this.dataStroy).length === 0 && this.dataStroy.constructor === Object)) {
         const confirmEventEmitter = new EventEmitter<any>();
         confirmEventEmitter.subscribe(() => {
           this.submitDialog.emit(this.dataStroy);
@@ -692,10 +822,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.submitCanCelDialog.emit(this.dataStroy);
         });
 
-        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้างสตอรี่โพสต์ ใช่หรือไม่่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+        let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.dataStroy.storyPost = "";
             this.closeDialog();
           } else {
             this.isStory = true;
@@ -704,7 +833,44 @@ export class BoxPost extends AbstractPage implements OnInit {
       } else {
         this.closeDialog();
       }
+      if (this.content !== '' && this.content !== undefined && this.content !== null) {
+        if (!(Object.keys(this.content.story).length === 0 && this.content.story.constructor === Object)) {
+          const confirmEventEmitter = new EventEmitter<any>();
+          confirmEventEmitter.subscribe(() => {
+            this.submitDialog.emit(this.dataStroy);
+          });
+          const canCelEventEmitter = new EventEmitter<any>();
+          canCelEventEmitter.subscribe(() => {
+            this.submitCanCelDialog.emit(this.dataStroy);
+          });
+
+          let dialog = this.showDialogWarming("คุณต้องการปิดการสร้าง" + this.PLATFORM_STORY + " ใช่หรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.dataStroy = {};
+              this.closeDialog();
+            } else {
+              this.isStory = true;
+            }
+          });
+        } else {
+          this.closeDialog();
+        }
+      }
+    } else {
+      if (window.innerWidth <= 1024) {
+        this.snackBarToast("เปิดสตอรี่", 1000);
+      }
     }
+  }
+
+  public snackBarToast(text: string, duration?: any, vertical?: any, horizontal?: any, customize?: any) {
+    this.snackBar.open(text, "", {
+      duration: duration,
+      verticalPosition: vertical,
+      horizontalPosition: horizontal,
+      panelClass: customize
+    });
   }
 
   public showDialogDoing(): void {
@@ -720,6 +886,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     const dialogRef = this.dialog.open(DialogDoIng, {
       width: 'auto',
       data: this.dataItem,
+      panelClass: 'customize-dialog',
       disableClose: true,
     });
     dialogRef.afterClosed().subscribe(doingItem => {
@@ -751,10 +918,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public showDialogCreateStory(isEdit?: boolean): void {
-    const topic = this.topic.nativeElement.value
+    const topic = this.topic.nativeElement.innerHTML;
     const storyPostShort = this.storyPost.nativeElement.innerText
     let cloneStory = this.dataStroy ? this.dataStroy : '';
-    this.dataStroy = this.content ? this.content.story : {};
+    this.dataStroy = this.content && this.content.story ? this.content.story : {};
     const storyPost = this.storyPost.nativeElement.innerText
     this.dataClone = {
       topic,
@@ -765,10 +932,6 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    // if (isEdit) {
-    //   this.dataStroy
-    // } else {
-    // }
     const dialogRef = this.dialog.open(DialogCreateStory, {
       width: '100vw',
       height: '100vh',
@@ -822,13 +985,11 @@ export class BoxPost extends AbstractPage implements OnInit {
           postGallery: this.dataImage,
           coverImage: this.coverImage
         }
-        // if (this.dataStroy.storyPost === '') {
-        //   delete data.story;
-        // }
         if (this.modeShowDoing) {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
           Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
         }
+        this.isClickPostPreLoad = true;
         return this.createPost.emit(data);
       }
       this.stopLoading();
@@ -1044,17 +1205,17 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onKeyupTopic(event) {
-    var limit = parseInt($('.header-story').attr('maxlength'));
-    var text = $('.header-story').html();
-    var chars = text.length;
-    if (chars > limit) {
-      $('.header-story').addClass('msg-error-shake');
-      text = text.substr(0, limit);
-    } else if (chars == 0) {
-      $('.header-story').removeClass('msg-error-shake');
-    } else {
-      $('.header-story').removeClass('msg-error-shake');
-    }
+    // var limit = parseInt($('.header-story').attr('maxlength'));
+    // var text = $('.header-story').html();
+    // var chars = text.length;
+    // if (chars > limit) {
+    //   $('.header-story').addClass('msg-error-shake');
+    //   text = text.substr(0, limit);
+    // } else if (chars == 0) {
+    //   $('.header-story').removeClass('msg-error-shake');
+    // } else {
+    //   $('.header-story').removeClass('msg-error-shake');
+    // }
 
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
@@ -1162,29 +1323,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     return user !== undefined && user !== null;
   }
 
-  public getImage() {
-    let user = this.authenManager.getCurrentUser();
-    this.userClone = user;
-    if (this.userClone && this.userClone.imageURL && this.userClone.imageURL !== '' && this.userClone.imageURL !== undefined && this.userClone.imageURL !== null) {
-      this.assetFacade.getPathFile(this.userClone.imageURL).then((image: any) => {
-        if (image.status === 1) {
-          if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-            this.userClone.imageBase64 = null
-          } else {
-            this.userClone.imageBase64 = image.data
-          }
-          this.accessPageImage.imageURL = this.userClone.imageBase64
-        }
-      }).catch((err: any) => {
-        if (err.error.message === "Unable got Asset") {
-          this.userClone.imageURL = ''
-        }
-      })
-    } else {
-      this.accessPageImage = this.userClone
-    }
-  }
-
   public genImages(images: any): void {
     this.modeShowImage = true;
     this.imagesTimeline.push(images);
@@ -1223,24 +1361,35 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.closeSearchAutocomp();
     } else {
       this.isShowEmergency = true;
-      setTimeout(() => {
-        let search = $('input[id=autocompleteEmergency]');
-        search.focus();
-      }, 30);
     }
   }
 
-  public selectAccessPage(page: any, type: string) {
-    this.pageId = page.id
-    this.accessPageImage = page
-    this.dataPage = page.name || page.displayName;
+  public selectAccessPage(event: any, type?: string) {
+    this.pageId = event.id;
+    this.dataPage = event.name || event.displayName;
     this.dataPageId = {};
-    this.dataPageId.id = page.id;
+    this.dataPageId.id = event.id;
     if (type === 'PAGE') {
       this.modeDoIng = false;
+      this.isSharePost = true;
+      this.modeShowDoing = true;
+      this.accessPageImage.name = event.name;
+      this.accessPageImage.imageURL = event.imageURL;
+      this.accessPageImage.id = event.id;
     } else {
       this.modeDoIng = true;
+      this.isSharePost = false;
+      this.modeShowDoing = false;
+      this.accessPageImage.displayName = event.displayName;
+      this.accessPageImage.imageURL = event.imageURL;
+      this.accessPageImage.id = event.id
     }
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+
+    this.selectedInformation.emit(event);
   }
 
   public onClickGetDataPost(isDraft?: boolean) {
@@ -1280,7 +1429,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.isMsgError = true
         var contentAlert;
         if (this.isListPage) {
-          topicAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
+          contentAlert = document.getElementById(this.prefix.detail + 'editableStoryPost');
           document.getElementById(this.prefix.detail + 'editableStoryPost').focus();
         } else {
           contentAlert = document.getElementById('editableStoryPost');
@@ -1337,6 +1486,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.imagesTimeline.length > 0) {
       this.dataImage = [];
       for (let [index, image] of this.imagesTimeline.entries()) {
+        // upload image
         const asset = new Asset();
         if (image && image.image) {
           let data = image.image.split(',')[0];
@@ -1349,10 +1499,23 @@ export class BoxPost extends AbstractPage implements OnInit {
           this.dataImage.push({
             id: image.id,
             asset,
-          })
+          });
+        } else {
+          if (image.imageURL !== undefined && image.imageURL !== '' && image.imageURL !== null) {
+            image.ordering = index + 1;
+            asset.ordering = image.ordering;
+            this.dataImage.push({
+              fileId: image.fileId,
+              id: image._id,
+              postId: image.post,
+              asset
+            });
+          }
+
         }
       }
-    }
+    } 
+
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
@@ -1394,10 +1557,10 @@ export class BoxPost extends AbstractPage implements OnInit {
         delete data.needs
       }
       if (this.isListPage) {
-        if (this.selectedAccessPage === 'โพสต์เข้าไทม์ไลน์ของฉัน') {
-          Object.assign(data, { id: this.dataPageId });
+        if (this.accessPageImage.name) {
+          Object.assign(data, { id: this.accessPageImage.id });
         } else {
-          Object.assign(data, { id: this.pageId });
+          Object.assign(data, { id: undefined });
         }
       }
 
@@ -1442,8 +1605,12 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public clearDataAll() {
-    this.topic.nativeElement.innerText = ""
-    this.storyPost.nativeElement.innerText = "";
+    if (this.topic !== undefined) {
+      this.topic.nativeElement.innerText = "";
+    }
+    if (this.storyPost !== undefined) {
+      this.storyPost.nativeElement.innerText = "";
+    }
     if (this.objectiveDoingName !== undefined) {
       this.objectiveDoingName.nativeElement.value = "";
     }
@@ -1461,7 +1628,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.hashTag = [];
     this.listTag = [];
     this.userTag = [];
-    this.selected = "ทั่วไป";
+    this.selected = this.PLATFORM_GENERAL_TEXT;
     this.selected1 = "โพสต์";
     this.isShowImage = false;
     this.isChecked = false;
@@ -1501,6 +1668,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           if (data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null) {
             Object.assign(this.resObjective[index], { isLoadImageIcon: true });
             this.getDataIcon(data.iconURL, index);
+          } else {
+            Object.assign(this.resObjective[index], { isLoadImageIcon: false });
+            this.isLoading = false;
           }
           index++;
         }
@@ -1550,7 +1720,10 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.orderBy = {}
     this.resHashTag = [];
     this.isLoading = true;
-    this.hashTagFacade.searchTrend(filter).then((res: any) => {
+    let result = {
+      filter
+    }
+    this.hashTagFacade.searchTrend(result).then((res: any) => {
       if (res) {
 
         this.resHashTag = res;
@@ -1940,21 +2113,18 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isUpload = false;
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
-    let search = $('input[id=searchInputObjective]');
-    search.focus();
     setTimeout(() => {
       const element = document.querySelector('.active-click-doing');
       this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
     }, 500);
 
     setTimeout(() => {
-
       this.setTopobj();
     }, 0);
   }
 
   public UploadImage() {
-    this.searchObjectivePageCategory();  
+    this.searchObjectivePageCategory();
     return this.isUpload = true;
   }
 
@@ -2007,7 +2177,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET;
     filter.relation = [];
-    filter.whereConditions = {};
+    filter.whereConditions = {
+      active: true
+    };
     filter.count = false;
     filter.orderBy = {}
     this.objectiveFacade.searchObjectiveCategory(filter).then((res: any) => {
@@ -2143,7 +2315,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.imageIcon = result; 
+        this.imageIcon = result;
       }
       this.stopLoading();
     });
@@ -2220,7 +2392,6 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     dialogRef.afterClosed().subscribe(res => {
       if (res !== undefined) {
-        console.log(res);
         this.imagesTimeline = res;
       }
     });
@@ -2346,79 +2517,49 @@ export class BoxPost extends AbstractPage implements OnInit {
     // }
   }
 
-  public getHeight() {
-    if (this.headerTop && this.topic && this.tagEvent && this.toolBar) {
-      let top = this.headerTop && this.headerTop.nativeElement.offsetHeight;
-      let topic = this.topic && this.topic.nativeElement.offsetHeight;
-      let tag = this.tagEvent && this.tagEvent.nativeElement.offsetHeight;
-      let toolbar = this.toolBar && this.toolBar.nativeElement.offsetHeight;
-      let x = top + topic + tag + toolbar + 1.4;
-      var chromeH = window.outerHeight - window.innerHeight;
-      var needs = this.needsElement && this.needsElement.listNeeds && this.needsElement.listNeeds.nativeElement.offsetHeight;
-      if (needs) {
-        x = x + needs;
-      }
-
-      if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
-        // x = x + 30.5; 
-        x = x + chromeH;
-
-      } else {
-        if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-          // x = x + chromeH;
-          x = x + 60.5;
-        }
-      }
-      return x;
-    }
-  }
-
   public onResize() {
     this.checkTabs();
+    this.socialGetBindingTwitter();
+    this.socialGetBindingFacebook();
+    this.getConfigTwitter();
+    this.getConfigFacebook();
+
     if (window.innerWidth <= 479) {
       this.isMobilePost = true;
       this.isMobileText = true;
+      this.isTablet = false;
+      this.isShowText = false;
       var postion = $('.wrapper-tool-post');
       postion.addClass("m-tool-post");
 
-      var postion1 = $('.left');
+      var postion1 = $('.box-left');
       postion1.addClass("m-left");
 
-      var postion2 = $('.center');
+      var postion2 = $('.box-center');
       postion2.addClass("m-center");
 
-      var postion3 = $('.right');
+      var postion3 = $('.box-right');
       postion3.addClass("m-right");
-      let x = this.getHeight();
-      if (x && x !== null) {
-        this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
-      }
-    } else if (window.innerWidth > 768) {
+    } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
       this.isMobileText = false;
-      let x = this.getHeight();
-      if (x && x !== null) {
-        this.storyPost.nativeElement.style.height = "unset";
-      }
+      this.isShowText = true;
     }
 
-    if (window.innerWidth <= 768 && 479 < window.innerWidth) {
+    if (window.innerWidth <= 1024 && 768 < window.innerWidth) {
       this.isMobilePost = true;
       this.isMobileText = false;
       this.isTablet = true;
-      setTimeout(() => {
-        let x = this.getHeight();
-        if (x && x !== undefined) {
-          this.storyPost.nativeElement.style.height = "calc(100vh - " + x + "px)";
-        }
-      }, 20);
-    } else if (window.innerWidth > 768) {
+      this.isShowText = true;
+    } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
-      let x = this.getHeight();
-      if (x && x !== undefined) {
-        this.storyPost.nativeElement.style.height = "unset";
-        this.onResizeCloseDialog();
-      }
+      this.isShowText = true;
+      this.onResizeCloseDialog();
+    } else if (479 < window.innerWidth) {
+      this.isMobilePost = true;
+      this.isMobileText = false;
+      this.isTablet = true;
+      this.isShowText = false;
     }
   }
 
@@ -2445,10 +2586,16 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.data.isFulfill = false;
     this.data.id = this.user.id;
     this.data.modeShowDoing = true;
-    this.data.isBox = true;
+    if (this.router.url.split('/')[1] === "page") {
+      this.data.isSharePost = true;
+    } else {
+      this.data.isSharePost = false;
+    }
+    // this.data.isBox = true;
 
     const dialogRef = this.dialog.open(DialogPost, {
       data: this.data,
+      panelClass: 'customize-dialog',
       disableClose: false,
     });
 
@@ -2492,14 +2639,23 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialGetBindingTwitter() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
+        this.twitterConection = res.data;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
     }
-    this.pageFacade.socialGetBindingTwitter(this.dataPageId.id).then((res: any) => {
-      this.twitterConection = res.data;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
+  }
+
+  public socialGetBindingFacebook() {
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.socialGetBindingFacebook(this.dataPageId.id).then((res: any) => {
+        this.facebookConection = res.data;
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
+    }
   }
 
   public socialBinding(socialBind: boolean, platform: string) {
@@ -2513,7 +2669,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           window.open(this.authorizeLink);
           window.bindTwitter = (resultTwitter) => {
             if (resultTwitter !== undefined && resultTwitter !== null) {
-              const twitter = new PageSocailTW();
+              const twitter = new PageSocialTW();
               twitter.twitterOauthToken = resultTwitter.token;
               twitter.twitterTokenSecret = resultTwitter.token_secret;
               twitter.twitterUserId = resultTwitter.userId;
@@ -2594,25 +2750,27 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public getConfigFacebook() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.getConfigByPage(this.dataPageId.id, FACEBOOK_AUTO_POST).then((res: any) => {
+        this.isAutoPostFacebook = res.value;
+      }).catch((err: any) => {
+        if (err && err.error && err.error.message === 'Unable to Get Page Config') {
+          this.isAutoPostFacebook = false;
+        }
+      })
     }
-    this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
-      this.isAutoPostFacebook = res.value;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    })
   }
 
   public getConfigTwitter() {
-    if (this.dataPageId && this.dataPageId.id === undefined) {
-      return;
+    if (this.dataPageId && this.dataPageId.id !== undefined) {
+      this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
+        this.isAutoPostTwitter = res.value;
+      }).catch((err: any) => {
+        if (err && err.error && err.error.message === 'Unable to Get Page Config') {
+          this.isAutoPostTwitter = false;
+        }
+      });
     }
-    this.pageFacade.getConfigByPage(this.dataPageId.id, TWITTER_AUTO_POST).then((res: any) => {
-      this.isAutoPostTwitter = res.value;
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
   }
 
   public setAutoPostSocial(checked: boolean, social: string) {
@@ -2638,6 +2796,11 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public redirectSetting() {
-    this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    if (this.dataPageId && this.dataPageId.pageUsername !== undefined && this.dataPageId.pageUsername !== '' && this.dataPageId.pageUsername !== null) {
+      this.router.navigateByUrl('page/' + this.dataPageId.pageUsername + '/settings?tab=connect');
+    } else {
+      this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
+    }
+    this.dialog.closeAll();
   }
 }

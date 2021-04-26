@@ -24,7 +24,7 @@
     z-index: 999;
     left: 0;
     top: 0;
-    @include font-size-8-100("Kanit-400");
+    @include font-size-8($font-head-400);
 }
 
 mat-spinner {
@@ -39,5 +39,5 @@ mat-spinner {
 
 .mat-progress-spinner circle,
 .mat-spinner circle {
-    stroke: $brandcolor2 !important;
+    stroke: $brandcolor3 !important;
 }
