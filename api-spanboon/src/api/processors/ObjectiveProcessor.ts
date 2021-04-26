@@ -10,10 +10,8 @@ import { ContentModel } from '../models/ContentModel';
 import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { ObjectiveProcessorData } from './data/ObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
-import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -23,7 +21,6 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
     constructor(
         private pageObjectiveService: PageObjectiveService,
-        private userFollowService: UserFollowService,
         private postsService: PostsService,
     ) {
         super();
