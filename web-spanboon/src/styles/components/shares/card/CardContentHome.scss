@@ -80,7 +80,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-7($font-head-500);
+                    @include font-size-9($font-head-500);
 
                     &:hover {
                         transition: 0.1s;
@@ -401,7 +401,7 @@
                 > span {
                     margin-top: 5px;
                     line-height: 25px;
-                    @include font-size-9($font-content-light);
+                    @include font-size-10($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -411,7 +411,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-7($font-head-500);
+                    @include font-size-9($font-head-500);
                 }
             }
             > a {
@@ -511,8 +511,8 @@
                     -o-object-fit: scale-down;
                     object-fit: cover;
                     z-index: 1;
-                    filter: blur(15px);
-                    -webkit-filter: blur(15px);
+                    filter: blur(5px);
+                    -webkit-filter: blur(5px);
                 }
                 > .teg_event {
                     position: absolute;
@@ -643,8 +643,8 @@
                             -o-object-fit: scale-down;
                             object-fit: cover;
                             z-index: 1;
-                            filter: blur(15px);
-                            -webkit-filter: blur(15px);
+                            filter: blur(5px);
+                            -webkit-filter: blur(5px);
                         }
                         > img {
                             z-index: 2;

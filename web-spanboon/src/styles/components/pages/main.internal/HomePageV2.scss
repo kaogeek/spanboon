@@ -35,15 +35,16 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
-                        width: 72px;
                     }
                 }
                 > .tag_list {
-                    display: block;
+                    display: flex;
+                    align-self: center;
+                    @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
@@ -73,13 +74,14 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text {
                     color: $brandcolor2;
-                    margin-right: 10px;
-                    width: 72px;
                 }
                 > .tag_list {
+                    display: flex;
+                    align-self: center;
+                    @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
@@ -704,6 +706,7 @@
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
+        @include font-size-9($font-head-500);
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
         display: none;
