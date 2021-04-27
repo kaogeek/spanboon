@@ -11,6 +11,7 @@ export class SectionModel extends BaseModel {
     public title: string;
     public subtitle: string;
     public description: string;
+    public type: string;
     public link: string;
     public contents: any[];
     public iconUrl: string;

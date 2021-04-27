@@ -1078,9 +1078,10 @@ export class PagePostController {
                     },
                     {
                         $project: {
-                            'emergencyEvent._id': 0,
+                            // 'emergencyEvent._id': 0,
                             'emergencyEvent.title': 0,
                             'emergencyEvent.detail': 0,
+                            'emergencyEvent.hashTag': 0,
                             'emergencyEvent.coverPageURL': 0,
                             'emergencyEvent.createdDate': 0,
                             'emergencyEvent.isClose': 0,
@@ -1103,11 +1104,12 @@ export class PagePostController {
                     },
                     {
                         $project: {
-                            'objective._id': 0,
+                            // 'objective._id': 0,
                             'objective.pageId': 0,
                             'objective.title': 0,
                             'objective.detail': 0,
                             'objective.iconURL': 0,
+                            'objective.hashTag': 0,
                             'objective.createdDate': 0
                         }
                     },
@@ -1127,10 +1129,8 @@ export class PagePostController {
                     },
                     {
                         $project: {
-                            'ownerUser._id': 0,
                             'ownerUser.username': 0,
                             'ownerUser.password': 0,
-                            'ownerUser.uniqueId': 0,
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
@@ -1195,8 +1195,13 @@ export class PagePostController {
 
                         if (postsReference !== null && postsReference !== undefined && postsReference.length > 0) {
                             for (const posts of postsReference) {
-                                const postId = posts.referencePost;
-                                postsMap[postId + ':' + uId] = posts;
+                                const pageId = posts.pageId;
+                                const referencePost = posts.referencePost;
+                                if (pageId !== null && pageId !== undefined && pageId !== '') {
+                                    postsMap[pageId + ':' + referencePost + ':' + uId] = posts;
+                                } else {
+                                    postsMap[referencePost + ':' + uId] = posts;
+                                }
                             }
                         }
                     }
@@ -1217,10 +1222,10 @@ export class PagePostController {
                                     const likeAsPage = like.likeAsPage;
 
                                     if (postId !== null && postId !== undefined && postId !== '') {
-                                        userLikeMap[postId] = like;
-
                                         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
                                             likeAsPageMap[postId] = like;
+                                        } else {
+                                            userLikeMap[postId] = like;
                                         }
                                     }
                                 }
@@ -1238,8 +1243,9 @@ export class PagePostController {
 
                     pagePostLists.map(async (data) => {
                         const postId = data._id;
+                        const postAsPage = data.postAsPage;
                         const story = data.story;
-                        const dataKey = postId + ':' + uId;
+                        let dataKey;
 
                         if (isHideStory === true) {
                             if (story !== null && story !== undefined) {
@@ -1249,27 +1255,44 @@ export class PagePostController {
                             }
                         }
 
-                        if (userLikeMap[postId]) {
-                            data.isLike = true;
-                        } else {
-                            data.isLike = false;
-                        }
+                        if (postId !== null && postId !== undefined && postId !== '') {
+                            if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
+                                dataKey = postAsPage + ':' + postId + ':' + uId;
+                            } else {
+                                dataKey = postId + ':' + uId;
+                            }
 
-                        if (likeAsPageMap[postId]) {
-                            data.likeAsPage = true;
-                        } else {
-                            data.likeAsPage = false;
-                        }
+                            if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                                if (postsMap[dataKey]) {
+                                    data.isRepost = true;
+                                } else {
+                                    data.isRepost = false;
+                                }
+                            } else {
+                                data.isRepost = false;
+                            }
 
-                        if (postsMap[dataKey]) {
-                            data.isRepost = true;
+                            if (userLikeMap[postId]) {
+                                data.isLike = true;
+                            } else {
+                                data.isLike = false;
+                            }
+
+                            if (likeAsPageMap[postId]) {
+                                data.likeAsPage = true;
+                            } else {
+                                data.likeAsPage = false;
+                            }
+
+                            if (postsCommentMap[postId]) {
+                                data.isComment = true;
+                            } else {
+                                data.isComment = false;
+                            }
                         } else {
                             data.isRepost = false;
-                        }
-
-                        if (postsCommentMap[postId]) {
-                            data.isComment = true;
-                        } else {
+                            data.isLike = false;
+                            data.likeAsPage = false;
                             data.isComment = false;
                         }
                     });
@@ -1335,7 +1358,7 @@ export class PagePostController {
             let isDraft = postPages.isDraft;
             let story = postPages.story;
             let coverImage = postPages.coverImage;
-            // let postGallery = postPages.postGallery;
+            const postGallery = postPages.postGallery;
             const postNeeds = postPages.needs;
             const postHashTag = postPages.postsHashTags;
             const postUserTag = postPages.userTags;
@@ -1379,6 +1402,95 @@ export class PagePostController {
                 for (const user of userIdExists) {
                     userTags.push(new ObjectID(user.id));
                 }
+            }
+
+            let assetResultUpload: Asset;
+
+            if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
+
+                let isCreateAssetGallery = false;
+                let postIdGallery;
+                const deleteGalleryList = [];
+                const UpdateGalleryList = [];
+                const createGalleyList = [];
+
+                for (const image of postGallery) {
+                    postIdGallery = new ObjectID(image.postId);
+                    deleteGalleryList.push(new ObjectID(image.fileId));
+                    UpdateGalleryList.push(image);
+                }
+
+                // find post have not in image  
+                await this.postGalleryService.deleteMany({
+                    // where: {
+                    $and: [
+                        {
+                            post: postIdGallery
+                        }, {
+                            fileId: {
+                                $nin: deleteGalleryList
+                            }
+                        }
+                    ]
+                    // }
+                });
+
+                for (const data of UpdateGalleryList) {
+                    // find gallery update ordering
+                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
+                    if (gallery.length > 0) {
+                        // const isContain = gallery.find(object => {  
+                        //     console.log('object.fileId ',object.fileId)
+                        //     console.log('data.fileId ',data.fileId)
+                        //     console.log('>>> ',new ObjectID(object.fileId) === new ObjectID(data.fileId) ? 'true' : 'false')
+                        //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
+                        // });
+                        // if(isContain){
+                        //     continue;
+                        // } else {
+                        //     console.log('isContain ',data)
+                        // }
+                        // console.log(isContain);
+
+                        const updateImageQuery = { _id: new ObjectID(data.id) };
+                        const newImageValue = {
+                            $set: {
+                                ordering: data.asset.ordering,
+                            }
+                        };
+                        await this.postGalleryService.update(updateImageQuery, newImageValue);
+                    } else {
+                        createGalleyList.push(data);
+                        isCreateAssetGallery = true;
+                    }
+                }
+                if (isCreateAssetGallery) {
+                    for (const image of createGalleyList) {
+                        const newFileName = ownerUser + FileUtil.renameFile();
+                        const assetData = image.asset.data;
+                        const assetMimeType = image.asset.mimeType;
+                        const assetFileName = newFileName;
+                        const assetSize = image.asset.size;
+
+                        const galleryImageAsset = new Asset();
+                        galleryImageAsset.userId = ownerUser;
+                        galleryImageAsset.data = assetData;
+                        galleryImageAsset.mimeType = assetMimeType;
+                        galleryImageAsset.fileName = assetFileName;
+                        galleryImageAsset.size = assetSize;
+                        galleryImageAsset.expirationDate = null;
+                        galleryImageAsset.scope = ASSET_SCOPE.PUBLIC;
+                        assetResultUpload = await this.assetService.create(galleryImageAsset);
+
+                        const gallery = new PostsGallery();
+                        gallery.fileId = new ObjectID(image.id);
+                        gallery.post = post.id;
+                        gallery.imageURL = assetResultUpload ? ASSET_PATH + assetResultUpload.id : '';
+                        gallery.ordering = image.asset.ordering;
+                        await this.postGalleryService.create(gallery);
+                    }
+                }
+
             }
 
             let assetResult: Asset;
@@ -1537,7 +1649,14 @@ export class PagePostController {
                 }
 
                 for (const need of postNeeds) {
-                    const needId = need.id;
+                    let needId = undefined;
+                    if (need._id !== null && need._id !== undefined && need._id !== '') {
+                        needId = need._id;
+                    }
+
+                    if (need.id !== null && need.id !== undefined && need.id !== '') {
+                        needId = need.id;
+                    }
                     const standardId = need.standardItemId;
                     const customName = need.itemName;
                     const customUnit = need.unit;
@@ -1738,6 +1857,19 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            const referencePost = new ObjectID(posts.referencePost);
+
+            const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
+
+            if (undoRepost !== null && undoRepost !== undefined) {
+                const originPost: Posts = await this.postsService.findOne({ _id: referencePost });
+
+                if (originPost !== null && originPost !== undefined) {
+                    const repostCount = originPost.repostCount;
+                    await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
+                }
+            }
+
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);
@@ -1858,4 +1990,4 @@ export class PagePostController {
     public async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }
-} 
+}

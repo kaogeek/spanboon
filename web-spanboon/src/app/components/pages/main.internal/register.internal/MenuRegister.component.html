@@ -12,15 +12,15 @@
                 สวัสดี,
             </div>
             <div class="wrapper-sub-header">
-                ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม สะพานบุญ<br>
+                ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม {{PLATFORM_NAME_TH}}<br>
                 คุณสามารถเลือกสร้างบัญชีในแบบ <br>
                 ที่คุณต้องการได้
             </div>
         </div>
 
         <div class="login-div">
-            <spanboon-button class="login" [height]="'34pt'" [text]="'สร้างบัญชีผู้ใช้ สะพานบุญ'" [fontSize]="'18px'"
-                [color]="'#F8F7F2'" [bgColor]="'#FD545A'" [link]="'/register'" [param]="{mode: 'normal'}">
+            <spanboon-button class="login" [height]="'34pt'" [text]="'สร้างบัญชีผู้ใช้ ' + PLATFORM_NAME_TH"
+                [fontSize]="'18px'" [color]="'#F8F7F2'" [link]="'/register'" [param]="{mode: 'normal'}">
             </spanboon-button>
 
             <div class="center-line">
@@ -33,7 +33,7 @@
                 [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
                 [color]="'#F8F7F2'" (click)="clickLoginFB()" [param]="{mode: 'facebook'}"></button-social>
             <!-- [link]="'/clickSystemDevelopment'"  -->
-            <button-social class="button-social-dis" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
+            <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
                 [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
                 [color]="'#F8F7F2'" (click)="clickLoginTW()" [param]="{mode: 'twitter'}">
             </button-social>

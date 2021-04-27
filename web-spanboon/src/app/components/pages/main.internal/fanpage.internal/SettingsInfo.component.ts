@@ -10,6 +10,7 @@ import { Component, ElementRef, ViewChild } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { AuthenManager, UserAccessFacade, AssetFacade, ObservableManager, PageFacade } from 'src/app/services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { AboutPage } from './AboutPage.component';
@@ -47,7 +48,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     public resDataPage: any;
     public cloneData: any;
     public uuid: boolean;
-    public selected: any;
+    public selected: any;  
 
     public links = [
         {
@@ -68,11 +69,8 @@ export class SettingsInfo extends AbstractPage implements OnInit {
         this.dialog = dialog 
         this.observManager = observManager;
         this.routeActivated = routeActivated;
-        this.dirtyCancelEvent = new EventEmitter();  
-
-        this.routeActivated.params.subscribe(async (params) => {
-            this.pageId = params['id']; 
-        });
+        this.dirtyCancelEvent = new EventEmitter();   
+         
         this.selected = this.links[0].label; 
     }
 
@@ -80,7 +78,7 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     }
 
     public ngOnDestroy(): void {
-        super.ngOnDestroy();
+        super.ngOnDestroy(); 
     }
 
     isPageDirty(): boolean {

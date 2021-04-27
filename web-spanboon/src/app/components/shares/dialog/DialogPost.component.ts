@@ -50,7 +50,9 @@ export class DialogPost extends AbstractPage {
   public isFulfill: boolean = true;
   public isPreload: boolean = true;
   public isFulfillNull: boolean = false;
+  public isSharePost: boolean = false;
   public snackBar: MatSnackBar;
+  public selectedAccessPage: any;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -68,17 +70,24 @@ export class DialogPost extends AbstractPage {
     this.fulfillFacade = fulfillFacade;
     this.prefix = {};
 
-    this.observManager.createSubject(REFRESH_DATA);
-    this.observManager.createSubject('scroll.fix');
+    setTimeout(() => {
+      this.isPreload = false
+    }, 1000);
 
+    this.observManager.createSubject(REFRESH_DATA);
+    this.observManager.createSubject('scroll.fix'); 
     if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
+      if(this.data && !this.data.isSharePost){ 
+        this.isSharePost = this.data.isSharePost;
+      } else {  
+        this.isSharePost = true;
+      }   
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
-
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
@@ -97,11 +106,7 @@ export class DialogPost extends AbstractPage {
       })
     }
 
-    console.log('this.data', this.data);
 
-    setTimeout(() => {
-      this.isPreload = false
-    }, 1000);
   }
 
   public ngOnInit() {
@@ -139,8 +144,26 @@ export class DialogPost extends AbstractPage {
         check = (this.data.title !== '' || this.data.detail)
       }
       if (result.type === 'click' && check) {
-
-        this.dialogRef.close();
+        let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            if (this.isListPage) {
+              if (!this.isEdit) {
+                this.data.topic = '';
+                this.data.content = '';
+                this.postFacade.nextMessageTopic(this.data.topic);
+                this.postFacade.nextMessage(this.data.content);
+              }
+            }
+            this.dialogRef.close();
+          } else {
+            if (!this.isEdit) {
+              this.dialog.open(DialogPost, {
+                data: this.data
+              });
+            }
+          }
+        });
       }
     });
   }
@@ -186,6 +209,14 @@ export class DialogPost extends AbstractPage {
           }
         }).catch((err: any) => {
           console.log(err);
+          let alertMessages: string;
+          if (err && err.error && err.error.message === 'Objective was not found.') {
+            alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.showAlertDialogWarming(alertMessages, "none");
+          } else if (err && err.error && err.error.message === 'Emergency Event was not found.'){
+            alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.showAlertDialogWarming(alertMessages, "none");
+          }
         })
       }
     } else {
@@ -203,6 +234,8 @@ export class DialogPost extends AbstractPage {
                 }
                 this.showAlertDialogWarming(alertMessages, "none");
               }
+              this.postFacade.nextMessageTopic('');
+              this.postFacade.nextMessage('');
               this.boxPost.clearDataAll();
               this.observManager.publish(REFRESH_DATA, data.type);
               this.dialogRef.close();
@@ -216,8 +249,6 @@ export class DialogPost extends AbstractPage {
   }
 
   public createFullfillPost(data) {
-    console.log('this.isFulfill', this.isFulfill)
-    console.log('data', data)
     if (this.isFulfill) {
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
         if (res.status === 1) {
@@ -257,20 +288,22 @@ export class DialogPost extends AbstractPage {
         this.submitCanCelDialog.emit(this.data);
       });
 
-      // let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
-      // dialog.afterClosed().subscribe((res) => {
-      //   if (res) {
-      //     this.data.topic = '';
-      //     this.data.content = '';
-      //     this.postFacade.nextMessageTopic(this.data.topic);
-      //     this.postFacade.nextMessage(this.data.content);
-      //     this.dialogRef.close();
-      //   }
-      // });
-
-      this.dialogRef.close();
+      let dialog = this.showDialogWarming("คุณต้องการออกจากหน้านี้ใช่หรือไม่", "ยกเลิก", "ตกลง", this.confirmEventEmitter, this.canCelEventEmitter);
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.data.topic = '';
+          this.data.content = '';
+          this.postFacade.nextMessageTopic(this.data.topic);
+          this.postFacade.nextMessage(this.data.content);
+          this.dialogRef.close();
+        }
+      }); 
     } else {
       this.dialogRef.close(this.data);
     }
+  }
+
+  public selectedInformation(data : any){ 
+    this.selectedAccessPage = data.name || data.displayName;
   }
 }

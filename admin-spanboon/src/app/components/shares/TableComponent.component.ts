@@ -15,6 +15,8 @@ import { DialogWarningComponent } from './DialogWarningComponent.component';
 import { SearchFilter } from '../../models/SearchFilter';
 import { FormControl } from '@angular/forms';
 
+const SEARCH_LIMIT: number = 0;
+const SEARCH_OFFSET: number = 0;
 const DEFAULT_DATE_TIME_FORMAT: string = "dd-MM-yyyy HH:mm:ss";
 const ITEMS_PER_PAGE: string = 'รายการต่อหน้า';
 const BASE_MODEL: string[] = [
@@ -250,8 +252,9 @@ export class TableComponent implements OnInit {
                 search.whereConditions[field] = { $regex: '^' + this.search + '.*' };
             }
         }
+        search.limit = SEARCH_LIMIT;
         search.orderBy = {};
-        search.offset = isNextPage ? this.paginator.length : 0;
+        search.offset = isNextPage ? this.paginator.length : SEARCH_OFFSET;
         search.relation = this.relation;
         search.count = false;
         let facade: any;
@@ -453,8 +456,11 @@ export class TableComponent implements OnInit {
 
     public clickCreateForm(): void {
         if (this.seletc.length != 0) {
+            console.log('create1 >>>> ', this.arr);
+
             this.create.emit(this.arr);
         } else {
+            console.log('create2 >>>> ');
             this.create.emit(null);
         }
     }

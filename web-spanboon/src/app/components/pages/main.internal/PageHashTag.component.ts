@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -20,6 +20,7 @@ import { POST_TYPE, SORT_BY } from '../../../TypePost';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { RePost } from '../../../models/RePost';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
+import { UserEngagement } from '../../../models/UserEngagement';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -41,7 +42,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: 'ทั่วไป', keyword: 'general' }, { label: 'มองหา', keyword: 'needs' }, { label: 'เติมเต็ม', keyword: 'fulfillment' }];
+  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
   public activeLink = this.links[0].label;
 
   filterType: 'เฉพาะที่คุณติดตาม' | 'ทั้งหมด' | 'กำหนดเอง' = 'ทั้งหมด';
@@ -68,6 +69,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   private pageCategoryFacade: PageCategoryFacade;
   private pageFacade: PageFacade;
   private dateAdapter: DateAdapter<Date>;
+  private engagementService: Engagement;
+  private userEngagementFacade: UserEngagementFacade;
 
   public resDataPage: any;
   public resObjective: any;
@@ -82,6 +85,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public isBackdrop: boolean;
   public scrollMobile: boolean;
   public showLoading: boolean;
+  public isLoadMorePageCategory: boolean;
+  public isLoadMorePageEmergency: boolean;
+  public isLoadMoreObjective: boolean;
+  public isLoadMoreHashTag: boolean;
   public isLoadingClickTab: boolean;
   public imageCoverSize: number;
   public position: number;
@@ -207,7 +214,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
-    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade) {
+    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -222,6 +229,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.pageCategoryFacade = pageCategoryFacade;
     this.accountFacade = accountFacade;
     this.pageFacade = pageFacade;
+    this.engagementService = engagementService;
+    this.userEngagementFacade = userEngagementFacade;
     this.isOpen = false;
     this.isAdvance = false;
     this.isAdvanceRich = false;
@@ -267,7 +276,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               const dataHashtag = text.split('=')[1].split(',');
               if (dataHashtag.length > 0) {
                 for (let data of dataHashtag) {
-                  if (data.includes('#')) { 
+                  if (data.includes('#')) {
                     this.matHashTag.push(data.substring(1, data.length));
                   } else {
                     this.matHashTag = text.split('=')[1].split(',');
@@ -326,20 +335,20 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.endActionCount = Number(text.split('=')[1]);
             } else if (text.includes('type')) {
               const typeCate = text.split('=')[1];
-              if(typeCate.toUpperCase() === POST_TYPE.NEEDS){ 
-                this.type = text.split('=')[1]; 
-                this.activeLink = 'มองหา';
-              } else if(typeCate.toUpperCase() === POST_TYPE.FULFILLMENT){
-                this.type = text.split('=')[1]; 
-                this.activeLink = 'เติมเต็ม';
-              } else if(typeCate.toUpperCase() === POST_TYPE.GENERAL){
-                this.type = text.split('=')[1]; 
-                this.activeLink = 'ทั่วไป';
+              if (typeCate.toUpperCase() === POST_TYPE.NEEDS) {
+                this.type = text.split('=')[1];
+                this.activeLink = this.PLATFORM_NEEDS_TEXT;
+              } else if (typeCate.toUpperCase() === POST_TYPE.FULFILLMENT) {
+                this.type = text.split('=')[1];
+                this.activeLink = this.PLATFORM_FULFILL_TEXT;
+              } else if (typeCate.toUpperCase() === POST_TYPE.GENERAL) {
+                this.type = text.split('=')[1];
+                this.activeLink = this.PLATFORM_GENERAL_TEXT;
               } else {
-                this.type = text.split('=')[1]; 
+                this.type = text.split('=')[1];
                 this.activeLink = 'ทั้งหมด';
               }
-            } 
+            }
           }
           // this.searchTrendTag();
           // const splitText = substringPath.split('=');
@@ -377,7 +386,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       var x = document.getElementsByClassName('header-top')[0].clientHeight;
       let top = x + y;
       if (this.prevOld > scrollTop) {
-        if( this.feedbodysearch &&  this.feedbodysearch.nativeElement !== undefined){ 
+        if (this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined) {
           if (window.innerWidth < 489) {
             this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
           } else {
@@ -385,7 +394,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
         }
       } else {
-        if(this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined){
+        if (this.feedbodysearch && this.feedbodysearch.nativeElement !== undefined) {
           this.feedbodysearch.nativeElement.style.top = - top + 'px';
         }
       }
@@ -645,10 +654,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public async searchEmergency() {
     this.isLoading = true;
+    this.isLoadMorePageEmergency = true;
     const keywordFilter: any = {
       filter: {
         limit: 5,
-        offset: SEARCH_OFFSET,
+        offset: SEARCH_OFFSET + (this.resEmergency && this.resEmergency.length > 0 ? this.resEmergency.length : 0),
         relation: [],
         whereConditions: {},
         count: false,
@@ -668,7 +678,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergency = data.id;
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
         if (this.emergency) {
           for (let [index, tag] of cloneEmergency.entries()) {
@@ -677,6 +687,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
+        this.isLoadMorePageEmergency = false;
       }
 
       this.isLoading = false;
@@ -699,6 +710,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       },
     };
     let cloneObject: any[] = this.resObjective;
+    this.isLoadMoreObjective = true;
     await this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.data) {
         for (let object of result.data) {
@@ -711,7 +723,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.objective = data.id;
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
         if (this.objective) {
           for (let [index, tag] of cloneObject.entries()) {
@@ -721,53 +733,76 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
         }
       }
+      this.isLoadMoreObjective = false;
     }).catch((err: any) => {
       console.log(err)
     })
   }
 
   public searchHashTag() {
-    let searchFilter: SearchFilter = new SearchFilter();
-    searchFilter.limit = 5;
-    searchFilter.offset = SEARCH_OFFSET + this.resHashTag && this.resHashTag.length ? this.resHashTag.length : 0;
-    searchFilter.whereConditions = {};
-    searchFilter.orderBy = {};
+    let filter: SearchFilter = new SearchFilter();
+    filter.limit = 5;
+    filter.offset = SEARCH_OFFSET + this.resHashTag && this.resHashTag.length ? this.resHashTag.length : 0;
+    filter.whereConditions = {};
+    filter.orderBy = {};  
     let cloneHashtag: any[] = this.resHashTag;
-    this.hashTagFacade.searchTrend(searchFilter).then(res => {
-      for (let hashtag of res) {
-        cloneHashtag.push(hashtag);
-      }
-      if (this.matHashTag) {
-        for (let [index, tag] of cloneHashtag.entries()) {
-          for (let hashtag of this.matHashTag) {
-            if (tag.value === hashtag) {
-              Object.assign(cloneHashtag[index], { selected: true })
+    this.isLoadMoreHashTag = true;
+    let data = {
+      filter
+    } 
+    this.hashTagFacade.searchTrend(data).then(res => { 
+      if (res && res.length > 0) {
+        for (let hashtag of res) {
+          cloneHashtag.push(hashtag);
+        }
+        if (this.matHashTag) {
+          for (let [index, tag] of cloneHashtag.entries()) {
+            for (let hashtag of this.matHashTag) {
+              if (tag.value === hashtag) {
+                Object.assign(cloneHashtag[index], { selected: true })
+              }
             }
           }
         }
       }
-      this.resHashTag = cloneHashtag;
+      this.isLoadMoreHashTag = false;
+      // this.resHashTag = cloneHashtag;
     }).catch(error => {
       console.log(error);
+      this.isLoadMoreHashTag = false;
     });
   }
 
   public getObjective(data) {
-    if (data.selected) {
+    if (data.item.selected) {
       this.objective = data.hashTag;
     } else {
       this.objective = '';
     }
     this.searchTrendTag();
+
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    this.createEngagement(dataEngagement);
+
   }
 
   public getEmergency(data) {
-    if (data.selected) {
-      this.emergency = data.id;
+    if (data.item.selected) {
+      this.emergency = data.item.id;
     } else {
       this.emergency = '';
     }
     this.searchTrendTag();
+
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    this.createEngagement(dataEngagement);
+  }
+
+  public createEngagement(dataEngagement: UserEngagement) {
+    return this.userEngagementFacade.create(dataEngagement).then((res: any) => {
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
   }
 
   public getPagecategory(data) {
@@ -797,17 +832,20 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public checkBoxMutiple(data) {
-    if (data.selected) {
-      this.matHashTag.push(data.value)
+    if (data.item.selected) {
+      this.matHashTag.push(data.item.value)
     } else {
       const isHashtag = this.matHashTag.findIndex(lTag => {
-        return lTag === data.value
+        return lTag === data.item.value
       });
       if (isHashtag !== -1) {
         this.matHashTag.splice(isHashtag, 1)
       }
     }
     this.searchTrendTag();
+
+    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
+    this.createEngagement(dataEngagement);
   }
 
   public searchTrendTag(offset?: boolean) {
@@ -1068,8 +1106,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public async searchPageCategory(page?: any) {
     let filter = new SearchFilter();
-    filter.limit = SEARCH_LIMIT;
-    filter.offset = SEARCH_OFFSET;
+    filter.limit = 5;
+    filter.offset = SEARCH_OFFSET + (this.resPageType && this.resPageType.length > 0 ? this.resPageType.length : 0);
     filter.relation = [];
     filter.whereConditions = {};
     filter.count = false;
@@ -1077,20 +1115,26 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       createdDate: "DESC",
     }
     this.isLoading = true;
+    this.isLoadMorePageCategory = true; 
+   
+    let clonePageCategory: any[] = this.resPageType;
     await this.pageCategoryFacade.search(filter).then((res: any) => {
-      if (res) {
-        this.resPageType = res;
+      if (res && res.length > 0) {
+        for (let hashtag of res) {
+          clonePageCategory.push(hashtag);
+        }
         if (this.pageCateUrl) {
           for (let data of this.resPageType) {
             for (let list of this.pageCateUrl) {
               if (list === data.name) {
-                this.page.push(data.id);
+                this.page.push(data.id); 
               }
             }
           }
-          this.searchTrendTag();
+          this.searchTrendTag(); 
         }
-      }
+      } 
+        this.isLoadMorePageCategory = false;  
     }).catch((err: any) => {
       console.log(err)
     })
@@ -1120,6 +1164,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag();
     }
   }
+  
   public removeCard(card: any, index: number) {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
@@ -1192,8 +1237,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     $("#menubottom").css({
       'overflow-y': "hidden"
-    });
-
+    }); 
   }
 
   public async actionComment(action: any, index: number) {
@@ -1226,7 +1270,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             });
           }
           const dialogRef = this.dialog.open(DialogReboonTopic, {
-            width: '550pt',
+            width: '450pt',
             data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: action.userAsPage } }
           });
 

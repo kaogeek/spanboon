@@ -17,12 +17,12 @@
         font-family: "Kanit-500";
 
         > .header {
-            font-size: 22px;
+            @include font-size-7($font-head-500);
         }
 
         > .title {
-            color: $koalaGray;
-            font-size: 16px;
+            color: $color-gray;
+            @include font-size-9($font-head-500);
         }
     }
 
@@ -30,11 +30,11 @@
         flex: 0 0 auto;
         width: 100%;
         overflow: hidden;
-        background-color: $bg-fog-gray2;
+        background-color: whitesmoke;
         display: none;
         height: 40pt;
 
-        > .tablinks{
+        > .tablinks {
             width: 50%;
             padding: 0 10pt;
             display: flex;
@@ -42,19 +42,18 @@
             align-items: center;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 18px;
-            font-family: "Kanit-500";
+            @include font-size-9($font-head-500);
             color: $black;
             border-bottom: 3pt solid transparent;
 
             &:hover {
-                background: rgba($color-warm-red, 0.1);
-                color: $color-warm-red;
+                background: rgba($brandcolor2, 0.1);
+                color: $brandcolor2;
             }
 
             &.active {
-                color: $color-warm-red;
-                border-bottom: 3pt solid $color-warm-red;
+                color: $brandcolor2;
+                border-bottom: 3pt solid $brandcolor2;
             }
         }
     }
@@ -78,7 +77,7 @@
                 padding: 0 20pt;
                 height: 50pt;
                 border-bottom: 0.7pt solid $border-color;
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-head-500);
 
                 > .label-fulfill {
                     display: flex;
@@ -88,12 +87,12 @@
                     > .active-hover {
                         @include pointer();
                         > .non-active {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                         &:hover {
                             > .folder-sub {
-                                color: $color-warm-red;
-                                text-decoration: underline;
+                                color: $brandcolor2;
+                                color: rgba($brandcolor2, 0.95);
                             }
                         }
 
@@ -123,8 +122,7 @@
                         border: 0.7pt solid #e5e5e5;
                         border-radius: 5pt;
                         padding: 5pt 25pt;
-                        font-family: "Kanit-500";
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
 
                     > .icon-clear {
@@ -146,8 +144,7 @@
                 overflow-y: auto;
 
                 > .search-latest {
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     width: 100%;
                 }
                 .list-search-fulfill {
@@ -171,8 +168,7 @@
                         border: 0.7pt solid $border-color;
                         border-radius: 5pt;
                         @include pointer();
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
 
                         &.active {
                             width: calc(25% - 8pt - 8pt - 2.8pt - 10pt);
@@ -207,7 +203,7 @@
 
                         &.active-click-data {
                             border-radius: 8pt;
-                            border: 0.7pt solid $color-warm-red;
+                            border: 0.7pt solid $brandcolor2;
                         }
 
                         > .category-img {
@@ -232,7 +228,7 @@
                                 width: 25pt;
                                 height: 25pt;
                                 border-radius: 50%;
-                                background-color: $color-warm-red;
+                                background-color: $brandcolor2;
                                 > .count-item {
                                     color: $brandcolor;
                                 }
@@ -279,7 +275,7 @@
                         }
                         > .path-name {
                             color: #a5a5a6;
-                            font-size: 14px;
+                            @include font-size-10($font-head-500);
                         }
 
                         > .icon-folder {
@@ -310,43 +306,45 @@
                             position: absolute;
                             top: 5pt;
                             right: 5pt;
-                        } 
+                        }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
 
-                        >.limit-fulfill {
+                        > .limit-fulfill {
                             display: flex;
                             position: absolute;
                             bottom: 5pt;
                             right: 5pt;
-                            color: $koalaGray;
-                            font-size: 14px;  
+                            color: $color-gray;
+                            @include font-size-10($font-head-300);
+                            color: $color-gray;
                             align-items: center;
-                            >.material-icons {
-                                color : $bg-color4;
-                                font-size: 16px;
+                            > .material-icons {
+                                color: $status-success;
+                                font-size: $font-size-icon-medium;
+                                font-family: "Material Icons" !important;
                                 padding-right: 5pt;
                             }
 
                             span {
                                 padding-right: 2pt;
-                               &.active {
-                                color: $color-warm-red; 
-                               }
+                                &.active {
+                                    color: $brandcolor2;
+                                }
                             }
                         }
                     }
                     > .body-empty {
-                        border: 3pt dashed blue; 
+                        border: 3pt dashed blue;
                         > .add-item {
-                            color: $koalaGray; 
+                            color: $color-gray;
                             font-size: 42px;
                             @include pointer();
                         }
                         > .label-item {
-                            color: $koalaGray;
+                            color: $color-gray;
                             text-align: center;
                         }
                     }
@@ -368,8 +366,7 @@
                 align-items: center;
                 padding: 0 20pt;
                 height: 50pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
 
                 > .label-fulfill-left {
                 }
@@ -381,13 +378,12 @@
                 flex: 1 1 0%;
                 overflow-y: auto;
 
-                >.empty-data {
+                > .empty-data {
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     height: 100%;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }
@@ -402,6 +398,12 @@
         justify-content: flex-end;
         padding: 10pt 20pt;
 
+        spanboon-button {
+            .btn-fulfill {
+                background-color: $brandcolor3;
+            }
+        }
+
         > .close-dialog {
             margin-right: 5pt;
             &.active {
@@ -413,20 +415,17 @@
 }
 
 @media (max-width: $xxlarge) {
-    
 }
-
 
 @media (max-width: $xlarge) {
     .fulfill-item {
         > .center {
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
                                 width: calc(33.33% - 8pt - 8pt - 2.8pt - 10pt);
-     
                             }
                         }
                     }
@@ -449,10 +448,10 @@
             > .center-left {
                 width: 100%;
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                         }
                     }
@@ -460,7 +459,7 @@
             }
 
             > .center-right {
-                display: none;   
+                display: none;
                 width: 100%;
                 &.active {
                     display: flex;
@@ -480,10 +479,10 @@
             > .center-left {
                 > .body-list-item {
                     height: calc(100% - 20pt - 0.7pt);
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(20% - 8pt - 8pt - 2.8pt - 10pt);
                             }
                             > .empty-data {
                                 width: 100%;
@@ -492,27 +491,27 @@
                     }
                 }
             }
-            > .center-right { 
-                display: none; 
+            > .center-right {
+                display: none;
             }
         }
     }
 }
 
 @media (max-width: $medium) {
-    .fulfill-item { 
+    .fulfill-item {
         height: 100vh;
         width: 100vw;
-        > .center { 
+        > .center {
             flex: unset;
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             > .body-data-category {
-                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
                                 &.active {
-                                    width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);  
+                                    width: calc(33% - 8pt - 8pt - 2.8pt - 10pt);
                                 }
                             }
                         }
@@ -533,16 +532,16 @@
             }
         }
         > .center {
-            flex: unset;  
+            flex: unset;
             > .center-left {
                 > .body-list-item {
-                    >.search-latest { 
+                    > .search-latest {
                         .list-search-fulfill {
                             justify-content: stretch;
                             > .body-data-category {
-                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt); 
+                                width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
                                 &.active {
-                                    width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);   
+                                    width: calc(50% - 8pt - 8pt - 2.8pt - 10pt);
                                 }
                             }
                         }
@@ -590,8 +589,7 @@
                             }
                         }
                     }
-                    >.empty-data {
-
+                    > .empty-data {
                     }
                 }
             }

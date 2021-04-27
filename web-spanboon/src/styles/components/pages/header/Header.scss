@@ -11,7 +11,8 @@
   padding: 0 40pt;
   height: $height-header-top;
   position: sticky;
-  top: 0;
+  top: 0pt !important;
+  transform: unset;
   z-index: 1000;
   background-color: $white;
   transition: all 0.8s ease-in-out;
@@ -23,9 +24,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: $color-warm-red;
-    font-family: "Kanit-500";
-    font-size: 1.5em;
+    color: $brandcolor2;
+    @include font-size-7($font-head-500);
     @include pointer();
 
     > .icon-spanboon {
@@ -33,7 +33,7 @@
     }
 
     > .name-spanboon {
-      margin-left: 10pt;
+      margin-left: 5pt;
     }
   }
   > .middle {
@@ -49,8 +49,7 @@
     > .wrapper-home {
       display: flex;
       align-items: center;
-      font-family: "Kanit-400";
-      font-size: 1.15em;
+      @include font-size-8($font-head-500);
       margin: 0 auto;
       pointer-events: auto;
 
@@ -69,14 +68,14 @@
         &:hover {
           background-color: $background-hover;
           border-radius: 8pt;
-          color: $color-warm-red;
+          color: $brandcolor2;
 
           svg,
           circle,
           path,
           g {
             opacity: 1;
-            fill: $color-warm-red;
+            fill: $brandcolor2;
           }
         }
 

@@ -6,7 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { PostCommentFacade, AuthenManager, ObservableManager } from '../../../services/services';
+import { PostCommentFacade, AuthenManager, ObservableManager, Engagement } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
@@ -17,7 +17,8 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
-import { BoxPost } from '../shares';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
+import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 
 @Component({
@@ -35,6 +36,7 @@ export class PostData {
   private assetFacade: AssetFacade;
   private router: Router;
   public dialog: MatDialog;
+  public engagementService: Engagement;
 
   public commentpost: any[] = []
   public isComment: boolean
@@ -62,6 +64,8 @@ export class PostData {
   @Input()
   public pageUser: any;
   @Input()
+  public mainPostLink: string;
+  @Input()
   public itemPost: any;
   @Input()
   public user: any;
@@ -79,6 +83,8 @@ export class PostData {
   public update: EventEmitter<any> = new EventEmitter();
   @Output()
   public userpage: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public engagement: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -86,8 +92,15 @@ export class PostData {
   public isFulfill: boolean = false;
   public isPendingFulfill: boolean = false;
 
-  private mainPostLink: string = window.location.origin + '/post/'
+  // private mainPostLink: string = window.location.origin + '/profile/aaa/post/'
+  // private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/';
+
+  public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+  public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
+  public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
+  public PLATFORM_STORY: string = PLATFORM_STORY;
+  public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
 
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
@@ -95,23 +108,26 @@ export class PostData {
   public menuProfile: any;
 
   constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, authenManager: AuthenManager,
-    observManager: ObservableManager, router: Router,) {
+    observManager: ObservableManager, router: Router, engagementService: Engagement) {
     this.dialog = dialog;
     this.authenManager = authenManager;
     this.postCommentFacade = postCommentFacade
     this.observManager = observManager;
-    this.postFacade = postFacade
-    this.assetFacade = assetFacade
-    this.needsFacade = needsFacade
-    this.pageFacade = pageFacade
+    this.postFacade = postFacade;
+    this.assetFacade = assetFacade;
+    this.needsFacade = needsFacade;
+    this.pageFacade = pageFacade;
+    this.engagementService = engagementService;
     this.router = router;
     this.isComment = false
     this.isRepost = true;
     this.isLoading = true;
 
-    setTimeout(() => {  
+    setTimeout(() => {
+      // console.log('this.itemPost >>>> ', this.itemPost);
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
+          this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering)
           let galleryIndex = 0;
           for (let img of this.itemPost.referencePostObject.gallery) {
             if (img.imageURL !== '') {
@@ -154,12 +170,12 @@ export class PostData {
           this.itemPost.needs.push(fulfill)
         }
       }
-      this.linkPost = (this.mainPostLink + this.itemPost._id)
-      this.isLoading = false
+      this.linkPost = (this.mainPostLink + this.itemPost._id);
+      this.isLoading = false;
     }, 1000);
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void {  
     setTimeout(() => {
       if (this.itemPost && this.itemPost.detail) {
         if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
@@ -177,9 +193,29 @@ export class PostData {
           }
         }
       }
-    }, 1000); 
+      if (this.itemPost && this.itemPost.title) {
+        if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
+          if (this.itemPost && this.itemPost.hashTags.length > 0) {
+            if (this.itemPost.title.includes('#')) {
+              const hashTag: string[] = this.itemPost.title.match(/#[\wก-๙]+/g) || [];
+              for (let lTag of hashTag) {
+                for (let [index, tag] of this.itemPost.hashTags.entries()) {
+                  if (lTag.substring(1) === tag.name) {
+                    this.itemPost.hashTags.splice(index, 1)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } 
+      // ordering image
+      if (this.itemPost && this.itemPost.gallery && this.itemPost.gallery.length > 0) {
+        this.itemPost.gallery = this.itemPost.gallery.sort((a, b) => a.ordering - b.ordering)
+      }
+    }, 1000);
   }
-  
+
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
     return this.user !== undefined && this.user !== null;
@@ -256,25 +292,34 @@ export class PostData {
     this.getComment(true);
   }
 
-  public clickDevelop(index, text) {
-    let url = ''
-    if (index === 1) {
-      url += "emergency=#" + text
-    } else if (index === 2) {
-      url += "objective=" + text
+  public clickDevelop(data, text) {
+    let url = '';
+    let type = '';
+    let eventId = '';
+    if (data.index === 1) {
+      url += "emergency=#" + text.emergencyEventTag
+      type = "emergency";
+      eventId = text.emergencyEvent.hashTag;
+    } else if (data.index === 2) {
+      url += "objective=" + text.objectiveTag;
+      type = "objective";
+      eventId = text.objective.hashTag;
     }
+    let click = this.engagementService.getEngagement(data.event, eventId, type);
+    this.engagement.emit(click)
+
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-        bottomText2: "ตกลง",
-        bottomText1: "ยกเลิก",
+        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
         bottomColorText2: "black",
         // btDisplay1: "none"
       }
     });
     dialog.afterClosed().subscribe((res) => {
-      if(res){ 
+      if (res) {
         this.router.navigateByUrl('/search?' + url);
       }
     });
@@ -354,8 +399,8 @@ export class PostData {
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: "ต้องการลบความคิดเห็น ?",
-          bottomText2: "ตกลง",
+          text: MESSAGE.TEXT_TITLE_DELETE_COMMENT_CONFIRM,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
           bottomColorText2: "black",
         }
       });
@@ -378,19 +423,16 @@ export class PostData {
       } else {
         this.commentpost[data.index].isEdit = true;
       }
-      // let dialog = this.dialog.open(DialogAlert, {
-      //   disableClose: true,
-      //   data: {
-      //     text: "ระบบอยู่ในระหว่างการพัฒนา",
-      //     bottomText2: "ตกลง",
-      //     bottomColorText2: "black",
-      //     btDisplay1: "none"
-      //   }
-      // });
-      // dialog.afterClosed().subscribe((res) => {
-      // });
     } else if (data.action === 'CANCEL') {
       this.commentpost[data.index].isEdit = false;
+    }
+  }
+
+  public substringData(settingname: string) {
+    if (settingname && settingname.length > 0) {
+      if (settingname.match(/[^_]*$/)) {
+        return settingname.split('_');
+      }
     }
   }
 
@@ -398,7 +440,7 @@ export class PostData {
     this.delete.emit(post);
   }
 
-  public checkPost(post): boolean {
+  public checkPost(post): boolean { 
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {
@@ -431,8 +473,8 @@ export class PostData {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: MESSAGE.TEXT_TITLE_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }
@@ -443,6 +485,16 @@ export class PostData {
 
   public editPost(itemPost) {
     this.update.emit(itemPost)
+  }
+
+  public onClickEngagement(event, id: any, contentType: string) {
+    let data = this.engagementService.getEngagement(event, id, contentType);
+    this.engagement.emit(data);
+  }
+
+  public fulfillEngagement(event, postId: string) {
+    let data = this.engagementService.getEngagement(event, postId, "fulfillment");
+    this.engagement.emit(data);
   }
 
 }

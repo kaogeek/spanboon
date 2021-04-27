@@ -14,21 +14,21 @@ import { Component, Input } from '@angular/core';
 })
 export class NewConButtonSave {
 
-    @Input()
-    public text: string = "ข้อความ";
-    @Input()
-    public color: string = "#ffffff";
-    @Input()
-    public bgColor: string = "#279d90";
-    @Input()
-    public isRadius: boolean = true;
-    @Input()
-    public isLoading: boolean = false;
-    @Input()
-    public class: string | [string];
+  @Input()
+  public text: string = "ข้อความ";
+  @Input()
+  public color: string = "#ffffff";
+  @Input()
+  public bgColor: string;
+  @Input()
+  public isRadius: boolean = true;
+  @Input()
+  public isLoading: boolean = false;
+  @Input()
+  public class: string | [string];
 
-  constructor() {    
+  constructor() {
 
   }
-  
+
 }

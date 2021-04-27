@@ -121,8 +121,7 @@
                     </ng-template>
                     <img id="images" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                 </div>
-                <Preload-card *ngIf="isPload" [isShowCard1]="true" [isShowCard2]="false"
-                    [class]="'preload-profile'">
+                <Preload-card *ngIf="isPload" [isShowCard1]="true" [isShowCard2]="false" [class]="'preload-profile'">
                 </Preload-card>
                 <div class="wrapper-fan-page">
                     <div *ngIf="!isPload" class="wrapper-profile-fan-page" #pagefixHeight>
@@ -145,10 +144,10 @@
                                     <g id="Group_88" data-name="Group 88" transform="translate(0)">
                                         <path id="Path_141" data-name="Path 141"
                                             d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
-                                            transform="translate(-36.867)" fill="#28a745" />
+                                            transform="translate(-36.867)" class="svg-icon-home-color" />
                                         <path id="Path_142" data-name="Path 142"
                                             d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
-                                            transform="translate(-259.715 -289.198)" fill="#28a745" />
+                                            transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
                                     </g>
                                 </svg>
                                 <div class="official-name">
@@ -162,8 +161,7 @@
                         <div *ngIf="!isPload" class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                                <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                    [bgColor]="'#FFFFFF'"
+                                <button-follow [bgColor]="'#FFFFFF'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
                                     (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
@@ -181,7 +179,8 @@
                                                 d="M30.258,257.711a21.629,21.629,0,0,0-.295-2.3,18.1,18.1,0,0,0-.565-2.31,11.407,11.407,0,0,0-.949-2.154,8.126,8.126,0,0,0-1.432-1.866,6.312,6.312,0,0,0-2.057-1.292,7.107,7.107,0,0,0-2.626-.475,2.665,2.665,0,0,0-1.423.6c-.427.278-.926.6-1.483.956a8.5,8.5,0,0,1-1.918.845,7.449,7.449,0,0,1-4.693,0,8.472,8.472,0,0,1-1.917-.845c-.552-.353-1.051-.674-1.484-.956a2.661,2.661,0,0,0-1.423-.6,7.1,7.1,0,0,0-2.625.476,6.308,6.308,0,0,0-2.057,1.292,8.129,8.129,0,0,0-1.431,1.866A11.431,11.431,0,0,0,.932,253.1a18.144,18.144,0,0,0-.565,2.309,21.553,21.553,0,0,0-.295,2.3c-.048.7-.073,1.418-.073,2.147a6.037,6.037,0,0,0,1.793,4.567,6.454,6.454,0,0,0,4.62,1.685H23.918a6.453,6.453,0,0,0,4.62-1.685,6.034,6.034,0,0,0,1.793-4.568c0-.733-.025-1.455-.074-2.147Zm0,0"
                                                 transform="translate(0 -229.755)" fill="#464646" />
                                         </svg>
-                                        {{ resDataPage && resDataPage.followers ? resDataPage.followers : 0 | shortNumber}}
+                                        {{ resDataPage && resDataPage.followers ? resDataPage.followers : 0 |
+                                        shortNumber}}
                                         คน
                                     </span>
                                 </div>
@@ -193,7 +192,7 @@
                         <!-- <div *ngIf="!isPload" class="wrapper-looking-for" style="display: none;">
                             <div class="wrapper-header">
                                 <div class="header-looking-for">
-                                    ติดต่อเพื่อเติมเต็ม
+                                    ติดต่อเพื่อ{{PLATFORM_FULFILL_TEXT}}
                                 </div>
                             </div>
                             <ng-container *ngIf="expression; else elseTemplates">
@@ -229,7 +228,6 @@
                                             สิ่งที่ {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
                                         </div>
                                         <div class="label-looking-for">
-                                            กำลังมองหาอยู่
                                         </div>
                                     </div>
                                     <div>
@@ -284,7 +282,7 @@
                                 </div>
                                 <div class="btn-donate" *ngIf="resDataPage.needs.length > 6">
                                     <span class="btn-donate-top">
-                                        ร่วมเติมเต็ม
+                                        ร่วม{{PLATFORM_FULFILL_TEXT}}
                                     </span>
                                     <div class="btn-donate-bottom">
                                         {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
@@ -566,7 +564,7 @@
                             </div>
                         </ng-container>
                         <ng-template #elseTemplateLoads>
-                            
+
                         </ng-template>
                     </div>
                 </div>

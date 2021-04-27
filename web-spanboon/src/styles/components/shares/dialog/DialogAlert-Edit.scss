@@ -18,7 +18,7 @@
     > .edit-h {
         width: auto;
         height: 20pt;
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
         border-bottom: whitesmoke 2px solid;
         padding: 10pt;
         display: flex;
@@ -27,7 +27,7 @@
         position: relative;
         overflow: hidden;
         > .edit-head-one {
-            @include font-size-8-100("Kanit-500");
+            @include font-size-8($font-head-500);
             height: 20px;
             color: white;
         }
@@ -38,6 +38,7 @@
             position: absolute;
             right: 10pt;
             > .material-icons {
+                font-family: 'Material Icons' !important;
                 cursor: pointer;
                 opacity: 0.4;
                 color: $white;
@@ -57,11 +58,11 @@
         overflow-y: auto;
         overflow-x: hidden;
         max-height: calc(55vh - 40pt - 20pt - 20pt);
-        @include font-size-7-100("Kanit-500");
+        @include font-size-7($font-head-500);
         word-break: break-word;
 
         .text-item {
-            color: $color-warm-red;
+            color: $brandcolor2;
         }
     }
     ckeditor {
@@ -83,7 +84,7 @@
             cursor: pointer;
             border: $width-border solid #e0e0e0;
             text-align: center;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-head-500);
             margin: 0 0.25rem;
             transition: 0.5s;
             &:hover {
@@ -98,7 +99,7 @@
         }
         .but-submit {
             color: $brandcolor;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
         }
     }
 }

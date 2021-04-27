@@ -5,9 +5,12 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
+import { SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+import { CHAT_MESSAGE_TYPE } from '../../../app/ChatMessageTypes';
 import { AuthenManager, NotificationFacade, AssetFacade } from '../../services/services';
 import { AbstractPage } from '../pages/AbstractPage';
 
@@ -36,6 +39,7 @@ export class Notification extends AbstractPage implements OnInit {
 
   public notiisRead: any[] = []
   public linkPost: string;
+  public preload: boolean; 
   public notiOrigin: any[] = [];
 
   private mainPostLink: string = window.location.origin
@@ -52,25 +56,25 @@ export class Notification extends AbstractPage implements OnInit {
     this.authenManager = authenManager;
     this.assetFacade = assetFacade;
     this.notificationFacade = notificationFacade;
-    var that = this;
-    var myVar = setInterval(function () {
-      if (that.notiOrigin.length !== that.noti && that.noti !== undefined && that.noti !== null && that.noti.length) {
-        that.notiisRead = []
-        for (let noti of that.noti) {
-          that.assetFacade.getPathFile(noti.sender.imageURL).then((res: any) => {
-            noti.sender.avatarURL = res.data
-          }).catch((err: any) => {
-          });
-          if (!noti.notification.isRead) {
-            that.notiisRead.push(noti)
-            noti.notification.linkPath = (that.mainPostLink + noti.notification.link)
-          }
-        }
-        that.notiOrigin = that.noti
-      }
-    }, 31000);
 
+    this.preload = true;
+
+    var myVar;
+    clearInterval(myVar);
+    myVar = setInterval(() => {
+      this.checkNotification();
+    }, 31000);
   }
+
+  public ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.checkNotification();
+      setTimeout(() => {
+        this.preload = false
+      }, 1000);
+    }, 1000);
+  }
+
 
   public ngOnInit(): void {
   }
@@ -97,12 +101,48 @@ export class Notification extends AbstractPage implements OnInit {
     return user !== undefined && user !== null;
   }
 
+  private checkNotification() {
+    if (this.notiOrigin && this.notiOrigin.length !== this.noti && this.noti !== undefined && this.noti !== null && this.noti.length) {
+      this.notiisRead = []
+      for (let noti of this.noti) {
+        if (noti.sender && noti.sender.imageURL !== '' && noti.sender.imageURL !== undefined && noti.sender.imageURL !== null) {
+          this.assetFacade.getPathFile(noti.sender.imageURL).then((res: any) => {
+            noti.sender.avatarURL = res.data
+          }).catch((err: any) => {
+          });
+        }
+        if (!noti.notification.isRead) {
+          this.notiisRead.push(noti)
+          noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
+        }
+      }
+      this.notiOrigin = this.noti; 
+    }
+  }
+
   public markReadNoti(data) {
-    this.notificationFacade.markRead(data)
+    this.notificationFacade.markRead(data.notification.id)
+  }
+
+  public redirectNotification(data) {
+    if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) {
+      this.router.navigateByUrl(data.notification.link)
+    } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT) {
+      this.router.navigateByUrl('/fulfill', { state: { room: data.notification.data } })
+    }
   }
 
   public markReadNotiAll() {
     // this.notificationFacade.clearAll()
     this.showAlertDevelopDialog();
+  }
+
+  public isOpened() { 
+    if (this.notiOrigin && this.notiOrigin.length > 0) {
+      for (let msg of this.notiOrigin) {
+        this.notificationFacade.markRead(msg.notification.id);
+        this.notiisRead = [];
+      }
+    }
   }
 }

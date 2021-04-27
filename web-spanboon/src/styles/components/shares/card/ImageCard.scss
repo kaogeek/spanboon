@@ -71,8 +71,7 @@
             display: flex;
             justify-content: center;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 26px;
+            @include font-size-6($font-head-500);
         }
 
         > .tag-social {
@@ -102,8 +101,7 @@
                 > .wrapper-count {
                     color: $brandcolor;
                     margin: 5pt;
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
             }
         }
@@ -150,16 +148,14 @@
 
                         > span {
                             color: $white;
-                            font-family: "Kanit-400";
-                            font-size: 14px;
+                            @include font-size-10($font-head-400);
                             padding: 0 15pt 0 7pt;
                         }
                     }
 
                     > .count-plus {
                         color: $white;
-                        font-family: "Kanit-400";
-                        font-size: 14px;
+                        @include font-size-10($font-head-400);
                         display: none;
                     }
                 }
@@ -167,11 +163,10 @@
 
             > .butt-more {
                 flex: 0 0 auto;
-                border: 2px solid $color-warm-red;
-                color: $color-warm-red;
+                border: 2px solid $brandcolor2;
+                color: $brandcolor2;
                 border-radius: 20px;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 padding: 2px 25px;
                 background: transparent;
                 transform: scale(1, 1);
@@ -218,7 +213,7 @@
 
                         > .count-plus {
                             display: block;
-                            font-size: 16px;
+                            @include font-size-10($font-head-500);
                         }
                     }
                 }
@@ -251,7 +246,7 @@
                 > .butt-more {
                     height: 26pt;
                     line-height: unset;
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                     display: flex;
                     align-items: center;
                     padding: 0 20px;

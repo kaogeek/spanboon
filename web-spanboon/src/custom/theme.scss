@@ -1,0 +1,167 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+// Spanboon variables
+// --------------------
+
+// 1.Color
+
+// Brand color
+
+$brandcolor: rgb(243, 248, 242);
+$brandcolor2: rgb(238, 118, 35);
+$brandcolor3: rgb(12, 52, 85);
+
+//Background
+
+$background-fan-page: rgb(245, 245, 245);
+$background-profile-page: rgb(245, 245, 245);
+$background-fulfill-page: rgb(245, 245, 245);
+$background-fan-page: rgb(245, 245, 245);
+$background-hashtag-page: rgb(245, 245, 245);
+
+// Svg icon
+
+$svg-clock-icon-color: rgb(165, 165, 166);
+$svg-crown-icon-color: $brandcolor2;
+$svg-social-icon-color: rgb(248, 247, 242);
+
+// Status color
+
+$status-post-need: $brandcolor2;
+$status-post-general: rgb(165, 165, 166);
+$status-post-fulfill: $brandcolor3;
+
+$status-success: $brandcolor2;
+
+// Button Color
+
+$button-home-card: $brandcolor3;
+$button-timeline: rgb(122, 175, 103);
+$button-fan-page: rgb(122, 175, 103);
+
+$home-follow-users-color: $brandcolor3;
+$home-page-activate-color: $brandcolor3;
+$home-page-card-color: $brandcolor2;
+$home-page-button-color: rgb(40, 167, 69);
+
+// 2.Font
+
+$font-size-based: 10pt;
+
+$font-size-10: pt;
+$font-size-9: 3pt;
+$font-size-8: 5pt;
+$font-size-7: 7pt;
+$font-size-6: 9pt;
+$font-size-5: 12pt;
+$font-size-4: 18pt;
+$font-size-3: 24pt;
+$font-size-2: 42pt;
+$font-size-1: 45pt;
+
+$font-size-icon-small: 11pt;
+$font-size-icon-medium: 13pt;
+$font-size-icon-large: 14pt;
+
+// 2.Font Family
+
+$font-head-600: "Anakotmai-Medium";
+$font-head-500: "Anakotmai-Medium";
+$font-head-400: "Anakotmai-Medium";
+$font-head-300: "Anakotmai-Medium";
+$font-head-200: "Anakotmai-Medium";
+$font-head-100: "Anakotmai-Light";
+
+$font-content-light: "Sarabun-Light";
+$font-content-medium: "Sarabun-Medium";
+
+$font-content2-medium: "Anakotmai-Medium";
+$font-content2-bold: "Anakotmai-Bold";
+
+// Font Family import
+
+// Anakotmai
+@font-face {
+    font-family: "Anakotmai-Medium";
+    src: url("../src/app/font-ana/Anakotmai-Medium.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Anakotmai-Bold";
+    src: url("../src/app/font-ana/Anakotmai-Bold.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Anakotmai-Light";
+    src: url("../src/app/font-ana/Anakotmai-Light.ttf") format("truetype");
+    font-style: normal;
+}
+
+// sarabun
+@font-face {
+    font-family: "Sarabun-Light";
+    src: url("../src/app/font-sarabun/Sarabun-Light.ttf") format("truetype");
+    font-style: normal;
+}
+
+// Kanit
+@font-face {
+    font-family: "Kanit-100";
+    src: url("../src/app/Kanit/Kanit-Thin.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-200";
+    src: url("../src/app/Kanit/Kanit-ExtraLight.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-300";
+    src: url("../src/app/Kanit/Kanit-Light.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-400";
+    src: url("../src/app/Kanit/Kanit-Regular.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-500";
+    src: url("../src/app/Kanit/Kanit-Medium.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-600";
+    src: url("../src/app/Kanit/Kanit-SemiBold.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-700";
+    src: url("../src/app/Kanit/Kanit-Bold.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-800";
+    src: url("../src/app/Kanit/Kanit-ExtraBold.ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Kanit-900";
+    src: url("../src/app/Kanit/Kanit-Black.ttf") format("truetype");
+    font-style: normal;
+}

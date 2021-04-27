@@ -7,17 +7,16 @@
 
 .security-info {
     > .label-info {
-        font-family: "Kanit-500";
-        font-size: 22px;
+        @include font-size-7($font-head-500);
         margin: 15pt 40pt 5pt 40pt;
         border-bottom: 0.7pt solid $border-color;
+        height: 30pt;
     }
     > .body-social {
         > .label-connect {
             padding: 10pt;
             margin: 0 30pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
         }
         > .box-social {
             position: relative;
@@ -29,8 +28,9 @@
             > .left {
                 display: flex;
                 align-items: center;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
+                flex: 1 1 0%;
+                margin-right: 10pt;
 
                 > .icon-left {
                     display: flex;
@@ -40,42 +40,91 @@
                     width: 20pt;
                     height: 20pt;
                     margin-right: 7pt;
-                    background-color: $koalaGray;
-                    
+                    background-color: $color-gray;
+                    flex: 0 0 auto;
+
                     &.facebook {
-                        background-color : #2851a3;
+                        background-color: #2851a3;
                     }
 
                     &.twitter {
-                        background-color : #1da1f3;
+                        background-color: #1da1f3;
+                    }
+
+                    &.share-page {
+                        border-radius: 50%;
+                        background-color: $brandcolor2;
+                        color: $white;
+                        width: 35pt;
+                        height: 35pt;
+                        flex: 0 0 auto;
                     }
                     > .icon {
                         height: 20px;
                         width: 20px;
                     }
+                    > .display-name {
+                    }
+                }
+
+                > .lost-connect {
+                    display: flex;
+                    flex-direction: column;
+                    @include font-size-10($font-head-500);
+                    color: $color-black;
+
+                    > .link-social {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        word-break: break-all;
+                        width: 100%;
+                        @include font-size-10($font-head-400);
+                        color: $color-gray;
+                        a {
+                           
+                            @include font-size-10($font-head-400);
+                            color: $color-gray;
+                            padding-right: 5pt;
+                            @include pointer();
+
+                            &:hover {
+                                color: $brandcolor2;
+                            }
+                        }
+                    }
                 }
             }
-            > .lost-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                color: $koalaGray;
-                font-family: "Kanit-500";
-                font-size: 16px;
+
+            > .social-name {
+                display: flex;
+                align-items: center;
+                flex: 0 0 auto;
             }
 
-            > .link-connect {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                color: $koalaGray;
+            .link-connect {
+                @include font-size-9($font-head-500);
+                color: $color-gray;
 
                 &:hover {
-                    text-decoration: underline;
-                    color: $color-warm-red;
+                    color: rgba($brandcolor2, 0.95);
+                    color: $brandcolor2;
                     @include pointer();
                 }
 
                 &.active {
-                    color: $color-warm-red;
+                    color: $brandcolor2;
+                }
+
+                &.hide {
+                    display: none;
+                }
+
+                > .preload-spinner {
+                    svg {
+                        float: right;
+                    }
                 }
             }
         }
@@ -91,7 +140,7 @@
             > .label-connect {
                 margin: 0 20pt;
             }
-            >.box-social {
+            > .box-social {
                 margin: 0 20pt;
             }
         }
@@ -107,7 +156,7 @@
             > .label-connect {
                 margin: 0 10pt;
             }
-            >.box-social {
+            > .box-social {
                 margin: 0 10pt;
             }
         }

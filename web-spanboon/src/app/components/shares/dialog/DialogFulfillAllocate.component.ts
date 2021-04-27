@@ -13,9 +13,7 @@ import { DialogAlertAllocate } from '../../shares/dialog/DialogAlertAllocate.com
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from '../../../../environments/environment';
-import * as $ from 'jquery';
-import { count } from 'rxjs/operators';
-import { E, L } from '@angular/cdk/keycodes';
+import { MESSAGE } from '../../../../custom/variable';
 
 const PAGE_NAME: string = 'fulfillallocate';
 const SEARCH_LIMIT: number = 10;
@@ -77,6 +75,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     public isAuto: boolean = false;
     public isListBalance: boolean = false;
     public isListNotBalance: boolean = false;
+    public isSpinner: boolean = false;
 
     public filter: any = {
         sortingDate: null,
@@ -108,11 +107,6 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 "detail": "จัดสรรเข้าเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ ด้วยตัวคุณเอง",
                 "type": "MANUAL"
             },
-            // {
-            //     "label": "เข้าโพสต์มองหาทั่วไป",
-            //     "detail": "จัดสรรเข้าโพสต์ที่ไม่ระบุเหตุการณ์ด่วนหรือสิ่งที่กำลังทำ",
-            //     "type": "MANUALGENERAL"
-            // }
         ]
 
         this.sortingByDateArr = [
@@ -353,7 +347,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
 
-            this.calculateAllocatePostByItem(postsList, false, true);
+            await this.calculateAllocatePostByItem(postsList, false, true);
 
         } else {
             const itemNeeds: any[] = [];
@@ -441,7 +435,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                         let dialog = this.dialog.open(DialogAlertAllocate, {
                             disableClose: true,
                             data: {
-                                text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้",
+                                text: MESSAGE.TEXT_TITLE_FULFILL_ALLOCATE_ERROR,
                                 item: "รายการ : " + textAllocate,
                                 bottomText1: "กลับไปจัดสรร",
                                 btDisplay1: "block",
@@ -567,13 +561,14 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                 let indexItems: number = 0;
                 if (this.indexItemAllocateQuantity() !== 0) {
 
-                    let dialog = this.dialog.open(DialogAlert, {
+                    let dialog = this.dialog.open(DialogAlertAllocate, {
                         disableClose: true,
                         data: {
-                            text: "ยังคงเหลือ " + this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit() + " ที่ยังจัดสรรไม่หมด ต้องการไปรายการถัดไป ?",
+                            text: this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit(),
+                            allo: true,
                             bottomText2: "ถัดไป",
                             bottomText1: "ปิด/จัดสรรต่อ",
-                            btDisplay1: "block"
+                            btDisplay1: "block",
                         }
                     });
                     dialog.afterClosed().subscribe(async (res) => {
@@ -617,13 +612,14 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                 if (this.indexItemAllocateQuantity() !== 0) {
 
-                    let dialog = this.dialog.open(DialogAlert, {
+                    let dialog = this.dialog.open(DialogAlertAllocate, {
                         disableClose: true,
                         data: {
-                            text: "ยังคงเหลือ " + this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit() + " ที่ยังจัดสรรไม่หมด ต้องการไปรายการถัดไป ?",
+                            text: this.indexItemName() + " " + this.indexItemAllocateQuantity() + " " + this.indexItemUnit(),
+                            allo: true,
                             bottomText2: "ถัดไป",
                             bottomText1: "ปิด/จัดสรรต่อ",
-                            btDisplay1: "block"
+                            btDisplay1: "block",
                         }
                     });
                     dialog.afterClosed().subscribe(async (res) => {
@@ -705,9 +701,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
-                text: "ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม",
-                bottomText2: "ตกลง",
-                bottomText1: "ยกเลิก",
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
                 bottomColorText2: "black",
                 // btDisplay1: "none"
             }
@@ -735,7 +731,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                     for (let item of i.item) {
 
-                        if (item.isAuto && item.amount > 0) {
+                        if (item.isAuto && !item.isMn && item.amount > 0) {
 
                             var indexPost = autoPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -745,7 +741,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
                             }
 
-                        } else if (!item.isAuto && item.amount > 0) {
+                        } else if (!item.isAuto || (item.isMn && item.isAuto) && item.amount > 0) {
 
                             var indexPost = mnPosts.map(function (e) { return e.postsId; }).indexOf(i.postsId);
 
@@ -835,9 +831,9 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     public getTypePost(type): string {
         if (type === "NEEDS") {
-            return "มองหา"
+            return this.PLATFORM_NEEDS_TEXT;
         } else if (type === "GENERAL") {
-            return "ทั่วไป"
+            return this.PLATFORM_GENERAL_TEXT
         } else {
             return "ไม่ระบุประเภท"
         }
@@ -1073,7 +1069,8 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
     }
 
-    public confirmAllocate() {
+    public async confirmAllocate() {
+        this.isSpinner = false;
 
         const data: any[] = []
 
@@ -1110,14 +1107,16 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
         }
 
-        this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
+        await this.allocateFacade.confirmAllocateFulfillmentCase(this.caseId, this.pageId, data).then((res: any) => {
 
             this.dialogRef.close(res);
+            this.isSpinner = false;
 
         }).catch((err: any) => {
 
-            this.dialogRef.close(err);
+            this.isSpinner = false;
             console.log('err', err)
+            this.dialogRef.close(err);
 
         })
 
@@ -1128,6 +1127,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
     }
 
     private async calculateAllocatePostByItem(data?, auto?, ignoreAllocatedPost?) {
+        this.isSpinner = true;
 
         await this.allocateFacade.calculateAllocate(data, ignoreAllocatedPost).then((res: any) => {
 
@@ -1143,6 +1143,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                     if (index > -1) {
 
                         itemNeeds[index].amount = (itemNeeds[index].amount + item.amount);
+                        itemNeeds[index].isAuto = true;
 
                     } else {
 
@@ -1175,6 +1176,13 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
                                 }
 
                                 if (auto) {
+
+                                    if (i.isAuto) {
+
+                                        item.isAuto = true;
+
+                                    }
+
 
                                     if (!item.isMn) {
 
@@ -1229,20 +1237,20 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             } else {
 
-                let dialog = this.dialog.open(DialogAlertAllocate, {
+                let dialog = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
-                        text: "ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้ ",
-                        bottomText1: "ปิด",
+                        text: MESSAGE.TEXT_TITLE_FULFILL_ALLOCATE_ERROR,
+                        bottomText1: MESSAGE.TEXT_BUTTON_CLOSE,
                         btDisplay1: "block",
                         btDisplay2: "none",
                     }
                 });
-                dialog.afterClosed().subscribe((res) => {
+                dialog.afterClosed().subscribe(async (res) => {
 
                     if (res.type === "ISAUTO") {
 
-                        this.calculateAllocatePostByItem(data, false, false);
+                        await this.calculateAllocatePostByItem(data, false, false);
 
                     } else {
 
@@ -1253,6 +1261,11 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
 
             }
         })
+
+
+        setTimeout(() => {
+            this.isSpinner = false;
+        }, 1000);
 
     }
 

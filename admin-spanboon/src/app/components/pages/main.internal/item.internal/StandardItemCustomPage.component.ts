@@ -30,7 +30,7 @@ const SEARCH_OFFSET: number = 0;
 export class StandardItemCustomPage extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
-    @ViewChild('myInput')
+    @ViewChild('table')
     myInputVariable: ElementRef;
 
     public standardItemFacade: StandardItemFacade;
@@ -197,8 +197,9 @@ export class StandardItemCustomPage extends AbstractPage implements OnInit {
     }
 
     public create(data: any) {
+        console.log('this.myInputVariable >>> ', this.myInputVariable);
         this.standardItemIds = data
-        this.myInputVariable.nativeElement.value = "";
+        // this.myInputVariable.nativeElement.value = "";
         this.setFields();
         this.drawer.toggle();
     }

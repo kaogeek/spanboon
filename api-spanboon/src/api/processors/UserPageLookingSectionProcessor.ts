@@ -14,6 +14,7 @@ import { UserFollowService } from '../services/UserFollowService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 
 export class UserPageLookingSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -58,6 +59,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                 let userId = undefined;
                 let clientId = undefined;
+                let userObjId: ObjectID = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     clientId = this.data.clientId;
@@ -148,7 +150,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     }
                 }
 
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
@@ -156,13 +158,29 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                     const firstImg = (row.gallery !== undefined && row.gallery.length > 0) ? row.gallery[0] : undefined;
 
+                    const contentModel = new ContentModel();
                     let followUserCount = 0;
                     let followUsers = [];
-                    if (page !== undefined) {
+                    if (page !== null && page !== undefined) {
                         const pfSimple = await this.userFollowService.sampleUserFollow(page._id, SUBJECT_TYPE.PAGE, 5);
                         followUserCount = pfSimple.count;
                         followUsers = pfSimple.followers;
-                    } else if (user !== undefined) {
+
+                        if (userId !== null && userId !== undefined && userId !== '') {
+                            userObjId = new ObjectID(userId);
+
+                            const currentUserFollowStmt = { userId: userObjId, subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
+                            const currentUserFollow = await this.userFollowService.findOne(currentUserFollowStmt);
+
+                            if (currentUserFollow !== null && currentUserFollow !== undefined) {
+                                contentModel.isFollow = true;
+                            } else {
+                                contentModel.isFollow = false;
+                            }
+                        } else {
+                            contentModel.isFollow = false;
+                        }
+                    } else if (user !== null && user !== undefined) {
                         const usrSimple = await this.userFollowService.sampleUserFollow(user._id, SUBJECT_TYPE.USER, 5);
                         followUserCount = usrSimple.count;
                         followUsers = usrSimple.followers;
@@ -171,7 +189,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     if (lastestDate === null) {
                         lastestDate = row.createdDate;
                     }
-                    const contentModel = new ContentModel();
+
                     contentModel.commentCount = row.commentCount;
                     contentModel.repostCount = row.repostCount;
                     contentModel.shareCount = row.shareCount;

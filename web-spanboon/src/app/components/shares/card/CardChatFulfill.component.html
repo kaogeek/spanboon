@@ -102,7 +102,7 @@
 
         <div class="fulfill-case-create-detail">
             <span class="material-icons status"> lens </span>
-            <span class="lookfor">มองหา</span>
+            <span class="lookfor">{{PLATFORM_NEEDS_TEXT}}</span>
 
             <div class="fulfill-case-create-hashtag">
                 <div class="fulfill-case-create-content"
@@ -166,14 +166,25 @@
     </div>
 
     <div class="fulfill-case-create-footer">
-        <spanboon-button (click)="viewPost(postData.id)" [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'"
-            [bgColor]="'#E02438'" [text]="'ดูโพสต์'">
+        <spanboon-button class="btn-view-post" (click)="viewPost(postData.id)" [radius]="'5pt'" [width]="'70pt'"
+            [height]="'25pt'" [bgColor]="'#E02438'" [text]="'ดูโพสต์'">
+        </spanboon-button>
+    </div>
+</div>
+<div class="fulfill-case-create-wrapper" *ngIf="(postData === undefined && messageType === 'FULFILLMENT_CASE_CREATE')">
+    <div class="fulfill-case-create-message">
+        {{sender}} ต้องการ{{PLATFORM_FULFILL_TEXT}}เข้าเพจ
+    </div>
+
+    <div class="fulfill-case-create-footer">
+        <spanboon-button class="btn-view-post" (click)="viewPost()" [radius]="'5pt'" [width]="'70pt'" [height]="'25pt'"
+            [bgColor]="'#E02438'" [text]="'ดูที่เพจ'">
         </spanboon-button>
     </div>
 </div>
 
 <div *ngIf="messageType === 'FULFILLMENT_CASE_CANCEL'">
     <div class="fulfill-case-cancel-wrapper">
-        {{sender}} ได้ทำการ <span style="color: #E02438;">ยกเลิกเติมเต็ม</span>
+        {{sender}} ได้ทำการ <span style="color: #E02438;">ยกเลิก{{PLATFORM_FULFILL_TEXT}}</span>
     </div>
 </div>

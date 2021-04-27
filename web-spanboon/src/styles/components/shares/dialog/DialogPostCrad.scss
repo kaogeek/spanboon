@@ -1,0 +1,68 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+
+.dialog_post_card {
+    width: 600px;
+    max-width: 100%;
+    overflow: auto;
+    height: auto;
+    max-height: 80vh;
+    position: relative;
+    &.setheight {
+        height: 400px !important;
+    }
+    > .onClose {
+        padding: 10px;
+        background-color: #d3d3d3;
+        position: absolute;
+        border-radius: 4px;
+        top: 1%;
+        right: 1%;
+        @include pointer();
+        display: flex;
+        justify-content: center;
+        z-index: 2;
+        align-items: center;
+
+        > svg {
+            width: 14px;
+        }
+    }
+
+    post-data {
+        > .card-feed-post {
+            margin: unset;
+        }
+    }
+    preload-card {
+        > .preload-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            z-index: 10;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-evenly;
+            align-content: flex-start;
+            flex-direction: column;
+            flex-wrap: nowrap;
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .dialog_post_card {
+        width: 95vw;
+        max-height: 100vh;
+    }
+}
+
+@media (max-width: $small) {
+}

@@ -40,6 +40,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public noti: any = [];
 
   public user: any;
+
   public partners: any[] = [];
   public countPageuser: any;
   public isclickmenu: boolean;
@@ -142,15 +143,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   public closeMenu() {
     this.trigger.closeMenu();
-  }
-
-  // public clickLogout(event) { 
-  //   if(event){   
-  //     setTimeout(() => {
-  //       this.resSize();  
-  //     }, 0);
-  //   }
-  // }
+  } 
 
   private stopIsloading(): void {
     setTimeout(() => {

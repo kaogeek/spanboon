@@ -74,4 +74,26 @@ export class TagEvent extends AbstractPage implements OnInit {
   public actions() {
     // this.clickEmergency.emit(true);
   }
+
+  public onResize(){
+    if(window.innerWidth < 479){
+      return true;
+    }
+  }
+
+  public emergency(event){
+    let data = {
+      index: 1,
+      event
+    }
+    this.emergencyClick.emit(data)
+  }
+
+  public objective(event){
+    let data = {
+      index: 2,
+      event
+    }
+    this.objectiveClick.emit(data)
+  }
 }

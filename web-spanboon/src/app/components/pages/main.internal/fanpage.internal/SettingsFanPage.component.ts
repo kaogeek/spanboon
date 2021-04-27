@@ -9,11 +9,12 @@ import { EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
 import { Component } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { PageSocailTW } from '../../../../models/PageSocailTW';
+import { PageSocialTW } from '../../../../models/PageSocialTW';
 import { environment } from '../../../../../environments/environment';
 import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
+import { Subscription } from 'rxjs';
 
 const PAGE_NAME: string = 'settings';
 const URL_PATH: string = '/page/';
@@ -42,7 +43,9 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     public linkSetting: any;
     public isPreload: boolean;
     public isMobile: boolean;
+    public isLoadImage: boolean;
     public bindingSocialTwitter: any;
+    public paramsSub: Subscription;
 
     @Input()
     public dirtyCancelEvent: EventEmitter<any>;
@@ -75,26 +78,6 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             icon: "person",
             label: "บทบาทในเพจ",
         },
-        // {
-        //     link: "",
-        //     icon: "insert_comment",
-        //     label: "โพสต์ทั้งหมด",
-        // },
-        // {
-        //     link: "",
-        //     icon: "speaker_notes",
-        //     label: "โพสต์ฉบับร่าง",
-        // },
-        // {
-        //     link: "",
-        //     icon: "access_time",
-        //     label: "โพสต์ตั้งเวลา",
-        // },
-        // {
-        //     link: "",
-        //     icon: "favorite",
-        //     label: "เติมเต็ม",
-        // }
     ];
     public arrayLink = {
         links: [{
@@ -144,6 +127,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         this.assetFacade = assetFacade;
         this.pageFacade = pageFacade;
         this.isPreload = true;
+        this.isLoadImage = true;
         this.isMobile = false;
         this.selected = this.links[0].label;
         this.dirtyCancelEvent = new EventEmitter();
@@ -164,44 +148,45 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             }
         });
 
-        this.routeActivated.params.subscribe(async (params) => {
-            this.pageId = params['id'];
-            if (this.pageId !== undefined && this.pageId !== '') {
-                this.getAccessPage();
-            }
-        });
-
-        this.router.events.subscribe((event) => {
+        this.paramsSub = this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
-                const url: string = decodeURI(this.router.url);
+                const url: string = decodeURI(this.router.url); 
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
                     const replaceCommentURL: string = substringPage.replace('/page/', '');
+                    this.pageId = replaceCommentURL.split('/')[0];
                     const splitTextId = replaceCommentURL.split('?tab=')[1];
+                    this.isLoadImage = true;
                     if (splitTextId === 'connect') {
                         this.selected = 'การเชื่อมต่อ';
                     } else if (splitTextId === 'account') {
                         this.selected = 'ข้อมูลเพจ';
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
+                    } 
+                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) { 
+                        this.getAccessPage(this.pageId);
                     }
-                    this.getAccessPage();
                 }
             }
         });
+
+        // this.routeActivated.params.subscribe(async (params) => {
+        //     // this.pageId = params['id'];  
+        //     this.getAccessPage(params['id']); 
+        // });
     }
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
         if (!this.isLogin()) {
             this.router.navigateByUrl("/home");
-        } else {
-            this.getAccessPage();
         }
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.paramsSub.unsubscribe();
     }
 
     isPageDirty(): boolean {
@@ -243,46 +228,37 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getAccessPage() {
-        this.pageFacade.getProfilePage(this.pageId).then((res) => {
-            if (res.data) {
-                if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
-                    this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
-                        if (image.status === 1) {
-                            if (!this.validBase64Image(image.data)) {
-                                res.data.imageURL = null
-                            } else {
-                                res.data.imageURL = image.data
-                            }
-                            this.resListPage = res.data;
-                            setTimeout(() => {
-                                this.isPreload = false;
-                            }, 1000);
+    public getAccessPage(pageId : string) {
+        this.isLoadImage = false;
+        this.pageFacade.getProfilePage(pageId).then((res) => {
+            if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {
+                this.assetFacade.getPathFile(res.data.imageURL).then((image: any) => {
+                    if (image.status === 1) {
+                        if (!this.validBase64Image(image.data)) {
+                            res.data.imageURL = null
+                        } else {
+                            res.data.imageURL = image.data
                         }
+                        this.resListPage = res.data;
+                        setTimeout(() => {
+                            this.isPreload = false;
+                        }, 1000);
+                    }
 
-                    }).catch((err: any) => {
-                        if (err.error.message === "Unable got Asset") {
-                            res.data.imageURL = ''
-                            this.resListPage = res.data
-                        }
-                    });
-                } else {
-                    this.resListPage = res.data;
-                    setTimeout(() => {
-                        this.isPreload = false;
-                    }, 3000);
-                }
-
+                }).catch((err: any) => {
+                    if (err.error.message === "Unable got Asset") {
+                        res.data.imageURL = ''
+                        this.resListPage = res.data
+                    }
+                });
+            } else {
+                this.resListPage = res.data;
+                setTimeout(() => {
+                    this.isPreload = false;
+                }, 3000);
             }
         }).catch((err: any) => {
-            // if (err.error.status === 0) {
-            //   if (err.error.message === 'Unable got Page') {
-            //     this.msgPageNotFound = true;
-            //   }
-            //   // else if(err.error.message === 'Unable got Asset'){
-            //   //   console.log("1111")
-            //   // }
-            //   this.stopLoading(); 
+            console.log('err ', err)
         });
     }
 
@@ -293,6 +269,13 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public backSetting() {
         this.isMobile = false;
-        
+    }
+
+    public backToPage() {
+        if (this.resListPage && this.resListPage.pageUsername !== undefined && this.resListPage.pageUsername !== '' && this.resListPage.pageUsername !== null) {
+            this.router.navigateByUrl('page/' + this.resListPage.pageUsername);
+        } else {
+            this.router.navigateByUrl('page/' + this.resListPage.id);
+        }
     }
 }

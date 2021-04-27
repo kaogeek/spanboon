@@ -18,7 +18,7 @@ import { FileHandle } from '../directive/DragAndDrop.directive';
 import * as moment from 'moment';
 import { DomSanitizer } from '@angular/platform-browser';
 import { POST_TYPE } from '../../../TypePost';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import * as $ from 'jquery';
 import './../../../../assets/script/jquery.atwho.js';
 import { environment } from 'src/environments/environment';
@@ -38,15 +38,15 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
   @ViewChild('autoCompleteTag', { static: false }) autoCompleteTag: ElementRef;
 
-  public links = [{ label: 'เรื่องราว', keyword: 'story' }, { label: 'มองหา', keyword: 'needs' }];
+  public links = [{ label: 'เรื่องราว', keyword: 'story' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
 
   chooseStory: any[] = [
-    { value: 'ทั่วไป', viewValue: 'ทั่วไป', class: 'icon-feed' },
-    { value: 'มองหา', viewValue: 'มองหา', class: 'icon-feed looking' },
+    { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
 
-  selected = 'ทั่วไป'
+  selected = this.PLATFORM_GENERAL_TEXT
 
   private pageCategoryFacade: PageCategoryFacade;
   private observManager: ObservableManager;
@@ -157,7 +157,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     if (this.data.imagesTimeline.length > 0) {
       this.image = this.data.imagesTimeline[0].image
       this.coverImage = this.data.imagesTimeline[0]
-    }
+    } 
     if (this.data.dataStroy.storyAry !== null && this.data.dataStroy.storyAry !== undefined && this.data.dataStroy.storyAry.length > 0) {
       setTimeout(() => {
         this.ary = this.data.dataStroy.storyAry
@@ -263,8 +263,8 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   public selectType(value) {
     if (value === "เติมเต็ม") {
       this.typeStroy = POST_TYPE.FULFILLMENT;
-    } else if (value === "มองหา") {
-      this.activeLink === 'กำลังมองหา'
+    } else if (value === this.PLATFORM_NEEDS_TEXT) {
+      this.activeLink === 'กำลัง' + this.PLATFORM_NEEDS_TEXT
 
     } else {
       this.typeStroy = POST_TYPE.GENERAL;
@@ -337,14 +337,14 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       this.ary[this.selectIndex].isNewTeb = this.LinkNewTeb
       // this.reSetFrom();
     } else if (type === "IMAGE") {
-      if (this.imageUrl !== undefined && this.imageUrl !== null) {
-        this.ary[this.selectIndex].image64 = this.imageUrl
-      }
-      if (this.imageDetail !== undefined && this.imageDetail !== null) {
-        this.ary[this.selectIndex].imageDetail = this.imageDetail
-      }
-      this.ary[this.selectIndex].isNewTeb = this.isImageLink
-      this.ary[this.selectIndex].style.imageSize = this.imageSize
+      // if (this.imageUrl !== undefined && this.imageUrl !== null) {
+      //   this.ary[this.selectIndex].image64 = this.imageUrl
+      // }
+      // if (this.imageDetail !== undefined && this.imageDetail !== null) {
+      //   this.ary[this.selectIndex].imageDetail = this.imageDetail
+      // }
+      // this.ary[this.selectIndex].isNewTeb = this.isImageLink
+      this.ary[this.selectIndex].imageStyle.imageSize = this.imageSize
     } else if (type === "VIDEO") {
       var unit = this.videoUrl
       var index1 = unit.indexOf('v=')
@@ -363,7 +363,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
 
   public onClose(): void {
     if (this.ary.length > 0) {
-      let dialog = this.showAlertDialogWarming("คุณยังไม่บันทึกเรื่องราวของคุณ?", "ยกเลิก")
+      let dialog = this.showAlertDialogWarming("คุณยังไม่บันทึก" + this.PLATFORM_STORY_TALE + "ของคุณ?", "ยกเลิก")
       dialog.afterClosed().subscribe((res) => {
         if (res) {
           this.dialogRef.close(null);
@@ -426,88 +426,6 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     moveItemInArray(this.ary, event.previousIndex, event.currentIndex);
   }
 
-  public text() {
-    this.ary[this.selectIndex].htmlType = "TEXT"
-    this.ary[this.selectIndex].style = { textalign: "left", fontsize: "16px" }
-    this.isText = !this.isText
-    this.isImage = true
-    this.isLink = true
-    this.isVideo = true
-    this.isTitleText = true
-    this.setTextEditor()
-    this.component()
-    // $(() => {
-    //   $.fn.atwho.debug = true
-    //   var at_config = {
-    //     at: "@",
-    //     insertTpl: '<span class="tribute-container">${displayName}</span>',
-    //     displayTpl: '<li >${displayName}</li>',
-    //     delay: 100,
-    //     limit: 10,
-    //     searchKey: 'displayName',
-    //     callbacks: {
-    //       remoteFilter: (query, callback) => {
-    //         $.ajax({
-    //           url: this.apiBaseURL + '/user/tag/',
-    //           beforeSend: (xhr) => {
-    //             xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem('token'));
-    //           },
-    //           type: "POST",
-    //           dataType: "json",
-    //           data: {
-    //             name: query ? query : ""
-    //           },
-    //           success: (data) => {
-    //             this.user = data
-    //             callback(data);
-    //           }
-    //         });
-    //       }
-    //     }
-    //   }
-    //   var hashTag_config = {
-    //     at: "#",
-    //     searchKey: 'value',
-    //     insertTpl: '<span class="tribute-container-hashtag">#${value}</span>&nbsp',
-    //     displayTpl: "<li class='list-add-hashtaggg'>${value}</li>",
-    //     delay: 100,
-    //     limit: 10,
-    //     callbacks: {
-    //       remoteFilter: (query, callback) => {
-    //         let searchFilter: SearchFilter = new SearchFilter();
-    //         searchFilter.whereConditions = {
-    //           name: query
-    //         };
-    //         this.hashTagFacade.searchTrend(searchFilter).then(res => {
-    //           callback(res);
-    //           this.choiceTag = res;
-    //         }).catch(error => {
-    //           console.log(error);
-    //         });
-    //       },
-    //     }
-    //   }
-    //   if (this.isListPage) {
-    //     $('#textarea-story-editor').focus().atwho('run');
-    //     $('#editableStory').atwho(at_config).atwho(hashTag_config);
-    //     $('#editableStory').atwho(at_config).atwho(at_config);
-
-    //     $('#header-story').focus().atwho('run');
-    //     $('#topic').atwho(at_config).atwho(hashTag_config);
-    //     $('#topic').atwho(at_config).atwho(at_config);
-    //   } else {
-    //     $('#textarea-story-editor').focus().atwho('run');
-    //     $('#editableStory').atwho(at_config).atwho(hashTag_config);
-    //     $('#editableStory').atwho(at_config).atwho(at_config);
-
-    //     $('#header-story').focus().atwho('run');
-    //     $('#topic').atwho(at_config).atwho(hashTag_config);
-    //     $('#topic').atwho(at_config).atwho(at_config);
-    //   }
-    // });
-    // this.updateText();
-  }
-
   public setTextEditor() {
     if (this.isTextEditor) {
       setTimeout(() => {
@@ -539,9 +457,11 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
 
   public Image() {
     this.ary[this.selectIndex].htmlType = "IMAGE"
-    this.ary[this.selectIndex].imageUrl = "https://ssudjai.dblog.org/img/default.jpg"
+    this.ary[this.selectIndex].imageUrl = ""
     this.ary[this.selectIndex].imageDetail = ""
-    this.ary[this.selectIndex].style = { imageSize: "50%", imagealign: "center" }
+    if (this.ary[this.selectIndex].imageStyle === undefined) {
+      this.ary[this.selectIndex].imageStyle = { imageSize: "50%", imagealign: "center" }
+    }
     this.isText = true
     this.isLink = true
     this.isVideo = true
@@ -574,7 +494,10 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
   }
 
   public Title(value?) {
-    let text = document.getElementById(this.selectIndex).innerText
+
+    if (this.ary[this.selectIndex].htmlType !== "LINK") {
+      this.ary[this.selectIndex].text = document.getElementById(this.selectIndex).innerText
+    }
     if (value) {
       if (value === "h1") {
         this.ary[this.selectIndex].style.fontsize = "32px"
@@ -595,9 +518,31 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       this.isLink = true
       this.isVideo = true
       this.isTitleText = !this.isTitleText
-      document.getElementById(this.selectIndex).innerText = text
-      this.component()
+      setTimeout(() => {
+        document.getElementById(this.selectIndex).innerText = this.ary[this.selectIndex].text
+        this.component()
+      }, 100);
     }
+  }
+
+
+  public text() {
+    if (this.ary[this.selectIndex].htmlType !== "LINK") {
+      this.ary[this.selectIndex].text = document.getElementById(this.selectIndex).innerText
+    }
+    this.ary[this.selectIndex].htmlType = "TEXT"
+    this.ary[this.selectIndex].style = { textalign: "left", fontsize: "16px" }
+    this.isText = !this.isText
+    this.isImage = true
+    this.isLink = true
+    this.isVideo = true
+    this.isTitleText = true
+
+    setTimeout(() => {
+      document.getElementById(this.selectIndex).innerText = this.ary[this.selectIndex].text
+      this.setTextEditor()
+      this.component()
+    }, 100);
   }
 
   public titleActive(value) {
@@ -696,6 +641,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     this.reSetFrom();
     let story: Storycomponent = new Storycomponent();
     story.htmlType = "TEXT"
+    story.text = ""
     story.style = { textalign: "left", fontsize: "16px" }
     this.ary.push(story)
     let num: any = this.ary.length - 1
@@ -763,11 +709,11 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       this.ary[this.selectIndex].style.textalign = value
     } else if (this.imageType(this.ary[this.selectIndex].htmlType)) {
       if (value === "left") {
-        this.ary[this.selectIndex].style.imagealign = "flex-start"
+        this.ary[this.selectIndex].imageStyle.imagealign = "flex-start"
       } else if (value === "right") {
-        this.ary[this.selectIndex].style.imagealign = "flex-end"
+        this.ary[this.selectIndex].imageStyle.imagealign = "flex-end"
       } else {
-        this.ary[this.selectIndex].style.imagealign = value
+        this.ary[this.selectIndex].imageStyle.imagealign = value
       }
     } else if (this.videoType(this.ary[this.selectIndex].htmlType)) {
       if (value === "left") {
@@ -812,7 +758,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     } else if (this.textType(item.htmlType)) {
       let text = document.getElementById(index).innerText
       if (text !== '' && text !== undefined && text !== null) {
-        let dialog = this.showAlertDialogWarming("คุณต้องการลบเรื่องราวออกใช่ไหม ?", "ยกเลิก")
+        let dialog = this.showAlertDialogWarming("คุณต้องการลบ" + this.PLATFORM_STORY_TALE + "ออกใช่ไหม ?", "ยกเลิก")
         dialog.afterClosed().subscribe((res) => {
           if (res) {
             if (index !== null && index !== undefined) {
@@ -971,7 +917,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       this.imageUrl = this.ary[index].imageUrl;
       this.imageDetail = this.ary[index].imageDetail;
       this.isImageLink = this.ary[index].isNewTeb;
-      this.imageSize = this.ary[index].style.imageSize;
+      this.imageSize = this.ary[index].imageStyle.imageSize;
       if (item.style.imagealign === "flex-start") {
         this.alignActive("left");
       } else if (item.style.imagealign === "flex-end") {

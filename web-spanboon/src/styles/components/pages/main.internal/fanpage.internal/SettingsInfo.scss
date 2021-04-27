@@ -27,7 +27,7 @@
                 padding: 13px 10px;
                 border-top: 1px solid $border-color;
                 @include pointer();
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-head-500);
                 opacity: 0.7;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -44,7 +44,7 @@
 
                 > .settings-icon {
                     margin-right: 8pt;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                 }
 
                 > .settings-title {
@@ -65,9 +65,9 @@
 
 .fanpage-info {
     > .info-title {
-        font-family: "Kanit-500";
-        font-size: 22px;
+        @include font-size-8($font-head-500);
         margin: 15pt 50pt 5pt 50pt;
+        height: 30pt;
     }
 
     > .card-info {
@@ -95,7 +95,7 @@
             padding-right: 15pt;
 
             > .header {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-10($font-head-500);
             }
         }
 
@@ -110,11 +110,11 @@
                     > .mat-radio-button {
                         margin-bottom: 3pt;
                         width: fit-content;
-                        @include font-size-9-100("Kanit-400");
+                        @include font-size-9($font-head-400);
                     }
 
                     > .mat-radio-checked {
-                        @include font-size-9-100("Kanit-600");
+                        @include font-size-9($font-head-600);
                     }
                 }
 
@@ -184,13 +184,19 @@
                     flex-direction: row;
                     justify-content: flex-start;
                     // align-items: center;
-                    @include font-size-10-100("Kanit-400");
+                    @include font-size-10($font-head-400);
                     margin-top: 8pt;
                     color: $black;
 
-                    > span {
-                        margin-left: 6pt;
-                    }
+                    >.mat-checkbox {
+                        >.mat-checkbox-layout {
+                            >.mat-checkbox-label {
+                                > .checkbox-confirm { 
+                                    @include font-size-10($font-head-500);
+                                }
+                            }
+                        }
+                    } 
                 }
 
                 > .card-bottom {
@@ -202,13 +208,12 @@
 
                     > .card-title {
                         padding-top: 8pt;
-                        @include font-size-10-100("Kanit-400");
+                        @include font-size-10($font-head-400);
                         color: rgba($black, 0.5);
                     }
                     > .display-name {
                         margin-top: 3px;
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                         word-break: break-all;
                         padding: 0 13px;
                     }
@@ -218,9 +223,9 @@
 
                         > .save-card {
                             color: $white;
-                            background: $color-warm-red;
+                            background: $brandcolor2;
                             opacity: 0.7;
-                            @include font-size-10-100("Kanit-500");
+                            @include font-size-10($font-head-500);
 
                             &.active {
                                 opacity: 1;
@@ -232,13 +237,13 @@
                         }
 
                         > .cancel-card {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             background: transparent;
-                            @include font-size-10-100("Kanit-500");
+                            @include font-size-10($font-head-500);
 
                             &:hover {
                                 > .mat-button-wrapper {
-                                    text-decoration: underline;
+                                    color: rgba($brandcolor2, 0.95);
                                 }
                             }
                         }
@@ -256,9 +261,8 @@
         > label {
             position: absolute;
             left: 9pt;
-            font-family: "Kanit-500";
-            font-size: 24px;
-            bottom: 2pt;
+            @include font-size-8($font-content-light);
+            bottom: 6pt;
         }
 
         > .input-data {
@@ -302,7 +306,7 @@
         border-radius: 4px;
         padding: 0 8pt;
         height: 26pt;
-        @include font-size-9-100("Kanit-400");
+        @include font-size-10($font-content-light);
     }
 
     .textarea {
@@ -332,53 +336,53 @@
             }
 
             > .mat-checkbox-label {
-                @include font-size-9-100("Kanit-500");
+                @include font-size-9($font-head-500);
             }
         }
     }
 
     .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
     .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
-        background: $color-warm-red;
+        background: $brandcolor2;
     }
 
     .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
     .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-        background: $color-warm-red;
+        background: $brandcolor2;
     }
 
     // --------------
 
     .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-        border-color: $color-warm-red;
+        border-color: $brandcolor2;
     }
 
     .mat-radio-button.mat-accent .mat-radio-inner-circle {
-        color: $color-warm-red;
-        background-color: $color-warm-red;
+        color: $brandcolor2;
+        background-color: $brandcolor2;
     }
 
     .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
     }
 }
 
 @media (max-width: $large) {
     .fanpage-info {
         > .info-title {
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                 }
             }
             > .card-right {
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                     //             > .card-bottom {
                     //                 > .card-title {
@@ -387,16 +391,16 @@
                     //                 > .card-confirm {
                     //                     text-align: end;
                     //                     > .save-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11($font-head-500);
                     //                     }
                     //                     > .cancel-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11($font-head-500);
                     //                     }
                     //                 }
                     // }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 12px;
+                        @include font-size-11($font-head-500);
                     }
                 }
             }
@@ -408,7 +412,7 @@
     .fanpage-info {
         > .info-title {
             margin: 15pt 30pt 5pt 30pt;
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             margin: 0 20pt;
@@ -416,15 +420,15 @@
             > .card-left {
                 width: 88pt;
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                 }
             }
             > .card-right {
                 width: calc(100% - 88pt - 15pt);
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                     //             > .card-bottom {
                     //                 > .card-title {
@@ -433,16 +437,16 @@
                     //                 > .card-confirm {
                     //                     text-align: end;
                     //                     > .save-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11($font-head-500);
                     //                     }
                     //                     > .cancel-card {
-                    //                         font-size: 12px;
+                    //                         @include font-size-11($font-head-500);
                     //                     }
                     //                 }
                     // }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 12px;
+                        @include font-size-11($font-head-500);
                     }
                 }
             }
@@ -452,23 +456,23 @@
 
 @media (max-width: $medium) {
     .fanpage-info {
-        > .info-title { 
+        > .info-title {
         }
-        > .card-info { 
+        > .card-info {
             flex-direction: column;
 
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                 }
             }
             > .card-right {
                 width: 100%;
                 padding-top: 8pt;
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 > .card-detail {
                     > .input-data {
-                        font-size: 14px;
+                        @include font-size-10($font-content-light);
                     }
                     > .card-bottom {
                         > .card-title {
@@ -477,16 +481,16 @@
                         > .card-confirm {
                             text-align: end;
                             > .save-card {
-                                font-size: 12px;
+                                @include font-size-11($font-head-500);
                             }
                             > .cancel-card {
-                                font-size: 12px;
+                                @include font-size-11($font-head-500);
                             }
                         }
                     }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
@@ -499,7 +503,7 @@
         min-height: calc(100vh - 39pt);
         > .info-title {
             margin: 15pt 16pt 5pt 16pt;
-            font-size: 18px;
+            @include font-size-9($font-head-500);
         }
         > .card-info {
             margin: 0 5pt;
@@ -507,13 +511,13 @@
 
             > .card-left {
                 > .header {
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                 }
             }
             > .card-right {
                 width: 100%;
                 padding-top: 8pt;
-                font-size: 16px;
+                @include font-size-9($font-head-500);
                 > .card-detail {
                     > .card-bottom {
                         > .card-title {
@@ -522,21 +526,21 @@
                         > .card-confirm {
                             text-align: end;
                             > .save-card {
-                                font-size: 12px;
+                                @include font-size-11($font-head-500);
                             }
                             > .cancel-card {
-                                font-size: 12px;
+                                @include font-size-11($font-head-500);
                             }
                         }
                     }
                     > .div-checkbox {
                         align-items: center;
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                 }
-                >.crop-input {
-                    >.input-data {
-                        font-size: 14px;
+                > .crop-input {
+                    > .input-data {
+                        @include font-size-10($font-head-500);
                     }
                 }
             }

@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="chat-spanboon"> 
+<div class="chat-spanboon">
     <div class="case-confirmed" *ngIf="isCaseConfirmed && isCaseHasPost"
         [ngStyle]="{'top': header.offsetHeight + 'px','height': talking.offsetHeight + 'px'}"></div>
     <div class="header" #header>
@@ -15,7 +15,9 @@
         <div>
             <span class="label-taking"> การพูดคุยกับ:</span>
             <a href="{{asPage ? linkUser : linkPage}}" target="_blank">
-                <span class="user-name">
+                <span #pageNameDiv style="position: relative;" (mousemove)="onMouseEnter($event, pageNameDiv)"
+                    #showTooltip (mouseover)="Tooltip(showTooltip , ProfilePage)" (mouseleave)="TooltipClose($event)"
+                    class="user-name">
                     {{sender}}
                 </span>
             </a>
@@ -28,7 +30,7 @@
                 *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
                 <div class="page-message">
                     <div class="talking-m">
-                        <div class="talking-time"> 
+                        <div class="talking-time">
                             <span class="material-icons" *ngIf="item.chatMessage.isRead">
                                 done
                             </span>
@@ -65,13 +67,13 @@
                                 [messageType]="item.chatMessage.messageType" (submit)="submit.emit()">
                             </chat-fulfill>
                         </ng-template>
- 
+
                         <a href="{{asPage ? linkPage : linkUser}}" target="_blank">
                             <ng-container
                                 *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseSenderImage">
                                 <img src="{{item.senderImage}}" alt="" class="m-profile">
                             </ng-container>
-                            <ng-template #elseSenderImage>  
+                            <ng-template #elseSenderImage>
                                 <div class="donator user"> {{item.senderName | slice: 0:1 }} </div>
                             </ng-template>
                         </a>
@@ -84,7 +86,7 @@
                         *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseUserSenderImage">
                         <img src="{{item.senderImage}}" alt="" class="y-profile">
                     </ng-container>
-                    <ng-template #elseUserSenderImage>  
+                    <ng-template #elseUserSenderImage>
                         <div class="donator sender"> {{item.senderName | slice: 0:1}} </div>
                     </ng-template>
                 </a>
@@ -136,27 +138,27 @@
                 <div class="confirm-text">
                     สิ้นสุดการสนทนา
                 </div>
-                <span class="confirm-text left">คำขอเติมเต็มถูกยืนยันแล้ว
+                <span class="confirm-text left">คำขอ{{PLATFORM_FULFILL_TEXT}}ถูกยืนยันแล้ว
                     <ng-container *ngIf="isCaseConfirmed && isCaseHasPost; else elseTemplatePost">
                         <span class="click-post" (click)="clickPost.emit()">ไปที่โพสต์</span>
                     </ng-container>
-                    <ng-template #elseTemplatePost> 
+                    <ng-template #elseTemplatePost>
                         <ng-container *ngIf="asPage; else elseTemplateAsPage">
-                            <span  class="click-post" (click)="createPost.emit()">ไปที่สร้างโพสต์</span>
+                            <span class="click-post" (click)="createPost.emit()">ไปที่สร้างโพสต์</span>
                         </ng-container>
                         <ng-template #elseTemplateAsPage>
                             <span>รอการสร้างโพสต์</span>
-                        </ng-template> 
-                    </ng-template>  
+                        </ng-template>
+                    </ng-template>
                 </span>
             </div>
         </div>
     </div>
     <div class="typing" #typing [class.active]="isCaseConfirmed">
         <ng-container *ngIf="imageURL !== '' && imageURL !== undefined && imageURL !== null ; else elseImage">
-            <img class="img-profile" src="{{imageURL}}" alt="">
+            <img class="img-profile" src="{{apiBaseURL+imageURL+'/image'}}" alt="">
         </ng-container>
-        <ng-template #elseImage>  
+        <ng-template #elseImage>
             <div class="donator"> {{sender | slice: 0:1 }} </div>
         </ng-template>
 

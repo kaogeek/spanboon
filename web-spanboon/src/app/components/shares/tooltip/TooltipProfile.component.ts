@@ -9,7 +9,8 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
 import { MatDialog, MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { find } from 'rxjs/operators';
-import { AuthenManager, MenuContextualService, ObservableManager } from 'src/app/services/services';
+import { AuthenManager, MenuContextualService, ObservableManager, PageFacade } from 'src/app/services/services';
+import { environment } from 'src/environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 
@@ -44,27 +45,30 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   public typePage: string;
 
   public observManager: ObservableManager;
+  public pageFacade: PageFacade;
   public unset: any;
   public mainProfileLink: any;
   public resDataPage: any;
 
-  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager, public popupService: MenuContextualService) {
+  constructor(authenManager: AuthenManager, router: Router, pageFacade: PageFacade, dialog: MatDialog, observManager: ObservableManager, public popupService: MenuContextualService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
+    this.pageFacade = pageFacade;
     this.observManager = observManager;
     this.popupService = popupService;
-
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.popupService.close(this.data);
     });
   }
+  public apiBaseURL = environment.apiBaseURL;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
-  public ngOnInit(): void {
-
+  public ngOnInit(): void { 
+    Object.assign(this.data.owner, { followers: this.data.followUserCount });
   }
+
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
@@ -82,7 +86,35 @@ export class TooltipProfile extends AbstractPage implements OnInit {
     return;
   }
 
-  public clickFollow(): void { }
+  public async clickFollow(page) {
+    let follow = await this.pageFacade.follow(page.id); 
+
+    this.data.owner.followUserCount = follow.data.followers;
+    this.data.owner.isFollow = follow.data.isFollow;
+    //
+    this.data.followUserCount = follow.data.followers;
+    this.data.isFollow = follow.data.isFollow;
+
+  }
+
+  public clickSend(page) {
+    if (page !== null && page !== undefined) {
+      let pageId = page.id;
+      let uniqueId = page.uniqueId;
+
+      if ((pageId !== null && pageId !== undefined && pageId !== '') && (uniqueId === null || uniqueId === undefined || uniqueId === '')) {
+        this.router.navigate(["/page/" + pageId]);
+      } else {
+        this.router.navigate(["/page/" + uniqueId]);
+      }
+    }
+  }
+
+  public clickMore(page) {
+
+    this.showAlertDevelopDialog();
+
+  }
 
   public Links = [
     {
@@ -106,4 +138,24 @@ export class TooltipProfile extends AbstractPage implements OnInit {
       icon: "sms_failed"
     },
   ];
+
+  public tooltipClose(event) {
+    let BUTTON_CLASS: string = "button-follow mat-ripple radius";
+    let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
+    let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";
+    let TOOLTIP_CLASS: string = "tooltip-body"
+    let ARROW_CLASS: string = "arrow-bottom";
+    let MAT_BUTTON_CLASS: string = "mat-button-wrapper";
+    let TOOLTIP_BUTTON_CLASS: string = "tooltip-bottom";
+    let ICON_CLASS: string = "material-icons";
+    let TOOL_DROP_CLASS: string = "but-send tool-dropdow mat-stroked-button mat-button-base";
+
+    if (event.toElement && event.toElement.className && event.toElement.className !== TOOL_DROP_CLASS && event.toElement.className !== ICON_CLASS && event.toElement.className !== MAT_BUTTON_CLASS && event.toElement.className !== TOOLTIP_BUTTON_CLASS && event.toElement.className !== TOOLTIP_CLASS && event.toElement.className !== ARROW_CLASS && event.toElement.className !== BUTTON_CLASS && event.toElement.className !== BUTTON_CLASS_RIGHT && event.toElement.className !== BUTTON_CLASS_SEND) {
+
+      this.popupService.close(undefined);
+
+    }
+  }
+
 }
+

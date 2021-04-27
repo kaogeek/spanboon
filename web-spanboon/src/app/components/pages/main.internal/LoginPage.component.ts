@@ -15,7 +15,7 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { AbstractPage } from '../AbstractPage';
 // import { LOGIN_FACEBOOK_ENABLE } from '../../../Constants';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
-import { MESSAGE } from '../../../AlertMessage';
+import { MESSAGE } from '../../../../custom/variable';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
 
@@ -59,7 +59,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
   public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
-  public accessTokenLink = 'https://api.twitter.com/oauth/access_token';
+  public accessTokenLink = '';
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
@@ -94,7 +94,6 @@ export class LoginPage extends AbstractPage implements OnInit {
 
     let doRunAccessToken = false;
     const fullURL = window.location.href;
-    console.log('fullURL ', fullURL)
     if (fullURL !== undefined && fullURL !== '') {
       let split = fullURL.split('?');
       if (split.length >= 2) {
@@ -104,7 +103,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }
 
-    if (doRunAccessToken) { 
+    if (doRunAccessToken) {
       this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
         let spilt = res.split('&');
         const token = spilt[0].split('=')[1];
@@ -189,34 +188,37 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginTwitter() { 
+  public clickLoginTwitter() {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
       this.authorizeLink += '?' + result;
       window.open(this.authorizeLink);
     }).catch((error: any) => {
       console.log(error);
+      if (error && error.message) {
+        return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+      }
     });
   }
 
   public clickLoginGoogle(): void {
     this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
-    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+    // this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
 
-      if (result !== null && result !== undefined) {
-        let googleToken = {
-          googleUserId: result.id,
-          authToken: result.authToken,
-          idToken: result.idToken
-        };
+    //   if (result !== null && result !== undefined) {
+    //     let googleToken = {
+    //       googleUserId: result.id,
+    //       authToken: result.authToken,
+    //       idToken: result.idToken
+    //     };
 
-        this.googleToken = googleToken;
+    //     this.googleToken = googleToken;
 
-        this._ngZone.run(() => this.loginGoogle());
-      }
-    }).catch((error) => {
-      console.log('error >>> ', error);
-    });
+    //     this._ngZone.run(() => this.loginGoogle());
+    //   }
+    // }).catch((error) => {
+    //   console.log('error >>> ', error);
+    // });
 
   }
 
@@ -290,7 +292,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-    }, { scope: 'public_profile,email,user_birthday,user_gender' });
+    }, { scope: 'public_profile,email' });
   }
 
   public emailLogin() {
@@ -395,8 +397,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: "ระบบอยู่ในระหว่างการพัฒนา",
-        bottomText2: "ตกลง",
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
         bottomColorText2: "black",
         btDisplay1: "none"
       }

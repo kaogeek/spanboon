@@ -19,7 +19,7 @@
                         <div class="box-profile">
                             <ng-container
                                 *ngIf="accessValue.imageBase64 !== '' && accessValue.imageBase64 !== undefined && accessValue.imageBase64 !== null ; else elseImage">
-                                <img src="{{accessValue.imageBase64 || accessValue.imageBase64}}" alt="">
+                                <img src="{{accessValue.imageBase64}}" alt="">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="donator">
@@ -42,8 +42,9 @@
                                 <button mat-menu-item *ngIf="index === 0" class="page-list"
                                     (click)="changeAccess(data.user,'user')">
                                     <ng-container
-                                        *ngIf="data.user && data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile1">
-                                        <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile">
+                                        *ngIf="data.user && data.user.imageBase64 !== '' && data.user.imageBase64 !== undefined && data.user.imageBase64 !== null; else elseImageProfile1">
+                                        <img src="{{data.user.imageBase64}}" alt="" class="profile">
+                                        <!-- <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile"> -->
                                     </ng-container>
                                     <ng-template #elseImageProfile1>
                                         <div class="donator"> {{ data.user.displayName | slice: 0:1 }} </div>
@@ -126,7 +127,7 @@
                         </div>
                     </ng-container>
                     <ng-template #elseTemplateFulFill>
-                        <!-- <div class="user-contact contact-notfound">ไม่พบรายการคำขอเติมเต็ม</div> -->
+                        <!-- <div class="user-contact contact-notfound">ไม่พบรายการคำขอ{{PLATFORM_FULFILL_TEXT}}</div> -->
                     </ng-template>
                 </div>
             </div>
@@ -159,32 +160,49 @@
                         <div class="story-left">
                             <div *ngIf="title" class="story-category">
                                 <span class="material-icons status"> lens </span>
-                                <span class="lookfor">มองหา</span>
+                                <span class="lookfor">{{PLATFORM_NEEDS_TEXT}}</span>
 
                                 <svg class="time" height="512pt" viewBox="0 0 512 512" width="512pt"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                        fill="#A5A5A6"></path>
+                                        class="svg-color-gray"></path>
                                     <path
                                         d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0"
-                                        fill="#A5A5A6"></path>
+                                        class="svg-color-gray"></path>
                                 </svg>
                                 <span class="date">
                                     <a href="{{linkPost}}" target="_blank">
-                                        {{postDate | dateFormat}}
+                                        {{postDates | dateFormat}}
                                     </a>
+                                </span>
+                                <span class="date">
+                                    {{name ? name:uniqueId}} ต้องการ{{PLATFORM_FULFILL_TEXT}}ให้กับ
+                                </span>
+                            </div>
+                            <div class="fulfill-name">
+                                <span class="date">
+                                    {{name ? name:uniqueId}} ต้องการ{{PLATFORM_FULFILL_TEXT}}ให้กับ
                                 </span>
                             </div>
                             <div class="contact-head">
-                                {{title ? title:(name ? name:uniqueId)}}
-                                <span *ngIf="!title" style="opacity: 0.7;"> ต้องการ เติมเต็มลงเพจ </span>
+                                <a href="{{linkUser}}" target="_blank">
+                                    {{title ? title:(name ? name:uniqueId)}}
+                                </a>
+                                <span *ngIf="!title" style="opacity: 0.7;"> ต้องการ{{PLATFORM_FULFILL_TEXT}}ให้กับ
+                                </span>
                             </div>
                             <div *ngIf="!title" class="contact-head">
-                                {{pageName ? pageName:uniqueId}}
+                                <a style="pointer-events: none;">เพจ</a>
+                                <a #pageNameDiv style="position: relative;"
+                                    (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
+                                    (mouseover)="Tooltip(showTooltip , ProfilePage)" (mouseleave)="TooltipClose($event)"
+                                    href="{{linkPage}}" target="_blank">
+                                    {{pageName ? pageName:uniqueId}}
+                                </a>
                             </div>
                             <div class="contact-hashtag">
-                                <tag-event
+                                <tag-event *ngIf="objective || emergencyEvent "
                                     [isShowEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
                                     [isNameEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
                                     [isIconEmergency]="emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== ''"
@@ -195,12 +213,18 @@
                                     [nameObjective]="objective" (emergencyClick)="clickDevelop($event , emergencyEvent)"
                                     (objectiveClick)="clickDevelop($event , objective)"></tag-event>
 
+                                <span class="date">
+                                    <a href="{{linkPost}}" target="_blank">เปิดคำขอ{{PLATFORM_FULFILL_TEXT}}เมื่อ
+                                        {{postDate |
+                                        dateFormat}}
+                                    </a>
+                                </span>
                                 <div class="contact-content" *ngIf="chatDate !== null && chatDate !== undefined">
                                     <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
                                 </div>
                             </div>
                             <div class="list-item" (click)="showFulFill()">
-                                <span>รายการเติมเต็ม {{reqData.length}} รายการ</span>
+                                <span>รายการ{{PLATFORM_FULFILL_TEXT}} {{reqData.length}} รายการ</span>
                             </div>
                         </div>
                         <div class="story-right"
@@ -208,7 +232,7 @@
                             <div class="profile-user">
                                 <div class="profile-contact">
                                     <ng-container *ngIf="asPage; else elseFulfill">
-                                        <div class="joinus">ผู้ร่วมเติมเต็ม</div>
+                                        <div class="joinus">ผู้ร่วม{{PLATFORM_FULFILL_TEXT}}</div>
                                         <span class="user">
                                             <span class="user-name">
                                                 <a href="{{linkUser}}" target="_blank">
@@ -218,10 +242,13 @@
                                         </span>
                                     </ng-container>
                                     <ng-template #elseFulfill>
-                                        <div class="joinus">เติมเต็มให้กับ</div>
+                                        <div class="joinus">{{PLATFORM_FULFILL_TEXT}}ให้กับ</div>
                                         <span class="user">
                                             <span class="user-name">
-                                                <a href="{{linkPage}}" target="_blank">
+                                                <a #pageNameDiv style="position: relative;"
+                                                    (mousemove)="onMouseEnter($event, pageNameDiv)" #showTooltip
+                                                    (mouseover)="Tooltip(showTooltip , ProfilePage,true)"
+                                                    href="{{linkPage}}" target="_blank">
                                                     {{pageName}}
                                                 </a>
                                             </span>
@@ -231,7 +258,7 @@
                                 <ng-container *ngIf="asPage; else elseAsPage">
                                     <ng-container
                                         *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
-                                        <img class="img" src="{{userImageURL}}">
+                                        <img class="img" src="{{apiBaseURL+userImageURL+'/image'}}">
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">
@@ -244,7 +271,7 @@
                                 <ng-template #elseAsPage>
                                     <ng-container
                                         *ngIf="(pageImageURL !== null && pageImageURL !== undefined && pageImageURL !==''); else elseUserImageURL">
-                                        <img class="img" src="{{pageImageURL}}">
+                                        <img class="img" src="{{apiBaseURL+pageImageURL+'/image'}}">
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">
@@ -257,7 +284,7 @@
                             </div>
                             <div class="confirm">
                                 <ng-container *ngIf="(isCaseHasPost && isCaseConfirmed); else elseFufillmentPost">
-                                    <span class="text-fulfill-close">คำขอเติมเต็มถูกยืนยันแล้ว
+                                    <span class="text-fulfill-close">คำขอ{{PLATFORM_FULFILL_TEXT}}ถูกยืนยันแล้ว
                                         <div class="date-case-close">{{approveDate}}</div>
                                     </span>
                                     <spanboon-button class="button-view-post" (click)="viewPost(fulfillmentPost)"
@@ -279,33 +306,33 @@
                                                     (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
                                                     [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">
                                                     <div class="select-name">
-                                                        ยกเลิกคำขอเติมเต็ม
+                                                        ยกเลิกคำขอ{{PLATFORM_FULFILL_TEXT}}
                                                     </div>
                                                 </button>
                                             </ng-container>
                                             <ng-container *ngIf="asPage && isCaseConfirmed && !isCaseHasPost">
-                                                <button mat-menu-item class="list-sort">
+                                                <button class="btn-create-fulfill-post" mat-menu-item class="list-sort">
                                                     <div class="select-name"
                                                         (click)="createFulfillPost(fulfillCaseId,asPage)">
-                                                        สร้างโพสต์เติมเต็ม
+                                                        สร้างโพสต์{{PLATFORM_FULFILL_TEXT}}
                                                     </div>
                                                 </button>
                                                 <button mat-menu-item class="list-sort">
-                                                    <div class="select-name"
+                                                    <div class="btn-cancel-fulfill" class="select-name"
                                                         (click)="cancelFulfillmentCase(fulfillCaseId,asPage)">
-                                                        ยกเลิกคำขอเติมเต็ม
+                                                        ยกเลิกคำขอ{{PLATFORM_FULFILL_TEXT}}
                                                     </div>
                                                 </button>
                                             </ng-container>
                                         </mat-menu>
                                     </ng-container>
                                     <ng-template #elseTemplateIsChecKMobile>
-                                        <button mat-stroked-button class="butt-fulfill"
+                                        <button mat-stroked-button class="butt-fulfill btn-cancel-fulfill"
                                             *ngIf="!isCaseConfirmed && !isCaseHasPost"
                                             (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
-                                            [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกคำขอเติมเต็ม</button>
+                                            [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกคำขอ{{PLATFORM_FULFILL_TEXT}}</button>
 
-                                        <button mat-stroked-button class="butt-fulfill"
+                                        <button mat-stroked-button class="butt-fulfill btn-create-fulfill-post"
                                             *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
                                             [ngStyle]="{'background': '#FD545A' , 'color' : '#FFF'}"
                                             (click)="createFulfillPost(fulfillCaseId,asPage)">
@@ -325,7 +352,7 @@
                                                     </g>
                                                 </g>
                                             </svg>
-                                            สร้างโพสต์เติมเต็ม
+                                            สร้างโพสต์{{PLATFORM_FULFILL_TEXT}}
                                         </button>
                                     </ng-template>
                                 </ng-template>
@@ -334,25 +361,26 @@
                     </div>
                     <div class="body-story" [class.active]="isCaseHasPost">
                         <div class="body-story-left" [class.active]="isListItem">
-                            <chat-message [data]="chatData" [pageId]="pageId" [postId]="postId" [linkUser]="linkUser"
-                                [linkPage]="linkPage" [imageURL]="asPage ? pageImageURL : userImageURL"
-                                [pageName]="pageName" [isCaseConfirmed]="isCaseConfirmed"
-                                [isCaseHasPost]="isCaseHasPost" [sender]="sender" [chatRoomId]="chatRoomId"
-                                [asPage]="asPage" (submit)="showFulFill()" [fulfillCaseId]="fulfillCaseId"
-                                (createPost)="createFulfillPost(fulfillCaseId,asPage)" (expand)="expandMore()"
-                                (back)="onBack()" [isBackArrow]="isBackArrow" (clickPost)="viewPost(fulfillmentPost)">
+                            <chat-message [ProfilePage]="ProfilePage" [data]="chatData" [pageId]="pageId"
+                                [postId]="postId" [linkUser]="linkUser" [linkPage]="linkPage" [isAsPage]="isAsPage"
+                                [imageURL]="asPage ? pageImageURL : userImageURL" [pageName]="pageName"
+                                [isCaseConfirmed]="isCaseConfirmed" [isCaseHasPost]="isCaseHasPost" [sender]="sender"
+                                [chatRoomId]="chatRoomId" [asPage]="asPage" (submit)="showFulFill()"
+                                [fulfillCaseId]="fulfillCaseId" (createPost)="createFulfillPost(fulfillCaseId,asPage)"
+                                (expand)="expandMore()" (back)="onBack()" [isBackArrow]="isBackArrow"
+                                (clickPost)="viewPost(fulfillmentPost)">
                             </chat-message>
                         </div>
                         <div class="body-story-right" id="body-story-right">
                             <div class="grop-fulfill">
                                 <ng-container *ngIf="!isListItem; else elseTemplateOnClose">
                                     <div class="header" #header>
-                                        รายการเติมเต็ม
+                                        รายการ{{PLATFORM_FULFILL_TEXT}}
                                     </div>
                                 </ng-container>
                                 <ng-template #elseTemplateOnClose>
                                     <div class="header">
-                                        รายการเติมเต็ม
+                                        รายการ{{PLATFORM_FULFILL_TEXT}}
                                         <div class="btn-close" (click)="onBack()">
                                             <span class="material-icons">
                                                 close
@@ -384,24 +412,21 @@
                                     <div class="fulfill-status">
                                         <div class="fulfill-status-text"
                                             *ngIf="isCaseConfirmed && (fulfillmentPost === null || fulfillmentPost === undefined || fulfillmentPost === '')">
-                                            คำขอเติมเต็มถูกยืนยันแล้ว
+                                            คำขอ{{PLATFORM_FULFILL_TEXT}}ถูกยืนยันแล้ว
                                         </div>
 
                                         <div class="fulfill-action">
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-cancel-confirm"
                                                 *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
-                                                (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)"
-                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกการยืนยัน</button>
+                                                (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)">ยกเลิกการยืนยัน</button>
 
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-cancel-fulfill"
                                                 *ngIf="!isCaseConfirmed && !isCaseHasPost"
-                                                (click)="deleteAllFulfillList(reqData,asPage)"
-                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกรายการทั้งหมด</button>
+                                                (click)="deleteAllFulfillList(reqData,asPage)">ยกเลิกรายการทั้งหมด</button>
 
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-confirm-fulfill"
                                                 *ngIf="asPage && !isCaseConfirmed && !isCaseHasPost"
-                                                (click)="confirmFulfillRequest(fulfillCaseId,asPage)"
-                                                [ngStyle]="{'background': '#7AAF67' , 'color' : '#FFF' }">ยืนยันรายการเติมเต็ม</button>
+                                                (click)="confirmFulfillRequest(fulfillCaseId,asPage)">ยืนยันรายการ{{PLATFORM_FULFILL_TEXT}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -424,12 +449,13 @@
                             d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
                             transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
                     </svg>
-                    <span class="fulfill-label" *ngIf="fulfillCase && fulfillCase.length > 0"> กรุณาเลือกคำขอเติมเต็ม
+                    <span class="fulfill-label" *ngIf="fulfillCase && fulfillCase.length > 0">
+                        กรุณาเลือกคำขอ{{PLATFORM_FULFILL_TEXT}}
                     </span>
                     <span class="fulfill-label"
-                        *ngIf="fulfillCase && fulfillCase.length === 0">ไม่พบรายการคำขอเติมเต็ม</span>
+                        *ngIf="fulfillCase && fulfillCase.length === 0">ไม่พบรายการคำขอ{{PLATFORM_FULFILL_TEXT}}</span>
                     <span class="fulfill-search hover" *ngIf="fulfillCase && fulfillCase.length === 0"
-                        (click)="searchPostNeeds()"> หากคุณต้องการมองหาโพสต์ได้ที่นี่</span>
+                        (click)="searchPostNeeds()"> หากคุณต้องการ{{PLATFORM_NEEDS_TEXT}}โพสต์ได้ที่นี่</span>
                 </div>
             </ng-template>
         </ng-template>

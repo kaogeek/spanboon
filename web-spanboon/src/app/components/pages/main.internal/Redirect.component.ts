@@ -82,17 +82,18 @@ export class Redirect implements OnInit {
                         }
                     }
 
-                    if (doRunAccessToken) {  
-                        this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => {
+                    if (doRunAccessToken) {   
+                        this.twitterService.getAcessToKen(this.accessTokenLink).then((res: any) => { 
                             let spilt = res.split('&');
                             const token = spilt[0].split('=')[1];
                             const token_secret = spilt[1].split('=')[1];
                             const userId = spilt[2].split('=')[1];
-                            const page = spilt[2].split('/')[1];
+                            const pageName = spilt[3].split('=')[1]; 
                             let user = {
                                 token: token,
                                 token_secret: token_secret,
-                                userId: userId
+                                userId: userId,
+                                name: pageName
                             }  
                             if (!window.opener.closed) { 
                                 window.opener.bindTwitter(user);

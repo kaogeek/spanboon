@@ -7,6 +7,8 @@
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { PLATFORM_STORY_TALE } from '../../../custom/variable';
+import { AssetFacade } from 'src/app/services/services';
 
 @Component({
   selector: 'control-action',
@@ -74,6 +76,8 @@ export class ControlAction {
   public isShowtextshare: boolean = true;
   @Input()
   public isShowtextPlusAll: boolean = false;
+  @Input()
+  public isPostShareData: any;
 
   public Allcount: number;
 
@@ -82,11 +86,19 @@ export class ControlAction {
   public isImges: boolean
   public isDis: boolean
   public apiBaseURL = environment.apiBaseURL;
+  public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
 
-  constructor() {
+  constructor(private assetFacade: AssetFacade) {
     setTimeout(() => {
-      if (this.accessPage !== undefined && this.accessPage !== null) {  
-        if (this.accessPage[0].img64 !== undefined && this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
+      if (this.accessPage !== undefined && this.accessPage !== null) {
+        for (let accessPage of this.accessPage) {
+          this.assetFacade.getPathFile(accessPage.imageURL).then((res: any) => {
+            accessPage.img64 = res.data;
+          }).catch((err: any) => {
+          });
+        }
+
+        if (this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
           this.isImges = true
           this.isDis = false
@@ -105,16 +117,16 @@ export class ControlAction {
 
   public selectAccessPage(page: any) {
     if (page.img64 !== undefined && page.img64 !== null && page.img64 !== '') {
-      this.selectedAccessPageimges = page 
+      this.selectedAccessPageimges = page
       this.isImges = true
       this.isDis = false
-      this.emitpage.emit(page); 
+      this.emitpage.emit(page);
     } else {
       this.selectedAccessPageimges = page.displayName || page.name;
       this.isImges = false
       this.isDis = true
       this.emitpage.emit(page);
-    } 
+    }
   }
 
   public postLike() {

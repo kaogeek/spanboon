@@ -15,12 +15,12 @@
         justify-content: space-between;
         padding: 10pt;
         border-bottom: $width-border solid $border-color;
-        @include font-size-8-100("Kanit-500");
+        @include font-size-8($font-head-500);
         > .left {
             display: flex;
             align-items: center;
             &:last-of-type {
-                font-size: 14px;
+                @include font-size-10($font-head-500);
             }
             > .mat-slide-toggle {
                 margin-left: 5pt;
@@ -36,10 +36,8 @@
         flex-direction: column;
         // > .select-calendar {
         //     width: 100%;
-        //     font-family: "Kanit-500";
-        //     font-size: 14px;
         //     border: 1pt solid $border-color;
-        //     color: $koalaGray;
+        //     color: $color-gray;
         //     > .mat-button-wrapper {
         //         display: flex;
         //         align-items: center;
@@ -62,10 +60,9 @@
                             border-radius: 25px;
                             background-color: #fff;
                             height: 25pt;
-                            color: #212721;
+                            color: $color-black;
                             padding: 2pt 10pt 2pt 13pt;
-                            font-family: "Kanit-500";
-                            font-size: 14px;
+                            @include font-size-10($font-head-500);
                             box-shadow: 0px 1px 9px 0 #00000020;
                         }
                     }
@@ -97,14 +94,13 @@
             display: flex;
             align-items: center;
             @include pointer();
-            font-family: "Kanit-300";
-            font-size: 16px;
-            color: $koalaGray;
+            @include font-size-10($font-head-500);
+            color: $color-gray;
             margin-left: 9pt;
             width: 50pt;
             flex: 0 0 auto;
             &:hover {
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
 
@@ -123,15 +119,15 @@
                 font-family: "Kanit-500";
                 margin-left: 6pt;
                 > .top {
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                     color: #a5a5a6;
                 }
                 > .middle {
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                 }
                 > .trend {
                     display: flex;
-                    font-size: 14px;
+                    @include font-size-10($font-head-500);
                     > .count {
                     }
                     // > .tag {
@@ -147,8 +143,7 @@
         }
         > .header-card {
             padding: 4pt 5pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
         }
         > .box-slider {
             // border: 0.7pt solid $border-color;
@@ -158,14 +153,14 @@
         .ng5-slider {
             > .ng5-slider-span {
                 > .ng5-slider-selection {
-                    background-color: $color-warm-red;
+                    background-color: $brandcolor2;
                 }
                 > .ng5-slider[disabled] .ng5-slider-bar {
                     background-color: #c4c4c4;
                 }
             }
             .ng5-slider-pointer {
-                background-color: $color-warm-red;
+                background-color: $brandcolor2;
                 width: 12px;
                 height: 12px;
                 top: -5px;
@@ -185,8 +180,7 @@
                     opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
             > .ng5-slider-bubble {
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
             }
             > .ng5-slider-pointer.ng5-slider-active::after {
                 transform: scale(1);
@@ -202,9 +196,9 @@
     > .follow-all {
         padding: 8pt 15pt;
         text-align: center;
-        color: $color-warm-red;
+        color: $brandcolor2;
         @include pointer();
-        @include font-size-9-100("Kanit-500");
+        @include font-size-9($font-head-500);
         min-height: 26pt;
         display: flex;
         justify-content: center;

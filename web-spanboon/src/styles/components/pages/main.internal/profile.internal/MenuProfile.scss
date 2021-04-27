@@ -44,7 +44,7 @@
     }
 
     &.displayName {
-        background: $color-warm-red;
+        background: $brandcolor2;
         box-shadow: 2.5px 0px 0px 0 $white;
         color: $brandcolor;
 
@@ -52,15 +52,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
         }
     }
 }
 
 .menu-set {
     margin: 5pt 0 0 0;
-    width: 320px !important; 
+    width: 320px !important;
     overflow-y: auto !important;
     max-height: calc(100vh - 48px - 20pt) !important;
 
@@ -86,7 +85,7 @@
                     user-select: none;
                     width: 70px;
                     height: 70px;
-                    background: $color-warm-red;
+                    background: $brandcolor2;
                     border: rgb($black, 0.1);
                     color: $brandcolor;
                     border-radius: 50%;
@@ -103,20 +102,21 @@
 
                 > .profile-detail {
                     > .profile-name {
-                        font-size: 1.5em;
+                        @include font-size-8($font-head-500);
                         line-height: 1em;
                         margin-top: 10pt;
                     }
 
                     > .profile-name-eng {
-                        color: $koalaGray;
-                        font-size: 16px;
+                        color: $color-gray;
+                        @include font-size-9($font-head-100);
+                        padding-top: 2pt;
                     }
 
                     > .header-follow {
                         display: flex;
                         align-items: center;
-                        font-size: 16px;
+                        @include font-size-9($font-head-100);
                         justify-content: center;
                         padding-top: 10px;
 
@@ -124,7 +124,7 @@
                         }
 
                         > .dote {
-                            font-size: 24px;
+                            @include font-size-6($font-head-500);
                             line-height: 16px;
                             margin: 0 5pt;
                         }
@@ -133,7 +133,7 @@
                         }
 
                         span {
-                            color: $koalaGray;
+                            color: $color-gray;
                         }
                     }
                 }
@@ -157,8 +157,7 @@
 
                     > .name {
                         padding: 5pt 13pt;
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-400);
                     }
                 }
             }
@@ -166,8 +165,8 @@
     }
 }
 
-@media (max-width: $small) { 
-    .profile-sub-menu+* .cdk-overlay-pane{
+@media (max-width: $small) {
+    .profile-sub-menu + * .cdk-overlay-pane {
         right: 0 !important;
         top: 39pt !important;
     }

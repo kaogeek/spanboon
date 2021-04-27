@@ -6,39 +6,39 @@
 -->
 
 <div #choose class="choose-item" id="control-height" (window:resize)="onResize()">
-    <div class="top" #top>
+    <div class="top" #top mat-dialog-title>
         <div class="header">
             {{statusLabel}}
         </div>
         <div class="title">
-            โปรดเลือกของที่คุณต้องการมองหา
+            โปรดเลือกของที่คุณต้องการ{{PLATFORM_NEEDS_TEXT}}
         </div>
     </div>
     <div class="tab" #tab>
         <div class="tablinks" matRipple *ngFor="let link of dataList; let index = index"
             [matRippleCentered]="'centered'" [matRippleColor]="'#FD545A20'" id="{{link.id}}"
-            (click)="clickData($event , link.id)">{{link.name}}</div> 
+            (click)="clickData($event , link.id)">{{link.name}}</div>
     </div>
-    <div class="center" #bodyList>
+    <div mat-dialog-content class="center" #bodyList>
         <ng-container *ngIf="isOpenFolder; else elseIsOpen">
             <div class="center-left mongha" [class.active]="isActiveCss" id="centerleft">
                 <div class="doing-search">
                     <div class="doing-search-box">
                         <label class="material-icons icon-search" for="search-img">search</label>
                         <input matInput #searchAll id="search-img" class="search-img" type="search"
-                            placeholder="คุณกำลังมองหาอะไรอยู่ ?" (keyup)="keyUpSearchAll(searchAll.value)"
+                            placeholder='คุณกำลังมองหาอะไรอยู่ ?' (keyup)="keyUpSearchAll(searchAll.value)"
                             (keyup.enter)="keyUpSearchAll(searchAll.value)" [(ngModel)]="query_conversation">
                         <span class="material-icons icon-clear" (click)="closeSearch(searchAll.value)"> close
                         </span>
                     </div>
-                    <spanboon-button class="search-data" [bgColor]="'#FD545A'" [color]="'#FFFFFF'" [text]="'ค้นหา'"
-                        [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn" [radius]="'6px'"
+                    <spanboon-button class="search-data" [color]="'#FFFFFF'" [text]="'ค้นหา'" [fontSize]="fontSize"
+                        [height]="heightBtn" [width]="widthBtn" [radius]="'6px'"
                         (click)="keyUpSearchAll(searchAll.value)">
                     </spanboon-button>
                 </div>
                 <div class="body-list-item">
                     <div class="search-latest" *ngIf="!isSearchAll">
-                        สิ่งที่มองหาล่าสุด
+                        สิ่งที่{{PLATFORM_NEEDS_TEXT}}ล่าสุด
                         <div class="list-search-doing">
                             <ng-container *ngIf="isLoading; else isLoadIng">
                                 <div class="body-data-category" [class.active]="isListItem || arrListItem.length > 0">
@@ -180,16 +180,16 @@
                                         </ng-template>
                                     </ng-container>
                                 </ng-container>
-                                <ng-template #elseNotFound1> 
-                                    <div class="body-data-category empty-data"> 
-                                        <span class="label-item">ไม่พบรายการมองหา</span>
+                                <ng-template #elseNotFound1>
+                                    <div class="body-data-category empty-data">
+                                        <span class="label-item">ไม่พบรายการ{{PLATFORM_NEEDS_TEXT}}</span>
                                     </div>
                                 </ng-template>
                             </ng-template>
                         </div>
                     </div>
                     <div class="search-latest folder"
-                        [ngStyle]="{'color': labelHeader === 'ไม่พบรายการที่มองหา' ? '#FD545A' : '#212721'}">
+                        [ngStyle]="{'color': labelHeader === 'ไม่พบรายการที่'+PLATFORM_NEEDS_TEXT ? '#FD545A' : '#212721'}">
                         {{labelHeader}}
                         <div class="list-search-doing">
                             <ng-container *ngIf="isSearchAll; else elseisSearchAll">
@@ -477,7 +477,7 @@
         <ng-template #elseIsOpen>
             <div class="center-left mongha" id="centerleft">
                 <!-- <div class="center-left mongha" id="centerleft" [ngStyle]="{'width' : isListItem || arrListItem.length > 0 ? '50%' : '100%' }"> -->
-                <div class="doing-search open-folder"> 
+                <div class="doing-search open-folder">
                     <ng-container *ngIf="pathFolder">
                         <div class="label-doing">
                             <div class="active-hover" (click)="folderRoot()">
@@ -491,7 +491,7 @@
                                 <span class="sub">{{index === pathFolder.length -1 ? "" : "/" }}</span>
                             </div>
                         </div>
-                    </ng-container> 
+                    </ng-container>
                 </div>
                 <div class="body-list-item">
                     <div class="list-search-doing">
@@ -635,21 +635,21 @@
             </div>
         </ng-template>
 
-        <div class="center-right mongha" [class.active]="isListItem" id="centerright"> 
+        <div class="center-right mongha" [class.active]="isListItem" id="centerright">
             <div class="doing-items">
                 <div class="label-doing-left">
-                    รายการสิ่งที่มองหา
+                    รายการสิ่งที่{{PLATFORM_NEEDS_TEXT}}
                 </div>
                 <div class="doing-count-item">
                     {{arrListItem.length}} รายการ
                 </div>
             </div>
             <div class="body-list-items">
-                <cdk-drop-list [cdkDropListData]="arrListItem" (cdkDropListDropped)="dropToList($event)"
+                <div cdkDropList [cdkDropListData]="arrListItem" (cdkDropListDropped)="dropToList($event)"
                     class="list-sorted" id="list1">
                     <ng-container *ngFor="let listItem of arrListItem; let index = index;">
                         <ng-container *ngIf="listItem.isAddItem; else elseisAddItem">
-                            <div class="list-sorted-item" cdkDrag> 
+                            <div class="list-sorted-item" cdkDrag>
                                 <div class="body-list"
                                     [ngStyle]="{'width': 'calc(100% - ' +listItemUnit2.offsetWidth + 'px)'}">
                                     <div class="list-items">
@@ -679,7 +679,8 @@
                                                 </g>
                                             </svg>
                                             <div class="wrapper-category">
-                                                <img class="img-category" src="../../../../assets/img/customize_item.svg" alt="">
+                                                <img class="img-category"
+                                                    src="../../../../assets/img/customize_item.svg" alt="">
                                             </div>
                                         </div>
 
@@ -687,7 +688,7 @@
                                             [ngStyle]="{'width': 'calc(100% - ' +listImg2.offsetWidth + 'px)'}">
                                             <input #itemName class="input-add" type="text"
                                                 id="itemNameCustomize{{index}}" [(ngModel)]="listItem.itemName"
-                                                placeholder="สิ่งที่กำลังมองหาแบบกำหนดเอง"
+                                                placeholder="สิ่งที่กำลัง{{PLATFORM_NEEDS_TEXT}}แบบกำหนดเอง"
                                                 (keyup)="keyUpText(itemName.value , index , 'name')" shake
                                                 [shake]="isName">
                                             <div class="list-category">
@@ -767,13 +768,14 @@
                                                         src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
                                                 </ng-container>
                                                 <ng-template #elseImage>
-                                                    <img class="img-category" src="../../../../assets/img/customize_item.svg"
-                                                        alt="">
+                                                    <img class="img-category"
+                                                        src="../../../../assets/img/customize_item.svg" alt="">
                                                 </ng-template>
 
                                             </div>
                                         </div>
-                                        <div class="list-data" [ngStyle]="{'width': 'calc(100% - ' +listImg.offsetWidth + 'px)'}">
+                                        <div class="list-data"
+                                            [ngStyle]="{'width': 'calc(100% - ' +listImg.offsetWidth + 'px)'}">
                                             <span class="list-item-name"
                                                 matTooltip="{{listItem.itemName}}">{{listItem.itemName ||
                                                 listItem.name}}</span>
@@ -817,15 +819,15 @@
                             </div>
                         </ng-template>
                     </ng-container>
-                </cdk-drop-list>
+                </div>
             </div>
         </div>
     </div>
-    <div class="bottom" #bottomConfirm>
-        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [border]="'0.7pt solid #e5e5e5'" [isShaDow]="false" [width]="'80pt'"
-            [color]="'#212721'" (click)="onClose()">
+    <div mat-dialog-actions align="end" class="bottom" #bottomConfirm>
+        <spanboon-button class="close-dialog" [text]="'ยกเลิก'" [bgColor]="'#FFF'" [border]="'0.7pt solid #e5e5e5'"
+            [isShaDow]="false" [width]="'80pt'" [color]="'#212721'" (click)="onClose()">
         </spanboon-button>
-        <spanboon-button [text]="'ยืนยัน'" [bgColor]="'#FD545A'" [width]="'80pt'" (click)="onConfirm()">
+        <spanboon-button [text]="'ยืนยัน'" [width]="'80pt'" (click)="onConfirm()">
         </spanboon-button>
     </div>
 </div>

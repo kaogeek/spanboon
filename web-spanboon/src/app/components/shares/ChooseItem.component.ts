@@ -106,7 +106,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
     public widthBtn: any;
     public isFirst: any;
 
-    public dataList: any = [{ name: 'มองหา', id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
+    public dataList: any = [{ name: this.PLATFORM_NEEDS_TEXT, id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
 
     constructor(pageCategoryFacade: PageCategoryFacade, pageFacade: PageFacade,
         dialog: MatDialog, authenManager: AuthenManager, router: Router, assetFacade: AssetFacade, observManager: ObservableManager, needsFacade: NeedsFacade) {
@@ -132,7 +132,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
         this.parrentCategoryMap = {};
         this.parrentCategoryMapSelect = {};
 
-        this.labelHeader = 'รายการมองหาทั้งหมด';
+        this.labelHeader = 'รายการ' + this.PLATFORM_NEEDS_TEXT + 'ทั้งหมด';
         this.isTabClick = this.dataList[0].id;
     }
 
@@ -464,7 +464,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
         if (data === '') {
             this.isSearchAll = false;
             this.searchPageCategory();
-            this.labelHeader = 'สิ่งที่มองหาล่าสุด';
+            this.labelHeader = 'สิ่งที่' + this.PLATFORM_NEEDS_TEXT + 'ล่าสุด';
             return;
         }
 
@@ -484,7 +484,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             if (this.resItemCategory.length === 0) {
                 this.labelHeader = 'ไม่พบรายการที่ค้นหา';
             } else {
-                this.labelHeader = 'ผลลัพธ์การมองหา';
+                this.labelHeader = 'ผลลัพธ์การ' + this.PLATFORM_NEEDS_TEXT;
             }
             for (const itemSelect of this.arrListItem) {
                 let index = 0;
@@ -503,7 +503,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             if (err.error.status === 0) {
                 if (err.error.message === 'Cannot search StandardItem') {
                     this.resItemCategory = [];
-                    this.labelHeader = 'ไม่พบรายการมองหา';
+                    this.labelHeader = 'ไม่พบรายการ' + this.PLATFORM_NEEDS_TEXT;
                 }
             }
             this.stopLoading();
@@ -635,15 +635,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
             if (this.arrListItem.length === 0) {
                 this.isListItem = false;
             }
-
         }
-        // if (window.innerWidth <= 1024) {
-        //     var i, tabcontent, tablinks;
-        //     tabcontent = document.getElementsByClassName("mongha");
-        //     tabcontent[0].style.display = "none";
-        //     tabcontent[1].style.display = "none";
-        //     document.getElementById("defaultOpen2").click();
-        // }
     }
 
     public keyUpText(text: string, index: number, type: string) {
@@ -662,15 +654,7 @@ export class ChooseItem extends AbstractPage implements OnInit {
 
     public openListItem() {
         this.isListItem = !this.isListItem;
-        // this.isActive = true;
         this.isUnit = false;
-        // if (window.innerWidth <= 1024) {
-        //     var i, tabcontent, tablinks;
-        //     tabcontent = document.getElementsByClassName("mongha");
-        //     tabcontent[0].style.display = "none";
-        //     tabcontent[1].style.display = "none";
-        //     document.getElementById("defaultOpen2").click();
-        // }
         this.arrListItem.push({
             isAddItem: true,
             standardItemId: "",
@@ -708,10 +692,6 @@ export class ChooseItem extends AbstractPage implements OnInit {
             }
             this.removeCategorySelect(listItem);
             this.arrListItem.splice(index, 1);
-            if (this.arrListItem.length === 0) {
-                // this.isListItem = false;
-                // this.isActive = false;
-            }
         }
     }
 
@@ -801,79 +781,31 @@ export class ChooseItem extends AbstractPage implements OnInit {
             }
         }
         if (window.innerWidth <= 768) {
-            if (this.tabSelect && this.top && this.bottomConfirm) {
-                let tab = this.tabSelect.nativeElement.offsetHeight;
-                let top = this.top.nativeElement.offsetHeight;
-                let bottom = this.bottomConfirm.nativeElement.offsetHeight;
-                let body = this.bodyList.nativeElement.offsetHeight;
-                let x = top + tab + bottom;
-                var chromeH = window.outerHeight - window.innerHeight;
-                var isLandscape = window.innerWidth > window.innerHeight, height;
-                let land = isLandscape ? 32 : 44;
-                if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
-                    x = x + chromeH;
-                } else {
-                    if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-                        // x = x + land - chromeH;
-                        x = x + chromeH;
-                        // console.log('total ', x)
-                        // x = x + 70;
-                    }
-                }
-                this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
-            }
+            // if (this.tabSelect && this.top && this.bottomConfirm) {
+            //     let tab = this.tabSelect.nativeElement.offsetHeight;
+            //     let top = this.top.nativeElement.offsetHeight;
+            //     let bottom = this.bottomConfirm.nativeElement.offsetHeight;
+            //     let body = this.bodyList.nativeElement.offsetHeight;
+            //     let x = top + tab + bottom;
+            //     var chromeH = window.outerHeight - window.innerHeight;
+            //     var isLandscape = window.innerWidth > window.innerHeight, height;
+            //     let land = isLandscape ? 32 : 44;
+            //     if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
+            //         x = x + chromeH;
+            //     } else {
+            //         if (window.innerHeight <= 768 && 479 < window.innerHeight) {
+            //             // x = x + land - chromeH;
+            //             x = x + chromeH;
+            //             // console.log('total ', x)
+            //             // x = x + 70;
+            //         }
+            //     }
+            //     this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
+            // }
 
         }
     }
-    // public onResize() {
-    //     if (window.innerWidth <= 1024) {
-    //         if (this.isTabClick === 'centerleft') {
-    //             document.getElementById("defaultOpen1").click();
-    //         } else {
-    //             document.getElementById("defaultOpen2").click();
-    //         }
-    //     } else {
 
-    //     }
-    //     if (window.innerWidth <= 768) { 
-    //         if (this.tabSelect && this.top && this.bottomConfirm) {
-    //             let tab = this.tabSelect.nativeElement.offsetHeight;
-    //             let tab1 = this.choose.nativeElement.offsetHeight;
-    //             let top = this.top.nativeElement.offsetHeight;
-    //             let bottom = this.bottomConfirm.nativeElement.offsetHeight;
-    //             let body = this.bodyList.nativeElement.offsetHeight;
-    //             let x;
-    //             // let x; 
-    //             if(window.outerHeight === 1024){
-    //                 x = top + tab + bottom;
-    //             } else if(window.outerHeight === 798){
-
-    //             }
-    //             console.log('document.documentElement.clientHeight ',document.documentElement.clientHeight)
-    //             var chromeH = window.outerHeight - window.innerHeight;
-    //             console.log('1 ', window.outerHeight) 
-    //             console.log('2 ', window.innerHeight) 
-    //             console.log('chromeH ', chromeH) 
-    //             var isLandscape = window.innerWidth > window.innerHeight, height; 
-    //             let land = isLandscape ? 32 : 44 ;
-    //             if (window.innerHeight <= 1024 && 768 < window.innerHeight) { 
-
-    //                 x =  chromeH + land ; 
-    //             } else {
-    //                 if (window.innerHeight <= 768 && 479 < window.innerHeight) {
-    //                     // x = x + chromeH;
-    //                     // console.log('total ', x)
-    //                     // x = x + 70;
-    //                     x =   chromeH + land;
-    //                 }
-    //             }
-
-    //             // this.bodyList.nativeElement.style.height = "calc(100vh - " + x + "px)";
-    //             this.choose.nativeElement.style.height = "calc(100vh - " + x + "px)";
-    //         }
-
-    //     }
-    // }
     public clickData(event, text) {
         if (event.isTrusted) {
             if (text === 'defaultOpen1') {
@@ -883,7 +815,6 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 data.style.display = 'flex';
                 this.isListItem = false;
                 this.isTabClick = text;
-                // document.getElementById("defaultOpen1").click();
             } else {
                 $('#defaultOpen1').removeClass('active');
                 $('#defaultOpen2').addClass('active');
@@ -891,7 +822,6 @@ export class ChooseItem extends AbstractPage implements OnInit {
                 data.style.display = 'none';
                 this.isListItem = true;
                 this.isTabClick = text;
-                // document.getElementById("defaultOpen2").click();
             }
         }
     }

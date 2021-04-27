@@ -7,7 +7,7 @@
 
 .fanpage {
   min-height: calc(100vh - 55pt);
-  background: $bg-fog-gray2;
+  background: $background-fan-page;
 
   .container {
     max-width: 1280px;
@@ -25,7 +25,7 @@
         > .wrapper-cover-image {
           width: calc(100% - 4px);
           height: calc(#{$height-cover-img-fanpage} - 4px);
-          border: 2px dashed $color-warm-red;
+          // border: 2px dashed $brandcolor2;
 
           &:hover {
             @include pointer();
@@ -42,8 +42,7 @@
             height: 100%;
             justify-content: center;
             align-items: center;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
 
             > .wrapper-icon-upload {
               display: flex;
@@ -71,7 +70,7 @@
               > .browse {
                 padding: 5pt 10pt;
                 border-radius: 25px;
-                border: 3px solid $color-warm-red;
+                border: 3px solid $brandcolor2;
                 @include pointer();
               }
             }
@@ -123,8 +122,7 @@
             align-items: center;
             background-color: #f4dead2f;
             color: $brandcolor;
-            font-family: "Kanit-500";
-            font-size: 20px;
+            @include font-size-8($font-head-500);
             padding-right: $padding-right-img-phrase;
           }
         }
@@ -149,8 +147,7 @@
             background: rgba($black, 0.2);
             color: $white;
             @include pointer();
-            font-family: "Kanit-400";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             border: 0.7px solid rgb($white, 0.1);
 
             &:hover {
@@ -192,7 +189,7 @@
           background-position-x: 50%;
 
           &.active {
-            background-image: none !important;
+            // background-image: none !important;
           }
         }
       }
@@ -267,9 +264,8 @@
             > .fan-page-name {
               display: flex;
               width: 100%;
-              color: $color-warm-red;
-              font-family: "Kanit-500";
-              font-size: 20px;
+              color: $brandcolor2;
+              @include font-size-8($font-head-500);
               margin-bottom: 5pt;
               align-items: center;
               justify-content: center;
@@ -288,15 +284,13 @@
             }
 
             > .fan-page-subline {
-              font-family: "Kanit-500";
-              font-size: 18px;
+              @include font-size-9($font-head-500);
               margin-bottom: 5pt;
             }
 
             > .fan-page-tag {
-              color: $koalaGray;
-              font-family: "Kanit-500";
-              font-size: 16px;
+              color: $color-gray;
+              @include font-size-9($font-head-100);
               justify-content: center;
               margin-bottom: 15pt;
             }
@@ -312,8 +306,7 @@
             border-left: $width-border solid $border-color;
             border-bottom: $width-border solid $border-color;
             border-right: $width-border solid $border-color;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
 
             > .btn-follow-about {
               display: flex;
@@ -321,8 +314,7 @@
               width: 33.33%;
               justify-content: center;
               align-items: center;
-              font-family: "Kanit-500";
-              font-size: 16px;
+              @include font-size-9($font-head-500);
 
               &:nth-child(1) {
                 margin: 0 8pt;
@@ -338,7 +330,7 @@
               > button-follow {
                 > .button-follow {
                   &:hover {
-                    background-color: rgba($color-warm-red, 0.1) !important;
+                    background-color: rgba($brandcolor2, 0.1) !important;
                   }
 
                   > .mat-ripple-element {
@@ -348,11 +340,11 @@
 
                 &.active {
                   > .button-follow {
-                    background-color: $color-warm-red !important;
+                    background-color: $brandcolor2 !important;
                     color: $white !important;
 
                     &:hover {
-                      background-color: rgba($color-warm-red, 0.95) !important;
+                      background-color: rgba($brandcolor2, 0.95) !important;
                     }
                   }
                 }
@@ -392,8 +384,7 @@
             border: $width-border solid $border-color;
             border-radius: $border-radius-4px;
             margin-top: 5pt;
-            font-family: "Kanit-500";
-            font-size: 18px;
+            @include font-size-9($font-head-500);
 
             > .wrapper-header {
               display: flex;
@@ -402,27 +393,25 @@
               border-bottom: $width-border solid $border-color;
 
               > .header-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
                 flex: 1 1 0%;
                 padding-right: 15pt;
               }
 
               > .material-icons {
-                font-size: 20px;
+                font-family: "Material Icons" !important;
+                font-size: $font-size-icon-large;
                 @include pointer();
                 flex: 0 0 auto;
               }
 
               > .label-looking-for {
-                font-family: "Kanit-400";
-                font-size: 18px;
+                @include font-size-9($font-head-400);
               }
 
               > .subline-looking-for {
-                font-family: "Kanit-500";
-                font-size: 14px;
-                color: $koalaGray;
+                @include font-size-10($font-head-500);
+                color: $color-gray;
               }
             }
 
@@ -431,13 +420,11 @@
               height: auto;
               padding: unset;
               border-bottom: unset;
-              font-family: "Kanit-500";
-              font-size: 16px;
+              @include font-size-9($font-head-500);
 
               > .con-text {
                 padding: 10pt 15pt;
-                font-family: "Kanit-500";
-                font-size: 16px;
+                @include font-size-9($font-head-500);
               }
             }
 
@@ -445,8 +432,7 @@
               > .item-looking-for {
                 padding: 10pt 15pt 10pt;
                 margin: 0;
-                font-family: "Kanit-400";
-                font-size: 16px;
+                @include font-size-10($font-head-100);
                 &:hover {
                   border-radius: 0;
                 }
@@ -505,8 +491,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-right: $width-border solid $border-color;
-                cursor: pointer;
+                border-right: $width-border solid $border-color; 
                 text-decoration: none;
 
                 &:last-of-type {
@@ -515,7 +500,11 @@
                 &:hover {
                   background-color: $background-hover;
                 }
+                &.none {
+                  pointer-events: none;
+                }
                 &.active {
+                  cursor: pointer;
                   > .facebook {
                     > svg,
                     g,
@@ -537,11 +526,25 @@
                       fill: #6fc32e;
                     }
                   }
+                  >.location {
+                    > svg,
+                    g,
+                    path {
+                      fill: #fd5454;
+                    }
+                  }
                   > .phone {
                     > svg,
                     g,
                     path {
-                      fill: #5a5a5a;
+                      fill: #6fc32e;
+                    }
+                  }
+                  > .message {
+                    > svg,
+                    g,
+                    path {
+                      fill: #FCD12A;
                     }
                   }
                   > .web {
@@ -551,7 +554,7 @@
                       fill: #3b85c7;
                     }
                   }
-                }
+                } 
               }
             }
 
@@ -567,15 +570,13 @@
               align-items: center;
 
               > .btn-donate-top {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                color: $color-warm-red;
+                @include font-size-9($font-head-500);
+                color: $brandcolor2;
               }
 
               > .btn-donate-bottom {
-                font-family: "Kanit-500";
-                font-size: 14px;
-                color: $koalaGray;
+                @include font-size-10($font-head-500);
+                color: $color-gray;
               }
             }
           }
@@ -613,18 +614,17 @@
                       height: 100%;
                       color: $color-black;
                       @include pointer();
-                      font-family: "Kanit-500";
-                      font-size: 18px;
+                      @include font-size-9($font-head-500);
                       opacity: 1;
 
                       &:hover {
-                        color: $color-warm-red;
-                        background: rgba($color-warm-red, 0.1);
+                        color: $brandcolor2;
+                        background: rgba($brandcolor2, 0.1);
                       }
                     }
 
                     > .mat-tab-label-active {
-                      color: $color-warm-red;
+                      color: $brandcolor2;
                     }
                   }
                 }
@@ -677,8 +677,8 @@
               > .title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
-                font-family: "Kanit-500";
-                font-size: 20px;
+                @include pointer();
+                @include font-size-8($font-head-500);
               }
 
               > .card-feed-post {
@@ -705,7 +705,8 @@
 
                   > .mat-button-wrapper {
                     > .material-icons {
-                      font-size: 26px;
+                      font-family: 'Material Icons' !important;
+                      font-size: $font-size-icon-small;
                     }
                   }
                 }
@@ -774,8 +775,7 @@
                         height: 100%;
                         left: 0;
                         top: 0;
-                        font-family: "Kanit-500";
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                         color: $white;
                         background-color: $black;
                         opacity: 0.5;
@@ -798,22 +798,19 @@
                     align-items: center;
 
                     > .date-time {
-                      font-family: "Kanit-500";
-                      font-size: 12px;
+                      @include font-size-11($font-head-300);
                       color: $black;
                       margin-right: 7px;
                     }
 
                     > .post-name {
-                      font-family: "Kanit-400";
-                      font-size: 12px;
-                      color: $koalaGray;
+                      @include font-size-11($font-head-200);
+                      color: $color-gray;
                     }
                   }
 
                   > .title {
-                    font-family: "Kanit-500";
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                   }
 
                   > .content {
@@ -821,7 +818,7 @@
                     color: $color-black;
                     margin-bottom: 10pt;
                     font-family: "Sarabun-Light";
-                    font-size: 16px;
+                    @include font-size-9($font-content-light);
                   }
 
                   > .content-sub {
@@ -829,12 +826,11 @@
                     display: inline-block;
                     margin-bottom: 10pt;
                     cursor: pointer;
-                    color: $color-warm-red;
-                    font-family: "Sarabun-Light";
-                    font-size: 14px;
+                    color: $brandcolor2;
+                    @include font-size-10($font-content-light);
 
                     &:hover {
-                      text-decoration: underline;
+                      color: rgba($brandcolor2, 0.95);
                     }
                   }
 
@@ -845,13 +841,12 @@
 
                     > .h_tag_list {
                       width: max-content;
-                      font-family: "Kanit-500";
-                      font-size: 16px;
+                      @include font-size-9($font-head-500);
                       @include pointer();
                       margin: 0 7pt 7pt 0;
 
                       &:hover {
-                        text-decoration: underline;
+                        color: rgba($brandcolor2, 0.95);
                       }
                     }
                   }
@@ -864,8 +859,7 @@
                       border-bottom: unset !important;
                       margin: 0;
                       padding: 10pt 10pt 10pt 5pt;
-                      font-family: "Kanit-500";
-                      font-size: 16px;
+                      @include font-size-9($font-head-500);
 
                       > span {
                         > .icon-looking-for {
@@ -898,8 +892,7 @@
                       background: rgba($bg-fog-gray, 0.8);
                       padding: 6pt;
                       @include pointer();
-                      font-family: "Kanit-500";
-                      font-size: 16px;
+                      @include font-size-9($font-head-500);
                       border-radius: $border-radius-4px;
                       margin: 5pt 0;
                       transform: scale(1, 1);
@@ -917,7 +910,7 @@
                   > .group-event {
                     display: flex;
                     align-items: center;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     @include pointer();
 
                     > .event-tag,
@@ -932,8 +925,7 @@
                       }
 
                       > span {
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                       }
                     }
                   }
@@ -948,15 +940,14 @@
                     > .left {
                       display: flex;
                       align-items: center;
-                      font-family: "Kanit-500";
-                      font-size: 16px;
-                      color: $koalaGray;
+                      @include font-size-9($font-head-500);
+                      color: $color-gray;
 
                       > .icon-feed {
                         width: 10pt;
                         height: 10pt;
                         border-radius: 50%;
-                        background-color: $koalaGray;
+                        background-color: $color-gray;
                       }
 
                       > .looking {
@@ -964,7 +955,7 @@
                       }
 
                       > .fulfill {
-                        background-color: $green;
+                        background-color: $status-post-fulfill;
                       }
 
                       span {
@@ -976,7 +967,7 @@
                       display: flex;
                       align-items: center;
                       color: $brandcolor2;
-                      font-size: 16px;
+                      @include font-size-9($font-head-500);
                     }
                   }
                 }
@@ -987,8 +978,7 @@
                 justify-content: center;
                 height: 501pt;
                 background-color: $brandcolor;
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
 
                 > .lable-timeline {
                   padding: 50pt;
@@ -1009,8 +999,7 @@
                 display: flex;
                 justify-content: center;
                 flex-wrap: wrap;
-                font-family: "Kanit-500";
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 border: $width-border solid $border-color;
                 background-color: $white;
                 margin-top: 5pt;
@@ -1019,8 +1008,7 @@
                   width: 100%;
                   padding: 15pt;
                   border-bottom: $width-border solid $border-color;
-                  font-family: "Kanit-500";
-                  font-size: 18px;
+                  @include font-size-9($font-head-500);
                 }
 
                 > .side-feed-about-page {
@@ -1030,26 +1018,23 @@
 
                   > .label-about {
                     padding: 15pt;
-                    font-family: "Kanit-500";
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
                   > .content-about {
                     padding: 10pt 15pt;
                     width: calc(100% - 30pt);
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
                   > .content-all {
                     padding: 8pt 15pt;
                     text-align: center;
-                    color: $color-warm-red;
+                    color: $brandcolor2;
                     @include pointer();
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-9($font-head-500);
                   }
                 }
 
@@ -1057,7 +1042,7 @@
                   width: 100%;
                   height: auto;
                   padding: unset !important;
-                  border-bottom: unset !important;
+                  // border-bottom: unset !important;
 
                   > .wrapper-doing {
                     display: flex;
@@ -1105,10 +1090,9 @@
                   width: calc(100% - 30pt);
                   padding: 8pt 15pt;
                   text-align: center;
-                  color: $color-warm-red;
+                  color: $brandcolor2;
                   @include pointer();
-                  font-family: "Kanit-500";
-                  font-size: 16px;
+                  @include font-size-9($font-head-500);
                   min-height: 26pt;
                   display: flex;
                   justify-content: center;
@@ -1118,6 +1102,11 @@
 
               > .wrapper-recommend {
                 > .recommend-card {
+                  margin-top: 5pt;
+                }
+              }
+              recommend-card {
+                >.recommend-card {
                   margin-top: 5pt;
                 }
               }
@@ -1134,8 +1123,7 @@
   }
 
   > span {
-    font-family: "Kanit-500";
-    font-size: 14px;
+    @include font-size-10($font-head-500);
   }
 }
 
@@ -1148,8 +1136,7 @@
   background-color: $brandcolor;
   border-bottom: $width-border solid $border-color;
   color: $font-color-none;
-  font-family: "Kanit-500";
-  font-size: 16px;
+  @include font-size-9($font-head-500);
 }
 
 .doing-none {
@@ -1161,8 +1148,7 @@
   background-color: $brandcolor;
   border-bottom: $width-border solid $border-color;
   color: $font-color-none;
-  font-family: "Kanit-500";
-  font-size: 16px;
+  @include font-size-9($font-head-500);
 }
 
 .pageNotFound {
@@ -1170,8 +1156,7 @@
   height: calc(100vh - 55pt);
   justify-content: center;
   align-items: center;
-  font-family: "Kanit-500";
-  font-size: 20px;
+  @include font-size-8($font-head-500);
 
   > #Group_142 {
     width: 100pt;
@@ -1181,8 +1166,7 @@
 
   > .text-NotFound {
     margin-top: 15pt;
-    font-family: "Kanit-500";
-    font-size: 22px;
+    @include font-size-7($font-head-500);
   }
 }
 
@@ -1211,7 +1195,7 @@
             height: calc(#{$height-cover-img-fanpage} - 4px - 10pt);
 
             > .text-wrapper {
-              font-size: 16px;
+              @include font-size-9($font-head-500);
 
               > .wrapper-icon-upload {
                 > .icon-upload {
@@ -1249,7 +1233,7 @@
                   > .mat-tab-list {
                     > .mat-tab-links {
                       > .mat-tab-link {
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                       }
                     }
                   }

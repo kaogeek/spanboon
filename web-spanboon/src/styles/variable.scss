@@ -17,86 +17,58 @@
 // ---------
 
 // ----- root color -----
-$blue: #007bff;
-$indigo: #6610f2;
-$purple: #6f42c1;
-$pink: #e83e8c;
-$red: #dc3545;
-$orange: #fd7e14;
-$yellow: #ffc107;
-$green: #28a745;
-$teal: #20c997;
-$cyan: #17a2b8;
-$white: #fff;
-$gray: #6c757d;
-$gray-dark: #343a40;
-$primary: #007bff;
-$secondary: #6c757d;
-$success: #28a745;
-$info: #17a2b8;
-$warning: #ffc107;
-$danger: #dc3545;
-$light: #f8f9fa;
-$dark: #343a40;
-$black: #000000;
-$goldenrod: #daa520;
+@import "../custom/theme.scss";
 
-$color: rgb(249, 113, 84);
-$color-1: rgb(126, 121, 115);
-$color-2: rgb(89, 178, 204);
-$color-3: rgba(0, 179, 225, 1);
+$blue: #007bff;
+$white: #fff;
+$gray-dark: #343a40;
+$black: #000000;
+
 $color-4: rgb(194, 194, 194);
-$color-5: rgb(30, 44, 61);
-$color-6: rgb(0, 110, 176);
 $color-7: #279d90;
 $color-8: #41f3e3;
-$color-9: rgb(243, 243, 243);
 $color-10: rgba(255, 255, 255, 1);
 $color-11: #8e8e8e;
-$color-12: #1e7bf3;
-
-//
-$padding-page-side: 45pt;
-
-$color-warm-red: #fd545a;
 $color-black: #212721;
+$color-gray: #a5a5a6;
 
-$brandcolor: #f8f7f2;
-$brandcolor2: #c62634;
-$koalaGray: #a5a5a6;
-$bg-fog-gray: #e5e3dd;
-$bg-fog-gray2: #f5f5f5;
+//Web
+
+$bg-color1: rgb(243, 243, 243);
+$bg-grey: rgb(241, 241, 241);
+$bg-fog-gray: rgb(229, 227, 221);
+$bg-fog-gray2: $brandcolor;
+$bg-color2: rgb(33, 39, 33);
+$bg-color4: rgb(16, 17, 16);
+
+//SVG icon fill
+
+$svg-color-gray-icon: #a5a5a6;
+$svg-icon: #f8f7f2;
+$svg-icon-black: #212721;
+$svg-icon-activate: $brandcolor2;
+
+// Home page color
+
 $border-color: #e5e5e5;
-$bg-grey: #f1f1f1;
 $border-separator: #efefef;
 $font-color-none: #c5c4c4;
-//
-$bg-color1: #f3f3f3;
-$bg-color2: rgb(27, 27, 27);
-$bg-color3: rgb(255, 101, 101);
-$bg-color4: #7aaf67;
-
-$blur: #00000070;
-$background-hover: #f1f1f1d9;
-
-$shadow-vote-vard: #d3d3d4;
-$shadow-vote-vard-hover: #adadb0;
-$shwdow-cards: #c2c2cc;
 
 $bgcolor-list-item-fulfill-allocate: #fcfcfd;
+$shadow-vote-vard: #d3d3d4;
+$shwdow-cards: #c2c2cc;
+
+$blur: #00000070;
+
+$background-hover: rgb(241 ,241 ,241 , 0.4);
+$shadow-vote-vard-hover: #adadb0;
+
+$padding-page-side: 45pt;
+
+//background page
+$background-page : #f5f5f5;
 
 // 3.font size
-$font-size-1: 72px;
-$font-size-2: 68px;
-$font-size-3: 62px;
-$font-size-4: 54px;
-$font-size-5: 44px;
-$font-size-6: 36px;
-$font-size-7: 24px;
-$font-size-8: 18px;
-$font-size-9: 16px;
-$font-size-10: 14px;
-$font-size-11: 12px;
 
 // @media (max-width: )
 
@@ -131,7 +103,7 @@ $height-time: 12pt;
 //headerTop
 $width-icon: 12pt;
 $height-icon: 12pt;
-$height-header-top: 55pt;
+$height-header-top: 45pt;
 $width-icon-recommend: $width-icon + 5;
 
 // home
@@ -161,18 +133,3 @@ $height-wrapper-tool-post: 45pt;
 $padding-side-wrapper-tool-post: 15pt;
 
 $border-radius-4px: 4px;
-
-@media (max-width: $xxlarge) {
-}
-
-@media (max-width: $xlarge) {
-}
-
-@media (max-width: $large) {
-}
-
-@media (max-width: $medium) {
-}
-
-@media (max-width: $small) {
-}

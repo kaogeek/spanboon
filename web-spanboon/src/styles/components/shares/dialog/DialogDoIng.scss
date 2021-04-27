@@ -17,10 +17,7 @@ dialog-doing {
 
     .wrapper-dialog-doing {
         display: flex;
-        flex-direction: column;
-        width: 1200px;
-        max-width: 100%;
-        max-height: 100%;
+        flex-direction: column; 
         background-color: $white;
         transition: 0.3s;
         overflow: hidden;
@@ -31,6 +28,7 @@ dialog-doing {
             position: absolute;
             border-radius: 4px;
             top: 1%;
+            z-index: 2;
             right: 1%;
             @include pointer();
             display: flex;
@@ -41,30 +39,5 @@ dialog-doing {
                 width: 14px;
             }
         }
-    }
-    @media (max-width: $large) {
-        .wrapper-dialog-doing {  
-            height: 100vh;
-        }
-    }
-
-    @media (max-width: $lmedium) {
-        // .wrapper-dialog-doing {  
-        //     height: 100vh;
-        // }
-    }
-
-    @media (max-width: $medium) {
-        .wrapper-dialog-doing {  
-            height: 100vh;
-        }
-    }
-
-    @media (max-width: $small) {
-        .wrapper-dialog-doing {
-            // min-height: 100vh;
-            height: 100%;
-            min-width: 100vw;
-        }
-    }
+    } 
 }

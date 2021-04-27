@@ -16,31 +16,33 @@
     // overflow: hidden;
     // @include pointer();
     // position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    /* max-width: 600px; */
-    height: auto;
-    background-color: #fff;
-    transition: 0.3s;
-    overflow-x: hidden;
-    overflow-y: auto;
+    // display: flex;
+    // flex-direction: column;
+    // width: 100%;
+    // height: auto;
+    // background-color: #fff;
+    // transition: 0.3s;
+    // overflow-x: hidden;
+    // overflow-y: auto;
     @include pointer();
+    overflow: hidden;
+    position: relative;
 
-    > .close {
-        position: fixed;
-        top: 10pt;
-        right: 10pt;
-        cursor: pointer;
-        background: $white;
-        padding: 2pt;
-        border-radius: 4pt;
-        color: $black;
-        font-size: 1.5rem;
-        font-weight: 900;
+    > .onClose {
+        padding: 10px;
+        background-color: #d3d3d3;
+        position: absolute;
+        border-radius: 4px;
+        top: 1%;
+        right: 1%;
+        @include pointer();
+        display: flex;
+        z-index: 2;
+        justify-content: center;
+        align-items: center;
 
-        &::selection {
-            background: transparent;
+        > svg {
+            width: 14px;
         }
     }
     > .media {
@@ -52,7 +54,7 @@
     > .edit-h {
         width: auto;
         height: 20pt;
-        background-color: $color-warm-red;
+        background-color: $brandcolor2;
         border-bottom: whitesmoke 2px solid;
         padding: 10pt;
         display: flex;
@@ -61,7 +63,7 @@
         position: relative;
         overflow: hidden;
         > .edit-head-one {
-            @include font-size-8-100("Kanit-500");
+            @include font-size-8($font-head-500);
             height: 20px;
             color: white;
         }
@@ -75,6 +77,7 @@
                 cursor: pointer;
                 opacity: 0.4;
                 color: $white;
+                font-family: "Material Icons" !important;
                 &:hover {
                     opacity: 0.8;
                 }
@@ -91,7 +94,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         max-height: calc(55vh - 40pt - 20pt - 20pt);
-        @include font-size-7-100("Kanit-500");
+        @include font-size-7($font-head-500);
         word-break: break-word;
     }
     ckeditor {
@@ -113,7 +116,7 @@
             cursor: pointer;
             border: $width-border solid #e0e0e0;
             text-align: center;
-            @include font-size-9-100("Kanit-500");
+            @include font-size-9($font-head-500);
             margin: 0 0.25rem;
             transition: 0.5s;
             &:hover {
@@ -128,14 +131,37 @@
         }
         .but-submit {
             color: $brandcolor;
-            background-color: $color-warm-red;
+            background-color: $brandcolor2;
+        }
+    }
+
+    box-post {
+        .mat-dialog-content {
+            max-height: unset;
+        }
+        .box-post > .box > .textarea-editor {
+            width: calc(100% - 40pt);
+            min-height: 60px;
+            padding: 15px 20pt;
+            overflow-y: auto;
+            margin-top: 50px;
+            border-top: solid 0.5px #e7e7e7;
+            overflow-x: hidden;
+            word-break: break-word;
+            font-size: 17px;
+            font-family: "Sarabun-Light";
+        }
+        .wrapper-content {
+            padding: 15px;
+            word-break: break-word;
+            border-top: solid 0.5px #e7e7e7;
         }
     }
 }
 
 @media (max-width: $xxlarge) {
     .dialog-repote {
-        max-width: 480px;
+        // max-width: 480px;
         > .edit-input {
             padding: 18pt;
             max-height: calc(55vh - 36pt - 20pt - 20pt);
@@ -171,7 +197,7 @@
 
 @media (max-width: $medium) {
     .dialog-repote {
-        max-width: 440px; 
+        max-width: 440px;
         > .edit-h,
         > .dialog-footer {
             height: 14pt;
@@ -183,7 +209,7 @@
 }
 
 @media (max-width: $small) {
-    .dialog-repote { 
-        height: 100vh; 
+    .dialog-repote {
+        height: 100vh;
     }
 }

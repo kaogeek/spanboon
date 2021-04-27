@@ -80,7 +80,5 @@
     "tslint": "5.12.1",
     "typescript": "3.2.4"
   },
-  "author": "KaoGeek",
-  "license": "MIT"
-  
+  "author": "KaoGeek"
 }

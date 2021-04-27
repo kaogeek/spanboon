@@ -7,20 +7,18 @@
 
 .tag-event {
     display: flex;
-    align-items: center;
-    align-items: center;
+    align-items: center; 
 
-    // &.active{
-    //     padding: 5pt 0;
-    // }
+    &.mobileActive{
+       padding: 5pt 0pt;
+    }
 
     > .tag-emergency,
     > .tag-objective {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
         @include pointer();
         padding: 0 3px;
         margin: 0 3px;
@@ -31,13 +29,13 @@
             margin-right: 5pt;
 
             &.active {
-                fill: $color-warm-red;
+                fill: $brandcolor2;
 
                 g,
                 path,
                 path,
                 rect {
-                    fill: $color-warm-red;
+                    fill: $brandcolor2;
                 }
             }
         }
@@ -63,7 +61,7 @@
             overflow: hidden;
 
             &.active {
-                color: $color-warm-red;
+                color: $brandcolor2;
             }
         }
     }

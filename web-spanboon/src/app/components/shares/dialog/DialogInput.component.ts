@@ -9,6 +9,7 @@ import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import * as $ from 'jquery';
 import { environment } from '../../../../environments/environment';
+import { PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 
 declare var $: any;
 
@@ -26,6 +27,7 @@ export class DialogInput {
     public itemQuantity: ElementRef;
 
     public apiBaseURL = environment.apiBaseURL;
+    public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT
 
     constructor(public dialogRef: MatDialogRef<DialogInput>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 

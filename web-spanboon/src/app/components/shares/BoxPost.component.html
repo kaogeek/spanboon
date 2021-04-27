@@ -6,8 +6,8 @@
 -->
 
 <div class="box-post" (window:resize)="onResize()" [ngClass]="class">
-    <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet">
-        <div *ngIf="isRepost" class="box-story" #headerTop>
+    <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet" mat-dialog-content>
+        <div *ngIf="isRepost" class="box-story" #headerTop> 
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
@@ -18,13 +18,15 @@
                         <ng-template #elseAccessPage>
                             <div class="donator">
                                 <span>{{accessPageImage && ( accessPageImage.displayName || accessPageImage.name |
-                                    slice: 0:1 ) }}</span>
+                                    slice: 0:1 ) }}</span> 
                             </div>
                         </ng-template>
-                        <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
+                        <mat-select [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="selectedAccessPage"
-                                    (click)="selectAccessPage(data.user , 'USER')">
+                                <mat-option *ngIf="index === 0 && data.user.type === 'user'"
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    (click)="selectAccessPage(data.user,'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -40,8 +42,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.pageUsername || data.page.name "
-                                    (click)="selectAccessPage(data.page, 'PAGE')">
+                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page ,'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -53,21 +54,20 @@
                                             </ng-template>
                                         </div>
                                         <div class="wrapper-body-action">
-                                            <div>{{data.page.pageUsername || data.page.name }}</div>
+                                            <div>{{ data.page.name }}</div>
                                         </div>
                                     </div>
                                 </mat-option>
                             </ng-container>
-
                         </mat-select>
                     </div>
                 </mat-form-field>
             </div>
             <div *ngIf="isMobilePost" class="mobile-post" (click)="onCloseDialog()">
-                ยกเลิก
+                <span> ยกเลิก</span>
             </div>
             <div *ngIf="isListPage && isHeaderPage && isMobilePost" class="dropdown-page mobile-page">
-                <mat-form-field appearance="none">
+                <mat-form-field appearance="none" *ngIf="!isSelectOption">
                     <div class="selected-dropdown">
                         <ng-container
                             *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
@@ -79,10 +79,12 @@
                                     slice: 0:1 ) }}</span>
                             </div>
                         </ng-template>
-                        <mat-select name="pageName" [(ngModel)]="selectedAccessPage">
+                        <mat-select [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
-                                <mat-option *ngIf="index === 0" [value]="selectedAccessPage"
-                                    (click)="selectAccessPage(data.user , 'USER')">
+                                <mat-option *ngIf="index === 0 && data.user.type === 'user'"
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    (click)="selectAccessPage(data.user, 'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -98,8 +100,7 @@
                                         </div>
                                     </div>
                                 </mat-option>
-                                <mat-option [value]="data.page.pageUsername || data.page.name "
-                                    (click)="selectAccessPage(data.page, 'PAGE')">
+                                <mat-option [value]="data.page.name" (click)="selectAccessPage(data.page ,'PAGE')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
@@ -111,17 +112,18 @@
                                             </ng-template>
                                         </div>
                                         <div class="wrapper-body-action">
-                                            <div>{{data.page.pageUsername || data.page.name }}</div>
+                                            <div>{{ data.page.name }}</div>
                                         </div>
                                     </div>
                                 </mat-option>
                             </ng-container>
-
                         </mat-select>
                     </div>
                 </mat-form-field>
             </div>
-            <div class="box-toggle">สร้างสตอรี่ :
+
+            <div class="box-toggle">
+                <span *ngIf="isShowText">สร้าง{{PLATFORM_STORY}} :</span>
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
                 <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
@@ -178,14 +180,14 @@
             placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="75">
         </div>
         <div *ngIf="isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
-            class="textarea-editor" contentEditable="true" attr.placeholder="เรื่องราวของ {{dataPage}}"
+            class="textarea-editor" contentEditable="true" attr.placeholder="{{PLATFORM_STORY_TALE}}ของ {{dataPage}}"
             (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
 
         <div *ngIf="!isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true"
-            attr.placeholder="ความเห็นของคุณต่อเรื่องราวนี้ {{repostPage}} {{dataPage}}" (keyup)="onKeyup($event)"
-            (click)="onKeyup($event)">
+            attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}"
+            (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
 
         <div class="wrapper-selector-tag" *ngIf="selectValueTag && selectValueTag.length > 0 ">
@@ -197,13 +199,13 @@
                 <span class="space-icon"></span>
             </div>
         </div>
-        <needs-card #needsCard style="padding-left: 10pt; padding-right: 10pt; display: block;" [isClose]="true"
-            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
+        <needs-card #needsCard style="padding-left: 15pt; padding-right: 15pt; display: block;" [isClose]="true"
+            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill" [isNeedBoxPost]="false"
             [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
-            <div class="wrapper-right">
-                <div *ngIf="isRepost && isMobilePost  && isMobileText" class="text-limit"
-                    [class.validate]="getTextLength() > 230" [class.active]="isMobilePost  && isMobileText">
+            <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
+                <div class="text-limit" [class.validate]="getTextLength() > 230"
+                    [class.active]="isMobilePost  && isMobileText">
                     {{getTextLength() ? getTextLength() : 0 }} <span>/230</span>
                 </div>
             </div>
@@ -256,7 +258,7 @@
                                         search
                                     </span>
                                     <input type="text" name="autocompleteEmergency" matInput id="autocompleteEmergency"
-                                        #autocompleteEmergency placeholder="ค้นหา" #autocompleteEmergency
+                                        #autocompleteEmergency placeholder="ค้นหา"
                                         (keyup)="keyUpSearchEmergencyEvent(autocompleteEmergency.value, true)">
                                 </div>
                             </div>
@@ -283,9 +285,8 @@
                             </div>
                         </div>
                     </mat-menu>
-                </div>
-
-                <div class="search-objective" *ngIf="modeShowDoing || ( accessPageImage && accessPageImage.name)">
+                </div>  
+                <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"
                         (click)="clickObjectiveDoing();">
@@ -315,24 +316,24 @@
                         </ng-template>
                     </div>
                     <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
-                        (keydown)="$event.stopPropagation()">
+                        (keydown)="$event.stopPropagation()" backdropClass="sg-vertical-sub-menu">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
-                                <div class="create-doing">
-                                    <div class="wrapper-back">
-                                        <svg class="img-back" (click)="$event.stopPropagation()" id="back"
-                                            xmlns="http://www.w3.org/2000/svg" width="31" height="31"
-                                            viewBox="0 0 31 31" (click)="onBack()">
-                                            <g id="Group_1304" data-name="Group 1304">
-                                                <path id="Path_3213" data-name="Path 3213"
-                                                    d="M15.5,0A15.5,15.5,0,1,0,31,15.5,15.517,15.517,0,0,0,15.5,0ZM19,21.045a1.291,1.291,0,1,1-1.826,1.826l-6.458-6.458a1.29,1.29,0,0,1,0-1.826L17.17,8.128A1.291,1.291,0,1,1,19,9.955L13.451,15.5Z"
-                                                    fill="#bfbfbf" />
-                                            </g>
-                                        </svg>
-                                        <div class="btn-create-doing">
-                                            สร้างกำลังทำอยู่
-                                        </div>
+                                <div class="wrapper-back">
+                                    <svg class="img-back" (click)="$event.stopPropagation()" id="back"
+                                        xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
+                                        (click)="onBack()">
+                                        <g id="Group_1304" data-name="Group 1304">
+                                            <path id="Path_3213" data-name="Path 3213"
+                                                d="M15.5,0A15.5,15.5,0,1,0,31,15.5,15.517,15.517,0,0,0,15.5,0ZM19,21.045a1.291,1.291,0,1,1-1.826,1.826l-6.458-6.458a1.29,1.29,0,0,1,0-1.826L17.17,8.128A1.291,1.291,0,1,1,19,9.955L13.451,15.5Z"
+                                                fill="#bfbfbf" />
+                                        </g>
+                                    </svg>
+                                    <div class="btn-create-doing">
+                                        สร้างกำลังทำอยู่
                                     </div>
+                                </div>
+                                <div class="body-center">
                                     <div class="wrappper-body-upload" (click)="$event.stopPropagation()">
                                         <div class="wrapper-doing">
                                             <mat-form-field class="objective-category" appearance="none">
@@ -341,17 +342,17 @@
                                                     [(ngModel)]="selectedValue" name="objectCategory" required>
                                                     <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
                                                     </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory"
-                                                        [value]="item.name">
+                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.name">
                                                         {{item.name}}
                                                     </mat-option>
                                                 </mat-select>
                                             </mat-form-field>
                                             <div class="hash">
-                                                <span class="wrapper-hashTag">#</span>
+                                                <!-- <span class="wrapper-hashTag">#</span> -->
+                                                <label for="add-username">#</label>
                                                 <input type="text" class="input-hashTag" id="objective-doing-name"
-                                                    name="objective-doing-name" #objectiveDoingName
-                                                    placeholder="แฮชแท๊ค" required matInput>
+                                                    name="objective-doing-name" #objectiveDoingName placeholder="แฮชแท๊ค"
+                                                    required matInput>
                                             </div>
                                         </div>
                                         <div class="wrapper-doing">
@@ -360,8 +361,7 @@
                                                 required matInput>
                                         </div>
                                         <div class="wrapper-upload">
-                                            <ng-container
-                                                *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
+                                            <ng-container *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
                                                 <div class="div-image">
                                                     <img class="image-user"
                                                         src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
@@ -370,11 +370,10 @@
                                             </ng-container>
                                             <ng-template #elseShowImage>
                                                 <div class="div-image">
-                                                    <img class="image-user" src="../../../../assets/img/image.svg"
-                                                        alt="">
+                                                    <img class="image-user" src="../../../../assets/img/image.svg" alt="">
                                                 </div>
                                             </ng-template>
-
+    
                                             <div class="wrapper-field-upload">
                                                 <div class="top">
                                                     อัพโหลดรูปโปรไฟล์
@@ -395,11 +394,12 @@
                                         </div>
                                         <div class="btn-submit">
                                             <spanboon-button (click)="createImageObjective()" [height]="'28pt'"
-                                                [width]="'79pt'" [bgColor]="'#FD545A'" [text]="'สร้าง'">
+                                                [width]="'79pt'" [text]="'สร้าง'">
                                             </spanboon-button>
                                         </div>
                                     </div>
                                 </div>
+                              
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
@@ -413,7 +413,8 @@
                                                 transform="translate(26.891 0)" fill="#474747" />
                                         </g>
                                     </svg>
-                                    <mat-form-field class="form-search-field" appearance="none">
+                                    <mat-form-field class="form-search-field" appearance="none"
+                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                                         <input matInput placeholder="ค้นหา" #searchInputObjective
                                             id="searchInputObjective"
                                             (keyup)="keyUpSearchObjective(searchInputObjective.value)">
@@ -422,8 +423,7 @@
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
                                         <div class="page-doing">
-                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}}
-                                            กำลังทำอยู่
+                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}} กำลังทำอยู่
                                         </div>
                                         <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
                                             <svg class="icon-add" xmlns="http://www.w3.org/2000/svg" width="20.948"
@@ -432,7 +432,7 @@
                                                     d="M17.88,3.068A10.474,10.474,0,0,0,3.067,17.88,10.474,10.474,0,0,0,17.88,3.068ZM10.473,19.311a8.837,8.837,0,1,1,8.837-8.837,8.847,8.847,0,0,1-8.837,8.837Zm.818-9.656h3.682v1.637H11.292v3.682H9.655V11.291H5.973V9.655H9.655V5.973h1.637Zm0,0"
                                                     transform="translate(0)" fill="#212721" />
                                             </svg>
-                                            เพิ่มใหม่
+                                            <span class="add-label">เพิ่มใหม่</span>
                                             <div class="lable-add"></div>
                                         </div>
                                     </div>
@@ -446,7 +446,6 @@
                                                 [class.active-click-doing]="selectedObjectiveId === item.id"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
-
                                                 <ng-container
                                                     *ngIf="isLoading || item.isLoadImageIcon ; else elseIsicon">
                                                     <span class="loading-image">
@@ -499,17 +498,19 @@
             <div class="wrapper-middle" #middle>
                 <div class="wrapper-edit-story" *ngIf="(isEmptyObject(dataStroy) || isDataStroy) && isStory">
                     <div class="edit-story" (click)="showDialogCreateStory(true)">
-                        แก้ไขสตอรี่
+                        แก้ไข{{PLATFORM_STORY}}
                     </div>
                 </div>
                 <ng-container *ngIf="arrListItem && arrListItem.length > 0 && isTypeNeed; else elseNeeds">
                     <div class="wrapper-edit-story" (click)="showDialogDoing()">
-                        <span class="label-needs"> กำลังมองหา {{getObjectLength(arrListItem)}} รายการ</span>
+                        <span class="label-needs"> กำลัง{{PLATFORM_NEEDS_TEXT}} {{getObjectLength(arrListItem)}}
+                            รายการ</span>
                     </div>
                 </ng-container>
                 <ng-template #elseNeeds>
                     <div *ngIf="typeStroy === 'NEEDS'" class="wrapper-edit-story" (click)="showDialogDoing()">
-                        <span class="label-needs" id="needs" [class.msg-error-shake]="isMsgNeeds">กำลังมองหา 0
+                        <span class="label-needs" id="needs"
+                            [class.msg-error-shake]="isMsgNeeds">กำลัง{{PLATFORM_NEEDS_TEXT}} 0
                             รายการ</span>
                     </div>
                 </ng-template>
@@ -534,8 +535,8 @@
             <repost-data [isRepost]="true" [itemPost]="rePote"></repost-data>
         </div>
 
-        <div class="wrapper-tool-post" #toolBar (window:resize)="onResize()">
-            <div class="left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
+        <div class="wrapper-tool-post" mat-dialog-actions (window:resize)="onResize()">
+            <div class="box-left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
                 <mat-form-field appearance="none" *ngIf="!isFulfill">
                     <mat-select *ngIf="isRepost;" #matSelect [(ngModel)]="selected"
                         [ngModelOptions]="{standalone: true}">
@@ -572,7 +573,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="center" style="justify-content: flex-end;">
+            <div class="box-center" style="justify-content: flex-end;">
                 <!-- <div class="center" style="justify-content: flex-end;"> -->
                 <!-- <img class="btn-action" src="../../../assets/img/vision.png" (click)="preview()" alt=""> -->
                 <div class="wrapper-action">
@@ -677,20 +678,21 @@
 
                     <div *ngIf="isRepost" class="wrapper-toolbar-action">
                         <ng-container *ngIf="imagesTimeline && imagesTimeline.length > 0 ; else elseDragandDrop">
-                            <svg [class.active-click]="isShowImage || imagesTimeline.length > 0" id="photo"
-                                xmlns="http://www.w3.org/2000/svg" width="20.094" height="18.42"
-                                viewBox="0 0 20.094 18.42" (click)="onShowDragandDrop()">
-                                <path id="Path_143" data-name="Path 143"
-                                    d="M5.232,157.223a3.135,3.135,0,0,1-2.966-2.136l-.029-.1a3.056,3.056,0,0,1-.145-.908v-5.709l-2.031,6.78a1.9,1.9,0,0,0,1.333,2.307l12.947,3.467a1.921,1.921,0,0,0,.482.062,1.867,1.867,0,0,0,1.809-1.369l.754-2.4Zm0,0"
-                                    transform="translate(0 -142.571)" fill="#343434" />
-                                <path id="Path_144" data-name="Path 144"
-                                    d="M150.995,67.841a1.675,1.675,0,1,0-1.675-1.675A1.676,1.676,0,0,0,150.995,67.841Zm0,0"
-                                    transform="translate(-143.46 -61.98)" fill="#343434" />
-                                <path id="Path_145" data-name="Path 145"
-                                    d="M99.972.492H87.413A2.1,2.1,0,0,0,85.32,2.586V11.8a2.1,2.1,0,0,0,2.093,2.093H99.972a2.1,2.1,0,0,0,2.093-2.093V2.586A2.1,2.1,0,0,0,99.972.492ZM87.413,2.167H99.972a.419.419,0,0,1,.419.419V8.529L97.746,5.443a1.5,1.5,0,0,0-1.123-.515,1.464,1.464,0,0,0-1.119.528L92.4,9.189,91.382,8.178a1.47,1.47,0,0,0-2.076,0l-2.311,2.31v-7.9A.419.419,0,0,1,87.413,2.167Zm0,0"
-                                    transform="translate(-81.971 -0.492)" fill="#343434" />
-                            </svg>
-
+                            <div class="box-image-upload">
+                                <svg [class.active-click]="isShowImage || imagesTimeline.length > 0" id="photo"
+                                    xmlns="http://www.w3.org/2000/svg" width="20.094" height="18.42"
+                                    viewBox="0 0 20.094 18.42" (click)="onShowDragandDrop()">
+                                    <path id="Path_143" data-name="Path 143"
+                                        d="M5.232,157.223a3.135,3.135,0,0,1-2.966-2.136l-.029-.1a3.056,3.056,0,0,1-.145-.908v-5.709l-2.031,6.78a1.9,1.9,0,0,0,1.333,2.307l12.947,3.467a1.921,1.921,0,0,0,.482.062,1.867,1.867,0,0,0,1.809-1.369l.754-2.4Zm0,0"
+                                        transform="translate(0 -142.571)" fill="#343434" />
+                                    <path id="Path_144" data-name="Path 144"
+                                        d="M150.995,67.841a1.675,1.675,0,1,0-1.675-1.675A1.676,1.676,0,0,0,150.995,67.841Zm0,0"
+                                        transform="translate(-143.46 -61.98)" fill="#343434" />
+                                    <path id="Path_145" data-name="Path 145"
+                                        d="M99.972.492H87.413A2.1,2.1,0,0,0,85.32,2.586V11.8a2.1,2.1,0,0,0,2.093,2.093H99.972a2.1,2.1,0,0,0,2.093-2.093V2.586A2.1,2.1,0,0,0,99.972.492ZM87.413,2.167H99.972a.419.419,0,0,1,.419.419V8.529L97.746,5.443a1.5,1.5,0,0,0-1.123-.515,1.464,1.464,0,0,0-1.119.528L92.4,9.189,91.382,8.178a1.47,1.47,0,0,0-2.076,0l-2.311,2.31v-7.9A.419.419,0,0,1,87.413,2.167Zm0,0"
+                                        transform="translate(-81.971 -0.492)" fill="#343434" />
+                                </svg>
+                            </div>
                         </ng-container>
                         <ng-template #elseDragandDrop>
                             <div class="box-image-upload">
@@ -713,76 +715,89 @@
                                     accept="image/*" multiple />
                             </div>
                         </ng-template>
-                    </div>
-
-                    <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial"> 
-                        <svg class="icon-social" [class.active]="menuTrigger.menuOpen || isAutoPostTwitter" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
-                            viewBox="0 0 17.474 17.474">
-                            <path id="social-media"
-                                d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
-                                fill="#343434" />
-                        </svg>
-                    </div>
-                    <mat-menu #menuSocial="matMenu" (click)="$event.stopPropagation()"
-                        (keydown)="$event.stopPropagation()">
-                        <div class="menu-social">
-                            <div class="post-other">
-                                <div class="left">
-                                    โพสต์บนช่องทางอื่น
-                                </div>
-                                <div class="setting-all">
-                                    <svg (click)="redirectSetting()" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773" viewBox="0 0 16.334 16.773">
-                                        <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
-                                          <g id="Group_401" data-name="Group 401" transform="translate(6.71)">
-                                            <path id="Path_265" data-name="Path 265" d="M22.761,10.225,21.219,9.019a6.071,6.071,0,0,0,.036-.633,5.887,5.887,0,0,0-.036-.633l1.543-1.206a.756.756,0,0,0,.182-.963l-1.6-2.774a.743.743,0,0,0-.927-.333l-1.819.73A6.237,6.237,0,0,0,17.5,2.573L17.226.643A.742.742,0,0,0,16.485,0H13.27a.74.74,0,0,0-.739.637l-.277,1.937a6.43,6.43,0,0,0-1.09.634L9.339,2.475a.758.758,0,0,0-.92.328L6.813,5.581a.751.751,0,0,0,.182.968L8.537,7.754a5.53,5.53,0,0,0,0,1.266L6.994,10.226a.756.756,0,0,0-.182.963l1.6,2.774a.742.742,0,0,0,.927.333l1.819-.73a6.292,6.292,0,0,0,1.092.634l.277,1.929a.742.742,0,0,0,.741.644h3.215a.741.741,0,0,0,.74-.637L17.5,14.2a6.46,6.46,0,0,0,1.09-.635l1.824.732a.751.751,0,0,0,.274.052.738.738,0,0,0,.646-.379l1.61-2.789A.754.754,0,0,0,22.761,10.225Zm-7.883.957a2.8,2.8,0,1,1,2.8-2.8A2.8,2.8,0,0,1,14.878,11.182Z" transform="translate(-6.71)"/>
-                                          </g>
-                                        </g>
-                                      </svg>  
-                                </div>
-                            </div>
-                            <div class="body-list">
-                                <div class="checklist">
-                                    <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()">
-                                        <div class="icon-social facebook">
-                                            <svg class="icon" version="1.1" id="Capa_1"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                                viewBox="0 0 96.124 96.123"
-                                                style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
-                                                <g>
-                                                    <path fill="#F8F7F2"
-                                                        d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
-                                c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
-                                c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
-                                c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
-                                                </g>
-                                            </svg>
-                                        </div>
-                                        <div class="middle">Facebook</div>
-                                    </mat-checkbox>
-                                </div>
-                                <div class="checklist">
-                                    <mat-checkbox [(ngModel)]="isAutoPostTwitter"  class="item-checkbox" [class.active]="isAutoPostTwitter"
-                                    [ngModelOptions]="{standalone: true}" (change)="socialBinding(isAutoPostTwitter , 'twitter')"
-                                    (click)="$event.stopPropagation()">
-                                        <div class="icon-social twitter">
-                                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962"
-                                                height="30.845" viewBox="0 0 37.962 30.845">
-                                                <path id="brands-and-logotypes"
-                                                    d="M37.962,51.652a16.226,16.226,0,0,1-4.484,1.229,7.739,7.739,0,0,0,3.424-4.3,15.553,15.553,0,0,1-4.935,1.884A7.782,7.782,0,0,0,18.5,55.785a8.014,8.014,0,0,0,.18,1.775A22.029,22.029,0,0,1,2.643,49.419a7.785,7.785,0,0,0,2.392,10.4,7.686,7.686,0,0,1-3.516-.959v.085a7.818,7.818,0,0,0,6.235,7.647,7.767,7.767,0,0,1-2.04.256,6.881,6.881,0,0,1-1.473-.133,7.857,7.857,0,0,0,7.272,5.421,15.638,15.638,0,0,1-9.65,3.319A14.579,14.579,0,0,1,0,75.352a21.91,21.91,0,0,0,11.939,3.493C26.26,78.844,34.09,66.981,34.09,56.7c0-.344-.012-.676-.028-1.006A15.526,15.526,0,0,0,37.962,51.652Z"
-                                                    transform="translate(0 -48)" fill="#F8F7F2" />
-                                            </svg>
-                                        </div>
-                                        <div class="middle">Twitter</div>
-                                    </mat-checkbox>
-                                </div>  
-                            </div>
+                    </div> 
+                    <ng-container *ngIf="isSharePost">
+                        <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
+                            <svg class="icon-social"
+                                [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
+                                xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
+                                viewBox="0 0 17.474 17.474">
+                                <path id="social-media"
+                                    d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
+                                    fill="#343434" />
+                            </svg>
                         </div>
-                    </mat-menu>
-
+                        <mat-menu #menuSocial="matMenu" (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()">
+                            <div class="menu-social">
+                                <div class="post-other">
+                                    <div class="left">
+                                        โพสต์บนช่องทางอื่น
+                                    </div>
+                                    <div class="setting-all">
+                                        <svg (click)="redirectSetting()" xmlns="http://www.w3.org/2000/svg"
+                                            width="16.334" height="16.773" viewBox="0 0 16.334 16.773">
+                                            <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
+                                                <g id="Group_401" data-name="Group 401" transform="translate(6.71)">
+                                                    <path id="Path_265" data-name="Path 265"
+                                                        d="M22.761,10.225,21.219,9.019a6.071,6.071,0,0,0,.036-.633,5.887,5.887,0,0,0-.036-.633l1.543-1.206a.756.756,0,0,0,.182-.963l-1.6-2.774a.743.743,0,0,0-.927-.333l-1.819.73A6.237,6.237,0,0,0,17.5,2.573L17.226.643A.742.742,0,0,0,16.485,0H13.27a.74.74,0,0,0-.739.637l-.277,1.937a6.43,6.43,0,0,0-1.09.634L9.339,2.475a.758.758,0,0,0-.92.328L6.813,5.581a.751.751,0,0,0,.182.968L8.537,7.754a5.53,5.53,0,0,0,0,1.266L6.994,10.226a.756.756,0,0,0-.182.963l1.6,2.774a.742.742,0,0,0,.927.333l1.819-.73a6.292,6.292,0,0,0,1.092.634l.277,1.929a.742.742,0,0,0,.741.644h3.215a.741.741,0,0,0,.74-.637L17.5,14.2a6.46,6.46,0,0,0,1.09-.635l1.824.732a.751.751,0,0,0,.274.052.738.738,0,0,0,.646-.379l1.61-2.789A.754.754,0,0,0,22.761,10.225Zm-7.883.957a2.8,2.8,0,1,1,2.8-2.8A2.8,2.8,0,0,1,14.878,11.182Z"
+                                                        transform="translate(-6.71)" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div> 
+                                <div class="body-list">
+                                    <div class="checklist" *ngIf="(facebookConection && !facebookConection.data) && (twitterConection && !twitterConection.data)">
+                                        <span class="list-found">ไม่พบเพจหรือบัญชีผู้ใช้</span>
+                                    </div>
+                                    <div class="checklist" *ngIf="facebookConection && facebookConection.data">
+                                        <mat-checkbox #checkbox [(ngModel)]="isAutoPostFacebook"
+                                            [class.active]="isAutoPostFacebook" [ngModelOptions]="{standalone: true}"
+                                            class="item-checkbox" (click)="$event.stopPropagation()"
+                                            (change)="socialBinding(isAutoPostFacebook , 'facebook')">
+                                            <div class="icon-social facebook">
+                                                <svg class="icon" version="1.1" id="Capa_1"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                    viewBox="0 0 96.124 96.123"
+                                                    style="enable-background:new 0 0 96.124 96.123;"
+                                                    xml:space="preserve">
+                                                    <g>
+                                                        <path fill="#F8F7F2"
+                                                            d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+                                    c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+                                    c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+                                    c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                            <div class="middle">Facebook</div>
+                                        </mat-checkbox>
+                                    </div>
+                                    <div class="checklist" *ngIf="twitterConection && twitterConection.data">
+                                        <mat-checkbox [(ngModel)]="isAutoPostTwitter" class="item-checkbox"
+                                            [class.active]="isAutoPostTwitter" [ngModelOptions]="{standalone: true}"
+                                            (change)="socialBinding(isAutoPostTwitter , 'twitter')"
+                                            (click)="$event.stopPropagation()">
+                                            <div class="icon-social twitter">
+                                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962"
+                                                    height="30.845" viewBox="0 0 37.962 30.845">
+                                                    <path id="brands-and-logotypes"
+                                                        d="M37.962,51.652a16.226,16.226,0,0,1-4.484,1.229,7.739,7.739,0,0,0,3.424-4.3,15.553,15.553,0,0,1-4.935,1.884A7.782,7.782,0,0,0,18.5,55.785a8.014,8.014,0,0,0,.18,1.775A22.029,22.029,0,0,1,2.643,49.419a7.785,7.785,0,0,0,2.392,10.4,7.686,7.686,0,0,1-3.516-.959v.085a7.818,7.818,0,0,0,6.235,7.647,7.767,7.767,0,0,1-2.04.256,6.881,6.881,0,0,1-1.473-.133,7.857,7.857,0,0,0,7.272,5.421,15.638,15.638,0,0,1-9.65,3.319A14.579,14.579,0,0,1,0,75.352a21.91,21.91,0,0,0,11.939,3.493C26.26,78.844,34.09,66.981,34.09,56.7c0-.344-.012-.676-.028-1.006A15.526,15.526,0,0,0,37.962,51.652Z"
+                                                        transform="translate(0 -48)" fill="#F8F7F2" />
+                                                </svg>
+                                            </div>
+                                            <div class="middle">Twitter</div>
+                                        </mat-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-menu>
+                    </ng-container>
                 </div>
             </div>
-            <div class="right">
+            <div class="box-right" [class.active]="isClickPostPreLoad">
                 <div class="div-gatdata-post" (click)="onClickGetDataPost()"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
@@ -794,14 +809,14 @@
                     </mat-form-field>
                 </ng-container>
                 <ng-template #elseIsFulfill>
-                    <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
-                        <mat-select [(value)]="selected1">
-                            <ng-container *ngIf="isEdit; else elseIsEdit">
-                                <mat-option [value]="'แก้ไขโพสต์'" (click)="onClickGetDataPost()">
-                                    แก้ไขโพสต์
-                                </mat-option>
-                            </ng-container>
-                            <ng-template #elseIsEdit>
+                    <ng-container *ngIf="isEdit; else elseIsEdit">
+                        <div class="edit-post" (click)="onClickGetDataPost()">
+                            แก้ไขโพสต์
+                        </div>
+                    </ng-container>
+                    <ng-template #elseIsEdit>
+                        <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
+                            <mat-select [(value)]="selected1">
                                 <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
                                     โพสต์
                                 </mat-option>
@@ -815,9 +830,29 @@
                                 <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                     ตั้งเวลาโพสต์
                                 </mat-option>
-                            </ng-template>
-                        </mat-select>
-                    </mat-form-field>
+                                <!-- <ng-container *ngIf="isEdit; else elseIsEdit"> 
+                                    <mat-option [value]="'แก้ไขโพสต์'" [class.active]="isEdit" (click)="onClickGetDataPost()">
+                                        แก้ไขโพสต์
+                                    </mat-option>
+                                </ng-container>
+                                <ng-template #elseIsEdit>
+                                    <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                        โพสต์
+                                    </mat-option>
+                                    <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                        โพสต์
+                                    </mat-option>
+                                    <mat-option *ngIf="isRepost" [value]="'บันทึกฉบับร่าง'"
+                                        (click)="onClickGetDataPost(true)">
+                                        บันทึกฉบับร่าง
+                                    </mat-option>
+                                    <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
+                                        ตั้งเวลาโพสต์
+                                    </mat-option>
+                                </ng-template> -->
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-template>
                 </ng-template>
             </div>
         </div>
@@ -831,7 +866,9 @@
             <img src="../../../../assets/img/profile.svg" class="img-profile">
         </ng-template>
         <div class="to-dialog-post" (click)="dialogPost()">
-            เรื่องราวของ {{dataPage}}
+            <div class="mobile">
+                {{PLATFORM_STORY_TALE}}ของ {{dataPage}}
+            </div>
         </div>
     </div>
 </div>

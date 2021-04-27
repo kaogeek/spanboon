@@ -13,10 +13,10 @@ null-data {
     background-color: $bg-fog-gray2;
   }
   .null-title {
-    color: $koalaGray;
-    @include font-size-8-100("Kanit-500");
+    color: $color-gray;
+    @include font-size-8($font-head-500);
   }
   .null-sub-title {
-    @include font-size-9-100("Kanit-200");
+    @include font-size-9($font-head-200);
   }
 }

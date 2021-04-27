@@ -10,8 +10,7 @@
     border: $width-border solid $border-color;
     border-radius: $border-radius-4px;
     margin-top: 5pt;
-    font-family: "Kanit-500";
-    font-size: 16px;
+    @include font-size-10($font-head-500);
 
     > .wrapper-header {
         display: flex;
@@ -24,30 +23,36 @@
             padding-right: 15pt;
 
             > .header-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
             > .material-icons {
+                font-family: "Material Icons" !important;
                 @include pointer();
             }
 
             > .label-looking-for {
-                font-family: "Kanit-500";
-                font-size: 18px;
+                @include font-size-9($font-head-500);
             }
 
             > .subline-looking-for {
-                font-family: "Kanit-500";
-                font-size: 14px;
-                color: $koalaGray;
+                @include font-size-10($font-head-500);
+                color: $color-gray;
             }
         }
 
         div {
             flex: 0 0 auto;
 
+            spanboon-button {
+                .btn-fulfill {
+                    background-color: $brandcolor3 !important;
+                    color: $white !important;
+                }
+            }
+
             > .material-icons {
-                font-size: 20px;
+                font-family: "Material Icons" !important;
+                font-size: $font-size-icon-large;
                 @include pointer();
             }
         }
@@ -65,8 +70,7 @@
             // overflow: hidden;
             // word-break: break-all;
             padding: 10pt 15pt;
-            font-family: "Kanit-300";
-            font-size: 16px;
+            @include font-size-10($font-head-500);
             // color: rgba($black, 0.6);
         }
 
@@ -114,14 +118,21 @@
             width: calc(100% - 30pt);
             padding: 8pt 15pt;
             text-align: center;
-            color: $color-warm-red;
+            color: $brandcolor2;
             @include pointer();
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             min-height: 26pt;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        > .doing-found {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            height: 150pt;
+            @include pointer();
         }
     }
 
@@ -142,8 +153,8 @@
                         justify-content: center;
                         padding: 20px;
                         border-radius: 4px;
-                        background: $bg-fog-gray2;
-                        border: 0.7px solid #F2F2F2;
+                        background: whitesmoke;
+                        border: 0.7px solid #f2f2f2;
                         @include pointer();
 
                         display-image {
@@ -167,8 +178,7 @@
                             -webkit-box-orient: vertical;
                             overflow: hidden;
                             word-break: break-all;
-                            font-family: "Kanit-500";
-                            font-size: 16px;
+                            @include font-size-10($font-head-500);
                             color: rgb($black, 0.6);
                         }
                     }
@@ -192,7 +202,7 @@
             //     width: 30pt;
             //     height: 30pt;
             //     border-radius: 50%;
-            //     background: $color-warm-red;
+            //     background: $brandcolor2;
             //     border: 0.7px solid rgb($black, 0.2);
 
             //     &.swiper-button-disabled {
@@ -200,7 +210,7 @@
             //     }
 
             //     &:hover {
-            //         background: rgb($color-warm-red, 0.9);
+            //         background: rgb($brandcolor2, 0.9);
             //     }
 
             //     > .material-icons {
@@ -278,13 +288,13 @@
                         align-items: center;
                         border-radius: 4px;
                         background: $white;
-                        border: 0.7px solid #F2F2F2;
+                        border: 0.7px solid #f2f2f2;
                         @include pointer();
 
                         > .div-img {
                             width: 100%;
                             padding: 15pt 0;
-                            background: $bg-fog-gray2;
+                            background: whitesmoke;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -311,8 +321,7 @@
                                 -webkit-box-orient: vertical;
                                 overflow: hidden;
                                 word-break: break-all;
-                                font-family: "Kanit-500";
-                                font-size: 16px;
+                                @include font-size-10($font-head-500);
                                 color: rgb($black, 0.6);
                             }
 
@@ -324,15 +333,13 @@
                                 width: 100%;
 
                                 > .ob-top {
-                                    font-family: "Kanit-500";
-                                    font-size: 16px;
+                                    @include font-size-10($font-head-500);
                                     color: $bg-color4;
                                 }
 
                                 > .ob-bottom {
                                     margin-left: 5pt;
-                                    font-family: "Kanit-500";
-                                    font-size: 16px;
+                                    @include font-size-10($font-head-500);
                                     color: rgb($black, 0.6);
                                     display: -webkit-box;
                                     -webkit-line-clamp: 1;
@@ -375,7 +382,7 @@
             //     width: 26pt;
             //     height: 26pt;
             //     border-radius: 50%;
-            //     background: $color-warm-red;
+            //     background: $brandcolor2;
             //     border: 0.7px solid rgb($black, 0.2);
 
             //     &.swiper-button-disabled {
@@ -383,7 +390,7 @@
             //     }
 
             //     &:hover {
-            //         background: rgb($color-warm-red, 0.9);
+            //         background: rgb($brandcolor2, 0.9);
             //     }
 
             //     > .material-icons {
@@ -404,31 +411,38 @@
         justify-content: flex-end;
         align-items: center;
 
+        > spanboon-button {
+            > .fulfill {
+                background-color: $status-post-fulfill !important;
+            }
+
+            .btn {
+                background-color: $brandcolor3 !important;
+            }
+        }
+
         > .btn {
             width: 60pt;
         }
 
         > .btn-fulfill {
             padding: 3pt 9pt;
-            font-family: "Kanit-500";
-            font-size: 16px;
+            @include font-size-9($font-head-500);
             @include pointer();
             color: $white;
             background-color: #84b572;
             border-radius: 5pt;
-            border: 3pt solid #7aaf67;
+            border: 3pt solid $bg-color4;
         }
 
         > .btn-donate-top {
-            font-family: "Kanit-500";
-            font-size: 16px;
-            color: $color-warm-red;
+            @include font-size-9($font-head-500);
+            color: $brandcolor2;
         }
 
         > .btn-donate-bottom {
-            font-family: "Kanit-500";
-            font-size: 14px;
-            color: $koalaGray;
+            @include font-size-10($font-head-500);
+            color: $color-gray;
         }
     }
 }

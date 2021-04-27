@@ -6,22 +6,17 @@
  */
 
 .wrapper-body-objective {
-  // position: absolute;
   width: 50vw;
   background-color: $white;
   box-shadow: 0px 1px 9px 0 #e5e3dd;
-  // top: 23pt;
-  // left: 0;
-  // bottom: auto;
-  // z-index: 10000;
   min-width: 250pt;
-  max-width: 550pt;
+  max-width: 450pt;
 
   &.active {
     top: auto;
     bottom: 0;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
   > .search-header-objective {
@@ -36,8 +31,7 @@
 
     > .form-search-field {
       padding-left: 10pt;
-      font-family: "Kanit-500";
-      font-size: 16px;
+      @include font-size-10($font-head-500);
 
       > .mat-form-field-wrapper {
         > .mat-form-field-flex {
@@ -49,7 +43,7 @@
       }
     }
   }
-
+  
   > .wrapper-add-doing {
     border-bottom: $width-border solid $border-separator;
 
@@ -60,18 +54,27 @@
       align-items: center;
 
       > .page-doing {
-        font-family: "Kanit-500";
-        font-size: 16px;
+        display: flex;
+        @include font-size-10($font-head-500);
+        span {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          max-width: 100%;
+          word-break: break-all;
+        }
       }
 
       > .image-upload {
         display: flex;
         align-items: center;
         cursor: pointer;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
         @include pointer();
-
+        >.add-label {
+          @include font-size-10($font-head-500);
+        }
         > .icon-add {
           width: 12pt;
           margin: 0 10pt;
@@ -99,17 +102,18 @@
         height: 100%;
         justify-content: center;
         align-items: center;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
       }
 
       > .wrapper-doing {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
         padding: 14pt;
         margin: 0;
         width: calc(25% - 28pt);
-        font-family: "Kanit-500";
-        font-size: 16px;
+        @include font-size-10($font-head-500);
         height: max-content;
 
         &:hover {
@@ -117,7 +121,7 @@
         }
 
         &.active-click-doing {
-          background-color: $color-warm-red;
+          background-color: $brandcolor2;
 
           > .name-objective,
           > .div-objective {
@@ -149,6 +153,12 @@
           height: 60pt;
           border-radius: 50%;
         }
+        >.image-waste {
+          background-color: $bg-grey;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         > .loading-image {
           display: flex;
@@ -172,9 +182,7 @@
   }
 }
 
-.image-waste {
-  background-color: $bg-grey;
-}
+
 
 @keyframes placeHolderShimmer {
   0% {
@@ -203,9 +211,9 @@
 
 @media (max-width: $medium) {
   .wrapper-body-objective {
-    >.wrapper-choose-tag {
-      >.wrapper-body-doing {
-        >.wrapper-doing {
+    > .wrapper-choose-tag {
+      > .wrapper-body-doing {
+        > .wrapper-doing {
           width: calc(50% - 28pt);
         }
       }
@@ -215,9 +223,20 @@
 
 @media (max-width: $small) {
   .wrapper-body-objective {
-    >.wrapper-choose-tag {
-      >.wrapper-body-doing {
-        >.wrapper-doing {
+    width: unset;
+    height: 100%;
+    >.wrapper-add-doing {
+      >.wrapper-add-image {
+        >.image-upload {
+          >.add-label {
+            display: none;
+          }
+        }
+      }
+    }
+    > .wrapper-choose-tag {
+      > .wrapper-body-doing {
+        > .wrapper-doing {
           width: calc(50% - 28pt);
         }
       }

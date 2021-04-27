@@ -7,7 +7,7 @@
 
 .recommended {
     min-height: calc(100vh - 55pt);
-    background: $bg-fog-gray2;
+    background: $background-hashtag-page;
 
     .container {
         max-width: 1280px;
@@ -53,14 +53,14 @@
 
                         > .title-setting {
                             margin: 0 15px;
-                            @include font-size-8-100("Kanit-500");
+                            @include font-size-8($font-head-500);
                         }
                     }
 
                     &:hover {
                         > .list-item {
-                            color: $color-warm-red;
-                            background: rgba($color-warm-red, 0.1);
+                            color: $brandcolor2;
+                            background: rgba($brandcolor2, 0.1);
 
                             > .icon-setting {
                             }
@@ -69,7 +69,7 @@
 
                     &.active {
                         > .list-item {
-                            color: $color-warm-red;
+                            color: $brandcolor2;
 
                             > .icon-setting {
                             }
@@ -232,7 +232,7 @@
                                         background-color: #ff001624;
                                         color: $brandcolor2 !important;
                                         > .mat-chip-remove {
-                                            color: #c62634 !important;
+                                            color: $brandcolor2 !important;
                                             opacity: 0.7 !important;
                                         }
                                     }
@@ -263,18 +263,18 @@
                                             > .mat-tab-links {
                                                 > .mat-tab-link {
                                                     min-width: auto;
-                                                    @include font-size-8-100("Kanit-400");
+                                                    @include font-size-8($font-head-400);
                                                     font-weight: bold;
                                                     opacity: 1;
 
                                                     &:hover {
-                                                        color: $color-warm-red;
-                                                        background: rgba($color-warm-red, 0.1);
+                                                        color: $brandcolor2;
+                                                        background: rgba($brandcolor2, 0.1);
                                                     }
                                                 }
 
                                                 > .mat-tab-label-active {
-                                                    color: $color-warm-red;
+                                                    color: $brandcolor2;
                                                 }
                                             }
                                         }
@@ -286,15 +286,14 @@
                                 > .menu-sorting {
                                     height: 20pt;
                                     border: 0.7pt solid $border-color;
-                                    font-family: "Kanit-400";
-                                    font-size: 16px;
+                                    @include font-size-9($font-head-400);
                                     &:hover {
-                                        color: $color-warm-red;
-                                        background: rgba($color-warm-red, 0.1);
+                                        color: $brandcolor2;
+                                        background: rgba($brandcolor2, 0.1);
                                         svg,
                                         g,
                                         path {
-                                            fill: $color-warm-red;
+                                            fill: $brandcolor2;
                                         }
                                     }
                                     > .mat-button-wrapper {
@@ -369,22 +368,22 @@
 
                                             > .page-user {
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
 
                                             > .page-user-name {
                                                 padding: 0 5pt;
-                                                color: $koalaGray;
+                                                color: $color-gray;
                                                 &:hover {
-                                                    text-decoration: underline;
+                                                    color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
                                         }
 
                                         > .feed-date-time {
                                             &:hover {
-                                                text-decoration: underline;
+                                                color: rgba($brandcolor2, 0.95);
                                             }
                                         }
                                     }
@@ -412,7 +411,7 @@
                     > .feed-none-post {
                         text-align: center;
                         padding: 20pt 0;
-                        @include font-size-7-100("Kanit-500");
+                        @include font-size-7($font-head-500);
                     }
 
                     > .wrapper-body-middle {
@@ -447,7 +446,7 @@
                             padding: 15pt;
                             border-top: 0.5px solid #e5e5e5;
                             border-bottom: 0.5px solid #e5e5e5;
-                            @include font-size-8-100("Kanit-500");
+                            @include font-size-8($font-head-500);
                             background: $white;
                             position: sticky;
                             top: 55pt;
@@ -464,26 +463,26 @@
                             }
 
                             > .trend-title {
-                                @include font-size-10-100("Kanit-400");
-                                color: $koalaGray;
+                                @include font-size-10($font-head-400);
+                                color: $color-gray;
                             }
 
                             > .trend-hashtag {
-                                @include font-size-9-100("Kanit-500");
+                                @include font-size-9($font-head-500);
                                 color: $black;
                             }
 
                             > .trend-hashtag-count {
                                 margin-top: 5px;
-                                @include font-size-10-100("Kanit-500");
-                                color: $koalaGray;
+                                @include font-size-10($font-head-500);
+                                color: $color-gray;
                             }
                         }
 
                         > .read-more {
                             @include pointer();
                             padding: 15px;
-                            @include font-size-9-100("Kanit-500");
+                            @include font-size-9($font-head-500);
                             color: $brandcolor2;
 
                             &:hover {
@@ -512,7 +511,7 @@
                                 > .wrapper-filter-name {
                                     padding: 10pt;
                                     border-bottom: $width-border solid $border-color;
-                                    @include font-size-8-100("Kanit-500");
+                                    @include font-size-8($font-head-500);
                                 }
 
                                 > .body-filter {
@@ -525,8 +524,8 @@
 
                                         > .header-name {
                                             // @include font-size-9-100("Sarabun-ExtraBold");
-                                            // @include font-size-9-100("Kanit-500");
-                                            @include font-size-9-100("Kanit-500");
+                                            // @include font-size-9($font-head-500);
+                                            @include font-size-9($font-head-500);
                                         }
 
                                         > .mat-radio-group {
@@ -540,9 +539,9 @@
                                                     flex-direction: row-reverse;
                                                     justify-content: space-between;
                                                     align-items: center;
-                                                    // @include font-size-9-100("Sarabun-Light");
-                                                    // @include font-size-9-100("Kanit-500");
-                                                    @include font-size-9-100("Kanit-400");
+                                                    // @include font-size-9($font-content-light);
+                                                    // @include font-size-9($font-head-500);
+                                                    @include font-size-9($font-head-400);
                                                     color: rgba($black, 0.6);
 
                                                     > .mat-radio-container {
@@ -557,7 +556,7 @@
                                 }
                                 > .footer-more {
                                     padding: 10pt;
-                                    @include font-size-8-100("Kanit-500");
+                                    @include font-size-8($font-head-500);
 
                                     > .search-page {
                                         display: flex;
@@ -574,7 +573,7 @@
                                             flex: 1 1 0%;
                                             margin-right: 5pt;
                                             > .input-data {
-                                                @include font-size-9-100("Kanit-400");
+                                                @include font-size-9($font-head-400);
                                             }
                                             > .autocomp-close {
                                                 @include pointer();
@@ -588,14 +587,13 @@
                                             display: flex;
                                             align-items: center;
                                             @include pointer();
-                                            font-family: "Kanit-300";
-                                            font-size: 16px;
-                                            color: $koalaGray;
+                                            @include font-size-9($font-head-300);
+                                            color: $color-gray;
                                             margin-left: 9pt;
                                             width: 50pt;
                                             flex: 0 0 auto;
                                             &:hover {
-                                                color: $color-warm-red;
+                                                color: $brandcolor2;
                                             }
                                         }
                                     }
@@ -620,26 +618,25 @@
                                                 display: flex;
                                                 align-items: center;
                                                 justify-content: center;
-                                                background-color: $color-warm-red;
-                                                font-family: "Kanit-500";
-                                                font-size: 14px;
+                                                background-color: $brandcolor2;
+                                                @include font-size-10($font-head-500);
                                                 color: $white;
                                             }
 
                                             > .page-name {
                                                 margin-left: 5pt;
                                                 > .top {
-                                                    @include font-size-8-100("Kanit-500");
-                                                    font-size: 14px;
+                                                    @include font-size-10($font-head-500);
                                                 }
                                                 > .page-username {
-                                                    color: $koalaGray;
-                                                    @include font-size-9-100("Kanit-500");
-                                                    font-size: 14px;
+                                                    color: $color-gray;
+                                                    @include font-size-10($font-head-500);
                                                 }
                                             }
                                         }
                                         > .material-icons {
+                                            font-family: "Material Icons" !important;
+                                            font-size: $font-size-icon-small;
                                             @include pointer();
                                         }
                                     }
@@ -650,8 +647,8 @@
                                 padding: 10pt;
                                 border-bottom: $width-border solid $border-color;
                                 background-color: $white;
-                                // @include font-size-8-100("Kanit-500");
-                                @include font-size-8-100("Kanit-500");
+                                // @include font-size-8($font-head-500);
+                                @include font-size-8($font-head-500);
                             }
                             > .wrapper-card {
                                 background-color: $white;
@@ -668,22 +665,33 @@
                                         display: flex;
                                         padding: 5pt 0;
                                         align-items: center;
+
                                         > .img-user {
                                             width: 40pt;
                                             height: 40pt;
                                             border-radius: 50%;
                                             object-fit: cover;
                                         }
+
+                                        > .img-user-displayname {
+                                            background-color: $brandcolor2;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            @include font-size-9($font-head-500);
+                                            color: $white;
+                                        }
+
                                         > .list-follow-name {
                                             margin-left: 5pt;
                                             > .follow-name {
-                                                // @include font-size-10-100("Kanit-500");
-                                                @include font-size-10-100("Kanit-500");
+                                                // @include font-size-10($font-head-500);
+                                                @include font-size-10($font-head-500);
                                             }
                                             > .follow-name-eng {
-                                                // @include font-size-10-100("Kanit-500");
-                                                @include font-size-10-100("Kanit-400");
-                                                color: $koalaGray;
+                                                // @include font-size-10($font-head-500);
+                                                @include font-size-10($font-head-400);
+                                                color: $color-gray;
                                             }
                                         }
                                     }
@@ -698,12 +706,12 @@
                                     align-items: center;
                                     padding: 8pt 15pt;
                                     text-align: center;
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     min-height: 26pt;
                                     border-top: $width-border solid $border-color;
                                     @include pointer();
-                                    // @include font-size-9-100("Kanit-500");
-                                    @include font-size-9-100("Kanit-500");
+                                    // @include font-size-9($font-head-500);
+                                    @include font-size-9($font-head-500);
                                 }
                             }
                             > .wrapper-matter {
@@ -714,14 +722,14 @@
                                     padding: 10pt;
                                     margin-top: 5pt;
                                     border-bottom: $width-border solid $border-color;
-                                    @include font-size-8-100("Kanit-500");
+                                    @include font-size-8($font-head-500);
                                 }
                                 > .item-all {
-                                    color: $color-warm-red;
+                                    color: $brandcolor2;
                                     padding: 10pt;
                                     text-align: center;
-                                    // @include font-size-9-100("Kanit-500");
-                                    @include font-size-9-100("Kanit-500");
+                                    // @include font-size-9($font-head-500);
+                                    @include font-size-9($font-head-500);
                                     @include pointer();
                                 }
                             }
@@ -741,8 +749,8 @@
                             border: $width-border solid $border-color;
 
                             > .header-top-name {
-                                // @include font-size-8-100("Kanit-500");
-                                @include font-size-8-100("Kanit-500");
+                                // @include font-size-8($font-head-500);
+                                @include font-size-8($font-head-500);
                                 width: calc(100% - 20pt);
                                 padding: 10pt;
                                 border-radius: 4px;
@@ -756,13 +764,13 @@
                                     border-radius: 8pt;
                                 }
                                 > .trend-hashtag {
-                                    // @include font-size-10-100("Kanit-500");
-                                    @include font-size-10-100("Kanit-400");
+                                    // @include font-size-10($font-head-500);
+                                    @include font-size-10($font-head-400);
                                 }
                                 > .trend-hashtag-count {
-                                    color: $koalaGray;
-                                    // @include font-size-10-100("Kanit-500");
-                                    @include font-size-10-100("Kanit-500");
+                                    color: $color-gray;
+                                    // @include font-size-10($font-head-500);
+                                    @include font-size-10($font-head-500);
                                 }
                             }
                         }
@@ -779,7 +787,7 @@
                         > .head-follow {
                             padding: 15pt;
                             border-bottom: $width-border solid $border-color;
-                            @include font-size-8-100("Kanit-500");
+                            @include font-size-8($font-head-500);
                         }
 
                         > .wrapper-card {
@@ -809,11 +817,21 @@
                                         object-fit: cover;
                                     }
 
+                                    > .img-user-displayname {
+                                        background-color: $brandcolor2;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        @include font-size-9($font-head-500);
+                                        color: $white;
+                                        flex: 0 0 auto;
+                                    }
+
                                     > .list-follow-name {
                                         margin-left: 5pt;
 
                                         > .follow-name {
-                                            @include font-size-10-100("Kanit-500");
+                                            @include font-size-10($font-head-500);
 
                                             > .img-icon {
                                                 width: 12pt;
@@ -822,8 +840,8 @@
                                         }
 
                                         > .follow-name-eng {
-                                            @include font-size-10-100("Kanit-500");
-                                            color: $koalaGray;
+                                            @include font-size-10($font-head-500);
+                                            color: $color-gray;
                                         }
                                     }
                                 }
@@ -838,9 +856,9 @@
                         > .follow-all {
                             padding: 8pt 15pt;
                             text-align: center;
-                            color: $color-warm-red;
+                            color: $brandcolor2;
                             @include pointer();
-                            @include font-size-9-100("Kanit-500");
+                            @include font-size-9($font-head-500);
                             min-height: 26pt;
                             display: flex;
                             justify-content: center;
@@ -900,21 +918,21 @@
                     > .recommended-left {
                         > .wrapper-body-middle {
                             > .header-top-name {
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                             }
                             > .wrapper-body-trend {
                                 > .trend-title {
-                                    font-size: 12px;
+                                    @include font-size-11($font-head-400);
                                 }
                                 > .trend-hashtag {
-                                    font-size: 14px;
+                                    @include font-size-1($font-head-500);
                                 }
                             }
-                            >.read-more {
-                                font-size: 14px;
+                            > .read-more {
+                                @include font-size-10($font-head-500);
                             }
                         }
-                    } 
+                    }
                 }
             }
         }
@@ -934,18 +952,18 @@
                     > .recommended-left {
                         > .wrapper-body-middle {
                             > .header-top-name {
-                                font-size: 18px;
+                                @include font-size-9($font-head-500);
                             }
                             > .wrapper-body-trend {
                                 > .trend-title {
-                                    font-size: 12px;
+                                    @include font-size-11($font-head-400);
                                 }
                                 > .trend-hashtag {
-                                    font-size: 14px;
+                                    @include font-size-10($font-head-500);
                                 }
                             }
-                            >.read-more {
-                                font-size: 14px;
+                            > .read-more {
+                                @include font-size-10($font-head-500);
                             }
                         }
                     }

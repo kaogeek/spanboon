@@ -53,7 +53,7 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                font-size: 14px;
+                @include font-size-10($font-head-500);
                 &:hover {
                     transition: 0.4s;
                     transform: scale(1.1);
@@ -71,14 +71,14 @@
             transition: 0.2s;
             width: 60pt;
             height: 20pt;
-            font-size: 14px;
+            @include font-size-10($font-head-500);
             border-radius: 4px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            background-color: #fd545a;
+            background-color: $brandcolor2;
             &:hover {
                 transition: 0.2s;
                 transform: scale(1.1);

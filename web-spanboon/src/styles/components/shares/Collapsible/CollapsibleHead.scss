@@ -33,16 +33,14 @@
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                font-size: 18px;
-                font-family: "Kanit-500";
+                @include font-size-9($font-head-500);
                 word-break: break-all;
                 margin-right: 10pt;
                 color: rgb($black, 0.6);
             }
 
             > .content-count {
-                font-size: 14px;
-                font-family: "Kanit-500";
+                @include font-size-10($font-head-500);
                 flex: 0 0 auto;
                 color: rgb($black, 0.5);
             }
@@ -55,9 +53,8 @@
             align-items: center;
 
             > .count-contact-user {
-                font-family: "Kanit-500";
-                font-size: 16px;
-                background: $color-warm-red;
+                @include font-size-9($font-head-500);
+                background: $brandcolor2;
                 color: $white;
                 border-radius: 10px;
                 padding: 0 10px;
@@ -67,14 +64,30 @@
             > .status {
                 width: 24px;
                 text-align: center;
-                color: $color-warm-red;
+                color: $brandcolor2;
                 transition: 0.3s all ease;
                 margin-left: 5px;
             }
         }
+    }
+    > .body-collapsible {
+    }
+    > .load-more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10pt;
+        @include pointer();
+        @include font-size-10($font-head-500);
+        border-bottom: 1px solid $border-color;
+        border-right: 1px solid $border-color;
 
-        > .body-collapsible {
+        &:hover {
+            color: $brandcolor2;
+            color: rgba($brandcolor2, 0.95);
         }
+    }
+    > .preload-card {
     }
 }
 
@@ -83,7 +96,7 @@
         > .header {
             padding: 8pt 10pt 8pt 20pt;
         }
-        > .body-collapsible { 
+        > .body-collapsible {
         }
     }
 }

@@ -30,7 +30,14 @@
                 [fulfillRequestCount]="fulfill.fulfillRequestCount" [unreadMessageCount]="fulfill.unreadMessageCount" [data]="fulfill"
                 (onClick)="getFulfillmentCase(fulfill , index)"></card-contact> 
         </div>
+        <!-- <div class="load-more" *ngIf="!isLoading" (click)="loadMore()">
+            โหลดข้อมูล
+        </div> -->
+        <!-- <div class="preload-card load-more" *ngIf="isLoading">
+            <mat-spinner  [diameter]="25" ></mat-spinner>
+        </div>  -->
     </div>
+   
 </ng-container>
 <ng-template #elsePreload>
     <Preload-card *ngFor="let fulfill of data.cases;let index = index" [isShowCard1]="false" [isShowCard2]="false"

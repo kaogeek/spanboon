@@ -15,6 +15,7 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogResetForgotPassword } from '../../shares/dialog/DialogResetForgotPassword.component';
 import { AbstractPage } from '../AbstractPage';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
+import { MESSAGE } from '../../../../custom/variable';
 
 const PAGE_NAME: string = 'forgotpassword';
 declare var $: any;
@@ -67,7 +68,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -80,7 +81,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
-  
+
   public ngAfterViewInit(): void {
     this.tabWizard(currentTab);
   }
@@ -194,7 +195,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
         this.resUser = res.data;
         if (this.resUser && this.resUser.imageURL !== '' && this.resUser.imageURL !== undefined && this.resUser.imageURL !== null) {
           this.getDataIcon(this.resUser.imageURL)
-        } 
+        }
         this.isLastButton = true;
         this.nextPrev(n);
       }
@@ -297,8 +298,8 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
       let dialog = this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: "คุณต้องการจะออกจากหน้านี้",
-          bottomText2: "ตกลง",
+          text: MESSAGE.TEXT_TITLE_NEXT_PAGE,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
           bottomColorText2: "black",
           btDisplay1: "black"
         }

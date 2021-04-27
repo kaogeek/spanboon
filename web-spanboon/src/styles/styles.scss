@@ -8,6 +8,7 @@
 @import "mixins";
 @import "~rfs/scss";
 @import "variable";
+@import "../custom/theme.scss";
 @import "components/components";
 
 .phx-preload {
@@ -58,19 +59,19 @@
   align-items: center;
   justify-content: center;
   span {
-    width: 150pt;
+    // width: 150pt;
     // color: white;
     font-size: 13pt;
     // text-align: center;
   }
+
   .createpage-temporary-box {
-    border: solid #fd545a 2px;
+    border: solid $brandcolor2 2px;
     color: white;
     border-radius: 4px;
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
-    font-family: "Kanit-400";
-    font-size: 16px;
+    @include font-size-10($font-head-500);
     .box-icon {
       width: 500pt;
       height: 200pt;
@@ -78,10 +79,12 @@
       .box-icon-svg {
         height: 100%;
         width: 200pt;
-        background-color: #fd545a;
+        background-color: #dfdfdf;
         display: flex;
         flex-direction: column;
         align-items: center;
+        color: #fd545a;
+        text-align: center;
         justify-content: center;
       }
       .box-from {
@@ -97,16 +100,15 @@
           align-items: flex-end;
           .box-from-text {
             color: #ff0000;
-            font-size: 12px;
+            @include font-size-10($font-head-400);
             width: 105%;
             text-align: initial;
           }
           .input-test {
-            font-family: "Kanit-400";
             padding: 6px;
             width: 100%;
             margin-bottom: 20px;
-            font-size: 18px;
+            @include font-size-9($font-head-400);
           }
           .test-login-bt {
             transition: 0.2s;
@@ -114,7 +116,7 @@
             padding: 4px;
             color: white;
             text-align: center;
-            background-color: #fd545a;
+            background-color: $brandcolor2;
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -140,9 +142,10 @@
   .createpage-temporary .createpage-temporary-box .box-icon {
     width: 90vw;
   }
+  .createpage-temporary {
+    height: unset;
+  }
 }
-
-$color-green: #8f6;
 
 $circle-size: 60px;
 
@@ -163,7 +166,7 @@ $circle-size: 60px;
 .circle-border {
   z-index: 0;
   position: absolute;
-  background: $color-green;
+  background: $brandcolor2;
   transform: scale(1.2);
   animation: circle-anim 400ms ease;
   margin: 0px 20px;
@@ -195,7 +198,7 @@ $circle-size: 60px;
   content: "";
   display: block;
   height: 4px;
-  background: $color-green;
+  background: $brandcolor2;
   position: absolute;
 }
 
@@ -233,45 +236,6 @@ a {
   text-decoration: none !important;
 }
 
-.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-  color: $white;
-  background: $color-warm-red;
-}
-
-.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
-  background: rgba($color-warm-red, 0.5);
-}
-
-.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
-  background: $color-warm-red;
-}
-
-.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-  background-color: $color-warm-red;
-}
-
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,
-.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: $color-warm-red;
-}
-
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
-.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
-  background: $color-warm-red;
-}
-
-.mat-form-field.mat-focused.mat-primary .mat-select-arrow {
-  color: $color-warm-red;
-}
-
-.mat-form-field.mat-focused .mat-form-field-ripple {
-  background: $black;
-}
-
-.mat-select-arrow {
-  color: $color-warm-red;
-}
-
 .dis {
   opacity: 0.5;
   pointer-events: none;
@@ -301,7 +265,7 @@ a {
   box-sizing: border-box;
   cursor: move;
   background: white;
-  font-size: 14px;
+  @include font-size-10($font-head-500);
 }
 
 .cdk-drag-preview {
@@ -324,4 +288,76 @@ a {
   border: dotted 3px #999;
   min-height: 60px;
   transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+  color: $white;
+  background: $brandcolor2;
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+  background: rgba($brandcolor2, 0.5);
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+  background: $brandcolor2;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  background-color: $brandcolor2;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $brandcolor2;
+}
+
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
+  background: $brandcolor2;
+}
+
+.mat-form-field.mat-focused.mat-primary .mat-select-arrow {
+  color: $brandcolor2;
+}
+
+.mat-form-field.mat-focused .mat-form-field-ripple {
+  background: $black;
+}
+
+.mat-select-arrow {
+  color: $brandcolor2;
+}
+
+.follow-users-color {
+  background-color: $home-follow-users-color !important;
+}
+
+.svg-color-gray {
+  fill: $svg-color-gray-icon;
+}
+
+.svg-home-color {
+  fill: $svg-clock-icon-color;
+}
+.svg-home-crown-color {
+  fill: $svg-crown-icon-color;
+}
+
+.svg-icon-color {
+  fill: $svg-icon;
+}
+.svg-icon-color-black {
+  fill: $svg-icon-black;
+}
+.svg-icon-color-activate {
+  fill: $svg-icon-activate;
+}
+.svg-icon-home-color {
+  fill: $home-page-activate-color;
+  color: $home-page-activate-color;
+}
+
+.svg-social-icon-color {
+  fill: $svg-social-icon-color;
 }

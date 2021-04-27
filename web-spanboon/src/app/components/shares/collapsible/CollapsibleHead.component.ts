@@ -12,6 +12,8 @@ import { AuthenManager, ObservableManager } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 
 const PAGE_NAME: string = 'CollapsibleHead';
+const SEARCH_OFFSET : number = 0;
+const SEARCH_LIMIT : number = 0;
 
 @Component({
   selector: 'collapsible-head',
@@ -43,12 +45,14 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   public onContactClick: EventEmitter<any> = new EventEmitter();
 
   public showLoading: boolean = true;
+  public isLoading : boolean;
   public observManager: ObservableManager;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.observManager = observManager;
+    this.isLoading = false;
 
     this.observManager.subscribe('status.message', (fulfill) => { 
       for(let result of this.data.cases){ 
@@ -62,9 +66,7 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     setTimeout(() => {
       this.showLoading = false;
-    }, 1000);
- 
-    console.log('asPage ',this.data.cases)
+    }, 1000); 
   }
 
   public ngOnDestroy(): void {
@@ -82,6 +84,11 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  public loadMore(){
+    this.isLoading = true;
+    console.log('this.data.cases ',this.data.cases.length)
   }
 
   public getFulfillmentCase(fulfill: any, index: number) {

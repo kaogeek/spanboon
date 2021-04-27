@@ -17,17 +17,19 @@ export class ButtonFollow {
   @Input()
   public text: string = "ข้อความ";
   @Input()
-  public color: string = "#ffffff";
+  public color: string;
   @Input()
   public bgColor: string = "#313f40";
   @Input()
-  public border: string = "#FD545A";
+  public border: string;
   @Input()
   public width: string = "76pt";
   @Input()
   public height: string = "26pt";
   @Input()
   public fontSize: string = "14px";
+  @Input()
+  public inputId: string;
   @Input()
   public link: string;
   @Input()

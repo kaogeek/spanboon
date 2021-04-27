@@ -6,46 +6,38 @@
  */
 
 .upload-image-doing {
-    position: absolute;
     width: 520px;
     background-color: $white;
-    box-shadow: 0px 1px 9px 0 #e5e3dd; 
-    left: 0;
-    z-index: 10000;
+    box-shadow: 0px 1px 9px 0 #e5e3dd;
 
     &.active {
         top: auto;
         bottom: 0;
     }
 
-    > .create-doing {
+    > .wrapper-back {
         display: flex;
-        flex-direction: column;
-        // align-items: center;
-        // padding: 0 10pt;
-        > .wrapper-back {
+        padding: 10pt;
+        border-bottom: $width-border solid $border-separator;
+        > .img-back {
+            padding: 0 10pt 0 0;
+            transition: 0.5s ease-in-out;
+            @include pointer();
+        }
+        > .btn-create-doing {
             display: flex;
-            padding: 10pt;
-            border-bottom: $width-border solid $border-separator;
-            > .img-back {
-                padding: 0 10pt 0 0;
-                transition: 0.5s ease-in-out;
-                @include pointer()
-            }
-            > .btn-create-doing {
-                display: flex;
-                align-items: center;
-                padding: 0 10pt;
-                color: $color-warm-red;
-                border-left: $width-border solid $border-separator; 
-                font-family: "Kanit-500";
-                font-size: 16px;
-                @include pointer();
-                > .img-add {
-                    margin: 0 5pt 0 0;
-                }
+            align-items: center;
+            padding: 0 10pt;
+            color: $brandcolor2;
+            border-left: $width-border solid $border-separator;
+            @include font-size-9($font-head-500);
+            @include pointer();
+            > .img-add {
+                margin: 0 5pt 0 0;
             }
         }
+    }
+    > .body-center {
         > .wrappper-body-upload {
             padding: 14pt 20pt;
             background-color: $bg-color1;
@@ -56,16 +48,15 @@
                 > .objective-category {
                     width: 50%;
                     margin-right: 15pt;
-                    margin-left: 5pt; 
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    margin-left: 5pt;
+                    @include font-size-10($font-head-500);
                     > .mat-form-field-wrapper {
                         > .mat-form-field-flex {
                             > .mat-form-field-infix {
                                 width: unset;
                                 > .mat-form-field-underline {
                                     &.msg-error {
-                                        background-color: red ;
+                                        background-color: red;
                                     }
                                 }
                             }
@@ -75,19 +66,20 @@
                 > .hash {
                     display: flex;
                     align-items: center;
-
+                    position: relative;
+                    > label {
+                        position: absolute;
+                        left: 9pt;
+                        @include font-size-8($font-head-500);
+                        bottom: 14pt;
+                    }
                     > .wrapper-hashTag {
-                        // display: flex;
-                        // align-items: center;
-                        margin: 0 5pt; 
+                        margin: 0 5pt;
                         flex: 0 0 auto;
-                        font-family: "Kanit-500";
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                     }
                     > .input-hashTag {
-                        // display: block;
-                        // width: calc(100% - 42pt);
-                        width: unset ;
+                        width: unset;
                         flex: 1 1 0%;
                         height: 30pt;
                         padding: 2pt 21pt;
@@ -95,9 +87,8 @@
                         background-color: $white;
                         background-clip: padding-box;
                         border: unset;
-                        border-radius: 25px; 
-                        font-family: "Kanit-500";
-                        font-size: 16px;
+                        border-radius: 25px;
+                        @include font-size-10($font-head-500);
                         box-shadow: 0px 1px 9px 0 #e5e3dd;
                         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
                         &.msg-error {
@@ -117,8 +108,7 @@
                     background-clip: padding-box;
                     border: unset;
                     border-radius: 25px;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    @include font-size-10($font-head-500);
                     box-shadow: 0px 1px 9px 0 #e5e3dd;
                     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
                     &.msg-error {
@@ -133,15 +123,11 @@
             //     > .wrapper-field-upload {
             //         padding: 10pt 30pt ;
             //         > .top {
-            //             font-family: "Kanit-500";
-            //             font-size: 18px;
             //         }
             //         > .btn-upload {
             //             > .button-social {
             //                 display: flex;
-            //                 align-items: center; 
-            //                 font-family: "Kanit-500";
-            //                 font-size: 18px;
+            //                 align-items: center;
             //             }
             //             input[type="file"] {
             //                 display: none;
@@ -149,7 +135,7 @@
             //         }
             //     }
             // }
-            >.wrapper-upload {
+            > .wrapper-upload {
                 display: flex;
                 border-bottom: $width-border solid $border-color;
                 padding: 10pt 0;
@@ -168,7 +154,7 @@
                     justify-content: space-evenly;
                     padding: 20pt;
                     > .top {
-                        @include font-size-9-100("Kanit-500");
+                        @include font-size-9($font-head-500);
                         color: $bg-color2;
                         text-align: left;
                     }
@@ -182,16 +168,15 @@
                             vertical-align: middle;
                             background-size: 18px;
                             box-shadow: 0px 1px 9px 0 #e5e3dd;
-                            font-family: "Kanit-500";
-                            font-size: 18px;
+                            @include font-size-9($font-head-500);
                             border: unset;
-                            color: #212721;
+                            color: $color-black;
                             border-radius: 25pt;
                             width: 136pt;
                             height: 28pt;
                             display: flex;
-                            justify-content: center; 
-                            align-items: center;  
+                            justify-content: center;
+                            align-items: center;
                             &:focus {
                                 outline: none;
                             }
@@ -236,9 +221,8 @@
 
                     > .butt {
                         border-radius: 5px;
-                        padding: 2pt 0; 
-                        font-family: "Kanit-400";
-                        font-size: 18px;
+                        padding: 2pt 0;
+                        @include font-size-9($font-head-400);
                         cursor: pointer;
                         width: 54pt;
                         height: 16pt;
@@ -272,9 +256,46 @@
             border-top: $width-border solid $border-separator;
             > .btn-submit {
                 width: 78pt;
-                padding: 10pt 5pt; 
-                font-family: "Kanit-500";
-                font-size: 14px;
+                padding: 10pt 5pt;
+                @include font-size-10($font-head-500);
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .upload-image-doing {
+        width: unset;
+        height: 100%; 
+        > .body-center {
+            height: calc(100% - 44pt);
+            overflow: scroll;
+            > .wrappper-body-upload {
+                > .wrapper-doing {
+                    flex-direction: column;
+                    > .hash {
+                        width: 100%;
+                        > .input-hashTag {
+                            padding: 2pt 28pt;
+                        }
+                    }
+                    > .objective-category {
+                        width: 100%;
+                        margin-left: unset;
+                        margin-right: unset;
+                    }
+                }
+                > .wrapper-upload {
+                    flex-direction: column;
+                    align-items: center;
+                    > .wrapper-field-upload {
+                        padding: 10pt;
+                        align-items: center;
+                        > .top {
+                            padding: 10pt 0;
+                        }
+                    }
+                }
             }
         }
     }

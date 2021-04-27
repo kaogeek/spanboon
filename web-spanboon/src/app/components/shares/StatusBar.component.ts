@@ -26,7 +26,7 @@ export class StatusBar extends AbstractPage implements OnInit {
   @Input()
   public bgColor: string = "#fff";
   @Input()
-  public status: string = "กำลังมองหา";
+  public status: string = "กำลัง" + this.PLATFORM_NEEDS_TEXT;
   @Input()
   public images: string = "https://www.thebangkokinsight.com/wp-content/uploads/2019/09/ad903a3f9339ad274a01ca65a1862735.png";
   @Input()
@@ -48,19 +48,19 @@ export class StatusBar extends AbstractPage implements OnInit {
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
-  public name : string;
+  public name: string;
 
   constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
     super(null, authenManager, dialog, router);
   }
 
-  public ngOnInit(): void { 
+  public ngOnInit(): void {
 
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -73,8 +73,8 @@ export class StatusBar extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
-  
-  public actions() { 
+
+  public actions() {
     this.submit.emit();
   }
 

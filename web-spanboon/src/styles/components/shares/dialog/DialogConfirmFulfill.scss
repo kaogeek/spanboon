@@ -24,6 +24,7 @@
         right: 1%;
         @include pointer();
         display: flex;
+        z-index: 2;
         justify-content: center;
         align-items: center;
 
@@ -48,13 +49,11 @@
 
             > .header {
                 > .title {
-                    font-size: 20px;
-                    font-family: "Kanit-500";
+                    @include font-size-8($font-head-500);
                 }
 
                 > .description {
-                    font-size: 16px;
-                    font-family: "Kanit-300";
+                    @include font-size-10($font-head-300);
                     color: rgba($color: #909090, $alpha: 0.7);
                 }
             }
@@ -96,7 +95,7 @@
                 > .mat-row {
                     > .mat-cell {
                         justify-content: center;
-                        font-family: "Kanit-400"; 
+                        font-family: "Kanit-400";
                         img {
                             border-radius: 50%;
                         }
@@ -134,7 +133,7 @@
 
                     &:nth-child(4) {
                         > .fulfill-quantity {
-                            color: #7aaf67;
+                            color: $bg-color4;
                         }
                     }
 
@@ -160,6 +159,7 @@
 
             > .material-icons {
                 cursor: pointer;
+                font-family: "Material Icons" !important;
                 opacity: 0.4;
                 color: $white;
 
@@ -179,6 +179,19 @@
         justify-content: flex-end;
         align-items: center;
         overflow: hidden;
+
+        spanboon-button {
+            .confirm-fulfill-button {
+                color: $white !important;
+                background-color: $brandcolor3 !important;
+            }
+
+            .cancel-fulfill-button {
+                background-color: $white !important;
+                border: 1px solid rgb($gray-dark, 0.5) !important;
+                box-shadow: unset !important;
+            }
+        }
 
         > .confirm-fulfill-button {
             cursor: pointer;
@@ -208,16 +221,16 @@
                 display: flex;
 
                 &:hover {
-                    transform: scale(1.06);
-                    -webkit-transform: scale(1.06);
-                    -moz-transform: scale(1.06);
-                    -ms-transform: scale(1.06);
-                    -o-transform: scale(1.06);
+                    // transform: scale(1.06);
+                    // -webkit-transform: scale(1.06);
+                    // -moz-transform: scale(1.06);
+                    // -ms-transform: scale(1.06);
+                    // -o-transform: scale(1.06);
                 }
             }
 
             > .button-submit {
-                background-color: #7aaf67;
+                background-color: $brandcolor2;
                 color: $white;
                 width: 150pt;
             }
@@ -231,8 +244,8 @@
 
             > .button-cancel,
             .button-edit {
-                background-color: #f8f7f2;
-                color: #212721;
+                border: 0.3px solid $border-color;
+                color: $color-black;
             }
         }
     }

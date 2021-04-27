@@ -108,13 +108,15 @@ export class ImageCard {
 
   public ngOnInit(): void {
     this.valueSub();
+    setTimeout(() => {
+    }, 1500);
   }
 
   public action(even) {
     this.submit.emit();
   }
 
-  public valueSub(){
+  public valueSub() {
     var Tw = Number(this.countTwitter);
     var Fb = Number(this.countFacebook);
     var Sb = Number(this.countSpanboon);

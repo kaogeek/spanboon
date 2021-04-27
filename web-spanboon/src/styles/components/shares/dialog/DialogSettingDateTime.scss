@@ -44,8 +44,7 @@
             }
 
             > span {
-                font-family: "Kanit-500";
-                font-size: 22px;
+                @include font-size-7($font-head-500);
                 margin-left: 7pt;
                 color: rgb($black, 0.6);
             }
@@ -54,6 +53,7 @@
         > .onClose {
             @include pointer();
             display: flex;
+            z-index: 2;
             justify-content: center;
             align-items: center;
 
@@ -95,8 +95,7 @@
 
                             > button {
                                 > .mat-button-wrapper {
-                                    font-family: "Kanit-500";
-                                    font-size: 18px;
+                                    @include font-size-9($font-head-500);
 
                                     > .mat-calendar-arrow {
                                         margin-top: -4px;
@@ -115,8 +114,7 @@
                             > .mat-calendar-table-header {
                                 > tr {
                                     > th {
-                                        font-family: "Kanit-500";
-                                        font-size: 18px;
+                                        @include font-size-9($font-head-500);
                                         color: rgb($black, 0.85);
                                     }
 
@@ -141,7 +139,7 @@
                                             font-weight: 500;
 
                                             &.mat-calendar-body-selected {
-                                                background-color: $color-warm-red;
+                                                background-color: $brandcolor2;
                                                 color: $white;
                                             }
                                         }
@@ -163,8 +161,7 @@
 
             > .post-time {
                 > .title {
-                    font-family: "Kanit-500";
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
 
                 > ngx-timepicker-field {
@@ -186,7 +183,7 @@
                                 }
 
                                 > input {
-                                    font-size: 20px;
+                                    @include font-size-8($font-head-500);
                                     padding: 0;
                                 }
 
@@ -198,14 +195,13 @@
 
                         > .ngx-timepicker__time-colon {
                             margin: 0 10px;
-                            font-size: 24px;
+                            @include font-size-6($font-head-500);
                         }
                     }
                 }
 
                 > .detail {
-                    font-family: "Kanit-400";
-                    font-size: 16px;
+                    @include font-size-10($font-head-400);
                     color: rgb($black, 0.5);
 
                     > span {
@@ -261,7 +257,7 @@
                 }
 
                 > span {
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
             }
 
@@ -344,7 +340,7 @@
 
                 > .post-time {
                     > .title {
-                        font-size: 18px;
+                        @include font-size-9($font-head-500);
                     }
 
                     > ngx-timepicker-field {
@@ -368,7 +364,7 @@
                     }
 
                     > .detail {
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
 
                         > span {
                             display: inline;

@@ -8,6 +8,7 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MatPaginator, MatTableDataSource, MAT_DIALOG_DATA } from '@angular/material';
 import { environment } from '../../../../environments/environment';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
 
 let fulfill: any[] = [];
 
@@ -23,7 +24,9 @@ export class DialogConfirmFulfill {
     public dataSource: MatTableDataSource<any> = undefined;
 
     public apiBaseURL = environment.apiBaseURL;
-    
+    public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+    public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
+
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
     constructor(public dialogRef: MatDialogRef<DialogConfirmFulfill>,

@@ -48,7 +48,7 @@ export class AssetController {
         if (asset) {
             const url = 'data:' + asset.mimeType + ';base64,' + asset.data;
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got Asset', url);
-            return res.status(200).set('Cache-Control', 'public').send(successResponse);
+            return res.status(200).set('Cache-Control', 'public,must-revalidate,max-age=864000' ).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return res.status(400).send(errorResponse);
@@ -117,8 +117,8 @@ export class AssetController {
     }
 
     /**
-     * @api {delete} /api/fulfillment/:id Delete Fulfillment API
-     * @apiGroup Fulfillment
+     * @api {delete} /api/temp Delete temp API
+     * @apiGroup Asset
      * @apiHeader {String} Authorization
      * @apiParamExample {json} Input
      * {
@@ -127,11 +127,11 @@ export class AssetController {
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     * "message": "Successfully Delete Fulfillment.",
+     * "message": "Successfully Delete temp.",
      * "status": "1"
      * }
-     * @apiSampleRequest /api/fulfillment/:id
-     * @apiErrorExample {json} Delete Fulfillment Error
+     * @apiSampleRequest /api/temp
+     * @apiErrorExample {json} Delete temp Error
      * HTTP/1.1 500 Internal Server Error
      */
     @Delete('/temp')
@@ -187,7 +187,7 @@ export class AssetController {
                 return response.status(400).send(errorResponse);
             }
 
-            return response.status(200).set('Content-Type', asset.mimeType).set('Cache-Control', 'public').send(Buffer.from(asset.data, 'base64'));
+            return response.status(200).set('Content-Type', asset.mimeType).set('Cache-Control', 'public,must-revalidate,max-age=864000').send(Buffer.from(asset.data, 'base64'));
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return response.status(400).send(errorResponse);

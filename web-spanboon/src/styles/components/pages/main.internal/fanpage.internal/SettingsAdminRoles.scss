@@ -13,14 +13,12 @@
         padding: 20pt 40pt;
 
         > .head {
-            font-family: "Kanit-500";
-            font-size: 22px;
+            @include font-size-7($font-head-500);
             color: $black;
         }
 
         > .title {
-            font-family: "Kanit-300";
-            font-size: 14px;
+            @include font-size-10($font-head-300);
             color: rgba($black, 0.5);
             margin-top: 5pt;
         }
@@ -31,8 +29,7 @@
             padding: 15pt 40pt;
 
             > .y1-title {
-                font-size: 18px;
-                font-family: "Kanit-400";
+                @include font-size-9($font-head-400);
             }
 
             > .set-your {
@@ -65,8 +62,7 @@
 
                     > .how-title {
                         color: #ffc107;
-                        font-size: 14px;
-                        font-family: "Kanit-500";
+                        @include font-size-10($font-head-500);
                         padding: 5pt 8pt;
                     }
                 }
@@ -100,8 +96,7 @@
                             > .search-input {
                                 height: 100%;
                                 width: 100%;
-                                font-family: "Kanit-400";
-                                font-size: 16px;
+                                @include font-size-9($font-content-light);
                                 border-radius: 4px 0 0 4px;
                                 border: 0.7pt solid $border-color;
                                 padding: 0 30pt 0 10pt;
@@ -158,8 +153,7 @@
 
                                     > .mat-select-value-text {
                                         padding-right: 5pt;
-                                        font-size: 16px;
-                                        font-family: "Kanit-500";
+                                        @include font-size-9($font-head-500);
                                     }
                                 }
                             }
@@ -172,10 +166,9 @@
                         min-width: 70pt;
                         height: 26pt;
                         color: $white;
-                        background: $color-warm-red;
+                        background: $brandcolor2;
                         opacity: 0.7;
-                        font-size: 16px;
-                        font-family: "Kanit-500";
+                        @include font-size-9($font-head-500);
 
                         &.active {
                             opacity: 1;
@@ -188,8 +181,7 @@
                 }
 
                 > .title-power {
-                    font-size: 14px;
-                    font-family: "Kanit-500";
+                    @include font-size-10($font-head-500);
                     color: rgba($black, 0.5);
                     margin: 5pt 0 20pt 0;
                 }
@@ -199,14 +191,12 @@
 
                     > .top-selected {
                         > .header {
-                            font-family: "Kanit-400";
-                            font-size: 16px;
+                            @include font-size-9($font-head-400);
                             color: $black;
                         }
 
                         > .title {
-                            font-size: 14px;
-                            font-family: "Kanit-500";
+                            @include font-size-10($font-head-500);
                             color: rgba($black, 0.5);
                         }
                     }
@@ -233,14 +223,13 @@
                                     border-radius: 50%;
                                     box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
                                     color: $white;
-                                    font-family: "Kanot-500";
-                                    font-size: 16px;
+                                    @include font-size-9($font-head-500);
                                 }
                                 > .not-image {
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    background-color: $color-warm-red;
+                                    background-color: $brandcolor2;
                                     font-family: "Kanit-500";
                                     font-family: 16px;
                                 }
@@ -250,14 +239,12 @@
                                     flex: 1 0 0px;
 
                                     > .name {
-                                        font-family: "Kanit-400";
-                                        font-size: 16px;
+                                        @include font-size-9($font-head-400);
                                         color: $black;
                                     }
 
                                     > .access {
-                                        font-size: 14px;
-                                        font-family: "Kanit-500";
+                                        @include font-size-10($font-head-500);
                                         color: rgba($black, 0.5);
                                     }
                                 }
@@ -308,17 +295,15 @@
                                                 display: flex;
                                                 align-items: center;
                                                 justify-content: center;
-                                                background-color: $color-warm-red;
+                                                background-color: $brandcolor2;
                                                 color: $white;
-                                                font-family: "Kanit-500";
-                                                font-size: 16px;
+                                                @include font-size-9($font-head-500);
                                             }
 
                                             > span {
                                                 height: 100%;
                                                 width: 100%;
-                                                font-family: "Kanit-400";
-                                                font-size: 16px;
+                                                @include font-size-9($font-head-400);
                                                 border-radius: 4px 0 0 4px;
                                                 border: 0.7pt solid #d3d6db;
                                                 padding: 0 10pt 0 30pt;
@@ -357,8 +342,7 @@
 
                                                         > .mat-select-value-text {
                                                             padding-right: 5pt;
-                                                            font-family: "Kanit-500";
-                                                            font-size: 14px;
+                                                            @include font-size-10($font-head-500);
                                                         }
                                                     }
                                                 }
@@ -367,8 +351,7 @@
                                     }
 
                                     > .edit-title {
-                                        font-family: "Kanit-400";
-                                        font-size: 14px;
+                                        @include font-size-10($font-head-400);
                                         color: rgba($black, 0.5);
                                         margin-top: 3pt;
                                         padding-bottom: 20pt;
@@ -384,27 +367,27 @@
                                     align-items: center;
 
                                     > .delete-card {
-                                        color: $color-warm-red;
+                                        color: $brandcolor2;
                                         background: transparent;
-                                        font-size: 16px;
-                                        font-family: "Kanit-500";
+                                        @include font-size-9($font-head-500);
                                         width: 22pt;
                                         height: 14pt;
                                         @include pointer();
                                         &:hover {
-                                            svg , g, path { 
-                                                    fill: $color-warm-red; 
+                                            svg,
+                                            g,
+                                            path {
+                                                fill: $brandcolor2;
                                             }
                                             // > .mat-button-wrapper {
-                                            //     text-decoration: underline;
+                                            //     color: rgba($brandcolor2, 0.95);
                                             // }
                                         }
                                     }
 
                                     > .edit-bottom-right {
                                         > .cancel-card {
-                                            font-size: 16px;
-                                            font-family: "Kanit-500";
+                                            @include font-size-9($font-head-500);
                                             color: $black;
                                             width: 70pt;
                                             min-width: 70pt;
@@ -416,10 +399,9 @@
                                             width: 70pt;
                                             min-width: 70pt;
                                             color: $white;
-                                            background: $color-warm-red;
+                                            background: $brandcolor2;
                                             opacity: 0.7;
-                                            font-size: 16px;
-                                            font-family: "Kanit-500";
+                                            @include font-size-9($font-head-500);
 
                                             &.active {
                                                 opacity: 1;
@@ -445,10 +427,10 @@
         padding: 5pt !important;
 
         &:hover {
-            background: rgba($color-warm-red, 0.3);
+            background: rgba($brandcolor2, 0.3);
 
             &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-                background: rgba($color-warm-red, 0.3);
+                background: rgba($brandcolor2, 0.3);
             }
         }
 
@@ -471,12 +453,12 @@
     }
 }
 @media (max-width: $xlarge) {
-    .fanpage-admin-roles { 
-        >.body-admin {
-            >.admin-y1 {
+    .fanpage-admin-roles {
+        > .body-admin {
+            > .admin-y1 {
                 padding: 0 40pt 15pt 40pt;
-                >.set-your {
-                    >.set-your-admin { 
+                > .set-your {
+                    > .set-your-admin {
                     }
                 }
             }
@@ -486,32 +468,32 @@
 
 @media (max-width: $lmedium) {
     .fanpage-admin-roles {
-        >.header-admin {
-            padding: 20pt 25pt; 
+        > .header-admin {
+            padding: 20pt 25pt;
         }
-        >.body-admin {
-            >.admin-y1 {
+        > .body-admin {
+            > .admin-y1 {
                 padding: 0 25pt 15pt 25pt;
-                >.set-your {
-                    >.set-your-admin {
+                > .set-your {
+                    > .set-your-admin {
                         margin-top: 10pt;
                     }
                 }
             }
         }
     }
-} 
+}
 
 @media (max-width: $medium) {
     .fanpage-admin-roles {
-        >.header-admin {
-            padding: 20pt 30pt; 
+        > .header-admin {
+            padding: 20pt 30pt;
         }
-        >.body-admin {
-            >.admin-y1 {
+        > .body-admin {
+            > .admin-y1 {
                 // padding: 15pt 30pt;
-                >.set-your {
-                    >.set-your-admin {
+                > .set-your {
+                    > .set-your-admin {
                         margin-top: 10pt;
                     }
                 }
@@ -522,25 +504,25 @@
 
 @media (max-width: $small) {
     .fanpage-admin-roles {
-        >.header-admin {
+        > .header-admin {
             padding: 15pt;
         }
-        >.body-admin {
-            >.admin-y1 {
-                padding: 0 15pt 15pt 15pt; 
-                >.set-your {
-                    >.set-your-admin {
+        > .body-admin {
+            > .admin-y1 {
+                padding: 0 15pt 15pt 15pt;
+                > .set-your {
+                    > .set-your-admin {
                         margin-top: 10pt;
-                        >.save-card {
+                        > .save-card {
                             width: 50pt;
                             min-width: 50pt;
                         }
                     }
-                    >.true-selected {
-                        >.body-selected {
-                            >.card-selected {
-                                >.selected-con {
-                                    >.edit-selected {
+                    > .true-selected {
+                        > .body-selected {
+                            > .card-selected {
+                                > .selected-con {
+                                    > .edit-selected {
                                         width: 50pt;
                                         min-width: 50pt;
                                     }

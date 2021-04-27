@@ -24,8 +24,7 @@
 
         > .wrapper-topic {
             > .topic-label {
-                font-family: "Kanit-500";
-                font-size: 26px;
+                @include font-size-6($font-head-500);
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
@@ -40,20 +39,18 @@
         align-items: center;
 
         > .topic-count {
-            font-family: "Kanit-500";
-            font-size: 22px;
+            @include font-size-7($font-head-500);
             color: $color-black;
 
             > a {
                 > .topic-type {
-                    color: $color-warm-red;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    color: $brandcolor2;
+                    @include font-size-9($font-head-500);
                     margin-left: 5pt;
                     @include pointer();
 
                     &:hover {
-                        text-decoration: underline;
+                        color: rgba($brandcolor2, 0.7);
                     }
                 }
             }
@@ -61,8 +58,7 @@
 
         > .topic-date {
             color: $color-black;
-            font-family: "Kanit-500";
-            font-size: 20px;
+            @include font-size-8($font-head-500);
 
             > .date {
                 display: flex;
@@ -80,14 +76,13 @@
 
             > a {
                 > .topic-type {
-                    color: $color-warm-red;
-                    font-family: "Kanit-500";
-                    font-size: 16px;
+                    color: $brandcolor2;
+                    @include font-size-9($font-head-500);
                     margin-left: 5pt;
                     @include pointer();
 
                     &:hover {
-                        text-decoration: underline;
+                        color: rgba($brandcolor2, 0.7);
                     }
                 }
             }
@@ -131,12 +126,12 @@
         > .wrapper-left {
             > .wrapper-topic {
                 > .topic-label {
-                    font-size: 20px;
+                    @include font-size-8($font-head-500);
                 }
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                     }
                 }
             }
@@ -144,21 +139,21 @@
 
         > .topic-label-right {
             > .topic-date {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
 
                 > a {
                     > .topic-type {
-                        font-size: 15px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
 
             > .topic-count {
-                font-size: 18px;
+                @include font-size-9($font-head-500);
 
                 > a {
                     > .topic-type {
-                        font-size: 15px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
@@ -177,21 +172,21 @@
 
         > .topic-label-right {
             > .topic-date {
-                font-size: 16px;
+                @include font-size-10($font-head-500);
 
                 > a {
                     > .topic-type {
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
 
             > .topic-count {
-                font-size: 16px;
+                @include font-size-9($font-head-500);
 
                 > a {
                     > .topic-type {
-                        font-size: 14px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }
@@ -206,7 +201,6 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    // font-size: 20px;
                 }
             }
         }
@@ -215,17 +209,17 @@
             > .topic-date {
                 > a {
                     > .topic-type {
-                        // font-size: 14px;
+                        
                     }
                 }
             }
 
             > .topic-count {
-                // font-size: 16px;
+                // @include font-size-9($font-head-500);
 
                 > a {
                     > .topic-type {
-                        // font-size: 14px;
+                        
                     }
                 }
             }
@@ -240,12 +234,12 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    font-size: 18px;
+                    @include font-size-9($font-head-500);
                 }
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 16px;
+                        @include font-size-9($font-head-500);
                     }
                 }
             }
@@ -272,12 +266,11 @@
 
             > .wrapper-topic {
                 > .topic-label {
-                    // font-size: 18px;
                 }
 
                 > .wrapper-icon {
                     > span {
-                        font-size: 15px;
+                        @include font-size-10($font-head-500);
                     }
                 }
             }

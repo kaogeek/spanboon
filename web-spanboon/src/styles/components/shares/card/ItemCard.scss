@@ -17,7 +17,7 @@
         padding: 15pt;
         flex-direction: column;
         > .item-status {
-            @include font-size-10-100("Anakotmai-Medium");
+            @include font-size-10($font-content2-medium);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -30,7 +30,7 @@
                     border-radius: 50%;
                 }
                 > .looking {
-                    background-color: $brandcolor2;
+                    background-color: $brandcolor3;
                 }
                 // >.item-status-active {
 
@@ -70,7 +70,7 @@
                 }
                 > .item-name {
                     padding: 5pt 5pt;
-                    @include font-size-10-100("Anakotmai-Medium");
+                    @include font-size-10($font-content2-medium);
                 }
             }
 
@@ -79,10 +79,10 @@
                 > .item-amount {
                     display: flex;
                     flex-direction: column;
-                    @include font-size-10-100("Anakotmai-Medium");
+                    @include font-size-10($font-content2-medium);
                     > .item-unit {
-                        @include font-size-10-100("Anakotmai-Medium");
-                        color: $koalaGray;
+                        @include font-size-10($font-content2-medium);
+                        color: $color-gray;
                     }
                 }
             }
@@ -91,7 +91,7 @@
             border-top: 0.7pt solid $bg-fog-gray;
             text-align: center;
             padding: 10pt;
-            @include font-size-10-100("Anakotmai-Medium");
+            @include font-size-10($font-content2-medium);
         }
         > .item-footer {
             padding: 10pt 0;
@@ -101,7 +101,7 @@
             > .item-footer-icon {
                 display: flex;
                 align-items: center;
-                @include font-size-10-100("Anakotmai-Medium");
+                @include font-size-10($font-content2-medium);
                 > .item-footer-offical {
                     width: 10pt;
                 }
@@ -110,7 +110,7 @@
                 > .footer-icon-user {
                     width: 10pt;
                     > .user-count {
-                        @include font-size-10-100("Anakotmai-Medium");
+                        @include font-size-10($font-content2-medium);
                     }
                 }
             }

@@ -31,8 +31,7 @@
 
     > .label {
       text-align: center;
-      font-family: "Kanit-500";
-      font-size: 24px;
+      @include font-size-6($font-head-500);
       color: $brandcolor2;
       margin-bottom: 20pt;
     }
@@ -47,8 +46,7 @@
         background-clip: padding-box;
         border: 0.7pt solid $bg-grey;
         border-radius: 25px;
-        font-size: 16px;
-        font-family: "Kanit-500";
+        @include font-size-10($font-content-light);
         box-shadow: 0px 1px 9px 0 #00000020;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         margin-bottom: 10pt;
@@ -61,12 +59,11 @@
       padding: 10pt 0;
 
       > .forget {
-        font-family: "Kanit-500";
-        font-size: 14px;
+        @include font-size-10($font-head-500);
         @include pointer();
 
         &:hover {
-          text-decoration: underline;
+          color: rgba($brandcolor2, 0.95);
         }
       }
     }
@@ -91,8 +88,7 @@
         > .span-for {
           flex: 0 0 auto;
           display: inline-block;
-          font-family: "Kanit-500";
-          font-size: 16px;
+          @include font-size-9($font-head-500);
           position: relative;
           padding: 0 20px;
         }
@@ -112,30 +108,27 @@
       text-align: center;
       font-weight: 300;
       margin-top: 30pt;
-      font-family: "Sarabun-Light";
-      font-size: 16px;
+      @include font-size-9($font-content-light);
 
       > .wrapper-register {
-        color: $color-warm-red;
-        font-family: "Kanit-500";
-        font-size: 16px;
+        color: $brandcolor2;
+        @include font-size-9($font-head-500);
         @include pointer();
 
         &:hover {
-          text-decoration: underline;
+          color: rgba($brandcolor2, 0.95);
         }
       }
     }
     > .policy {
       display: flex;
       justify-content: center;
-      font-size: 14px;
-      font-family: "Kanit-300";
+      @include font-size-10($font-head-500);
       padding-top: 5px;
       @include pointer();
-      color: $koalaGray;
+      color: $color-gray;
       &:hover {
-        text-decoration: underline;
+        color: rgba($brandcolor2, 0.95);
       }
     }
   }

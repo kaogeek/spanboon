@@ -63,7 +63,7 @@
                                 </ng-container>
                                 <ng-template #elseOwner>
                                     <div class="wrapper-cover-image image-not-edit">
-                                        <img class="image-cover" alt="">
+                                        <img class="image-cover" src="{{BACKGROUND_IMAGE}}" alt="">
                                     </div>
                                 </ng-template>
                             </ng-container>
@@ -129,7 +129,8 @@
                             </ng-template>
                         </ng-container>
                     </ng-template>
-                    <img id="images" [class.active]="isEditCover" [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
+                    <img id="images" [class.active]="!isEditCover"
+                        [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                 </div>
                 <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false"
                     [class]="'preload-profile'">
@@ -171,10 +172,10 @@
                                     <g id="Group_88" data-name="Group 88" transform="translate(0)">
                                         <path id="Path_141" data-name="Path 141"
                                             d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
-                                            transform="translate(-36.867)" fill="#28a745" />
+                                            transform="translate(-36.867)" class="svg-icon-home-color" />
                                         <path id="Path_142" data-name="Path 142"
                                             d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
-                                            transform="translate(-259.715 -289.198)" fill="#28a745" />
+                                            transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
                                     </g>
                                 </svg>
                                 <div class="official-name">
@@ -188,10 +189,9 @@
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                                <button-follow [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                    [bgColor]="'#FFFFFF'"
+                                <button-follow [bgColor]="'#FFFFFF'" [inputId]="'follow'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
-                                    (click)="clickFollow()" [class.active]="resDataPage && resDataPage.isFollow">
+                                    (click)="clickFollowPage()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
                             </div>
                             <div class="btn-follow-about btn_fa">
@@ -213,16 +213,17 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="btn-follow-about btn_fa">
+                            <div class="btn-follow-about btn_fa" (click)="clickSystemDevelopment()">
                                 เกี่ยวกับ
                             </div>
                         </div>
                         <div class="wrapper-looking-for">
                             <div class="wrapper-header">
                                 <div class="header-looking-for">
-                                    ความเป็นมา
+                                    ข้อมูลเพจ
                                 </div>
-                                <span class="material-icons" (click)="showAlertDevelopDialog()" *ngIf="isLogin() && isNotAccess"> edit </span>
+                                <span class="material-icons" (click)="redirectSetting()"
+                                    *ngIf="isLogin() && isNotAccess"> edit </span>
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
                                 *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
@@ -233,7 +234,7 @@
                                 </div>
                             </div>
                             <div class="list-looking-for">
-                                <div class="item-looking-for"
+                                <div class="item-looking-for" (click)="showAlertDevelopDialog()"
                                     *ngIf="resDataPage && resDataPage.categoryName && resDataPage.categoryName !== undefined && resDataPage.categoryName !== null && resDataPage.categoryName !== '' ">
                                     <span>
                                         <svg style="padding-right: 5pt;" xmlns="http://www.w3.org/2000/svg"
@@ -276,152 +277,318 @@
                                 </div> -->
                             </div>
                             <div class="footer-contact-social">
-                                <!-- <a href="{{'//'+resDataPage && resDataPage.lineId}}" target="_blank" -->
-                                <a (click)="showAlertDevelopDialog()" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.lineId && resDataPage.lineId !== undefined && resDataPage.lineId !== null && resDataPage.lineId !== '' ? true : false">
-                                    <svg class="line" xmlns="http://www.w3.org/2000/svg" width="22" height="8.16"
-                                        viewBox="0 0 22 8.16">
-                                        <g id="line_1_" data-name="line (1)" transform="translate(-119.276 -124.917)">
-                                            <g id="Group_1357" data-name="Group 1357"
-                                                transform="translate(119.276 124.917)">
-                                                <path id="Path_3254" data-name="Path 3254"
-                                                    d="M162.128,207.391v-5.6a.854.854,0,0,0-.854-.854h0a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563Z"
-                                                    transform="translate(-160.419 -200.94)" fill="#ececec" />
-                                                <path id="Path_3255" data-name="Path 3255"
-                                                    d="M213.539,209.1h-.373a.668.668,0,0,1-.668-.668v-6.824a.668.668,0,0,1,.668-.668h.373a.668.668,0,0,1,.668.668v6.824A.668.668,0,0,1,213.539,209.1Z"
-                                                    transform="translate(-206.56 -200.938)" fill="#ececec" />
-                                                <path id="Path_3256" data-name="Path 3256"
-                                                    d="M243.679,201.795v3.941s-3.412-4.451-3.464-4.509a.85.85,0,0,0-.67-.285.878.878,0,0,0-.821.889v6.415a.854.854,0,0,0,.854.854h0a.854.854,0,0,0,.854-.854v-3.917s3.464,4.489,3.515,4.538a.849.849,0,0,0,.578.234.886.886,0,0,0,.862-.89V201.8a.854.854,0,0,0-.854-.854h0A.854.854,0,0,0,243.679,201.795Z"
-                                                    transform="translate(-229.796 -200.94)" fill="#ececec" />
-                                                <path id="Path_3257" data-name="Path 3257"
-                                                    d="M313.533,201.794h0a.854.854,0,0,0-.854-.854H309.26a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563A.854.854,0,0,0,313.533,201.794Z"
-                                                    transform="translate(-291.532 -200.94)" fill="#ececec" />
+                                <ng-container *ngIf="resDataPage && resDataPage.lineId; else elseTemplatelineId">
+                                    <a href="{{'//'+resDataPage && resDataPage.lineId}}" target="_blank"
+                                        class="contact-social" [class.active]="resDataPage && resDataPage.lineId && resDataPage.lineId !==
+                                undefined && resDataPage.lineId !== null && resDataPage.lineId !== '' ? true : false">
+                                        <svg class="line" xmlns="http://www.w3.org/2000/svg" width="22" height="8.16"
+                                            viewBox="0 0 22 8.16">
+                                            <g id="line_1_" data-name="line (1)"
+                                                transform="translate(-119.276 -124.917)">
+                                                <g id="Group_1357" data-name="Group 1357"
+                                                    transform="translate(119.276 124.917)">
+                                                    <path id="Path_3254" data-name="Path 3254"
+                                                        d="M162.128,207.391v-5.6a.854.854,0,0,0-.854-.854h0a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563Z"
+                                                        transform="translate(-160.419 -200.94)" fill="#ececec" />
+                                                    <path id="Path_3255" data-name="Path 3255"
+                                                        d="M213.539,209.1h-.373a.668.668,0,0,1-.668-.668v-6.824a.668.668,0,0,1,.668-.668h.373a.668.668,0,0,1,.668.668v6.824A.668.668,0,0,1,213.539,209.1Z"
+                                                        transform="translate(-206.56 -200.938)" fill="#ececec" />
+                                                    <path id="Path_3256" data-name="Path 3256"
+                                                        d="M243.679,201.795v3.941s-3.412-4.451-3.464-4.509a.85.85,0,0,0-.67-.285.878.878,0,0,0-.821.889v6.415a.854.854,0,0,0,.854.854h0a.854.854,0,0,0,.854-.854v-3.917s3.464,4.489,3.515,4.538a.849.849,0,0,0,.578.234.886.886,0,0,0,.862-.89V201.8a.854.854,0,0,0-.854-.854h0A.854.854,0,0,0,243.679,201.795Z"
+                                                        transform="translate(-229.796 -200.94)" fill="#ececec" />
+                                                    <path id="Path_3257" data-name="Path 3257"
+                                                        d="M313.533,201.794h0a.854.854,0,0,0-.854-.854H309.26a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563A.854.854,0,0,0,313.533,201.794Z"
+                                                        transform="translate(-291.532 -200.94)" fill="#ececec" />
+                                                </g>
                                             </g>
-                                        </g>
-                                    </svg>
-                                </a>
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplatelineId>
+                                    <a class="contact-social">
+                                        <svg class="line" xmlns="http://www.w3.org/2000/svg" width="22" height="8.16"
+                                            viewBox="0 0 22 8.16">
+                                            <g id="line_1_" data-name="line (1)"
+                                                transform="translate(-119.276 -124.917)">
+                                                <g id="Group_1357" data-name="Group 1357"
+                                                    transform="translate(119.276 124.917)">
+                                                    <path id="Path_3254" data-name="Path 3254"
+                                                        d="M162.128,207.391v-5.6a.854.854,0,0,0-.854-.854h0a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563Z"
+                                                        transform="translate(-160.419 -200.94)" fill="#ececec" />
+                                                    <path id="Path_3255" data-name="Path 3255"
+                                                        d="M213.539,209.1h-.373a.668.668,0,0,1-.668-.668v-6.824a.668.668,0,0,1,.668-.668h.373a.668.668,0,0,1,.668.668v6.824A.668.668,0,0,1,213.539,209.1Z"
+                                                        transform="translate(-206.56 -200.938)" fill="#ececec" />
+                                                    <path id="Path_3256" data-name="Path 3256"
+                                                        d="M243.679,201.795v3.941s-3.412-4.451-3.464-4.509a.85.85,0,0,0-.67-.285.878.878,0,0,0-.821.889v6.415a.854.854,0,0,0,.854.854h0a.854.854,0,0,0,.854-.854v-3.917s3.464,4.489,3.515,4.538a.849.849,0,0,0,.578.234.886.886,0,0,0,.862-.89V201.8a.854.854,0,0,0-.854-.854h0A.854.854,0,0,0,243.679,201.795Z"
+                                                        transform="translate(-229.796 -200.94)" fill="#ececec" />
+                                                    <path id="Path_3257" data-name="Path 3257"
+                                                        d="M313.533,201.794h0a.854.854,0,0,0-.854-.854H309.26a.854.854,0,0,0-.854.854v6.451a.854.854,0,0,0,.854.854h3.418a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563a.854.854,0,0,0,.854-.854h0a.854.854,0,0,0-.854-.854h-2.563v-1.516h2.563A.854.854,0,0,0,313.533,201.794Z"
+                                                        transform="translate(-291.532 -200.94)" fill="#ececec" />
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </a>
+                                </ng-template>
 
-                                <!-- <a href="//{{resDataPage && resDataPage.facebookURL}}" target="_blank" -->
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.facebookURL && resDataPage.facebookURL !== undefined  && resDataPage.facebookURL !== null  && resDataPage.facebookURL !== '' ? true : false">
-                                    <svg class="facebook" xmlns="http://www.w3.org/2000/svg" width="7.073"
-                                        height="14.146" viewBox="0 0 7.073 14.146">
-                                        <path id="facebook_1_" data-name="facebook (1)"
-                                            d="M11.969,2.349H13.26V.1A16.676,16.676,0,0,0,11.379,0C7.293,0,8.4,4.627,8.242,5.3H6.187V7.819H8.242v6.327h2.519V7.82h1.972l.313-2.514H10.76c.111-1.664-.449-2.956,1.209-2.956Z"
-                                            transform="translate(-6.187)" fill="#ececec" />
-                                    </svg>
-                                </a>
+                                <ng-container *ngIf="resDataPage && resDataPage.facebookURL; else elseTemplateFacebook">
+                                    <a href="//{{resDataPage && resDataPage.facebookURL}}" target="_blank"
+                                        class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.facebookURL && resDataPage.facebookURL !== undefined  && resDataPage.facebookURL !== null  && resDataPage.facebookURL !== '' ? true : false">
+                                        <svg class="facebook" xmlns="http://www.w3.org/2000/svg" width="7.073"
+                                            height="14.146" viewBox="0 0 7.073 14.146">
+                                            <path id="facebook_1_" data-name="facebook (1)"
+                                                d="M11.969,2.349H13.26V.1A16.676,16.676,0,0,0,11.379,0C7.293,0,8.4,4.627,8.242,5.3H6.187V7.819H8.242v6.327h2.519V7.82h1.972l.313-2.514H10.76c.111-1.664-.449-2.956,1.209-2.956Z"
+                                                transform="translate(-6.187)" fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateFacebook>
+                                    <a class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.facebookURL && resDataPage.facebookURL !== undefined  && resDataPage.facebookURL !== null  && resDataPage.facebookURL !== '' ? true : false">
+                                        <svg class="facebook" xmlns="http://www.w3.org/2000/svg" width="7.073"
+                                            height="14.146" viewBox="0 0 7.073 14.146">
+                                            <path id="facebook_1_" data-name="facebook (1)"
+                                                d="M11.969,2.349H13.26V.1A16.676,16.676,0,0,0,11.379,0C7.293,0,8.4,4.627,8.242,5.3H6.187V7.819H8.242v6.327h2.519V7.82h1.972l.313-2.514H10.76c.111-1.664-.449-2.956,1.209-2.956Z"
+                                                transform="translate(-6.187)" fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-template>
 
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.twitterURL && resDataPage.twitterURL !== undefined && resDataPage.twitterURL !== null && resDataPage.twitterURL !== '' ? true : false">
-                                    <svg class="twitter" xmlns="http://www.w3.org/2000/svg" width="13.813"
-                                        height="11.223" viewBox="0 0 13.813 11.223">
-                                        <path id="twitter"
-                                            d="M13.813,49.329a5.9,5.9,0,0,1-1.632.447,2.816,2.816,0,0,0,1.246-1.565,5.659,5.659,0,0,1-1.8.685,2.831,2.831,0,0,0-4.9,1.936,2.916,2.916,0,0,0,.066.646A8.015,8.015,0,0,1,.962,48.516a2.832,2.832,0,0,0,.87,3.785,2.8,2.8,0,0,1-1.279-.349v.031a2.845,2.845,0,0,0,2.269,2.782,2.826,2.826,0,0,1-.742.093,2.5,2.5,0,0,1-.536-.048,2.859,2.859,0,0,0,2.646,1.973A5.69,5.69,0,0,1,.678,57.991,5.3,5.3,0,0,1,0,57.952a7.972,7.972,0,0,0,4.344,1.271,8,8,0,0,0,8.06-8.058c0-.125,0-.246-.01-.366A5.649,5.649,0,0,0,13.813,49.329Z"
-                                            transform="translate(0 -48)" fill="#ececec" />
-                                    </svg>
-                                </a>
 
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="11.352" height="16.146"
-                                        viewBox="0 0 11.352 16.146">
-                                        <g id="placeholder" transform="translate(-76)">
-                                            <path id="Path_3258" data-name="Path 3258"
-                                                d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
+                                <ng-container *ngIf="resDataPage && resDataPage.twitterURL; else elseTemplateTwitter">
+                                    <a href="//{{resDataPage && resDataPage.twitterURL}}" target="_blank"
+                                        class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.twitterURL && resDataPage.twitterURL !== undefined && resDataPage.twitterURL !== null && resDataPage.twitterURL !== '' ? true : false">
+                                        <svg class="twitter" xmlns="http://www.w3.org/2000/svg" width="13.813"
+                                            height="11.223" viewBox="0 0 13.813 11.223">
+                                            <path id="twitter"
+                                                d="M13.813,49.329a5.9,5.9,0,0,1-1.632.447,2.816,2.816,0,0,0,1.246-1.565,5.659,5.659,0,0,1-1.8.685,2.831,2.831,0,0,0-4.9,1.936,2.916,2.916,0,0,0,.066.646A8.015,8.015,0,0,1,.962,48.516a2.832,2.832,0,0,0,.87,3.785,2.8,2.8,0,0,1-1.279-.349v.031a2.845,2.845,0,0,0,2.269,2.782,2.826,2.826,0,0,1-.742.093,2.5,2.5,0,0,1-.536-.048,2.859,2.859,0,0,0,2.646,1.973A5.69,5.69,0,0,1,.678,57.991,5.3,5.3,0,0,1,0,57.952a7.972,7.972,0,0,0,4.344,1.271,8,8,0,0,0,8.06-8.058c0-.125,0-.246-.01-.366A5.649,5.649,0,0,0,13.813,49.329Z"
+                                                transform="translate(0 -48)" fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateTwitter>
+                                    <a class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.twitterURL && resDataPage.twitterURL !== undefined && resDataPage.twitterURL !== null && resDataPage.twitterURL !== '' ? true : false">
+                                        <svg class="twitter" xmlns="http://www.w3.org/2000/svg" width="13.813"
+                                            height="11.223" viewBox="0 0 13.813 11.223">
+                                            <path id="twitter"
+                                                d="M13.813,49.329a5.9,5.9,0,0,1-1.632.447,2.816,2.816,0,0,0,1.246-1.565,5.659,5.659,0,0,1-1.8.685,2.831,2.831,0,0,0-4.9,1.936,2.916,2.916,0,0,0,.066.646A8.015,8.015,0,0,1,.962,48.516a2.832,2.832,0,0,0,.87,3.785,2.8,2.8,0,0,1-1.279-.349v.031a2.845,2.845,0,0,0,2.269,2.782,2.826,2.826,0,0,1-.742.093,2.5,2.5,0,0,1-.536-.048,2.859,2.859,0,0,0,2.646,1.973A5.69,5.69,0,0,1,.678,57.991,5.3,5.3,0,0,1,0,57.952a7.972,7.972,0,0,0,4.344,1.271,8,8,0,0,0,8.06-8.058c0-.125,0-.246-.01-.366A5.649,5.649,0,0,0,13.813,49.329Z"
+                                                transform="translate(0 -48)" fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-template>
+
+                                <ng-container *ngIf="localtion; else elseTemplateLocation">
+                                    <a target="_blank" href="{{localtion}}" class="contact-social"
+                                        [class.active]="localtion !== undefined && localtion !== null && localtion !== '' ? true : false">
+                                        <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
+                                            height="16.146" viewBox="0 0 11.352 16.146">
+                                            <g id="placeholder" transform="translate(-76)">
+                                                <path id="Path_3258" data-name="Path 3258"
+                                                    d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
+                                                    fill="#ececec" />
+                                                <path id="Path_3259" data-name="Path 3259"
+                                                    d="M256,0V2.838a2.838,2.838,0,0,1,0,5.676v7.631a.468.468,0,0,0,.419-.233l4.453-7.332a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,256,0Z"
+                                                    transform="translate(-174.324)" fill="#ececec" />
+                                            </g>
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateLocation>
+                                    <a class="contact-social">
+                                        <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
+                                            height="16.146" viewBox="0 0 11.352 16.146">
+                                            <g id="placeholder" transform="translate(-76)">
+                                                <path id="Path_3258" data-name="Path 3258"
+                                                    d="M81.676,0A5.681,5.681,0,0,0,76,5.676a5.6,5.6,0,0,0,.851,2.98l4.44,7.266a.448.448,0,0,0,.322.218.471.471,0,0,0,.482-.227L86.548,8.58a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,81.676,0Zm0,8.514a2.838,2.838,0,1,1,2.838-2.838A2.834,2.834,0,0,1,81.676,8.514Z"
+                                                    fill="#ececec" />
+                                                <path id="Path_3259" data-name="Path 3259"
+                                                    d="M256,0V2.838a2.838,2.838,0,0,1,0,5.676v7.631a.468.468,0,0,0,.419-.233l4.453-7.332a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,256,0Z"
+                                                    transform="translate(-174.324)" fill="#ececec" />
+                                            </g>
+                                        </svg>
+                                    </a>
+                                </ng-template>
+                                <ng-container *ngIf="resDataPage && resDataPage.mobileNo; else elseTemplateMobile">
+                                    <a href="tel:{{resDataPage.mobileNo}}" class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
+                                        <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
+                                            height="12.552" viewBox="0 0 12.552 12.552">
+                                            <path id="Path_3246" data-name="Path 3246"
+                                                d="M11.561,8.264a7.17,7.17,0,0,1-2.251-.358.966.966,0,0,0-.98.207L6.9,9.189A7.962,7.962,0,0,1,3.362,5.648L4.409,4.256a1,1,0,0,0,.245-1.011A7.178,7.178,0,0,1,4.294.991.991.991,0,0,0,3.3,0H.991A.991.991,0,0,0,0,.991,11.574,11.574,0,0,0,11.561,12.552a.991.991,0,0,0,.991-.991V9.255A.991.991,0,0,0,11.561,8.264Z"
                                                 fill="#ececec" />
-                                            <path id="Path_3259" data-name="Path 3259"
-                                                d="M256,0V2.838a2.838,2.838,0,0,1,0,5.676v7.631a.468.468,0,0,0,.419-.233l4.453-7.332a5.6,5.6,0,0,0,.8-2.9A5.681,5.681,0,0,0,256,0Z"
-                                                transform="translate(-174.324)" fill="#ececec" />
-                                        </g>
-                                    </svg>
-                                </a>
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateMobile>
+                                    <a class="contact-social">
+                                        <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
+                                            height="12.552" viewBox="0 0 12.552 12.552">
+                                            <path id="Path_3246" data-name="Path 3246"
+                                                d="M11.561,8.264a7.17,7.17,0,0,1-2.251-.358.966.966,0,0,0-.98.207L6.9,9.189A7.962,7.962,0,0,1,3.362,5.648L4.409,4.256a1,1,0,0,0,.245-1.011A7.178,7.178,0,0,1,4.294.991.991.991,0,0,0,3.3,0H.991A.991.991,0,0,0,0,.991,11.574,11.574,0,0,0,11.561,12.552a.991.991,0,0,0,.991-.991V9.255A.991.991,0,0,0,11.561,8.264Z"
+                                                fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-template>
 
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
-                                    <svg class="phone" id="phone" xmlns="http://www.w3.org/2000/svg" width="12.552"
-                                        height="12.552" viewBox="0 0 12.552 12.552">
-                                        <path id="Path_3246" data-name="Path 3246"
-                                            d="M11.561,8.264a7.17,7.17,0,0,1-2.251-.358.966.966,0,0,0-.98.207L6.9,9.189A7.962,7.962,0,0,1,3.362,5.648L4.409,4.256a1,1,0,0,0,.245-1.011A7.178,7.178,0,0,1,4.294.991.991.991,0,0,0,3.3,0H.991A.991.991,0,0,0,0,.991,11.574,11.574,0,0,0,11.561,12.552a.991.991,0,0,0,.991-.991V9.255A.991.991,0,0,0,11.561,8.264Z"
-                                            fill="#ececec" />
-                                    </svg>
-                                </a>
-
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18.87" height="13.479"
-                                        viewBox="0 0 18.87 13.479">
-                                        <g id="email" transform="translate(0 -68.267)">
-                                            <g id="Group_1359" data-name="Group 1359"
-                                                transform="translate(0.674 68.267)">
-                                                <g id="Group_1358" data-name="Group 1358" transform="translate(0 0)">
-                                                    <path id="Path_3260" data-name="Path 3260"
-                                                        d="M34.589,68.267H17.067l8.761,7.217,8.86-7.2A.61.61,0,0,0,34.589,68.267Z"
-                                                        transform="translate(-17.067 -68.267)" fill="#ececec" />
+                                <ng-container *ngIf="resDataPage && resDataPage.email; else elseTemplateMessage">
+                                    <a href="mailto:{{resDataPage.email}}" target="_blank" class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.email && resDataPage.email !== undefined && resDataPage.email !== null && resDataPage.email !== '' ? true : false">
+                                        <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
+                                            height="13.479" viewBox="0 0 18.87 13.479">
+                                            <g id="email" transform="translate(0 -68.267)">
+                                                <g id="Group_1359" data-name="Group 1359"
+                                                    transform="translate(0.674 68.267)">
+                                                    <g id="Group_1358" data-name="Group 1358"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3260" data-name="Path 3260"
+                                                            d="M34.589,68.267H17.067l8.761,7.217,8.86-7.2A.61.61,0,0,0,34.589,68.267Z"
+                                                            transform="translate(-17.067 -68.267)" fill="#ececec" />
+                                                    </g>
+                                                </g>
+                                                <g id="Group_1361" data-name="Group 1361"
+                                                    transform="translate(0 69.457)">
+                                                    <g id="Group_1360" data-name="Group 1360"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3261" data-name="Path 3261"
+                                                            d="M9.86,105.826a.674.674,0,0,1-.854,0L0,98.406v11.615a.674.674,0,0,0,.674.674H18.2a.674.674,0,0,0,.674-.674V98.506Z"
+                                                            transform="translate(0 -98.406)" fill="#ececec" />
+                                                    </g>
                                                 </g>
                                             </g>
-                                            <g id="Group_1361" data-name="Group 1361" transform="translate(0 69.457)">
-                                                <g id="Group_1360" data-name="Group 1360" transform="translate(0 0)">
-                                                    <path id="Path_3261" data-name="Path 3261"
-                                                        d="M9.86,105.826a.674.674,0,0,1-.854,0L0,98.406v11.615a.674.674,0,0,0,.674.674H18.2a.674.674,0,0,0,.674-.674V98.506Z"
-                                                        transform="translate(0 -98.406)" fill="#ececec" />
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateMessage>
+                                    <a class="contact-social">
+                                        <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
+                                            height="13.479" viewBox="0 0 18.87 13.479">
+                                            <g id="email" transform="translate(0 -68.267)">
+                                                <g id="Group_1359" data-name="Group 1359"
+                                                    transform="translate(0.674 68.267)">
+                                                    <g id="Group_1358" data-name="Group 1358"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3260" data-name="Path 3260"
+                                                            d="M34.589,68.267H17.067l8.761,7.217,8.86-7.2A.61.61,0,0,0,34.589,68.267Z"
+                                                            transform="translate(-17.067 -68.267)" fill="#ececec" />
+                                                    </g>
+                                                </g>
+                                                <g id="Group_1361" data-name="Group 1361"
+                                                    transform="translate(0 69.457)">
+                                                    <g id="Group_1360" data-name="Group 1360"
+                                                        transform="translate(0 0)">
+                                                        <path id="Path_3261" data-name="Path 3261"
+                                                            d="M9.86,105.826a.674.674,0,0,1-.854,0L0,98.406v11.615a.674.674,0,0,0,.674.674H18.2a.674.674,0,0,0,.674-.674V98.506Z"
+                                                            transform="translate(0 -98.406)" fill="#ececec" />
+                                                    </g>
                                                 </g>
                                             </g>
-                                        </g>
-                                    </svg>
-                                </a>
+                                        </svg>
+                                    </a>
+                                </ng-template>
 
-                                <a (click)="showAlertDevelopDialog()" target="_blank" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
-                                    <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747" height="13.795"
-                                        viewBox="0 0 13.747 13.795">
-                                        <g id="internet" transform="translate(-0.881)">
-                                            <path id="Path_3262" data-name="Path 3262"
-                                                d="M157.724,272H152.4a.135.135,0,0,0-.135.138c.016.624.058,1.219.123,1.783a.135.135,0,0,0,.167.116,10.222,10.222,0,0,1,5.011,0,.135.135,0,0,0,.167-.116c.064-.563.107-1.159.123-1.783A.135.135,0,0,0,157.724,272Z"
-                                                transform="translate(-147.31 -264.672)" fill="#ececec" />
-                                            <path id="Path_3263" data-name="Path 3263"
-                                                d="M157.736,164.39a.135.135,0,0,0-.167-.116,10.222,10.222,0,0,1-5.011,0,.135.135,0,0,0-.167.116c-.064.563-.107,1.159-.123,1.783a.135.135,0,0,0,.135.138h5.32a.135.135,0,0,0,.135-.138C157.843,165.549,157.8,164.953,157.736,164.39Z"
-                                                transform="translate(-147.31 -159.844)" fill="#ececec" />
-                                            <path id="Path_3264" data-name="Path 3264"
-                                                d="M167.935,3.409A10.766,10.766,0,0,0,166.9.2a.134.134,0,0,0-.091-.067,6.981,6.981,0,0,0-2.752,0,.134.134,0,0,0-.091.067,10.765,10.765,0,0,0-1.038,3.205.134.134,0,0,0,.1.153,9.25,9.25,0,0,0,2.409.317,9.249,9.249,0,0,0,2.409-.318A.134.134,0,0,0,167.935,3.409Z"
-                                                transform="translate(-157.676)" fill="#ececec" />
-                                            <path id="Path_3265" data-name="Path 3265"
-                                                d="M355.541,22.581a.135.135,0,0,0-.181.172l0,.006A13.436,13.436,0,0,1,356,25.052a.135.135,0,0,0,.184.1,9.255,9.255,0,0,0,1.512-.791.135.135,0,0,0,.026-.205q-.082-.088-.168-.174A6.894,6.894,0,0,0,355.541,22.581Z"
-                                                transform="translate(-344.92 -21.96)" fill="#ececec" />
-                                            <path id="Path_3266" data-name="Path 3266"
-                                                d="M386.228,116.531h2.947a.135.135,0,0,0,.134-.146,6.83,6.83,0,0,0-1.108-3.212.135.135,0,0,0-.188-.038,10.1,10.1,0,0,1-1.634.875q-.177.075-.355.142a.135.135,0,0,0-.086.143c.085.676.137,1.382.155,2.1A.135.135,0,0,0,386.228,116.531Z"
-                                                transform="translate(-374.683 -110.065)" fill="#ececec" />
-                                            <path id="Path_3267" data-name="Path 3267"
-                                                d="M162.924,368.471a10.766,10.766,0,0,0,1.038,3.205.134.134,0,0,0,.091.067,6.981,6.981,0,0,0,2.752,0,.134.134,0,0,0,.091-.067,10.765,10.765,0,0,0,1.038-3.205.134.134,0,0,0-.1-.153,9.3,9.3,0,0,0-4.818,0A.134.134,0,0,0,162.924,368.471Z"
-                                                transform="translate(-157.676 -358.085)" fill="#ececec" />
-                                            <path id="Path_3268" data-name="Path 3268"
-                                                d="M3.811,274.522q.177-.075.355-.142a.135.135,0,0,0,.086-.143c-.085-.676-.137-1.382-.155-2.1A.135.135,0,0,0,3.963,272H1.015a.135.135,0,0,0-.134.146,6.83,6.83,0,0,0,1.108,3.211.135.135,0,0,0,.188.038A10.091,10.091,0,0,1,3.811,274.522Z"
-                                                transform="translate(0 -264.673)" fill="#ececec" />
-                                            <path id="Path_3269" data-name="Path 3269"
-                                                d="M357.694,394.012a9.255,9.255,0,0,0-1.512-.791.135.135,0,0,0-.184.1,13.433,13.433,0,0,1-.635,2.293l0,.006a.135.135,0,0,0,.181.172,6.9,6.9,0,0,0,2.01-1.4q.086-.086.168-.174A.135.135,0,0,0,357.694,394.012Z"
-                                                transform="translate(-344.921 -382.616)" fill="#ececec" />
-                                            <path id="Path_3270" data-name="Path 3270"
-                                                d="M386.094,272.131c-.018.722-.071,1.428-.155,2.1a.135.135,0,0,0,.086.143q.179.068.355.142a10.1,10.1,0,0,1,1.634.875.135.135,0,0,0,.188-.038,6.83,6.83,0,0,0,1.108-3.212.135.135,0,0,0-.134-.146h-2.947A.135.135,0,0,0,386.094,272.131Z"
-                                                transform="translate(-374.682 -264.671)" fill="#ececec" />
-                                            <path id="Path_3271" data-name="Path 3271"
-                                                d="M67.483,24.359a9.253,9.253,0,0,0,1.512.791.135.135,0,0,0,.184-.1,13.43,13.43,0,0,1,.635-2.293l0-.006a.135.135,0,0,0-.181-.172,6.9,6.9,0,0,0-2.01,1.4q-.086.086-.168.174A.135.135,0,0,0,67.483,24.359Z"
-                                                transform="translate(-64.747 -21.959)" fill="#ececec" />
-                                            <path id="Path_3272" data-name="Path 3272"
-                                                d="M4.094,116.531a21.267,21.267,0,0,1,.158-2.235.135.135,0,0,0-.086-.143q-.179-.068-.355-.142a10.1,10.1,0,0,1-1.634-.875.135.135,0,0,0-.188.038,6.83,6.83,0,0,0-1.108,3.211.135.135,0,0,0,.134.146Z"
-                                                transform="translate(0 -110.065)" fill="#ececec" />
-                                            <path id="Path_3273" data-name="Path 3273"
-                                                d="M69.636,395.789a.135.135,0,0,0,.181-.172l0-.006a13.433,13.433,0,0,1-.635-2.293.135.135,0,0,0-.184-.1,9.254,9.254,0,0,0-1.512.791.135.135,0,0,0-.026.205q.082.088.168.174A6.894,6.894,0,0,0,69.636,395.789Z"
-                                                transform="translate(-64.748 -382.615)" fill="#ececec" />
-                                        </g>
-                                    </svg>
-                                </a>
-
+                                <ng-container
+                                    *ngIf="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== ''; else elseTemplateWeb">
+                                    <a href="//{{resDataPage && resDataPage.websiteURL}}" target="_blank"
+                                        class="contact-social"
+                                        [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
+                                        <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747"
+                                            height="13.795" viewBox="0 0 13.747 13.795">
+                                            <g id="internet" transform="translate(-0.881)">
+                                                <path id="Path_3262" data-name="Path 3262"
+                                                    d="M157.724,272H152.4a.135.135,0,0,0-.135.138c.016.624.058,1.219.123,1.783a.135.135,0,0,0,.167.116,10.222,10.222,0,0,1,5.011,0,.135.135,0,0,0,.167-.116c.064-.563.107-1.159.123-1.783A.135.135,0,0,0,157.724,272Z"
+                                                    transform="translate(-147.31 -264.672)" fill="#ececec" />
+                                                <path id="Path_3263" data-name="Path 3263"
+                                                    d="M157.736,164.39a.135.135,0,0,0-.167-.116,10.222,10.222,0,0,1-5.011,0,.135.135,0,0,0-.167.116c-.064.563-.107,1.159-.123,1.783a.135.135,0,0,0,.135.138h5.32a.135.135,0,0,0,.135-.138C157.843,165.549,157.8,164.953,157.736,164.39Z"
+                                                    transform="translate(-147.31 -159.844)" fill="#ececec" />
+                                                <path id="Path_3264" data-name="Path 3264"
+                                                    d="M167.935,3.409A10.766,10.766,0,0,0,166.9.2a.134.134,0,0,0-.091-.067,6.981,6.981,0,0,0-2.752,0,.134.134,0,0,0-.091.067,10.765,10.765,0,0,0-1.038,3.205.134.134,0,0,0,.1.153,9.25,9.25,0,0,0,2.409.317,9.249,9.249,0,0,0,2.409-.318A.134.134,0,0,0,167.935,3.409Z"
+                                                    transform="translate(-157.676)" fill="#ececec" />
+                                                <path id="Path_3265" data-name="Path 3265"
+                                                    d="M355.541,22.581a.135.135,0,0,0-.181.172l0,.006A13.436,13.436,0,0,1,356,25.052a.135.135,0,0,0,.184.1,9.255,9.255,0,0,0,1.512-.791.135.135,0,0,0,.026-.205q-.082-.088-.168-.174A6.894,6.894,0,0,0,355.541,22.581Z"
+                                                    transform="translate(-344.92 -21.96)" fill="#ececec" />
+                                                <path id="Path_3266" data-name="Path 3266"
+                                                    d="M386.228,116.531h2.947a.135.135,0,0,0,.134-.146,6.83,6.83,0,0,0-1.108-3.212.135.135,0,0,0-.188-.038,10.1,10.1,0,0,1-1.634.875q-.177.075-.355.142a.135.135,0,0,0-.086.143c.085.676.137,1.382.155,2.1A.135.135,0,0,0,386.228,116.531Z"
+                                                    transform="translate(-374.683 -110.065)" fill="#ececec" />
+                                                <path id="Path_3267" data-name="Path 3267"
+                                                    d="M162.924,368.471a10.766,10.766,0,0,0,1.038,3.205.134.134,0,0,0,.091.067,6.981,6.981,0,0,0,2.752,0,.134.134,0,0,0,.091-.067,10.765,10.765,0,0,0,1.038-3.205.134.134,0,0,0-.1-.153,9.3,9.3,0,0,0-4.818,0A.134.134,0,0,0,162.924,368.471Z"
+                                                    transform="translate(-157.676 -358.085)" fill="#ececec" />
+                                                <path id="Path_3268" data-name="Path 3268"
+                                                    d="M3.811,274.522q.177-.075.355-.142a.135.135,0,0,0,.086-.143c-.085-.676-.137-1.382-.155-2.1A.135.135,0,0,0,3.963,272H1.015a.135.135,0,0,0-.134.146,6.83,6.83,0,0,0,1.108,3.211.135.135,0,0,0,.188.038A10.091,10.091,0,0,1,3.811,274.522Z"
+                                                    transform="translate(0 -264.673)" fill="#ececec" />
+                                                <path id="Path_3269" data-name="Path 3269"
+                                                    d="M357.694,394.012a9.255,9.255,0,0,0-1.512-.791.135.135,0,0,0-.184.1,13.433,13.433,0,0,1-.635,2.293l0,.006a.135.135,0,0,0,.181.172,6.9,6.9,0,0,0,2.01-1.4q.086-.086.168-.174A.135.135,0,0,0,357.694,394.012Z"
+                                                    transform="translate(-344.921 -382.616)" fill="#ececec" />
+                                                <path id="Path_3270" data-name="Path 3270"
+                                                    d="M386.094,272.131c-.018.722-.071,1.428-.155,2.1a.135.135,0,0,0,.086.143q.179.068.355.142a10.1,10.1,0,0,1,1.634.875.135.135,0,0,0,.188-.038,6.83,6.83,0,0,0,1.108-3.212.135.135,0,0,0-.134-.146h-2.947A.135.135,0,0,0,386.094,272.131Z"
+                                                    transform="translate(-374.682 -264.671)" fill="#ececec" />
+                                                <path id="Path_3271" data-name="Path 3271"
+                                                    d="M67.483,24.359a9.253,9.253,0,0,0,1.512.791.135.135,0,0,0,.184-.1,13.43,13.43,0,0,1,.635-2.293l0-.006a.135.135,0,0,0-.181-.172,6.9,6.9,0,0,0-2.01,1.4q-.086.086-.168.174A.135.135,0,0,0,67.483,24.359Z"
+                                                    transform="translate(-64.747 -21.959)" fill="#ececec" />
+                                                <path id="Path_3272" data-name="Path 3272"
+                                                    d="M4.094,116.531a21.267,21.267,0,0,1,.158-2.235.135.135,0,0,0-.086-.143q-.179-.068-.355-.142a10.1,10.1,0,0,1-1.634-.875.135.135,0,0,0-.188.038,6.83,6.83,0,0,0-1.108,3.211.135.135,0,0,0,.134.146Z"
+                                                    transform="translate(0 -110.065)" fill="#ececec" />
+                                                <path id="Path_3273" data-name="Path 3273"
+                                                    d="M69.636,395.789a.135.135,0,0,0,.181-.172l0-.006a13.433,13.433,0,0,1-.635-2.293.135.135,0,0,0-.184-.1,9.254,9.254,0,0,0-1.512.791.135.135,0,0,0-.026.205q.082.088.168.174A6.894,6.894,0,0,0,69.636,395.789Z"
+                                                    transform="translate(-64.748 -382.615)" fill="#ececec" />
+                                            </g>
+                                        </svg>
+                                    </a>
+                                </ng-container>
+                                <ng-template #elseTemplateWeb>
+                                    <a class="contact-social">
+                                        <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747"
+                                            height="13.795" viewBox="0 0 13.747 13.795">
+                                            <g id="internet" transform="translate(-0.881)">
+                                                <path id="Path_3262" data-name="Path 3262"
+                                                    d="M157.724,272H152.4a.135.135,0,0,0-.135.138c.016.624.058,1.219.123,1.783a.135.135,0,0,0,.167.116,10.222,10.222,0,0,1,5.011,0,.135.135,0,0,0,.167-.116c.064-.563.107-1.159.123-1.783A.135.135,0,0,0,157.724,272Z"
+                                                    transform="translate(-147.31 -264.672)" fill="#ececec" />
+                                                <path id="Path_3263" data-name="Path 3263"
+                                                    d="M157.736,164.39a.135.135,0,0,0-.167-.116,10.222,10.222,0,0,1-5.011,0,.135.135,0,0,0-.167.116c-.064.563-.107,1.159-.123,1.783a.135.135,0,0,0,.135.138h5.32a.135.135,0,0,0,.135-.138C157.843,165.549,157.8,164.953,157.736,164.39Z"
+                                                    transform="translate(-147.31 -159.844)" fill="#ececec" />
+                                                <path id="Path_3264" data-name="Path 3264"
+                                                    d="M167.935,3.409A10.766,10.766,0,0,0,166.9.2a.134.134,0,0,0-.091-.067,6.981,6.981,0,0,0-2.752,0,.134.134,0,0,0-.091.067,10.765,10.765,0,0,0-1.038,3.205.134.134,0,0,0,.1.153,9.25,9.25,0,0,0,2.409.317,9.249,9.249,0,0,0,2.409-.318A.134.134,0,0,0,167.935,3.409Z"
+                                                    transform="translate(-157.676)" fill="#ececec" />
+                                                <path id="Path_3265" data-name="Path 3265"
+                                                    d="M355.541,22.581a.135.135,0,0,0-.181.172l0,.006A13.436,13.436,0,0,1,356,25.052a.135.135,0,0,0,.184.1,9.255,9.255,0,0,0,1.512-.791.135.135,0,0,0,.026-.205q-.082-.088-.168-.174A6.894,6.894,0,0,0,355.541,22.581Z"
+                                                    transform="translate(-344.92 -21.96)" fill="#ececec" />
+                                                <path id="Path_3266" data-name="Path 3266"
+                                                    d="M386.228,116.531h2.947a.135.135,0,0,0,.134-.146,6.83,6.83,0,0,0-1.108-3.212.135.135,0,0,0-.188-.038,10.1,10.1,0,0,1-1.634.875q-.177.075-.355.142a.135.135,0,0,0-.086.143c.085.676.137,1.382.155,2.1A.135.135,0,0,0,386.228,116.531Z"
+                                                    transform="translate(-374.683 -110.065)" fill="#ececec" />
+                                                <path id="Path_3267" data-name="Path 3267"
+                                                    d="M162.924,368.471a10.766,10.766,0,0,0,1.038,3.205.134.134,0,0,0,.091.067,6.981,6.981,0,0,0,2.752,0,.134.134,0,0,0,.091-.067,10.765,10.765,0,0,0,1.038-3.205.134.134,0,0,0-.1-.153,9.3,9.3,0,0,0-4.818,0A.134.134,0,0,0,162.924,368.471Z"
+                                                    transform="translate(-157.676 -358.085)" fill="#ececec" />
+                                                <path id="Path_3268" data-name="Path 3268"
+                                                    d="M3.811,274.522q.177-.075.355-.142a.135.135,0,0,0,.086-.143c-.085-.676-.137-1.382-.155-2.1A.135.135,0,0,0,3.963,272H1.015a.135.135,0,0,0-.134.146,6.83,6.83,0,0,0,1.108,3.211.135.135,0,0,0,.188.038A10.091,10.091,0,0,1,3.811,274.522Z"
+                                                    transform="translate(0 -264.673)" fill="#ececec" />
+                                                <path id="Path_3269" data-name="Path 3269"
+                                                    d="M357.694,394.012a9.255,9.255,0,0,0-1.512-.791.135.135,0,0,0-.184.1,13.433,13.433,0,0,1-.635,2.293l0,.006a.135.135,0,0,0,.181.172,6.9,6.9,0,0,0,2.01-1.4q.086-.086.168-.174A.135.135,0,0,0,357.694,394.012Z"
+                                                    transform="translate(-344.921 -382.616)" fill="#ececec" />
+                                                <path id="Path_3270" data-name="Path 3270"
+                                                    d="M386.094,272.131c-.018.722-.071,1.428-.155,2.1a.135.135,0,0,0,.086.143q.179.068.355.142a10.1,10.1,0,0,1,1.634.875.135.135,0,0,0,.188-.038,6.83,6.83,0,0,0,1.108-3.212.135.135,0,0,0-.134-.146h-2.947A.135.135,0,0,0,386.094,272.131Z"
+                                                    transform="translate(-374.682 -264.671)" fill="#ececec" />
+                                                <path id="Path_3271" data-name="Path 3271"
+                                                    d="M67.483,24.359a9.253,9.253,0,0,0,1.512.791.135.135,0,0,0,.184-.1,13.43,13.43,0,0,1,.635-2.293l0-.006a.135.135,0,0,0-.181-.172,6.9,6.9,0,0,0-2.01,1.4q-.086.086-.168.174A.135.135,0,0,0,67.483,24.359Z"
+                                                    transform="translate(-64.747 -21.959)" fill="#ececec" />
+                                                <path id="Path_3272" data-name="Path 3272"
+                                                    d="M4.094,116.531a21.267,21.267,0,0,1,.158-2.235.135.135,0,0,0-.086-.143q-.179-.068-.355-.142a10.1,10.1,0,0,1-1.634-.875.135.135,0,0,0-.188.038,6.83,6.83,0,0,0-1.108,3.211.135.135,0,0,0,.134.146Z"
+                                                    transform="translate(0 -110.065)" fill="#ececec" />
+                                                <path id="Path_3273" data-name="Path 3273"
+                                                    d="M69.636,395.789a.135.135,0,0,0,.181-.172l0-.006a13.433,13.433,0,0,1-.635-2.293.135.135,0,0,0-.184-.1,9.254,9.254,0,0,0-1.512.791.135.135,0,0,0-.026.205q.082.088.168.174A6.894,6.894,0,0,0,69.636,395.789Z"
+                                                    transform="translate(-64.748 -382.615)" fill="#ececec" />
+                                            </g>
+                                        </svg>
+                                    </a>
+                                </ng-template>
                             </div>
                         </div>
                         <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
                             <ng-container>
                                 <card-item [isDevelop]="true" [itemData]="resDataPage.needs"
-                                    [pageName]="resDataPage.name" [label]="'ร่วมเติมเต็ม'" [isPageName]="'true'"
-                                    [isTabletObjectList]="'true'" [isEdit]="false" [isButton]="true"
-                                    [isShowWidthButton]="'899'">
+                                    [pageName]="resDataPage.name" [label]="'ร่วม'+PLATFORM_FULFILL_TEXT"
+                                    [isPageName]="'true'" [isTabletObjectList]="'true'" [isEdit]="false"
+                                    [isButton]="true" [isShowWidthButton]="'899'">
                                 </card-item>
                             </ng-container>
                         </ng-container>
@@ -435,11 +602,9 @@
                         <div class="do-tablet">
                             <ng-container
                                 *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                <ng-container>
-                                    <card-item [isDevelop]="true" [itemData]="resDataPage.pageObjectives"
-                                        [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
-                                    </card-item>
-                                </ng-container>
+                                <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
+                                    [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
+                                </card-item>
                             </ng-container>
                         </div>
 
@@ -466,13 +631,14 @@
                                 <div *ngIf="!isPost" class="main-feed">
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
-                                        [profile]="resDataPage.imageBase64" [isShowTablet]="'true'"
-                                        [isShowMaxWidth]="'899'" (createPost)="createPost($event)"
-                                        style="display: block; padding: 5pt 0;">
+                                        [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
+                                        [isShowTablet]="'true'" [isShowMaxWidth]="'899'"
+                                        (createPost)="createPost($event)" style="display: block; padding: 5pt 0;">
                                     </box-post>
-                                    <div class="title-feed">
-                                        {{ resPost && resPost.posts && resPost.posts.length > 0 ? 'เรื่องราว' :
-                                        'คุณสามารถเพิ่มเรื่องราวได้ที่นี่' }}
+                                    <div class="title-feed" (click)="openDialogPost(PLATFORM_STORY_TALE)">
+                                        {{ resPost && resPost.posts && resPost.posts.length > 0 && !isLoadingClickTab ?
+                                        PLATFORM_STORY_TALE :
+                                        'คุณสามารถเพิ่ม'+PLATFORM_STORY_TALE+'ได้ที่นี่' }}
                                     </div>
                                     <ng-container *ngIf="isLoadingClickTab; else elseTemplateLoad">
                                         <Preload-card [isShowCard1]="true" [isShowCard2]="true">
@@ -482,12 +648,14 @@
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
                                             <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
+                                                    [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                                    (delete)="deletePost($event,index)" (update)="editPost($event)">
+                                                    (delete)="deletePost($event,index)" (update)="editPost($event)"
+                                                    (engagement)="engagement($event)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"
@@ -501,10 +669,26 @@
                                 <div class="main-feed">
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage" [isNotAccess]
+                                            <post-data [itemPost]="itemPost" [user]="userImage"
                                                 (action)="actionComment($event,index)" (comment)="createComment($event)"
                                                 [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
-                                                (delete)="deletePost($event,index)"></post-data>
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
+                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
+                                            </post-data>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </ng-template>
+                            <ng-template #elseTemplateCheckPost>
+                                <div class="main-feed">
+                                    <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
+                                        <ng-container *ngFor="let itemPost of resDataPost; let index = index">
+                                            <post-data [itemPost]="itemPost" [user]="userImage"
+                                                (action)="actionComment($event,index)" (comment)="createComment($event)"
+                                                [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
+                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
+                                            </post-data>
                                         </ng-container>
                                     </ng-container>
                                 </div>
@@ -512,11 +696,12 @@
                             <div class="side-feed" #sidefeedHeight>
                                 <ng-container
                                     *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                    <ng-container>
-                                        <card-item [itemData]="resDataPage.pageObjectives" [isDoIng]="'true'"
-                                            [statusLable]="'กำลังทำอยู่'"></card-item>
-                                    </ng-container>
+                                    <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
+                                        [statusLable]="'กำลังทำอยู่'"></card-item>
                                 </ng-container>
+                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"
+                                    (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex">
+                                </recommend-card>
                             </div>
                         </div>
                         <ng-container *ngIf="isCheck === true">
