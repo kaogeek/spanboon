@@ -30,12 +30,12 @@
                     <span class="text">มาใหม่ :</span>
                 </div>
                 <div class="tag_list">
-                    <a class="tag" (click)="clickDataSearch(item)"
-                        *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</a>
+                    <span class="tag" (click)="clickDataSearch(item)"
+                        *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">{{item}}</span>
                 </div>
                 <div class="tag_list_moblie">
-                    <a class="tag" (click)="clickDataSearch(item)"
-                        *ngFor="let item of emergencyEventsArrTitle | slice:0:2; let i=index">{{item}}</a>
+                    <span class="tag" (click)="clickDataSearch(item)"
+                        *ngFor="let item of emergencyEventsArrTitle | slice:0:2; let i=index">{{item}}</span>
                 </div>
             </div>
             <div class="right">
@@ -101,8 +101,9 @@
             </div>
             <div class="body">
                 <div class="card">
-                    <post-swiper-card (clickEventA)="clickDataSearchTodo($event)" [isFulfillQuantity]="true"
-                        [isFulfill]="'true'" [keyItem]='["iconUrl"]' [itemNeeds]="aroundSectionModels.contents">
+                    <post-swiper-card [isObjective]="'true'" (clickEventA)="clickDataSearchTodo($event)"
+                        [isFulfillQuantity]="true" [isFulfill]="'true'" [keyItem]='["iconUrl"]'
+                        [itemNeeds]="aroundSectionModels.contents">
                     </post-swiper-card>
                 </div>
             </div>
