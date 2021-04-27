@@ -127,7 +127,7 @@ export class PostsService {
                 if (showIsRepost) {
                     let repostStmt: any = {
                         where: {
-                            ownerUser: userObjId, referencePost: postObjId,
+                            ownerUser: userObjId, referencePost: postObjId, deleted: false, hidden: false,
                             $or: [
                                 { postAsPage: { $exists: false } },
                                 { postAsPage: null }
@@ -135,7 +135,7 @@ export class PostsService {
                         }
                     };
                     if (searchAsPage) {
-                        repostStmt = { where: { postAsPage: userObjId, referencePost: postObjId } };
+                        repostStmt = { where: { postAsPage: userObjId, referencePost: postObjId, deleted: false, hidden: false } };
                     }
                     const postRepost: any = await this.findOne(repostStmt);
                     if (postRepost) {

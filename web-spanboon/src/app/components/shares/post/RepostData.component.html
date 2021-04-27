@@ -7,23 +7,28 @@
 
 <div class="repost-data-card" [ngStyle]="isRepost? {'max-height': '60vh'} : {'max-height': 'none'}" *ngIf="itemPost">
     <div class="profile-page" *ngIf="!itemPost.requester">
-        <ng-container
-            *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId.imageURL && itemPost.pageId.imageURL !== undefined && itemPost.pageId.imageURL !== null && itemPost.pageId.imageURL !== '' ; else elseImage">
-            <div class="menu-user" (click)="menuProfile();">
-                <img class="image-profile" src="{{itemPost.pageId.imageURL}}" alt="">
+        <ng-container *ngIf="(itemPost.pageObject && itemPost.pageObject.imageURL && itemPost.pageObject.imageURL !== undefined && itemPost.pageObject.imageURL !== null && itemPost.pageObject.imageURL !== '') ||
+        (!itemPost.pageObject); else elseImage">
+            <div class="menu-user" (click)="menuProfile();"> 
+                <img class="image-profile" *ngIf="itemPost.pageObject" src="{{itemPost.pageObject.imageURL }}" alt="">  
+                <img class="image-profile" *ngIf="!itemPost.pageObject && itemPost.ownerUser.imageURL !== '' " src="{{itemPost.ownerUser.imageURL}}" alt="">
             </div>
         </ng-container>
         <ng-template #elseImage>
-            <div *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId && itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId !== ''"
-                class="menu-user displayName">
-                <div class="donator">
-                    {{itemPost.pageId.name | slice: 0:1 }}
+            <div class="menu-user displayName">
+                <div class="donator" *ngIf="itemPost.pageObject"> 
+                    {{itemPost.pageObject.name | slice: 0:1 }}
+                </div>
+                <div class="donator" *ngIf="!itemPost.pageObject"> 
+                    {{itemPost.ownerUser.displayName | slice: 0:1 }}
                 </div>
             </div>
         </ng-template>
-        <div *ngIf="itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId && itemPost.pageId !== undefined && itemPost.pageId !== null && itemPost.pageId !== ''"
+        <div *ngIf="(itemPost.pageObject && itemPost.pageObject !== undefined && itemPost.pageObject !== null && itemPost.pageObject !== '') || 
+        (itemPost.ownerUser && itemPost.ownerUser !== undefined && itemPost.ownerUser !== null && itemPost.ownerUser !== '')"
             class="profile-page-name">
-            {{itemPost.pageId.name}}
+            <span *ngIf="itemPost.pageObject">{{itemPost.pageObject.name}}</span>
+            <span *ngIf="!itemPost.pageObject">{{itemPost.ownerUser.displayName}}</span> 
             <span class="profile-page-name-sub" (click)="postTeb(itemPost)">{{itemPost && itemPost.createdDate |
                 dateFormat}}</span>
         </div>
@@ -116,7 +121,6 @@
                             <ng-template #elseTemplateObjective>
                                 <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
                             </ng-template>
-
                         </div>
                     </div>
                 </a>
@@ -146,8 +150,9 @@
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
     </ng-container>
+
     <div class="topic-name" [class.active]="itemPost.referencePostObject"
-        *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+        *ngIf="itemPost.requester && (itemPost.title === '' || itemPost.title === undefined || itemPost.title === null)">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
@@ -156,28 +161,7 @@
 
     <div class="wrapper-content"
         [class.active]="(itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && (itemPost.gallery.length === 0 ) || (itemPost.gallery.length > 0 || itemPost.title === ''  || itemPost.detail === ''))">
-        <!-- <ng-container *ngIf="itemPost.type === 'NEEDS';">
-            <div class="left">
-                <div class="icon-feed looking"></div>
-                <span>
-                    {{PLATFORM_NEEDS_TEXT}}
-                </span>
-                <div class="post-to">
-                    <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                        <span style="cursor: pointer;" (click)="postTeb(itemPost)">{{itemPost &&
-                            itemPost.createdDate | dateFormat}}</span>
-                    </div>
-                    <ng-container *ngIf="isPage">
-                        <div class="post-name">
-                                เผยแพร่โดย :
-                                <span>Natthaphong Ruengpanyawut</span>
-                            </div>
-                    </ng-container>
-                </div>
-            </div>
-        </ng-container> -->
         <div class="title" *ngIf="itemPost && itemPost.title" [innerHTML]="itemPost.title | highlight">
-            <!-- {{itemPost && itemPost.title}} -->
         </div>
         <div class="content" *ngIf="itemPost && itemPost.detail" [innerHTML]="itemPost && itemPost.detail | highlight">
         </div>
@@ -203,92 +187,26 @@
                 อ่านสตอรี่<span style="margin-left: 1px;">...</span>
             </div>
         </ng-container>
-
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0" [routerLink]="'/'">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                 <a style="color: gray !important;" class="highlight-text"
-                    href="/hashtag/{{hashTag}}">#{{hashTag.name}}</a>
+                    href="/search?hashtag={{hashTag.name}}">#{{hashTag.name}}</a>
             </div>
         </div>
 
         <needs-card [itemNeeds]="itemPost.needs" [isFulfillQuantity]="true" [isFulfill]="isFulfill"
             [isPendingFulfill]="isPendingFulfill"
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
-
         <ng-template #elseNullPost>
             <ng-container>
                 <null-data></null-data>
             </ng-container>
         </ng-template>
-        <!-- <div class="wrapper-footer-post">
-            <div class="left">
-                
-        <div class="group-event" [phxPreload]="itemPost" [preloadClass]="'group-event'">
-            <div class="event-tag" [ngStyle]="{'display': isEmptyObject(itemPost.emergencyEvent) ? 'flex' : 'none'}">
-                <svg class="icon-event" xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
-                    <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
-                        <path id="Subtraction_2" data-name="Subtraction 2"
-                            d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
-                            transform="translate(7129.611 -573.082)" fill="#FD545A" stroke="rgba(0,0,0,0)"
-                            stroke-miterlimit="10" stroke-width="1" />
-                        <path id="Rectangle_572" data-name="Rectangle 572"
-                            d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
-                            transform="translate(674.701 434.463)" fill="#FD545A" />
-                        <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3" rx="1"
-                            transform="translate(683.701 415.463)" fill="#FD545A" />
-                        <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398" height="3.962" rx="0.699"
-                            transform="translate(678.115 416.918) rotate(-30)" fill="#FD545A" />
-                        <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398" height="3.962" rx="0.699"
-                            transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)" fill="#FD545A" />
-                        <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398" height="3.962" rx="0.699"
-                            transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)" fill="#FD545A" />
-                        <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398" height="3.962" rx="0.699"
-                            transform="translate(689.761 416.304) rotate(31.145)" fill="#FD545A" />
-                        <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3" rx="0.5"
-                            transform="translate(672.701 427.463) rotate(-90)" fill="#FD545A" />
-                        <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3" rx="0.5"
-                            transform="translate(692.701 427.463) rotate(-90)" fill="#FD545A" />
-                    </g>
-                </svg>
-                <span>{{itemPost.emergencyEvent}}</span>
-            </div>
-            <div class="objective-doing" [ngStyle]="{'display': isEmptyObject(itemPost.objective) ? 'flex' : 'none'}">
-                <svg class="icon-event" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
-                    viewBox="0 0 22.899 22.899">
-                    <g id="mission" transform="translate(0)">
-                        <path id="Path_3205" data-name="Path 3205"
-                            d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
-                            transform="translate(0 -299.903)" fill="#FD545A" />
-                        <path id="Path_3206" data-name="Path 3206"
-                            d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
-                            transform="translate(-295.877)" fill="#FD545A" />
-                        <path id="Path_3207" data-name="Path 3207"
-                            d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
-                            transform="translate(-131.312 -333.558)" fill="#FD545A" />
-                        <path id="Path_3208" data-name="Path 3208"
-                            d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
-                            transform="translate(-248.03 -228.703)" fill="#FD545A" />
-                    </g>
-                </svg>
-                <span>{{itemPost.objective && itemPost.objective.title ? itemPost.objective.title : ''}}</span>
-            </div>
-        </div>
-            </div>
-            <div class="right">
-                <control-action [isAction]="'true'"
-                    [comment]="itemPost.comment && itemPost.comment.length ? itemPost.comment.length : 0 "
-                    [reboon]="itemPost.repostCount ? itemPost.repostCount : 0"
-                    [like]="itemPost.likeCount ? itemPost.likeCount : 0"
-                    [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
-                    (submit)="postAction($event)">
-                </control-action>
-            </div>
-        </div> -->
+
         <ng-container *ngIf="isNotAccess;">
             <div
                 style="display: flex;height: 50pt;justify-content: space-between;align-items: center;border-top: 0.7px solid rgba(229, 229, 229, 0.7);">
                 <div style="width: 6%;">
-                    <!-- [matMenuTriggerFor]="menu" -->
                     <ng-container
                         *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
@@ -296,7 +214,6 @@
                         </div>
                     </ng-container>
                     <ng-template #elseImage>
-                        {{user.name}}
                         <div class="menu-user displayName"
                             *ngIf="user && user.displayName && user.displayName !== undefined && user.displayName !== null && user.displayName !== '' || user.name && user.name !== null && user.name !== '' && user.name !== undefined ">
                             <div class="donator">
@@ -307,6 +224,5 @@
                 </div>
             </div>
         </ng-container>
-
     </div>
 </div>

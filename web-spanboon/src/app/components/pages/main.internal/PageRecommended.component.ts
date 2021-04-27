@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -14,6 +14,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost } from '../../shares/shares';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { UserEngagement } from '../../../models/UserEngagement';
+import { environment } from '../../../../environments/environment';
 
 const PAGE_NAME: string = 'recommended';
 const SEARCH_LIMIT: number = 20;
@@ -39,7 +40,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
 
-
   private objectiveFacade: ObjectiveFacade;
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
@@ -47,9 +47,11 @@ export class PageRecommended extends AbstractPage implements OnInit {
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
   protected observManager: ObservableManager;
+  private recommendFacade: RecommendFacade;
 
   public resDataPage: any;
   public resObjective: any;
+  public dataRecommend: any;
   public url: string;
   public subPage: string;
   public isLoading: boolean;
@@ -64,9 +66,12 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
   mySubscription: any;
 
+  public apiBaseURL = environment.apiBaseURL;
+
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade,
+    recommendFacade: RecommendFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -76,6 +81,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.searchHashTagFacade = searchHashTagFacade;
     this.engagementService = engagementService;
     this.userEngagementFacade = userEngagementFacade;
+    this.recommendFacade = recommendFacade;
     this.whereConditions = ["name"]
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
@@ -86,7 +92,9 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     this.searchTrendTag();
     this.openLoading();
+    this.getRecommend();
   }
+
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
@@ -121,7 +129,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
     const result = this.engagementService.getEngagement(event, data.label, "hashTag");
     const dataEngagement: UserEngagement = this.engagementService.engagementPost(result.contentType, result.contentId, result.dom);
-    console.log('vdataEngagement ', dataEngagement)
     this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
     }).catch((err: any) => {
       console.log('err ', err)
@@ -175,6 +182,17 @@ export class PageRecommended extends AbstractPage implements OnInit {
     }).catch((err: any) => {
       console.log(err)
     })
+  }
+
+  public getRecommend() {
+    let limit: number = 3;
+    let offset: number = 0;
+    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+      this.dataRecommend = res.data;
+      console.log('dataRecommend ',this.dataRecommend)
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
   }
 }
 

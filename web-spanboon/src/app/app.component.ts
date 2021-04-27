@@ -7,6 +7,7 @@
 
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { SeoService } from './services/SeoService.service';
 
 @Component({
   selector: 'app-root',
@@ -19,10 +20,11 @@ export class AppComponent {
 
   public router: Router;
 
-  constructor(router: Router) {
+  constructor(router: Router , private seoSerive : SeoService) {
     this.router = router;
     this.router.events.subscribe((event) => { 
       window.scroll(0,0);
+      this.seoSerive.showMeta();
     });
   } 
 

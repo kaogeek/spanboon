@@ -1195,8 +1195,13 @@ export class PagePostController {
 
                         if (postsReference !== null && postsReference !== undefined && postsReference.length > 0) {
                             for (const posts of postsReference) {
-                                const postId = posts.referencePost;
-                                postsMap[postId + ':' + uId] = posts;
+                                const pageId = posts.pageId;
+                                const referencePost = posts.referencePost;
+                                if (pageId !== null && pageId !== undefined && pageId !== '') {
+                                    postsMap[pageId + ':' + referencePost + ':' + uId] = posts;
+                                } else {
+                                    postsMap[referencePost + ':' + uId] = posts;
+                                }
                             }
                         }
                     }
@@ -1217,10 +1222,10 @@ export class PagePostController {
                                     const likeAsPage = like.likeAsPage;
 
                                     if (postId !== null && postId !== undefined && postId !== '') {
-                                        userLikeMap[postId] = like;
-
                                         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
                                             likeAsPageMap[postId] = like;
+                                        } else {
+                                            userLikeMap[postId] = like;
                                         }
                                     }
                                 }
@@ -1238,8 +1243,9 @@ export class PagePostController {
 
                     pagePostLists.map(async (data) => {
                         const postId = data._id;
+                        const postAsPage = data.postAsPage;
                         const story = data.story;
-                        const dataKey = postId + ':' + uId;
+                        let dataKey;
 
                         if (isHideStory === true) {
                             if (story !== null && story !== undefined) {
@@ -1249,27 +1255,44 @@ export class PagePostController {
                             }
                         }
 
-                        if (userLikeMap[postId]) {
-                            data.isLike = true;
-                        } else {
-                            data.isLike = false;
-                        }
+                        if (postId !== null && postId !== undefined && postId !== '') {
+                            if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
+                                dataKey = postAsPage + ':' + postId + ':' + uId;
+                            } else {
+                                dataKey = postId + ':' + uId;
+                            }
 
-                        if (likeAsPageMap[postId]) {
-                            data.likeAsPage = true;
-                        } else {
-                            data.likeAsPage = false;
-                        }
+                            if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                                if (postsMap[dataKey]) {
+                                    data.isRepost = true;
+                                } else {
+                                    data.isRepost = false;
+                                }
+                            } else {
+                                data.isRepost = false;
+                            }
 
-                        if (postsMap[dataKey]) {
-                            data.isRepost = true;
+                            if (userLikeMap[postId]) {
+                                data.isLike = true;
+                            } else {
+                                data.isLike = false;
+                            }
+
+                            if (likeAsPageMap[postId]) {
+                                data.likeAsPage = true;
+                            } else {
+                                data.likeAsPage = false;
+                            }
+
+                            if (postsCommentMap[postId]) {
+                                data.isComment = true;
+                            } else {
+                                data.isComment = false;
+                            }
                         } else {
                             data.isRepost = false;
-                        }
-
-                        if (postsCommentMap[postId]) {
-                            data.isComment = true;
-                        } else {
+                            data.isLike = false;
+                            data.likeAsPage = false;
                             data.isComment = false;
                         }
                     });
@@ -1412,18 +1435,22 @@ export class PagePostController {
                     ]
                     // }
                 });
-
+                
                 for (const data of UpdateGalleryList) { 
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
                     if (gallery.length > 0) {
-                        // const isContain = gallery.filter(object => {
-                        //     console.log('1 ', data.fileId) 
-                        //     console.log('2 ', new ObjectID(data.fileId)) 
-                        //     console.log('object ', new ObjectID(data.fileId) === object.fileId   ? true : false);
-
+                        // const isContain = gallery.find(object => {  
+                        //     console.log('object.fileId ',object.fileId)
+                        //     console.log('data.fileId ',data.fileId)
+                        //     console.log('>>> ',new ObjectID(object.fileId) === new ObjectID(data.fileId) ? 'true' : 'false')
                         //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
                         // });
+                        // if(isContain){
+                        //     continue;
+                        // } else {
+                        //     console.log('isContain ',data)
+                        // }
                         // console.log(isContain);
 
                         const updateImageQuery = { _id: new ObjectID(data.id) };
@@ -1831,6 +1858,19 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            const referencePost = new ObjectID(posts.referencePost);
+
+            const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
+
+            if (undoRepost !== null && undoRepost !== undefined) {
+                const originPost: Posts = await this.postsService.findOne({ _id: referencePost });
+
+                if (originPost !== null && originPost !== undefined) {
+                    const repostCount = originPost.repostCount;
+                    await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
+                }
+            } 
+            
             const postGallery: PostsGallery[] = await this.postGalleryService.find(postsQuery);
             if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                 await this.postGalleryService.deleteMany(postsQuery);

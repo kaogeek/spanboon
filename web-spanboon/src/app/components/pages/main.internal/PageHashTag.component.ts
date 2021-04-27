@@ -740,14 +740,17 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public searchHashTag() {
-    let searchFilter: SearchFilter = new SearchFilter();
-    searchFilter.limit = 5;
-    searchFilter.offset = SEARCH_OFFSET + this.resHashTag && this.resHashTag.length ? this.resHashTag.length : 0;
-    searchFilter.whereConditions = {};
-    searchFilter.orderBy = {};
+    let filter: SearchFilter = new SearchFilter();
+    filter.limit = 5;
+    filter.offset = SEARCH_OFFSET + this.resHashTag && this.resHashTag.length ? this.resHashTag.length : 0;
+    filter.whereConditions = {};
+    filter.orderBy = {};  
     let cloneHashtag: any[] = this.resHashTag;
     this.isLoadMoreHashTag = true;
-    this.hashTagFacade.searchTrend(searchFilter).then(res => {
+    let data = {
+      filter
+    } 
+    this.hashTagFacade.searchTrend(data).then(res => { 
       if (res && res.length > 0) {
         for (let hashtag of res) {
           cloneHashtag.push(hashtag);
@@ -760,12 +763,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               }
             }
           }
-          this.isLoadMoreHashTag = false;
         }
       }
+      this.isLoadMoreHashTag = false;
       // this.resHashTag = cloneHashtag;
     }).catch(error => {
       console.log(error);
+      this.isLoadMoreHashTag = false;
     });
   }
 
@@ -1160,6 +1164,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag();
     }
   }
+  
   public removeCard(card: any, index: number) {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
@@ -1232,8 +1237,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     $("#menubottom").css({
       'overflow-y': "hidden"
-    });
-
+    }); 
   }
 
   public async actionComment(action: any, index: number) {

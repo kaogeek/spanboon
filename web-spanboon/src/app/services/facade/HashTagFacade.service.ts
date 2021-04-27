@@ -37,9 +37,9 @@ export class HashTagFacade extends AbstractFacade {
       });
     });
   }
-  public searchTrend(searchFilter: SearchFilter): Promise<any> {
+  public searchTrend(searchFilter: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/hashtag/trend';
+      let url: string = this.baseURL + '/hashtag/trend/';
       let body: any = {};
       if (searchFilter !== null && searchFilter !== undefined) {
         body = Object.assign(searchFilter)

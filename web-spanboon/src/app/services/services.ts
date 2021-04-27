@@ -14,3 +14,4 @@ export * from './NotificationManager.service';
 export * from './CheckMessageManager.service';
 export * from './Engagement.service';
 export * from './SeoService.service';
+export * from './PostActionService.service';

@@ -323,11 +323,14 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                     limit: 10,
                     callbacks: {
                         remoteFilter: (query, callback) => {
-                            let searchFilter: SearchFilter = new SearchFilter();
-                            searchFilter.whereConditions = {
+                            let filter : SearchFilter = new SearchFilter();
+                            filter.whereConditions = {
                                 name: query
                             };
-                            this.hashTagFacade.searchTrend(searchFilter).then(res => {
+                            let data = {
+                                filter
+                            }
+                            this.hashTagFacade.searchTrend(data).then(res => {
                                 callback(res);
                                 this.choiceTag = res;
                             }).catch(error => {
@@ -434,7 +437,10 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         filter.whereConditions = {
                             name: hTag.substring(1)
                         };
-                        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+                        let data = {
+                            filter
+                        }
+                        this.hashTagFacade.searchTrend(data).then((res: any) => {
                             if (res) {
                                 this.resHashTag = res;
                                 const isData = this.resHashTag.find(data => {
@@ -464,7 +470,10 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         filter.whereConditions = {
                             name: hTag.substring(1)
                         };
-                        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+                        let data = {
+                            filter
+                        }
+                        this.hashTagFacade.searchTrend(data).then((res: any) => {
                             if (res) {
                                 this.resHashTag = res;
                                 const isData = this.resHashTag.find(data => {
@@ -1594,8 +1603,11 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         filter.count = false;
         filter.orderBy = {}
         this.resHashTag = [];
+        let result = {
+            filter
+        }
         this.isLoading = true;
-        this.hashTagFacade.searchTrend(filter).then((res: any) => {
+        this.hashTagFacade.searchTrend(result).then((res: any) => {
             if (res) {
 
                 this.resHashTag = res;
