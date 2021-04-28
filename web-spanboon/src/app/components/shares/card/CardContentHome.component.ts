@@ -214,6 +214,20 @@ export class CardContentHome extends AbstractPage implements OnInit {
         this.showAlertDevelopDialog();
     }
 
+    public clickEventEmitMedium(data?) {
+        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+            return
+        }
+        this.clickEvent.emit(this.postData);
+    }
+
+    public clickEventEmitLarge(data?) {
+        if (data.path[0].className !== 'large_card' && data.path[0].className !== 'bottom_large_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+            return
+        }
+        this.clickEvent.emit(this.postData);
+    }
+
     public clickEventEmit() {
         this.clickEvent.emit(this.postData);
     }
