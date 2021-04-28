@@ -35,25 +35,28 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
+                        width: 72px;
                     }
                 }
                 > .tag_list {
-                    display: flex;
-                    align-self: center;
-                    @include font-size-9($font-head-100);
+                    display: contents;
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
+                        word-break: unset;
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
                         }
                     }
+                }
+                > .tag_list::-webkit-scrollbar {
+                    width: 0 !important;
                 }
                 > .tag_list_moblie {
                     display: none;
@@ -75,18 +78,19 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
+                    margin-right: 10px;
+                    width: 72px;
                 }
                 > .tag_list {
-                    display: flex;
-                    align-self: center;
-                    @include font-size-9($font-head-100);
+                    display: contents;
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
+                        word-break: unset;
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
@@ -101,7 +105,7 @@
             // width: 80%;
             display: flex;
             &.full {
-                width: 1533px;
+                width: 80vw;
             }
             border-bottom: solid 0.5px #d3d3d3;
             > .left {
@@ -129,7 +133,7 @@
         > .around_section {
             margin: 20px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 width: 100%;
                 display: flex;
@@ -175,7 +179,7 @@
         > .needs_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -237,7 +241,7 @@
         > .rated_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -297,7 +301,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -721,7 +725,6 @@
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
-        @include font-size-9($font-head-500);
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
         display: none;
