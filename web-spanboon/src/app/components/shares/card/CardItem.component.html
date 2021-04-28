@@ -23,14 +23,14 @@
         </ng-template>
         <div>
             <!-- <span class="material-icons" *ngIf="isEdit" (click)="showDialogEdit()"> edit </span> -->
-            <spanboon-button class="btn" *ngIf="isButton" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'"
+            <spanboon-button class="btn btn-fulfill" *ngIf="isButton" [bgColor]="'#7AAF67'" [color]="'#FFFFFF'"
                 [text]="PLATFORM_FULFILL_TEXT" [fontSize]="fontSize" [height]="" [width]="'65pt'" [radius]="'6px'"
                 (click)="fulfillNeeds(item,index)">
             </spanboon-button>
         </div>
-    </div> 
+    </div>
     <ng-container *ngIf="isObjectList || isDoIng; else elseisData">
-        <div class="wrapper-body-doing"> 
+        <div class="wrapper-body-doing">
             <!-- <ng-container *ngIf="itemData && itemData !== undefined && itemData.length > 0 ; else elseTemplateitemData">  -->
             <ng-container *ngFor="let itemObjective of itemData; let index = index">
                 <div class="wrapper-doing" *ngIf="index <= 5">
@@ -49,7 +49,7 @@
             <ng-template #elseTemplateitemData>
                 <div class="doing-found" >ร่วมสร้างสิ่งที่กำลังทำได้ที่นี่</div>
             </ng-template> -->
-           
+
         </div>
         <div class="doing-swipper" *ngIf="isTabletDoIng">
             <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
@@ -94,7 +94,7 @@
                 </span>
                 <div class="wrapper-option">
                     <div class="amount-looking-for">
-                        <div class="top">{{item.quantity | shortNumber}}</div>
+                        <div class="top quantity">{{item.quantity | shortNumber}}</div>
                         <div class="bottom">{{item.unit}}</div>
                     </div>
                 </div>
@@ -108,7 +108,8 @@
                             <div class="div-img">
                                 <img *ngIf="!item.imageURL" class="icon-ob"
                                     src="../../../../assets/img/customize_item.svg">
-                                <img *ngIf="item.imageURL" class="icon-ob" src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                <img *ngIf="item.imageURL" class="icon-ob" src="{{apiBaseURL+item.imageURL+'/image'}}"
+                                    alt="">
                             </div>
                             <div class="bottom-ob">
                                 <div class="name-ob">{{item.name}}</div>

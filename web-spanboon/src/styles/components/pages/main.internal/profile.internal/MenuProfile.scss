@@ -109,13 +109,14 @@
 
                     > .profile-name-eng {
                         color: $color-gray;
-                        @include font-size-9($font-head-500);
+                        @include font-size-9($font-head-100);
+                        padding-top: 2pt;
                     }
 
                     > .header-follow {
                         display: flex;
                         align-items: center;
-                        @include font-size-9($font-head-400);
+                        @include font-size-9($font-head-100);
                         justify-content: center;
                         padding-top: 10px;
 

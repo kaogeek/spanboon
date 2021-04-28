@@ -290,7 +290,7 @@
 
             > .fan-page-tag {
               color: $color-gray;
-              @include font-size-9($font-head-500);
+              @include font-size-9($font-head-100);
               justify-content: center;
               margin-bottom: 15pt;
             }
@@ -432,7 +432,7 @@
               > .item-looking-for {
                 padding: 10pt 15pt 10pt;
                 margin: 0;
-                @include font-size-10($font-head-400);
+                @include font-size-10($font-head-100);
                 &:hover {
                   border-radius: 0;
                 }

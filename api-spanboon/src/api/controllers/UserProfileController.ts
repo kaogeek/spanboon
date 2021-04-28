@@ -631,4 +631,4 @@ export class UserProfileController {
             return res.status(400).send(error);
         }
     }
-} 
+}

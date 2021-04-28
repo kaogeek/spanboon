@@ -76,7 +76,7 @@
           }
 
           > .follow-name-eng {
-            @include font-size-10($font-head-300);
+            @include font-size-10($font-head-100);
             color: $color-gray;
             display: -webkit-box;
             -webkit-line-clamp: 1;

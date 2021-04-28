@@ -375,7 +375,8 @@
 
                                     > .autocomp-search {
                                         width: 100%;
-                                        padding: 7pt;
+                                        padding: 5pt;
+                                        @include font-size-10($font-head-100);
 
                                         div {
                                             width: 100%;
@@ -484,7 +485,7 @@
                                             > .mat-tab-links {
                                                 > .mat-tab-link {
                                                     min-width: auto;
-                                                    @include font-size-8($font-head-400);
+                                                    @include font-size-9($font-head-400);
                                                     font-weight: bold;
                                                     opacity: 1;
 
@@ -765,6 +766,14 @@
                                                 color: rgba($black, 0.6);
 
                                                 > .mat-radio-container {
+                                                    > .mat-radio-outer-circle {
+                                                        border: 1px solid $brandcolor2;
+                                                    }
+
+                                                    > .mat-radio-inner-circle {
+                                                        background-color: $brandcolor2;
+                                                    }
+
                                                     > .mat-radio-ripple,
                                                     > .mat-ripple {
                                                     }
@@ -793,7 +802,7 @@
                                         flex: 1 1 0%;
                                         margin-right: 5pt;
                                         > .input-data {
-                                            @include font-size-9($font-head-400);
+                                            @include font-size-10($font-head-100);
                                         }
                                         > .autocomp-close {
                                             @include pointer();
@@ -855,7 +864,7 @@
                                         }
                                     }
                                     > .material-icons {
-                                        font-family: 'Material Icons' !important;
+                                        font-family: "Material Icons" !important;
                                         font-size: $font-size-icon-small;
                                         @include pointer();
                                     }

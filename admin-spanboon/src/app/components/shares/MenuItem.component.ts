@@ -5,8 +5,8 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input } from '@angular/core'; 
-import { MatDialog } from '@angular/material/dialog'; 
+import { Component, OnInit, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Routes } from '../pages/MainPage.component';
 import { Router } from '@angular/router';
 
@@ -14,8 +14,8 @@ import { Router } from '@angular/router';
   selector: 'admin-menu-item',
   templateUrl: './MenuItem.component.html'
 })
-export class MenuItem implements OnInit { 
-  
+export class MenuItem implements OnInit {
+
   private router: Router;
 
   @Input()
@@ -23,18 +23,18 @@ export class MenuItem implements OnInit {
   @Input()
   public isOpen: boolean;
 
-  constructor(dialog: MatDialog, router: Router) { 
-    this.router = router; 
+  constructor(dialog: MatDialog, router: Router) {
+    this.router = router;
   }
 
-  public ngOnInit() { 
-  } 
+  public ngOnInit() {
+  }
 
   public isActive(): boolean {
     if (this.menu.title === "จัดการเว็บไซต์" && (this.router.url === '/main/home_content/pageslide' || this.router.url === '/main/home_content/pagevideo')) {
       return true;
     } else {
-      for(let item of this.menu.subRoutes) {
+      for (let item of this.menu.subRoutes) {
         if (item.path === this.router.url) {
           return true;
         }

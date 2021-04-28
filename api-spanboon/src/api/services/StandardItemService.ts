@@ -18,7 +18,7 @@ export class StandardItemService {
     constructor(@OrmRepository() private standardItemRepository: StandardItemRepository) { }
 
     // find standardItem
-    public async find(findCondition: any): Promise<any[]> {
+    public async find(findCondition: any): Promise<StandardItem[]> {
         return await this.standardItemRepository.find(findCondition);
     }
 
