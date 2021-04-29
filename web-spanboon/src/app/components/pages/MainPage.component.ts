@@ -120,7 +120,7 @@ export class MainPage extends AbstractPage implements OnInit {
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
       $('.header-top').toggleClass('hidden', scrollTop > prev);
       // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
-      $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
+      // $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
       // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
       prev = scrollTop;

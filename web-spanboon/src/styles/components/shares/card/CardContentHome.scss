@@ -14,10 +14,10 @@
         cursor: pointer;
         padding: 5px;
         transition: 0.1s;
-        border: solid 0.5px #d3d3d300;
+        border: solid 0.2px #e4e4e400;
         &:hover {
             transition: 0.2s;
-            background-color: #f0f0f0;
+            border: solid 0.2px #e4e4e4;
             // color: white !important;
         }
         > .top_small_card {
@@ -165,9 +165,11 @@
         padding: 15px;
         border-radius: 5px;
         cursor: pointer;
+        border: solid 0.2px #e4e4e400;
         &:hover {
             transition: 0.2s;
-            background-color: #f0f0f0;
+            // background-color: #f0f0f0;
+            border: solid 0.2px #e4e4e4;
             // color: white !important;
         }
         > .type_post {
