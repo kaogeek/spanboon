@@ -9,6 +9,7 @@ import 'reflect-metadata';
 import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
 import MainPageResponse from './responses/MainPageResponse';
 import { ResponseUtil } from '../../utils/ResponseUtil';
+import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import { HashTagService } from '../services/HashTagService';
@@ -172,6 +173,8 @@ export class MainPageController {
             }
         }
 
+        let processorList: any[] = [];
+
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
         emerProcessor.setConfig({
             showUserAction: true,
@@ -194,7 +197,8 @@ export class MainPageController {
             offset,
             date
         });
-        const lastestLookSectionModel = await lastestLKProcessor.process();
+        processorList.push(lastestLKProcessor);
+        // const lastestLookSectionModel = await lastestLKProcessor.process();
 
         const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
         if (userId !== undefined) {
@@ -207,7 +211,8 @@ export class MainPageController {
             offset,
             date
         });
-        const stillLKSectionModel = await stillLKProcessor.process();
+        processorList.push(stillLKProcessor);
+        // const stillLKSectionModel = await stillLKProcessor.process();
 
         const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
         if (userId !== undefined) {
@@ -220,8 +225,9 @@ export class MainPageController {
             offset,
             date
         });
-        const userRecSectionModel = await userRecProcessor.process();
-        userRecSectionModel.isList = true;
+        processorList.push(userRecProcessor);
+        // const userRecSectionModel = await userRecProcessor.process();
+        // userRecSectionModel.isList = true;
 
         const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
         const emergencyPinModel = await emergencyPinProcessor.process();
@@ -248,10 +254,11 @@ export class MainPageController {
             limit: 4,
             showUserAction: true
         });
+        processorList.push(userFollowProcessor);
 
-        const userFollowSectionModel = await userFollowProcessor.process();
-        userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
-        userFollowSectionModel.isList = true;
+        // const userFollowSectionModel = await userFollowProcessor.process();
+        // userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
+        // userFollowSectionModel.isList = true;
 
         const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
         if (userId !== undefined) {
@@ -263,13 +270,14 @@ export class MainPageController {
             limit: 2,
             showUserAction: true
         });
-        const userPageLookingSectionModel = await userPageLookingProcessor.process();
-        userPageLookingSectionModel.templateType = TEMPLATE_TYPE.TWIN;
-        userPageLookingSectionModel.isList = true;
+        processorList.push(userPageLookingProcessor);
+        // const userPageLookingSectionModel = await userPageLookingProcessor.process();
+        // userPageLookingSectionModel.templateType = TEMPLATE_TYPE.TWIN;
+        // userPageLookingSectionModel.isList = true;
 
-        const userPageLookingSectionModel2 = await userPageLookingProcessor.process();
-        userPageLookingSectionModel2.templateType = TEMPLATE_TYPE.TWIN;
-        userPageLookingSectionModel2.isList = true;
+        // const userPageLookingSectionModel2 = await userPageLookingProcessor.process();
+        // userPageLookingSectionModel2.templateType = TEMPLATE_TYPE.TWIN;
+        // userPageLookingSectionModel2.isList = true;
 
         // open when main icon template show
         const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
@@ -282,48 +290,58 @@ export class MainPageController {
             limit: 5,
             showUserAction: true
         });
-        const lastestObjModel = await lastestObjProcessor.process();
-        lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
-        
+        processorList.push(lastestObjProcessor);
+        // const lastestObjModel = await lastestObjProcessor.process();
+        // lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
+
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
+        result.emergencyPin = emergencyPinModel;
         result.postSectionModel = postSectionModel;
         result.objectiveEvents = objectiveSectionModel;
-        result.lastest = lastestLookSectionModel;
-        result.looking = stillLKSectionModel;
-        result.viewSection = userRecSectionModel;
-        result.emergencyPin = emergencyPinModel;
+        // result.lastest = lastestLookSectionModel;
+        // result.looking = stillLKSectionModel;
+        // result.viewSection = userRecSectionModel;
         result.sectionModels = [];
 
-        if (userFollowSectionModel.contents.length > 0) {
-            result.sectionModels.push(userFollowSectionModel);
+        processorList = ProcessorUtil.randomProcessorOrdering(processorList);
+
+        for (const processor of processorList) {
+            const model = await processor.process();
+            if (model.contents.length > 0) {
+                result.sectionModels.push(model);
+            }
         }
+
+        // if (userFollowSectionModel.contents.length > 0) {
+        //     result.sectionModels.push(userFollowSectionModel);
+        // }
 
         // twin model
-        const twinModel = new SectionModel();
-        twinModel.title = '';
-        twinModel.subtitle = '';
-        twinModel.description = '';
-        twinModel.link = '';
-        twinModel.iconUrl = '';
-        twinModel.contentCount = 0;
-        twinModel.templateType = TEMPLATE_TYPE.TWIN;
-        twinModel.contents = [];
-        twinModel.isList = true;
+        // const twinModel = new SectionModel();
+        // twinModel.title = '';
+        // twinModel.subtitle = '';
+        // twinModel.description = '';
+        // twinModel.link = '';
+        // twinModel.iconUrl = '';
+        // twinModel.contentCount = 0;
+        // twinModel.templateType = TEMPLATE_TYPE.TWIN;
+        // twinModel.contents = [];
+        // twinModel.isList = true;
 
-        result.sectionModels.push(twinModel);
+        // result.sectionModels.push(twinModel);
 
-        if (userPageLookingSectionModel.contents.length > 0) {
-            twinModel.contents.push(userPageLookingSectionModel);
-        }
+        // if (userPageLookingSectionModel.contents.length > 0) {
+        //     twinModel.contents.push(userPageLookingSectionModel);
+        // }
 
-        if (userPageLookingSectionModel2.contents.length > 0) {
-            twinModel.contents.push(userPageLookingSectionModel2);
-        }
+        // if (userPageLookingSectionModel2.contents.length > 0) {
+        //     twinModel.contents.push(userPageLookingSectionModel2);
+        // }
 
-        if (lastestObjModel.contents.length > 0) {
-            result.sectionModels.push(lastestObjModel);
-        }
+        // if (lastestObjModel.contents.length > 0) {
+        //     result.sectionModels.push(lastestObjModel);
+        // }
 
         // if (lastestObjModel2.contents.length > 0) {
         //     result.sectionModels.push(lastestObjModel2);
@@ -1151,13 +1169,5 @@ export class MainPageController {
         }
 
         return userResult;
-    }
-
-    private randomProcessorOrdering(processorNames: string[]): string[] {
-        const result = [];
-
-        // DataProcessorInf
-
-        return result;
     }
 }
