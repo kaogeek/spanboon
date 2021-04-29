@@ -5,13 +5,13 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
+import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProcessor';
 import { SectionModel } from '../models/SectionModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import moment from 'moment';
 
-export class PostSectionProcessor extends AbstractSectionModelProcessor {
+export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
     private DEFAULT_SEARCH_LIMIT = 5;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -101,6 +101,7 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
+                result.type = this.getType(); // set type by processor type
 
                 for (const row of postAggregate) {
                     const contents: any = {};
