@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-export const PLATFORM_NAME_TH: string = 'สะพานบุญ';
+export const PLATFORM_NAME_TH: string = 'ก้าวไกลทูเดย์';
 export const PLATFORM_NAME_ENG: string = 'MFP Today';
 
 // Dialog Message

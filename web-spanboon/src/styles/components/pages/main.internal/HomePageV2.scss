@@ -35,7 +35,7 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
@@ -44,6 +44,7 @@
                 }
                 > .tag_list {
                     display: contents;
+                    @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
@@ -78,7 +79,7 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text {
                     color: $brandcolor2;
                     margin-right: 10px;
@@ -86,6 +87,7 @@
                 }
                 > .tag_list {
                     display: contents;
+                    @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
