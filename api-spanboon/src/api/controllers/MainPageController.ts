@@ -36,11 +36,11 @@ import { UserFollowSectionProcessor } from '../processors/UserFollowSectionProce
 import { UserPageLookingSectionProcessor } from '../processors/UserPageLookingSectionProcessor';
 import { LastestObjectiveProcessor } from '../processors/LastestObjectiveProcessor';
 import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProcessor';
-import { TEMPLATE_TYPE } from '../../constants/TemplateType';
+// import { TEMPLATE_TYPE } from '../../constants/TemplateType';
 // import { SearchFilter } from './requests/SearchFilterRequest';
 // import { SearchHistory } from '../models/SearchHistory';
 // import { MAX_SEARCH_ROWS } from '../../constants/Constants';
-import { SectionModel } from '../models/SectionModel';
+// import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
