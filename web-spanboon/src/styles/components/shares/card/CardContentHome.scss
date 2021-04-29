@@ -10,11 +10,15 @@
     > .small_card {
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
+        border-radius: 5px;
         cursor: pointer;
+        padding: 5px;
         transition: 0.1s;
         border: solid 0.5px #d3d3d300;
         &:hover {
-            border: solid 0.5px $brandcolor2;
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
         }
         > .top_small_card {
             width: 200px;
@@ -156,9 +160,16 @@
     }
     > .medium_card {
         background-color: rgb(255, 255, 255);
+        width: 320px;
         margin: 0px 10px;
-        width: 360px;
+        padding: 15px;
+        border-radius: 5px;
         cursor: pointer;
+        &:hover {
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
+        }
         > .type_post {
             display: flex;
             align-items: center;
@@ -330,9 +341,16 @@
         }
     }
     > .large_card {
-        background-color: rgb(255, 255, 255);
+        background-color: white;
         margin: 0px 10px;
-
+        padding: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
+        }
         > .type_post {
             display: flex;
             align-items: center;
@@ -411,7 +429,7 @@
             height: 200px;
             word-break: break-word;
             position: relative;
-            padding: 0px 5px;
+            // padding: 0px 5px;
             > .bottom_large_card_detail {
                 > span {
                     margin-top: 5px;
@@ -506,6 +524,11 @@
             &.full {
                 width: calc(60% - 30px);
                 padding: 0px 15px;
+                &:hover {
+                    transition: 0.2s;
+                    background-color: #f0f0f0;
+                    // color: white !important;
+                }
             }
             > .top_coverPage {
                 width: 100%;
@@ -635,7 +658,7 @@
                     border-bottom: solid 0.5px #d3d3d3;
                     &:hover {
                         transition: 0.2s;
-                        border-bottom: solid 0.5px $brandcolor2;
+                        background-color: #f0f0f0;
                         // color: white !important;
                     }
                     > .img_box {
