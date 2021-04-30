@@ -57,7 +57,7 @@ export class UserFollowService {
         }
     }
 
-    public sampleUserFollow(id: string, subjectType: string, simpleCount: number): Promise<any> {
+    public sampleUserFollow(id: any, subjectType: string, simpleCount: number): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = {

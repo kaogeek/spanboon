@@ -20,4 +20,5 @@ export class SectionModel extends BaseModel {
     public templateType: string;
     public data: any;
     public isList = false;
+    public isHighlight = false;
 }
