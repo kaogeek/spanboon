@@ -306,9 +306,20 @@ export class MainPageController {
 
         processorList = ProcessorUtil.randomProcessorOrdering(processorList);
 
-        for (const processor of processorList) {
+        // ! remove random function when fishished testing
+        const randIdx = Math.floor(Math.random() * processorList.length);
+        for (let i = 0; i < processorList.length; i++) {
+            const processor = processorList[i];
             const model = await processor.process();
             if (model.contents.length > 0) {
+                // !remove random function when fishished testing
+                if (randIdx === i) {
+                    model.isHighlight = true;
+                    // fix content to 3
+                    if (model.contents.length > 3) {
+                        model.contents = model.contents.slice(0, 3);
+                    }
+                }
                 result.sectionModels.push(model);
             }
         }

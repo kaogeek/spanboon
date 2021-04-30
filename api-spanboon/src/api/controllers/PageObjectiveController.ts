@@ -22,13 +22,24 @@ import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import moment from 'moment';
 import { FindHashTagRequest } from './requests/FindHashTagRequest';
+import { PageObjectiveTimelineResponse } from './responses/PageObjectiveTimelineResponse';
+import { PageService } from '../services/PageService';
+import { UserFollowService } from '../services/UserFollowService';
+import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { UserEngagement } from '../models/UserEngagement';
+import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { UserFollow } from '../models/UserFollow';
+import { UserEngagementService } from '../services/UserEngagementService';
 
 @JsonController('/objective')
 export class ObjectiveController {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private hashTagService: HashTagService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private pageService: PageService,
+        private userFollowService: UserFollowService,
+        private userEngagementService: UserEngagementService
     ) { }
 
     // Find PageObjective API
@@ -202,7 +213,7 @@ export class ObjectiveController {
         }
 
         const hashTag = search.hashTag;
-        const filter = search.filter;  
+        const filter = search.filter;
         const hashTagIdList = [];
         const hashTagMap = {};
         let hashTagList: HashTag[];
@@ -211,7 +222,7 @@ export class ObjectiveController {
             hashTagList = await this.hashTagService.find({ name: { $regex: '.*' + hashTag + '.*', $options: 'si' } });
         } else {
             hashTagList = await this.hashTagService.find();
-        }  
+        }
 
         if (hashTagList !== null && hashTagList !== undefined && hashTagList.length > 0) {
             for (const masterHashTag of hashTagList) {
@@ -224,7 +235,7 @@ export class ObjectiveController {
         let objectiveLists: PageObjective[];
         let objectiveStmt;
 
-        if (Object.keys(filter.whereConditions).length > 0 && filter.whereConditions !== null && filter.whereConditions !== undefined) { 
+        if (Object.keys(filter.whereConditions).length > 0 && filter.whereConditions !== null && filter.whereConditions !== undefined) {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
 
@@ -236,9 +247,9 @@ export class ObjectiveController {
                 objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
             }
 
-            objectiveLists = await this.pageObjectiveService.find(objectiveStmt); 
-        } else { 
-            objectiveLists = await this.pageObjectiveService.search(filter); 
+            objectiveLists = await this.pageObjectiveService.find(objectiveStmt);
+        } else {
+            objectiveLists = await this.pageObjectiveService.search(filter);
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
@@ -420,4 +431,146 @@ export class ObjectiveController {
             return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
         }
     }
-} 
+
+    // Get PageObjective Timeline API
+    /**
+     * @api {get} /api/objective/:id/timeline Get PageObjective timeline API
+     * @apiGroup PageObjective
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully get PageObjective"
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/objective/:id
+     * @apiErrorExample {json} PageObjective error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Get('/:id/timeline')
+    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any): Promise<any> {
+        let objective: PageObjective;
+        const objId = new ObjectID(id);
+
+        try {
+            objective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
+        } catch (ex) {
+            objective = await this.pageObjectiveService.findOne({ where: { title: id } });
+        }
+
+        if (objective) {
+            // generate timeline
+            const page = await this.pageService.findOne({ _id: objective.pageId });
+            const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.OBJECTIVE, 5);
+
+            const pageObjTimeline = new PageObjectiveTimelineResponse();
+            pageObjTimeline.pageObjective = objective;
+            pageObjTimeline.page = page;
+            pageObjTimeline.followedUser = followingUsers.followers;
+            pageObjTimeline.followedCount = followingUsers.count;
+
+            const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5);
+            pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;
+            pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
+            pageObjTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
+
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable got PageObjective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // Follow PageObjective
+    /**
+     * @api {post} /api/objective/:id/follow Follow PageObjective API
+     * @apiGroup PageObjective
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Follow PageObjective Success",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"OBJEV
+     *  }
+     * @apiSampleRequest /api/objective/:id/follow
+     * @apiErrorExample {json} Follow PageObjective Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/:id/follow')
+    @Authorized('user')
+    public async followObjective(@Param('id') objectiveId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objectiveObjId = new ObjectID(objectiveId);
+        const userObjId = new ObjectID(req.user.id);
+        const clientId = req.headers['client-id'];
+        const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const objectiveFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: objectiveObjId, subjectType: SUBJECT_TYPE.OBJECTIVE } });
+        let userEngagementAction: UserEngagement;
+
+        if (objectiveFollow) {
+            const unfollow = await this.userFollowService.delete({ userId: userObjId, subjectId: objectiveObjId, subjectType: SUBJECT_TYPE.OBJECTIVE });
+            if (unfollow) {
+                const userEngagement = new UserEngagement();
+                userEngagement.clientId = clientId;
+                userEngagement.contentId = objectiveObjId;
+                userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.OBJECTIVE;
+                userEngagement.ip = ipAddress;
+                userEngagement.userId = userObjId;
+                userEngagement.action = ENGAGEMENT_ACTION.UNFOLLOW;
+
+                const engagement = await this.userEngagementService.findOne({ where: { contentId: objectiveObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.OBJECTIVE, action: ENGAGEMENT_ACTION.UNFOLLOW } });
+                if (engagement) {
+                    userEngagement.isFirst = false;
+                } else {
+                    userEngagement.isFirst = true;
+                }
+
+                userEngagementAction = await this.userEngagementService.create(userEngagement);
+
+                if (userEngagementAction) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Unfollow PageObjective Success', undefined);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unfollow PageObjective Failed', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const userFollow = new UserFollow();
+            userFollow.userId = userObjId;
+            userFollow.subjectId = objectiveObjId;
+            userFollow.subjectType = SUBJECT_TYPE.OBJECTIVE;
+
+            const followCreate: UserFollow = await this.userFollowService.create(userFollow);
+            if (followCreate) {
+                const userEngagement = new UserEngagement();
+                userEngagement.clientId = clientId;
+                userEngagement.contentId = objectiveObjId;
+                userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.OBJECTIVE;
+                userEngagement.ip = ipAddress;
+                userEngagement.userId = userObjId;
+                userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
+
+                const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: objectiveObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.OBJECTIVE, action: ENGAGEMENT_ACTION.FOLLOW } });
+                if (engagement) {
+                    userEngagement.isFirst = false;
+                } else {
+                    userEngagement.isFirst = true;
+                }
+
+                userEngagementAction = await this.userEngagementService.create(userEngagement);
+
+                if (userEngagementAction) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Followed PageObjective Success', followCreate);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Follow PageObjective Failed', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+    }
+}
