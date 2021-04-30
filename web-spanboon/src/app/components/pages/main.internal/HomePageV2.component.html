@@ -29,21 +29,17 @@
                 <div class="text_h">
                     <span class="text">มาใหม่ :</span>
                 </div>
-                <div class="tag_list">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">
+                <div class="tag_list" id="style-1">
+                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle let i=index">
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
-                </div>
-                <div class="tag_list_moblie">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle; let i=index">
-                        <a (click)="clickDataSearch(item)">{{item}}</a>
-                    </div>
+                    <div style="width: 10%;height: 10%;"></div>
                 </div>
             </div>
             <div class="right">
                 <span class="text">มาแรง :</span>
-                <div class="tag_list">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">
+                <div class="tag_list" id="style-1">
+                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle let i=index">
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
                 </div>
@@ -200,12 +196,8 @@
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
                         [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
-                <div *ngIf="isLodingMore" style="width: 100%; margin: 20px;display: flex;">
-                    <div class="isDesktop" style="width: 30%; margin-right: 15px;" *ngFor="let number of [0,1,2,3 ]">
-                        <Preload-card [isShowCard1]="true" [isShowCard2]="false">
-                        </Preload-card>
-                    </div>
-                    <div class="isMobile" style="width: 100%; margin-right: 15px;" *ngFor="let number of [0,1]">
+                <div class="loding_more" *ngIf="isLodingMore">
+                    <div class="preload_card_more" *ngFor="let number of [0,1,2,3 ]">
                         <Preload-card [isShowCard1]="true" [isShowCard2]="false">
                         </Preload-card>
                     </div>
@@ -223,7 +215,7 @@
         </div>
 
         <div class="other_section" [class.dis]="item.title === ''"
-            *ngFor=" let item of sectionModels| slice:0:1;let index = index">
+            *ngFor=" let item of sectionModels;let index = index">
             <div class="top fix-hompage-bar">
                 <span class="title hompage-title">{{item.title}}</span>
                 <div class="line"></div>

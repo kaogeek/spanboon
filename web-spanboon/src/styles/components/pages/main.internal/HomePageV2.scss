@@ -30,12 +30,12 @@
             align-items: center;
             justify-content: center;
             > .left {
-                padding: 0px 20px;
                 align-items: flex-start;
+                position: relative;
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
@@ -43,7 +43,11 @@
                     }
                 }
                 > .tag_list {
-                    display: contents;
+                    display: inline-flex;
+                    white-space: nowrap;
+                    overflow-x: visible;
+                    width: 80%;
+                    overflow-y: hidden;
                     @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
@@ -74,19 +78,23 @@
                 }
             }
             > .right {
-                padding: 0px 20px;
                 align-items: flex-start;
+                position: relative;
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-9($font-head-500);
+                @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
                     margin-right: 10px;
                     width: 72px;
                 }
                 > .tag_list {
-                    display: contents;
+                    display: inline-flex;
+                    white-space: nowrap;
+                    overflow-x: visible;
+                    width: 80%;
+                    overflow-y: hidden;
                     @include font-size-9($font-head-100);
                     > .tag {
                         cursor: pointer;
@@ -358,11 +366,25 @@
                 > .footer_mobile_button {
                     display: none;
                 }
+                > .loding_more {
+                    width: 100%;
+                    margin: 20px;
+                    display: flex;
+                    display: inline-flex;
+                    flex-wrap: wrap;
+                    > .preload_card_more {
+                        width: 350px;
+                        margin-right: 15px;
+                    }
+                }
             }
             &.dis {
                 display: none;
             }
         }
+    }
+    #style-1::-webkit-scrollbar {
+        height: 0px;
     }
 }
 
@@ -486,6 +508,28 @@
     }
     .home_page_v2 > .hoem_page_body > .events_top > .right {
         width: 400px;
+    }
+
+    .home_page_v2 > .hoem_page_body > .rated_section > .body {
+        justify-content: center;
+        align-items: center;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section > .body {
+        justify-content: center;
+        align-items: center;
+    }
+    .home_page_v2 > .hoem_page_body > .needs_section > .body {
+        justify-content: center;
+        align-items: center;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section > .body > .loding_more {
+        width: 100%;
+        margin: 20px;
+        display: flex;
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
     }
 }
 
@@ -728,13 +772,7 @@
     }
     .home_page_v2 > .hoem_page_body > .events_tag_top > .left {
         word-break: unset;
-    }
-    .home_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list {
-        display: none;
-    }
-    .home_page_v2 > .hoem_page_body > .events_tag_top > .left > .tag_list_moblie {
-        display: flex;
-        overflow: scroll;
+        width: 100%;
     }
     .loding > .buttom {
         display: none;
@@ -772,6 +810,7 @@
         width: 100%;
         display: block;
     }
+
     card-contant-home {
         .card_content_home > .medium_card {
             background-color: white;

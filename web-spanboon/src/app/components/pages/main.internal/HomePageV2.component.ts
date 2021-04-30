@@ -101,9 +101,9 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
     this.postSectionModel = this.jsonParseData(this.pageModel.postSectionModel);
 
-    this.needsSectionModels = this.jsonParseData(this.pageModel.lastest);
-    this.lookingSectionModels = this.jsonParseData(this.pageModel.looking);
-    this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
+    // this.needsSectionModels = this.jsonParseData(this.pageModel.lastest);
+    // this.lookingSectionModels = this.jsonParseData(this.pageModel.looking);
+    // this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
 
     if (this.pageModel.objectiveEvents.contents.length > 0) {
       this.isDoing = false
