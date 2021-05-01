@@ -30,7 +30,10 @@ import { UserEngagement } from '../models/UserEngagement';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
+import { PostsService } from '../services/PostsService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
+import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
+import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -40,7 +43,8 @@ export class ObjectiveController {
         private assetService: AssetService,
         private pageService: PageService,
         private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService
+        private userEngagementService: UserEngagementService,
+        private postsService: PostsService
     ) { }
 
     // Find PageObjective API
@@ -477,6 +481,34 @@ export class ObjectiveController {
 
             pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
             pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
+            pageObjTimeline.timelines = [];
+
+            // fix for first
+            const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
+            startProcessor.setData({
+                objectiveId: objId
+            });
+            const startObjvResult = await startProcessor.process();
+            if (startObjvResult !== undefined) {
+                pageObjTimeline.timelines.push(startObjvResult);
+            }
+
+            const datetimeRange: any[] = this.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            for (const ranges of datetimeRange) {
+                if (ranges !== undefined && ranges.length < 2) {
+                    continue;
+                }
+                const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
+                needsProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1]
+                });
+                const needsProcsResult = await needsProcessor.process();
+                if (needsProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(needsProcsResult);
+                }
+            }
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);
             return res.status(200).send(successResponse);
@@ -576,5 +608,15 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
+    }
+
+    private generateCurrentMonthRanges(): any[] {
+        const result = [];
+        const startOfMonth = moment().clone().startOf('month').toDate();
+        const endOfMonth = moment().clone().endOf('month').toDate();
+        const datetimeRange = [startOfMonth, endOfMonth];
+
+        result.push(datetimeRange);
+        return result;
     }
 }
