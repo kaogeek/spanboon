@@ -30,6 +30,7 @@ import { UserEngagement } from '../models/UserEngagement';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
+import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -469,10 +470,13 @@ export class ObjectiveController {
             pageObjTimeline.followedUser = followingUsers.followers;
             pageObjTimeline.followedCount = followingUsers.count;
 
-            const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5);
+            const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;
             pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
             pageObjTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
+
+            pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
+            pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);
             return res.status(200).send(successResponse);

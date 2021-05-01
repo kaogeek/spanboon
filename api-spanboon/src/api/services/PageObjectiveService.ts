@@ -12,13 +12,16 @@ import { PageObjectiveRepository } from '../repositories/PageObjectiveRepository
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { ObjectID } from 'mongodb';
-import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+import { PostsService } from '../services/PostsService';
+import { NeedsService } from '../services/NeedsService';
+import { POST_TYPE } from '../../constants/PostType';
 
 @Service()
 export class PageObjectiveService {
 
-    constructor(@OrmRepository() private pageObjectiveRepository: PageObjectiveRepository, private fulfillmentCaseService: FulfillmentCaseService) { }
+    constructor(@OrmRepository() private pageObjectiveRepository: PageObjectiveRepository,
+        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService, private needsService: NeedsService) { }
 
     // find PageObjective
     public find(findCondition?: any): Promise<any[]> {
@@ -99,7 +102,7 @@ export class PageObjectiveService {
                             preserveNullAndEmptyArrays: true
                         }
                     },
-                    { $match: { 'posts.objective': pageObjectiveId } },
+                    { $match: { 'posts.objective': pageObjectiveId, 'posts.deleted': false } },
                     { $group: { _id: null, count: { $sum: 1 } } },
                     { $project: { _id: 0 } }
                 ];
@@ -126,7 +129,7 @@ export class PageObjectiveService {
                             preserveNullAndEmptyArrays: true
                         }
                     },
-                    { $match: { 'posts.objective': pageObjectiveId } },
+                    { $match: { 'posts.objective': pageObjectiveId, 'posts.deleted': false } },
                     { $sample: { size: simpleCount } },
                     { $group: { _id: { requester: '$requester' }, count: { $sum: 1 } } },
                     {
@@ -175,15 +178,65 @@ export class PageObjectiveService {
                             preserveNullAndEmptyArrays: true
                         }
                     },
-                    { $match: { 'posts.objective': pageObjectiveId } },
+                    { $match: { 'posts.objective': pageObjectiveId, 'posts.deleted': false } },
                     { $group: { _id: { requester: '$requester' }, count: { $sum: 1 } } },
                     { $group: { _id: { requester: '$_id.requester' }, count: { $sum: 1 } } }
                 ];
 
                 const countAllUserResult = await this.fulfillmentCaseService.aggregate(aggregateCountAllUserPost);
-                if(countAllUserResult.length > 0){
+                if (countAllUserResult.length > 0) {
                     result.fulfillmentUserCount = countAllUserResult[0].count;
                 }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public sampleRelatedHashTags(pageObjectiveId: ObjectID, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
+
+                if (pageObjectiveId === undefined || pageObjectiveId === null) {
+                    resolve(result);
+                    return;
+                }
+
+                const matchStmt: any = {
+                    objective: pageObjectiveId,
+                    postsHashTags: { $exists: true, $type: 'objectId' },
+                    deleted: false
+                };
+
+                result = await this.postsService.sampleHashTags(matchStmt, simpleCount);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public sampleNeedsItems(pageObjectiveId: ObjectID, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
+
+                if (pageObjectiveId === undefined || pageObjectiveId === null) {
+                    resolve(result);
+                    return;
+                }
+
+                const matchStmt: any = {
+                    objective: pageObjectiveId,
+                    deleted: false,
+                    type: POST_TYPE.NEEDS
+                };
+
+                result = await this.postsService.samplePostNeedsItems(matchStmt, simpleCount);
 
                 resolve(result);
             } catch (error) {
