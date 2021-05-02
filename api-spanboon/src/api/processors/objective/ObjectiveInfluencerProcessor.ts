@@ -78,6 +78,14 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
                         },
                         { $match: { objective: objectiveId } },
                         { $group: { _id: '$user', count: { $sum: 1 } } },
+                        {
+                            $project: {
+                                'user.password': 0,
+                                'user.coverPosition': 0,
+                                'user.birthdate': 0,
+                                'user.coverURL': 0,
+                            }
+                        }
                     ];
                     const objectiveInflu = await this.postsCommentService.aggregate(commentAgg);
 
