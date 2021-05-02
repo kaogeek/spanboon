@@ -10,6 +10,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { UserFollow } from '../models/UserFollow';
 import { UserFollowRepository } from '../repositories/UserFollowRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
+import { SUBJECT_TYPE } from '../../constants/FollowType';
 
 @Service()
 export class UserFollowService {
@@ -89,6 +90,51 @@ export class UserFollowService {
                 for (const fol of folFive) {
                     result.followers.push(this.parseUserField(fol.user[0]));
                 }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public getTopInfluencerUserFollow(topCount: number): Promise<any[]> {
+        if (topCount === undefined) {
+            topCount = 5;
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const aggregateStmt = [
+                    { $match: { subjectType: SUBJECT_TYPE.USER } },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } },
+                    { $sort: { count: -1 } },
+                    { $limit: topCount },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                        }
+                    }
+                ];
+
+                const result = await this.aggregate(aggregateStmt);
 
                 resolve(result);
             } catch (error) {

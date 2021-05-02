@@ -31,9 +31,11 @@ import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/User
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
+import { PostsCommentService } from '../services/PostsCommentService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
+import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -44,7 +46,8 @@ export class ObjectiveController {
         private pageService: PageService,
         private userFollowService: UserFollowService,
         private userEngagementService: UserEngagementService,
-        private postsService: PostsService
+        private postsService: PostsService,
+        private postsCommentService: PostsCommentService
     ) { }
 
     // Find PageObjective API
@@ -483,7 +486,7 @@ export class ObjectiveController {
             pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
             pageObjTimeline.timelines = [];
 
-            // fix for first
+            // fix for first section
             const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
             startProcessor.setData({
                 objectiveId: objId
@@ -498,6 +501,20 @@ export class ObjectiveController {
                 if (ranges !== undefined && ranges.length < 2) {
                     continue;
                 }
+                // influencer section
+                const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
+                influencerProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 2
+                });
+                const influencerProcsResult = await influencerProcessor.process();
+                if (influencerProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(influencerProcsResult);
+                }
+
+                // need section
                 const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
                 needsProcessor.setData({
                     objectiveId: objId,
@@ -508,6 +525,10 @@ export class ObjectiveController {
                 if (needsProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(needsProcsResult);
                 }
+                // share section
+                // fullfill section
+                // following section
+                // current post section
             }
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);

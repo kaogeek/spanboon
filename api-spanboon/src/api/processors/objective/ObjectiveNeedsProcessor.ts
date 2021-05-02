@@ -22,13 +22,13 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                 let objectiveId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
-                let simpleCount = undefined;
+                let sampleCount = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
                     objectiveId = this.data.objectiveId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
-                    simpleCount = this.data.simpleCount;
+                    sampleCount = this.data.sampleCount;
                 }
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
@@ -84,9 +84,9 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     }
                 ];
 
-                // if no simpleCount limit will set to 1.
-                if (simpleCount !== undefined) {
-                    postAgg.push({ $sample: { size: simpleCount } });
+                // if no sampleCount limit will set to 1.
+                if (sampleCount !== undefined) {
+                    postAgg.push({ $sample: { size: sampleCount } });
                 } else {
                     postAgg.push({ $limit: 1 });
                 }
