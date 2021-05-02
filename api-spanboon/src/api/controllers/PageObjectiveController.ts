@@ -39,6 +39,7 @@ import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsP
 import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
 import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
 import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
+import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -571,8 +572,18 @@ export class ObjectiveController {
                 if (followingProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(followingProcsResult);
                 }
+            }
 
-                // current post section
+            // current post section
+            const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
+            lastestPostProcessor.setData({
+                objectiveId: objId,
+                limit: 4,
+                userId
+            });
+            const lastestProcsResult = await lastestPostProcessor.process();
+            if (lastestProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(lastestProcsResult);
             }
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);
