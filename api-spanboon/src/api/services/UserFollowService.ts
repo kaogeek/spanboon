@@ -11,6 +11,7 @@ import { UserFollow } from '../models/UserFollow';
 import { UserFollowRepository } from '../repositories/UserFollowRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { ObjectID } from 'mongodb';
 
 @Service()
 export class UserFollowService {
@@ -133,6 +134,48 @@ export class UserFollowService {
                         }
                     }
                 ];
+
+                const result = await this.aggregate(aggregateStmt);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public getUserFollower(followedUser: ObjectID, limit?: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const aggregateStmt: any[] = [
+                    { $match: { subjectId: followedUser, subjectType: SUBJECT_TYPE.USER } },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                        }
+                    }
+                ];
+
+                if (limit !== undefined) {
+                    aggregateStmt.splice(1, 0, { $limit: limit });
+                }
 
                 const result = await this.aggregate(aggregateStmt);
 

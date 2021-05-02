@@ -32,10 +32,12 @@ import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
+import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
 import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
+import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -47,7 +49,8 @@ export class ObjectiveController {
         private userFollowService: UserFollowService,
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
-        private postsCommentService: PostsCommentService
+        private postsCommentService: PostsCommentService,
+        private fulfillmentCaseService: FulfillmentCaseService
     ) { }
 
     // Find PageObjective API
@@ -456,7 +459,8 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/timeline')
-    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any): Promise<any> {
+    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
         let objective: PageObjective;
         const objId = new ObjectID(id);
 
@@ -525,8 +529,36 @@ export class ObjectiveController {
                 if (needsProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(needsProcsResult);
                 }
+
                 // share section
-                // fullfill section
+                /* //! waiting for implement
+                const shareProcessor = new ObjectiveShareProcessor(this.postsService, this.userFollowService);
+                shareProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 10,
+                    userId
+                });
+                const shareProcsResult = await shareProcessor.process();
+                if (shareProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(shareProcsResult);
+                }*/
+
+                // fulfill section
+                const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+                fulfillrocessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 10,
+                    userId
+                });
+                const fulfillProcsResult = await fulfillrocessor.process();
+                if (fulfillProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(fulfillProcsResult);
+                }
+
                 // following section
                 // current post section
             }
