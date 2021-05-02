@@ -38,6 +38,7 @@ import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveSt
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
 import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
 import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
+import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -560,6 +561,17 @@ export class ObjectiveController {
                 }
 
                 // following section
+                const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
+                followingProcessor.setData({
+                    objectiveId: objId,
+                    sampleCount: 10,
+                    userId
+                });
+                const followingProcsResult = await followingProcessor.process();
+                if (followingProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(followingProcsResult);
+                }
+
                 // current post section
             }
 
