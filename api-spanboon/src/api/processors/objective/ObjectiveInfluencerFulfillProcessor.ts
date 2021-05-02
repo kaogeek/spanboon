@@ -56,9 +56,9 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                     }
 
                     const matchStmt: any = { requester: { $in: fulfillUser }, deleted: false, status: FULFILLMENT_STATUS.CONFIRM };
-                    // if (dateTimeAndArray.length > 0) {
-                    //     matchStmt['$and'] = dateTimeAndArray;
-                    // }
+                    if (dateTimeAndArray.length > 0) {
+                        matchStmt['$and'] = dateTimeAndArray;
+                    }
 
                     const fulfillmentAgg = [
                         { $match: matchStmt },
@@ -77,7 +77,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        // { $match: { objective: objectiveId } },
+                        { $match: { objective: objectiveId } },
                         { $group: { _id: '$requester', count: { $sum: 1 } } },
                         {
                             $lookup: {
