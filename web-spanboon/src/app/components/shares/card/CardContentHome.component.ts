@@ -118,7 +118,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     ngAfterViewInit(): void {
         setTimeout(() => {
-
             if (this.isDerTy(this.postData)) {
                 if (this.isDerTy(this.postData.post)) {
                     this.postId = this.postData.post._id;
@@ -130,7 +129,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 }
 
-                this.amountSocial = (this.postData.post.likeCount ? this.postData.post.likeCount : this.postData.likeCount + this.postData.post.repostCount ? this.postData.post.repostCount : this.postData.repostCount + this.postData.post.shareCount ? this.postData.post.shareCount : this.postData.shareCount);
+                this.amountSocial = (this.postData.post ? this.postData.post.likeCount : 0 + this.postData.post ? this.postData.post.repostCount : 0 + this.postData.post ? this.postData.post.shareCount : 0);
             }
 
             if (this.isDerTy(this.eventData)) {
@@ -195,7 +194,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(data, index?) {
-        this.router.navigateByUrl('/search?hashtag=' + data);
+        // this.router.navigateByUrl('/search?hashtag=' + data);
+        window.open('/search?hashtag=' + data);
         // if (this.isData) {
         //     this.router.navigateByUrl('/search?hashtag=' + data);
         // } else if (!index) {
@@ -208,6 +208,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
         //     }
         // }
+    }
+
+    public clickToStory(data) {
+        window.open('/story/' + data);
     }
 
     public clickDialogDiverlop() {

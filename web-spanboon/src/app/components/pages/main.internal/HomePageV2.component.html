@@ -223,16 +223,16 @@
             </div>
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of item.contents| slice:0:4;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
-                        [postData]='dataViewSection'></card-contant-home>
+                    <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
+                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <post-swiper-card *ngIf="item.type === 'SMALL'" [isObjective]="'true'"
                     (clickEventA)="clickDataSearchTodo($event)" [isFulfillQuantity]="true" [isFulfill]="'true'"
-                    [keyItem]='["iconUrl"]' [itemNeeds]="item">
+                    [keyItem]='["iconUrl"]' [itemNeeds]="item.contents">
                 </post-swiper-card>
                 <div class="isMobile" *ngFor="let dataViewSection of item.contents| slice:0:3;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
-                        [postData]='dataViewSection'></card-contant-home>
+                    <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
+                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <!-- <div class="footer_mobile">
                     <span>ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>
