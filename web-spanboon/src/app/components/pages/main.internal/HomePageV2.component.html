@@ -69,7 +69,7 @@
         <!-- ///////////////////////// -->
 
 
-        <div class="around_section" *ngIf="aroundSectionModels">
+        <!-- <div class="around_section" *ngIf="aroundSectionModels">
             <div class="top fix-hompage-bar">
                 <div class="text_svg">
                     <div class="svg">
@@ -212,7 +212,7 @@
                         [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="other_section" [class.dis]="item.title === ''"
             *ngFor=" let item of sectionModels;let index = index">
@@ -226,6 +226,10 @@
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
                         [postData]='dataViewSection'></card-contant-home>
                 </div>
+                <post-swiper-card *ngIf="item.type === 'SMALL'" [isObjective]="'true'"
+                    (clickEventA)="clickDataSearchTodo($event)" [isFulfillQuantity]="true" [isFulfill]="'true'"
+                    [keyItem]='["iconUrl"]' [itemNeeds]="item">
+                </post-swiper-card>
                 <div class="isMobile" *ngFor="let dataViewSection of item.contents| slice:0:3;let index = index">
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
                         [postData]='dataViewSection'></card-contant-home>
