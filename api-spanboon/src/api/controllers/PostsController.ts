@@ -39,6 +39,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { Page } from '../models/Page';
 
 @JsonController('/post')
 export class PostsController {
@@ -238,6 +239,7 @@ export class PostsController {
 
         const postLists: any = await this.postsService.search(filter);
         const userLikeMap: any = {};
+        const likeAsPageMap: any = {};
         const postsCommentMap: any = {};
         let result = [];
 
@@ -258,6 +260,14 @@ export class PostsController {
             if (postIdList !== null && postIdList !== undefined && postIdList.length > 0) {
                 result = await this.postsService.aggregate([
                     { $match: { _id: { $in: postIdList }, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
                     {
                         $lookup: {
                             from: 'PostsComment',
@@ -462,9 +472,9 @@ export class PostsController {
                         }
                     },
                     {
-                        $project: { 
+                        $project: {
                             'ownerUser.username': 0,
-                            'ownerUser.password': 0, 
+                            'ownerUser.password': 0,
                             'ownerUser.coverURL': 0,
                             'ownerUser.coverPosition': 0,
                             'ownerUser.isSubAdmin': 0,
@@ -519,7 +529,15 @@ export class PostsController {
                     if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
                         for (const like of userLikes) {
                             const postId = like.subjectId;
-                            userLikeMap[postId] = like;
+                            const likeAsPage = like.likeAsPage;
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                                    likeAsPageMap[postId] = like;
+                                } else {
+                                    userLikeMap[postId] = like;
+                                }
+                            }
                         }
                     }
 
@@ -540,7 +558,8 @@ export class PostsController {
                     const postId = data._id;
                     const story = data.story;
                     const ownerUser = data.ownerUser;
-                    const dataKey = postId + ':' + ownerUser;
+                    const postAsPage = data.postAsPage;
+                    let dataKey;
 
                     if (isHideStory === true) {
                         if (story !== null && story !== undefined) {
@@ -550,21 +569,44 @@ export class PostsController {
                         }
                     }
 
-                    if (userLikeMap[postId]) {
-                        data.isLike = true;
-                    } else {
-                        data.isLike = false;
-                    }
+                    if (postId !== null && postId !== undefined && postId !== '') {
+                        if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
+                            dataKey = postAsPage + ':' + postId + ':' + ownerUser;
+                        } else {
+                            dataKey = postId + ':' + ownerUser;
+                        }
 
-                    if (postsMap[dataKey]) {
-                        data.isRepost = true;
+                        if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
+                            if (postsMap[dataKey]) {
+                                data.isRepost = true;
+                            } else {
+                                data.isRepost = false;
+                            }
+                        } else {
+                            data.isRepost = false;
+                        }
+
+                        if (userLikeMap[postId]) {
+                            data.isLike = true;
+                        } else {
+                            data.isLike = false;
+                        }
+
+                        if (likeAsPageMap[postId]) {
+                            data.likeAsPage = true;
+                        } else {
+                            data.likeAsPage = false;
+                        }
+
+                        if (postsCommentMap[postId]) {
+                            data.isComment = true;
+                        } else {
+                            data.isComment = false;
+                        }
                     } else {
                         data.isRepost = false;
-                    }
-
-                    if (postsCommentMap[postId]) {
-                        data.isComment = true;
-                    } else {
+                        data.isLike = false;
+                        data.likeAsPage = false;
                         data.isComment = false;
                     }
                 });
@@ -858,14 +900,20 @@ export class PostsController {
 
                 // noti to owner post
                 {
-                    const notificationText = req.user.displayName + ' กดถูกใจโพสต์ของคุณ';
+                    let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
+
+                    console.log('postObj >>>> ', postObj);
 
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {
                         // create noti for page
+                        const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
+
+                        notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
                         await this.pageNotificationService.notifyToPageUser(postObj.pageId, undefined, req.user.id + '', USER_TYPE.USER, NOTIFICATION_TYPE.LIKE, notificationText, link);
                     } else {
                         // create noti for user
+                        notificationText += ' กดถูกใจโพสต์ของคุณ';
                         await this.notificationService.createNotification(postObj.ownerUser + '', USER_TYPE.USER, req.user.id + '', USER_TYPE.USER, NOTIFICATION_TYPE.LIKE, notificationText, link);
                     }
                 }
@@ -1313,4 +1361,4 @@ export class PostsController {
             return res.status(200).send(ResponseUtil.getErrorResponse('Get Post HashTag Recommended Story Success', {}));
         }
     }
-} 
+}

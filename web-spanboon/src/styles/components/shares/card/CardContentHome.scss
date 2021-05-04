@@ -10,11 +10,15 @@
     > .small_card {
         background-color: rgb(255, 255, 255);
         margin: 0px 10px;
+        border-radius: 5px;
         cursor: pointer;
+        padding: 5px;
         transition: 0.1s;
         border: solid 0.5px #d3d3d300;
         &:hover {
-            border: solid 0.5px $brandcolor2;
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
         }
         > .top_small_card {
             width: 200px;
@@ -95,7 +99,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-7($font-head-500);
+                    @include font-size-9($font-head-500);
 
                     &:hover {
                         transition: 0.1s;
@@ -156,9 +160,16 @@
     }
     > .medium_card {
         background-color: rgb(255, 255, 255);
-        margin: 0px 10px;
         width: 360px;
+        margin: 0px 10px;
+        padding: 15px;
+        border-radius: 5px;
         cursor: pointer;
+        &:hover {
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
+        }
         > .type_post {
             display: flex;
             align-items: center;
@@ -330,9 +341,16 @@
         }
     }
     > .large_card {
-        background-color: rgb(255, 255, 255);
+        background-color: white;
         margin: 0px 10px;
-
+        padding: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+            transition: 0.2s;
+            background-color: #f0f0f0;
+            // color: white !important;
+        }
         > .type_post {
             display: flex;
             align-items: center;
@@ -411,12 +429,12 @@
             height: 200px;
             word-break: break-word;
             position: relative;
-            padding: 0px 5px;
+            // padding: 0px 5px;
             > .bottom_large_card_detail {
                 > span {
                     margin-top: 5px;
                     line-height: 25px;
-                    @include font-size-9($font-content-light);
+                    @include font-size-10($font-content-light);
                 }
                 > .title {
                     margin-top: 5px;
@@ -426,7 +444,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-7($font-head-500);
+                    @include font-size-9($font-head-500);
                 }
             }
             > a {
@@ -506,6 +524,11 @@
             &.full {
                 width: calc(60% - 30px);
                 padding: 0px 15px;
+                &:hover {
+                    transition: 0.2s;
+                    background-color: #f0f0f0;
+                    // color: white !important;
+                }
             }
             > .top_coverPage {
                 width: 100%;
@@ -526,8 +549,8 @@
                     -o-object-fit: scale-down;
                     object-fit: cover;
                     z-index: 1;
-                    filter: blur(15px);
-                    -webkit-filter: blur(15px);
+                    filter: blur(5px);
+                    -webkit-filter: blur(5px);
                 }
                 > .teg_event {
                     position: absolute;
@@ -635,7 +658,7 @@
                     border-bottom: solid 0.5px #d3d3d3;
                     &:hover {
                         transition: 0.2s;
-                        border-bottom: solid 0.5px $brandcolor2;
+                        background-color: #f0f0f0;
                         // color: white !important;
                     }
                     > .img_box {
@@ -658,8 +681,8 @@
                             -o-object-fit: scale-down;
                             object-fit: cover;
                             z-index: 1;
-                            filter: blur(15px);
-                            -webkit-filter: blur(15px);
+                            filter: blur(5px);
+                            -webkit-filter: blur(5px);
                         }
                         > img {
                             z-index: 2;

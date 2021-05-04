@@ -58,6 +58,7 @@ export class UserEngagementController {
         } else { 
             userEngagement.isFirst = true; 
         } 
+
         userEngagementAction = await this.userEngagementService.create(userEngagement); 
  
         if (userEngagementAction) {

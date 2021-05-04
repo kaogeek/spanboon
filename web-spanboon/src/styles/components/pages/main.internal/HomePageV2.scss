@@ -43,16 +43,20 @@
                     }
                 }
                 > .tag_list {
-                    display: block;
+                    display: contents;
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
+                        word-break: unset;
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
                         }
                     }
+                }
+                > .tag_list::-webkit-scrollbar {
+                    width: 0 !important;
                 }
                 > .tag_list_moblie {
                     display: none;
@@ -81,10 +85,12 @@
                     width: 72px;
                 }
                 > .tag_list {
+                    display: contents;
                     > .tag {
                         cursor: pointer;
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
+                        word-break: unset;
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
@@ -99,7 +105,7 @@
             // width: 80%;
             display: flex;
             &.full {
-                width: 1533px;
+                width: 80vw;
             }
             border-bottom: solid 0.5px #d3d3d3;
             > .left {
@@ -127,7 +133,7 @@
         > .around_section {
             margin: 20px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 width: 100%;
                 display: flex;
@@ -173,7 +179,7 @@
         > .needs_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -235,7 +241,7 @@
         > .rated_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -295,7 +301,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 1533px;
+            width: 80vw;
             > .top {
                 color: $brandcolor2;
                 display: flex;

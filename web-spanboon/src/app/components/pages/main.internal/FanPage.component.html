@@ -189,7 +189,7 @@
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
-                            <button-follow  [bgColor]="'#FFFFFF'" [inputId]="'follow'"
+                                <button-follow [bgColor]="'#FFFFFF'" [inputId]="'follow'"
                                     [text]="resDataPage && resDataPage.isFollow ? 'กำลังติดตาม' : 'ติดตาม'"
                                     (click)="clickFollowPage()" [class.active]="resDataPage && resDataPage.isFollow">
                                 </button-follow>
@@ -381,7 +381,7 @@
 
                                 <ng-container *ngIf="localtion; else elseTemplateLocation">
                                     <a target="_blank" href="{{localtion}}" class="contact-social"
-                                    [class.active]="localtion !== undefined && localtion !== null && localtion !== '' ? true : false">
+                                        [class.active]="localtion !== undefined && localtion !== null && localtion !== '' ? true : false">
                                         <svg class="location" xmlns="http://www.w3.org/2000/svg" width="11.352"
                                             height="16.146" viewBox="0 0 11.352 16.146">
                                             <g id="placeholder" transform="translate(-76)">
@@ -409,7 +409,7 @@
                                             </g>
                                         </svg>
                                     </a>
-                                </ng-template> 
+                                </ng-template>
                                 <ng-container *ngIf="resDataPage && resDataPage.mobileNo; else elseTemplateMobile">
                                     <a href="tel:{{resDataPage.mobileNo}}" class="contact-social"
                                         [class.active]="resDataPage && resDataPage.mobileNo && resDataPage.mobileNo !== undefined && resDataPage.mobileNo !== null && resDataPage.mobileNo !== '' ? true : false">
@@ -430,11 +430,11 @@
                                                 fill="#ececec" />
                                         </svg>
                                     </a>
-                                </ng-template> 
+                                </ng-template>
 
                                 <ng-container *ngIf="resDataPage && resDataPage.email; else elseTemplateMessage">
                                     <a href="mailto:{{resDataPage.email}}" target="_blank" class="contact-social"
-                                    [class.active]="resDataPage && resDataPage.email && resDataPage.email !== undefined && resDataPage.email !== null && resDataPage.email !== '' ? true : false">
+                                        [class.active]="resDataPage && resDataPage.email && resDataPage.email !== undefined && resDataPage.email !== null && resDataPage.email !== '' ? true : false">
                                         <svg class="message" xmlns="http://www.w3.org/2000/svg" width="18.87"
                                             height="13.479" viewBox="0 0 18.87 13.479">
                                             <g id="email" transform="translate(0 -68.267)">
@@ -600,10 +600,11 @@
 
                     <div class="wrapper-feed-fan-page">
                         <div class="do-tablet">
-                            <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0"> 
-                            <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
-                                [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
-                            </card-item>
+                            <ng-container
+                                *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
+                                <card-item [isDevelop]="true" [itemData]="resDataPage && resDataPage.pageObjectives"
+                                    [isDoIng]="'true'" [statusLable]="'กำลังทำอยู่'" [isTabletDoIng]="'true'">
+                                </card-item>
                             </ng-container>
                         </div>
 
@@ -627,7 +628,7 @@
                         </div>
                         <div *ngIf="!showLoading" class="wrapper-feed">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
-                                <div *ngIf="!isPost" class="main-feed"> 
+                                <div *ngIf="!isPost" class="main-feed">
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
@@ -678,13 +679,29 @@
                                     </ng-container>
                                 </div>
                             </ng-template>
+                            <ng-template #elseTemplateCheckPost>
+                                <div class="main-feed">
+                                    <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
+                                        <ng-container *ngFor="let itemPost of resDataPost; let index = index">
+                                            <post-data [itemPost]="itemPost" [user]="userImage"
+                                                (action)="actionComment($event,index)" (comment)="createComment($event)"
+                                                [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
+                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
+                                            </post-data>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </ng-template>
                             <div class="side-feed" #sidefeedHeight>
-                                <ng-container *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
+                                <ng-container
+                                    *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
                                     <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
                                         [statusLable]="'กำลังทำอยู่'"></card-item>
-                                </ng-container> 
-                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend" 
-                                (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex"></recommend-card>
+                                </ng-container>
+                                <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"
+                                    (submitFollow)="clickFollow($event)" [selectedIndex]="selectedIndex">
+                                </recommend-card>
                             </div>
                         </div>
                         <ng-container *ngIf="isCheck === true">

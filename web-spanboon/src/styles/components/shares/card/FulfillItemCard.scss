@@ -68,6 +68,8 @@
             @include font-size-10($font-head-500);
             line-height: 30px;
             padding: 0 24px;
+            background-color: $brandcolor3;
+            color: $white;
         }
     }
 }

@@ -145,7 +145,7 @@
               > a {
                 > .new-card-pageName {
                   color: $brandcolor;
-                  @include font-size-9($font-head-500);
+                  @include font-size-10($font-head-500);
                   flex: 1 1 0%;
                   display: -webkit-box;
                   -webkit-line-clamp: 1;
@@ -155,7 +155,7 @@
                   word-break: break-all;
 
                   &:hover {
-                    color: rgba($brandcolor2, 0.95);
+                    color: rgba($brandcolor3, 0.95);
                   }
                 }
               }
