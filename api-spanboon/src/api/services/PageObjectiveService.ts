@@ -14,14 +14,13 @@ import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { ObjectID } from 'mongodb';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { PostsService } from '../services/PostsService';
-import { NeedsService } from '../services/NeedsService';
 import { POST_TYPE } from '../../constants/PostType';
 
 @Service()
 export class PageObjectiveService {
 
     constructor(@OrmRepository() private pageObjectiveRepository: PageObjectiveRepository,
-        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService, private needsService: NeedsService) { }
+        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService) { }
 
     // find PageObjective
     public find(findCondition?: any): Promise<any[]> {
