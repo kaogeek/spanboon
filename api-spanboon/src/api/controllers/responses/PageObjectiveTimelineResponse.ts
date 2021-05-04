@@ -18,4 +18,5 @@ export class PageObjectiveTimelineResponse {
     public startDateTime: Date;
     public endDateTime: Date;
     public timelines: any[];
+    public needItems: any[];
 }

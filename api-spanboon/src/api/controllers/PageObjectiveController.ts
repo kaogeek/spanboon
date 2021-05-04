@@ -30,6 +30,16 @@ import { UserEngagement } from '../models/UserEngagement';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
+import { PostsService } from '../services/PostsService';
+import { PostsCommentService } from '../services/PostsCommentService';
+import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
+import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
+import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
+import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
+import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
+import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
+import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -39,7 +49,10 @@ export class ObjectiveController {
         private assetService: AssetService,
         private pageService: PageService,
         private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService
+        private userEngagementService: UserEngagementService,
+        private postsService: PostsService,
+        private postsCommentService: PostsCommentService,
+        private fulfillmentCaseService: FulfillmentCaseService
     ) { }
 
     // Find PageObjective API
@@ -448,7 +461,8 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/timeline')
-    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any): Promise<any> {
+    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
         let objective: PageObjective;
         const objId = new ObjectID(id);
 
@@ -469,10 +483,108 @@ export class ObjectiveController {
             pageObjTimeline.followedUser = followingUsers.followers;
             pageObjTimeline.followedCount = followingUsers.count;
 
-            const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5);
+            const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;
             pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
             pageObjTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
+
+            pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
+            pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
+            pageObjTimeline.timelines = [];
+
+            // fix for first section
+            const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
+            startProcessor.setData({
+                objectiveId: objId
+            });
+            const startObjvResult = await startProcessor.process();
+            if (startObjvResult !== undefined) {
+                pageObjTimeline.timelines.push(startObjvResult);
+            }
+
+            const datetimeRange: any[] = this.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            for (const ranges of datetimeRange) {
+                if (ranges !== undefined && ranges.length < 2) {
+                    continue;
+                }
+                // influencer section
+                const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
+                influencerProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 2
+                });
+                const influencerProcsResult = await influencerProcessor.process();
+                if (influencerProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(influencerProcsResult);
+                }
+
+                // need section
+                const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
+                needsProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1]
+                });
+                const needsProcsResult = await needsProcessor.process();
+                if (needsProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(needsProcsResult);
+                }
+
+                // share section
+                /* //! waiting for implement
+                const shareProcessor = new ObjectiveShareProcessor(this.postsService, this.userFollowService);
+                shareProcessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 10,
+                    userId
+                });
+                const shareProcsResult = await shareProcessor.process();
+                if (shareProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(shareProcsResult);
+                }*/
+
+                // fulfill section
+                const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+                fulfillrocessor.setData({
+                    objectiveId: objId,
+                    startDateTime: ranges[0],
+                    endDateTime: ranges[1],
+                    sampleCount: 10,
+                    userId
+                });
+                const fulfillProcsResult = await fulfillrocessor.process();
+                if (fulfillProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(fulfillProcsResult);
+                }
+
+                // following section
+                const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
+                followingProcessor.setData({
+                    objectiveId: objId,
+                    sampleCount: 10,
+                    userId
+                });
+                const followingProcsResult = await followingProcessor.process();
+                if (followingProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(followingProcsResult);
+                }
+            }
+
+            // current post section
+            const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
+            lastestPostProcessor.setData({
+                objectiveId: objId,
+                limit: 4,
+                userId
+            });
+            const lastestProcsResult = await lastestPostProcessor.process();
+            if (lastestProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(lastestProcsResult);
+            }
 
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', pageObjTimeline);
             return res.status(200).send(successResponse);
@@ -572,5 +684,15 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
+    }
+
+    private generateCurrentMonthRanges(): any[] {
+        const result = [];
+        const startOfMonth = moment().clone().startOf('month').toDate();
+        const endOfMonth = moment().clone().endOf('month').toDate();
+        const datetimeRange = [startOfMonth, endOfMonth];
+
+        result.push(datetimeRange);
+        return result;
     }
 }
