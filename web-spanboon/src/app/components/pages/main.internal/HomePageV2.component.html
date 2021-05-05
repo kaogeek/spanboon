@@ -29,21 +29,17 @@
                 <div class="text_h">
                     <span class="text">มาใหม่ :</span>
                 </div>
-                <div class="tag_list">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">
+                <div class="tag_list" id="style-1">
+                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle let i=index">
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
-                </div>
-                <div class="tag_list_moblie">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle; let i=index">
-                        <a (click)="clickDataSearch(item)">{{item}}</a>
-                    </div>
+                    <div style="width: 10%;height: 10%;"></div>
                 </div>
             </div>
             <div class="right">
                 <span class="text">มาแรง :</span>
-                <div class="tag_list">
-                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle | slice:0:3; let i=index">
+                <div class="tag_list" id="style-1">
+                    <div class="tag" *ngFor="let item of emergencyEventsArrTitle let i=index">
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
                 </div>
@@ -73,9 +69,28 @@
         <!-- ///////////////////////// -->
 
 
-        <div class="around_section" *ngIf="aroundSectionModels">
+        <!-- <div class="around_section" *ngIf="aroundSectionModels">
             <div class="top fix-hompage-bar">
                 <div class="text_svg">
+                    <div class="svg">
+                        <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
+                            viewBox="0 0 22.899 22.899">
+                            <g id="mission" transform="translate(0)">
+                                <path class="svg-icon-color-activate" id="Path_3205" data-name="Path 3205"
+                                    d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                    transform="translate(0 -299.903)" class="svg-icon-color-activate" />
+                                <path class="svg-icon-color-activate" id="Path_3206" data-name="Path 3206"
+                                    d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                    transform="translate(-295.877)" class="svg-icon-color-activate" />
+                                <path class="svg-icon-color-activate" id="Path_3207" data-name="Path 3207"
+                                    d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                    transform="translate(-131.312 -333.558)" class="svg-icon-color-activate" />
+                                <path class="svg-icon-color-activate" id="Path_3208" data-name="Path 3208"
+                                    d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                    transform="translate(-248.03 -228.703)" class="svg-icon-color-activate" />
+                            </g>
+                        </svg>
+                    </div>
                     <div class="text">
                         <span class="title hompage-title">{{aroundSectionModels.title}}</span>
                         <span class="subtitle">{{aroundSectionModels.subtitle}}</span>
@@ -181,8 +196,8 @@
                     <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true'
                         [keyObjArr]='["coverPageUrl"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
-                <div *ngIf="isLodingMore" style="width: 100%; margin: 20px;display: flex;">
-                    <div style="width: 30%; margin-right: 15px;" *ngFor="let number of [0,1,2,3 ]">
+                <div class="loding_more" *ngIf="isLodingMore">
+                    <div class="preload_card_more" *ngFor="let number of [0,1,2,3 ]">
                         <Preload-card [isShowCard1]="true" [isShowCard2]="false">
                         </Preload-card>
                     </div>
@@ -197,10 +212,10 @@
                         [border]="'rgba(253, 84, 84, 0.95) 1px solid'"></spanboon-button>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="other_section" [class.dis]="item.title === ''"
-            *ngFor=" let item of sectionModels| slice:0:1;let index = index">
+            *ngFor=" let item of sectionModels;let index = index">
             <div class="top fix-hompage-bar">
                 <span class="title hompage-title">{{item.title}}</span>
                 <div class="line"></div>
@@ -208,12 +223,16 @@
             </div>
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of item.contents| slice:0:4;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
-                        [postData]='dataViewSection'></card-contant-home>
+                    <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
+                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
+                <post-swiper-card *ngIf="item.type === 'SMALL'" [isObjective]="'true'"
+                    (clickEventA)="clickDataSearchTodo($event)" [isFulfillQuantity]="true" [isFulfill]="'true'"
+                    [keyItem]='["iconUrl"]' [itemNeeds]="item.contents">
+                </post-swiper-card>
                 <div class="isMobile" *ngFor="let dataViewSection of item.contents| slice:0:3;let index = index">
-                    <card-contant-home (clickEvent)="testCrad($event)" [mediumCard]='true' [keyObjArr]='["coverImage"]'
-                        [postData]='dataViewSection'></card-contant-home>
+                    <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
+                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <!-- <div class="footer_mobile">
                     <span>ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>
