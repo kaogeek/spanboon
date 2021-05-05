@@ -212,8 +212,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     })
   }
 
-  public async getMore(length, type,) {
-    console.log('type', type)
+  public async getMore(length: string, type: string, index: number) {
 
     this.isLodingMore = true;
     let userId = undefined;
@@ -225,28 +224,10 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let getMoreModel: any = await this.mainPageModelFacade.getMainPageModel(userId, length, type);
 
-    if (type === 'RECOMMEND') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.viewSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
-      }
-    }
-    if (type === 'STILLLOOKING') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.lookingSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
-      }
-    }
-    if (type === 'LASTEST') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.needsSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
+    if (getMoreModel.contents.length > 0) {
+      arrData = this.sectionModels[index].contents
+      for (const post of getMoreModel.contents) {
+        arrData.push(post)
       }
     }
 
