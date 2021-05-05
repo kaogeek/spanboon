@@ -213,6 +213,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   }
 
   public async getMore(length, type,) {
+    console.log('type', type)
 
     this.isLodingMore = true;
     let userId = undefined;

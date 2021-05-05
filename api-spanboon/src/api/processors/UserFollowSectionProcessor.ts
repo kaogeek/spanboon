@@ -120,8 +120,8 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 const postStmt = [
                     { $match: matchStmt },
                     { $sort: { createdDate: -1 } },
-                    { $limit: limit },
                     { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',
@@ -152,6 +152,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'โพสต์ที่แนะนำสำหรับคุณ';
+                result.type = 'USERFOLLOW';
                 result.iconUrl = '';
                 if (page) {
                     result.title = 'เพราะคุณติดตาม' + ' "' + page.name + '"';

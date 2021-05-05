@@ -384,7 +384,7 @@
             > .around_section {
                 margin: 20px 0px;
                 padding: 10px 10px;
-                width: 100%;
+                width: calc(100% - 20px);
                 > .top {
                     width: 100%;
                     display: flex;
@@ -434,7 +434,7 @@
             &.tag {
                 margin: unset;
                 padding: unset;
-                width: 100%;
+                width: 80vw;
             }
         }
     }
