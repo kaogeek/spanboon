@@ -120,8 +120,8 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 const postStmt = [
                     { $match: matchStmt },
                     { $sort: { createdDate: -1 } },
-                    { $limit: limit },
                     { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',

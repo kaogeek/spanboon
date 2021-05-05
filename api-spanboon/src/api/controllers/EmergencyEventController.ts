@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Param, Post, Body } from 'routing-controllers';
+import { JsonController, Res, Get, Param, Post, Body, Authorized, Req } from 'routing-controllers';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ObjectID } from 'mongodb';
 import { ObjectUtil, ResponseUtil } from '../../utils/Utils';
@@ -14,10 +14,17 @@ import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTagService } from '../services/HashTagService';
 import { HashTag } from '../models/HashTag';
 import { FindHashTagRequest } from './requests/FindHashTagRequest';
+import { UserFollow } from '../models/UserFollow';
+import { UserEngagement } from '../models/UserEngagement';
+import { UserEngagementService } from '../services/UserEngagementService';
+import { UserFollowService } from '../services/UserFollowService';
+import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
-    constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService) { }
+    constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
+        private userEngagementService: UserEngagementService,) { }
 
     // Find EmergencyEvent API
     /**
@@ -141,4 +148,96 @@ export class EmergencyEventController {
             return res.status(200).send(errorResponse);
         }
     }
-} 
+
+    // Follow Emergency Event
+    /**
+     * @api {post} /api/emergency/:id/follow Follow Emergency Event API
+     * @apiGroup Emergency Event
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Follow Emergency Event Success",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"OBJEV
+     *  }
+     * @apiSampleRequest /api/emergency/:id/follow
+     * @apiErrorExample {json} Follow Emergency Event Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/:id/follow')
+    @Authorized('user')
+    public async followEmergencyEvent(@Param('id') emergencyEventId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const emergencyEventObjId = new ObjectID(emergencyEventId);
+        const userObjId = new ObjectID(req.user.id);
+        const clientId = req.headers['client-id'];
+        const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const emergencyEventFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: emergencyEventObjId, subjectType: SUBJECT_TYPE.EMERGENCY_EVENT } });
+        let userEngagementAction: UserEngagement;
+
+        if (emergencyEventFollow) {
+            const unfollow = await this.userFollowService.delete({ userId: userObjId, subjectId: emergencyEventObjId, subjectType: SUBJECT_TYPE.EMERGENCY_EVENT });
+            if (unfollow) {
+                const userEngagement = new UserEngagement();
+                userEngagement.clientId = clientId;
+                userEngagement.contentId = emergencyEventObjId;
+                userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.EMERGENCY_EVENT;
+                userEngagement.ip = ipAddress;
+                userEngagement.userId = userObjId;
+                userEngagement.action = ENGAGEMENT_ACTION.UNFOLLOW;
+
+                const engagement = await this.userEngagementService.findOne({ where: { contentId: emergencyEventObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.EMERGENCY_EVENT, action: ENGAGEMENT_ACTION.UNFOLLOW } });
+                if (engagement) {
+                    userEngagement.isFirst = false;
+                } else {
+                    userEngagement.isFirst = true;
+                }
+
+                userEngagementAction = await this.userEngagementService.create(userEngagement);
+
+                if (userEngagementAction) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Unfollow Emergency Event Success', undefined);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unfollow Emergency Event Failed', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const userFollow = new UserFollow();
+            userFollow.userId = userObjId;
+            userFollow.subjectId = emergencyEventObjId;
+            userFollow.subjectType = SUBJECT_TYPE.OBJECTIVE;
+
+            const followCreate: UserFollow = await this.userFollowService.create(userFollow);
+            if (followCreate) {
+                const userEngagement = new UserEngagement();
+                userEngagement.clientId = clientId;
+                userEngagement.contentId = emergencyEventObjId;
+                userEngagement.contentType = ENGAGEMENT_CONTENT_TYPE.EMERGENCY_EVENT;
+                userEngagement.ip = ipAddress;
+                userEngagement.userId = userObjId;
+                userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
+
+                const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: emergencyEventObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.OBJECTIVE, action: ENGAGEMENT_ACTION.FOLLOW } });
+                if (engagement) {
+                    userEngagement.isFirst = false;
+                } else {
+                    userEngagement.isFirst = true;
+                }
+
+                userEngagementAction = await this.userEngagementService.create(userEngagement);
+
+                if (userEngagementAction) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Followed Emergency Event Success', followCreate);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Follow Emergency Event Failed', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+    }
+}
