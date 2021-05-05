@@ -12,6 +12,7 @@ import { UserPageLookingProcessorData } from './data/UserPageLookingProcessorDat
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { POST_TYPE } from '../../constants/PostType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
@@ -92,7 +93,8 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     isDraft: false,
                     deleted: false,
                     hidden: false,
-                    startDateTime: { $lte: today }
+                    startDateTime: { $lte: today },
+                    type: POST_TYPE.NEEDS
                 };
                 if (pageFollow !== undefined) {
                     matchStmt.pageId = new ObjectID(pageFollow.subjectId + '');
@@ -100,9 +102,9 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                 const postStmt = [
                     { $match: matchStmt },
+                    { $sort: { createdDate: -1 } },
                     { $limit: limit },
                     { $skip: offset },
-                    { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
                             from: 'Page',

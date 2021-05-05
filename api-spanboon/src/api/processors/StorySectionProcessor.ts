@@ -99,8 +99,8 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $sample: { size: limit } }, // for random
                     { $sort: { createdDate: -1 } },
+                    { $sample: { size: limit } }, // for random
                     { $skip: offset },
                     { $limit: limit },
                     {
