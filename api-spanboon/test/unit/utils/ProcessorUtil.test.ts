@@ -7,37 +7,37 @@ import { EmergencyEventSectionProcessor } from '../../../src/api/processors/Emer
 function generateMockProcessor(): any[] {
     const result = [];
 
-    let processor1 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
-    processor1.process = function () {
-        const sectionModel = new SectionModel();
-        sectionModel.title = '1';
-        return Promise.resolve(sectionModel);
-    };
-    result.push(processor1);
+    // let processor1 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
+    // processor1.process = function () {
+    //     const sectionModel = new SectionModel();
+    //     sectionModel.title = '1';
+    //     return Promise.resolve(sectionModel);
+    // };
+    // result.push(processor1);
 
-    let processor2 = new StillLookingSectionProcessor(undefined, undefined, undefined);
-    processor2.process = function () {
-        const sectionModel = new SectionModel();
-        sectionModel.title = '2';
-        return Promise.resolve(sectionModel);
-    };
-    result.push(processor2);
+    // let processor2 = new StillLookingSectionProcessor(undefined, undefined, undefined);
+    // processor2.process = function () {
+    //     const sectionModel = new SectionModel();
+    //     sectionModel.title = '2';
+    //     return Promise.resolve(sectionModel);
+    // };
+    // result.push(processor2);
 
-    let processor3 = new EmergencyEventSectionProcessor(undefined, undefined);
-    processor3.process = function () {
-        const sectionModel = new SectionModel();
-        sectionModel.title = '3';
-        return Promise.resolve(sectionModel);
-    };
-    result.push(processor3);
+    // let processor3 = new EmergencyEventSectionProcessor(undefined, undefined);
+    // processor3.process = function () {
+    //     const sectionModel = new SectionModel();
+    //     sectionModel.title = '3';
+    //     return Promise.resolve(sectionModel);
+    // };
+    // result.push(processor3);
 
-    let processor4 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
-    processor4.process = function () {
-        const sectionModel = new SectionModel();
-        sectionModel.title = '4';
-        return Promise.resolve(sectionModel);
-    };
-    result.push(processor4);
+    // let processor4 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
+    // processor4.process = function () {
+    //     const sectionModel = new SectionModel();
+    //     sectionModel.title = '4';
+    //     return Promise.resolve(sectionModel);
+    // };
+    // result.push(processor4);
 
     return result;
 }
@@ -56,7 +56,7 @@ describe('to test randomProcessorOrdering.', () => {
 
     test('To test Random data array.', async () => {
         const processor = generateMockProcessor();
-        let result = ProcessorUtil.randomProcessorOrdering(processor);
+        const result = ProcessorUtil.randomProcessorOrdering(processor);
         expect(result.length).toBe(4);
 
         const processorName = ['1', '2', '3', '4'];
