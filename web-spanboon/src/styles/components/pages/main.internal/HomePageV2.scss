@@ -488,6 +488,9 @@
     .home_page_v2 > .hoem_page_body > .around_section {
         width: 90%;
     }
+    .home_page_v2 > .hoem_page_body > .other_section > .around_section {
+        width: 90%;
+    }
     .home_page_v2 > .hoem_page_body > .needs_section {
         width: 90%;
     }
@@ -545,6 +548,11 @@
         width: 100%;
     }
     .home_page_v2 > .hoem_page_body > .around_section {
+        margin: 10px 0px;
+        padding: 10px 0px;
+        width: 100%;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section > .around_section {
         margin: 10px 0px;
         padding: 10px 0px;
         width: 100%;
@@ -627,6 +635,11 @@
         padding: 10px 0px;
         width: calc(100% - 20px);
     }
+    .home_page_v2 > .hoem_page_body > .other_section > .around_section {
+        margin: 10px 0px;
+        padding: 10px 0px;
+        width: calc(100% - 20px);
+    }
     .home_page_v2 > .hoem_page_body > .needs_section > .body > .isMobile {
         width: 50%;
         display: block;
@@ -650,6 +663,10 @@
     .home_page_v2 > .hoem_page_body > .other_section > .body > .isDesktop {
         width: 50%;
         display: none;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section.tag {
+        width: calc(100% - 22px);
+        padding: 10px 10px;
     }
 }
 

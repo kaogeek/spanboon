@@ -219,8 +219,8 @@
             <div [class.dis]="item.type === 'SMALL'" class="top fix-hompage-bar">
                 <span class="title hompage-title">{{item.title}}</span>
                 <div class="line"></div>
-                <a class="more" (click)="getMore(item.contents.length,item.type)"
-                    *ngIf="item.contents.length === 4">ดูเพิ่มเติม</a>
+                <a class="more" (click)="getMore(item.contents.length,item.type,index)"
+                    *ngIf="item.contents.length > 3">ดูเพิ่มเติม</a>
             </div>
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of item.contents;let index = index">
