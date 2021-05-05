@@ -815,6 +815,8 @@
         .card_content_home > .medium_card {
             background-color: white;
             margin: 10px 10px;
+            border-radius: unset;
+            border-top: solid 0.2px #e4e4e6;
             width: auto;
         }
     }
