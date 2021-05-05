@@ -102,9 +102,9 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                 const postStmt = [
                     { $match: matchStmt },
+                    { $sort: { createdDate: -1 } },
                     { $limit: limit },
                     { $skip: offset },
-                    { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
