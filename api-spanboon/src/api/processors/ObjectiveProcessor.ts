@@ -10,9 +10,8 @@ import { ContentModel } from '../models/ContentModel';
 import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { ObjectiveProcessorData } from './data/ObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
-import { ObjectID } from 'mongodb';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import moment from 'moment';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -22,7 +21,6 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
     constructor(
         private pageObjectiveService: PageObjectiveService,
-        private userFollowService: UserFollowService,
         private postsService: PostsService,
     ) {
         super();
@@ -45,6 +43,14 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                 const matchStmt: any = {
                 };
+
+                const result: SectionModel = new SectionModel();
+                result.title = 'สิ่งที่กำลังเกิดขึ้นรอบตัวคุณ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
+                result.type = 'OBJECTIVE';
+                result.description = '';
+                result.iconUrl = '';
+                result.contents = [];
 
                 const pageObjectiveResult: any[] = [];
                 for (let index = 0; pageObjectiveResult.length < 5; index++) {
@@ -72,8 +78,12 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         }
                     ];
                     const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+                    if (searchResult.length === 0) {
+                        resolve(result);
+                        break;
+                    }
 
-                    for await (const iterator of searchResult) {
+                    for (const iterator of searchResult) {
                         if (iterator.hashTagObj.length > 0) {
                             pageObjectiveResult.push(iterator);
                         }
@@ -83,14 +93,6 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 }
 
                 let lastestDate = null;
-
-                const result: SectionModel = new SectionModel();
-                result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
-                result.type = 'OBJECTIVE';
-                result.description = '';
-                result.iconUrl = '';
-                result.contents = [];
 
                 const hashtagNames = [];
                 const hastagRowMap = {};

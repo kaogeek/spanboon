@@ -456,8 +456,11 @@ export class TableComponent implements OnInit {
 
     public clickCreateForm(): void {
         if (this.seletc.length != 0) {
+            console.log('create1 >>>> ', this.arr);
+
             this.create.emit(this.arr);
         } else {
+            console.log('create2 >>>> ');
             this.create.emit(null);
         }
     }

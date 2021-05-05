@@ -217,7 +217,7 @@
                         }
 
                         > .lookfor {
-                            @include font-size-9($font-head-300);
+                            @include font-size-10($font-head-300);
                             margin-left: 5px;
                         }
 
@@ -228,7 +228,7 @@
                         }
 
                         > .date {
-                            @include font-size-9($font-head-300);
+                            @include font-size-10($font-head-300);
                             color: rgb($black, 0.5);
                             margin-left: 5px;
 
@@ -246,7 +246,7 @@
                     }
 
                     > .contact-head {
-                        @include font-size-6($font-head-500);
+                        @include font-size-8($font-head-500);
                         margin-top: 3pt;
                         display: -webkit-box;
                         -webkit-line-clamp: 1;
@@ -266,7 +266,7 @@
                         flex-wrap: wrap;
                         padding: 3pt 0;
                         > .date {
-                            @include font-size-9($font-head-300);
+                            @include font-size-10($font-head-100);
                             color: rgb($black, 0.5);
 
                             a {
@@ -357,13 +357,13 @@
                             text-align: right;
 
                             > .joinus {
-                                @include font-size-9($font-head-500);
+                                @include font-size-10($font-head-500);
                                 color: $home-page-activate-color;
                             }
 
                             > .user {
                                 word-break: break-all;
-                                @include font-size-9($font-head-400);
+                                @include font-size-10($font-head-400);
 
                                 a {
                                     color: #a5a5a6;
@@ -410,6 +410,11 @@
 
                         > .butt-fulfill {
                             font-family: "Kanit-500";
+                        }
+
+                        .btn-create-fulfill-post {
+                            background-color: $brandcolor2 !important;
+                            color: $white !important;
                         }
 
                         > .text-fulfill-close {
@@ -578,7 +583,7 @@
                                 > .fulfill-status-text {
                                     font-family: "Kanit-500";
                                     font-size: 12pt;
-                                    color: $bg-color4;
+                                    color: $brandcolor3;
                                 }
 
                                 > .fulfill-action {
@@ -586,6 +591,17 @@
                                     // justify-content: space-between;
                                     // display: flex;
                                     // width: 100%;
+
+                                    > .btn-cancel-confirm,
+                                    > .btn-cancel-fulfill {
+                                        background-color: $white !important;
+                                        color: $black !important;
+                                    }
+
+                                    > .btn-confirm-fulfill {
+                                        background-color: $brandcolor3 !important;
+                                        color: $white !important;
+                                    }
 
                                     > .butt-fulfill-bottom {
                                         @include font-size-10($font-head-500);

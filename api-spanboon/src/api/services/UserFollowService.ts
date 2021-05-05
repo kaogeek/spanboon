@@ -10,6 +10,8 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { UserFollow } from '../models/UserFollow';
 import { UserFollowRepository } from '../repositories/UserFollowRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
+import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { ObjectID } from 'mongodb';
 
 @Service()
 export class UserFollowService {
@@ -17,8 +19,8 @@ export class UserFollowService {
     constructor(@OrmRepository() private userFollowRepository: UserFollowRepository) { }
 
     // find userFollow
-    public async find(findCondition: any): Promise<any[]> {
-        return await this.userFollowRepository.find(findCondition);
+    public async find(findCondition: any): Promise<UserFollow[]> {
+        return this.userFollowRepository.find(findCondition);
     }
 
     // find userFollow
@@ -57,7 +59,7 @@ export class UserFollowService {
         }
     }
 
-    public sampleUserFollow(id: string, subjectType: string, simpleCount: number): Promise<any> {
+    public sampleUserFollow(id: any, subjectType: string, simpleCount: number): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = {
@@ -89,6 +91,93 @@ export class UserFollowService {
                 for (const fol of folFive) {
                     result.followers.push(this.parseUserField(fol.user[0]));
                 }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public getTopInfluencerUserFollow(topCount: number): Promise<any[]> {
+        if (topCount === undefined) {
+            topCount = 5;
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const aggregateStmt = [
+                    { $match: { subjectType: SUBJECT_TYPE.USER } },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } },
+                    { $sort: { count: -1 } },
+                    { $limit: topCount },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                        }
+                    }
+                ];
+
+                const result = await this.aggregate(aggregateStmt);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public getUserFollower(followedUser: ObjectID, limit?: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const aggregateStmt: any[] = [
+                    { $match: { subjectId: followedUser, subjectType: SUBJECT_TYPE.USER } },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                        }
+                    }
+                ];
+
+                if (limit !== undefined) {
+                    aggregateStmt.splice(1, 0, { $limit: limit });
+                }
+
+                const result = await this.aggregate(aggregateStmt);
 
                 resolve(result);
             } catch (error) {

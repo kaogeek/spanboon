@@ -311,14 +311,14 @@
                                                 </button>
                                             </ng-container>
                                             <ng-container *ngIf="asPage && isCaseConfirmed && !isCaseHasPost">
-                                                <button mat-menu-item class="list-sort">
+                                                <button class="btn-create-fulfill-post" mat-menu-item class="list-sort">
                                                     <div class="select-name"
                                                         (click)="createFulfillPost(fulfillCaseId,asPage)">
                                                         สร้างโพสต์{{PLATFORM_FULFILL_TEXT}}
                                                     </div>
                                                 </button>
                                                 <button mat-menu-item class="list-sort">
-                                                    <div class="select-name"
+                                                    <div class="btn-cancel-fulfill" class="select-name"
                                                         (click)="cancelFulfillmentCase(fulfillCaseId,asPage)">
                                                         ยกเลิกคำขอ{{PLATFORM_FULFILL_TEXT}}
                                                     </div>
@@ -327,12 +327,12 @@
                                         </mat-menu>
                                     </ng-container>
                                     <ng-template #elseTemplateIsChecKMobile>
-                                        <button mat-stroked-button class="butt-fulfill"
+                                        <button mat-stroked-button class="butt-fulfill btn-cancel-fulfill"
                                             *ngIf="!isCaseConfirmed && !isCaseHasPost"
                                             (click)="cancelFulfillmentCase(fulfillCaseId,asPage)"
                                             [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกคำขอ{{PLATFORM_FULFILL_TEXT}}</button>
 
-                                        <button mat-stroked-button class="butt-fulfill"
+                                        <button mat-stroked-button class="butt-fulfill btn-create-fulfill-post"
                                             *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
                                             [ngStyle]="{'background': '#FD545A' , 'color' : '#FFF'}"
                                             (click)="createFulfillPost(fulfillCaseId,asPage)">
@@ -416,20 +416,17 @@
                                         </div>
 
                                         <div class="fulfill-action">
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-cancel-confirm"
                                                 *ngIf="asPage && isCaseConfirmed && !isCaseHasPost"
-                                                (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)"
-                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกการยืนยัน</button>
+                                                (click)="cancelConfirmFulfillmentCase(fulfillCaseId,asPage)">ยกเลิกการยืนยัน</button>
 
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-cancel-fulfill"
                                                 *ngIf="!isCaseConfirmed && !isCaseHasPost"
-                                                (click)="deleteAllFulfillList(reqData,asPage)"
-                                                [ngStyle]="{'background': '#FFF' , 'color' : '#000'}">ยกเลิกรายการทั้งหมด</button>
+                                                (click)="deleteAllFulfillList(reqData,asPage)">ยกเลิกรายการทั้งหมด</button>
 
-                                            <button mat-stroked-button class="butt-fulfill-bottom"
+                                            <button mat-stroked-button class="butt-fulfill-bottom btn-confirm-fulfill"
                                                 *ngIf="asPage && !isCaseConfirmed && !isCaseHasPost"
-                                                (click)="confirmFulfillRequest(fulfillCaseId,asPage)"
-                                                [ngStyle]="{'background': '#7AAF67' , 'color' : '#FFF' }">ยืนยันรายการ{{PLATFORM_FULFILL_TEXT}}</button>
+                                                (click)="confirmFulfillRequest(fulfillCaseId,asPage)">ยืนยันรายการ{{PLATFORM_FULFILL_TEXT}}</button>
                                         </div>
                                     </div>
                                 </div>

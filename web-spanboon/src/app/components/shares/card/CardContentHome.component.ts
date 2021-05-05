@@ -49,6 +49,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public tagCard: boolean;
     @Input()
     public tagCardIsOpenRight: boolean;
+    @Input()
+    public isObjective: boolean;
 
     @Output()
     public clickEvent: EventEmitter<any> = new EventEmitter();
@@ -112,8 +114,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
-        setTimeout(() => {
+    }
 
+    ngAfterViewInit(): void {
+        setTimeout(() => {
             if (this.isDerTy(this.postData)) {
                 if (this.isDerTy(this.postData.post)) {
                     this.postId = this.postData.post._id;
@@ -125,11 +129,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 }
 
-                this.amountSocial = (this.postData.likeCount + this.postData.repostCount + this.postData.shareCount);
+                this.amountSocial = (this.postData.post ? this.postData.post.likeCount : 0 + this.postData.post ? this.postData.post.repostCount : 0 + this.postData.post ? this.postData.post.shareCount : 0);
             }
 
             if (this.isDerTy(this.eventData)) {
-                console.log('this.eventData', this.eventData);
                 this.eventDataAct = this.eventData[0];
                 this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
@@ -164,10 +167,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.isLoad = false;
             }, 1000);
 
-        }, 2000);
-    }
-
-    ngAfterViewInit(): void {
+        }, 3000);
 
 
     }
@@ -194,7 +194,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(data, index?) {
-        this.router.navigateByUrl('/search?hashtag=' + data);
+        // this.router.navigateByUrl('/search?hashtag=' + data);
+        window.open('/search?hashtag=' + data);
         // if (this.isData) {
         //     this.router.navigateByUrl('/search?hashtag=' + data);
         // } else if (!index) {
@@ -209,8 +210,26 @@ export class CardContentHome extends AbstractPage implements OnInit {
         // }
     }
 
+    public clickToStory(data) {
+        window.open('/story/' + data);
+    }
+
     public clickDialogDiverlop() {
         this.showAlertDevelopDialog();
+    }
+
+    public clickEventEmitMedium(data?) {
+        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+            return
+        }
+        this.clickEvent.emit(this.postData);
+    }
+
+    public clickEventEmitLarge(data?) {
+        if (data.path[0].className !== 'large_card' && data.path[0].className !== 'bottom_large_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+            return
+        }
+        this.clickEvent.emit(this.postData);
     }
 
     public clickEventEmit() {

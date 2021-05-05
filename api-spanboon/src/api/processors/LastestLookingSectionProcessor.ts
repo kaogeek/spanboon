@@ -72,7 +72,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     { $group: { '_id': { 'post': '$post' } } },
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
-                    { $limit: 3 }
+                    { $limit: 4 }
                 ];
                 const postIds: any[] = [];
                 const needSearchResult = await this.needsService.aggregateEntity(needStmt);
@@ -83,12 +83,29 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 const today = moment().toDate();
                 const postStmt = [
                     { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false, startDateTime: { $lte: today } } },
+                    { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
                             localField: 'pageId',
                             foreignField: '_id',
                             as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
                         }
                     }
                 ];
@@ -114,6 +131,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         lastestDate = row.createdDate;
                     }
 
+                    const coverImageUrl = (row.coverImage) ? row.coverImage : undefined;
+
                     const contentModel = new ContentModel();
 
                     if (page !== null && page !== undefined) {
@@ -127,6 +146,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.viewCount = row.viewCount;
                         contentModel.followUserCount = followUserCount; // count all userfollow
                         contentModel.post = row;
+                        contentModel.coverPageUrl = coverImageUrl;
                         contentModel.dateTime = row.createdDate;
                         contentModel.owner = this.parsePageField(page);
 

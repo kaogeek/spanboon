@@ -382,7 +382,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     if (userId !== undefined) {
       search = {
         keyword: value,
-        user: userId
+        userId: userId
       }
     } else {
       search = {

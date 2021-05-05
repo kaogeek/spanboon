@@ -56,7 +56,7 @@ comment-post {
 
           > .username {
             color: $brandcolor2;
-            @include font-size-9($font-head-500);
+            @include font-size-10($font-head-500);
           }
 
           > .comment-comment {

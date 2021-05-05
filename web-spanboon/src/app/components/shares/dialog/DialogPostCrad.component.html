@@ -4,7 +4,7 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div class="dialog_post_card">
+<div class="dialog_post_card" [class.setheight]="showLoading">
     <span class="onClose" (click)="onClose($event)">
         <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.756 41.756"
@@ -23,8 +23,10 @@
         (userpage)="getAaaPost($event,index)" (delete)="deletePost($event,index)" (update)="editPost($event)"
         (engagement)="engagement($event)">
     </post-data> -->
-    <post-data [itemPost]="data.post" [isComments]="isLogin()" [isUserPage]="isLogin() && data.isNotAccess"
-        [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
-        (action)="actionComment($event)" (comment)="createComment($event)">
+    <post-data [itemPost]="data.post" [isComments]="isLogin()" [isUserPage]="isLogin()" [isShowUser]="true"
+        [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess" (action)="actionComment($event)"
+        [pageUser]="data.pageUser" (comment)="createComment($event)">
     </post-data>
+    <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false" [class]="'preload-profile'">
+    </Preload-card>
 </div>

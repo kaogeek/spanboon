@@ -22,7 +22,7 @@ import { MESSAGE } from '../../../../custom/variable';
 
 declare var $: any;
 
-const PAGE_NAME: string = 'home';
+const PAGE_NAME: string = 'homeV2';
 const PAGE_SIZE: number = 6;
 
 @Component({
@@ -207,7 +207,7 @@ export class HomePage extends AbstractPage implements OnInit {
 
     setTimeout(() => {
       this.showLoading = false
-    }, 3000);
+    }, 4000);
 
   }
   private setCardSilder() {

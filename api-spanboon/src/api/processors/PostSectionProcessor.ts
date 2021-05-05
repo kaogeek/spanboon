@@ -5,14 +5,13 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
+import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProcessor';
 import { SectionModel } from '../models/SectionModel';
-import { ContentModel } from '../models/ContentModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import moment from 'moment';
 
-export class PostSectionProcessor extends AbstractSectionModelProcessor {
+export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
     private DEFAULT_SEARCH_LIMIT = 5;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -67,8 +66,17 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                 };
                 const postStmt = [
                     { $match: postMatchStmt },
+                    { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: 10 },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
                     {
                         $lookup: {
                             from: 'Page',
@@ -76,6 +84,12 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                             foreignField: '_id',
                             as: 'ownerUser'
                         }
+                    },
+                    {
+                        $project: {
+                            story: 0
+                        }
+
                     }
                 ];
                 const postAggregate = await this.postsService.aggregate(postStmt);
@@ -87,10 +101,14 @@ export class PostSectionProcessor extends AbstractSectionModelProcessor {
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
+                result.type = this.getType(); // set type by processor type
+
                 for (const row of postAggregate) {
-                    row.owner = row.ownerUser[0];
-                    row.owner.isUserOfficial = row.owner.isOfficial;
-                    result.contents.push(row);
+                    const contents: any = {};
+                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                    contents.owner = row.ownerUser;
+                    contents.post = row;
+                    result.contents.push(contents);
                 }
                 result.dateTime = lastestDate;
 

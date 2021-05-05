@@ -8,6 +8,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { PLATFORM_STORY_TALE } from '../../../custom/variable';
+import { AssetFacade } from 'src/app/services/services';
 
 @Component({
   selector: 'control-action',
@@ -87,10 +88,17 @@ export class ControlAction {
   public apiBaseURL = environment.apiBaseURL;
   public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
 
-  constructor() {
+  constructor(private assetFacade: AssetFacade) {
     setTimeout(() => {
       if (this.accessPage !== undefined && this.accessPage !== null) {
-        if (this.accessPage[0].img64 !== undefined && this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
+        for (let accessPage of this.accessPage) {
+          this.assetFacade.getPathFile(accessPage.imageURL).then((res: any) => {
+            accessPage.img64 = res.data;
+          }).catch((err: any) => {
+          });
+        }
+
+        if (this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
           this.isImges = true
           this.isDis = false

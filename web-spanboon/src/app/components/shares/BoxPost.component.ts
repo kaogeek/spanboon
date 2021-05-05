@@ -83,7 +83,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public accessDataPage: any;
   @Input()
-  public isRepost: boolean; 
+  public isRepost: boolean;
   @Input()
   public isListPage: boolean;
   @Input()
@@ -152,7 +152,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public snackBar: MatSnackBar;
 
-  private masterSelected: boolean; 
+  private masterSelected: boolean;
 
   public httpItems: Observable<any[]>;
   public isShowEmergency: boolean;
@@ -318,7 +318,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     //   // console.log(error) 
     // }); 
   }
- 
+
   public ngOnInit(): void {
     this.searchAccessPage();
     this.checkTabs();
@@ -355,7 +355,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.prefix_button = 'box-file-input';
       }
     }, 0);
-    if (this.isListPage && this.content) { 
+    if (this.isListPage && this.content) {
       setTimeout(() => {
         let detail = this.content && (this.content.content || this.content.detail) ? (this.content.content || this.content.detail) : '';
         if (detail.includes('#')) {
@@ -526,7 +526,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         limit: 10,
         callbacks: {
           remoteFilter: (query, callback) => {
-            let filter : SearchFilter = new SearchFilter();
+            let filter: SearchFilter = new SearchFilter();
             filter.whereConditions = {
               name: query
             };
@@ -581,12 +581,12 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.socialGetBindingTwitter();
       this.socialGetBindingFacebook();
       this.getConfigTwitter();
-      this.getConfigFacebook(); 
+      this.getConfigFacebook();
     }, 0);
   }
 
   public ngOnDestroy(): void {
-    super.ngOnDestroy(); 
+    super.ngOnDestroy();
   }
 
   isPageDirty(): boolean {
@@ -616,17 +616,17 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
-  public async checkAccessPage(pageId: string) { 
-    await this.pageFacade.getAccess(pageId).then((res: any) => { 
+  public async checkAccessPage(pageId: string) {
+    await this.pageFacade.getAccess(pageId).then((res: any) => {
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true; 
+          this.isNotAccess = true;
         }
       }
 
-    }).catch((err: any) => { 
+    }).catch((err: any) => {
       if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false; 
+        this.isNotAccess = false;
       }
     })
   }
@@ -635,7 +635,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public searchAccessPage() {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
-        let index = 0; 
+        let index = 0;
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
@@ -663,7 +663,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = null
                 } else {
                   data.page.imageURL = image.data
-                } 
+                }
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -684,7 +684,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public cloneDataCheck(cloneData: any) {
     if (cloneData && cloneData.length > 0) {
       for (let data of cloneData) {
-        if (this.router.url.split('/')[1] === "page") { 
+        if (this.router.url.split('/')[1] === "page") {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
             this.modeShowDoing = true;
@@ -1514,7 +1514,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         }
       }
-    } 
+    }
 
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
@@ -2195,6 +2195,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     const dataDoing = this.objectiveDoing.nativeElement.value;
     const tagName = this.objectiveDoingName.nativeElement.value;
     const category = this.objectCategory.value;
+    console.log('this.objectCategory', this.objectCategory)
 
     if (category === undefined) {
       return this.showAlertDialog("เลือกหมวดหมู่");
@@ -2659,61 +2660,62 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialBinding(socialBind: boolean, platform: string) {
-    if (platform === 'twitter' && !this.twitterConection) {
-      if (!socialBind) {
-        this.unbindTwitter();
-      } else {
-        let callback = environment.webBaseURL + "/callback";
-        this.twitterService.requestToken(callback).then((result: any) => {
-          this.authorizeLink += '?' + result;
-          window.open(this.authorizeLink);
-          window.bindTwitter = (resultTwitter) => {
-            if (resultTwitter !== undefined && resultTwitter !== null) {
-              const twitter = new PageSocialTW();
-              twitter.twitterOauthToken = resultTwitter.token;
-              twitter.twitterTokenSecret = resultTwitter.token_secret;
-              twitter.twitterUserId = resultTwitter.userId;
+    this.setAutoPostSocial(socialBind, platform);
+    // if (platform === 'twitter' && !this.twitterConection) {
+    //   // if (!socialBind) {
+    //   //   this.unbindTwitter();
+    //   // } else { 
+    //   //   let callback = environment.webBaseURL + "/callback";
+    //   //   this.twitterService.requestToken(callback).then((result: any) => {
+    //   //     this.authorizeLink += '?' + result;
+    //   //     window.open(this.authorizeLink);
+    //   //     window.bindTwitter = (resultTwitter) => {
+    //   //       if (resultTwitter !== undefined && resultTwitter !== null) {
+    //   //         const twitter = new PageSocialTW();
+    //   //         twitter.twitterOauthToken = resultTwitter.token;
+    //   //         twitter.twitterTokenSecret = resultTwitter.token_secret;
+    //   //         twitter.twitterUserId = resultTwitter.userId;
 
-              this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
-                if (res.data) {
-                  this.twitterConection = res.data;
-                  if (this.twitterConection) {
-                    let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
+    //   //         this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
+    //   //           if (res.data) {
+    //   //             this.twitterConection = res.data;
+    //   //             if (this.twitterConection) {
+    //   //               let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
 
-                    const confirmEventEmitter = new EventEmitter<any>();
-                    confirmEventEmitter.subscribe(() => {
-                      this.submitDialog.emit();
-                    });
-                    const canCelEventEmitter = new EventEmitter<any>();
-                    canCelEventEmitter.subscribe(() => {
-                      this.submitCanCelDialog.emit();
-                    });
+    //   //               const confirmEventEmitter = new EventEmitter<any>();
+    //   //               confirmEventEmitter.subscribe(() => {
+    //   //                 this.submitDialog.emit();
+    //   //               });
+    //   //               const canCelEventEmitter = new EventEmitter<any>();
+    //   //               canCelEventEmitter.subscribe(() => {
+    //   //                 this.submitCanCelDialog.emit();
+    //   //               });
 
-                    let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
-                    dialog.afterClosed().subscribe((res) => {
-                      if (res) {
-                        this.setAutoPostSocial(true, 'twitter')
-                      } else {
-                        this.isAutoPostTwitter = false;
-                      }
-                    });
-                  }
-                }
-              }).catch((err: any) => {
-                if (err.error.message === 'This page was binding with Twitter Account.') {
-                  this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
-                }
-              });
-            }
-          }
-        }).catch((error: any) => {
-          console.log(error);
-          this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
-        });
-      }
-    } else {
-      this.setAutoPostSocial(socialBind, platform);
-    }
+    //   //               let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    //   //               dialog.afterClosed().subscribe((res) => {
+    //   //                 if (res) {
+    //   //                   this.setAutoPostSocial(true, 'twitter')
+    //   //                 } else {
+    //   //                   this.isAutoPostTwitter = false;
+    //   //                 }
+    //   //               });
+    //   //             }
+    //   //           }
+    //   //         }).catch((err: any) => {
+    //   //           if (err.error.message === 'This page was binding with Twitter Account.') {
+    //   //             this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+    //   //           }
+    //   //         });
+    //   //       }
+    //   //     }
+    //   //   }).catch((error: any) => {
+    //   //     console.log(error);
+    //   //     this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    //   //   });
+    //   // }
+    // } else {
+    //   this.setAutoPostSocial(socialBind, platform);
+    // }
   }
 
   public popup(url, title, width, height, scroll) {

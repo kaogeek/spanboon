@@ -7,14 +7,13 @@
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
 import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService } from '../../../services/services';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { Asset } from '../../../models/Asset';
-import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import * as moment from 'moment';
@@ -24,7 +23,6 @@ import { DialogEditProfile } from '../../shares/dialog/DialogEditProfile.compone
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
 import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
 
@@ -206,7 +204,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
         }
       }
-    }); 
+    });
   }
 
   public ngOnDestroy() {
@@ -709,7 +707,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public rePositionImage(image: any) {
-
     var imgWidth;
     var imgHeight;
     var imgHeightTotal;
@@ -852,7 +849,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-
   public async clickFollow(data: any) {
     if (data.recommed.type === 'USER') {
       const followUser = await this.followUser(data.recommed._id);
@@ -955,7 +951,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }, 1000);
   }
 
-
   public createComment(comment: any, index?: number) {
     let commentPosts = new CommentPosts
     if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
@@ -982,11 +977,11 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.isLoginCh();
     await this.postActionService.actionPost(action, index, this.resPost).then((res: any) => {
       //repost
-      if (res && res.type === "NOTOPIC") { 
+      if (res && res.type === "NOTOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") { 
+      } else if (res.type === "TOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") { 
+      } else if (res.type === "UNDOTOPIC") {
         for (let [i, data] of this.resPost.posts.entries()) {
           if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
             if (data.referencePostObject._id === action.post._id) {
@@ -1003,7 +998,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((err: any) => {
       console.log('err ', err)
-    }); 
+    });
   }
 
   public deletePost(post: any, index: number) {
@@ -1027,7 +1022,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         })
       }
     });
-
   }
 
   public editPost(data: any, index: number) {
@@ -1066,7 +1060,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-
   public getAaaPost(action: any, index: number) {
     let user = this.authenManager.getCurrentUser()
     if (action.userPage.id === user.id) {
@@ -1101,7 +1094,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     }
   }
-
 
   public getImageSelector(): string[] {
     return [".checkload"];
@@ -1187,9 +1179,4 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       console.log('err ', err)
     })
   }
-
 }
-
-
-
-
