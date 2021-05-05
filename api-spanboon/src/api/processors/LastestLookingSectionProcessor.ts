@@ -83,6 +83,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 const today = moment().toDate();
                 const postStmt = [
                     { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false, startDateTime: { $lte: today } } },
+                    { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
