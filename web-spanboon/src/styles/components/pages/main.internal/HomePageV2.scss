@@ -382,7 +382,7 @@
             > .around_section {
                 margin: 20px 0px;
                 padding: 10px 10px;
-                width: 100%;
+                width: calc(100% - 20px);
                 > .top {
                     width: 100%;
                     display: flex;
