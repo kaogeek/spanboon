@@ -81,8 +81,6 @@ export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
                         socialAggMatchStmt['$and'] = dateTimeAndArray;
                     }
 
-                    console.log('socialPostPageUser', socialPostPageUser);
-
                     const userSocialPostsAgg = [
                         { $match: socialAggMatchStmt },
                         { $sort: { startDateTime: -1 } },
@@ -145,7 +143,7 @@ export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
 
         if (topInfluencer && topInfluencer.length > 0) {
             // generate title
-            let title = 'เพื่อนของคุณและพวกเขาเหล่านี้ได้เข้ามาแชร์';
+            const title = 'เพื่อนของคุณและพวกเขาเหล่านี้ได้เข้ามาแชร์';
 
             result = {
                 title,

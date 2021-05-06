@@ -34,6 +34,7 @@ import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { SocialPostService } from '../services/SocialPostService';
+import { UserLikeService } from '../services/UserLikeService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
@@ -42,6 +43,7 @@ import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/Obj
 import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
 import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
+import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/objective')
@@ -56,7 +58,8 @@ export class ObjectiveController {
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
         private fulfillmentCaseService: FulfillmentCaseService,
-        private socialPostService: SocialPostService
+        private socialPostService: SocialPostService,
+        private userLikeService: UserLikeService
     ) { }
 
     // Find PageObjective API
@@ -574,6 +577,18 @@ export class ObjectiveController {
                 const followingProcsResult = await followingProcessor.process();
                 if (followingProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(followingProcsResult);
+                }
+
+                // Like section
+                const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
+                postLikeProcessor.setData({
+                    objectiveId: objId,
+                    sampleCount: 10,
+                    userId
+                });
+                const postLikeProcsResult = await postLikeProcessor.process();
+                if (postLikeProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(postLikeProcsResult);
                 }
             }
 
