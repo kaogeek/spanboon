@@ -25,6 +25,7 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
                     resolve(undefined);
+                    return;
                 }
 
                 const objectiveAgg = [

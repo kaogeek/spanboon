@@ -26,9 +26,10 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
                     resolve(undefined);
+                    return;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (limit === undefined || limit === null || limit === '') {
                     limit = 1;
                 }
 

@@ -28,6 +28,7 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
                     resolve(undefined);
+                    return;
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
@@ -73,7 +74,6 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
 
                     // generate title
                     result = this.generateResult(objectiveInflu);
-                    console.log('result', result);
                 }
 
                 resolve(result);
