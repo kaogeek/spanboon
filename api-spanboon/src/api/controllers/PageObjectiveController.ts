@@ -40,6 +40,7 @@ import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveI
 import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
 import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
+import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -502,7 +503,7 @@ export class ObjectiveController {
                 pageObjTimeline.timelines.push(startObjvResult);
             }
 
-            const datetimeRange: any[] = this.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
             for (const ranges of datetimeRange) {
                 if (ranges !== undefined && ranges.length < 2) {
                     continue;
@@ -684,15 +685,5 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
-    }
-
-    private generateCurrentMonthRanges(): any[] {
-        const result = [];
-        const startOfMonth = moment().clone().startOf('month').toDate();
-        const endOfMonth = moment().clone().endOf('month').toDate();
-        const datetimeRange = [startOfMonth, endOfMonth];
-
-        result.push(datetimeRange);
-        return result;
     }
 }

@@ -57,9 +57,9 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                     const pageObjStmt = [
                         { $match: matchStmt },
+                        { $sort: { createdDate: -1 } },
                         { $skip: offset },
                         { $limit: limit },
-                        { $sort: { createdDate: -1 } },
                         {
                             $lookup: {
                                 from: 'Page',
@@ -132,8 +132,8 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                 };
                                 const postStmt = [
                                     { $match: postMatchStmt },
-                                    { $limit: limit },
                                     { $sort: { createdDate: -1 } },
+                                    { $limit: limit },
                                     { $addFields: { objectiveId: { $toObjectId: '$objective' } } },
                                     {
                                         $lookup: {

@@ -119,9 +119,9 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 const matchStmt = lastestFilter.whereConditions;
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
-                    { $skip: offset },
                     { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',
@@ -152,6 +152,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'โพสต์ที่แนะนำสำหรับคุณ';
+                result.type = 'USERFOLLOW';
                 result.iconUrl = '';
                 if (page) {
                     result.title = 'เพราะคุณติดตาม' + ' "' + page.name + '"';
