@@ -376,6 +376,21 @@
   justify-self: center;
   top: 0;
   z-index: 10;
+  .stoey-buttom {
+    width: 80%;
+    .stoey-buttom-preload {
+      display: flex;
+      width: 100%;
+      .preload-left {
+        width: 70%;
+        padding: 20px 20px 20px 0px;
+      }
+      .preload-right {
+        width: 30%;
+        padding: 20px 20px 20px 0px;
+      }
+    }
+  }
 }
 
 .post-story-not-found {
@@ -421,6 +436,19 @@
 }
 
 @media (max-width: $xlarge) {
+  .loding .stoey-buttom {
+    width: 90%;
+  }
+  .loding .stoey-buttom .stoey-buttom-preload .preload-left {
+    width: 100%;
+    padding: 20px 20px 20px 0px;
+  }
+  .loding .stoey-buttom .stoey-buttom-preload .preload-right {
+    display: none;
+  }
+  .story > .story-body > .content > .left > .story-display .ct-background-text {
+    width: 105% !important;
+  }
   .story {
     .content {
       margin-top: 0;
