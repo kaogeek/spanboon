@@ -127,6 +127,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 }
                 if (this.keyObjArr !== undefined && this.keyObjArr !== null && this.keyObjArr !== '') {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
+                } else if (this.postData.post.gallery) {
+                    if (this.postData.post.gallery.length > 0) {
+                        this.postCardCoverPageUrl = this.postData.post.gallery[0].imageURL;
+                    }
                 }
 
                 this.amountSocial = (this.postData.post ? this.postData.post.likeCount : 0 + this.postData.post ? this.postData.post.repostCount : 0 + this.postData.post ? this.postData.post.shareCount : 0);
@@ -219,14 +223,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
             return
         }
         this.clickEvent.emit(this.postData);
     }
 
     public clickEventEmitLarge(data?) {
-        if (data.path[0].className !== 'large_card' && data.path[0].className !== 'bottom_large_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+        if (data.path[0].className !== 'large_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
             return
         }
         this.clickEvent.emit(this.postData);

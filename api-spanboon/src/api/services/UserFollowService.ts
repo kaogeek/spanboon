@@ -186,6 +186,48 @@ export class UserFollowService {
         });
     }
 
+    public getTopInfluencerPageFollow(topCount: number): Promise<any[]> {
+        if (topCount === undefined) {
+            topCount = 5;
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const aggregateStmt = [
+                    { $match: { subjectType: SUBJECT_TYPE.PAGE } },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } },
+                    { $sort: { count: -1 } },
+                    { $limit: topCount },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'page.coverPosition': 0
+                        }
+                    }
+                ];
+
+                const result = await this.aggregate(aggregateStmt);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     private parseUserField(user: any): any {
         const userResult: any = {};
 

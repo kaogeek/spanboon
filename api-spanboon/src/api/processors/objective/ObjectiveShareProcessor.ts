@@ -6,13 +6,13 @@
  */
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
-import { FulfillmentCaseService } from '../../services/FulfillmentCaseService';
 import { UserFollowService } from '../../services/UserFollowService';
-import { FULFILLMENT_STATUS } from '../../../constants/FulfillmentStatus';
+import { SocialPostService } from '../../services/SocialPostService';
+import { ObjectID } from 'mongodb';
 
-export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProcessor {
+export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
 
-    constructor(private fulfillmentCaseService: FulfillmentCaseService, private userFollowService: UserFollowService) {
+    constructor(private userFollowService: UserFollowService, private socialPostService: SocialPostService) {
         super();
     }
 
@@ -23,12 +23,14 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let sampleCount = undefined;
+                let userId = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
                     objectiveId = this.data.objectiveId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     sampleCount = this.data.sampleCount;
+                    userId = this.data.userId;
                 }
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
@@ -44,30 +46,48 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                     dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
                 }
 
-                const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
+                let topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
+
+                if (userId !== undefined) {
+                    const userFriend = await this.userFollowService.getUserFollower(new ObjectID(userId), sampleCount);
+                    if (userFriend && userFriend.length > 0) {
+                        topInfluencer = topInfluencer.concat(userFriend);
+                    }
+                }
+
+                const topPageInfluencer = await this.userFollowService.getTopInfluencerPageFollow(sampleCount);
 
                 let result: any = undefined;
                 if (topInfluencer !== undefined && topInfluencer.length > 0) {
                     // post with objective and influencer was comment
                     const influencerMap = {};
-                    const fulfillUser = [];
+                    const socialPostUser = [];
                     for (const influe of topInfluencer) {
-                        fulfillUser.push(influe._id);
+                        socialPostUser.push(influe._id);
                         influencerMap[influe._id + ''] = influe;
                     }
 
-                    const matchStmt: any = { requester: { $in: fulfillUser }, deleted: false, status: FULFILLMENT_STATUS.CONFIRM };
-                    if (dateTimeAndArray.length > 0) {
-                        matchStmt['$and'] = dateTimeAndArray;
+                    // page influencer
+                    const pageInfluencerMap = {};
+                    const socialPostPageUser = [];
+                    for (const influe of topPageInfluencer) {
+                        socialPostPageUser.push(influe._id);
+                        pageInfluencerMap[influe._id + ''] = influe;
                     }
 
-                    const fulfillmentAgg = [
-                        { $match: matchStmt },
+                    // user type social
+                    const socialAggMatchStmt: any = { $or: [{ postByType: 'USER', postBy: { $in: socialPostUser } }, { postByType: 'PAGE', postBy: { $in: socialPostPageUser } }] };
+                    if (dateTimeAndArray.length > 0) {
+                        socialAggMatchStmt['$and'] = dateTimeAndArray;
+                    }
+
+                    const userSocialPostsAgg = [
+                        { $match: socialAggMatchStmt },
                         { $sort: { startDateTime: -1 } },
                         {
                             $lookup: {
                                 from: 'Posts',
-                                localField: 'postId',
+                                localField: 'post',
                                 foreignField: '_id',
                                 as: 'posts'
                             }
@@ -79,44 +99,30 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                             }
                         },
                         { $match: { objective: objectiveId } },
-                        { $group: { _id: '$requester', count: { $sum: 1 } } },
-                        {
-                            $lookup: {
-                                from: 'User',
-                                localField: '_id',
-                                foreignField: '_id',
-                                as: 'user'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$user',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $project: {
-                                'user.password': 0,
-                                'user.coverPosition': 0,
-                                'user.birthdate': 0,
-                                'user.coverURL': 0,
-                            }
-                        }
+                        { $group: { _id: '$postBy', count: { $sum: 1 } } }
                     ];
-                    const objectiveInflu = await this.fulfillmentCaseService.aggregate(fulfillmentAgg);
+                    const userSocialPost = await this.socialPostService.aggregate(userSocialPostsAgg);
 
                     const addedUserIds = [];
+                    const addedPageIds = [];
                     const distinctTopInfluencer = [];
-                    if (objectiveInflu && objectiveInflu.length > 0) {
-                        for (const objInflu of objectiveInflu) {
+                    if (userSocialPost && userSocialPost.length > 0) {
+                        for (const objInflu of userSocialPost) {
                             const key = objInflu._id + '';
                             if (addedUserIds.indexOf(key) >= 0) {
+                                continue;
+                            }
+
+                            if (addedPageIds.indexOf(key) >= 0) {
                                 continue;
                             }
 
                             if (influencerMap[key]) {
                                 distinctTopInfluencer.push(influencerMap[key]);
                                 addedUserIds.push(key);
+                            } else if (pageInfluencerMap[key]) {
+                                distinctTopInfluencer.push(pageInfluencerMap[key]);
+                                addedPageIds.push(key);
                             }
                         }
                     }
@@ -136,15 +142,17 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
         let result = undefined;
 
         if (topInfluencer && topInfluencer.length > 0) {
+            // generate title
+            const title = 'เพื่อนของคุณและพวกเขาเหล่านี้ได้เข้ามาแชร์';
+
             result = {
-                title: 'พวกเขาเหล่านี้ได้เข้ามาเติมเต็ม',
+                title,
                 subTitle: '',
                 detail: '',
                 type: this.type,
                 influencers: []
             };
 
-            // count as a number as case that was fulfill.
             for (const influe of topInfluencer) {
                 result.influencers.push(influe);
             }

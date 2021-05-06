@@ -886,10 +886,19 @@
     card-contant-home {
         .card_content_home > .medium_card {
             background-color: white;
-            margin: 10px 10px;
+            margin: unset;
+            padding: 15px;
             border-radius: unset;
-            border-top: solid 0.2px #e4e4e6;
-            width: auto;
+            border-bottom: solid 0.2px #e4e4e6;
+            width: 101%;
+        }
+        .card_content_home > .large_card {
+            background-color: white;
+            margin: unset;
+            padding: 15px;
+            border-radius: unset;
+            border-bottom: solid 0.2px #e4e4e6;
+            width: 101%;
         }
     }
 }

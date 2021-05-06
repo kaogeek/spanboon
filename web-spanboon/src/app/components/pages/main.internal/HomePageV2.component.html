@@ -225,11 +225,11 @@
             <div class="body">
                 <div class="isDesktop" *ngFor="let dataViewSection of item.contents;let index = index">
                     <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <div class="isMobile" *ngFor="let dataViewSection of item.contents;let index = index">
                     <card-contant-home *ngIf="item.type !== 'SMALL'" (clickEvent)="testCrad($event)" [mediumCard]='true'
-                        [keyObjArr]='["coverImage"]' [postData]='dataViewSection'></card-contant-home>
+                        [postData]='dataViewSection'></card-contant-home>
                 </div>
                 <!-- <div class="footer_mobile">
                     <span>ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>

@@ -1034,6 +1034,9 @@
 }
 
 @media (max-width: $large) {
+    .card_content_home > .small_card {
+        border: solid 0.2px #eaeaead9;
+    }
     .card_content_home > .event_card > .top_coverPage > .teg_event {
         width: 100%;
     }
@@ -1131,6 +1134,7 @@
         background-color: white;
         width: calc(100% - 2px);
         padding: unset;
+        border-bottom: unset;
     }
 }
 

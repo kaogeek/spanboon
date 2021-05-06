@@ -33,6 +33,8 @@ import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+import { SocialPostService } from '../services/SocialPostService';
+import { UserLikeService } from '../services/UserLikeService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
@@ -40,6 +42,8 @@ import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveI
 import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
 import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
+import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
+import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/objective')
@@ -53,7 +57,9 @@ export class ObjectiveController {
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private fulfillmentCaseService: FulfillmentCaseService
+        private fulfillmentCaseService: FulfillmentCaseService,
+        private socialPostService: SocialPostService,
+        private userLikeService: UserLikeService
     ) { }
 
     // Find PageObjective API
@@ -457,7 +463,7 @@ export class ObjectiveController {
      *      "data":"{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/objective/:id
+     * @apiSampleRequest /api/objective/:id/timeline
      * @apiErrorExample {json} PageObjective error
      * HTTP/1.1 500 Internal Server Error
      */
@@ -534,8 +540,7 @@ export class ObjectiveController {
                 }
 
                 // share section
-                /* //! waiting for implement
-                const shareProcessor = new ObjectiveShareProcessor(this.postsService, this.userFollowService);
+                const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
                 shareProcessor.setData({
                     objectiveId: objId,
                     startDateTime: ranges[0],
@@ -546,7 +551,7 @@ export class ObjectiveController {
                 const shareProcsResult = await shareProcessor.process();
                 if (shareProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(shareProcsResult);
-                }*/
+                }
 
                 // fulfill section
                 const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
@@ -572,6 +577,18 @@ export class ObjectiveController {
                 const followingProcsResult = await followingProcessor.process();
                 if (followingProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(followingProcsResult);
+                }
+
+                // Like section
+                const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
+                postLikeProcessor.setData({
+                    objectiveId: objId,
+                    sampleCount: 10,
+                    userId
+                });
+                const postLikeProcsResult = await postLikeProcessor.process();
+                if (postLikeProcsResult !== undefined) {
+                    pageObjTimeline.timelines.push(postLikeProcsResult);
                 }
             }
 
