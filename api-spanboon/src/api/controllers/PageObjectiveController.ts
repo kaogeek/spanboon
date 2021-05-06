@@ -463,7 +463,7 @@ export class ObjectiveController {
      *      "data":"{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/objective/:id
+     * @apiSampleRequest /api/objective/:id/timeline
      * @apiErrorExample {json} PageObjective error
      * HTTP/1.1 500 Internal Server Error
      */

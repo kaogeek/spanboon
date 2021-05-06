@@ -14,7 +14,6 @@ export class PageObjectiveTimelineResponse {
     public fulfillmentCount: number;
     public fulfillmentUserCount: number;
     public fulfillmentUser: any[];
-    public fulfillmentItems: any[];
     public startDateTime: Date;
     public endDateTime: Date;
     public timelines: any[];
