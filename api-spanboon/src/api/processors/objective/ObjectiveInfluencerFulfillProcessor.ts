@@ -33,6 +33,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
                     resolve(undefined);
+                    return;
                 }
 
                 const dateTimeAndArray = [];
