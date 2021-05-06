@@ -20,12 +20,10 @@ export class ObjectivePostLikedProcessor extends AbstractTypeSectionProcessor {
             try {
                 let objectiveId = undefined;
                 let sampleCount = undefined;
-                let userId = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
                     objectiveId = this.data.objectiveId;
                     sampleCount = this.data.sampleCount;
-                    userId = this.data.userId;
                 }
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
