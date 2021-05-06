@@ -33,6 +33,7 @@ import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+import { SocialPostService } from '../services/SocialPostService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
 import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
@@ -40,6 +41,7 @@ import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveI
 import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
 import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
+import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/objective')
@@ -53,7 +55,8 @@ export class ObjectiveController {
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private fulfillmentCaseService: FulfillmentCaseService
+        private fulfillmentCaseService: FulfillmentCaseService,
+        private socialPostService: SocialPostService
     ) { }
 
     // Find PageObjective API
@@ -534,8 +537,7 @@ export class ObjectiveController {
                 }
 
                 // share section
-                /* //! waiting for implement
-                const shareProcessor = new ObjectiveShareProcessor(this.postsService, this.userFollowService);
+                const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
                 shareProcessor.setData({
                     objectiveId: objId,
                     startDateTime: ranges[0],
@@ -546,7 +548,7 @@ export class ObjectiveController {
                 const shareProcsResult = await shareProcessor.process();
                 if (shareProcsResult !== undefined) {
                     pageObjTimeline.timelines.push(shareProcsResult);
-                }*/
+                }
 
                 // fulfill section
                 const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
