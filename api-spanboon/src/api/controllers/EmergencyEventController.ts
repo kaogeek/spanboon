@@ -18,13 +18,17 @@ import { UserFollow } from '../models/UserFollow';
 import { UserEngagement } from '../models/UserEngagement';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { UserFollowService } from '../services/UserFollowService';
+import { PostsService } from '../services/PostsService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
+import { EmergencyEventTimelineResponse } from './responses/EmergencyEventTimelineResponse';
+import { EmergencyStartPostProcessor } from '../processors/emergency/EmergencyStartPostProcessor';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService,) { }
+        private userEngagementService: UserEngagementService,private postsService: PostsService) { }
 
     // Find EmergencyEvent API
     /**
@@ -209,7 +213,7 @@ export class EmergencyEventController {
             const userFollow = new UserFollow();
             userFollow.userId = userObjId;
             userFollow.subjectId = emergencyEventObjId;
-            userFollow.subjectType = SUBJECT_TYPE.OBJECTIVE;
+            userFollow.subjectType = SUBJECT_TYPE.EMERGENCY_EVENT;
 
             const followCreate: UserFollow = await this.userFollowService.create(userFollow);
             if (followCreate) {
@@ -221,7 +225,7 @@ export class EmergencyEventController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
 
-                const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: emergencyEventObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.OBJECTIVE, action: ENGAGEMENT_ACTION.FOLLOW } });
+                const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: emergencyEventObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.EMERGENCY_EVENT, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {
@@ -240,4 +244,159 @@ export class EmergencyEventController {
             }
         }
     }
+
+    // Get EmergencyEvent Timeline API
+    /**
+     * @api {get} /api/emergency/:id/timeline Get EmergencyEvent timeline API
+     * @apiGroup PageObjective
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "message": "Successfully get EmergencyEvent"
+     *      "data":"{}"
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/emergency/:id/timeline
+     * @apiErrorExample {json} EmergencyEvent error
+     * HTTP/1.1 500 Internal Server Error
+     */
+     @Get('/:id/timeline')
+     public async getEmergencyEventTimeline(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        //  const userId = req.headers.userid;
+         let emergencyEvent: EmergencyEvent;
+         const objId = new ObjectID(id);
+ 
+         emergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
+ 
+         if (emergencyEvent) {
+             // generate timeline
+             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.EMERGENCY_EVENT, 5);
+ 
+             const emergencyEventTimeline = new EmergencyEventTimelineResponse();
+             emergencyEventTimeline.emergencyEvent = emergencyEvent;
+             emergencyEventTimeline.followedUser = followingUsers.followers;
+             emergencyEventTimeline.followedCount = followingUsers.count;
+ 
+             const pageObjFulfillResult = await this.emergencyEventService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
+             emergencyEventTimeline.fulfillmentCount = pageObjFulfillResult.count;
+             emergencyEventTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
+             emergencyEventTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
+ 
+             emergencyEventTimeline.relatedHashTags = await this.emergencyEventService.sampleRelatedHashTags(objId, 5);
+             emergencyEventTimeline.needItems = await this.emergencyEventService.sampleNeedsItems(objId, 5);
+            //  emergencyEventTimeline.timelines = [];
+ 
+             // fix for first section
+            //  const startProcessor = new EmergencyStartPostProcessor(this.emergencyEventService, this.postsService);
+            //  startProcessor.setData({
+            //      objectiveId: objId
+            //  });
+            //  const startObjvResult = await startProcessor.process();
+            //  if (startObjvResult !== undefined) {
+            //      emergencyEventTimeline.timelines.push(startObjvResult);
+            //  }
+ 
+             // ! to implement
+            //  const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            //  for (const ranges of datetimeRange) {
+            //      if (ranges !== undefined && ranges.length < 2) {
+            //          continue;
+            //      }
+            //      // influencer section
+            //      const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
+            //      influencerProcessor.setData({
+            //          objectiveId: objId,
+            //          startDateTime: ranges[0],
+            //          endDateTime: ranges[1],
+            //          sampleCount: 2
+            //      });
+            //      const influencerProcsResult = await influencerProcessor.process();
+            //      if (influencerProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(influencerProcsResult);
+            //      }
+ 
+            //      // need section
+            //      const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
+            //      needsProcessor.setData({
+            //          objectiveId: objId,
+            //          startDateTime: ranges[0],
+            //          endDateTime: ranges[1]
+            //      });
+            //      const needsProcsResult = await needsProcessor.process();
+            //      if (needsProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(needsProcsResult);
+            //      }
+ 
+            //      // share section
+            //      const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
+            //      shareProcessor.setData({
+            //          objectiveId: objId,
+            //          startDateTime: ranges[0],
+            //          endDateTime: ranges[1],
+            //          sampleCount: 10,
+            //          userId
+            //      });
+            //      const shareProcsResult = await shareProcessor.process();
+            //      if (shareProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(shareProcsResult);
+            //      }
+ 
+            //      // fulfill section
+            //      const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+            //      fulfillrocessor.setData({
+            //          objectiveId: objId,
+            //          startDateTime: ranges[0],
+            //          endDateTime: ranges[1],
+            //          sampleCount: 10,
+            //          userId
+            //      });
+            //      const fulfillProcsResult = await fulfillrocessor.process();
+            //      if (fulfillProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(fulfillProcsResult);
+            //      }
+ 
+            //      // following section
+            //      const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
+            //      followingProcessor.setData({
+            //          objectiveId: objId,
+            //          sampleCount: 10,
+            //          userId
+            //      });
+            //      const followingProcsResult = await followingProcessor.process();
+            //      if (followingProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(followingProcsResult);
+            //      }
+ 
+            //      // Like section
+            //      const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
+            //      postLikeProcessor.setData({
+            //          objectiveId: objId,
+            //          sampleCount: 10,
+            //          userId
+            //      });
+            //      const postLikeProcsResult = await postLikeProcessor.process();
+            //      if (postLikeProcsResult !== undefined) {
+            //          emergencyEventTimeline.timelines.push(postLikeProcsResult);
+            //      }
+            //  }
+ 
+            //  // current post section
+            //  const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
+            //  lastestPostProcessor.setData({
+            //      objectiveId: objId,
+            //      limit: 4,
+            //      userId
+            //  });
+            //  const lastestProcsResult = await lastestPostProcessor.process();
+            //  if (lastestProcsResult !== undefined) {
+            //      emergencyEventTimeline.timelines.push(lastestProcsResult);
+            //  }
+ 
+             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', emergencyEventTimeline);
+             return res.status(200).send(successResponse);
+         } else {
+             const errorResponse = ResponseUtil.getErrorResponse('Unable got PageObjective', undefined);
+             return res.status(400).send(errorResponse);
+         }
+     }
 }

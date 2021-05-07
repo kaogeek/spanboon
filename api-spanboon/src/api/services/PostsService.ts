@@ -255,6 +255,46 @@ export class PostsService {
                     return;
                 }
 
+                result = await this.getPostNeedsAggregate(matchStmt, simpleCount);
+
+                let loopCount = 0;
+                // while until sample was full
+                while (result.length < simpleCount) {
+                    // break in worst case
+                    if (loopCount >= 50) {
+                        break;
+                    }
+
+                    const leftSampleCount = simpleCount - result.length;
+                    if (leftSampleCount <= 0) {
+                        break;
+                    }
+
+                    const moreResult = await this.getPostNeedsAggregate(matchStmt, leftSampleCount);
+                    if (moreResult.length > 0) {
+                        result = result.concat(moreResult);
+                    }
+
+                    loopCount += 1;
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    private getPostNeedsAggregate(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
                 const aggregateObj = [
                     { $match: matchStmt },
                     { $sample: { size: simpleCount } },
@@ -280,27 +320,6 @@ export class PostsService {
                         // add post and needs only if has needs
                         result.push(item);
                     }
-                }
-
-                let loopCount = 0;
-                // recursive until sample was full
-                while (result.length < simpleCount) {
-                    // break in worst case
-                    if (loopCount >= 50) {
-                        break;
-                    }
-
-                    const leftSampleCount = simpleCount - result.length;
-                    if (leftSampleCount <= 0) {
-                        break;
-                    }
-
-                    const moreResult = await this.samplePostNeedsItems(matchStmt, leftSampleCount);
-                    if (moreResult.length > 0) {
-                        result = result.concat(moreResult);
-                    }
-
-                    loopCount++;
                 }
 
                 resolve(result);
