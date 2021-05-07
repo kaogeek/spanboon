@@ -890,7 +890,7 @@
             padding: 15px;
             border-radius: unset;
             border-bottom: solid 0.2px #e4e4e6;
-            width: 101%;
+            width: calc(100% - 34px);
         }
         .card_content_home > .large_card {
             background-color: white;
@@ -898,7 +898,7 @@
             padding: 15px;
             border-radius: unset;
             border-bottom: solid 0.2px #e4e4e6;
-            width: 101%;
+            width: calc(100% - 34px);
         }
     }
 }
