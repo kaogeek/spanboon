@@ -66,6 +66,11 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     clientId = this.data.clientId;
                 }
 
+                if (userId === undefined || userId === null) {
+                    resolve(undefined);
+                    return;
+                }
+
                 let pageFollow: any = undefined;
                 if (userId !== undefined) {
                     const followStmt = [
