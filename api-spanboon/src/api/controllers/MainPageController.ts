@@ -296,7 +296,7 @@ export class MainPageController {
         for (let i = 0; i < processorList.length; i++) {
             const processor = processorList[i];
             const model = await processor.process();
-            if (model.contents.length > 0) {
+            if (model !== undefined && model.contents.length > 0) {
                 // !remove random function when fishished testing
                 if (randIdx === i) {
                     model.isHighlight = true;
