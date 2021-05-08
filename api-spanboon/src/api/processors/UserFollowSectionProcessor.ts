@@ -61,6 +61,14 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 let userId = undefined;
                 let clientId = undefined;
                 let userObjId: ObjectID = undefined;
@@ -116,9 +124,26 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 lastestFilter.whereConditions.hidden = false;
                 lastestFilter.whereConditions.startDateTime = { $lte: today };
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    lastestFilter.whereConditions['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    lastestFilter.whereConditions.startDateTime = { $lte: today };
+                }
+
                 const matchStmt = lastestFilter.whereConditions;
                 const postStmt = [
                     { $match: matchStmt },
+                    { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: limit },

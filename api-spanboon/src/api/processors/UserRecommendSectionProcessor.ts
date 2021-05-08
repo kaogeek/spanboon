@@ -71,12 +71,19 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     clientId = this.data.clientId;
                 }
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 const today = moment().toDate();
-                const matchStmt = {
+                const matchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: today }
+                    hidden: false
                 };
                 if (userId !== undefined) {
                     // ! impl 
@@ -84,8 +91,25 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     // ! impl
                 }
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    matchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    matchStmt.startDateTime = { $lte: today };
+                }
+
                 const postStmt = [
                     { $match: matchStmt },
+                    { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: 4 },
