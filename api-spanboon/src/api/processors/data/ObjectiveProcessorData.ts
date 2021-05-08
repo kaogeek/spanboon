@@ -7,4 +7,6 @@
 
 export class ObjectiveProcessorData {
     public userId: string;
+    public startDateTime: Date;
+    public endDateTime: Date;
 }
