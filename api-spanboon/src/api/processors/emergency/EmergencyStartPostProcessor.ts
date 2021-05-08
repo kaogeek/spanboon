@@ -6,30 +6,30 @@
  */
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
-import { PageObjectiveService } from '../../services/PageObjectiveService';
+import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { PostsService } from '../../services/PostsService';
 
-export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyStartPostProcessor extends AbstractTypeSectionProcessor {
 
-    constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService) {
+    constructor(private emergencyEventService: EmergencyEventService, private postsService: PostsService) {
         super();
     }
 
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
 
-                const objectiveAgg = [
-                    { $match: { _id: objectiveId } },
+                const emergencyEventAgg = [
+                    { $match: { _id: emergencyEventId } },
                     {
                         $lookup: {
                             from: 'HashTag',
@@ -39,15 +39,15 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                         }
                     },
                 ];
-                const objectiveList = await this.pageObjectiveService.aggregate(objectiveAgg);
-                if (objectiveList === undefined || objectiveList.length <= 0) {
+                const emergencyEventList = await this.emergencyEventService.aggregate(emergencyEventAgg);
+                if (emergencyEventList === undefined || emergencyEventList.length <= 0) {
                     resolve(undefined);
                 }
-                const objective = objectiveList[0];
+                const emergencyEvent = emergencyEventList[0];
 
-                // search first post of objective and join gallery
+                // search first post of emergencyEvent and join gallery
                 const postAgg = [
-                    { $match: { objective: objectiveId, deleted: false } },
+                    { $match: { emergencyEvent: emergencyEventId, deleted: false } },
                     { $sort: { startDateTime: 1 } },
                     { $limit: 1 },
                     {
@@ -65,9 +65,9 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
                     result = {
-                        title: objective.title, // as a objective name
-                        subTitle: (objective.hashTag !== undefined && objective.hashTag.length > 0) ? '#' + objective.hashTag[0].name : '', // as a objective hashtag
-                        detail: objective.detail,
+                        title: emergencyEvent.title, // as a emergencyEvent name
+                        subTitle: (emergencyEvent.hashTag !== undefined && emergencyEvent.hashTag.length > 0) ? '#' + emergencyEvent.hashTag[0].name : '', // as a emergencyEvent hashtag
+                        detail: emergencyEvent.detail,
                         post,
                         type: this.type
                     };

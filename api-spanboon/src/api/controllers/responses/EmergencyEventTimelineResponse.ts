@@ -5,9 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export class PageObjectiveTimelineResponse {
-    public page: any;
-    public pageObjective: any;
+export class EmergencyEventTimelineResponse {
+    public emergencyEvent: any;
     public relatedHashTags: any[];
     public followedUser: any[];
     public followedCount: number;

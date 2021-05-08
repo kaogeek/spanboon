@@ -10,7 +10,7 @@ import { FulfillmentCaseService } from '../../services/FulfillmentCaseService';
 import { UserFollowService } from '../../services/UserFollowService';
 import { FULFILLMENT_STATUS } from '../../../constants/FulfillmentStatus';
 
-export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyInfluencerFulfillProcessor extends AbstractTypeSectionProcessor {
 
     constructor(private fulfillmentCaseService: FulfillmentCaseService, private userFollowService: UserFollowService) {
         super();
@@ -19,19 +19,19 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let sampleCount = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     sampleCount = this.data.sampleCount;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
@@ -48,7 +48,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
 
                 let result: any = undefined;
                 if (topInfluencer !== undefined && topInfluencer.length > 0) {
-                    // post with objective and influencer was comment
+                    // post with emergencyEvent and influencer was comment
                     const influencerMap = {};
                     const fulfillUser = [];
                     for (const influe of topInfluencer) {
@@ -78,7 +78,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { objective: objectiveId } },
+                        { $match: { emergencyEvent: emergencyEventId } },
                         { $group: { _id: '$requester', count: { $sum: 1 } } },
                         {
                             $lookup: {
@@ -103,12 +103,12 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                             }
                         }
                     ];
-                    const objectiveInflu = await this.fulfillmentCaseService.aggregate(fulfillmentAgg);
+                    const emergencyEventInflu = await this.fulfillmentCaseService.aggregate(fulfillmentAgg);
 
                     const addedUserIds = [];
                     const distinctTopInfluencer = [];
-                    if (objectiveInflu && objectiveInflu.length > 0) {
-                        for (const objInflu of objectiveInflu) {
+                    if (emergencyEventInflu && emergencyEventInflu.length > 0) {
+                        for (const objInflu of emergencyEventInflu) {
                             const key = objInflu._id + '';
                             if (addedUserIds.indexOf(key) >= 0) {
                                 continue;

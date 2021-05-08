@@ -55,7 +55,6 @@
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -69,6 +68,7 @@
         </div>
         <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img class="bottom_coverPage_cover" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
                 <img class="other_topic_coverPage" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
@@ -79,8 +79,8 @@
         </div>
         <div class="bottom_medium_card">
             <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span class="detail">{{postData.post.detail}}</span>
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span class="detail" [innerHTML]='postData.post.detail | highlight'></span>
                 <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
                     ...</span>
             </div>
@@ -131,7 +131,6 @@
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -156,15 +155,15 @@
         </div>
         <div class="bottom_large_card">
             <div class="bottom_large_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span>{{postData.post.detail}}</span>
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span [innerHTML]='postData.post.detail | highlight'></span>
                 <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
                     ...</span>
             </div>
             <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
-                    <span>{{postData.post.detail}}</span>
+                    <span [innerHTML]='postData.post.detail | highlight'></span>
                     <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
                         class="story">อ่านสตอรี่ ...</span>
                 </div>

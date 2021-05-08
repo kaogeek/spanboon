@@ -9,7 +9,7 @@ import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { UserFollowService } from '../../services/UserFollowService';
 import { SUBJECT_TYPE } from '../../../constants/FollowType';
 
-export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyInfluencerFollowedProcessor extends AbstractTypeSectionProcessor {
 
     constructor(private userFollowService: UserFollowService) {
         super();
@@ -18,15 +18,15 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 let sampleCount = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                     sampleCount = this.data.sampleCount;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
@@ -35,7 +35,7 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
 
                 let result: any = undefined;
                 if (topInfluencer !== undefined && topInfluencer.length > 0) {
-                    // post with objective and influencer was comment
+                    // post with emergencyEvent and influencer was comment
                     const influencerMap = {};
                     const fulfillUser = [];
                     for (const influe of topInfluencer) {
@@ -43,7 +43,7 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
                         influencerMap[influe._id + ''] = influe;
                     }
 
-                    const matchStmt: any = { userId: { $in: fulfillUser }, subjectId: objectiveId, subjectType: SUBJECT_TYPE.OBJECTIVE };
+                    const matchStmt: any = { userId: { $in: fulfillUser }, subjectId: emergencyEventId, subjectType: SUBJECT_TYPE.EMERGENCY_EVENT };
 
                     const followingAgg = [
                         { $match: matchStmt },
@@ -70,10 +70,10 @@ export class ObjectiveInfluencerFollowedProcessor extends AbstractTypeSectionPro
                             }
                         }
                     ];
-                    const objectiveInflu = await this.userFollowService.aggregate(followingAgg);
+                    const emergencyEventInflu = await this.userFollowService.aggregate(followingAgg);
 
                     // generate title
-                    result = this.generateResult(objectiveInflu);
+                    result = this.generateResult(emergencyEventInflu);
                 }
 
                 resolve(result);

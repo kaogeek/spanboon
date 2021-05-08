@@ -8,7 +8,7 @@
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 
-export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
     constructor(private postsService: PostsService) {
         super();
@@ -17,14 +17,14 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 let limit = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
@@ -33,9 +33,9 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                     limit = 1;
                 }
 
-                // search first post of objective and join gallery
+                // search first post of emergencyEvent and join gallery
                 const postAgg = [
-                    { $match: { objective: objectiveId, deleted: false } },
+                    { $match: { emergencyEvent: emergencyEventId, deleted: false } },
                     { $sort: { startDateTime: -1 } },
                     { $limit: limit },
                     {
@@ -52,7 +52,7 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
                     result = {
-                        title: 'โพสต์ต่างๆ ในช่วงนี้', // as a objective name
+                        title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
                         subTitle: '',
                         detail: '',
                         posts: searchResult,

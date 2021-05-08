@@ -228,14 +228,29 @@
                 overflow: hidden;
                 height: 200px;
                 position: relative;
+                > .bottom_coverPage_cover {
+                    z-index: 1;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: calc(100% - 8px);
+                    height: calc(100% - 8px);
+                    border: solid 4px;
+                    -o-object-fit: scale-down;
+                    object-fit: cover;
+                    z-index: 1;
+                    filter: blur(5px);
+                    -webkit-filter: blur(5px);
+                }
                 > img {
+                    z-index: 2;
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    -o-object-fit: cover;
-                    object-fit: cover;
+                    -o-object-fit: scale-down;
+                    object-fit: scale-down;
                 }
             }
             > .other_topic {
@@ -260,7 +275,7 @@
         }
         > .bottom_medium_card {
             width: auto;
-            height: 200px;
+            height: 250px;
             word-break: break-word;
             position: relative;
             padding: 0px 5px;
@@ -452,7 +467,7 @@
         }
         > .bottom_large_card {
             width: 400px;
-            height: 200px;
+            height: 250px;
             word-break: break-word;
             position: relative;
             // padding: 0px 5px;
@@ -1034,6 +1049,9 @@
 }
 
 @media (max-width: $large) {
+    .card_content_home > .small_card > .top_small_card > .image_base64 > img.is_objective {
+        border: solid 0.2px #eaeaead9;
+    }
     .card_content_home > .event_card > .top_coverPage > .teg_event {
         width: 100%;
     }
@@ -1081,11 +1099,11 @@
     }
     .card_content_home > .large_card > .bottom_large_card {
         width: 100%;
-        height: 190px;
+        height: 250px;
     }
     .card_content_home > .medium_card > .bottom_medium_card {
         width: 100%;
-        height: 150px;
+        height: 250px;
     }
     .card_content_home > .medium_card {
         padding: 15px 0px;
@@ -1131,6 +1149,7 @@
         background-color: white;
         width: calc(100% - 2px);
         padding: unset;
+        border-bottom: unset;
     }
 }
 

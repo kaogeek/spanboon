@@ -6,38 +6,38 @@
  */
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
-import { PageObjectiveService } from '../../services/PageObjectiveService';
+import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { PostsService } from '../../services/PostsService';
 import { POST_TYPE } from '../../../constants/PostType';
 
-export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyNeedsProcessor extends AbstractTypeSectionProcessor {
 
-    constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService) {
+    constructor(private emergencyEventService: EmergencyEventService, private postsService: PostsService) {
         super();
     }
 
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let sampleCount = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     sampleCount = this.data.sampleCount;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
 
-                const objectiveAgg = [
-                    { $match: { _id: objectiveId } },
+                const emergencyAgg = [
+                    { $match: { _id: emergencyEventId } },
                     {
                         $lookup: {
                             from: 'HashTag',
@@ -47,15 +47,15 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                         }
                     },
                 ];
-                const objectiveList = await this.pageObjectiveService.aggregate(objectiveAgg);
-                if (objectiveList === undefined || objectiveList.length <= 0) {
+                const emergencyList = await this.emergencyEventService.aggregate(emergencyAgg);
+                if (emergencyList === undefined || emergencyList.length <= 0) {
                     resolve(undefined);
                 }
-                const objective = objectiveList[0];
+                const emergency = emergencyList[0];
 
-                // search first post of objective and join gallery
+                // search first post of emergency and join gallery
                 const postAggMatchStmt: any = {
-                    objective: objectiveId,
+                    emergency: emergencyEventId,
                     deleted: false,
                     type: POST_TYPE.NEEDS
                 };
@@ -97,9 +97,9 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
                     result = {
-                        title: objective.title, // as a objective name
-                        subTitle: (objective.hashTag !== undefined && objective.hashTag.length > 0) ? '#' + objective.hashTag[0].name : '', // as a objective hashtag
-                        detail: objective.detail,
+                        title: emergency.title, // as a emergency name
+                        subTitle: (emergency.hashTag !== undefined && emergency.hashTag.length > 0) ? '#' + emergency.hashTag[0].name : '', // as a emergency hashtag
+                        detail: emergency.detail,
                         post,
                         type: this.type
                     };

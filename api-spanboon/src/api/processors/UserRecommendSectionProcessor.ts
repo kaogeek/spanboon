@@ -286,7 +286,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
         delete post.story;
         delete post.page;
         delete post.user;
-        delete post.gallery;
+        // delete post.gallery;
         delete post.rootRefPost;
         delete post.rootRefGallery;
 

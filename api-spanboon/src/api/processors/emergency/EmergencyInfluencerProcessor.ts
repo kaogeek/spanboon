@@ -6,32 +6,31 @@
  */
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
-import { FulfillmentCaseService } from '../../services/FulfillmentCaseService';
+import { PostsCommentService } from '../../services/PostsCommentService';
 import { UserFollowService } from '../../services/UserFollowService';
-import { FULFILLMENT_STATUS } from '../../../constants/FulfillmentStatus';
 
-export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProcessor {
+export class EmergencyInfluencerProcessor extends AbstractTypeSectionProcessor {
 
-    constructor(private fulfillmentCaseService: FulfillmentCaseService, private userFollowService: UserFollowService) {
+    constructor(private postsCommentService: PostsCommentService, private userFollowService: UserFollowService) {
         super();
     }
 
     public process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                let objectiveId = undefined;
+                let emergencyEventId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let sampleCount = undefined;
 
                 if (this.data !== undefined && this.data !== null) {
-                    objectiveId = this.data.objectiveId;
+                    emergencyEventId = this.data.emergencyEventId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     sampleCount = this.data.sampleCount;
                 }
 
-                if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
+                if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
                 }
@@ -48,26 +47,26 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
 
                 let result: any = undefined;
                 if (topInfluencer !== undefined && topInfluencer.length > 0) {
-                    // post with objective and influencer was comment
+                    // post with emergencyEvent and influencer was comment
                     const influencerMap = {};
-                    const fulfillUser = [];
+                    const commentUser = [];
                     for (const influe of topInfluencer) {
-                        fulfillUser.push(influe._id);
+                        commentUser.push(influe._id);
                         influencerMap[influe._id + ''] = influe;
                     }
 
-                    const matchStmt: any = { requester: { $in: fulfillUser }, deleted: false, status: FULFILLMENT_STATUS.CONFIRM };
+                    const commentAggMatchStmt: any = { user: { $in: commentUser }, deleted: false };
                     if (dateTimeAndArray.length > 0) {
-                        matchStmt['$and'] = dateTimeAndArray;
+                        commentAggMatchStmt['$and'] = dateTimeAndArray;
                     }
 
-                    const fulfillmentAgg = [
-                        { $match: matchStmt },
+                    const commentAgg = [
+                        { $match: commentAggMatchStmt },
                         { $sort: { startDateTime: -1 } },
                         {
                             $lookup: {
                                 from: 'Posts',
-                                localField: 'postId',
+                                localField: 'post',
                                 foreignField: '_id',
                                 as: 'posts'
                             }
@@ -78,22 +77,8 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { objective: objectiveId } },
-                        { $group: { _id: '$requester', count: { $sum: 1 } } },
-                        {
-                            $lookup: {
-                                from: 'User',
-                                localField: '_id',
-                                foreignField: '_id',
-                                as: 'user'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$user',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
+                        { $match: { emergencyEvent: emergencyEventId } },
+                        { $group: { _id: '$user', count: { $sum: 1 } } },
                         {
                             $project: {
                                 'user.password': 0,
@@ -103,12 +88,12 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                             }
                         }
                     ];
-                    const objectiveInflu = await this.fulfillmentCaseService.aggregate(fulfillmentAgg);
+                    const emergencyInflu = await this.postsCommentService.aggregate(commentAgg);
 
                     const addedUserIds = [];
                     const distinctTopInfluencer = [];
-                    if (objectiveInflu && objectiveInflu.length > 0) {
-                        for (const objInflu of objectiveInflu) {
+                    if (emergencyInflu && emergencyInflu.length > 0) {
+                        for (const objInflu of emergencyInflu) {
                             const key = objInflu._id + '';
                             if (addedUserIds.indexOf(key) >= 0) {
                                 continue;
@@ -136,15 +121,30 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
         let result = undefined;
 
         if (topInfluencer && topInfluencer.length > 0) {
+            // generate title
+            let title = topInfluencer[0].user ? topInfluencer[0].user.displayName : '';
+            if (topInfluencer.length > 1) {
+                if (title !== '') {
+                    title += ' และ ';
+                }
+
+                if (topInfluencer[1].user && topInfluencer[1].user.displayName !== '') {
+                    title += topInfluencer[1].user.displayName;
+                }
+            }
+
+            if (title !== '') {
+                title += ' ได้เข้ามาพูดคุยในโพส';
+            }
+
             result = {
-                title: 'พวกเขาเหล่านี้ได้เข้ามาเติมเต็ม',
+                title,
                 subTitle: '',
                 detail: '',
                 type: this.type,
                 influencers: []
             };
 
-            // count as a number as case that was fulfill.
             for (const influe of topInfluencer) {
                 result.influencers.push(influe);
             }
