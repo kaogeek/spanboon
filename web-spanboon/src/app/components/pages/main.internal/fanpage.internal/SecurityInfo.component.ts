@@ -126,8 +126,13 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     this.socialGetBindingFacebook();
                 }
             }).catch((err: any) => {
-                console.log('err ', err)
-                this.showDialogError(err.error.name, this.router.url);
+                // console.log('err ', err)
+                if(err.error && err.error.name){
+
+                    this.showDialogError(err.error.name, this.router.url);
+                } else {
+                    this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+                }
             });
         } else if (text === 'twitter' && !bind) {
             this.isPreLoadIng = true;
@@ -162,7 +167,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                         }).catch((err: any) => {
                             if (err.error.message === 'This page was binding with Twitter Account.') {
                                 this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+                            } else {
+                                this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
                             }
+                            this.connectTwitter = false;
                         });
                     }
                 }
@@ -292,7 +300,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 isAutoPost = true;
             }
         } else if (social === 'facebook') {
-            // facebook 
+            // facebook  
             if (!this.connect) { 
                 let dialogRef = this.dialog.open(DialogAlert, {
                     disableClose: true,
@@ -312,7 +320,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 isAutoPost = true;
             }
         } 
-        if (isAutoPost) { 
+        if (isAutoPost && (this.autoPostFacebook || this.autoPostTwitter)) { 
             let autopost: string = '';
             if (social === 'facebook') {
                 autopost = FACEBOOK_AUTO_POST;
@@ -442,7 +450,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.showAlertDialog('คุณไม่มีสิทธื์ในการเข้าถึงเพจได้');
             } else if (err.error.message === 'You cannot access the facebook page.') {
                 this.showAlertDialog('คุณไม่มีสิทธื์ในการเข้าถึง facebook ได้');
+            } else {
+                this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
             }
+            this.connect = false;
         });
     }
 } 
