@@ -471,10 +471,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async searchPostById(postId: string) {
+    var postIdSubstring = postId.substring(0, 24);
     let search: SearchFilter = new SearchFilter();
     search.limit = 10;
     search.count = false;
-    search.whereConditions = { _id: postId };
+    search.whereConditions = { _id: postIdSubstring };
     let res = await this.searchById(search);
     this.resDataPost = res;
     if (res) {
@@ -1247,14 +1248,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.isLoginCh(); 
+    this.isLoginCh();
     await this.postActionService.actionPost(action, index, this.resPost, "PAGE").then((res: any) => {
       //repost
-      if (res && res.type === "NOTOPIC") { 
+      if (res && res.type === "NOTOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") { 
+      } else if (res.type === "TOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") { 
+      } else if (res.type === "UNDOTOPIC") {
         for (let [i, data] of this.resPost.posts.entries()) {
           if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
             if (data.referencePostObject._id === action.post._id) {
@@ -1271,7 +1272,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }
     }).catch((err: any) => {
       console.log('err ', err)
-    }); 
+    });
   }
 
   public getAaaPost(action: any, index: number) {
