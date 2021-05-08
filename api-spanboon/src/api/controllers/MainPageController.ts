@@ -182,7 +182,7 @@ export class MainPageController {
 
         let processorList: any[] = [];
 
-        const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 180);
+        const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
         emerProcessor.setConfig({
             showUserAction: true,
