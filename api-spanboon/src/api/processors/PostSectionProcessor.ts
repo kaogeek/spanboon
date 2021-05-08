@@ -13,7 +13,7 @@ import moment from 'moment';
 
 export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
-    private DEFAULT_SEARCH_LIMIT = 5;
+    private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
@@ -41,6 +41,14 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -61,14 +69,31 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 const postMatchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: today },
+                    hidden: false
                 };
+
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    postMatchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    postMatchStmt.startDateTime = { $lte: today };
+                }
+
                 const postStmt = [
                     { $match: postMatchStmt },
+                    { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
-                    { $limit: 10 },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'PostsGallery',
