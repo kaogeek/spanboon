@@ -174,29 +174,6 @@ export class MainPageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            } else if (section === 'USERFOLLOW') {
-                const userFollowProcessors: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-                userFollowProcessors.setData({
-                    userId
-                });
-                userFollowProcessors.setConfig({
-                    showUserAction: true,
-                    offset,
-                    date
-                });
-                const userFollowSectionModelSec = await userFollowProcessors.process();
-                userFollowSectionModelSec.isList = true;
-
-                const urResult: any = {};
-                urResult.contents = userFollowSectionModelSec.contents;
-
-                if (urResult) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', urResult);
-                    return res.status(200).send(successResponse);
-                } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
-                    return res.status(400).send(errorResponse);
-                }
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                 return res.status(400).send(errorResponse);
