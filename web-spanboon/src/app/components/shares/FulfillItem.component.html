@@ -122,7 +122,7 @@
                                         <ng-template #elseTemplateUnLimit>
                                             <div class="limit-fulfill">
                                                 <span [class.active]="item.fulfillQuantity > item.quantity">
-                                                    {{item.fulfillQuantity}} </span> / {{item.quantity}}
+                                                    {{item.fulfillQuantity}} </span> / {{item.quantity | shortNumber }}
                                             </div>
                                         </ng-template>
                                     </div>
