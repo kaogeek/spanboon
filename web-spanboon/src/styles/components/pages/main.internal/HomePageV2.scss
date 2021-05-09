@@ -706,7 +706,7 @@
         position: sticky;
         top: 0px;
         height: 40px;
-        z-index: 1;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
@@ -717,7 +717,7 @@
         position: sticky;
         top: 0px;
         height: 40px;
-        z-index: 1;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
@@ -726,9 +726,13 @@
         color: $brandcolor2;
         position: -webkit-sticky;
         position: sticky;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
         top: 0px;
         height: 40px;
-        z-index: 1;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }

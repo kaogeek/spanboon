@@ -983,7 +983,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           userTags: this.userTag,
           postsHashTags: this.hashTag,
           postGallery: this.dataImage,
-          coverImage: this.coverImage
+          coverImage: this.coverImage,
+          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
         }
         if (this.modeShowDoing) {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
@@ -2195,7 +2197,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     const dataDoing = this.objectiveDoing.nativeElement.value;
     const tagName = this.objectiveDoingName.nativeElement.value;
     const category = this.objectCategory.value;
-    console.log('this.objectCategory', this.objectCategory)
 
     if (category === undefined) {
       return this.showAlertDialog("เลือกหมวดหมู่");

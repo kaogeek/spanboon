@@ -226,36 +226,39 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
-      if (!this.isMaxLoadingPost) {
-        let data;
-        this.isLoadingPost = true
-        setTimeout(() => {
-          if (this.splitTpyeClone === 'general') {
-            data = {
-              type: 'GENERAL',
+      console.log('this.splitTpyeClone', this.splitTpyeClone)
+      if (!this.isLoadingPost) {
+        if (!this.isMaxLoadingPost) {
+          let data;
+          this.isLoadingPost = true
+          setTimeout(() => {
+            if (this.splitTpyeClone === 'general') {
+              data = {
+                type: 'GENERAL',
+              }
+              this.activeLink = this.PLATFORM_GENERAL_TEXT;
+              this.searchPostPageType(data);
+            } else if (this.splitTpyeClone === 'needs') {
+              data = {
+                type: 'NEEDS',
+              }
+              this.activeLink = this.PLATFORM_NEEDS_TEXT;
+              this.searchPostPageType(data);
+            } else if (this.splitTpyeClone === 'timeline') {
+              this.activeLink = 'ไทมไลน์';
+              data = {
+                type: '',
+              }
+              this.searchPostPageType(data);
+            } else if (this.splitTpyeClone === 'fulfillment') {
+              data = {
+                type: 'FULFILLMENT',
+              }
+              this.activeLink = this.PLATFORM_FULFILL_TEXT;
+              this.searchPostPageType(data);
             }
-            this.activeLink = this.PLATFORM_GENERAL_TEXT;
-            this.searchPostPageType(data);
-          } else if (this.splitTpyeClone === 'needs') {
-            data = {
-              type: 'NEEDS',
-            }
-            this.activeLink = this.PLATFORM_NEEDS_TEXT;
-            this.searchPostPageType(data);
-          } else if (this.splitTpyeClone === 'timeline') {
-            this.activeLink = 'ไทมไลน์';
-            data = {
-              type: '',
-            }
-            this.searchPostPageType(data);
-          } else if (this.splitTpyeClone === 'fulfillment') {
-            data = {
-              type: 'FULFILLMENT',
-            }
-            this.activeLink = this.PLATFORM_FULFILL_TEXT;
-            this.searchPostPageType(data);
-          }
-        }, 1000);
+          }, 1000);
+        }
       }
     });
   }

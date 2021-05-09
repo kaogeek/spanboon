@@ -300,6 +300,7 @@
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    margin-bottom: 10px;
                     width: 90%;
                 }
 
@@ -1050,6 +1051,7 @@
 
 @media (max-width: $large) {
     .card_content_home > .small_card > .top_small_card > .image_base64 > img.is_objective {
+        padding: 2px;
         border: solid 0.2px #eaeaead9;
     }
     .card_content_home > .event_card > .top_coverPage > .teg_event {

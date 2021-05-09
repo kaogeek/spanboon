@@ -92,8 +92,8 @@
                 </div>
             </ng-template>
             <div class="bottom_medium_card_detail_footer">
-                <div class="owner" #showTooltip (mouseleave)="TooltipClose($event)"
-                    (mouseover)="Tooltip(showTooltip , postData)">
+                <div class="owner" (click)="clickToPage(linkUserPage)" #showTooltip
+                    (mouseleave)="TooltipClose($event)" (mouseover)="Tooltip(showTooltip , postData)">
                     <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
                         height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
                         <g id="Group_88" data-name="Group 88" transform="translate(0)">
@@ -105,7 +105,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a target="_blank" href={{linkUserPage}}>{{postData.owner.name}}</a>
+                    <a>{{postData.owner.name}}</a>
                 </div>
                 <div class="amount_social">
                     <span class="count-aontrol">{{postData.eventRepostCount | shortNumber}}</span>

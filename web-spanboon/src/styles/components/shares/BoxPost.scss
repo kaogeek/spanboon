@@ -791,10 +791,10 @@
   background-color: rgb(34, 64, 119);
 }
 .tribute-container-hashtag {
-  color: blue;
+  color: $brandcolor2;
 }
 .atwho-query {
-  color: blue;
+  color: $brandcolor2;
 }
 
 .mat-autocomplete-panel {
@@ -1303,9 +1303,7 @@
     left: 0;
     top: 0;
   }
-  .sg-vertical-sub-menu + * .cdk-overlay-pane 
-  >.mat-menu-panel >.mat-menu-content 
-  {
-      height: 100% !important;
+  .sg-vertical-sub-menu + * .cdk-overlay-pane > .mat-menu-panel > .mat-menu-content {
+    height: 100% !important;
   }
 }

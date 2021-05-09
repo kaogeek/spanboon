@@ -218,6 +218,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
         window.open('/story/' + data);
     }
 
+    public clickToPage(data) {
+        window.open(data);
+    }
+
     public clickDialogDiverlop() {
         this.showAlertDevelopDialog();
     }
