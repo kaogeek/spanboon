@@ -65,7 +65,10 @@ export class TooltipProfile extends AbstractPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
-  public ngOnInit(): void { 
+  public ngOnInit(): void {
+    if (this.data.owner.length > 0) {
+      this.data.owner = this.data.owner[0];
+    }
     Object.assign(this.data.owner, { followers: this.data.followUserCount });
   }
 
@@ -87,7 +90,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   }
 
   public async clickFollow(page) {
-    let follow = await this.pageFacade.follow(page.id); 
+    let follow = await this.pageFacade.follow(page.id);
 
     this.data.owner.followUserCount = follow.data.followers;
     this.data.owner.isFollow = follow.data.isFollow;
