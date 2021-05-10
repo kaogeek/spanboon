@@ -34,7 +34,7 @@
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" [class.is_objective]="isObjective"
+                <span class="title" (click)="clickDataSearchs(postData.title)" [class.is_objective]="isObjective"
                     [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
             </div>
             <ng-template #other_topic_detail>
@@ -71,7 +71,7 @@
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512" width="10px"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
@@ -349,7 +349,7 @@
                             </div>
                         </div>
                         <div class="date_time">
-                            <svg class="svg_icon" height="10px" viewBox="0 0 512 512" width="10px"
+                            <svg class="svg_icon" style="padding: 5px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
