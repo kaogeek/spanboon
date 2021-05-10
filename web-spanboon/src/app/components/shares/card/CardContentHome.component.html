@@ -55,7 +55,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a>{{postData.owner.name}}</a>
+                    <a>{{postData.owner?postData.owner.name:''}}</a>
                 </div>
                 <div class="amount_social">
                     <span>{{amountSocial ? amountSocial:0}}</span> การมีส่วนร่วมกับโพสต์

@@ -120,6 +120,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
+                console.log('this.postData', this.postData)
                 if (this.isDerTy(this.postData.post)) {
                     this.postId = this.postData.post._id;
                 }
