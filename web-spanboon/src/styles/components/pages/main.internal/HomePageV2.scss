@@ -722,21 +722,21 @@
         background-color: white;
     }
     .home_page_v2 > .hoem_page_body > .other_section > .top {
-        padding: 10px;
+        padding: 10px 8px;
         color: $brandcolor2;
         position: -webkit-sticky;
         position: sticky;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        // -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
         top: 0px;
-        height: 40px;
+        height: auto;
         z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
-    .home_page_v2 > .hoem_page_body > .needs_section > .top > .line {
+    .home_page_v2 > .hoem_page_body > .needs_section > .top > .line { 
         display: none;
     }
     .home_page_v2 > .hoem_page_body > .needs_section > .top > .spinner {
