@@ -132,10 +132,9 @@
                 </div>
             </div>
         </div>
-
         <ng-container *ngIf="showChatRoom; else showChatRoom1">
-            <Preload-card class="fulfill-right" [isShowCard1]="false" [isShowCard2]="false" [isShowCard3]="false"
-                [isShowCard4]="false" [isShowCard5]="true" [isShow]="true">
+            <Preload-card style="width: 100%;height: 100%;" [isShowCard1]="true" [isShowCard2]="false"
+                [isShowCard3]="false" [isShowCard4]="true" [isShowCard5]="false" [isShow]="true">
             </Preload-card>
         </ng-container>
         <ng-template #showChatRoom1>

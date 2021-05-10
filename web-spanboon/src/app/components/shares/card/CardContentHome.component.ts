@@ -209,6 +209,11 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public clickToStory(data) {
         window.open('/story/' + data);
     }
+    public clickDataSearchs(data: any) {
+        if (this.isObjective) {
+            window.open('/search?hashtag=' + data);
+        }
+    }
 
     public clickToPage(data) {
         window.open(data);
@@ -219,7 +224,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+        console.log('data.path[0].className', data.path[0].className)
+        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic' && data.path[0].className !== 'detail' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'title' && data.path[0].className !== 'bottom_medium_card_detail') {
             return
         }
         this.clickEvent.emit(this.postData);
