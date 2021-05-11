@@ -75,6 +75,7 @@ export class CardItem extends AbstractPage implements OnInit {
 
     ngOnInit(): void {
         this.checkResp(); 
+        console.log('this.itemData',this.itemData)
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();

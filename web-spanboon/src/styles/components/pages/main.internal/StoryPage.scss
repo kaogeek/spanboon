@@ -260,6 +260,7 @@
             @include font-size-9($font-head-500);
           }
           > .controls {
+            padding: 1px;
           }
         }
         > .user-comment {
@@ -508,6 +509,24 @@
         }
       }
     }
+  }
+  .story > .story-body > .content > .left > .comment {
+    flex-direction: column;
+  }
+  .story > .story-body > .content > .left > .comment > .event-tag {
+    color: #fd5454;
+    font-size: 13pt;
+    font-family: "Kanit-500";
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .story > .story-body > .content > .left > .comment > .controls {
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 
