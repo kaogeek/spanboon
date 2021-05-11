@@ -191,15 +191,23 @@ export class CardContentHome extends AbstractPage implements OnInit {
         this.userImageURL = owner.imageURL;
         this.userName = owner.name;
         this.userType = owner.type;
-        if (this.isDerTy(owner.uniqueId)) {
-            this.userUniqueId = owner.uniqueId;
+        if (owner.length > 0) {
+            if (this.isDerTy(owner[0].uniqueId)) {
+                this.userUniqueId = owner.uniqueId;
+            } else {
+                this.userId = owner[0]._id;
+            }
+        } else {
+            if (this.isDerTy(owner.uniqueId)) {
+                this.userUniqueId = owner.uniqueId;
+            }
         }
 
         this.linkPost = (this.mainPostLink + this.postId);
         if (this.isDerTy(this.userUniqueId)) {
             this.linkUserPage = (this.mainPageLink + this.userUniqueId)
         } else if (this.isDerTy(this.userId)) {
-            this.linkUserPage = (this.mainPageLink + this.linkUserPage)
+            this.linkUserPage = (this.mainPageLink + this.userId)
         }
     }
 

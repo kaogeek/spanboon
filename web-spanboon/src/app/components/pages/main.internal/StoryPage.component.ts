@@ -292,6 +292,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.getRecommendedHashtag();
       this.setCardSilder();
       setTimeout(() => {
+        if (document.getElementById("0").innerText === "undefined") {
+          document.getElementById("0").style.display = "none";
+        }
         this.isPreload = false
       }, 500);
 
