@@ -520,6 +520,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       }
     }
+    // setTimeout(() => {
+    //   if (this.resDataPost[0].needs.length > 0) {
+    //     this.needsCard.fulfillNeeds('sdsad', 'asdsadasd');
+    //   }
+    // }, 500);
   }
 
   public async searchById(search: any) {
