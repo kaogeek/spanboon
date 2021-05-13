@@ -146,7 +146,7 @@ export class DialogCreatePage extends AbstractPage {
         this.resPageType = res;
         let index = 0;
         for (let dataImage of res) {
-          if (dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null) {
+          if(dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null){
             this.getDataIcon(dataImage.iconURL, index);
             index++;
           }
@@ -223,6 +223,7 @@ export class DialogCreatePage extends AbstractPage {
         if (value.status === 1) {
           this.resProfilePage = value.data;
           this.observManager.publish('authen.createPage', value.data);
+          this.isCloseDialog = true;
         }
       }).catch((err: any) => {
         let alertMessages: string;
@@ -242,7 +243,6 @@ export class DialogCreatePage extends AbstractPage {
         }
       })
     }
-    this.isCloseDialog = true;
   }
 
   public checkUUID(text: string) {
