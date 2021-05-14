@@ -20,6 +20,39 @@
             border: solid 0.2px #e4e4e4;
             // color: white !important;
         }
+        > .type_post {
+            display: flex;
+            align-items: center;
+            margin: 10px 0px;
+            width: auto;
+            > .type {
+                width: 6pt;
+                height: 6pt;
+                border-radius: 50%;
+                margin-right: 5px;
+                &.need {
+                    background-color: $status-post-need;
+                }
+                &.general {
+                    background-color: $status-post-general;
+                }
+            }
+            > span {
+                @include font-size-11($font-head-400);
+            }
+            > .date_time {
+                @include font-size-11($font-head-300);
+                color: #cacaca;
+                &:hover {
+                    transition: 0.1s;
+                    color: $brandcolor2;
+                }
+            }
+            > .drot {
+                color: #cacaca;
+                margin: 0px 5px;
+            }
+        }
         > .top_small_card {
             width: 200px;
             margin-bottom: 10px;
@@ -228,14 +261,29 @@
                 overflow: hidden;
                 height: 200px;
                 position: relative;
+                > .bottom_coverPage_cover {
+                    z-index: 1;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: calc(100% - 8px);
+                    height: calc(100% - 8px);
+                    border: solid 4px;
+                    -o-object-fit: scale-down;
+                    object-fit: cover;
+                    z-index: 1;
+                    filter: blur(5px);
+                    -webkit-filter: blur(5px);
+                }
                 > img {
+                    z-index: 2;
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    -o-object-fit: cover;
-                    object-fit: cover;
+                    -o-object-fit: scale-down;
+                    object-fit: scale-down;
                 }
             }
             > .other_topic {
@@ -285,6 +333,7 @@
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    margin-bottom: 10px;
                     width: 90%;
                 }
 
@@ -798,6 +847,8 @@
                             }
                         }
                         > .date_time {
+                            display: flex;
+                            align-items: flex-end;
                             color: rgb(202, 202, 202);
                             @include font-size-11($font-head-300);
                         }
@@ -1034,7 +1085,8 @@
 }
 
 @media (max-width: $large) {
-    .card_content_home > .small_card {
+    .card_content_home > .small_card > .top_small_card > .image_base64 > img.is_objective {
+        padding: 2px;
         border: solid 0.2px #eaeaead9;
     }
     .card_content_home > .event_card > .top_coverPage > .teg_event {
@@ -1084,11 +1136,11 @@
     }
     .card_content_home > .large_card > .bottom_large_card {
         width: 100%;
-        height: 190px;
+        height: 250px;
     }
     .card_content_home > .medium_card > .bottom_medium_card {
         width: 100%;
-        height: 150px;
+        height: 250px;
     }
     .card_content_home > .medium_card {
         padding: 15px 0px;

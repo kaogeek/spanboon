@@ -118,7 +118,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     ngAfterViewInit(): void {
         setTimeout(() => {
+
             if (this.isDerTy(this.postData)) {
+                console.log('this.postData', this.postData)
                 if (this.isDerTy(this.postData.post)) {
                     this.postId = this.postData.post._id;
                 }
@@ -131,6 +133,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     if (this.postData.post.gallery.length > 0) {
                         this.postCardCoverPageUrl = this.postData.post.gallery[0].imageURL;
                     }
+                }
+
+                if (this.smallCard) {
+                    this.postData.owner = this.postData.owner[0];
                 }
 
                 this.amountSocial = (this.postData.post ? this.postData.post.likeCount : 0 + this.postData.post ? this.postData.post.repostCount : 0 + this.postData.post ? this.postData.post.shareCount : 0);
@@ -185,37 +191,41 @@ export class CardContentHome extends AbstractPage implements OnInit {
         this.userImageURL = owner.imageURL;
         this.userName = owner.name;
         this.userType = owner.type;
-        if (this.isDerTy(owner.uniqueId)) {
-            this.userUniqueId = owner.uniqueId;
+        if (owner.length > 0) {
+            if (this.isDerTy(owner[0].uniqueId)) {
+                this.userUniqueId = owner.uniqueId;
+            } else {
+                this.userId = owner[0]._id;
+            }
+        } else {
+            if (this.isDerTy(owner.uniqueId)) {
+                this.userUniqueId = owner.uniqueId;
+            }
         }
 
         this.linkPost = (this.mainPostLink + this.postId);
         if (this.isDerTy(this.userUniqueId)) {
             this.linkUserPage = (this.mainPageLink + this.userUniqueId)
         } else if (this.isDerTy(this.userId)) {
-            this.linkUserPage = (this.mainPageLink + this.linkUserPage)
+            this.linkUserPage = (this.mainPageLink + this.userId)
         }
     }
 
     public clickDataSearch(data, index?) {
-        // this.router.navigateByUrl('/search?hashtag=' + data);
         window.open('/search?hashtag=' + data);
-        // if (this.isData) {
-        //     this.router.navigateByUrl('/search?hashtag=' + data);
-        // } else if (!index) {
-        //     this.router.navigateByUrl('/search?hashtag=' + data);
-        // } else {
-        //     if (this.selectIndex !== index) {
-        //         this.selectIndex = index
-        //     } else { 
-        //         this.router.navigateByUrl('/search?hashtag=' + data);
-
-        //     }
-        // }
     }
 
     public clickToStory(data) {
         window.open('/story/' + data);
+    }
+    public clickDataSearchs(data: any) {
+        if (this.isObjective) {
+            window.open('/search?hashtag=' + data);
+        }
+    }
+
+    public clickToPage(data) {
+        window.open(data);
     }
 
     public clickDialogDiverlop() {
@@ -223,7 +233,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+        console.log('data.path[0].className', data.path[0].className)
+        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic' && data.path[0].className !== 'detail' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'title' && data.path[0].className !== 'bottom_medium_card_detail') {
             return
         }
         this.clickEvent.emit(this.postData);
@@ -254,6 +265,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public TooltipClose($event) {
+        console.log('$event.toElement.className', $event.toElement.className)
 
         setTimeout(() => {
 
@@ -264,14 +276,12 @@ export class CardContentHome extends AbstractPage implements OnInit {
         }, 400);
     }
 
-    duplicateObjFunction(Obj, keyObjs: any[]): any {
+    public duplicateObjFunction(Obj, keyObjs: any[]): any {
 
         let indexKey: number = 1;
         let lastObj: any
 
         for (let key of keyObjs) {
-
-            // for (let arr of ArrayObj) {
 
             if (indexKey === keyObjs.length) {
                 if (indexKey === 1) {
@@ -286,7 +296,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     lastObj = Obj[key];
                 }
             }
-            // }
             indexKey++
         }
 

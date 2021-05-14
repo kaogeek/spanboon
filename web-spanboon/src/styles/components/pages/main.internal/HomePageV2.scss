@@ -39,7 +39,8 @@
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
-                        width: 72px;
+                        line-height: 25px;
+                        width: 45px;
                     }
                 }
                 > .tag_list {
@@ -85,8 +86,8 @@
                 @include font-size-10($font-head-500);
                 > .text {
                     color: $brandcolor2;
-                    margin-right: 10px;
-                    width: 72px;
+                    line-height: 25px;
+                    width: 45px;
                 }
                 > .tag_list {
                     display: inline-flex;
@@ -706,7 +707,7 @@
         position: sticky;
         top: 0px;
         height: 40px;
-        z-index: 1;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
@@ -717,18 +718,22 @@
         position: sticky;
         top: 0px;
         height: 40px;
-        z-index: 1;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
     .home_page_v2 > .hoem_page_body > .other_section > .top {
-        padding: 10px;
+        padding: 10px 8px;
         color: $brandcolor2;
         position: -webkit-sticky;
         position: sticky;
+        display: -webkit-box;
+        // -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
         top: 0px;
-        height: 40px;
-        z-index: 1;
+        height: auto;
+        z-index: 5;
         border-bottom: 1px solid #00000024;
         background-color: white;
     }
@@ -888,7 +893,7 @@
             padding: 15px;
             border-radius: unset;
             border-bottom: solid 0.2px #e4e4e6;
-            width: 101%;
+            width: calc(100% - 34px);
         }
         .card_content_home > .large_card {
             background-color: white;
@@ -896,7 +901,7 @@
             padding: 15px;
             border-radius: unset;
             border-bottom: solid 0.2px #e4e4e6;
-            width: 101%;
+            width: calc(100% - 34px);
         }
     }
 }

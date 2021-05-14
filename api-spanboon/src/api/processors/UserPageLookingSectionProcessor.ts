@@ -66,7 +66,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     clientId = this.data.clientId;
                 }
 
-                if (userId === undefined || userId === null) {
+                if (userId === undefined || userId === null || userId === '') {
                     resolve(undefined);
                     return;
                 }
@@ -91,6 +91,11 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     }
                 } else if (clientId !== undefined) {
                     // ! impl
+                }
+
+                if (pageFollow === undefined) {
+                    resolve(undefined);
+                    return;
                 }
 
                 const today = moment().toDate();

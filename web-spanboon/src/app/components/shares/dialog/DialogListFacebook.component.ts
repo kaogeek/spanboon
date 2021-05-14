@@ -49,7 +49,12 @@ export class DialogListFacebook extends AbstractPage {
         super(PAGE_NAME, authenManager, dialog, router);
         this.dialog = dialog;
         this.isProvideItem = this.data.isProvideItem;
-        this.index = 0; 
+        this.index = 0;  
+        if(this.data && this.data.data && this.data.data.length > 0){
+            if(this.data.data[0].selected){ 
+                this.chooseFacebook = this.data.data[0];
+            }
+        }
     }
 
     public ngOnInit(): void {
@@ -84,7 +89,7 @@ export class DialogListFacebook extends AbstractPage {
         this.dialogRef.close(this.chooseFacebook);
     }
 
-    public checkBoxBindingPageFacebook(text: any, i: number) { 
+    public checkBoxBindingPageFacebook(text: any, i: number) {  
         if (typeof (this.index) === 'number') {
             if (this.index !== i) {
                 Object.assign(this.data.data[this.index], { selected: false });

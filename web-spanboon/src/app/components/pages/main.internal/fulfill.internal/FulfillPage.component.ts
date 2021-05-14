@@ -379,7 +379,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public searchAccessPage() {
         this.accessValue = this.getCurrentUser();
         this.showLoading = true;
-       
+
         this.userAccessFacade.getPageAccess().then((res: any) => {
             if (res.length > 0) {
                 let index = 0;
@@ -412,7 +412,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                     data.page.imageBase64 = null;
                                 } else {
                                     data.page.imageBase64 = image.data;
-                                } 
+                                }
                             }
                         }).catch((err: any) => {
                             if (err.error.message === "Unable got Asset") {
@@ -421,8 +421,8 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         });
                     } else {
                         this.accessPage = res;
-                    } 
-                    index++; 
+                    }
+                    index++;
                 }
 
                 setTimeout(() => {
@@ -486,6 +486,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 setTimeout(() => {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
+                    console.log('this.fulfillCase', this.fulfillCase)
                 }, 1000);
                 resolve(this.fulfillCase);
             } else {
@@ -546,6 +547,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     public getChatRoom(fulfill: any, asPage?: any) {
         this.chatData = [];
         this.reqData = [];
+        this.showChatRoom = true;
 
         if (fulfill !== null && fulfill !== undefined) {
             if (asPage !== null && asPage !== undefined && asPage !== '') {
@@ -979,7 +981,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
             this.sorting = this.sortingBy[2].type;
             this.sortBy = this.sortingBy[2].name;
         }
-
         this.fulfullCaseStatus = status;
 
         this.listFulfillmentCase(status, this.asPage, this.sorting, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET);
