@@ -107,7 +107,15 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                             from: 'Page',
                             localField: 'pageId',
                             foreignField: '_id',
-                            as: 'ownerUser'
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
                         }
                     },
                     {
@@ -129,9 +137,20 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 result.type = this.getType(); // set type by processor type
 
                 for (const row of postAggregate) {
+                    const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+
                     const contents: any = {};
                     contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    contents.owner = row.ownerUser;
+                    contents.owner = {};
+                    if (row.page !== undefined && row.page.length > 0) {
+                        contents.owner = this.parsePageField(row.page[0]);
+                    } else {
+                        contents.owner = this.parseUserField(user);
+                    }
+                    // remove page agg
+                    delete row.page;
+                    delete row.user;
+
                     contents.post = row;
                     result.contents.push(contents);
                 }
@@ -142,5 +161,36 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 reject(error);
             }
         });
+    }
+
+    private parsePageField(page: any): any {
+        const pageResult: any = {};
+
+        if (page !== undefined) {
+            pageResult.id = page._id;
+            pageResult.name = page.name;
+            pageResult.imageURL = page.imageURL;
+            pageResult.isOfficial = page.isOfficial;
+            pageResult.uniqueId = page.pageUsername;
+            pageResult.type = 'PAGE';
+        }
+
+        return pageResult;
+    }
+
+    private parseUserField(user: any): any {
+        const userResult: any = {};
+
+        if (user !== undefined) {
+            userResult.id = user._id;
+            userResult.displayName = user.displayName;
+            userResult.imageURL = user.imageURL;
+            userResult.email = user.email;
+            userResult.isAdmin = user.isAdmin;
+            userResult.uniqueId = user.uniqueId;
+            userResult.type = 'USER';
+        }
+
+        return userResult;
     }
 }
