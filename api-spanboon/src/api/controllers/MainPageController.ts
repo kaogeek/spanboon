@@ -47,6 +47,7 @@ import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
+import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/main')
 export class MainPageController {
@@ -104,7 +105,9 @@ export class MainPageController {
             } else if (section === 'LASTEST') {
                 const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
                 lastestLKProcessorSec.setData({
-                    userId
+                    userId,
+                    startDateTime: undefined,
+                    endDateTime: undefined
                 });
                 lastestLKProcessorSec.setConfig({
                     showUserAction: true,
@@ -149,7 +152,9 @@ export class MainPageController {
             } else if (section === 'RECOMMEND') {
                 const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
                 userRecProcessorSec.setData({
-                    userId
+                    userId,
+                    startDateTime: undefined,
+                    endDateTime: undefined
                 });
                 userRecProcessorSec.setConfig({
                     showUserAction: true,
@@ -200,6 +205,7 @@ export class MainPageController {
 
         let processorList: any[] = [];
 
+        const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
         emerProcessor.setConfig({
             showUserAction: true,
@@ -209,14 +215,18 @@ export class MainPageController {
         const emerSectionModel = await emerProcessor.process();
 
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
+        postProcessor.setData({
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         const postSectionModel = await postProcessor.process();
 
         const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-        if (userId !== undefined) {
-            lastestLKProcessor.setData({
-                userId
-            });
-        }
+        lastestLKProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         lastestLKProcessor.setConfig({
             showUserAction: true,
             offset,
@@ -238,11 +248,11 @@ export class MainPageController {
         // processorList.push(stillLKProcessor);
 
         const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
-        if (userId !== undefined) {
-            userRecProcessor.setData({
-                userId
-            });
-        }
+        userRecProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         userRecProcessor.setConfig({
             showUserAction: true,
             offset,
@@ -254,23 +264,22 @@ export class MainPageController {
         const emergencyPinModel = await emergencyPinProcessor.process();
 
         const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
-        if (userId !== undefined) {
-            objectiveProcessor.setData({
-                userId
-            });
-        }
+        objectiveProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         objectiveProcessor.setConfig({
             showUserAction: true
         });
-
         const objectiveSectionModel = await objectiveProcessor.process();
 
         const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-        if (userId !== undefined) {
-            userFollowProcessor.setData({
-                userId
-            });
-        }
+        userFollowProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         userFollowProcessor.setConfig({
             limit: 4,
             showUserAction: true
@@ -278,11 +287,11 @@ export class MainPageController {
         processorList.push(userFollowProcessor);
 
         const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
-        if (userId !== undefined) {
-            userPageLookingProcessor.setData({
-                userId
-            });
-        }
+        userPageLookingProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         userPageLookingProcessor.setConfig({
             limit: 2,
             showUserAction: true
@@ -291,11 +300,11 @@ export class MainPageController {
 
         // open when main icon template show
         const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-        if (userId !== undefined) {
-            lastestObjProcessor.setData({
-                userId
-            });
-        }
+        lastestObjProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
         lastestObjProcessor.setConfig({
             limit: 5,
             showUserAction: true
