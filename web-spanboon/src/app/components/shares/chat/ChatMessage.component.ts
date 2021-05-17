@@ -154,8 +154,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
       this.observManager.subscribe('chat_message', (roomId: any) => {
         // this will be your http get request 
         this.chatRoomFacade.getChatMessages(roomId, this.asPage).subscribe(async (res) => {
-          console.log('this.cloneMessage', this.cloneMessage);
-          console.log('res.data', res.data);
           if (res.data !== null && res.data !== undefined) {
             for (let newMessage of res.data) {
               var isMessage = false;
@@ -345,7 +343,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
   public Tooltip(origin: any, data) {
     if (!this.isAsPage) {
-      console.log('data ', data)
       data.owner = Object.assign(data.owner, { type: "USER" });
     } else {
       data.owner = Object.assign(data.owner, { type: "PAGE" });

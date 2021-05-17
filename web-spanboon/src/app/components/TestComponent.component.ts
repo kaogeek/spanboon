@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, HostBinding, Input, Optional, Self, ChangeDetectorRef, Output, EventEmitter, HostListener, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, MenuContextualService } from '../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, MenuContextualService, ObjectiveFacade } from '../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser';
@@ -8,6 +8,7 @@ import { MatChipInputEvent } from '@angular/material';
 import { TooltipProfile } from './components';
 import { AbstractPageImageLoader } from './pages/AbstractPageImageLoader';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import './../../assets/script/canvas.js';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 declare var atwho: any;
@@ -47,30 +48,21 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
   keywords = [];
   assetFacade: AssetFacade
+  objectiveFacade: ObjectiveFacade
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
-  constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog,
+  constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, profileFacade: ProfileFacade, dialog: MatDialog,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.assetFacade = assetFacade
+    this.objectiveFacade = objectiveFacade;
 
   }
   ngOnInit(): void {
-
-    ClassicEditor
-      .create(document.querySelector('#editor'), {
-        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-        heading: {
-          options: [
-            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
-          ]
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e').then((Objective) => {
+      console.log('Objective', Objective)
+    }).catch((err) => {
+    });
   }
 
   public ngOnDestroy(): void {

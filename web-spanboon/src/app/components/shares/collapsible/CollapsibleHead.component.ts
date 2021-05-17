@@ -88,7 +88,6 @@ export class CollapsibleHead extends AbstractPage implements OnInit {
 
   public loadMore(){
     this.isLoading = true;
-    console.log('this.data.cases ',this.data.cases.length)
   }
 
   public getFulfillmentCase(fulfill: any, index: number) {

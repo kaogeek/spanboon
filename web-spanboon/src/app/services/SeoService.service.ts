@@ -21,7 +21,6 @@ export class SeoService {
     }
 
     updateTitle(title: string) {
-        console.log(title)
         this.title.setTitle(title);
     }
 
