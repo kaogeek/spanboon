@@ -315,7 +315,6 @@ export class StoryPage extends AbstractPage implements OnInit {
 
 
       this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        console.log(page)
         if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
           this.linkPage = (this.mainPageLink + page.data.uniqueId)
         } else if (page.data.id !== undefined && page.data.id !== null) {

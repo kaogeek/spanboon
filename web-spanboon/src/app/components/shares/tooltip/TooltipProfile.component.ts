@@ -5,6 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
+import { E } from '@angular/cdk/keycodes';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
@@ -89,8 +90,17 @@ export class TooltipProfile extends AbstractPage implements OnInit {
     return;
   }
 
-  public async clickFollow(page) {
-    let follow = await this.pageFacade.follow(page.id);
+  public async clickFollow(owner) {
+
+    if (owner.isFollow) {
+      owner.followers--;
+      owner.isFollow = false;
+    } else {
+      owner.followers++;
+      owner.isFollow = true;
+    }
+
+    let follow = await this.pageFacade.follow(owner.id);
 
     this.data.owner.followUserCount = follow.data.followers;
     this.data.owner.isFollow = follow.data.isFollow;
