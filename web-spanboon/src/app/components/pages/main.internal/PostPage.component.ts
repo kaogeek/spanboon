@@ -167,7 +167,6 @@ export class PostPage extends AbstractPage implements OnInit {
             });
           }
         }
-        console.log('this.resDataPost', this.resDataPost)
 
       }).catch((err: any) => {
       });

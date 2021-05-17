@@ -276,6 +276,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
       } else {
         this.data.push(res.data);
       }
+      this.cloneMessage = JSON.parse(JSON.stringify(this.data));
 
       this.scrollChat();
     }).catch((error) => {
@@ -342,7 +343,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
   public Tooltip(origin: any, data) {
     if (!this.isAsPage) {
-      console.log('data ',data)
       data.owner = Object.assign(data.owner, { type: "USER" });
     } else {
       data.owner = Object.assign(data.owner, { type: "PAGE" });
@@ -354,7 +354,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
       });
   }
 
-  
+
   public TooltipClose($event) {
 
     setTimeout(() => {

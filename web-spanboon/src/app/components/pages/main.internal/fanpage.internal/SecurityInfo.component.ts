@@ -406,7 +406,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             panelClass: 'customize-dialog',
             data: data
         });
-        dialog.afterClosed().subscribe((res) => {
+        dialog.afterClosed().subscribe((res) => { 
             if (res) {
                 this.checkBoxBindingPageFacebook(res);
                 let check = {

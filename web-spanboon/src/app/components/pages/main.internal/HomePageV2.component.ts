@@ -151,11 +151,11 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   }
 
   public clickDataSearch(data) {
-    this.router.navigateByUrl('/search?hashtag=' + data);
+    window.open('/search?hashtag=' + data);
   }
 
   public clickDataSearchTodo(data) {
-    this.router.navigateByUrl('/search?hashtag=' + data.title);
+    window.open('/search?hashtag=' + data);
   }
 
   public smallType(data): boolean {

@@ -8,7 +8,7 @@
 import { ElementRef } from '@angular/core';
 import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { NavigationExtras, Router } from '@angular/router';
+import { NavigationExtras, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { AuthenManager, ObservableManager } from '../../../services/services';
 import { environment } from '../../../../environments/environment';
@@ -60,14 +60,18 @@ export class NeedsCard extends AbstractPage implements OnInit {
   // public offsetHeightCard: number;
   private needsResult: any[] = [];
   private observManager: ObservableManager;
+  private rout: ActivatedRoute;
 
   public apiBaseURL = environment.apiBaseURL;
 
-  constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, observManager: ObservableManager) {
+  mySubscription: any;
+
+  constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, rout: ActivatedRoute, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.dialog = dialog;
     this.router = router;
+    this.rout = rout;
     this.observManager = observManager;
 
   }
@@ -75,6 +79,9 @@ export class NeedsCard extends AbstractPage implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     setTimeout(() => {
       this.getNeeds();
+      setTimeout(() => {
+        this.subscripUrl();
+      }, 300);
     }, 650);
   }
 
@@ -95,6 +102,25 @@ export class NeedsCard extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  public subscripUrl() {
+
+    const pathUrlPost = window.location.pathname.split('/')[1];
+    if (pathUrlPost === "post" && this.itemNeeds.length > 0) {
+      this.fulfillNeeds(null, this.itemNeeds[0]);
+    }
+    // alert('asdasdsadsad')
+
+    // this.mySubscription = this.router.events.subscribe((event) => {
+    //   const url: string = decodeURI(this.router.url);
+    //   const pathUrlPost = url.split('/')[1];
+    //   const postId = url.split('/')[2];
+
+    //   if (pathUrlPost === 'post') {
+    //   }
+
+    // });
   }
 
   public getNeeds(close?: boolean) {
