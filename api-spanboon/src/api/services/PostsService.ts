@@ -21,6 +21,8 @@ import { ObjectID } from 'mongodb';
 @Service()
 export class PostsService {
 
+    public MAX_SAMPLE_COUNT = 10;
+
     constructor(@OrmRepository() private postsRepository: PostsRepository,
         private postsCommentService: PostsCommentService,
         private userLikeService: UserLikeService,
@@ -204,7 +206,7 @@ export class PostsService {
 
                 // search until hashTagObjIds == simpleCount;
                 while (hashTagStringIds.length < simpleCount) {
-                    if (countLoop === 100) {
+                    if (countLoop === this.MAX_SAMPLE_COUNT) {
                         break;
                     }
 
@@ -213,6 +215,12 @@ export class PostsService {
                         { $sample: { size: simpleCount } },
                     ];
                     const aggResult = await this.aggregate(aggregateObjPost);
+
+                    // cannot find any data at first time
+                    if (countLoop === 0 && aggResult !== undefined && aggResult.length <= 0) {
+                        break;
+                    }
+
                     for (const data of aggResult) {
                         // check if postsHashTags has data
                         if (data.postsHashTags !== undefined && data.postsHashTags.length > 0) {
