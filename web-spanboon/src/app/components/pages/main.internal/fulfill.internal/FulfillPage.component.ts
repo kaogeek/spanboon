@@ -320,7 +320,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                         for (let value of result) {
                             for (let chat of value.cases) {
                                 if (chat.chatRoom === this.roomId) {
-                                    console.log('chat ', chat)
                                     this.getChatRoom(chat, this.asPage);
                                 }
                             }
@@ -486,7 +485,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                 setTimeout(() => {
                     this.showLoading = false;
                     this.isPreloadLoad = false;
-                    console.log('this.fulfillCase', this.fulfillCase)
                 }, 1000);
                 resolve(this.fulfillCase);
             } else {

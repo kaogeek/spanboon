@@ -353,7 +353,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       this.dataTrend = res;
-      console.log('this.dataTrend ', this.dataTrend)
     }).catch((err: any) => {
       console.log(err)
     })

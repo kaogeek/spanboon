@@ -226,7 +226,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
-      console.log('this.splitTpyeClone', this.splitTpyeClone)
       if (!this.isLoadingPost) {
         if (!this.isMaxLoadingPost) {
           let data;

@@ -60,7 +60,6 @@ export class RegisterPageTestComponent extends AbstractPageImageLoader implement
 
   }
   ngOnInit(): void {
-    console.log('this.isLogin()', this.isLogin())
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/createpage-temporary");
     }

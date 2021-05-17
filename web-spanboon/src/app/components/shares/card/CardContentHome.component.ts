@@ -120,7 +120,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
         setTimeout(() => {
 
             if (this.isDerTy(this.postData)) {
-                console.log('this.postData', this.postData)
                 if (this.isDerTy(this.postData.post)) {
                     this.postId = this.postData.post._id;
                 }
@@ -233,7 +232,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        console.log('data.path[0].className', data.path[0].className)
         if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic' && data.path[0].className !== 'detail' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'title' && data.path[0].className !== 'bottom_medium_card_detail') {
             return
         }
@@ -265,7 +263,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public TooltipClose($event) {
-        console.log('$event.toElement.className', $event.toElement.className)
 
         setTimeout(() => {
 

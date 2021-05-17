@@ -550,7 +550,6 @@ export class AboutPage extends AbstractPage implements OnInit {
                 backgroundStory: this.resDataPage.backgroundStory
             }
         } else if (index === 5) {
-            console.log('this.phone ', this.phone)
             body = {
                 mobileNo: this.phone
             }

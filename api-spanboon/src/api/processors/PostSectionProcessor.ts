@@ -71,10 +71,10 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                     { $limit: 10 },
                     {
                         $lookup: {
-                            from: 'PostsGallery',
-                            localField: '_id',
-                            foreignField: 'post',
-                            as: 'gallery'
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
                         }
                     },
                     {
@@ -105,7 +105,6 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                 for (const row of postAggregate) {
                     const contents: any = {};
-                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                     contents.owner = row.ownerUser;
                     contents.post = row;
                     result.contents.push(contents);
