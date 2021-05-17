@@ -58,6 +58,14 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 let userId = undefined;
                 let clientId = undefined;
                 let userObjId: ObjectID = undefined;
@@ -103,15 +111,31 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                     isDraft: false,
                     deleted: false,
                     hidden: false,
-                    startDateTime: { $lte: today },
                     type: POST_TYPE.NEEDS
                 };
                 if (pageFollow !== undefined) {
                     matchStmt.pageId = new ObjectID(pageFollow.subjectId + '');
                 }
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    matchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    matchStmt.startDateTime = { $lte: today };
+                }
+
                 const postStmt = [
                     { $match: matchStmt },
+                    { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: limit },
