@@ -265,26 +265,53 @@ export class PostsService {
 
                 result = await this.getPostNeedsAggregate(matchStmt, simpleCount);
 
-                let loopCount = 0;
-                // while until sample was full
-                while (result.length < simpleCount) {
-                    // break in worst case
-                    if (loopCount >= 50) {
-                        break;
-                    }
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 
-                    const leftSampleCount = simpleCount - result.length;
-                    if (leftSampleCount <= 0) {
-                        break;
-                    }
+    public sampleNeedsItems(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
 
-                    const moreResult = await this.getPostNeedsAggregate(matchStmt, leftSampleCount);
-                    if (moreResult.length > 0) {
-                        result = result.concat(moreResult);
-                    }
-
-                    loopCount += 1;
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
                 }
+
+                const postAggregateObj = [
+                    { $match: matchStmt },
+                    { $sample: { size: simpleCount } },
+                    {
+                        $project:
+                        {
+                            'story': 0,
+                            'detail': 0
+                        }
+                    }
+                ];
+                const postSearchResult = await this.aggregate(postAggregateObj);
+                if (postSearchResult === undefined || postSearchResult.length <= 0) {
+                    resolve(result);
+                    return;
+                }
+                
+                const postIds = [];
+                for (const post of postSearchResult) {
+                    postIds.push(post._id);
+                }
+
+                const needsMatchStmt: any = {
+                    $and: []
+                };
+                needsMatchStmt['$and'].push({
+                    post: { $in: postIds }
+                });
+
+                result = await this.needsService.sampleNeedsItems(needsMatchStmt, simpleCount);
 
                 resolve(result);
             } catch (error) {

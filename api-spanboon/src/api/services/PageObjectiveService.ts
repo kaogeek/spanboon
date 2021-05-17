@@ -235,7 +235,7 @@ export class PageObjectiveService {
                     type: POST_TYPE.NEEDS
                 };
 
-                result = await this.postsService.samplePostNeedsItems(matchStmt, simpleCount);
+                result = await this.postsService.sampleNeedsItems(matchStmt, simpleCount);
 
                 resolve(result);
             } catch (error) {
