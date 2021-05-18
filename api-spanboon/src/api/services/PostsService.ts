@@ -21,6 +21,8 @@ import { ObjectID } from 'mongodb';
 @Service()
 export class PostsService {
 
+    public MAX_SAMPLE_COUNT = 10;
+
     constructor(@OrmRepository() private postsRepository: PostsRepository,
         private postsCommentService: PostsCommentService,
         private userLikeService: UserLikeService,
@@ -204,7 +206,7 @@ export class PostsService {
 
                 // search until hashTagObjIds == simpleCount;
                 while (hashTagStringIds.length < simpleCount) {
-                    if (countLoop === 100) {
+                    if (countLoop === this.MAX_SAMPLE_COUNT) {
                         break;
                     }
 
@@ -213,6 +215,12 @@ export class PostsService {
                         { $sample: { size: simpleCount } },
                     ];
                     const aggResult = await this.aggregate(aggregateObjPost);
+
+                    // cannot find any data at first time
+                    if (countLoop === 0 && aggResult !== undefined && aggResult.length <= 0) {
+                        break;
+                    }
+
                     for (const data of aggResult) {
                         // check if postsHashTags has data
                         if (data.postsHashTags !== undefined && data.postsHashTags.length > 0) {
@@ -257,26 +265,53 @@ export class PostsService {
 
                 result = await this.getPostNeedsAggregate(matchStmt, simpleCount);
 
-                let loopCount = 0;
-                // while until sample was full
-                while (result.length < simpleCount) {
-                    // break in worst case
-                    if (loopCount >= 50) {
-                        break;
-                    }
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 
-                    const leftSampleCount = simpleCount - result.length;
-                    if (leftSampleCount <= 0) {
-                        break;
-                    }
+    public sampleNeedsItems(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
 
-                    const moreResult = await this.getPostNeedsAggregate(matchStmt, leftSampleCount);
-                    if (moreResult.length > 0) {
-                        result = result.concat(moreResult);
-                    }
-
-                    loopCount += 1;
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
                 }
+
+                const postAggregateObj = [
+                    { $match: matchStmt },
+                    { $sample: { size: simpleCount } },
+                    {
+                        $project:
+                        {
+                            'story': 0,
+                            'detail': 0
+                        }
+                    }
+                ];
+                const postSearchResult = await this.aggregate(postAggregateObj);
+                if (postSearchResult === undefined || postSearchResult.length <= 0) {
+                    resolve(result);
+                    return;
+                }
+                
+                const postIds = [];
+                for (const post of postSearchResult) {
+                    postIds.push(post._id);
+                }
+
+                const needsMatchStmt: any = {
+                    $and: []
+                };
+                needsMatchStmt['$and'].push({
+                    post: { $in: postIds }
+                });
+
+                result = await this.needsService.sampleNeedsItems(needsMatchStmt, simpleCount);
 
                 resolve(result);
             } catch (error) {
