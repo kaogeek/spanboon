@@ -1,7 +1,7 @@
 setTimeout(() => {
     window.scrollTo(0, 0);
 
-    var elms = document.querySelectorAll("[id='draw']");
+    var elms = document.querySelectorAll("[id='point']");
     var ctx = canvas.getContext("2d");
     var stratXpoint = 20
     var stratYpoint = 20
@@ -20,7 +20,7 @@ setTimeout(() => {
         ctx.setLineDash([13, 10]);
         ctx.strokeStyle = "#e1e1e1";
         ctx.lineWidth = 9;
-        ctx.moveTo(stratXpoint, stratYpoint);
+        ctx.moveTo(stratXpoint, (stratYpoint - 60));
         ctx.lineTo(stratXpoint, ((stratYpoint - y) / 1.2) + y);
         ctx.arcTo(stratXpoint, (((stratYpoint - y) / 2) + y), x, (((stratYpoint - y) / 2) + y), 50); // Create an arc
         ctx.lineTo(((((stratXpoint - x) / 2) - (((stratXpoint - x) / 2) / 2)) + x), ((stratYpoint - y) / 2) + y);
@@ -33,9 +33,4 @@ setTimeout(() => {
 
     }
 
-
-
-
-
-
-}, 200);
+}, 1900);
