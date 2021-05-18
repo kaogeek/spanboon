@@ -8,7 +8,6 @@ import { MatChipInputEvent } from '@angular/material';
 import { TooltipProfile } from './components';
 import { AbstractPageImageLoader } from './pages/AbstractPageImageLoader';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import './../../assets/script/canvas.js';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 declare var atwho: any;
@@ -59,10 +58,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
   }
   ngOnInit(): void {
-    this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e').then((Objective) => {
-      console.log('Objective', Objective)
-    }).catch((err) => {
-    });
   }
 
   public ngOnDestroy(): void {

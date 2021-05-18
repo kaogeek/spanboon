@@ -89,6 +89,9 @@ import {
   SecurityInfo,
   AboutPage,
   Policy,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogImage,
   DialogAlert,
@@ -287,6 +290,9 @@ const COMPONENTS: any[] = [
   PageHashTag,
   PageRecommended,
   Redirect,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogEditComment,
   DialogEditPost,

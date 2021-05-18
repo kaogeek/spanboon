@@ -273,7 +273,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-        }, { scope: 'public_profile,email' });
+        }, { scope: 'public_profile, email, user_gender, user_birthday, pages_manage_posts, pages_show_list, pages_read_engagement' });
     }
 
     private loginFB() {

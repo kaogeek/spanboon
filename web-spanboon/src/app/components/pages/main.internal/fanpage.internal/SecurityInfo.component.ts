@@ -380,7 +380,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.isLoading = false;
                 this.connect = false;
             }
-        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement,pages_manage_posts,publish_to_groups' });
+        }, { scope: 'public_profile, email, user_gender, user_birthday, pages_manage_posts, pages_show_list, pages_read_engagement' });
     }
 
     public listPageFacebook() {
