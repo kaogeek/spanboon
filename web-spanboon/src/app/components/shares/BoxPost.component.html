@@ -342,7 +342,7 @@
                                                     [(ngModel)]="selectedValue" name="objectCategory" required>
                                                     <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
                                                     </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.name">
+                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.id">
                                                         {{item.name}}
                                                     </mat-option>
                                                 </mat-select>

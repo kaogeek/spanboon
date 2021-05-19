@@ -7,10 +7,10 @@
 
 .tag-event {
     display: flex;
-    align-items: center; 
+    align-items: center;
 
-    &.mobileActive{
-       padding-top: 5pt;
+    &.mobileActive {
+        padding: 5pt 0pt;
     }
 
     > .tag-emergency,
@@ -27,6 +27,7 @@
         > .img-emergency,
         > .img-objective {
             margin-right: 5pt;
+            margin-bottom: 5pt;
 
             &.active {
                 fill: $brandcolor2;

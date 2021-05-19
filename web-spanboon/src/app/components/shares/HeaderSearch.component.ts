@@ -353,7 +353,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       this.dataTrend = res;
-      console.log('this.dataTrend ', this.dataTrend)
     }).catch((err: any) => {
       console.log(err)
     })
@@ -382,7 +381,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     if (userId !== undefined) {
       search = {
         keyword: value,
-        user: userId
+        userId: userId
       }
     } else {
       search = {

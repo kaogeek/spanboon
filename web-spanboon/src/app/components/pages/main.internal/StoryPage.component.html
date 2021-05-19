@@ -18,7 +18,20 @@
 </div> -->
 
 <div *ngIf="isLoding" class="loding">
-    <loading></loading>
+    <Preload-card style="width: 100%;" [isShowCard1]="true" [isShowCard2]="false">
+    </Preload-card>
+    <div class="stoey-buttom">
+        <div class="stoey-buttom-preload" style="display: flex;width: 100%;">
+            <div class="preload-left">
+                <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+                </Preload-card>
+            </div>
+            <div class="preload-right">
+                <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+                </Preload-card>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="story">
     <div class="story-background"
@@ -170,12 +183,14 @@
                 <div class="story-footer" *ngIf="recommendedStorys.length > 0">
                     <span> สตอรี่อื่น ๆ ของ : </span>
                     <a href={{linkPage}} target="_blank">{{pageName}}</a>
-                    <post-swiper-card [itemNeeds]="recommendedStorys" [isFulfillQuantity]="true" [isFulfill]="'true'">
+                    <post-swiper-card [itemNeeds]="recommendedStorys" (clickEventA)="toStory($event)"
+                        [isFulfillQuantity]="true" [isFulfill]="'true'" [keyItem]='["coverPageUrl"]'>
                     </post-swiper-card>
                 </div>
                 <div class="story-footer" *ngIf="recommendedStory.length > 0">
                     <span> สตอรี่อื่น ๆ ที่คุณอาจสนใจ</span>
-                    <post-swiper-card [isFulfillQuantity]="true" [isFulfill]="'true'" [itemNeeds]="recommendedStory">
+                    <post-swiper-card [isFulfillQuantity]="true" (clickEventA)="toStory($event)" [isFulfill]="'true'"
+                        [itemNeeds]="recommendedStory" [keyItem]='["coverPageUrl"]'>
                     </post-swiper-card>
                 </div>
             </div>

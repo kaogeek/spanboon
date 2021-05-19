@@ -8,7 +8,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 import { MainPageModel } from '../../models/models';
 
 @Injectable()
@@ -20,9 +20,18 @@ export class MainPageSlideFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
-  public getMainPageModel(userId?: string): Promise<any[]> {
+  public getMainPageModel(userId?: string, offset?: string, section?: string, date?: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/content';
+      if (offset !== undefined) {
+        url = (url + '?offset=' + offset)
+      }
+      if (section !== undefined) {
+        url = (url + '&section=' + section)
+      }
+      if (date !== undefined) {
+        url = (url + '&date=' + date)
+      }
       let option = this.getDefaultOptions();
       let httpOptions
       if (userId !== null && userId !== undefined) {
@@ -87,7 +96,7 @@ export class MainPageSlideFacade extends AbstractFacade {
       let body: any = {};
       if (search !== null && search !== undefined) {
         body = Object.assign(search)
-      } 
+      }
 
       this.http.post(url, body).toPromise().then((response: any) => {
         resolve(response.data);

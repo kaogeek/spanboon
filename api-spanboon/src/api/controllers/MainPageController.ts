@@ -9,6 +9,7 @@ import 'reflect-metadata';
 import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
 import MainPageResponse from './responses/MainPageResponse';
 import { ResponseUtil } from '../../utils/ResponseUtil';
+import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import { HashTagService } from '../services/HashTagService';
@@ -24,8 +25,10 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { LastestLookingSectionProcessor } from '../processors/LastestLookingSectionProcessor';
-import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
+// import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
+import { PostSectionProcessor } from '../processors/PostSectionProcessor';
+import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { UserRecommendSectionProcessor } from '../processors/UserRecommendSectionProcessor';
@@ -33,17 +36,18 @@ import { UserFollowSectionProcessor } from '../processors/UserFollowSectionProce
 import { UserPageLookingSectionProcessor } from '../processors/UserPageLookingSectionProcessor';
 import { LastestObjectiveProcessor } from '../processors/LastestObjectiveProcessor';
 import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProcessor';
-import { TEMPLATE_TYPE } from '../../constants/TemplateType';
+// import { TEMPLATE_TYPE } from '../../constants/TemplateType';
 // import { SearchFilter } from './requests/SearchFilterRequest';
 // import { SearchHistory } from '../models/SearchHistory';
 // import { MAX_SEARCH_ROWS } from '../../constants/Constants';
-import { SectionModel } from '../models/SectionModel';
+// import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
+import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/main')
 export class MainPageController {
@@ -56,7 +60,7 @@ export class MainPageController {
         private postsService: PostsService,
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
-        private pageObjectiveService: PageObjectiveService
+        private pageObjectiveService: PageObjectiveService,
     ) { }
 
     // Find Page API
@@ -75,140 +79,267 @@ export class MainPageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/content')
-    public async getContentList(@Res() res: any, @Req() req: any): Promise<any> {
+    public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
 
+        if (section !== undefined && section !== '') {
+            if (section === 'EMERGENCYEVENT') {
+                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
+                emerProcessorSec.setConfig({
+                    showUserAction: true,
+                    offset,
+                    date
+                });
+                const emerSectionModelSec = await emerProcessorSec.process();
+
+                const emerResult: any = {};
+                emerResult.contents = emerSectionModelSec.contents;
+
+                if (emerResult) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', emerResult);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else if (section === 'LASTEST') {
+                const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+                lastestLKProcessorSec.setData({
+                    userId,
+                    startDateTime: undefined,
+                    endDateTime: undefined
+                });
+                lastestLKProcessorSec.setConfig({
+                    showUserAction: true,
+                    offset,
+                    date
+                });
+                const lastestLookSectionModelSec = await lastestLKProcessorSec.process();
+
+                const lKresult: any = {};
+                lKresult.contents = lastestLookSectionModelSec.contents;
+
+                if (lKresult) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', lKresult);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else if (section === 'STILLLOOKING') {
+                // const stillLKProcessorSec: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+                // stillLKProcessorSec.setData({
+                //     userId
+                // });
+                // stillLKProcessorSec.setConfig({
+                //     showUserAction: true,
+                //     offset,
+                //     date
+                // });
+                // const stillLKSectionModelSec = await stillLKProcessorSec.process();
+                // const slResult: any = {};
+                // slResult.contents = stillLKSectionModelSec.contents;
+
+                // if (slResult) {
+                //     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', slResult);
+                //     return res.status(200).send(successResponse);
+                // } else {
+                //     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                //     return res.status(400).send(errorResponse);
+                // }
+                const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                return res.status(400).send(errorResponse);
+            } else if (section === 'RECOMMEND') {
+                const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
+                userRecProcessorSec.setData({
+                    userId,
+                    startDateTime: undefined,
+                    endDateTime: undefined
+                });
+                userRecProcessorSec.setConfig({
+                    showUserAction: true,
+                    offset,
+                    date
+                });
+                const userRecSectionModelSec = await userRecProcessorSec.process();
+                userRecSectionModelSec.isList = true;
+
+                const urResult: any = {};
+                urResult.contents = userRecSectionModelSec.contents;
+
+                if (urResult) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', urResult);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else if (section === 'USERFOLLOW') {
+                const userFollowProcessors: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
+                userFollowProcessors.setData({
+                    userId
+                });
+                userFollowProcessors.setConfig({
+                    showUserAction: true,
+                    offset,
+                    date
+                });
+                const userFollowSectionModelSec = await userFollowProcessors.process();
+                userFollowSectionModelSec.isList = true;
+
+                const urResult: any = {};
+                urResult.contents = userFollowSectionModelSec.contents;
+
+                if (urResult) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', urResult);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
+        let processorList: any[] = [];
+
+        const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
+        emerProcessor.setConfig({
+            showUserAction: true,
+            offset,
+            date
+        });
         const emerSectionModel = await emerProcessor.process();
+
+        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
+        postProcessor.setData({
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
+        const postSectionModel = await postProcessor.process();
 
         const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
         lastestLKProcessor.setData({
-            userId
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
         });
         lastestLKProcessor.setConfig({
-            showUserAction: true
+            showUserAction: true,
+            offset,
+            date
         });
-        const lastestLookSectionModel = await lastestLKProcessor.process();
+        processorList.push(lastestLKProcessor);
 
-        const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-        stillLKProcessor.setData({
-            userId
-        });
-        stillLKProcessor.setConfig({
-            showUserAction: true
-        });
-        const stillLKSectionModel = await stillLKProcessor.process();
+        // const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+        // if (userId !== undefined) {
+        //     stillLKProcessor.setData({
+        //         userId
+        //     });
+        // }
+        // stillLKProcessor.setConfig({
+        //     showUserAction: true,
+        //     offset,
+        //     date
+        // });
+        // processorList.push(stillLKProcessor);
 
         const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
         userRecProcessor.setData({
-            userId
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
         });
         userRecProcessor.setConfig({
-            showUserAction: true
+            showUserAction: true,
+            offset,
+            date
         });
-        const userRecSectionModel = await userRecProcessor.process();
-        userRecSectionModel.isList = true;
+        processorList.push(userRecProcessor);
 
         const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
         const emergencyPinModel = await emergencyPinProcessor.process();
 
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
+        objectiveProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
+        objectiveProcessor.setConfig({
+            showUserAction: true
+        });
+        const objectiveSectionModel = await objectiveProcessor.process();
+
         const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
         userFollowProcessor.setData({
-            userId
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
         });
         userFollowProcessor.setConfig({
             limit: 4,
             showUserAction: true
         });
-        const userFollowSectionModel = await userFollowProcessor.process();
-        userFollowSectionModel.templateType = TEMPLATE_TYPE.MULTIPLE;
-        userFollowSectionModel.isList = true;
+        processorList.push(userFollowProcessor);
 
         const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
         userPageLookingProcessor.setData({
-            userId
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
         });
         userPageLookingProcessor.setConfig({
             limit: 2,
             showUserAction: true
         });
-        const userPageLookingSectionModel = await userPageLookingProcessor.process();
-        userPageLookingSectionModel.templateType = TEMPLATE_TYPE.TWIN;
-        userPageLookingSectionModel.isList = true;
-
-        const userPageLookingSectionModel2 = await userPageLookingProcessor.process();
-        userPageLookingSectionModel2.templateType = TEMPLATE_TYPE.TWIN;
-        userPageLookingSectionModel2.isList = true;
+        processorList.push(userPageLookingProcessor);
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
         lastestObjProcessor.setData({
-            userId
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
         });
         lastestObjProcessor.setConfig({
             limit: 5,
             showUserAction: true
         });
-        const lastestObjModel = await lastestObjProcessor.process();
-        // const userPageObjectiveLookingSectionModel = await lastestObjProcessor.processByPosts();
-        lastestObjModel.templateType = TEMPLATE_TYPE.ICON;
+        processorList.push(lastestObjProcessor);
 
-        // const lastestObjProcessor2 = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
-        // lastestObjProcessor2.setData({
-        //     userId
-        // });
-        // lastestObjProcessor2.setConfig({
-        //     limit: 5,
-        //     showUserAction: true
-        // });
-        // const lastestObjModel2 = await lastestObjProcessor2.process();
-        // lastestObjModel2.templateType = TEMPLATE_TYPE.ICON;
-        // lastestObjModel2.isList = true;
-
-        // const result: any = this.getResponsesData();
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
-        // result.objectiveEvents = userPageObjectiveLookingSectionModel;
-        result.lastest = lastestLookSectionModel;
-        result.looking = stillLKSectionModel;
-        result.viewSection = userRecSectionModel;
         result.emergencyPin = emergencyPinModel;
-        // result.sectionModels = [userFollowSectionModel, userPageLookingSectionModel, lastestObjModel];
+        result.postSectionModel = postSectionModel;
+        result.objectiveEvents = objectiveSectionModel;
+        // result.lastest = lastestLookSectionModel;
+        // result.looking = stillLKSectionModel;
+        // result.viewSection = userRecSectionModel;
         result.sectionModels = [];
 
-        if (userFollowSectionModel.contents.length > 0) {
-            result.sectionModels.push(userFollowSectionModel);
+        processorList = ProcessorUtil.randomProcessorOrdering(processorList);
+
+        // ! remove random function when fishished testing
+        const randIdx = Math.floor(Math.random() * processorList.length);
+        for (let i = 0; i < processorList.length; i++) {
+            const processor = processorList[i];
+            const model = await processor.process();
+            if (model !== undefined && model.contents.length > 0) {
+                // !remove random function when fishished testing
+                if (randIdx === i) {
+                    model.isHighlight = true;
+                    // fix content to 3
+                    if (model.contents.length > 3) {
+                        model.contents = model.contents.slice(0, 3);
+                    }
+                }
+                result.sectionModels.push(model);
+            }
         }
-
-        // twin model
-        const twinModel = new SectionModel();
-        twinModel.title = '';
-        twinModel.subtitle = '';
-        twinModel.description = '';
-        twinModel.link = '';
-        twinModel.iconUrl = '';
-        twinModel.contentCount = 0;
-        twinModel.templateType = TEMPLATE_TYPE.TWIN;
-        twinModel.contents = [];
-        twinModel.isList = true;
-
-        result.sectionModels.push(twinModel);
-
-        if (userPageLookingSectionModel.contents.length > 0) {
-            twinModel.contents.push(userPageLookingSectionModel);
-        }
-
-        if (userPageLookingSectionModel2.contents.length > 0) {
-            twinModel.contents.push(userPageLookingSectionModel2);
-        }
-
-        if (lastestObjModel.contents.length > 0) {
-            result.sectionModels.push(lastestObjModel);
-        }
-
-        // if (lastestObjModel2.contents.length > 0) {
-        //     result.sectionModels.push(lastestObjModel2);
-        // }
 
         if (result) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);

@@ -68,6 +68,7 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                 const needStmt = [
                     { $group: { '_id': { 'post': '$post' } } },
                     { $sort: { createdDate: 1 } },
+                    { $skip: offset },
                     { $limit: limit }
                 ];
                 const postIds: any[] = [];
@@ -79,6 +80,9 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                 const today = moment().toDate();
                 const postStmt = [
                     { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false, startDateTime: { $lte: today } } },
+                    {
+                        $sort: { startDateTime: -1 }
+                    },
                     {
                         $lookup: {
                             from: 'Page',
@@ -103,6 +107,7 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                 const result: SectionModel = new SectionModel();
                 result.title = 'ยังมองหาอยู่';
                 result.subtitle = 'กำลังมองหา';
+                result.type = 'STILLLOOKING';
                 result.description = '';
                 result.iconUrl = '';
                 result.contentCount = countAllResult;
@@ -123,7 +128,7 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                     if (page !== null && page !== undefined) {
                         const folStmt = { subjectId: page._id, subjectType: SUBJECT_TYPE.PAGE };
                         const followUserCount = await this.userFollowService.search(undefined, undefined, undefined, undefined, folStmt, undefined, true);
-                        
+
                         contentModel.commentCount = row.commentCount;
                         contentModel.repostCount = row.repostCount;
                         contentModel.shareCount = row.shareCount;

@@ -66,7 +66,8 @@
                 [createDate]="dataMainPage.lastest.dateTime | dateFormat " [isStausDate]="'true'"
                 [isStatusIcon]="'true'"></status-bar-looking>
             <ng-container *ngIf="dataMainPage.lastest.contents; else elseLastest">
-                <new-card class="wrapper-new-card" *ngFor="let dataLastests of dataMainPage.lastest.contents; "
+                <new-card class="wrapper-new-card"
+                    *ngFor="let dataLastests of dataMainPage.lastest.contents| slice:0:1; "
                     (submit)="actionComment($event,index,'NEWCARD')" [data]="dataLastests" [showLoading]="showLoading"
                     [topic]="dataLastests.post.title" [content]="dataLastests.post.detail"
                     [countUserFollow]="dataLastests.followUserCount | shortNumber"

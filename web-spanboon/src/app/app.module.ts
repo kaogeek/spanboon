@@ -89,6 +89,9 @@ import {
   SecurityInfo,
   AboutPage,
   Policy,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogImage,
   DialogAlert,
@@ -177,6 +180,7 @@ import {
   DialogCheckFulfill,
   DialogConfirmFulfill,
   DialogListFacebook,
+  DialogPostCrad,
   FulfillItem,
   FulFillMenu,
   DialogInput,
@@ -286,6 +290,9 @@ const COMPONENTS: any[] = [
   PageHashTag,
   PageRecommended,
   Redirect,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogEditComment,
   DialogEditPost,
@@ -307,6 +314,7 @@ const COMPONENTS: any[] = [
   DialogCheckFulfill,
   DialogConfirmFulfill,
   DialogListFacebook,
+  DialogPostCrad,
   DialogInput,
   DialogFulfillAllocate,
   DialogPreview,

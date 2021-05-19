@@ -519,7 +519,7 @@
                     text-align: left;
                     border: unset;
                     box-shadow: 0 2px 9px 0 #e5e3dd;
-                    @include font-size-9($font-head-300);
+                    @include font-size-10($font-content-light);
                 }
 
                 > .list-category {
@@ -539,7 +539,7 @@
                             border-radius: 20pt;
                             text-align: right;
                             border: unset;
-                            @include font-size-9($font-head-400);
+                            @include font-size-9($font-content-light);
                             border: 1px solid rgb($black, 0.1);
                         }
 
@@ -552,7 +552,7 @@
                             border-radius: 20pt;
                             text-align: center;
                             border: unset;
-                            @include font-size-9($font-head-300);
+                            @include font-size-9($font-content-light);
                             border: 1px solid rgb($black, 0.1);
                         }
                     }

@@ -189,7 +189,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
     let offset: number = 0;
     this.recommendFacade.getRecommend(limit, offset).then((res) => {
       this.dataRecommend = res.data;
-      console.log('dataRecommend ',this.dataRecommend)
     }).catch((err: any) => {
       console.log('err ', err)
     });

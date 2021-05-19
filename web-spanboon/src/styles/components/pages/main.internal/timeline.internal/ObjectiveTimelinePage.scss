@@ -1,0 +1,48 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.objective-timeline-body {
+    width: 100%;
+    height: 100%;
+    background-color: burlywood;
+    > .crad-body {
+        width: 100vw;
+        height: 220px;
+
+        &.boom {
+            width: 100vw;
+            display: flex;
+            height: 220px;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+        }
+        > .point {
+            width: 90px;
+            height: 90px;
+            background-color: cadetblue;
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+}
+
+@media (max-width: $xlarge) {
+}
+
+@media (max-width: $large) {
+}
+
+@media (max-width: $lmedium) {
+}
+
+@media (max-width: $medium) {
+}
+
+@media (max-width: $small) {
+}

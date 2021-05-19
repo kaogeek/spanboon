@@ -6,30 +6,46 @@
 -->
 <div class="card_content_home">
     <div *ngIf="smallCard && postData && !isLoad" class="small_card">
-        <div class="top_small_card">
-            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img width="110%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+        <div *ngIf="!isObjective" class="type_post">
+            <div class="type" [class.need]="postData.post.type === 'NEEDS'"
+                [class.general]="postData.post.type === 'GENERAL'"></div>
+            <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
+            <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
+            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                    class="svg-color-gray" />
+                <path
+                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                    class="svg-color-gray" />
+            </svg>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.post.createdDate | dateFormat}}</a>
+        </div>
+        <div (click)="clickEventEmit()" class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
+            <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span [innerHTML]='postData.title'></span>
+                    <span [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" [innerHTML]='postData.title'></span>
-                <!-- <span>{{postData.post.detail}}</span> -->
+                <span class="title" (click)="clickDataSearchs(postData.title)" [class.is_objective]="isObjective"
+                    [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
             </div>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
-                    <!-- <span>{{postData.post.detail}}</span> -->
                 </div>
             </ng-template>
             <div class="bottom_small_card_detail_footer">
-                <div class="owner">
-                    <svg *ngIf="postData.owner.isOfficial" class="new-cards-offical" id="shield"
-                        xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208" viewBox="0 0 43.383 47.208">
+                <div *ngIf="!isObjective" class="owner" (click)="clickToPage(linkUserPage)" #showTooltip
+                    (mouseover)="Tooltip(showTooltip , postData)">
+                    <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
+                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
                         <g id="Group_88" data-name="Group 88" transform="translate(0)">
                             <path id="Path_141" data-name="Path 141"
                                 d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
@@ -39,51 +55,63 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <span>{{postData.owner.name}}</span>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.owner?postData.owner.name:''}}</a>
                 </div>
                 <div class="amount_social">
-                    <!-- <span>{{amountSocial}}</span> การมีส่วนร่วมกับโพสต์ -->
-                    <span>34</span> การมีส่วนร่วมกับโพสต์
+                    <span>{{amountSocial ? amountSocial:0}}</span> การมีส่วนร่วมกับโพสต์
+                    <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
                 </div>
             </div>
         </div>
     </div>
 
-
-    <div *ngIf="mediumCard && postData && !isLoad" class="medium_card">
+    <div *ngIf="mediumCard && postData && !isLoad" (click)="clickEventEmitMedium($event)" class="medium_card">
         <div class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
-            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512" width="10px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                    class="svg-color-gray" />
+                <path
+                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                    class="svg-color-gray" />
+            </svg>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
-        <div class="top_medium_card">
+        <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img width="150%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img class="bottom_coverPage_cover" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img class="other_topic_coverPage" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
+                    <div class="other_topic_title" [innerHTML]='postData.post.title | highlight'></div>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_medium_card">
             <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span class="detail">{{postData.post.detail}}</span>
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span class="detail" [innerHTML]='postData.post.detail | highlight'></span>
+                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                    ...</span>
             </div>
-            <a>อ่านต่อ...</a>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
                     <span>{{postData.post.detail}}</span>
+                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                        class="story">อ่านสตอรี่ ...</span>
                 </div>
             </ng-template>
             <div class="bottom_medium_card_detail_footer">
-                <div class="owner">
+                <div class="owner" (click)="clickToPage(linkUserPage)" #showTooltip (mouseleave)="TooltipClose($event)"
+                    (mouseover)="Tooltip(showTooltip , postData)">
                     <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
-                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isOfficial">
+                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
                         <g id="Group_88" data-name="Group 88" transform="translate(0)">
                             <path id="Path_141" data-name="Path 141"
                                 d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
@@ -93,7 +121,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <span>{{postData.owner.name}}</span>
+                    <a>{{postData.owner.name}}</a>
                 </div>
                 <div class="amount_social">
                     <span class="count-aontrol">{{postData.eventRepostCount | shortNumber}}</span>
@@ -113,40 +141,54 @@
     </div>
 
 
-    <div *ngIf="largeCard && postData && !isLoad" class="large_card">
+    <div *ngIf="largeCard && postData && !isLoad" (click)="clickEventEmitLarge($event)" class="large_card">
         <div class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
-            <span class="date_time">{{postData.dateTime | thformatdatetime}}</span>
+            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                    class="svg-color-gray" />
+                <path
+                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                    class="svg-color-gray" />
+            </svg>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
-        <div class="top_large_card">
+        <div (click)="clickEventEmit()" class="top_large_card"
+            [class.title]="postCardCoverPageUrl === undefined || postCardCoverPageUrl === null || postCardCoverPageUrl === ''">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img width="150%" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span>{{postData.post.title}}</span>
+                    <div [innerHTML]='postData.post.title | highlight'></div>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_large_card">
             <div class="bottom_large_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span>{{postData.post.detail}}</span>
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span [innerHTML]='postData.post.detail | highlight'></span>
+                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                    ...</span>
             </div>
-            <a>อ่านต่อ...</a>
+            <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
-                    <span>{{postData.post.detail}}</span>
+                    <span [innerHTML]='postData.post.detail | highlight'></span>
+                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                        class="story">อ่านสตอรี่ ...</span>
                 </div>
             </ng-template>
             <div class="bottom_large_card_detail_footer">
-                <div class="owner">
+                <div class="owner" #showTooltip (mouseleave)="TooltipClose($event)"
+                    (mouseover)="Tooltip(showTooltip , postData)">
                     <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
-                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isOfficial">
+                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
                         <g id="Group_88" data-name="Group 88" transform="translate(0)">
                             <path id="Path_141" data-name="Path 141"
                                 d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
@@ -156,7 +198,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <span>{{postData.owner.name}}</span>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.owner.name}}</a>
                 </div>
 
                 <div class="amount_social">
@@ -177,185 +219,147 @@
     </div>
 
 
-    <div *ngIf="eventCard && eventData && !isLoad" class="event_card">
-        <div class="top_coverPage">
-            <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
-                    height="21" viewBox="0 0 23 21">
-                    <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
-                        <path class="svg-icon-color-activate" id="Subtraction_2" data-name="Subtraction 2"
-                            d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
-                            transform="translate(7129.611 -573.082)" fill="#747474" stroke="rgba(0,0,0,0)"
-                            stroke-miterlimit="10" stroke-width="1" />
-                        <path class="svg-icon-color-activate" id="Rectangle_572" data-name="Rectangle 572"
-                            d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
-                            transform="translate(674.701 434.463)" fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_573" data-name="Rectangle 573" width="2"
-                            height="3" rx="1" transform="translate(683.701 415.463)" fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_574" data-name="Rectangle 574" width="1.398"
-                            height="3.962" rx="0.699" transform="translate(678.115 416.918) rotate(-30)"
-                            fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_575" data-name="Rectangle 575" width="1.398"
-                            height="3.962" rx="0.699" transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
-                            fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_576" data-name="Rectangle 576" width="1.398"
-                            height="3.962" rx="0.699" transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
-                            fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_577" data-name="Rectangle 577" width="1.398"
-                            height="3.962" rx="0.699" transform="translate(689.761 416.304) rotate(31.145)"
-                            fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_578" data-name="Rectangle 578" width="1"
-                            height="3" rx="0.5" transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
-                        <rect class="svg-icon-color-activate" id="Rectangle_579" data-name="Rectangle 579" width="1"
-                            height="3" rx="0.5" transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
-                    </g>
-                </svg> เหตุการณ์ด่วน</div>
-            <img width="120%" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
-        </div>
-        <div class="body_card">
-            <div class="title">
-                <span class="event_title">{{eventTitle}}</span>
-                <span class="date_time">{{dateTime | dateFormat}}</span>
-            </div>
-            <span class="description">{{eventDescription}}</span>
-        </div>
-        <div class="social_control">
-            <div class="social">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 37.962 30.845">
-                    <path id="brands-and-logotypes"
-                        d="M37.962,51.652a16.226,16.226,0,0,1-4.484,1.229,7.739,7.739,0,0,0,3.424-4.3,15.553,15.553,0,0,1-4.935,1.884A7.782,7.782,0,0,0,18.5,55.785a8.014,8.014,0,0,0,.18,1.775A22.029,22.029,0,0,1,2.643,49.419a7.785,7.785,0,0,0,2.392,10.4,7.686,7.686,0,0,1-3.516-.959v.085a7.818,7.818,0,0,0,6.235,7.647,7.767,7.767,0,0,1-2.04.256,6.881,6.881,0,0,1-1.473-.133,7.857,7.857,0,0,0,7.272,5.421,15.638,15.638,0,0,1-9.65,3.319A14.579,14.579,0,0,1,0,75.352a21.91,21.91,0,0,0,11.939,3.493C26.26,78.844,34.09,66.981,34.09,56.7c0-.344-.012-.676-.028-1.006A15.526,15.526,0,0,0,37.962,51.652Z"
-                        transform="translate(0 -48)" class="svg-home-color" />
-                </svg>
-                <span>0 ทวิต</span>
-                <!-- <span>{{countTwitter}}</span> -->
-            </div>
-            <span class="drot">•</span>
-            <div class="social">
-                <svg version="1.1" id="Capa_1" width="12" height="12" xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
-                    style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
-                    <g>
-                        <path class="st2"
-                            d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
-                        c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
-                        c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
-                        c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z"
-                            class="svg-home-color" />
-                    </g>
-                </svg>
-                <span>0 โพสต์</span>
-                <!-- <span>{{countFacebook}}</span> -->
-            </div>
-            <span class="drot">•</span>
-            <div class="social" style="padding-right: 15px;">
-                <svg id="Group_142" data-name="Group 142" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 67.553 33.8">
-                    <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(60.047 11.275)" class="svg-home-color" />
-                    <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(0 11.275)" class="svg-home-color" />
-                    <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
-                        transform="translate(30.024)" class="svg-home-color" />
-                    <path id="Path_201" data-name="Path 201"
-                        d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
-                        transform="translate(-120.208 -945.977)" class="svg-home-color" />
-                </svg>
-                <span>0 โพสต์</span>
-                <!-- <span>{{countSpanboon}}</span> -->
-            </div>
-
-            <div class="amount_social">
-                <span class="count-aontrol">{{eventRepostCount | shortNumber}}</span>
-                <span class="title-control">ความเห็น</span>
-                <span class="drot">•</span>
-                <span class="count-aontrol">{{eventLikeCount | shortNumber}}</span>
-                <span class="title-control">บอกต่อ</span>
-                <span class="drot">•</span>
-                <span class="count-aontrol">{{eventCommentCount | shortNumber}}</span>
-                <span class="title-control">ถูกใจ</span>
-                <span class="drot">•</span>
-                <span class="count-aontrol">{{eventShareCount | shortNumber}}</span>
-                <span class="title-control">แชร์</span>
-            </div>
-        </div>
-        <div class="other_teg_event">
-            <div class="teg_event_list" *ngFor="let event of eventData; let index = index">
-                <div class="title">
-                    <span>{{event.title}}</span>
-                    <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                        viewBox="0 0 23 21">
+    <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
+        <div class="top" [class.full]="!isData">
+            <div (click)="clickDataSearch(eventTitle)" class="top_coverPage" [class.full]="!isData">
+                <img class="top_coverPage_cover" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+                <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
+                        height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
-                            <path id="Subtraction_2" data-name="Subtraction 2"
+                            <path class="svg-icon-color-activate" id="Subtraction_2" data-name="Subtraction 2"
                                 d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
                                 transform="translate(7129.611 -573.082)" fill="#747474" stroke="rgba(0,0,0,0)"
                                 stroke-miterlimit="10" stroke-width="1" />
-                            <path id="Rectangle_572" data-name="Rectangle 572"
+                            <path class="svg-icon-color-activate" id="Rectangle_572" data-name="Rectangle 572"
                                 d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
                                 transform="translate(674.701 434.463)" fill="#747474" />
-                            <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3" rx="1"
-                                transform="translate(683.701 415.463)" fill="#747474" />
-                            <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398" height="3.962" rx="0.699"
+                            <rect class="svg-icon-color-activate" id="Rectangle_573" data-name="Rectangle 573" width="2"
+                                height="3" rx="1" transform="translate(683.701 415.463)" fill="#747474" />
+                            <rect class="svg-icon-color-activate" id="Rectangle_574" data-name="Rectangle 574"
+                                width="1.398" height="3.962" rx="0.699"
                                 transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
-                            <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398" height="3.962" rx="0.699"
+                            <rect class="svg-icon-color-activate" id="Rectangle_575" data-name="Rectangle 575"
+                                width="1.398" height="3.962" rx="0.699"
                                 transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)" fill="#747474" />
-                            <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398" height="3.962" rx="0.699"
+                            <rect class="svg-icon-color-activate" id="Rectangle_576" data-name="Rectangle 576"
+                                width="1.398" height="3.962" rx="0.699"
                                 transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)" fill="#747474" />
-                            <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398" height="3.962" rx="0.699"
+                            <rect class="svg-icon-color-activate" id="Rectangle_577" data-name="Rectangle 577"
+                                width="1.398" height="3.962" rx="0.699"
                                 transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
-                            <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3" rx="0.5"
-                                transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
-                            <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3" rx="0.5"
-                                transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
+                            <rect class="svg-icon-color-activate" id="Rectangle_578" data-name="Rectangle 578" width="1"
+                                height="3" rx="0.5" transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
+                            <rect class="svg-icon-color-activate" id="Rectangle_579" data-name="Rectangle 579" width="1"
+                                height="3" rx="0.5" transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                         </g>
-                    </svg>
+                    </svg> เหตุการณ์ด่วน</div>
+                <img src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+            </div>
+            <div class="body_card">
+                <div class="title">
+                    <a (click)="clickDataSearch(eventTitle)" class="event_title">{{eventTitle}}</a>
+                    <span class="date_time">{{dateTime | dateFormat}}</span>
                 </div>
-                <div class="social">
-                    <div class="social_control">
-                        <div class="social">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 37.962 30.845">
-                                <path id="brands-and-logotypes"
-                                    d="M37.962,51.652a16.226,16.226,0,0,1-4.484,1.229,7.739,7.739,0,0,0,3.424-4.3,15.553,15.553,0,0,1-4.935,1.884A7.782,7.782,0,0,0,18.5,55.785a8.014,8.014,0,0,0,.18,1.775A22.029,22.029,0,0,1,2.643,49.419a7.785,7.785,0,0,0,2.392,10.4,7.686,7.686,0,0,1-3.516-.959v.085a7.818,7.818,0,0,0,6.235,7.647,7.767,7.767,0,0,1-2.04.256,6.881,6.881,0,0,1-1.473-.133,7.857,7.857,0,0,0,7.272,5.421,15.638,15.638,0,0,1-9.65,3.319A14.579,14.579,0,0,1,0,75.352a21.91,21.91,0,0,0,11.939,3.493C26.26,78.844,34.09,66.981,34.09,56.7c0-.344-.012-.676-.028-1.006A15.526,15.526,0,0,0,37.962,51.652Z"
-                                    transform="translate(0 -48)" class="svg-home-color" />
-                            </svg>
-                            <span>0 ทวิต</span>
-                            <!-- <span>{{countTwitter}}</span> -->
-                        </div>
-                        <span class="drot">•</span>
-                        <div class="social">
-                            <svg version="1.1" id="Capa_1" width="12" height="12" xmlns="http://www.w3.org/2000/svg"
-                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
-                                style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
-                                <g>
-                                    <path class="st2"
-                                        d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
-                                c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
-                                c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
-                                c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z"
-                                        class="svg-home-color" />
-                                </g>
-                            </svg>
-                            <span>0 โพสต์</span>
-                            <!-- <span>{{countFacebook}}</span> -->
-                        </div>
-                        <span class="drot">•</span>
-                        <div class="social" style="padding-right: 15px;">
-                            <svg id="Group_142" data-name="Group 142" width="20" height="20"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67.553 33.8">
-                                <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
-                                    transform="translate(60.047 11.275)" class="svg-home-color" />
-                                <circle id="Ellipse_90" data-name="Ellipse 90" cx="3.753" cy="3.753" r="3.753"
-                                    transform="translate(0 11.275)" class="svg-home-color" />
-                                <circle id="Ellipse_91" data-name="Ellipse 91" cx="3.753" cy="3.753" r="3.753"
-                                    transform="translate(30.024)" class="svg-home-color" />
-                                <path id="Path_201" data-name="Path 201"
-                                    d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
-                                    transform="translate(-120.208 -945.977)" class="svg-home-color" />
-                            </svg>
-                            <span>0 โพสต์</span>
-                            <!-- <span>{{countSpanboon}}</span> -->
-                        </div>
+                <span class="description">{{eventDescription}}</span>
+            </div>
+            <div class="social_control">
+                <div class="amount_social">
+                    <span class="count-aontrol">{{eventRepostCount | shortNumber}}</span>
+                    <span class="title-control">ความเห็น</span>
+                    <span class="drot">•</span>
+                    <span class="count-aontrol">{{eventLikeCount | shortNumber}}</span>
+                    <span class="title-control">บอกต่อ</span>
+                    <span class="drot">•</span>
+                    <span class="count-aontrol">{{eventCommentCount | shortNumber}}</span>
+                    <span class="title-control">ถูกใจ</span>
+                    <span class="drot">•</span>
+                    <span class="count-aontrol">{{eventShareCount | shortNumber}}</span>
+                    <span class="title-control">แชร์</span>
+                </div>
+            </div>
+        </div>
+        <div class="bottom" [class.full]="!isData">
+            <div class="other_teg_event">
+                <div class="teg_event_list" (click)="clickDataSearch(event.title,index)"
+                    *ngFor="let event of eventData; let index = index">
+                    <div class="img_box" [class.open]="index === selectIndex && !isData">
+                        <img class="bottom_coverPage_cover" src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
+                        <img src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
                     </div>
-                    <div class="date_time">
-                        {{event.dateTime | thformatdatetime}}
+                    <div class="title">
+                        <a (click)="clickDataSearch(eventTitle)">{{event.title}}</a>
+                        <!-- <div class="date_time">
+                            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                    class="svg-color-gray" />
+                                <path
+                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                    class="svg-color-gray" />
+                            </svg>
+                            {{event.dateTime | thformatdatetime}}
+                        </div> -->
+                        <svg style="margin: 5px 0px 0px 0px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 23 21">
+                            <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
+                                <path id="Subtraction_2" data-name="Subtraction 2"
+                                    d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                    transform="translate(7129.611 -573.082)" fill="#747474" stroke="rgba(0,0,0,0)"
+                                    stroke-miterlimit="10" stroke-width="1" />
+                                <path id="Rectangle_572" data-name="Rectangle 572"
+                                    d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                    transform="translate(674.701 434.463)" fill="#747474" />
+                                <rect id="Rectangle_573" data-name="Rectangle 573" width="2" height="3" rx="1"
+                                    transform="translate(683.701 415.463)" fill="#747474" />
+                                <rect id="Rectangle_574" data-name="Rectangle 574" width="1.398" height="3.962"
+                                    rx="0.699" transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
+                                <rect id="Rectangle_575" data-name="Rectangle 575" width="1.398" height="3.962"
+                                    rx="0.699" transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                    fill="#747474" />
+                                <rect id="Rectangle_576" data-name="Rectangle 576" width="1.398" height="3.962"
+                                    rx="0.699" transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                    fill="#747474" />
+                                <rect id="Rectangle_577" data-name="Rectangle 577" width="1.398" height="3.962"
+                                    rx="0.699" transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
+                                <rect id="Rectangle_578" data-name="Rectangle 578" width="1" height="3" rx="0.5"
+                                    transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
+                                <rect id="Rectangle_579" data-name="Rectangle 579" width="1" height="3" rx="0.5"
+                                    transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="description">
+                        <span [class.full]="isData">{{event.description}}</span>
+                    </div>
+                    <div class="social">
+                        <div class="social_control">
+                            <div class="amount_social">
+                                <span class="count-aontrol">{{event.eventRepostCount | shortNumber}}</span>
+                                <span class="title-control">ความเห็น</span>
+                                <span class="drot">•</span>
+                                <span class="count-aontrol">{{event.eventLikeCount | shortNumber}}</span>
+                                <span class="title-control">บอกต่อ</span>
+                                <span class="drot">•</span>
+                                <span class="count-aontrol">{{event.eventCommentCount | shortNumber}}</span>
+                                <span class="title-control">ถูกใจ</span>
+                                <span class="drot">•</span>
+                                <span class="count-aontrol">{{event.eventShareCount | shortNumber}}</span>
+                                <span class="title-control">แชร์</span>
+                            </div>
+                        </div>
+                        <div class="date_time">
+                            <svg class="svg_icon" style="padding: 5px;" height="10px" viewBox="0 0 512 512" width="10px"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                    class="svg-color-gray" />
+                                <path
+                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                    class="svg-color-gray" />
+                            </svg>
+                            {{event.dateTime | thformatdatetime}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -365,17 +369,20 @@
     <div *ngIf="tagCard && tagData && !isLoad" class="tag_card">
         <div class="head">
             <div class="page_info">
-                <div class="page_logo"></div>
+                <div class="page_logo">
+                    <img style="border-radius: 50%;" width="30px"
+                        src="{{apiBaseURL+tagData.hashtag.coverPageUrl+'/image'}}">
+                </div>
                 <div class="hashtag_user">
-                    <span class="hashtag">{{tagData.hashtag.title}}</span>
+                    <a class="hashtag" (click)="clickDataSearch(tagData.hashtag.title)">{{tagData.hashtag.title}}</a>
                     <div class="user">
                         <span>โดย: </span>
                         <div class="page_name">
-                            <span>{{tagData.page.name}}</span>
+                            <span (click)="clickDialogDiverlop()">{{tagData.page.name}}</span>
                         </div>
                         <span class="drot">•</span>
                         <span>ผู้ติดตาม </span>
-                        <span>3.4k</span>
+                        <span>0</span>
                     </div>
                 </div>
             </div>
@@ -401,8 +408,10 @@
         </div>
         <div class="body">
             <div class="left">
-                <div class="post_card_list" *ngFor="let item of datahashTagArrPosts | slice:0:2; let i=index">
-                    <div class="type" [class.need]="item.type === 'NEEDS'" [class.general]="item.type === 'GENERAL'">
+                <div class="post_card_list" (click)="clickDialogDiverlop()"
+                    *ngFor="let item of datahashTagArrPosts | slice:0:4; let i=index">
+                    <div class="type" [class.need]="item.type === 'NEEDS'" [class.general]="item.type === 'GENERAL'"
+                        [class.fulfillment]="item.type === 'FULFILLMENT'">
                     </div>
                     <div class="text">
                         <span class="title">{{item.title}}</span>
@@ -421,13 +430,32 @@
                             <span *ngIf="datahashTagPost.type === 'GENERAL'">ทั่วไป</span>
                         </div>
                         <div class="date_time">
+                            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                    class="svg-color-gray" />
+                                <path
+                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                    class="svg-color-gray" />
+                            </svg>
                             <span>{{datahashTagPost.createdDate | dateFormat}}</span>
                         </div>
                     </div>
                     <div class="img">
-                        <img width="130%" src="{{apiBaseURL+datahashTagPost.coverImage+'/image'}}">
+                        <div class="image_base64" *ngIf="datahashTagPost.coverImage;else other_topics">
+                            <img src="{{apiBaseURL+datahashTagPost.coverImage+'/image'}}">
+                        </div>
+                        <ng-template #other_topics>
+                            <div class="other_topic">
+                                <span>{{datahashTagPost.title}}</span>
+                            </div>
+                        </ng-template>
                     </div>
-                    <div class="text">
+                    <div *ngIf="!datahashTagPost.coverImage" class="text-deteil">
+                        <span>{{datahashTagPost.detail}}</span>
+                    </div>
+                    <div *ngIf="datahashTagPost.coverImage" class="text">
                         <span>{{datahashTagPost.title}}</span>
                     </div>
                     <div class="social">
@@ -449,6 +477,4 @@
             </div>
         </div>
     </div>
-    <!-- <Preload-card [isShowCard1]="true" [isShowCard2]="false">
-    </Preload-card> -->
 </div>

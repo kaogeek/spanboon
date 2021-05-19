@@ -32,6 +32,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   @Input()
   public allPost: string = "ดูโพสต์";
   @Input()
+  public keyItem: string;
+  @Input()
   public itemNeeds: any[];
   @Input()
   public isClose: boolean = false;
@@ -45,9 +47,11 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
+  @Input()
+  public isObjective: boolean;
 
   @Output()
-  public close: EventEmitter<any> = new EventEmitter();
+  public clickEventA: EventEmitter<any> = new EventEmitter();
 
   public index: any;
   public needs: any[] = [];
@@ -64,6 +68,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     this.dialog = dialog;
     this.router = router;
     this.observManager = observManager;
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -122,6 +127,10 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     return this.listNeeds && this.listNeeds.nativeElement.offsetHeight;
   }
 
+  public clickEvent(event) {
+    this.clickEventA.emit(event);
+  }
+
   public next(type: string, index: number) {
     if (type === "NEXT") {
       this.needs = this.originalNeeds[index].needs
@@ -150,8 +159,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 4.6,
-    spaceBetween: 10,
+    slidesPerView: 6,
+    spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
     scrollbar: false,
@@ -161,19 +170,19 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 4.6,
+        slidesPerView: 4.5,
       },
       899: {
-        slidesPerView: 3.3,
+        slidesPerView: 3.5,
       },
       676: {
-        slidesPerView: 2.6,
+        slidesPerView: 2.5,
       },
       655: {
-        slidesPerView: 2.7,
+        slidesPerView: 2.5,
       },
       566: {
-        slidesPerView: 2.6,
+        slidesPerView: 1.8,
       },
       479: {
         slidesPerView: 1.4,

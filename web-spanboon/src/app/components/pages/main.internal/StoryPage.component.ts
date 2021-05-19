@@ -224,7 +224,23 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.h = 80
     this.dataNeeds = []
 
+    this.setStoryData()
 
+  }
+
+  public ngOnDestroy(): void {
+    super.ngOnDestroy();
+  }
+
+  public scrollFulfill() {
+    try {
+      const errorField = this.renderer.selectRootElement('.needs-display');
+      errorField.scrollIntoTop();
+    } catch (err) {
+    }
+  }
+
+  public async setStoryData() {
     this.routeActivated.params.subscribe((params) => {
       this.url = params['postId']
     })
@@ -233,7 +249,7 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.limit = 5;
     search.count = false;
     search.whereConditions = { _id: this.url };
-    this.postFacade.searchPostStory(search).then((res: any) => {
+    await this.postFacade.searchPostStory(search).then((res: any) => {
       this.postStoryData = res[0]
       this.type = this.postStoryData.type
       this.objectiveTag = this.postStoryData.objectiveTag
@@ -267,6 +283,7 @@ export class StoryPage extends AbstractPage implements OnInit {
           }
           this.postStoryData.gallery = imgGallery
         }).catch((err: any) => {
+          console.log('err', err)
         });
       }
       this.loding = false
@@ -275,6 +292,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.getRecommendedHashtag();
       this.setCardSilder();
       setTimeout(() => {
+        if (document.getElementById("0").innerText === "undefined") {
+          document.getElementById("0").style.display = "none";
+        }
         this.isPreload = false
       }, 500);
 
@@ -292,6 +312,17 @@ export class StoryPage extends AbstractPage implements OnInit {
     }
 
     setTimeout(() => {
+
+
+      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+          this.linkPage = (this.mainPageLink + page.data.uniqueId)
+        } else if (page.data.id !== undefined && page.data.id !== null) {
+          this.linkPage = (this.mainPageLink + page.data.id)
+        }
+      }).catch((err: any) => {
+      });
+
       this.pageName = this.postStoryData.pageData.data.name;
       this.story = this.postStoryData.story;
       this.title = this.postStoryData.title;
@@ -306,23 +337,10 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.shareCount = this.postStoryData.shareCount;
       this.needs = this.postStoryData.needs;
       this.isLoding = false;
-      
-    }, 3500);
 
+
+    }, 6500);
   }
-
-  public ngOnDestroy(): void {
-    super.ngOnDestroy();
-  }
-
-  public scrollFulfill() {
-    try {
-      const errorField = this.renderer.selectRootElement('.needs-display');
-      errorField.scrollIntoTop();
-    } catch (err) {
-    }
-  }
-
 
   private setCardSilder() {
     this.config = {
@@ -397,6 +415,14 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     return;
+  }
+
+  public toStory($event) {
+    this.isLoding = true
+    this.router.navigate(["/story/" + $event.post._id]);
+    setTimeout(() => {
+      location.reload();
+    }, 500);
   }
 
   public menuProfile() { }
@@ -594,18 +620,6 @@ export class StoryPage extends AbstractPage implements OnInit {
       }
       scroll = scrolls
     });
-
-    setTimeout(() => {
-      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        console.log(page)
-        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
-          this.linkPage = (this.mainPageLink + page.data.uniqueId)
-        } else if (page.data.id !== undefined && page.data.id !== null) {
-          this.linkPage = (this.mainPageLink + page.data.id)
-        }
-      }).catch((err: any) => {
-      });
-    }, 2000);
   }
 
   private isLoginUser() {
@@ -660,7 +674,7 @@ export class StoryPage extends AbstractPage implements OnInit {
           });
         }
         const dialogRef = this.dialog.open(DialogReboonTopic, {
-          width: '550pt',
+          width: '450pt',
           data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage, pageUserAsPage: this.user } }
         });
       } else if (action.type === "NOTOPIC") {

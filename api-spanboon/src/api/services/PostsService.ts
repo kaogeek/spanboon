@@ -13,15 +13,21 @@ import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { UserLikeService } from '../services/UserLikeService';
 import { PostsCommentService } from '../services/PostsCommentService';
+import { HashTagService } from '../services/HashTagService';
+import { NeedsService } from '../services/NeedsService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 
 @Service()
 export class PostsService {
 
+    public MAX_SAMPLE_COUNT = 10;
+
     constructor(@OrmRepository() private postsRepository: PostsRepository,
         private postsCommentService: PostsCommentService,
-        private userLikeService: UserLikeService) { }
+        private userLikeService: UserLikeService,
+        private hashTagService: HashTagService,
+        private needsService: NeedsService) { }
 
     // find post
     public async find(findCondition: any): Promise<Posts[]> {
@@ -174,6 +180,180 @@ export class PostsService {
                         result.repostCount = postObj.repostCount;
                         result.shareCount = postObj.shareCount;
                         result.viewCount = postObj.viewCount;
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public sampleHashTags(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
+                let countLoop = 0;
+                const hashTagStringIds = [];
+                const hashTagObjIds = [];
+
+                // search until hashTagObjIds == simpleCount;
+                while (hashTagStringIds.length < simpleCount) {
+                    if (countLoop === this.MAX_SAMPLE_COUNT) {
+                        break;
+                    }
+
+                    const aggregateObjPost = [
+                        { $match: matchStmt },
+                        { $sample: { size: simpleCount } },
+                    ];
+                    const aggResult = await this.aggregate(aggregateObjPost);
+
+                    // cannot find any data at first time
+                    if (countLoop === 0 && aggResult !== undefined && aggResult.length <= 0) {
+                        break;
+                    }
+
+                    for (const data of aggResult) {
+                        // check if postsHashTags has data
+                        if (data.postsHashTags !== undefined && data.postsHashTags.length > 0) {
+                            // random hastag and get only one hashtag per post
+                            const randIdx = Math.floor(Math.random() * data.postsHashTags.length);
+                            const hashtag = data.postsHashTags[randIdx] + '';
+
+                            // add in only non duplicate hashtag
+                            if (hashTagStringIds.indexOf(hashtag) < 0) {
+                                hashTagStringIds.push(hashtag);
+                                hashTagObjIds.push(new ObjectID(hashtag));
+                            }
+                        }
+                    }
+
+                    countLoop++;
+                }
+
+                // search for hastag object
+                if (hashTagObjIds.length > 0) {
+                    result = await this.hashTagService.find({
+                        _id: { $in: hashTagObjIds }
+                    });
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public samplePostNeedsItems(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
+                result = await this.getPostNeedsAggregate(matchStmt, simpleCount);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public sampleNeedsItems(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
+                const postAggregateObj = [
+                    { $match: matchStmt },
+                    { $sample: { size: simpleCount } },
+                    {
+                        $project:
+                        {
+                            'story': 0,
+                            'detail': 0
+                        }
+                    }
+                ];
+                const postSearchResult = await this.aggregate(postAggregateObj);
+                if (postSearchResult === undefined || postSearchResult.length <= 0) {
+                    resolve(result);
+                    return;
+                }
+                
+                const postIds = [];
+                for (const post of postSearchResult) {
+                    postIds.push(post._id);
+                }
+
+                const needsMatchStmt: any = {
+                    $and: []
+                };
+                needsMatchStmt['$and'].push({
+                    post: { $in: postIds }
+                });
+
+                result = await this.needsService.sampleNeedsItems(needsMatchStmt, simpleCount);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    private getPostNeedsAggregate(matchStmt: any, simpleCount: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
+                const aggregateObj = [
+                    { $match: matchStmt },
+                    { $sample: { size: simpleCount } },
+                    {
+                        $project:
+                        {
+                            'story': 0,
+                            'detail': 0
+                        }
+                    }
+                ];
+
+                const postResult = await this.aggregate(aggregateObj);
+                for (const post of postResult) {
+                    const item: any = {
+                        post,
+                        needs: []
+                    };
+                    // search needs
+                    const needsList = await this.needsService.find({ post: post._id, active: true, fullfilled: false });
+                    if (needsList !== undefined && needsList.length > 0) {
+                        item.needs = needsList;
+                        // add post and needs only if has needs
+                        result.push(item);
                     }
                 }
 

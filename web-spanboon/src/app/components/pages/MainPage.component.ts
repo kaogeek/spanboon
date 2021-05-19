@@ -119,7 +119,8 @@ export class MainPage extends AbstractPage implements OnInit {
       // var scrollTop = spanboonHome.scrollTop();  
       $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
       $('.header-top').toggleClass('hidden', scrollTop > prev);
-      $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
+      // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
+      // $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
       // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
       $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
       prev = scrollTop;
@@ -158,7 +159,7 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.observManager.publish('scroll.buttom', null);
     // }
     // var scrolltotop = document.getElementById("menubottom"); 
-    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 40)) { 
+    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 250)) { 
       this.observManager.publish('scroll.buttom', null);
     }
 
@@ -327,3 +328,4 @@ export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
+export * from './main.internal/timeline.internal/timeline';

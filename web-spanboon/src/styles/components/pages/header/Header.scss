@@ -25,8 +25,7 @@
     flex-direction: row;
     align-items: center;
     color: $brandcolor2;
-    font-family: $font-head-500;
-    font-size: 1.5em;
+    @include font-size-7($font-head-500);
     @include pointer();
 
     > .icon-spanboon {
@@ -34,7 +33,7 @@
     }
 
     > .name-spanboon {
-      margin-left: 10pt;
+      margin-left: 5pt;
     }
   }
   > .middle {
@@ -50,8 +49,7 @@
     > .wrapper-home {
       display: flex;
       align-items: center;
-      font-family: $font-head-400;
-      font-size: 1.15em;
+      @include font-size-8($font-head-500);
       margin: 0 auto;
       pointer-events: auto;
 

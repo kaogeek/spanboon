@@ -45,6 +45,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let limit: number = undefined;
                 let offset: number = undefined;
                 let showUserAction = false;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -70,12 +71,19 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     clientId = this.data.clientId;
                 }
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 const today = moment().toDate();
-                const matchStmt = {
+                const matchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: today }
+                    hidden: false
                 };
                 if (userId !== undefined) {
                     // ! impl 
@@ -83,11 +91,28 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     // ! impl
                 }
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    matchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    matchStmt.startDateTime = { $lte: today };
+                }
+
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
-                    { $skip: offset },
+                    { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: 4 },
                     {
                         $lookup: {
                             from: 'Page',
@@ -134,6 +159,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'เรื่องราวที่คุณอาจพลาดไป';
+                result.type = 'RECOMMEND';
                 result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
                 result.description = '';
                 result.iconUrl = '';
@@ -228,7 +254,6 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         if (rootRefFirstImg) {
                             contentModel.coverPageUrl = rootRefFirstImg.imageURL;
                         }
-                        console.log('rootRefPost: ' + rootRefPost);
                         contentModel.rootReferencePost = rootRefPost;
                         this.removePostField(contentModel.rootReferencePost);
                     }
@@ -285,7 +310,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
         delete post.story;
         delete post.page;
         delete post.user;
-        delete post.gallery;
+        // delete post.gallery;
         delete post.rootRefPost;
         delete post.rootRefGallery;
 

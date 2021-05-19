@@ -11,6 +11,7 @@ import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { LastestObjectiveProcessorData } from './data/LastestObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
+import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 // import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
 // import moment from 'moment';
@@ -100,9 +101,9 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
                 const pageObjStmt = [
                     { $match: matchStmt },
+                    { $sort: { createdDate: -1 } },
                     { $skip: offset },
                     { $limit: limit },
-                    { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
@@ -125,8 +126,9 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
 
                 const result: SectionModel = new SectionModel();
-                result.title = 'สิ่งนี้กำลังเกิดขึ้นรอบตัวคุณ';
-                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์มสะพานบุญ';
+                result.title = 'สิ่งที่กำลังเกิดขึ้นรอบตัวคุณ';
+                result.subtitle = 'การเติมเต็ม ที่เกิดขึ้นบนแพลตฟอร์ม' + PLATFORM_NAME_TH;
+                result.type = 'SMALL';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
@@ -184,8 +186,8 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     };
                     const postStmt = [
                         { $match: postMatchStmt },
-                        { $limit: limit },
                         { $sort: { createdDate: -1 } },
+                        { $limit: limit },
                         { $addFields: { objectiveId: { $toObjectId: '$objective' }}},
                         {
                             $lookup: {

@@ -21,7 +21,7 @@ import { ObjectID } from 'mongodb';
 */
 export class LastestLookingSectionProcessor extends AbstractSectionModelProcessor {
 
-    private DEFAULT_SEARCH_LIMIT = 1;
+    private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
@@ -68,20 +68,51 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
-                const needStmt = [
-                    { $group: { '_id': { 'post': '$post' } } },
-                    { $sort: { createdDate: -1 } },
-                    { $limit: limit }
-                ];
-                const postIds: any[] = [];
-                const needSearchResult = await this.needsService.aggregateEntity(needStmt);
-                for (const row of needSearchResult) {
-                    postIds.push(row.id.post);
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
                 }
 
                 const today = moment().toDate();
+                // overide start datetime
+                const needDateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    needDateTimeAndArray.push({ createdDate: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    needDateTimeAndArray.push({ createdDate: { $lte: endDateTime } });
+                }
+
+                let needMatchStmt = {};
+                if (needDateTimeAndArray.length > 0) {
+                    needMatchStmt = { $and: needDateTimeAndArray };
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    needMatchStmt = { createdDate: { $lte: today } };
+                }
+
+                const needStmt: any[] = [
+                    { $match: needMatchStmt },
+                    { $sample: { size: limit } }, // random post
+                    { $group: { '_id': { 'post': '$post' } } },
+                    { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: limit }
+                ];
+
+                const postIds: any[] = [];
+                const needSearchResult = await this.needsService.aggregate(needStmt);
+                for (const row of needSearchResult) {
+                    postIds.push(row._id.post);
+                }
+
                 const postStmt = [
-                    { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false, startDateTime: { $lte: today } } },
+                    { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false } },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
@@ -89,8 +120,41 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                             foreignField: '_id',
                             as: 'page'
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
                     }
                 ];
+
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    postStmt[0]['$match']['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    postStmt[0]['$match']['startDateTime'] = { $lte: today };
+                }
+
                 const searchResult = await this.postsService.aggregate(postStmt);
 
                 let lastestDate = null;
@@ -99,6 +163,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 result.subtitle = 'กำลังมองหา';
                 result.description = '';
                 result.iconUrl = '';
+                result.type = 'LASTEST';
                 result.contents = [];
 
                 for (const row of searchResult) {
@@ -111,6 +176,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     if (lastestDate === null) {
                         lastestDate = row.createdDate;
                     }
+
+                    const coverImageUrl = (row.coverImage) ? row.coverImage : undefined;
 
                     const contentModel = new ContentModel();
 
@@ -125,6 +192,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.viewCount = row.viewCount;
                         contentModel.followUserCount = followUserCount; // count all userfollow
                         contentModel.post = row;
+                        contentModel.coverPageUrl = coverImageUrl;
                         contentModel.dateTime = row.createdDate;
                         contentModel.owner = this.parsePageField(page);
 

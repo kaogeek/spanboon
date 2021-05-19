@@ -36,7 +36,7 @@ import { ChangePasswordRequest } from './requests/ChangePasswordRequest';
 import { GoogleService } from '../services/GoogleService';
 import { TwitterService } from '../services/TwitterService';
 import { ConfigService } from '../services/ConfigService';
-import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME } from '../../constants/SystemConfig';
+import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
 
 @JsonController()
@@ -162,11 +162,11 @@ export class GuestController {
                     }
 
                     let message = '<p> สวัสดีคุณ ' + result.firstName + '</p>';
-                    message += '<p> ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม สะพานบุญ </p>';
+                    message += '<p> ยินดีต้อนรับเข้าสู่ แพลตฟอร์ม ' + PLATFORM_NAME_TH + ' </p>';
                     message += '<p> ข้อมูลสำหรับ Login ของคุณคือ </p>';
                     message += '<p> ชื่อผู้ใช้ : ' + result.email + '</p>';
 
-                    MAILService.customerLoginMail(message, registerEmail, 'ยินดีต้อนรับสู่สะพานบุญ');
+                    MAILService.customerLoginMail(message, registerEmail, 'ยินดีต้อนรับสู่' + PLATFORM_NAME_TH);
                     result = this.userService.cleanUserField(result);
 
                     const authId = new AuthenticationId();
@@ -525,7 +525,7 @@ export class GuestController {
                 const twToken = jwt.sign({ token: authenId.storedCredentials }, env.SECRET_KEY);
 
                 if (authIdCreate) {
-                    const result: any = { token: twToken, user: userData }; 
+                    const result: any = { token: twToken, user: userData };
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', result);
                     return res.status(200).send(successResponse);
                 }
@@ -1175,4 +1175,4 @@ export class GuestController {
 
         return value;
     }
-} 
+}

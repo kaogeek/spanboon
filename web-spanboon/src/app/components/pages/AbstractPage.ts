@@ -174,12 +174,12 @@ export abstract class AbstractPage implements OnInit {
         dialog.afterClosed().subscribe((res) => {
           if (res) {
             this.authenManager.clearStorage();
-            if(redirection){
+            if (redirection) {
               this.router.navigate(["/login", { redirection: redirection }]);
             } else {
               this.router.navigate(["/login"]);
             }
-          
+
           }
         });
       } else {
