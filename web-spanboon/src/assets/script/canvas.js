@@ -3,6 +3,9 @@ setTimeout(() => {
 
     var elms = document.querySelectorAll("[id='point']");
     var ctx = canvas.getContext("2d");
+    canvas.height = document.getElementById('body').getBoundingClientRect().height
+    canvas.width = document.getElementById('body').getBoundingClientRect().width
+
     var stratXpoint = 20
     var stratYpoint = 20
 
@@ -33,4 +36,4 @@ setTimeout(() => {
 
     }
 
-}, 1900);
+}, 2000);
