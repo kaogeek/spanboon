@@ -7,50 +7,7 @@
 <div id="canvas-wrap">
     <canvas id="canvas"></canvas>
     <div class="objective-timeline-body" id="body">
-        <div class="top-objective-data">
-            <div class="objective">
-                <div class="data">
-                    <img class="iconURL" src="{{apiBaseURL+pageObjective.iconURL+'/image'}}" alt="">
-                    <div class="data-text">
-                        <div class="text">
-                            <span class="title">{{pageObjective.title}}</span>
-                            <span class="disiption">#{{pageObjective.title}}</span>
-                        </div>
-                        <div class="score">
-                            <div class="score-type">
-                                <span class="title">20</span>
-                                <span class="disiption">การพูดถึง</span>
-                            </div>
-                            <div class="score-type">
-                                <span class="title">20</span>
-                                <span class="disiption">บอกต่อ</span>
-                            </div>
-                            <div class="score-type">
-                                <span class="title">20</span>
-                                <span class="disiption">ถูกใจ</span>
-                            </div>
-                            <div class="score-type">
-                                <span class="title">20</span>
-                                <span class="disiption">แชร์</span>
-                            </div>
-                        </div>
-                        <div class="buttom">
-                            <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
-                            <button-follow style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
-                                [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
-                            </button-follow>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="objective-owner">
-                <div class="owner">
-                    <span class="title">ผู้สร้าง</span>
-                    <span class="disiption">ผู้สร้างงงงงงงงงงงงงงงงง</span>
-                </div>
-            </div>
-        </div>
-        <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="800.899" height="800.899"
+        <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="700.899" height="700.899"
             viewBox="10 0 22.899 22.899">
             <g id="mission" transform="translate(0)">
                 <path fill="white" id="Path_3205" data-name="Path 3205"
@@ -67,5 +24,188 @@
                     transform="translate(-248.03 -228.703)" />
             </g>
         </svg>
+        <div class="objective-head">
+            <div class="top-objective-data">
+                <div class="objective">
+                    <div class="data">
+                        <img class="iconURL" src="{{apiBaseURL+pageObjective.iconURL+'/image'}}" alt="">
+                        <div class="data-text">
+                            <div class="text">
+                                <span class="title">{{pageObjective.title}}</span>
+                                <span class="disiption">#{{pageObjective.title}}</span>
+                            </div>
+                            <div class="score">
+                                <div class="score-type">
+                                    <span class="title">20</span>
+                                    <span class="disiption">การพูดถึง</span>
+                                </div>
+                                <div class="score-type">
+                                    <span class="title">20</span>
+                                    <span class="disiption">บอกต่อ</span>
+                                </div>
+                                <div class="score-type">
+                                    <span class="title">20</span>
+                                    <span class="disiption">ถูกใจ</span>
+                                </div>
+                                <div class="score-type">
+                                    <span class="title">20</span>
+                                    <span class="disiption">แชร์</span>
+                                </div>
+                            </div>
+                            <div class="buttom">
+                                <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
+                                <button-follow style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
+                                    [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                </button-follow>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="objective-owner">
+                    <div class="owner">
+                        <span class="title">ผู้สร้าง</span>
+                        <div class="page">
+                            <img class="iconURL" src="{{apiBaseURL+pageOwner.imageURL+'/image'}}" alt="">
+                            <div class="disiption">
+                                <span>{{pageOwner.name}}</span>
+                            </div>
+                        </div>
+                        <div class="detail">
+                            <span class="title">แท็กที่เกี่ยวข้อง</span>
+                            <span class="disiption">#โควิด</span>
+                        </div>
+                        <div class="follow-fullfill">
+                            <div class="follow">
+                                <div class="text">
+                                    <span class="title">ติดตามทั้งหมด</span>
+                                    <span class="score"> 0 </span>
+                                </div>
+                            </div>
+                            <div class="fullfill">
+                                <div class="text">
+                                    <span class="title">ติดตามทั้งหมด</span>
+                                    <span class="score"> 0 </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="needs-section">
+                <span class="title"
+                    *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
+                <needs-card *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0"
+                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
+                    [isPendingFulfill]="true"
+                    [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
+                </needs-card>
+            </div>
+        </div>
+        <div class="timeline-data-section">
+            <div class="body">
+                <div *ngFor="let item of objectiveData.timelines; let index = index" class="strat-section-point">
+                    <div class="head">
+                        <div class="line"></div>
+                        <div class="strat-point">
+                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':'พฤษภาคม 2564'}}</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div *ngIf="item.post" class="needs-card">
+                            <div class="item" id="point" >
+                                <span class="title">สิ่งที่กำลังมองหา</span>
+                                <div class="needs">
+                                    <div class="list-needs"
+                                        *ngFor="let item of objectiveData.needItems; let index = index">
+                                        <div class="needs">
+                                            <img class="img-items" *ngIf="!item.imageURL"
+                                                src="../../../../assets/img/customize_item.svg" alt="">
+                                            <img class="img-items" *ngIf="item.imageURL"
+                                                src="{{apiBaseURL+item.imageURL+'/image'}}">
+                                        </div>
+                                        <div class="needs-data" [class.active]="isFulfill">
+                                            <div [class.active]="isFulfill">
+                                                <div class="needs-data-h">
+                                                    <div class="text-h">{{item.name || item.itemName}}</div>
+                                                </div>
+                                                <div class="needs-data-body" [class.active]="isFulfill">
+                                                    <div class="unit" [class.active]="isFulfill">
+                                                        <div class="unit-box">
+                                                            <div class="unit-num">
+                                                                <ng-container
+                                                                    *ngIf="isPendingFulfill; else elseTemplateQty">
+                                                                    <span *ngIf="isFulfillQuantity">
+                                                                        <span
+                                                                            [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                                            {{item.fulfillQuantity | shortNumber}} /
+                                                                        </span>
+                                                                    </span>
+                                                                    <span *ngIf="!isFulfill"
+                                                                        [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                                        {{item.quantity | shortNumber}}
+                                                                    </span>
+                                                                </ng-container>
+                                                                <ng-template #elseTemplateQty>
+                                                                    <span
+                                                                        [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                                        {{item.quantity | shortNumber}}
+                                                                    </span>
+                                                                </ng-template>
+
+                                                                <!-- <span *ngIf="!isFulfill"
+                                                [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                 {{item.quantity}}
+                                            </span> -->
+                                                            </div>
+
+                                                            <div class="unit-sub">{{item.unit}}</div>
+                                                        </div>
+                                                    </div>
+                                                    <ng-container *ngIf="isNeedBoxPost">
+                                                        <div class="unit-bt-box" *ngIf="!isFulfill">
+                                                            <!-- <ng-container
+                                                            *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
+                                                            <div class="limit">
+                                                                <span class="material-icons"> done </span>
+                                                                ครบแล้ว
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-template #elseTemplateUnLimit>
+                                                            <spanboon-button class="btn-fulfill" [bgColor]="'#7AAF67'"
+                                                                [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT"
+                                                                [radius]="'4px'" (click)="fulfillNeeds($event,item)">
+                                                            </spanboon-button>
+                                                        </ng-template> -->
+                                                        </div>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="isFulfill">
+                                                <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity > 0">
+                                                    ยังขาดอีก <span class="quantity">{{item.quantity -
+                                                        item.fulfillQuantity}} </span><span
+                                                        class="unit">{{item.unit}}</span>
+                                                </div>
+                                                <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity === 0">
+                                                    <span class="material-icons"> done </span>
+                                                    ได้รับครบแล้ว
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <div class="post"></div>
+                        </div>
+                        <div *ngIf="item.posts" class="post-card">
+                            post-card
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

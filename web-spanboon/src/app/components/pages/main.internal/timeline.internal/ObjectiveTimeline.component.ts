@@ -28,6 +28,25 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public objectiveFacade: ObjectiveFacade;
     public hashTagFacade: HashTagFacade;
 
+    // test
+
+    @Input()
+    public isClose: boolean = false;
+    @Input()
+    public isFulfillQuantity: boolean = false;
+    @Input()
+    public isFulfill: boolean = false;
+    @Input()
+    public isPendingFulfill: boolean = false;
+    @Input()
+    public isImage: boolean = false;
+    @Input()
+    public isButtonFulfill: boolean = true;
+    @Input()
+    public isNeedBoxPost: boolean = true;
+
+    // test
+
     @Output()
     public logout: EventEmitter<any> = new EventEmitter();
 
@@ -54,6 +73,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public async ngOnInit(): Promise<void> {
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
         this.setData();
+
     }
 
     public setData(): void {
