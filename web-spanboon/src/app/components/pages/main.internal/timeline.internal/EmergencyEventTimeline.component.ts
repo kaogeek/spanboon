@@ -18,6 +18,8 @@ const PAGE_NAME: string = 'emergencyeventtimeline';
     templateUrl: './EmergencyEventTimeline.component.html'
 })
 export class EmergencyEventTimeline extends AbstractPage implements OnInit {
+    
+    public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public router: Router;
     public observManager: ObservableManager;

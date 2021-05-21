@@ -12,8 +12,11 @@ import { POST_TYPE } from '../../../constants/PostType';
 
 export class EmergencyNeedsProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_NEEDS';
+
     constructor(private emergencyEventService: EmergencyEventService, private postsService: PostsService) {
         super();
+        this.type = EmergencyNeedsProcessor.TYPE;
     }
 
     public process(): Promise<any> {

@@ -10,8 +10,11 @@ import { PostsService } from '../../services/PostsService';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_LASTEST';
+
     constructor(private postsService: PostsService) {
         super();
+        this.type = EmergencyLastestProcessor.TYPE;
     }
 
     public process(): Promise<any> {

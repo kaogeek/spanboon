@@ -12,8 +12,11 @@ import { ObjectID } from 'mongodb';
 
 export class EmergencyShareProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_SHARE';
+
     constructor(private userFollowService: UserFollowService, private socialPostService: SocialPostService) {
         super();
+        this.type = EmergencyShareProcessor.TYPE;
     }
 
     public process(): Promise<any> {

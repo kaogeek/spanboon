@@ -6,9 +6,10 @@
  */
 
 import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
-import { AuthenManager, ObservableManager, ObjectiveFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
 import { AbstractPage } from '../../AbstractPage';
 import './../../../../../assets/script/canvas';
 
@@ -20,31 +21,65 @@ const PAGE_NAME: string = 'objectivetimeline';
 })
 export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
+    public static readonly PAGE_NAME: string = PAGE_NAME;
+
     public router: Router;
     public observManager: ObservableManager;
     public objectiveFacade: ObjectiveFacade;
+    public hashTagFacade: HashTagFacade;
+
+    // test
+
+    @Input()
+    public isClose: boolean = false;
+    @Input()
+    public isFulfillQuantity: boolean = false;
+    @Input()
+    public isFulfill: boolean = false;
+    @Input()
+    public isPendingFulfill: boolean = false;
+    @Input()
+    public isImage: boolean = false;
+    @Input()
+    public isButtonFulfill: boolean = true;
+    @Input()
+    public isNeedBoxPost: boolean = true;
+
+    // test
 
     @Output()
     public logout: EventEmitter<any> = new EventEmitter();
 
     public userImage: any;
-    public ObjectiveData: any;
 
-    constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, observManager: ObservableManager,
+    // ObjectiveData
+    public objectiveData: any;
+    public pageObjective: any;
+    public pageOwner: any;
+
+    public apiBaseURL = environment.apiBaseURL;
+
+    constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
+        this.hashTagFacade = hashTagFacade;
         this.objectiveFacade = objectiveFacade;
+
     }
 
-    public ngOnInit(): void {
-        this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e').then((Objective) => {
-            console.log('Objective', Objective);
-            this.ObjectiveData = Objective;
-        }).catch((err) => {
-        });
+    public async ngOnInit(): Promise<void> {
+        this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
+        this.setData();
+
+    }
+
+    public setData(): void {
+        this.pageObjective = this.objectiveData.pageObjective;
+        this.pageOwner = this.objectiveData.page;
+        console.log('this.objectiveData', this.objectiveData);
     }
 
     public ngOnDestroy(): void {
