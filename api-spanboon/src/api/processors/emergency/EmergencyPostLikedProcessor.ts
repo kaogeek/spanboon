@@ -11,8 +11,11 @@ import { LIKE_TYPE } from '../../../constants/LikeType';
 
 export class EmergencyPostLikedProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_POST_LIKED';
+
     constructor(private userLikeService: UserLikeService) {
         super();
+        this.type = EmergencyPostLikedProcessor.TYPE;
     }
 
     public process(): Promise<any> {

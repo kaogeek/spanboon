@@ -179,6 +179,10 @@
                         @include font-size-11($font-head-500);
                         color: $brandcolor2;
                     }
+
+                    &.hide {
+                        color: $home-page-activate-color;
+                    }
                 }
             }
             > .body {
@@ -441,6 +445,17 @@
     }
     #style-1::-webkit-scrollbar {
         height: 0px;
+        display: none !important;
+    }
+    .hide-scrollbar {
+        /*FireFox*/
+        scrollbar-width: none;
+        /*IE10+*/
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        /*Chrome, Safari, Edge*/
+        display: none;
     }
 }
 

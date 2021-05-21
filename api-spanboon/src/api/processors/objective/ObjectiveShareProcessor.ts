@@ -12,8 +12,11 @@ import { ObjectID } from 'mongodb';
 
 export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_SHARED';
+
     constructor(private userFollowService: UserFollowService, private socialPostService: SocialPostService) {
         super();
+        this.type = ObjectiveShareProcessor.TYPE;
     }
 
     public process(): Promise<any> {

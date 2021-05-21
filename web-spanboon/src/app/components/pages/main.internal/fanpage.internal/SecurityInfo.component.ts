@@ -349,7 +349,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 appId: environment.facebookAppId,
                 cookie: true,
                 xfbml: true,
-                version: 'v9.0'
+                version: 'v10.0'
             });
             window['FB'].AppEvents.logPageView();
         };
@@ -380,7 +380,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.isLoading = false;
                 this.connect = false;
             }
-        }, { scope: 'public_profile, email, user_gender, user_birthday, pages_manage_posts, pages_show_list, pages_read_engagement' });
+        }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement' });
     }
 
     public listPageFacebook() {
