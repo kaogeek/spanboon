@@ -271,7 +271,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 3,
+    slidesPerView: 6,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,

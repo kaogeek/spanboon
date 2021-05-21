@@ -18,7 +18,8 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
+  SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -127,6 +128,14 @@ export const APP_ROUTES: Routes = [
       {
         path: SettingAccount.PAGE_NAME + "/settings",
         component: SettingAccount,
+      },
+      {
+        path: ObjectiveTimeline.PAGE_NAME,
+        component: ObjectiveTimeline,
+      },
+      {
+        path: EmergencyEventTimeline.PAGE_NAME,
+        component: EmergencyEventTimeline,
       },
       // {
       //   path: SettingsFanPage.PAGE_NAME,

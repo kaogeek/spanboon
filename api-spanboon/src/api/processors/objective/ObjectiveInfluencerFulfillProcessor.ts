@@ -12,8 +12,11 @@ import { FULFILLMENT_STATUS } from '../../../constants/FulfillmentStatus';
 
 export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_INFLUENCER_FULFILL';
+
     constructor(private fulfillmentCaseService: FulfillmentCaseService, private userFollowService: UserFollowService) {
         super();
+        this.type = ObjectiveInfluencerFulfillProcessor.TYPE;
     }
 
     public process(): Promise<any> {

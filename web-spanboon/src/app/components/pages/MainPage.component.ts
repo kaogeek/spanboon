@@ -328,3 +328,4 @@ export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
+export * from './main.internal/timeline.internal/timeline';
