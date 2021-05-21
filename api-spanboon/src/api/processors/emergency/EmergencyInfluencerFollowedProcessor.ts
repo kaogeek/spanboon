@@ -11,8 +11,11 @@ import { SUBJECT_TYPE } from '../../../constants/FollowType';
 
 export class EmergencyInfluencerFollowedProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_INFLUENCER_FOLLOWED';
+
     constructor(private userFollowService: UserFollowService) {
         super();
+        this.type = EmergencyInfluencerFollowedProcessor.TYPE;
     }
 
     public process(): Promise<any> {

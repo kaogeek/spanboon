@@ -11,8 +11,11 @@ import { UserFollowService } from '../../services/UserFollowService';
 
 export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_INFLUENCER';
+
     constructor(private postsCommentService: PostsCommentService, private userFollowService: UserFollowService) {
         super();
+        this.type = ObjectiveInfluencerProcessor.TYPE;
     }
 
     public process(): Promise<any> {
