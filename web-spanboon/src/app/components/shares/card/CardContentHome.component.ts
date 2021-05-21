@@ -232,7 +232,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        var path = data.path ? data.path[0].className : data.explicitOriginalTarget.className;
+        var path = data.path ? data.path[0].className : data.explicitOriginalTarget ? data.explicitOriginalTarget.className : data.target.className;
         if (path !== 'medium_card' && path !== 'other_topic_coverPage' && path !== 'other_topic_title' && path !== 'other_topic' && path !== 'detail' && path !== 'bottom_medium_card' && path !== 'title' && path !== 'bottom_medium_card_detail') {
             return
         }

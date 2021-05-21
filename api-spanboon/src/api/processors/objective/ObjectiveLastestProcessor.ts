@@ -48,6 +48,11 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'postGallery'
                         }
+                    },
+                    {
+                        $project: {
+                            'story': 0
+                        }
                     }
                 ];
                 const searchResult = await this.postsService.aggregate(postAgg);
