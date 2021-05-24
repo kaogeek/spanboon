@@ -95,8 +95,8 @@
                 <span class="title"
                     *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
                 <needs-card *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0"
-                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
-                    [isPendingFulfill]="true"
+                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [slidesPerView]="6"
+                    [isFulfill]="true" [isPendingFulfill]="true"
                     [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
                 </needs-card>
             </div>
@@ -112,7 +112,7 @@
                     </div>
                     <div class="card">
                         <div *ngIf="item.post" class="needs-card">
-                            <div class="item" id="point" >
+                            <div class="item" id="point">
                                 <span class="title">สิ่งที่กำลังมองหา</span>
                                 <div class="needs">
                                     <div class="list-needs"
