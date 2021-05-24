@@ -47,6 +47,8 @@ export class NeedsCard extends AbstractPage implements OnInit {
   public isButtonFulfill: boolean = true;
   @Input()
   public isNeedBoxPost: boolean = true;
+  @Input()
+  public slidesPerView: number = 3;
 
   @Output()
   public close: EventEmitter<any> = new EventEmitter();
@@ -271,7 +273,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 6,
+    slidesPerView: this.slidesPerView,
     spaceBetween: 10,
     keyboard: false,
     mousewheel: false,
