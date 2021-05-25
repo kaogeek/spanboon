@@ -133,11 +133,12 @@
                 </svg> -->
             </ng-template>
         </div>
-        <div class="wrapper-action" *ngIf="isShare" (click)="postShare();"
+        <div class="wrapper-action" *ngIf="isShare"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{share | shortNumber }}</span>
 
-            <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+            <!-- FBTEST-->
+            <svg class="img-action-share" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                 xmlns="http://www.w3.org/2000/svg" width="13.913" height="15.385" viewBox="0 0 13.913 15.385">
                 <path [ngStyle]="{'fill': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}" id="Path_3803"
                     data-name="Path 3803"

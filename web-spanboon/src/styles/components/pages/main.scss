@@ -80,11 +80,11 @@ span:focus {
             padding: 10pt 5pt 10pt;
             margin: 5pt 0;
             border-bottom: $width-border solid $border-color;
-            cursor: pointer;
+            // cursor: pointer;
 
-            &:hover {
-                background-color: $background-hover;
-            }
+            // &:hover {
+            //     background-color: $background-hover;
+            // }
 
             .top {
                 display: flex;
