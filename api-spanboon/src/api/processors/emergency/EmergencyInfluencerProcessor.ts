@@ -40,10 +40,10 @@ export class EmergencyInfluencerProcessor extends AbstractTypeSectionProcessor {
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
