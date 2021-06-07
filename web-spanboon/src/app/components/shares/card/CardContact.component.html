@@ -30,7 +30,7 @@
             </div>
             <div *ngIf="data.postId === null" class="contact-head">
                 <div class="head-left" matTooltipShowDelay="{{800}}" matTooltip="{{title}}">
-                    {{data.pageName}}
+                    {{asPage ? data.name:data.pageName}}
                 </div>
             </div>
             <div class="contact-hashtag">

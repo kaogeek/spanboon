@@ -28,7 +28,6 @@ export class DialogPreview {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   constructor(public dialogRef: MatDialogRef<DialogPreview>, @Inject(MAT_DIALOG_DATA) public data: any) {
-    console.log('data ', data)
   }
 
   ngOnInit() {

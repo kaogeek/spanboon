@@ -80,11 +80,11 @@ span:focus {
             padding: 10pt 5pt 10pt;
             margin: 5pt 0;
             border-bottom: $width-border solid $border-color;
-            cursor: pointer;
+            // cursor: pointer;
 
-            &:hover {
-                background-color: $background-hover;
-            }
+            // &:hover {
+            //     background-color: $background-hover;
+            // }
 
             .top {
                 display: flex;
@@ -407,15 +407,15 @@ span:focus {
     }
 
     .tribute-container-hashtag {
-        color: blue;
+        color: #1b95e0;
     }
 
     .tribute-container-like {
-        color: blue;
+        color: #1b95e0;
     }
 
     .atwho-query {
-        color: blue;
+        color: #1b95e0;
     }
 
     @keyframes placeHolderShimmer {

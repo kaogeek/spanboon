@@ -260,6 +260,7 @@
             @include font-size-9($font-head-500);
           }
           > .controls {
+            padding: 1px;
           }
         }
         > .user-comment {
@@ -376,6 +377,21 @@
   justify-self: center;
   top: 0;
   z-index: 10;
+  .stoey-buttom {
+    width: 80%;
+    .stoey-buttom-preload {
+      display: flex;
+      width: 100%;
+      .preload-left {
+        width: 70%;
+        padding: 20px 20px 20px 0px;
+      }
+      .preload-right {
+        width: 30%;
+        padding: 20px 20px 20px 0px;
+      }
+    }
+  }
 }
 
 .post-story-not-found {
@@ -421,6 +437,19 @@
 }
 
 @media (max-width: $xlarge) {
+  .loding .stoey-buttom {
+    width: 90%;
+  }
+  .loding .stoey-buttom .stoey-buttom-preload .preload-left {
+    width: 100%;
+    padding: 20px 20px 20px 0px;
+  }
+  .loding .stoey-buttom .stoey-buttom-preload .preload-right {
+    display: none;
+  }
+  .story > .story-body > .content > .left > .story-display .ct-background-text {
+    width: 105% !important;
+  }
   .story {
     .content {
       margin-top: 0;
@@ -480,6 +509,24 @@
         }
       }
     }
+  }
+  .story > .story-body > .content > .left > .comment {
+    flex-direction: column;
+  }
+  .story > .story-body > .content > .left > .comment > .event-tag {
+    color: #fd5454;
+    font-size: 13pt;
+    font-family: "Kanit-500";
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .story > .story-body > .content > .left > .comment > .controls {
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 

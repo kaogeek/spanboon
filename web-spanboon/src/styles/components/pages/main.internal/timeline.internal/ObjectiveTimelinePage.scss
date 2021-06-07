@@ -1,0 +1,535 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom < chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
+ */
+
+.objective-timeline-body {
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background-color: #fcfcfd00;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    > .img_objective {
+        position: absolute;
+        background-color: whitesmoke;
+        top: -15px;
+        z-index: 0;
+        width: 100%;
+    }
+    > .objective-head {
+        position: relative;
+        width: 80%;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        flex-direction: column;
+
+        > .top-objective-data {
+            max-width: 1660px;
+            width: 100%;
+            background-color: #f5f5f500;
+            position: relative;
+            display: flex;
+            margin-top: 60px;
+            z-index: 1;
+            > .objective {
+                width: 70%;
+                > .data {
+                    padding: 15px;
+                    display: flex;
+                    > .iconURL {
+                        border-radius: 50%;
+                        width: 160px;
+                        height: 160px;
+                    }
+                    > .data-text {
+                        > .text {
+                            margin-left: 40pt;
+                            display: flex;
+                            flex-direction: column;
+                            > .title {
+                                @include font-size-3($font-head-500);
+                            }
+                            > .disiption {
+                                @include font-size-8($font-head-400);
+                            }
+                        }
+                        > .score {
+                            margin-left: 40pt;
+                            display: flex;
+                            > .score-type {
+                                display: flex;
+                                margin-right: 60px;
+                                margin-top: 60px;
+                                flex-direction: column;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                > .title {
+                                    @include font-size-5($font-head-500);
+                                }
+                                > .disiption {
+                                    @include font-size-9($font-head-400);
+                                }
+                            }
+                        }
+                        > .buttom {
+                            margin-top: 60px;
+                            margin-left: 40pt;
+                            display: flex;
+                            flex-direction: column;
+                            @include font-size-11($font-head-300);
+                        }
+                    }
+                }
+            }
+            > .objective-owner {
+                width: 30%;
+                > .owner {
+                    padding: 15px;
+                    display: flex;
+                    flex-direction: column;
+                    > .title {
+                        @include font-size-8($font-head-500);
+                    }
+                    > .disiption {
+                        @include font-size-10($font-head-300);
+                    }
+                    > .page {
+                        margin-top: 10px;
+                        border-radius: 5px;
+                        border: solid 0.5 gray;
+                        background-color: white;
+                        padding: 10px;
+                        display: flex;
+                        > .iconURL {
+                            border-radius: 50%;
+                            width: 50px;
+                            height: 50px;
+                            margin-right: 10px;
+                        }
+                        > .disiption {
+                            display: flex;
+                            flex-wrap: nowrap;
+                            align-content: center;
+                            align-items: center;
+                            @include font-size-10($font-head-300);
+                        }
+                    }
+                    > .detail {
+                        margin-top: 10px;
+                        padding: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        > .title {
+                            @include font-size-8($font-head-500);
+                        }
+                        > .disiption {
+                            @include font-size-10($font-head-300);
+                        }
+                    }
+                    > .follow-fullfill {
+                        margin-top: 10px;
+                        padding: 10px;
+                        display: flex;
+                        > .follow {
+                            margin-right: 100px;
+                            display: flex;
+                            flex-direction: column;
+                            > .text {
+                                > .title {
+                                    @include font-size-10($font-head-400);
+                                }
+                                > .score {
+                                    margin: 0px 6px;
+                                    @include font-size-10($font-head-400);
+                                    color: $brandcolor2;
+                                }
+                            }
+                        }
+                        > .fullfill {
+                            display: flex;
+                            flex-direction: column;
+                            > .text {
+                                > .title {
+                                    @include font-size-10($font-head-400);
+                                }
+                                > .score {
+                                    margin: 0px 6px;
+                                    @include font-size-10($font-head-400);
+                                    color: $brandcolor2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        > .needs-section {
+            max-width: 1660px;
+            width: 80%;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            > .title {
+                @include font-size-8($font-head-500);
+            }
+        }
+    }
+    > .timeline-data-section {
+        width: 100%;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        > .body {
+            width: 80%;
+            margin-top: 100px;
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            > .strat-section-point {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                position: relative;
+                > .head {
+                    width: 100%;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-self: center;
+                    justify-content: center;
+                    > .line {
+                        border-top: dashed 1px #d0d0d0;
+                        position: absolute;
+                        top: 50%;
+                        width: 100%;
+                        z-index: 2;
+                    }
+                    > .strat-point {
+                        padding: 10px 30px;
+                        background-color: #fff2f2;
+                        border-radius: 10px;
+                        position: relative;
+                        z-index: 3;
+                        box-shadow: rgb(0 0 0 / 19%) 0px 10px 20px, rgb(0 0 0 / 10%) 0px 17px 6px;
+                        > .title {
+                            @include font-size-5($font-head-500);
+                            color: $brandcolor2;
+                        }
+                    }
+                }
+                > .card {
+                    position: relative;
+                    margin: 80px 0px;
+                    > .needs-card {
+                        margin: 80px 0px;
+                        display: flex;
+                        > .item {
+                            width: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            align-content: center;
+                            justify-content: center;
+                            align-items: center;
+                            > .title {
+                                @include font-size-5($font-head-500);
+                                color: $status-post-fulfill;
+                                padding-left: 40%;
+                            }
+
+                            > .needs {
+                                width: 80%;
+                                margin: 30px 0px;
+                                display: inline-flex;
+                                flex-wrap: wrap;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                .list-needs {
+                                    position: relative;
+                                    border: 0.7px solid #e5e5e5;
+                                    border-radius: 4px;
+                                    overflow: hidden;
+                                    width: 200px;
+                                    margin: 10px;
+
+                                    .cl {
+                                        width: 20px;
+                                        height: 20px;
+                                        right: 7px;
+                                        top: 7px;
+                                        position: absolute;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        z-index: 10;
+                                        transition: 0.2s;
+                                        @include pointer();
+
+                                        &:hover {
+                                            fill: $brandcolor2;
+                                        }
+
+                                        > .icon-clear {
+                                            font-weight: 900;
+                                        }
+                                    }
+
+                                    .needs {
+                                        display: grid;
+                                        justify-content: center;
+                                        align-content: center;
+                                        position: relative;
+                                        background: #f9f9f9;
+                                        // background: $bg-fog-gray2;
+                                        padding: 15pt 0;
+
+                                        > .img-items {
+                                            width: 50pt;
+                                            height: 50pt;
+                                            border-radius: 50%;
+                                            object-fit: cover;
+                                        }
+                                    }
+
+                                    .needs-data {
+                                        padding: 10pt;
+                                        background: white;
+                                        &.active {
+                                            display: flex;
+                                            flex-direction: column;
+                                        }
+                                        div {
+                                            &.active {
+                                                display: flex;
+                                                justify-content: space-between;
+                                            }
+                                            .needs-data-h {
+                                                .text-h {
+                                                    @include font-size-10($font-head-500);
+                                                    line-height: 15px;
+                                                    color: #717886;
+                                                    display: -webkit-box;
+                                                    -webkit-line-clamp: 1;
+                                                    -webkit-box-orient: vertical;
+                                                    overflow: hidden;
+                                                    margin: 5pt 0;
+                                                }
+                                            }
+
+                                            .needs-data-body {
+                                                width: 100%;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: space-between;
+
+                                                &.active {
+                                                    width: unset;
+                                                    flex: 0 0 auto;
+                                                }
+                                                .unit {
+                                                    flex: 1 1 0%;
+                                                    margin-right: 10pt;
+
+                                                    &.active {
+                                                        margin-right: unset;
+                                                        .unit-box {
+                                                            display: flex;
+                                                            align-items: baseline;
+                                                            justify-content: flex-end;
+                                                            margin-right: unset;
+                                                            > .unit-num {
+                                                                color: $bg-color4;
+                                                            }
+                                                        }
+                                                        .unit-sub {
+                                                            padding-left: 5pt;
+                                                        }
+                                                    }
+                                                    .unit-box {
+                                                        .unit-num {
+                                                            color: $bg-color4;
+                                                            @include font-size-10($font-head-500);
+                                                            overflow: hidden;
+                                                            text-overflow: ellipsis;
+                                                            display: -webkit-box;
+                                                            -webkit-line-clamp: 1;
+                                                            -webkit-box-orient: vertical;
+                                                        }
+
+                                                        .unit-sub {
+                                                            @include font-size-10($font-head-500);
+                                                            color: #717886;
+                                                            overflow: hidden;
+                                                            text-overflow: ellipsis;
+                                                            display: -webkit-box;
+                                                            -webkit-line-clamp: 1;
+                                                            -webkit-box-orient: vertical;
+                                                        }
+                                                    }
+                                                }
+
+                                                .unit-bt-box {
+                                                    flex: 0 0 auto;
+                                                    > .limit {
+                                                        display: flex;
+                                                        align-items: center;
+                                                        justify-content: center;
+                                                        border-radius: 4px;
+                                                        border: 0.7pt solid $border-color;
+                                                        width: auto;
+                                                        padding: 0 7pt;
+                                                        height: 26pt;
+                                                        color: $bg-color4;
+                                                        @include font-size-10($font-head-500);
+                                                        color: $color-gray;
+                                                        > .material-icons {
+                                                            font-family: "Material Icons" !important;
+                                                            color: $status-success;
+                                                            font-size: $font-size-icon-small;
+                                                            padding-right: 2pt;
+                                                        }
+                                                    }
+                                                    > spanboon-button {
+                                                        > .spanboon-button {
+                                                            width: auto !important;
+                                                            padding: 0 7pt;
+                                                            height: 26pt !important;
+                                                        }
+
+                                                        > .btn-fulfill {
+                                                            background-color: $status-post-fulfill !important;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        > .amonut {
+                                            display: flex;
+                                            align-items: center;
+                                            @include font-size-10($font-head-500);
+                                            color: $color-gray;
+                                            > .material-icons {
+                                                font-family: "Material Icons" !important;
+                                                color: $status-success;
+                                                font-size: $font-size-icon-small;
+                                                padding-right: 5pt;
+                                            }
+                                            > .quantity {
+                                                color: black;
+                                                padding-left: 3pt;
+                                            }
+                                            > .unit {
+                                                padding-left: 3pt;
+                                                color: black;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        > .post {
+                            width: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            align-content: center;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                    }
+
+                    > .objective_start_card {
+                        width: calc(100%);
+                        padding: 60px 30px;
+                        display: flex;
+                        > .left {
+                            width: 50%;
+                            height: 100%;
+                            // background-color: blueviolet;
+                            > .body {
+                                margin-top: 50px;
+                            }
+                        }
+                        > .right {
+                            width: calc(50%);
+                            height: 100%;
+                            padding: 30px;
+                            > .body {
+                                width: 100%;
+                                margin-top: 50px;
+                                > .top {
+                                    background-color: white;
+                                    padding: 30px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-9($font-head-300);
+                                    }
+                                }
+                                > .post {
+                                    display: flex;
+                                    flex-direction: column;
+                                    padding: 30px;
+                                    > .head {
+                                        > .type {
+                                            > .point {
+                                            }
+                                            > .type_name {
+                                                @include font-size-11($font-head-300);
+                                            }
+                                        }
+                                    }
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .detail {
+                                        margin-top: 30px;
+                                        @include font-size-9($font-head-300);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: $xxlarge) {
+}
+
+@media (max-width: $xlarge) {
+}
+
+@media (max-width: $large) {
+}
+
+@media (max-width: $lmedium) {
+}
+
+@media (max-width: $medium) {
+}
+
+@media (max-width: $small) {
+}

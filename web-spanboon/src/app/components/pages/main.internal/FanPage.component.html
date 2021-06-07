@@ -213,9 +213,14 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="btn-follow-about btn_fa" (click)="clickSystemDevelopment()">
+                            <!-- <div class="btn-follow-about btn_fa" (click)="clickSystemDevelopment()">
+                                เกี่ยวกับ
+                            </div> -->
+                            <!-- FBTEST-->
+                            <div class="btn-follow-about btn_fa">
                                 เกี่ยวกับ
                             </div>
+
                         </div>
                         <div class="wrapper-looking-for">
                             <div class="wrapper-header">
@@ -234,7 +239,7 @@
                                 </div>
                             </div>
                             <div class="list-looking-for">
-                                <div class="item-looking-for" (click)="showAlertDevelopDialog()"
+                                <div class="item-looking-for"
                                     *ngIf="resDataPage && resDataPage.categoryName && resDataPage.categoryName !== undefined && resDataPage.categoryName !== null && resDataPage.categoryName !== '' ">
                                     <span>
                                         <svg style="padding-right: 5pt;" xmlns="http://www.w3.org/2000/svg"

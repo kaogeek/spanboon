@@ -94,16 +94,14 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
 
-    console.log('model', model);
-
     this.pageModel = this.jsonParseData(model);
     this.sectionModels = this.jsonParseData(this.pageModel.sectionModels);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
     this.postSectionModel = this.jsonParseData(this.pageModel.postSectionModel);
 
-    // this.needsSectionModels = this.jsonParseData(this.pageModel.lastest);
-    // this.lookingSectionModels = this.jsonParseData(this.pageModel.looking);
-    // this.viewSectionModels = this.jsonParseData(this.pageModel.viewSection);
+    for (let m of this.sectionModels) {
+      m.isLodingMore = false;
+    }
 
     if (this.pageModel.objectiveEvents.contents.length > 0) {
       this.isDoing = false
@@ -153,11 +151,11 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   }
 
   public clickDataSearch(data) {
-    this.router.navigateByUrl('/search?hashtag=' + data);
+    window.open('/search?hashtag=' + data);
   }
 
   public clickDataSearchTodo(data) {
-    this.router.navigateByUrl('/search?hashtag=' + data.title);
+    window.open('/search?hashtag=' + data);
   }
 
   public smallType(data): boolean {
@@ -212,9 +210,9 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     })
   }
 
-  public async getMore(length, type,) {
+  public async getMore(length: string, type: string, index: number) {
 
-    this.isLodingMore = true;
+    this.sectionModels[index].isLodingMore = true;
     let userId = undefined;
     let arrData: any[] = [];
 
@@ -224,34 +222,19 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let getMoreModel: any = await this.mainPageModelFacade.getMainPageModel(userId, length, type);
 
-    if (type === 'RECOMMEND') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.viewSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
-      }
-    }
-    if (type === 'STILLLOOKING') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.lookingSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
-      }
-    }
-    if (type === 'LASTEST') {
-      if (getMoreModel.contents.length > 0) {
-        arrData = this.needsSectionModels.contents
-        for (const post of getMoreModel.contents) {
-          arrData.push(post)
-        }
+    if (getMoreModel.contents.length > 0) {
+      arrData = this.sectionModels[index].contents
+      for (const post of getMoreModel.contents) {
+        arrData.push(post)
       }
     }
 
     setTimeout(() => {
-      this.isLodingMore = false;
-    }, 6000);
+      if (getMoreModel.contents.length === 0) {
+        this.sectionModels[index].isMax = true;
+      }
+      this.sectionModels[index].isLodingMore = false;
+    }, 5000);
 
   }
 
