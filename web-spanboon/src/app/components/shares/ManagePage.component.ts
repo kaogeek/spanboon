@@ -96,12 +96,12 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.drawer.toggle();
-        // const dialogRef = this.dialog.open(DialogCreatePage, {
-        //     autoFocus: false
-        // });
-        // dialogRef.afterClosed().subscribe(res => {
-        //     console.log(res)
-        // });
+        const dialogRef = this.dialog.open(DialogCreatePage, {
+            autoFocus: false
+        });
+        dialogRef.afterClosed().subscribe(res => {
+            console.log(res)
+        });
         // this.clickSystemDevelopment();
     }
 

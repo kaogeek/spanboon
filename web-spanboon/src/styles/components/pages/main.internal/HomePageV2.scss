@@ -35,12 +35,12 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text_h {
                     > .text {
                         color: $brandcolor2;
                         line-height: 25px;
-                        width: 45px;
+                        width: 55px;
                     }
                 }
                 > .tag_list {
@@ -84,11 +84,11 @@
                 display: flex;
                 word-break: break-word;
                 justify-content: center;
-                @include font-size-10($font-head-500);
+                @include font-size-9($font-head-500);
                 > .text {
                     color: $brandcolor2;
                     line-height: 25px;
-                    width: 45px;
+                    width: 55px;
                 }
                 > .tag_list {
                     display: inline-flex;

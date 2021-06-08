@@ -777,14 +777,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public getObjective(data) {
     if (data.item.selected) {
-      this.objective = data.hashTag;
+      this.objective = data.item.hashTag;
     } else {
       this.objective = '';
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
 
   }
 
@@ -796,8 +796,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
   }
 
   public createEngagement(dataEngagement: UserEngagement) {
@@ -846,8 +846,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
   }
 
   public searchTrendTag(offset?: boolean) {
@@ -925,7 +925,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           } else {
             Object.assign(posts.post, { user: posts.user })
           }
-          originalPost.push(posts); 
+          originalPost.push(posts);
           index++;
         }
         this.resPost = originalPost;

@@ -38,7 +38,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public user: any;
   public data: any;
-  public isDev: boolean = true;
+  public isDev: boolean = false;
 
   public redirection: string;
 

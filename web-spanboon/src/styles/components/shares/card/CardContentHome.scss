@@ -95,8 +95,8 @@
                 text-align: center;
                 align-items: center;
                 justify-content: center;
-                > div {
-                    @include font-size-7($font-head-500);
+                > span {
+                    @include font-size-9($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
