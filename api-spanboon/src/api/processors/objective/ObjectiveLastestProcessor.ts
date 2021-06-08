@@ -10,8 +10,11 @@ import { PostsService } from '../../services/PostsService';
 
 export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_LASTEST';
+
     constructor(private postsService: PostsService) {
         super();
+        this.type = ObjectiveLastestProcessor.TYPE;
     }
 
     public process(): Promise<any> {
@@ -44,6 +47,11 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                             localField: '_id',
                             foreignField: 'post',
                             as: 'postGallery'
+                        }
+                    },
+                    {
+                        $project: {
+                            'story': 0
                         }
                     }
                 ];

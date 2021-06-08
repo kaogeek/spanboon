@@ -495,7 +495,7 @@ export class ObjectiveController {
             pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
             pageObjTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
 
-            pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
+            // pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
             pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
             pageObjTimeline.timelines = [];
 

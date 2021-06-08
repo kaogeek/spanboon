@@ -370,13 +370,13 @@
               }
             }
 
-            > .btn_fa {
-              @include pointer();
+            // > .btn_fa {
+            //   @include pointer();
 
-              &:hover {
-                background-color: #e8e3e35c;
-              }
-            }
+            //   &:hover {
+            //     background-color: #e8e3e35c;
+            //   }
+            // }
           }
 
           > .wrapper-looking-for {

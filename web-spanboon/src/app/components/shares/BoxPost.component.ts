@@ -605,10 +605,16 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public updateText() {
-    document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake' || evt.srcElement.className === 'textarea-editor msg-error-shake'
-        || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake') {
-        evt.preventDefault();
+    const detail = document.getElementById(this.prefix && this.prefix.detail ? this.prefix.detail + 'editableStoryPost' : 'editableStoryPost');
+    const header = document.getElementById(this.prefix && this.prefix.header ? this.prefix.header + 'topic' : 'topic');
+    this.replaceContenteditable(detail);
+    this.replaceContenteditable(header);
+  }
+
+  public replaceContenteditable(element) {
+    element.addEventListener('paste', (evt: any) => {
+      evt.preventDefault();
+      if (evt.srcElement.className) {
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
         document.execCommand('insertText', false, text);

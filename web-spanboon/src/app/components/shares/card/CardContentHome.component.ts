@@ -232,21 +232,29 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        if (data.path[0].className !== 'medium_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic' && data.path[0].className !== 'detail' && data.path[0].className !== 'bottom_medium_card' && data.path[0].className !== 'title' && data.path[0].className !== 'bottom_medium_card_detail') {
+        var path = data.path ? data.path[0].className : data.explicitOriginalTarget.className;
+        if (path !== 'medium_card' && path !== 'other_topic_coverPage' && path !== 'other_topic_title' && path !== 'other_topic' && path !== 'detail' && path !== 'bottom_medium_card' && path !== 'title' && path !== 'bottom_medium_card_detail') {
             return
         }
         this.clickEvent.emit(this.postData);
     }
 
     public clickEventEmitLarge(data?) {
-        if (data.path[0].className !== 'large_card' && data.path[0].className !== 'other_topic_coverPage' && data.path[0].className !== 'other_topic_title' && data.path[0].className !== 'other_topic') {
+        var path = data.path ? data.path[0].className : data.explicitOriginalTarget.className;
+        if (path !== 'large_card' && path !== 'other_topic_coverPage' && path !== 'other_topic_title' && path !== 'other_topic') {
             return
         }
         this.clickEvent.emit(this.postData);
     }
 
-    public clickEventEmit() {
-        this.clickEvent.emit(this.postData);
+    public clickEventEmit(hashtag?: string) {
+        console.log(hashtag.indexOf('#'))
+        if (this.isObjective) {
+            window.open('/search?objective=' + hashtag.substring(1, hashtag.length + 1));
+
+        } else {
+            this.clickEvent.emit(this.postData);
+        }
     }
 
     isDerTy(value): boolean {

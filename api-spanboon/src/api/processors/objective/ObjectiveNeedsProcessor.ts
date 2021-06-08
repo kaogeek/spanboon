@@ -12,8 +12,11 @@ import { POST_TYPE } from '../../../constants/PostType';
 
 export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_NEEDS';
+
     constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService) {
         super();
+        this.type = ObjectiveNeedsProcessor.TYPE;
     }
 
     public process(): Promise<any> {
@@ -59,13 +62,13 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     deleted: false,
                     type: POST_TYPE.NEEDS
                 };
-                
+
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
 
                 if (dateTimeAndArray.length > 0) {
@@ -85,6 +88,8 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     }
                 ];
 
+                console.log('dateTimeAndArray: ', dateTimeAndArray);
+
                 // if no sampleCount limit will set to 1.
                 if (sampleCount !== undefined) {
                     postAgg.push({ $sample: { size: sampleCount } });
@@ -92,6 +97,8 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     postAgg.push({ $limit: 1 });
                 }
                 const searchResult = await this.postsService.aggregate(postAgg);
+
+                console.log('searchResult: ', searchResult.length);
 
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {

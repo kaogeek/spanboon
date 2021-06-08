@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="card_content_home">
-    <div *ngIf="smallCard && postData && !isLoad" class="small_card">
+    <div (click)="clickEventEmit(postData.title)" *ngIf="smallCard && postData && !isLoad" class="small_card">
         <div *ngIf="!isObjective" class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
@@ -22,7 +22,7 @@
             </svg>
             <a target="_blank" href={{linkPost}} class="date_time">{{postData.post.createdDate | dateFormat}}</a>
         </div>
-        <div (click)="clickEventEmit()" class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
+        <div class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
             <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
                 <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
@@ -34,7 +34,7 @@
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" (click)="clickDataSearchs(postData.title)" [class.is_objective]="isObjective"
+                <span class="title" [class.is_objective]="isObjective"
                     [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
             </div>
             <ng-template #other_topic_detail>

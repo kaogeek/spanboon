@@ -12,8 +12,11 @@ import { ObjectID } from 'mongodb';
 
 export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_SHARED';
+
     constructor(private userFollowService: UserFollowService, private socialPostService: SocialPostService) {
         super();
+        this.type = ObjectiveShareProcessor.TYPE;
     }
 
     public process(): Promise<any> {
@@ -40,10 +43,10 @@ export class ObjectiveShareProcessor extends AbstractTypeSectionProcessor {
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
 
                 let topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);

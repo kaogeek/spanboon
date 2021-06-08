@@ -12,8 +12,11 @@ import { POST_TYPE } from '../../../constants/PostType';
 
 export class EmergencyNeedsProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'EMERGENCY_NEEDS';
+
     constructor(private emergencyEventService: EmergencyEventService, private postsService: PostsService) {
         super();
+        this.type = EmergencyNeedsProcessor.TYPE;
     }
 
     public process(): Promise<any> {
@@ -62,10 +65,10 @@ export class EmergencyNeedsProcessor extends AbstractTypeSectionProcessor {
                 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
 
                 if (dateTimeAndArray.length > 0) {

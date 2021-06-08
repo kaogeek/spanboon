@@ -312,7 +312,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergencyUrl = this.emergencyUrl.pop();
             } else if (text.includes('objective')) {
               this.objectiveUrl = text.split('=')[1].split(',');
-              this.objectiveUrl = this.objectiveUrl.pop();
+              // this.objectiveUrl = this.objectiveUrl.pop();
             } else if (text.includes('startcommentcount')) {
               this.startCommentCount = Number(text.split('=')[1]);
             } else if (text.includes('endcommentcount')) {
@@ -402,10 +402,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
-      if (!this.isMaxLoadingPost) {
-        this.isLoadingPost = true;
-        if (this.resPost && this.resPost.length > 0) {
-          this.searchTrendTag();
+      if (!this.isLoadingPost) {
+        if (!this.isMaxLoadingPost) {
+          this.isLoadingPost = true;
+          if (this.resPost && this.resPost.length > 0) {
+            this.searchTrendTag();
+          }
         }
       }
     });
@@ -678,7 +680,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergency = data.id;
             }
           }
-          this.searchTrendTag(); 
+          this.searchTrendTag();
         }
         if (this.emergency) {
           for (let [index, tag] of cloneEmergency.entries()) {
@@ -723,7 +725,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.objective = data.id;
             }
           }
-          this.searchTrendTag(); 
+          this.searchTrendTag();
         }
         if (this.objective) {
           for (let [index, tag] of cloneObject.entries()) {
@@ -744,13 +746,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     filter.limit = 5;
     filter.offset = SEARCH_OFFSET + this.resHashTag && this.resHashTag.length ? this.resHashTag.length : 0;
     filter.whereConditions = {};
-    filter.orderBy = {};  
+    filter.orderBy = {};
     let cloneHashtag: any[] = this.resHashTag;
     this.isLoadMoreHashTag = true;
     let data = {
       filter
-    } 
-    this.hashTagFacade.searchTrend(data).then(res => { 
+    }
+    this.hashTagFacade.searchTrend(data).then(res => {
       if (res && res.length > 0) {
         for (let hashtag of res) {
           cloneHashtag.push(hashtag);
@@ -950,7 +952,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
-        this.resPost = [];
+        // this.resPost = [];
         if (offset) {
           this.resPost = [];
         }
@@ -1115,8 +1117,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       createdDate: "DESC",
     }
     this.isLoading = true;
-    this.isLoadMorePageCategory = true; 
-   
+    this.isLoadMorePageCategory = true;
+
     let clonePageCategory: any[] = this.resPageType;
     await this.pageCategoryFacade.search(filter).then((res: any) => {
       if (res && res.length > 0) {
@@ -1127,14 +1129,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           for (let data of this.resPageType) {
             for (let list of this.pageCateUrl) {
               if (list === data.name) {
-                this.page.push(data.id); 
+                this.page.push(data.id);
               }
             }
           }
-          this.searchTrendTag(); 
+          this.searchTrendTag();
         }
-      } 
-        this.isLoadMorePageCategory = false;  
+      }
+      this.isLoadMorePageCategory = false;
     }).catch((err: any) => {
       console.log(err)
     })
@@ -1164,7 +1166,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag();
     }
   }
-  
+
   public removeCard(card: any, index: number) {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
@@ -1237,7 +1239,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     $("#menubottom").css({
       'overflow-y': "hidden"
-    }); 
+    });
   }
 
   public async actionComment(action: any, index: number) {

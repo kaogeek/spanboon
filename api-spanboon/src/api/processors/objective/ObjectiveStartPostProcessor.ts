@@ -11,8 +11,11 @@ import { PostsService } from '../../services/PostsService';
 
 export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
 
+    public static TYPE = 'OBJECTIVE_START';
+
     constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService) {
         super();
+        this.type = ObjectiveStartPostProcessor.TYPE;
     }
 
     public process(): Promise<any> {
