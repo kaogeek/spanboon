@@ -232,7 +232,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmitMedium(data?) {
-        var path = data.path ? data.path[0].className : data.explicitOriginalTarget ? data.explicitOriginalTarget.className : data.target.className;
+        var path = data.path ? data.path[0].className : data.explicitOriginalTarget.className;
         if (path !== 'medium_card' && path !== 'other_topic_coverPage' && path !== 'other_topic_title' && path !== 'other_topic' && path !== 'detail' && path !== 'bottom_medium_card' && path !== 'title' && path !== 'bottom_medium_card_detail') {
             return
         }
@@ -248,11 +248,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmit(hashtag?: string) {
+        console.log(hashtag.indexOf('#'))
         if (this.isObjective) {
-            if (hashtag.includes("#")) {
-                hashtag = hashtag.replace(/#/g, "");
-                window.open('/search?objective=' + hashtag);
-            }
+            window.open('/search?objective=' + hashtag.substring(1, hashtag.length + 1));
+
         } else {
             this.clickEvent.emit(this.postData);
         }

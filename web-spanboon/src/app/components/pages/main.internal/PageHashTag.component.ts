@@ -312,7 +312,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.emergencyUrl = this.emergencyUrl.pop();
             } else if (text.includes('objective')) {
               this.objectiveUrl = text.split('=')[1].split(',');
-              this.objectiveUrl = this.objectiveUrl.pop();
+              // this.objectiveUrl = this.objectiveUrl.pop();
             } else if (text.includes('startcommentcount')) {
               this.startCommentCount = Number(text.split('=')[1]);
             } else if (text.includes('endcommentcount')) {
