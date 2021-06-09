@@ -125,6 +125,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public selectedIndex: number;
 
   public CheckPost: boolean = true;
+  public isPostLoading: boolean = false;
 
   private coverImageoldValue = 50;
   public index: number;
@@ -422,6 +423,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
         this.resPost.posts = originalpost
+        this.isPostLoading = false;
         for (let post of this.resPost.posts) {
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
             let search: SearchFilter = new SearchFilter();
@@ -457,12 +459,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           this.isLoadingPost = false;
           this.isLoadingClickTab = false;
           this.isLoadDataPost = false;
-        }, 1500);
+        }, 1500); 
       } else {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
         this.isLoadDataPost = false;
+        this.isPostLoading = false;
         if (offset) {
           this.resPost = [];
         }
@@ -691,6 +694,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else {
         pageId = this.resDataPage.id;
       }
+      this.isPostLoading = true;
       this.pageFacade.createPost(pageId, value, value.postSocialTW, value.postSocialFB).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {

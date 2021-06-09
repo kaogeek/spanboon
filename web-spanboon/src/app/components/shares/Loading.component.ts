@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 
 @Component({
@@ -13,6 +13,9 @@ import { Component } from '@angular/core';
   templateUrl: './Loading.component.html'
 })
 export class Loading {
+
+  @Input()
+  public text : string = "กำลังโหลด";
 
   constructor() {    
 
