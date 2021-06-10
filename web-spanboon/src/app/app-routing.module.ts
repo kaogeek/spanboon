@@ -23,7 +23,8 @@ import {
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
-import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component'; 
+import { DirtyCheckGuard } from './DirtyCheckGuard.guard';
 
 export const APP_ROUTES: Routes = [
   {
@@ -33,7 +34,7 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: MainPage.PAGE_NAME,
-    component: MainPage,
+    component: MainPage,  
     children: [
       {
         path: '',
@@ -79,19 +80,20 @@ export const APP_ROUTES: Routes = [
           },
           {
             path: 'timeline',
-            component: FanPage,
+            component: FanPage, 
           },
           {
             path: 'general',
-            component: FanPage,
+            component: FanPage, 
           },
           {
             path: 'needs',
-            component: FanPage,
+            component: FanPage, 
           },
           {
             path: 'fulfillment',
-            component: FanPage,
+            component: FanPage, 
+            
           },
         ]
       },
@@ -243,3 +245,9 @@ export const APP_ROUTES: Routes = [
     component: RegisterPageTestComponent
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(APP_ROUTES)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
