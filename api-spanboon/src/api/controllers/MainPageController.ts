@@ -21,6 +21,7 @@ import { SearchContentResponse } from './responses/SearchContentResponse';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
+import { ConfigService } from '../services/ConfigService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -48,6 +49,7 @@ import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
+import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
 
 @JsonController('/main')
 export class MainPageController {
@@ -61,6 +63,7 @@ export class MainPageController {
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
+        private configService: ConfigService
     ) { }
 
     // Find Page API
@@ -81,6 +84,8 @@ export class MainPageController {
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.getMainPageSearchConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
 
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
@@ -88,7 +93,8 @@ export class MainPageController {
                 emerProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
-                    date
+                    date,
+                    searchOfficialOnly
                 });
                 const emerSectionModelSec = await emerProcessorSec.process();
 
@@ -112,7 +118,8 @@ export class MainPageController {
                 lastestLKProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
-                    date
+                    date,
+                    searchOfficialOnly
                 });
                 const lastestLookSectionModelSec = await lastestLKProcessorSec.process();
 
@@ -159,36 +166,14 @@ export class MainPageController {
                 userRecProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
-                    date
+                    date,
+                    searchOfficialOnly
                 });
                 const userRecSectionModelSec = await userRecProcessorSec.process();
                 userRecSectionModelSec.isList = true;
 
                 const urResult: any = {};
                 urResult.contents = userRecSectionModelSec.contents;
-
-                if (urResult) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', urResult);
-                    return res.status(200).send(successResponse);
-                } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-            } else if (section === 'USERFOLLOW') {
-                const userFollowProcessors: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
-                userFollowProcessors.setData({
-                    userId
-                });
-                userFollowProcessors.setConfig({
-                    showUserAction: true,
-                    offset,
-                    date
-                });
-                const userFollowSectionModelSec = await userFollowProcessors.process();
-                userFollowSectionModelSec.isList = true;
-
-                const urResult: any = {};
-                urResult.contents = userFollowSectionModelSec.contents;
 
                 if (urResult) {
                     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', urResult);
@@ -210,7 +195,8 @@ export class MainPageController {
         emerProcessor.setConfig({
             showUserAction: true,
             offset,
-            date
+            date,
+            searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process();
 
@@ -218,6 +204,9 @@ export class MainPageController {
         postProcessor.setData({
             startDateTime: weekRanges[0],
             endDateTime: weekRanges[1]
+        });
+        postProcessor.setConfig({
+            searchOfficialOnly
         });
         const postSectionModel = await postProcessor.process();
 
@@ -230,7 +219,8 @@ export class MainPageController {
         lastestLKProcessor.setConfig({
             showUserAction: true,
             offset,
-            date
+            date,
+            searchOfficialOnly
         });
         processorList.push(lastestLKProcessor);
 
@@ -243,7 +233,8 @@ export class MainPageController {
         // stillLKProcessor.setConfig({
         //     showUserAction: true,
         //     offset,
-        //     date
+        //     date,
+        //     searchOfficialOnly
         // });
         // processorList.push(stillLKProcessor);
 
@@ -256,11 +247,15 @@ export class MainPageController {
         userRecProcessor.setConfig({
             showUserAction: true,
             offset,
-            date
+            date,
+            searchOfficialOnly
         });
         processorList.push(userRecProcessor);
 
         const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
+        emergencyPinProcessor.setConfig({
+            searchOfficialOnly
+        });
         const emergencyPinModel = await emergencyPinProcessor.process();
 
         const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
@@ -270,7 +265,8 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         objectiveProcessor.setConfig({
-            showUserAction: true
+            showUserAction: true,
+            searchOfficialOnly
         });
         const objectiveSectionModel = await objectiveProcessor.process();
 
@@ -282,7 +278,8 @@ export class MainPageController {
         });
         userFollowProcessor.setConfig({
             limit: 4,
-            showUserAction: true
+            showUserAction: true,
+            searchOfficialOnly
         });
         processorList.push(userFollowProcessor);
 
@@ -294,7 +291,8 @@ export class MainPageController {
         });
         userPageLookingProcessor.setConfig({
             limit: 2,
-            showUserAction: true
+            showUserAction: true,
+            searchOfficialOnly
         });
         processorList.push(userPageLookingProcessor);
 
@@ -1163,5 +1161,18 @@ export class MainPageController {
         }
 
         return userResult;
+    }
+
+    private async getMainPageSearchConfig(): Promise<any> {
+        const result: any = {
+            searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
+        };
+
+        const config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
+        if (config !== undefined && typeof config.value === 'boolean') {
+            result.searchOfficialOnly = config.value;
+        }
+
+        return result;
     }
 }
