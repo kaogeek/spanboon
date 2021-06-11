@@ -50,7 +50,9 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
+                
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -62,6 +64,10 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
 
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -109,10 +115,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     postIds.push(row._id.post);
                 }
 
-                const postStmt = [
+                const postStmt: any = [
                     { $match: { _id: { $in: postIds }, isDraft: false, deleted: false, hidden: false } },
-                    { $sample: { size: limit } }, // random post
-                    { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
@@ -121,6 +125,8 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                             as: 'page'
                         }
                     },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
                             from: 'User',
@@ -138,6 +144,11 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         }
                     }
                 ];
+
+                // overide search Official
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
 
                 // overide start datetime
                 const dateTimeAndArray = [];

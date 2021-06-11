@@ -37,9 +37,16 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
+
+                if (this.config !== undefined && this.config !== null) {
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
+                    }
+                }
 
                 const matchStmt: any = {
                 };
@@ -150,6 +157,19 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                                     }
                                 ];
+
+                                // overide search Official
+                                if (searchOfficialOnly) {
+                                    postStmt.splice(1, 0, {
+                                        $lookup: {
+                                            from: 'Page',
+                                            localField: 'pageId',
+                                            foreignField: '_id',
+                                            as: 'page'
+                                        }
+                                    });
+                                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                                }
                                 const postAggregate = await this.postsService.aggregate(postStmt);
                                 contentModel.post = postAggregate;
                             }
