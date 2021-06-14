@@ -14,6 +14,8 @@ import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
+import { DirtyComponent } from '../../DirtyComponent';
+import { Observable } from 'rxjs';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -22,7 +24,7 @@ const PAGE_NAME: string = '';
   selector: 'spanboon-main-page',
   templateUrl: './MainPage.component.html',
 })
-export class MainPage extends AbstractPage implements OnInit {
+export class MainPage extends AbstractPage implements OnInit ,DirtyComponent{
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -38,7 +40,8 @@ export class MainPage extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public user: any;
   public data: any;
-  public isDev: boolean = false;
+  public isDev: boolean = true;
+  public isDirty: boolean = false;
 
   public redirection: string;
 
@@ -92,9 +95,12 @@ export class MainPage extends AbstractPage implements OnInit {
     this.observManager.createSubject('scroll.buttom');
     this.observManager.createSubject('scroll.fix');
     this.observManager.createSubject('scroll');
-    this.observManager.createSubject('menu.click');
-  }
+    this.observManager.createSubject('menu.click'); 
+  } 
 
+  public canDeactivate() : boolean{
+    return this.isDirty
+  }
 
   public ngOnInit(): void {
     this.isLogin();
@@ -265,8 +271,7 @@ export class MainPage extends AbstractPage implements OnInit {
         dataName = this.user.uniqueId
       } else if (this.user.displayName) {
         dataName = this.user.displayName
-      }
-
+      } 
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;

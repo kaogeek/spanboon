@@ -223,6 +223,7 @@ export class PageObjectiveService {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = [];
+
                 if (pageObjectiveId === undefined || pageObjectiveId === null) {
                     resolve(result);
                     return;

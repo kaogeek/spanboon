@@ -1,7 +1,6 @@
 setTimeout(() => {
     window.scrollTo(0, 0);
     if (canvas) {
-
         var elms = document.querySelectorAll("[id='point']");
         var ctx = canvas.getContext("2d");
         canvas.height = document.getElementById('body').getBoundingClientRect().height
@@ -26,9 +25,9 @@ setTimeout(() => {
             ctx.lineWidth = 9;
             ctx.moveTo(stratXpoint, (stratYpoint - 60));
             ctx.lineTo(stratXpoint, ((stratYpoint - y) / 1.2) + y);
-            ctx.arcTo(stratXpoint, (((stratYpoint - y) / 2) + y), x, (((stratYpoint - y) / 2) + y), 50); // Create an arc
+            ctx.arcTo(stratXpoint, (((stratYpoint - y) / 2) + y), x, (((stratYpoint - y) / 2) + y), (x - stratXpoint) > 60 || (x - stratXpoint) < -60 ? 50 : 10); // Create an arc
             ctx.lineTo(((((stratXpoint - x) / 2) - (((stratXpoint - x) / 2) / 2)) + x), ((stratYpoint - y) / 2) + y);
-            ctx.arcTo(x, ((stratYpoint - y) / 2) + y, x, y, 50); // Create an arc
+            ctx.arcTo(x, ((stratYpoint - y) / 2) + y, x, y, (x - stratXpoint) > 60 || (x - stratXpoint) < -60 ? 50 : 10); // Create an arc
             ctx.lineTo(x, (y));
             ctx.stroke();
 

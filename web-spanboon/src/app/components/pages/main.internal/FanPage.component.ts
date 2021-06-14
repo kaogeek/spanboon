@@ -25,6 +25,8 @@ import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
+import { Observable } from 'rxjs';
+import { DirtyComponent } from '../../../../app/DirtyComponent';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -37,7 +39,7 @@ declare var $: any;
   selector: 'spanboon-fan-page',
   templateUrl: './FanPage.component.html',
 })
-export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestroy {
+export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestroy ,DirtyComponent  {
   private cacheConfigInfo: CacheConfigInfo;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -126,6 +128,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
+  public isDirty: boolean = false;
+
+  public canDeactivate() : boolean{  
+    return this.isDirty;
+  }
 
   private coverImageoldValue = 50;
   public index: number;
@@ -164,7 +171,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
 
-    this.mySubscription = this.router.events.subscribe((event) => {
+    this.mySubscription = this.router.events.subscribe((event) => { 
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const pathUrlPost = url.split('/')[1];
@@ -193,7 +200,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
           if (!this.msgPageNotFound) {
             if (splitTpye !== undefined && splitTpye !== null) {
-              this.splitTpyeClone = splitTpye
+              this.splitTpyeClone = splitTpye 
               this.initPage(splitTpye);
             } else {
               this.splitTpyeClone = 'timeline'
@@ -208,7 +215,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         } else if (pathUrlPost === 'post') {
           this.CheckPost = false;
           this.searchPostById(postId);
-        }
+        } 
       }
     });
 
@@ -260,8 +267,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }, 1000);
         }
       }
-    });
-  }
+    });  
+  }  
 
   public ngOnDestroy() {
     if (this.mySubscription) {
@@ -805,9 +812,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public linkDataType(link: any) {
     if (link === 'BACK') {
       this.resDataPost = null
-      this.isPost = false
+      this.isPost = false 
       this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline');
-    } else {
+    } else {   
+      this.isDirty = true;
       this.isLoadingClickTab = true;
       this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword);
     }
@@ -837,7 +845,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
           }
         }
-        this.resDataPage = res.data;
+        this.resDataPage = res.data; 
         if (this.resDataPage && this.resDataPage.name) {
           this.name = this.resDataPage.name
         } else if (this.resDataPage && this.resDataPage.pageUsername) {

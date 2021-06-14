@@ -28,6 +28,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -35,6 +36,10 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                     if (typeof this.config.offset === 'number') {
                         offset = this.config.offset;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -90,6 +95,14 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                 const postStmt = [
                     { $match: postMatchStmt },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
@@ -100,14 +113,6 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                             localField: '_id',
                             foreignField: 'post',
                             as: 'gallery'
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
-                            as: 'page'
                         }
                     },
                     {
@@ -125,8 +130,12 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                     }
                 ];
-                const postAggregate = await this.postsService.aggregate(postStmt);
 
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
+                
+                const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในเดือนนี้' : this.config.title;
