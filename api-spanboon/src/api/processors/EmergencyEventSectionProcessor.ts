@@ -30,6 +30,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -37,6 +38,10 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                     if (typeof this.config.offset === 'number') {
                         offset = this.config.offset;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -82,10 +87,23 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 }
 
                 // post count
-                const postCountStmt = [
-                    { $match: { emergencyEvent: { $in: emerEventIds } } },
-                    { $group: { _id: '$emergencyEvent', count: { $sum: 1 }, commentCount: { $sum: '$commentCount' }, repostCount: { $sum: '$repostCount' }, shareCount: { $sum: '$shareCount' }, viewCount: { $sum: '$viewCount' }, likeCount: { $sum: '$likeCount' } } }
-                ];
+                const postCountStmt = [];
+                postCountStmt.push({ $match: { emergencyEvent: { $in: emerEventIds } } });
+
+                if (searchOfficialOnly) {
+                    postCountStmt.push({
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    });
+                    postCountStmt.push({ $match: { 'page.isOfficial': true } });
+                }
+
+                postCountStmt.push({ $group: { _id: '$emergencyEvent', count: { $sum: 1 }, commentCount: { $sum: '$commentCount' }, repostCount: { $sum: '$repostCount' }, shareCount: { $sum: '$shareCount' }, viewCount: { $sum: '$viewCount' }, likeCount: { $sum: '$likeCount' } } });
+
                 const groupResult = await this.postsService.aggregate(postCountStmt);
                 const hashtagCountMap = {};
                 for (const item of groupResult) {

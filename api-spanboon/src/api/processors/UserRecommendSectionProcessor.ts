@@ -44,6 +44,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
 
                 if (this.config !== undefined && this.config !== null) {
@@ -57,6 +58,10 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -109,10 +114,6 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $sample: { size: limit } }, // random post
-                    { $sort: { createdDate: -1 } },
-                    { $skip: offset },
-                    { $limit: 4 },
                     {
                         $lookup: {
                             from: 'Page',
@@ -121,6 +122,10 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                             as: 'page'
                         }
                     },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: 4 },
                     {
                         $lookup: {
                             from: 'User',
@@ -154,6 +159,12 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         }
                     }
                 ];
+
+                // overide search Official
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
+
                 const searchResult = await this.postsService.aggregate(postStmt);
 
                 let lastestDate = null;

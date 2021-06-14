@@ -454,6 +454,62 @@
                             align-items: center;
                         }
                     }
+
+                    > .objective_start_card {
+                        width: calc(100%);
+                        padding: 60px 30px;
+                        display: flex;
+                        > .left {
+                            width: 50%;
+                            height: 100%;
+                            // background-color: blueviolet;
+                            > .body {
+                                margin-top: 50px;
+                            }
+                        }
+                        > .right {
+                            width: calc(50%);
+                            height: 100%;
+                            padding: 30px;
+                            > .body {
+                                width: 100%;
+                                margin-top: 50px;
+                                > .top {
+                                    background-color: white;
+                                    padding: 30px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-9($font-head-300);
+                                    }
+                                }
+                                > .post {
+                                    display: flex;
+                                    flex-direction: column;
+                                    padding: 30px;
+                                    > .head {
+                                        > .type {
+                                            > .point {
+                                            }
+                                            > .type_name {
+                                                @include font-size-11($font-head-300);
+                                            }
+                                        }
+                                    }
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .detail {
+                                        margin-top: 30px;
+                                        @include font-size-9($font-head-300);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

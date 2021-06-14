@@ -73,7 +73,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public async ngOnInit(): Promise<void> {
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
         this.setData();
-
     }
 
     public setData(): void {
