@@ -48,28 +48,28 @@ export const APP_ROUTES: Routes = [
         path: HomePageV2.PAGE_NAME,
         component: HomePageV2,
       },
-      // {
-      //   path: ProfilePage.PAGE_NAME + "/:id",
-      //   component: ProfilePage,
-      //   children: [
-      //     {
-      //       path: "post/:postId",
-      //       component: ProfilePage,
-      //     },
-      //     {
-      //       path: 'timeline',
-      //       component: ProfilePage,
-      //     },
-      //     {
-      //       path: 'general',
-      //       component: ProfilePage,
-      //     },
-      //     {
-      //       path: 'fulfillment',
-      //       component: ProfilePage,
-      //     },
-      //   ]
-      // },
+      {
+        path: ProfilePage.PAGE_NAME + "/:id",
+        component: ProfilePage,
+        children: [
+          {
+            path: "post/:postId",
+            component: ProfilePage,
+          },
+          {
+            path: 'timeline',
+            component: ProfilePage,
+          },
+          {
+            path: 'general',
+            component: ProfilePage,
+          },
+          {
+            path: 'fulfillment',
+            component: ProfilePage,
+          },
+        ]
+      },
       {
         path: FanPage.PAGE_NAME + "/:id",
         component: FanPage, 
@@ -101,143 +101,143 @@ export const APP_ROUTES: Routes = [
           },
         ]
       },
-      // // {
-      // //   path: PostPage.PAGE_NAME + "/:postId",
-      // //   component: PostPage,
-      // // },
       // {
-      //   path: "post/:postId",
-      //   component: FanPage,
+      //   path: PostPage.PAGE_NAME + "/:postId",
+      //   component: PostPage,
       // },
+      {
+        path: "post/:postId",
+        component: FanPage,
+      },
+      {
+        path: StoryPage.PAGE_NAME + "/:postId",
+        component: StoryPage
+      },
+      {
+        path: FanPage.PAGE_NAME + "/:id/settings",
+        component: SettingsFanPage,
+        children: [
+          {
+            path: 'account',
+            component: AboutPage,
+          },
+          {
+            path: 'roles',
+            component: SettingsAdminRoles,
+          },
+          {
+            path: 'connect',
+            component: SecurityInfo,
+          },
+        ]
+      },
+      {
+        path: SettingAccount.PAGE_NAME + "/settings",
+        component: SettingAccount,
+      },
+      {
+        path: ObjectiveTimeline.PAGE_NAME,
+        component: ObjectiveTimeline,
+      },
+      {
+        path: EmergencyEventTimeline.PAGE_NAME,
+        component: EmergencyEventTimeline,
+      },
       // {
-      //   path: StoryPage.PAGE_NAME + "/:postId",
-      //   component: StoryPage
-      // },
-      // {
-      //   path: FanPage.PAGE_NAME + "/:id/settings",
-      //   component: SettingsFanPage,
+      //   path: SettingsFanPage.PAGE_NAME,
+      //   component: SettingsFanPage,      
       //   children: [
       //     {
-      //       path: 'account',
-      //       component: AboutPage,
-      //     },
-      //     {
-      //       path: 'roles',
-      //       component: SettingsAdminRoles,
-      //     },
-      //     {
-      //       path: 'connect',
-      //       component: SecurityInfo,
-      //     },
-      //   ]
-      // },
-      // {
-      //   path: SettingAccount.PAGE_NAME + "/settings",
-      //   component: SettingAccount,
-      // },
-      // {
-      //   path: ObjectiveTimeline.PAGE_NAME,
-      //   component: ObjectiveTimeline,
-      // },
-      // {
-      //   path: EmergencyEventTimeline.PAGE_NAME,
-      //   component: EmergencyEventTimeline,
-      // },
-      // // {
-      // //   path: SettingsFanPage.PAGE_NAME,
-      // //   component: SettingsFanPage,      
-      // //   children: [
-      // //     {
-      // //       path: '**',
-      // //       component: SettingsFanPage,
-      // //     }
-      // //   ]
-      // // }, 
-      // {
-      //   path: PageHashTag.PAGE_NAME,
-      //   component: PageHashTag,
-      //   children: [
-      //     {
-      //       path: PageHashTag.PAGE_NAME + "/hashtag",
-      //       component: PageHashTag,
-      //       children: [
-      //         {
-      //           path: '**',
-      //           component: PageHashTag,
-      //         }
-      //       ]
-      //     },
-      //   ]
-      // },
-
-      // {
-      //   path: PageRecommended.PAGE_NAME,
-      //   component: PageRecommended,
-      // },
-      // // {
-      // //   path: PageRecommended.PAGE_NAME + "/:recomend",
-      // //   component: PageRecommended,
-      // // }, 
-      // {
-      //   path: LoginPage.PAGE_NAME,
-      //   component: LoginPage,
-      // },
-      // {
-      //   path: forgotPasswordPage.PAGE_NAME,
-      //   component: forgotPasswordPage,
-      // },
-      // {
-      //   path: RegisterPage.PAGE_NAME,
-      //   component: RegisterPage,
-      // },
-      // {
-      //   path: TestComponent.PAGE_NAME,
-      //   component: TestComponent,
-      // },
-      // {
-      //   path: RegisterPageTestComponent.PAGE_NAME,
-      //   component: RegisterPageTestComponent
-      // },
-      // {
-      //   path: MenuRegister.PAGE_NAME,
-      //   component: MenuRegister,
-      //   children: [
-      //     {
-      //       path: RegisterPage.PAGE_NAME,
-      //       component: RegisterPage,
-      //     },
-      //   ]
-      // },
-      // {
-      //   path: RegisterPage.PAGE_NAME,
-      //   component: RegisterPage,
-      // },
-      // {
-      //   path: Policy.PAGE_NAME,
-      //   component: Policy,
-      // },
-      // {
-      //   path: FulfillPage.PAGE_NAME,
-      //   component: FulfillPage,
-      //   children: [
-      //     {
-      //       path: ':fulfillId',
-      //       component: FulfillPage
+      //       path: '**',
+      //       component: SettingsFanPage,
       //     }
       //   ]
-      // },
-      // // {
-      // //   path: FulfillPage.PAGE_NAME + "/:fulfillId",
-      // //   component: FulfillPage
-      // // },
+      // }, 
+      {
+        path: PageHashTag.PAGE_NAME,
+        component: PageHashTag,
+        children: [
+          {
+            path: PageHashTag.PAGE_NAME + "/hashtag",
+            component: PageHashTag,
+            children: [
+              {
+                path: '**',
+                component: PageHashTag,
+              }
+            ]
+          },
+        ]
+      },
+
+      {
+        path: PageRecommended.PAGE_NAME,
+        component: PageRecommended,
+      },
       // {
-      //   path: Redirect.PAGE_NAME,
-      //   component: Redirect,
-      // },
+      //   path: PageRecommended.PAGE_NAME + "/:recomend",
+      //   component: PageRecommended,
+      // }, 
+      {
+        path: LoginPage.PAGE_NAME,
+        component: LoginPage,
+      },
+      {
+        path: forgotPasswordPage.PAGE_NAME,
+        component: forgotPasswordPage,
+      },
+      {
+        path: RegisterPage.PAGE_NAME,
+        component: RegisterPage,
+      },
+      {
+        path: TestComponent.PAGE_NAME,
+        component: TestComponent,
+      },
+      {
+        path: RegisterPageTestComponent.PAGE_NAME,
+        component: RegisterPageTestComponent
+      },
+      {
+        path: MenuRegister.PAGE_NAME,
+        component: MenuRegister,
+        children: [
+          {
+            path: RegisterPage.PAGE_NAME,
+            component: RegisterPage,
+          },
+        ]
+      },
+      {
+        path: RegisterPage.PAGE_NAME,
+        component: RegisterPage,
+      },
+      {
+        path: Policy.PAGE_NAME,
+        component: Policy,
+      },
+      {
+        path: FulfillPage.PAGE_NAME,
+        component: FulfillPage,
+        children: [
+          {
+            path: ':fulfillId',
+            component: FulfillPage
+          }
+        ]
+      },
       // {
-      //   path: Redirect.PAGE_NAME + ':id',
-      //   component: Redirect,
+      //   path: FulfillPage.PAGE_NAME + "/:fulfillId",
+      //   component: FulfillPage
       // },
+      {
+        path: Redirect.PAGE_NAME,
+        component: Redirect,
+      },
+      {
+        path: Redirect.PAGE_NAME + ':id',
+        component: Redirect,
+      },
     ]
   },
   {
