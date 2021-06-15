@@ -9,12 +9,18 @@
     <div style="height: 100%;" class="body-cover-image loading"></div>
 </ng-container>
 <ng-template #elseIsLoading>
-    <ng-container *ngIf="base64; else elseHasImage">
-        <img [ngClass]="class" src="{{base64}}" (click)="showDialogGallery(base64)">
+    <ng-container *ngIf="base64; else elseHasImage"> 
+        <!-- <img [ngClass]="class" src="{{base64}}" (click)="showDialogGallery(base64)"> -->
+        <a class="glightbox sub-image" data-type="image"> 
+            <img [ngClass]="class" src="{{base64}}" alt="image" />
+        </a>
     </ng-container>
     <ng-template #elseHasImage>
         <div [ngClass]="class" [class.image-file-waste]="!base64" (click)="showDialogGallery(base64)">
-            <img src="../../../../assets/img/photo.png" alt="" style="width: 30%; height: auto;">
+            <!-- <img src="../../../../assets/img/photo.png" alt="" style="width: 30%; height: auto;"> -->
+            <a href="../../../../assets/img/photo.png" class="glightbox">
+                <img src="../../../../assets/img/photo.png" alt="image" style="width: 30%; height: auto;"/>
+            </a>
         </div>
     </ng-template>
 </ng-template>
