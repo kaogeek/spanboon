@@ -32,9 +32,9 @@ setTimeout(() => {
             ctx.stroke();
 
             stratXpoint = x;
-            stratYpoint = (y + position.height);
+            stratYpoint = y;
 
         }
     }
 
-}, 3000);
+}, 7000);

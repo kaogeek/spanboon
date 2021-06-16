@@ -194,7 +194,7 @@
         align-items: center;
         flex-direction: column;
         > .body {
-            width: 80%;
+            width: 100%;
             margin-top: 100px;
             display: flex;
             align-content: center;
@@ -208,7 +208,6 @@
                 justify-content: center;
                 flex-direction: column;
                 position: relative;
-                margin-bottom: 100px;
                 > .head {
                     width: 100%;
                     position: relative;
@@ -466,13 +465,83 @@
                         > .left {
                             width: 50%;
                             height: 100%;
-                            // background-color: blueviolet;
+                            display: flex;
+                            align-content: center;
+                            justify-content: center;
+                            align-items: center;
                             > .body {
-                                margin-top: 50px;
-                                display: flex;
-                                align-content: center;
-                                justify-content: center;
-                                align-items: center;
+                                width: 80%;
+                                > .top {
+                                    background-color: white;
+                                    border-radius: 10px;
+                                    overflow: hidden;
+                                    padding: 30px;
+                                    display: flex;
+                                    text-align: center;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-3($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-6($font-head-300);
+                                    }
+                                }
+                                > .post {
+                                    display: flex;
+                                    flex-direction: column;
+                                    padding: 30px;
+                                    > .head {
+                                        display: flex;
+                                        margin-bottom: 10px;
+                                        > .type {
+                                            display: flex;
+                                            align-content: center;
+                                            align-items: center;
+                                            > .point {
+                                                width: 15px;
+                                                height: 15px;
+                                                border-radius: 50%;
+                                                margin: 0px 10px 0px 0px;
+                                                background-color: $status-post-need;
+                                            }
+                                            > .type_name {
+                                                opacity: 0.2;
+                                                @include font-size-8($font-head-500);
+                                            }
+                                        }
+                                        > .drot {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                            margin: 0 5pt;
+                                        }
+                                        > .createdDate {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                        }
+                                    }
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .detail {
+                                        margin-top: 30px;
+                                        @include font-size-9($font-head-300);
+                                    }
+                                    > .buttom {
+                                        margin-top: 30px;
+                                        > .botton {
+                                            @include font-size-9($font-head-300);
+                                            padding: 15px;
+                                            background-color: #fd5454;
+                                            color: white;
+                                            width: 120px;
+                                            display: flex;
+                                            align-content: center;
+                                            justify-content: center;
+                                            align-items: center;
+                                            border-radius: 30px;
+                                        }
+                                    }
+                                }
                             }
                         }
                         > .right {
@@ -530,11 +599,48 @@
                                         }
                                     }
                                     > .title {
-                                        @include font-size-5($font-head-500);
+                                        @include font-size-3($font-head-500);
                                     }
                                     > .detail {
                                         margin-top: 30px;
-                                        @include font-size-9($font-head-300);
+                                        @include font-size-7($font-content-light);
+                                        line-height: 40px;
+                                    }
+                                    > .buttom {
+                                        margin-top: 30px;
+                                        display: flex;
+                                        > .botton {
+                                            @include font-size-7($font-head-500);
+                                            padding: 10px;
+                                            background-color: #fd5454;
+                                            height: 40px;
+                                            color: white;
+                                            width: 180px;
+                                            display: flex;
+                                            align-content: center;
+                                            justify-content: center;
+                                            align-items: center;
+                                            border-radius: 30px;
+                                            cursor: pointer;
+                                        }
+                                        > .score {
+                                            margin-left: 40pt;
+                                            display: flex;
+                                            > .score-type {
+                                                display: flex;
+                                                margin-right: 50px;
+                                                flex-direction: column;
+                                                align-content: center;
+                                                justify-content: center;
+                                                align-items: center;
+                                                > .title {
+                                                    @include font-size-5($font-head-500);
+                                                }
+                                                > .disiption {
+                                                    @include font-size-9($font-head-400);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -563,9 +669,26 @@
                                 justify-content: center;
                                 align-content: center;
                                 align-items: center;
+                                width: 80%;
                                 > .post {
                                     width: 35%;
                                     margin: 5px;
+                                    > post-data {
+                                        .card-feed-post > .wrapper-content > .title {
+                                            font-size: 15pt;
+                                            font-family: "Kanit-500";
+                                            line-height: 26px;
+                                            height: 60px;
+                                        }
+                                        .card-feed-post > .wrapper-content > .content {
+                                            white-space: pre-wrap;
+                                            color: #212721;
+                                            font-size: 11pt;
+                                            font-family: "Sarabun-Light";
+                                            min-height: unset;
+                                            height: 100px;
+                                        }
+                                    }
                                 }
                             }
                         }
