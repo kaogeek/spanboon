@@ -319,6 +319,7 @@
 
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
+        <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
     <div class="topic-name" [class.active]="itemPost.referencePostObject"
         *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
