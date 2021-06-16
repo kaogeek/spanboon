@@ -38,6 +38,7 @@
         "angularx-social-login": "^3.2.2",
         "font-awesome": "^4.7.0",
         "gapi": "0.0.3",
+        "glightbox": "^3.0.9",
         "hammerjs": "^2.0.8",
         "jquery": "^3.5.1",
         "jquery.caret": "^0.3.1",

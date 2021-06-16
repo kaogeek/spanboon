@@ -22,8 +22,7 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config'; 
-import { DirtyComponent } from '../../../app/DirtyComponent';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';  
 
 declare var $: any;
 declare const window: any;
@@ -36,7 +35,7 @@ const TEXT_LIMIT: number = 230;
   selector: 'box-post',
   templateUrl: './BoxPost.component.html'
 })
-export class BoxPost extends AbstractPage implements OnInit ,DirtyComponent {
+export class BoxPost extends AbstractPage implements OnInit  {
 
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
@@ -135,6 +134,8 @@ export class BoxPost extends AbstractPage implements OnInit ,DirtyComponent {
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public selectedInformation: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public changeText: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -314,12 +315,7 @@ export class BoxPost extends AbstractPage implements OnInit ,DirtyComponent {
     // }).catch((error: any) => {
     //   // console.log(error) 
     // }); 
-  }
-
-  public canDeactivate() : boolean {
-    console.log('boxPost')
-    return this.isDirty;
-  }
+  } 
 
   public ngOnInit(): void {
     this.searchAccessPage();
@@ -1226,7 +1222,7 @@ export class BoxPost extends AbstractPage implements OnInit ,DirtyComponent {
     // } else {
     //   $('.header-story').removeClass('msg-error-shake');
     // }
-    this.isDirty = true; 
+    this.changeText.emit(true); 
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
       if (this.mStory === "") {

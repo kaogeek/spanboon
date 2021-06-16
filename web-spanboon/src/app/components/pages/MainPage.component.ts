@@ -13,8 +13,7 @@ import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
-import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
-import { DirtyComponent } from '../../DirtyComponent';
+import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service'; 
 import { Observable } from 'rxjs';
 
 declare var $: any;
@@ -24,7 +23,7 @@ const PAGE_NAME: string = '';
   selector: 'spanboon-main-page',
   templateUrl: './MainPage.component.html',
 })
-export class MainPage extends AbstractPage implements OnInit ,DirtyComponent{
+export class MainPage extends AbstractPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -96,11 +95,7 @@ export class MainPage extends AbstractPage implements OnInit ,DirtyComponent{
     this.observManager.createSubject('scroll.fix');
     this.observManager.createSubject('scroll');
     this.observManager.createSubject('menu.click'); 
-  } 
-
-  public canDeactivate() : boolean{
-    return this.isDirty
-  }
+  }  
 
   public ngOnInit(): void {
     this.isLogin();
