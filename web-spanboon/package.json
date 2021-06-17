@@ -36,6 +36,7 @@
         "angular-mentions": "^1.2.0",
         "angular-ng-autocomplete": "^2.0.1",
         "angularx-social-login": "^3.2.2",
+        "aos": "^3.0.0-beta.6",
         "font-awesome": "^4.7.0",
         "gapi": "0.0.3",
         "glightbox": "^3.0.9",
