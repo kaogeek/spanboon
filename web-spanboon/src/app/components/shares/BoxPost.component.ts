@@ -22,9 +22,7 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
-import { cpuUsage } from 'process';
-import { F } from '@angular/cdk/keycodes';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';  
 
 declare var $: any;
 declare const window: any;
@@ -37,7 +35,7 @@ const TEXT_LIMIT: number = 230;
   selector: 'box-post',
   templateUrl: './BoxPost.component.html'
 })
-export class BoxPost extends AbstractPage implements OnInit {
+export class BoxPost extends AbstractPage implements OnInit  {
 
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
@@ -136,6 +134,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public selectedInformation: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public changeText: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -245,6 +245,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   tag: Observable<string[]>;
   filtered: any;
   dataSource = new MatTableDataSource(this.resHashTag);
+  public isDirty: boolean =  false;
 
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
@@ -305,10 +306,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isButtonFulfill = false;
     this.isSelectOption = true;
     this.router = router;
-    this.data = {};
-
-    this.observManager.subscribe('authen.check', (data) => {
-    });
+    this.data = {}; 
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {
@@ -317,7 +315,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     // }).catch((error: any) => {
     //   // console.log(error) 
     // }); 
-  }
+  } 
 
   public ngOnInit(): void {
     this.searchAccessPage();
@@ -605,10 +603,16 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public updateText() {
-    document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake' || evt.srcElement.className === 'textarea-editor msg-error-shake'
-        || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake') {
-        evt.preventDefault();
+    const detail = document.getElementById(this.prefix && this.prefix.detail ? this.prefix.detail + 'editableStoryPost' : 'editableStoryPost');
+    const header = document.getElementById(this.prefix && this.prefix.header ? this.prefix.header + 'topic' : 'topic');
+    this.replaceContenteditable(detail);
+    this.replaceContenteditable(header);
+  }
+
+  public replaceContenteditable(element) {
+    element.addEventListener('paste', (evt: any) => {
+      evt.preventDefault();
+      if (evt.srcElement.className) {
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
         document.execCommand('insertText', false, text);
@@ -1218,15 +1222,23 @@ export class BoxPost extends AbstractPage implements OnInit {
     // } else {
     //   $('.header-story').removeClass('msg-error-shake');
     // }
-
+    this.changeText.emit(true); 
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
       if (this.mStory === "") {
         var myselect = $('#topic').attr('contenteditable', 'true');
         myselect.find("br:last-child").remove();
-        $('.header-story').addClass('msg-error-shake');
-      } else {
-        // $('.header-story').removeClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.header + 'topic').addClass('msg-error-shake');
+        } else {
+          $('#topic').addClass('msg-error-shake');
+        }
+      } else { 
+        if (this.prefix) {
+          $('#' + this.prefix.header + 'topic').removeClass('msg-error-shake');
+        } else {
+          $('#topic').removeClass('msg-error-shake');
+        }
       }
     }
     if (this.isListPage) {
@@ -1253,13 +1265,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onKeyup(event) {
+    this.isDirty = true;
     clearTimeout(this.setTimeKeyup);
     this.setTimeKeyup = setTimeout(() => {
       $('.list-add-hashtaggg').click((dom) => {
         this.clickAddHashtag(dom.target.innerText);
       });
-      this.getTextLength();
-
+      this.getTextLength(); 
     }, 200);
 
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
@@ -1267,9 +1279,17 @@ export class BoxPost extends AbstractPage implements OnInit {
       if (this.mTopic.trim() === "") {
         var myselect = $('#editableStoryPost').attr('contenteditable', 'true');
         myselect.find("br:last-child").remove();
-        $('.textarea-editor').addClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.detail + 'editableStoryPost').addClass('msg-error-shake');
+        } else {
+          $('#editableStoryPost').addClass('msg-error-shake');
+        }
       } else {
-        $('.textarea-editor').removeClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.detail + 'editableStoryPost').removeClass('msg-error-shake');
+        } else {
+          $('#editableStoryPost').removeClass('msg-error-shake');
+        }
       }
     }
     this.postFacade.nextMessage(this.mTopic);

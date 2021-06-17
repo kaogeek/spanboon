@@ -20,6 +20,7 @@ import { environment } from '../../../../environments/environment';
 import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
 import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
+import Glightbox from 'glightbox';
 
 @Component({
   selector: 'post-data',
@@ -452,17 +453,21 @@ export class PostData {
   }
 
   public showDialogGallery(imageGallery) {
-    const dialogRef = this.dialog.open(DialogMedia, {
-      width: 'auto',
-      data: imageGallery,
-      disableClose: true,
+    var lightbox = Glightbox(); 
+    let arrayImage = []
+    for (let galleryImage of imageGallery.gallerys) { 
+      arrayImage.push({
+        href: galleryImage.galleryBase64, 
+        type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
+      },)
+    }
+    lightbox.setElements(arrayImage); 
+    lightbox.openAt(imageGallery.index);  
+    lightbox.on('open', (target) => { 
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-      }
-      this.stopLoading();
-    });
+    lightbox.on('close', (target) => {
+      lightbox.destroy();
+    });    
   }
 
   private stopLoading(): void {

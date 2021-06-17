@@ -94,6 +94,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public userCloneDatas: any
   public Tab: boolean = true;
   public CheckPost: boolean = true;
+  public isPostLoading: boolean = false;
 
   private coverImageoldValue = 50;
 
@@ -358,6 +359,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public createPost(value) {
     if (value.title) {
+      this.isPostLoading = true;
       this.pageFacade.createPost(null, value).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
@@ -553,10 +555,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           this.isLoadingPost = false;
           this.isLoadingClickTab = false;
         }, 1500);
+        this.isPostLoading = false;
       } else {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
+        this.isPostLoading = false;
         if (offset) {
           this.resPost = [];
         }
