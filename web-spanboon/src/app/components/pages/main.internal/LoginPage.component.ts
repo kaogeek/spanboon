@@ -336,7 +336,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public onClickLogin() {
     let body = {
-      email: this.email.nativeElement.value,
+      email: this.email.nativeElement.value.toLowerCase(),
       password: this.password.nativeElement.value
     }
     let mode = "EMAIL"
