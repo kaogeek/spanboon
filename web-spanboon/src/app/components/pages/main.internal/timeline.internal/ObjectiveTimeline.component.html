@@ -263,7 +263,7 @@
                                         <div class="item">
                                             <span class="title">สิ่งที่กำลังมองหา</span>
                                             <div class="needs">
-                                                <!-- <div class="list-needs"
+                                                <div class="list-needs"
                                                     *ngFor="let item of item.post.needs | slice:0:4; let index = index">
                                                     <div class="needs">
                                                         <img class="img-items" *ngIf="!item.imageURL"
@@ -317,11 +317,20 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div> -->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked"
+                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="40" data-aos-duration="500"
+                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
+                            data-aos-anchor-placement="top-center">
+                            <div class="body">
+                                COMING SOON
                             </div>
                         </div>
 
