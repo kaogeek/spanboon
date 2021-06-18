@@ -194,8 +194,69 @@
                             data-aos-easing="ease-in-out" data-aos-mirror="true" data-aos-once="false"
                             data-aos-anchor-placement="top-center">
                             <div class="left">
+                                <div class="body">
+                                    <div class="top">
+                                        <span class="title">{{item.title}}</span>
+                                        <span class="sub_title">{{item.subTitle}}</span>
+                                    </div>
+                                    <div class="post">
+                                        <div class="head">
+                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
+                                                <div class="point"></div>
+                                                <div class="type_name">
+                                                    <span>มองหา</span>
+                                                </div>
+                                            </div>
+                                            <span class="drot">•</span>
+                                            <span class="createdDate">
+                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        fill="black" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        fill="black" />
+                                                </svg>
+                                                {{item.post.createdDate | dateFormat}}
+                                            </span>
+                                        </div>
+                                        <div class="title" [innerHTML]="item.post.title"></div>
+                                        <div class="detail" [innerHTML]="item.post.detail"></div>
+                                        <div class="buttom">
+                                            <div class="botton">
+                                                <span>ไปที่โพสต์</span>
+                                                <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
+                                                    width="15pt" viewBox="0 -22 512 511"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="white"
+                                                        d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                </svg>
+                                            </div>
+                                            <div class="score">
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">การพูดถึง</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">บอกต่อ</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">ถูกใจ</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">แชร์</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="right">
                                 <div class="body" id="point">
-
                                     <div class="needs-card">
                                         <div class="item">
                                             <span class="title">สิ่งที่กำลังมองหา</span>
@@ -254,68 +315,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="right">
-                                <div class="body">
-                                    <div class="top">
-                                        <span class="title">{{item.title}}</span>
-                                        <span class="sub_title">{{item.subTitle}}</span>
-                                    </div>
-                                    <div class="post">
-                                        <div class="head">
-                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
-                                                <div class="point"></div>
-                                                <div class="type_name">
-                                                    <span>มองหา</span>
-                                                </div>
-                                            </div>
-                                            <span class="drot">•</span>
-                                            <span class="createdDate">
-                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                        fill="black" />
-                                                    <path
-                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                        fill="black" />
-                                                </svg>
-                                                {{item.post.createdDate | dateFormat}}
-                                            </span>
-                                        </div>
-                                        <div class="title" [innerHTML]="item.post.title"></div>
-                                        <div class="detail" [innerHTML]="item.post.detail"></div>
-                                        <div class="buttom">
-                                            <div class="botton">
-                                                <span>ไปที่โพสต์</span>
-                                                <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
-                                                    width="15pt" viewBox="0 -22 512 511"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill="white"
-                                                        d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
-                                                </svg>
-                                            </div>
-                                            <div class="score">
-                                                <div class="score-type">
-                                                    <span class="title">0</span>
-                                                    <span class="disiption">การพูดถึง</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span class="title">0</span>
-                                                    <span class="disiption">บอกต่อ</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span class="title">0</span>
-                                                    <span class="disiption">ถูกใจ</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span class="title">0</span>
-                                                    <span class="disiption">แชร์</span>
                                                 </div>
                                             </div>
                                         </div>
