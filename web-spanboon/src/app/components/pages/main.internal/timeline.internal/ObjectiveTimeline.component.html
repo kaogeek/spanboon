@@ -190,11 +190,10 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_start_card" data-aos="fade-up"
-                            data-aos-offset="20" data-aos-delay="40" data-aos-duration="500"
-                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
-                            data-aos-anchor-placement="top-center">
-                            <div class="left">
+                        <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_start_card">
+                            <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="50"
+                                data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
                                 <div class="body">
                                     <div class="top">
                                         <span class="title">{{item.title}}</span>
@@ -256,13 +255,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="right">
+                            <div class="right" data-aos="fade-up" data-aos-offset="20" data-aos-delay="40"
+                                data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
                                 <div class="body" id="point">
                                     <div class="needs-card">
                                         <div class="item">
                                             <span class="title">สิ่งที่กำลังมองหา</span>
                                             <div class="needs">
-                                                <div class="list-needs"
+                                                <!-- <div class="list-needs"
                                                     *ngFor="let item of item.post.needs | slice:0:4; let index = index">
                                                     <div class="needs">
                                                         <img class="img-items" *ngIf="!item.imageURL"
@@ -316,7 +317,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
