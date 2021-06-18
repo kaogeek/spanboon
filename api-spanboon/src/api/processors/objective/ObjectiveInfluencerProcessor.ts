@@ -40,10 +40,10 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $lte: endDateTime } });
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
@@ -80,7 +80,7 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { objective: objectiveId } },
+                        { $match: { 'posts.objective': objectiveId } },
                         { $group: { _id: '$user', count: { $sum: 1 } } },
                         {
                             $project: {
