@@ -241,222 +241,6 @@
                     display: flex;
                     align-content: center;
                     justify-content: center;
-                    > .needs-card {
-                        margin: 80px 0px;
-                        display: flex;
-                        > .item {
-                            width: 50%;
-                            display: flex;
-                            flex-direction: column;
-                            align-content: center;
-                            justify-content: center;
-                            align-items: center;
-                            > .title {
-                                @include font-size-5($font-head-500);
-                                color: $status-post-fulfill;
-                                padding-left: 40%;
-                            }
-
-                            > .needs {
-                                width: 80%;
-                                margin: 30px 0px;
-                                display: inline-flex;
-                                flex-wrap: wrap;
-                                align-content: center;
-                                justify-content: center;
-                                align-items: center;
-                                .list-needs {
-                                    position: relative;
-                                    border: 0.7px solid #e5e5e5;
-                                    border-radius: 4px;
-                                    overflow: hidden;
-                                    width: 200px;
-                                    margin: 10px;
-
-                                    .cl {
-                                        width: 20px;
-                                        height: 20px;
-                                        right: 7px;
-                                        top: 7px;
-                                        position: absolute;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        z-index: 10;
-                                        transition: 0.2s;
-                                        @include pointer();
-
-                                        &:hover {
-                                            fill: $brandcolor2;
-                                        }
-
-                                        > .icon-clear {
-                                            font-weight: 900;
-                                        }
-                                    }
-
-                                    .needs {
-                                        display: grid;
-                                        justify-content: center;
-                                        align-content: center;
-                                        position: relative;
-                                        background: #f9f9f9;
-                                        // background: $bg-fog-gray2;
-                                        padding: 15pt 0;
-
-                                        > .img-items {
-                                            width: 50pt;
-                                            height: 50pt;
-                                            border-radius: 50%;
-                                            object-fit: cover;
-                                        }
-                                    }
-
-                                    .needs-data {
-                                        padding: 10pt;
-                                        background: white;
-                                        &.active {
-                                            display: flex;
-                                            flex-direction: column;
-                                        }
-                                        div {
-                                            &.active {
-                                                display: flex;
-                                                justify-content: space-between;
-                                            }
-                                            .needs-data-h {
-                                                .text-h {
-                                                    @include font-size-10($font-head-500);
-                                                    line-height: 15px;
-                                                    color: #717886;
-                                                    display: -webkit-box;
-                                                    -webkit-line-clamp: 1;
-                                                    -webkit-box-orient: vertical;
-                                                    overflow: hidden;
-                                                    margin: 5pt 0;
-                                                }
-                                            }
-
-                                            .needs-data-body {
-                                                width: 100%;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: space-between;
-
-                                                &.active {
-                                                    width: unset;
-                                                    flex: 0 0 auto;
-                                                }
-                                                .unit {
-                                                    flex: 1 1 0%;
-                                                    margin-right: 10pt;
-
-                                                    &.active {
-                                                        margin-right: unset;
-                                                        .unit-box {
-                                                            display: flex;
-                                                            align-items: baseline;
-                                                            justify-content: flex-end;
-                                                            margin-right: unset;
-                                                            > .unit-num {
-                                                                color: $bg-color4;
-                                                            }
-                                                        }
-                                                        .unit-sub {
-                                                            padding-left: 5pt;
-                                                        }
-                                                    }
-                                                    .unit-box {
-                                                        .unit-num {
-                                                            color: $bg-color4;
-                                                            @include font-size-10($font-head-500);
-                                                            overflow: hidden;
-                                                            text-overflow: ellipsis;
-                                                            display: -webkit-box;
-                                                            -webkit-line-clamp: 1;
-                                                            -webkit-box-orient: vertical;
-                                                        }
-
-                                                        .unit-sub {
-                                                            @include font-size-10($font-head-500);
-                                                            color: #717886;
-                                                            overflow: hidden;
-                                                            text-overflow: ellipsis;
-                                                            display: -webkit-box;
-                                                            -webkit-line-clamp: 1;
-                                                            -webkit-box-orient: vertical;
-                                                        }
-                                                    }
-                                                }
-
-                                                .unit-bt-box {
-                                                    flex: 0 0 auto;
-                                                    > .limit {
-                                                        display: flex;
-                                                        align-items: center;
-                                                        justify-content: center;
-                                                        border-radius: 4px;
-                                                        border: 0.7pt solid $border-color;
-                                                        width: auto;
-                                                        padding: 0 7pt;
-                                                        height: 26pt;
-                                                        color: $bg-color4;
-                                                        @include font-size-10($font-head-500);
-                                                        color: $color-gray;
-                                                        > .material-icons {
-                                                            font-family: "Material Icons" !important;
-                                                            color: $status-success;
-                                                            font-size: $font-size-icon-small;
-                                                            padding-right: 2pt;
-                                                        }
-                                                    }
-                                                    > spanboon-button {
-                                                        > .spanboon-button {
-                                                            width: auto !important;
-                                                            padding: 0 7pt;
-                                                            height: 26pt !important;
-                                                        }
-
-                                                        > .btn-fulfill {
-                                                            background-color: $status-post-fulfill !important;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        > .amonut {
-                                            display: flex;
-                                            align-items: center;
-                                            @include font-size-10($font-head-500);
-                                            color: $color-gray;
-                                            > .material-icons {
-                                                font-family: "Material Icons" !important;
-                                                color: $status-success;
-                                                font-size: $font-size-icon-small;
-                                                padding-right: 5pt;
-                                            }
-                                            > .quantity {
-                                                color: black;
-                                                padding-left: 3pt;
-                                            }
-                                            > .unit {
-                                                padding-left: 3pt;
-                                                color: black;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        > .post {
-                            width: 50%;
-                            display: flex;
-                            flex-direction: column;
-                            align-content: center;
-                            justify-content: center;
-                            align-items: center;
-                        }
-                    }
 
                     > .objective_start_card {
                         width: calc(100%);
@@ -539,6 +323,234 @@
                                             justify-content: center;
                                             align-items: center;
                                             border-radius: 30px;
+                                        }
+                                    }
+                                }
+
+                                > .needs-card {
+                                    margin: 80px 0px;
+                                    display: flex;
+                                    > .item {
+                                        width: 100%;
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-content: center;
+                                        justify-content: center;
+                                        align-items: center;
+                                        > .title {
+                                            @include font-size-5($font-head-500);
+                                            color: $status-post-fulfill;
+                                            padding-left: 40%;
+                                        }
+
+                                        > .needs {
+                                            width: 80%;
+                                            margin: 30px 0px;
+                                            display: inline-flex;
+                                            flex-wrap: wrap;
+                                            align-content: center;
+                                            justify-content: center;
+                                            align-items: center;
+                                            .list-needs {
+                                                position: relative;
+                                                border: 0.7px solid #e5e5e5;
+                                                border-radius: 4px;
+                                                overflow: hidden;
+                                                width: 250px;
+                                                height: 250px;
+                                                margin: 10px;
+                                                box-shadow: rgb(0 0 0 / 6%) 0px 3px 2px, rgb(0 0 0 / 4%) 5px 13px 5px;
+                                                .cl {
+                                                    width: 20px;
+                                                    height: 20px;
+                                                    right: 7px;
+                                                    top: 7px;
+                                                    position: absolute;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    z-index: 10;
+                                                    transition: 0.2s;
+                                                    @include pointer();
+
+                                                    &:hover {
+                                                        fill: $brandcolor2;
+                                                    }
+
+                                                    > .icon-clear {
+                                                        font-weight: 900;
+                                                    }
+                                                }
+
+                                                .needs {
+                                                    display: grid;
+                                                    justify-content: center;
+                                                    align-content: center;
+                                                    position: relative;
+                                                    background: #f9f9f9;
+                                                    // background: $bg-fog-gray2;
+                                                    padding: 25pt 0;
+
+                                                    > .img-items {
+                                                        width: 50pt;
+                                                        height: 50pt;
+                                                        border-radius: 50%;
+                                                        object-fit: cover;
+                                                    }
+                                                }
+
+                                                .needs-data {
+                                                    padding: 10pt;
+                                                    background: white;
+                                                    display: flex;
+                                                    justify-content: space-between;
+                                                    align-items: center;
+                                                    &.active {
+                                                        display: flex;
+                                                        flex-direction: column;
+                                                    }
+                                                    div {
+                                                        &.active {
+                                                            display: flex;
+                                                            justify-content: space-between;
+                                                        }
+                                                        .needs-data-h {
+                                                            .text-h {
+                                                                @include font-size-8($font-head-500);
+                                                                line-height: 15px;
+                                                                color: #717886;
+                                                                display: -webkit-box;
+                                                                -webkit-line-clamp: 1;
+                                                                -webkit-box-orient: vertical;
+                                                                overflow: hidden;
+                                                                margin: 5pt 0;
+                                                            }
+                                                        }
+
+                                                        .needs-data-body {
+                                                            width: 100%;
+                                                            display: flex;
+                                                            align-items: center;
+                                                            justify-content: space-between;
+
+                                                            &.active {
+                                                                width: unset;
+                                                                flex: 0 0 auto;
+                                                            }
+                                                            .unit {
+                                                                flex: 1 1 0%;
+                                                                margin-right: 10pt;
+
+                                                                &.active {
+                                                                    margin-right: unset;
+                                                                    .unit-box {
+                                                                        display: flex;
+                                                                        align-items: baseline;
+                                                                        justify-content: flex-end;
+                                                                        margin-right: unset;
+                                                                        > .unit-num {
+                                                                            color: $bg-color4;
+                                                                        }
+                                                                    }
+                                                                    .unit-sub {
+                                                                        padding-left: 5pt;
+                                                                    }
+                                                                }
+                                                                .unit-box {
+                                                                    .unit-num {
+                                                                        color: $bg-color4;
+                                                                        @include font-size-10($font-head-500);
+                                                                        overflow: hidden;
+                                                                        text-overflow: ellipsis;
+                                                                        display: -webkit-box;
+                                                                        -webkit-line-clamp: 1;
+                                                                        -webkit-box-orient: vertical;
+                                                                    }
+
+                                                                    .unit-sub {
+                                                                        @include font-size-10($font-head-500);
+                                                                        color: #717886;
+                                                                        overflow: hidden;
+                                                                        text-overflow: ellipsis;
+                                                                        display: -webkit-box;
+                                                                        -webkit-line-clamp: 1;
+                                                                        -webkit-box-orient: vertical;
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            .unit-bt-box {
+                                                                flex: 0 0 auto;
+                                                                > .limit {
+                                                                    display: flex;
+                                                                    align-items: center;
+                                                                    justify-content: center;
+                                                                    border-radius: 4px;
+                                                                    border: 0.7pt solid $border-color;
+                                                                    width: auto;
+                                                                    padding: 0 7pt;
+                                                                    height: 26pt;
+                                                                    color: $bg-color4;
+                                                                    @include font-size-10($font-head-500);
+                                                                    color: $color-gray;
+                                                                    > .material-icons {
+                                                                        font-family: "Material Icons" !important;
+                                                                        color: $status-success;
+                                                                        font-size: $font-size-icon-small;
+                                                                        padding-right: 2pt;
+                                                                    }
+                                                                }
+                                                                > spanboon-button {
+                                                                    > .spanboon-button {
+                                                                        width: auto !important;
+                                                                        padding: 0 7pt;
+                                                                        height: 26pt !important;
+                                                                    }
+
+                                                                    > .btn-fulfill {
+                                                                        background-color: $status-post-fulfill !important;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    > .fullfill {
+                                                        > .botton {
+                                                            @include font-size-11($font-head-500);
+                                                            padding: 10px;
+                                                            background-color: #84b572;
+                                                            color: white;
+                                                            display: flex;
+                                                            align-content: center;
+                                                            justify-content: center;
+                                                            align-items: center;
+                                                            border-radius: 5px;
+                                                            padding: 10px 25px;
+                                                            cursor: pointer;
+                                                        }
+                                                    }
+                                                    > .amonut {
+                                                        display: flex;
+                                                        align-items: center;
+                                                        @include font-size-10($font-head-500);
+                                                        color: $color-gray;
+                                                        > .material-icons {
+                                                            font-family: "Material Icons" !important;
+                                                            color: $status-success;
+                                                            font-size: $font-size-icon-small;
+                                                            padding-right: 5pt;
+                                                        }
+                                                        > .quantity {
+                                                            color: black;
+                                                            padding-left: 3pt;
+                                                        }
+                                                        > .unit {
+                                                            padding-left: 3pt;
+                                                            color: black;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -660,7 +672,7 @@
                             align-items: center;
                             > .top {
                                 > .title {
-                                    @include font-size-10($font-head-400);
+                                    @include font-size-6($font-head-400);
                                 }
                             }
                             > .posts {
