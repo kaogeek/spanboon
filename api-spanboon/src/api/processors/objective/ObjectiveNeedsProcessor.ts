@@ -85,10 +85,42 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'needs'
                         }
+                    },
+                    {
+                        $unwind: {
+                            path: '$needs',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
+                        }
                     }
                 ];
-
-                console.log('dateTimeAndArray: ', dateTimeAndArray);
 
                 // if no sampleCount limit will set to 1.
                 if (sampleCount !== undefined) {
@@ -97,8 +129,6 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     postAgg.push({ $limit: 1 });
                 }
                 const searchResult = await this.postsService.aggregate(postAgg);
-
-                console.log('searchResult: ', searchResult.length);
 
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
