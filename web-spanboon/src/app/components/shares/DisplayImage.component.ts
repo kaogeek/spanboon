@@ -22,6 +22,8 @@ export class DisplayImage {
     public class: string;
     @Input()
     public isPreload: boolean;
+    @Input()
+    public isGlightbox: boolean = true;
     @Output()
     public clickShowImage: EventEmitter<any> = new EventEmitter();
 
