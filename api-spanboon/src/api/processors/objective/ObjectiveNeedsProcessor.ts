@@ -85,40 +85,6 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'needs'
                         }
-                    },
-                    {
-                        $unwind: {
-                            path: '$needs',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'StandardItem',
-                            localField: 'standardItemId',
-                            foreignField: '_id',
-                            as: 'standardItem'
-                        }
-                    },
-                    {
-                        $unwind: {
-                            path: '$standardItem',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'CustomItem',
-                            localField: 'customItemId',
-                            foreignField: '_id',
-                            as: 'customItem'
-                        }
-                    },
-                    {
-                        $unwind: {
-                            path: '$customItem',
-                            preserveNullAndEmptyArrays: true
-                        }
                     }
                 ];
 
