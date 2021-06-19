@@ -52,6 +52,7 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
                 if (topInfluencer !== undefined && topInfluencer.length > 0) {
                     // post with objective and influencer was comment
                     const influencerMap = {};
+                    const postAndComments = {}; // map that contain post and a sample comment of influencer
                     const commentUser = [];
                     for (const influe of topInfluencer) {
                         commentUser.push(influe._id);
@@ -81,13 +82,14 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
                             }
                         },
                         { $match: { 'posts.objective': objectiveId } },
-                        { $group: { _id: '$user', count: { $sum: 1 } } },
+                        { $group: { _id: '$user', count: { $sum: 1 }, post: { $first: '$posts' }, comment: { $first: '$comment' } } },
                         {
                             $project: {
                                 'user.password': 0,
                                 'user.coverPosition': 0,
                                 'user.birthdate': 0,
                                 'user.coverURL': 0,
+                                'post.story': 0,
                             }
                         }
                     ];
@@ -106,11 +108,16 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
                                 distinctTopInfluencer.push(influencerMap[key]);
                                 addedUserIds.push(key);
                             }
+
+                            postAndComments[key] = {
+                                post: objInflu.post,
+                                comment: objInflu.comment
+                            };
                         }
                     }
 
                     // generate title
-                    result = this.generateResult(distinctTopInfluencer);
+                    result = this.generateResult(distinctTopInfluencer, postAndComments);
                 }
 
                 resolve(result);
@@ -120,7 +127,7 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
         });
     }
 
-    private generateResult(topInfluencer: any[]): any {
+    private generateResult(topInfluencer: any[], postAndCommentsMap?: any): any {
         let result = undefined;
 
         if (topInfluencer && topInfluencer.length > 0) {
@@ -149,6 +156,13 @@ export class ObjectiveInfluencerProcessor extends AbstractTypeSectionProcessor {
             };
 
             for (const influe of topInfluencer) {
+                const influencerIdString = influe._id + '';
+
+                if (postAndCommentsMap !== undefined && postAndCommentsMap[influencerIdString] !== undefined) {
+                    influe.post = postAndCommentsMap[influencerIdString].post;
+                    influe.comment = postAndCommentsMap[influencerIdString].comment;
+                }
+
                 result.influencers.push(influe);
             }
         }
