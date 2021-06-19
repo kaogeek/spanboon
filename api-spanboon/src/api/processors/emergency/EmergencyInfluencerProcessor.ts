@@ -40,10 +40,10 @@ export class EmergencyInfluencerProcessor extends AbstractTypeSectionProcessor {
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $lte: endDateTime } });
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
@@ -80,7 +80,7 @@ export class EmergencyInfluencerProcessor extends AbstractTypeSectionProcessor {
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { emergencyEvent: emergencyEventId } },
+                        { $match: { 'posts.emergencyEvent': emergencyEventId } },
                         { $group: { _id: '$user', count: { $sum: 1 } } },
                         {
                             $project: {

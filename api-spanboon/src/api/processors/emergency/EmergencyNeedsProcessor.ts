@@ -85,6 +85,22 @@ export class EmergencyNeedsProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'needs'
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'needs.standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItemCollection'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'needs.customItemId',
+                            foreignField: '_id',
+                            as: 'customItemCollection'
+                        }
                     }
                 ];
 

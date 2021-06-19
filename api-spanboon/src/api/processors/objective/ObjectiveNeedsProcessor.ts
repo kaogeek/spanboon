@@ -85,10 +85,24 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'needs'
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'needs.standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItemCollection'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'needs.customItemId',
+                            foreignField: '_id',
+                            as: 'customItemCollection'
+                        }
                     }
                 ];
-
-                console.log('dateTimeAndArray: ', dateTimeAndArray);
 
                 // if no sampleCount limit will set to 1.
                 if (sampleCount !== undefined) {
@@ -97,8 +111,6 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                     postAgg.push({ $limit: 1 });
                 }
                 const searchResult = await this.postsService.aggregate(postAgg);
-
-                console.log('searchResult: ', searchResult.length);
 
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
