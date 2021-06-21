@@ -75,20 +75,8 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public async ngOnInit(): Promise<void> {
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
-
-        for (let item of this.objectiveData.timelines) {
-            if (item.type === "OBJECTIVE_NEEDS") {
-                for (let n of item.post.needs) {
-                    let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
-                    n.imageURL = standardItem.imageURL;
-                }
-                console.log('item : ', item);
-            }
-        }
-
+        this._groupData();
         this.setData();
-
-        AOS.init();
 
         // You can also pass an optional settings object
         // below listed default settings
@@ -117,12 +105,30 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     }
 
+    private _groupData(): void {
+        let numloop: number = 0
+
+        for (let item of this.objectiveData.timelines) {
+            if (item.type === "OBJECTIVE_NEEDS") {
+                for (let n of item.post.needs) {
+                    let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
+                    n.imageURL = standardItem.imageURL;
+                }
+            }
+            if (item.type === "OBJECTIVE_POST_LIKED") {
+                if (item.galleries.length === 0) {
+                    this.objectiveData.timelines.splice(numloop, 1);
+                }
+            }
+            numloop++
+        }
+    }
+
     public setData(): void {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
 
         console.log('this.objectiveData', this.objectiveData);
-
     }
 
     public ngOnDestroy(): void {
