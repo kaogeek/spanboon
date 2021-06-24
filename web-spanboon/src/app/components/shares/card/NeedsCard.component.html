@@ -54,8 +54,8 @@
 
                                         <div class="unit-sub">{{item.unit}}</div>
                                     </div>
-                                </div>  
-                                <ng-container *ngIf="isNeedBoxPost"> 
+                                </div>
+                                <ng-container *ngIf="isNeedBoxPost">
                                     <div class="unit-bt-box" *ngIf="!isFulfill">
                                         <ng-container
                                             *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
@@ -65,11 +65,13 @@
                                             </div>
                                         </ng-container>
                                         <ng-template #elseTemplateUnLimit>
-                                            <spanboon-button [bgColor]="'#7AAF67'" [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"  (click)="fulfillNeeds($event,item)">
+                                            <spanboon-button class="btn-fulfill" [bgColor]="'#7AAF67'"
+                                                [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT" [radius]="'4px'"
+                                                (click)="fulfillNeeds($event,item)">
                                             </spanboon-button>
                                         </ng-template>
                                     </div>
-                                </ng-container>  
+                                </ng-container>
                             </div>
                         </div>
                         <ng-container *ngIf="isFulfill">

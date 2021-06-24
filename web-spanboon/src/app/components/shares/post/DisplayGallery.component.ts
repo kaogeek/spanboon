@@ -6,26 +6,26 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { environment } from '../../../../environments/environment';
- 
+import { environment } from '../../../../environments/environment'; 
+
 @Component({
   selector: 'display-gallery',
   templateUrl: './DisplayGallery.component.html'
 })
 export class DisplayGallery {
 
-    @Input()
-    public gallery: any; 
-    @Output()
-    public clickShowImage: EventEmitter<any> = new EventEmitter();
+  @Input()
+  public gallery: any;
+  @Output()
+  public clickShowImage: EventEmitter<any> = new EventEmitter();
 
-    public apiBaseURL = environment.apiBaseURL;
+  public apiBaseURL = environment.apiBaseURL;
 
-  constructor() {    
+  constructor() {
 
-  } 
+  }
 
-  public showDialogGallery(index : any){
+  public showDialogGallery(index: any) {  
     this.clickShowImage.emit({index: index, gallerys: this.gallery});
   }
 }

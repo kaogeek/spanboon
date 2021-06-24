@@ -5,56 +5,12 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="card_content_home">
-    <div *ngIf="smallCard && postData && !isLoad" class="small_card">
-        <div (click)="clickEventEmit()" class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
-            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
-            </div>
-            <ng-template #other_topic>
-                <div class="other_topic">
-                    <span [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
-                </div>
-            </ng-template>
-        </div>
-        <div class="bottom_small_card">
-            <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title" [innerHTML]='postData.post.title ? postData.post.title:postData.title'></span>
-            </div>
-            <ng-template #other_topic_detail>
-                <div class="other_topic_detail">
-                </div>
-            </ng-template>
-            <div class="bottom_small_card_detail_footer">
-                <div class="owner" #showTooltip (mouseleave)="TooltipClose($event)"
-                    (mouseover)="Tooltip(showTooltip , postData)">
-                    <svg *ngIf="postData.owner.isUserOfficial" class="new-cards-offical" id="shield"
-                        xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208" viewBox="0 0 43.383 47.208">
-                        <g id="Group_88" data-name="Group 88" transform="translate(0)">
-                            <path id="Path_141" data-name="Path 141"
-                                d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
-                                transform="translate(-36.867)" />
-                            <path id="Path_142" data-name="Path 142"
-                                d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
-                                transform="translate(-259.715 -289.198)" />
-                        </g>
-                    </svg>
-                    <a href={{linkUserPage}}>{{postData.owner.name}}</a>
-                </div>
-                <div class="amount_social">
-                    <span>{{amountSocial ? amountSocial:0}}</span> การมีส่วนร่วมกับโพสต์
-                    <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="mediumCard && postData && !isLoad" (click)="clickEventEmit()" class="medium_card">
-        <div class="type_post">
+    <div (click)="clickEventEmit(postData.title)" *ngIf="smallCard && postData && !isLoad" class="small_card">
+        <div *ngIf="!isObjective" class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -64,32 +20,29 @@
                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                     class="svg-color-gray" />
             </svg>
-            <a href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.post.createdDate | dateFormat}}</a>
         </div>
-        <div (click)="clickEventEmit()" class="top_medium_card"
-            [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
-            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+        <div class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
+            <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <div [innerHTML]='postData.post.title | highlight'></div>
+                    <span [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
                 </div>
             </ng-template>
         </div>
-        <div class="bottom_medium_card">
-            <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span class="detail">{{postData.post.detail}}</span>
+        <div class="bottom_small_card">
+            <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
+                <span class="title" [class.is_objective]="isObjective"
+                    [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
             </div>
-            <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
-                    <span>{{postData.post.detail}}</span>
                 </div>
             </ng-template>
-            <div class="bottom_medium_card_detail_footer">
-                <div class="owner" #showTooltip (mouseleave)="TooltipClose($event)"
+            <div class="bottom_small_card_detail_footer">
+                <div *ngIf="!isObjective" class="owner" (click)="clickToPage(linkUserPage)" #showTooltip
                     (mouseover)="Tooltip(showTooltip , postData)">
                     <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
                         height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
@@ -102,7 +55,73 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a href={{linkUserPage}}>{{postData.owner.name}}</a>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.owner?postData.owner.name:''}}</a>
+                </div>
+                <div class="amount_social">
+                    <span>{{amountSocial ? amountSocial:0}}</span> การมีส่วนร่วมกับโพสต์
+                    <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="mediumCard && postData && !isLoad" (click)="clickEventEmitMedium($event)" class="medium_card">
+        <div class="type_post">
+            <div class="type" [class.need]="postData.post.type === 'NEEDS'"
+                [class.general]="postData.post.type === 'GENERAL'"></div>
+            <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
+            <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
+            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512" width="10px"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                    class="svg-color-gray" />
+                <path
+                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                    class="svg-color-gray" />
+            </svg>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
+        </div>
+        <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
+            <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
+                <img class="bottom_coverPage_cover" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img class="other_topic_coverPage" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+            </div>
+            <ng-template #other_topic>
+                <div class="other_topic">
+                    <div class="other_topic_title" [innerHTML]='postData.post.title | highlight'></div>
+                </div>
+            </ng-template>
+        </div>
+        <div class="bottom_medium_card">
+            <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span class="detail" [innerHTML]='postData.post.detail | highlight'></span>
+                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                    ...</span>
+            </div>
+            <ng-template #other_topic_detail>
+                <div class="other_topic_detail">
+                    <span>{{postData.post.detail}}</span>
+                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                        class="story">อ่านสตอรี่ ...</span>
+                </div>
+            </ng-template>
+            <div class="bottom_medium_card_detail_footer">
+                <div class="owner" (click)="clickToPage(linkUserPage)" #showTooltip (mouseleave)="TooltipClose($event)"
+                    (mouseover)="Tooltip(showTooltip , postData)">
+                    <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
+                        height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
+                        <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                            <path id="Path_141" data-name="Path 141"
+                                d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                transform="translate(-36.867)" />
+                            <path id="Path_142" data-name="Path 142"
+                                d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                transform="translate(-259.715 -289.198)" />
+                        </g>
+                    </svg>
+                    <a>{{postData.owner.name}}</a>
                 </div>
                 <div class="amount_social">
                     <span class="count-aontrol">{{postData.eventRepostCount | shortNumber}}</span>
@@ -122,13 +141,12 @@
     </div>
 
 
-    <div *ngIf="largeCard && postData && !isLoad" (click)="clickEventEmit()" class="large_card">
+    <div *ngIf="largeCard && postData && !isLoad" (click)="clickEventEmitLarge($event)" class="large_card">
         <div class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
             <span *ngIf="postData.post.type === 'NEEDS'">มองหา</span>
             <span *ngIf="postData.post.type === 'GENERAL'">ทั่วไป</span>
-            <span class="drot">•</span>
             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -138,7 +156,7 @@
                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                     class="svg-color-gray" />
             </svg>
-            <a href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
+            <a target="_blank" href={{linkPost}} class="date_time">{{postData.dateTime | thformatdatetime}}</a>
         </div>
         <div (click)="clickEventEmit()" class="top_large_card"
             [class.title]="postCardCoverPageUrl === undefined || postCardCoverPageUrl === null || postCardCoverPageUrl === ''">
@@ -153,13 +171,17 @@
         </div>
         <div class="bottom_large_card">
             <div class="bottom_large_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
-                <span class="title">{{postData.post.title}}</span>
-                <span>{{postData.post.detail}}</span>
+                <span class="title" [innerHTML]='postData.post.title | highlight'></span>
+                <span [innerHTML]='postData.post.detail | highlight'></span>
+                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                    ...</span>
             </div>
             <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
-                    <span>{{postData.post.detail}}</span>
+                    <span [innerHTML]='postData.post.detail | highlight'></span>
+                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                        class="story">อ่านสตอรี่ ...</span>
                 </div>
             </ng-template>
             <div class="bottom_large_card_detail_footer">
@@ -176,7 +198,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a href={{linkUserPage}}>{{postData.owner.name}}</a>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.owner.name}}</a>
                 </div>
 
                 <div class="amount_social">
@@ -266,7 +288,7 @@
                     </div>
                     <div class="title">
                         <a (click)="clickDataSearch(eventTitle)">{{event.title}}</a>
-                        <div class="date_time">
+                        <!-- <div class="date_time">
                             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -277,8 +299,8 @@
                                     class="svg-color-gray" />
                             </svg>
                             {{event.dateTime | thformatdatetime}}
-                        </div>
-                        <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                        </div> -->
+                        <svg style="margin: 5px 0px 0px 0px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                             viewBox="0 0 23 21">
                             <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
                                 <path id="Subtraction_2" data-name="Subtraction 2"
@@ -327,7 +349,7 @@
                             </div>
                         </div>
                         <div class="date_time">
-                            <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
+                            <svg class="svg_icon" style="padding: 5px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"

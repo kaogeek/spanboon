@@ -8,8 +8,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
-import { SearchFilter } from "../../models/SearchFilter"; 
+import { AbstractFacade } from "./AbstractFacade";
+import { SearchFilter } from "../../models/SearchFilter";
 
 @Injectable()
 export class ObjectiveFacade extends AbstractFacade {
@@ -36,11 +36,11 @@ export class ObjectiveFacade extends AbstractFacade {
   public getObjectivePage(pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // https://10.1.0.22:9001/api/page/5ebf98a6f177d22d3aebb259/post
-      
-      let url: string = this.baseURL + '/page/' + pageId + '/objective' ;
+
+      let url: string = this.baseURL + '/page/' + pageId + '/objective';
       let body: any = {};
 
-      this.http.get(url,body).toPromise().then((response: any) => {
+      this.http.get(url, body).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);
@@ -48,9 +48,9 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
   public uploadImageObjective(data: any): Promise<any> {
-    return new Promise((resolve, reject) => { 
-      
-      let url: string = this.baseURL + '/objective' ;
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective';
 
       let body: any = {};
       if (data !== null && data !== undefined) {
@@ -58,7 +58,7 @@ export class ObjectiveFacade extends AbstractFacade {
       }
       let options = this.getDefaultOptions();
 
-      this.http.post(url,body,options).toPromise().then((response: any) => {
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
         reject(error);
@@ -66,9 +66,9 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
   public searchObjectiveCategory(searchFilter: SearchFilter): Promise<any> {
-    return new Promise((resolve, reject) => { 
-      
-      let url: string = this.baseURL + '/objective_category/search' ;
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective_category/search';
 
       let body: any = {};
       if (searchFilter !== null && searchFilter !== undefined) {
@@ -76,11 +76,26 @@ export class ObjectiveFacade extends AbstractFacade {
       }
       let options = this.getDefaultOptions();
 
-      this.http.post(url,body,options).toPromise().then((response: any) => {
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
         reject(error);
       });
     });
   }
+
+  public getPageObjectiveTimeline(objectiveId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/timeline';
+      let body: any = {};
+
+      this.http.get(url, body).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
 }

@@ -71,15 +71,16 @@ p {
     width: 800px;
     max-width: 100%;
 
-    &.wrapper-dialog-doing , &.dialog-post {
+    &.wrapper-dialog-doing,
+    &.dialog-post {
         width: 1200px;
-    } 
+    }
 
     &.customize-alert {
         width: unset;
         max-width: unset;
     }
-} 
+}
 // .cdk-overlay-container {
 //     > .cdk-global-overlay-wrapper {
 //         > .cdk-overlay-pane {
@@ -93,7 +94,7 @@ p {
 //     }
 // }
 .cdk-global-overlay-wrapper {
-    > .cdk-overlay-pane { 
+    > .cdk-overlay-pane {
         .mat-dialog-container {
             padding: unset;
         }
@@ -112,7 +113,6 @@ p {
         min-height: 100vh !important;
     }
 }
- 
 
 @media only screen and (max-width: $medium) {
     .cdk-global-overlay-wrapper {
@@ -224,7 +224,6 @@ p {
 // }
 //------------------------------------------------------------------//
 
-
 textarea {
     outline: none;
     @include font-size-9($font-head-200);
@@ -302,3 +301,24 @@ input:focus {
 //     font-style: normal;
 //     font-weight: 600;
 // }
+
+#canvas-wrap {
+    position: relative;
+} /* Make this a positioned parent */
+#overlay {
+    top: 20px;
+    left: 30px;
+}
+
+#canvas-wrap {
+    position: relative;
+    width: auto;
+    height: auto;
+}
+#canvas-wrap canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    background-color: #fbfbfc;
+}

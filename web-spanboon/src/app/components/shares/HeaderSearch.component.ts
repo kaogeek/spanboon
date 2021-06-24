@@ -289,9 +289,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     filter.orderBy = {} 
     this.isLoading = true;
     let originalRecentName: any[] = this.searchRecentName;
-    this.searchHistoryFacade.search(filter).then((res: any) => {
-      console.log('<<<< ', res);
-      
+    this.searchHistoryFacade.search(filter).then((res: any) => {  
       this.isLoadingMore = false; 
       if (originalRecentName.length > 0) {
         for (let history of res) {
@@ -353,7 +351,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.searchHashTagFacade.searchTopTrend(data).then((res: any) => {
       this.dataTrend = res;
-      console.log('this.dataTrend ', this.dataTrend)
     }).catch((err: any) => {
       console.log(err)
     })
@@ -382,7 +379,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     if (userId !== undefined) {
       search = {
         keyword: value,
-        user: userId
+        userId: userId
       }
     } else {
       search = {
@@ -442,7 +439,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.search.nativeElement.value = ''
       this.filled = false;
     } else if (isPass === 'TAG') {
-      this.router.navigateByUrl('/hashtag/' + dataList);
+      this.router.navigateByUrl('/search?hashtag=' + dataList);
     } else if (isPass === 'PAGE') {
       this.router.navigateByUrl('/page/' + dataList);
     } else if (isPass === 'KEYWORD') {
@@ -476,7 +473,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     });
 
     this.searchHashTagFacade.search(filter, dataHashTag.value).then((res: any) => {
-      console.log(res)
+      // console.log(res)
     }).catch((err: any) => {
       console.log(err)
     })

@@ -18,11 +18,13 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
+  SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
-import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
+import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';  
+import { DirtyCheckGuard } from './dirty-check.guard';
 
 export const APP_ROUTES: Routes = [
   {
@@ -32,14 +34,14 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: MainPage.PAGE_NAME,
-    component: MainPage,
+    component: MainPage,   
     children: [
       {
         path: '',
         component: HomePage,
       },
       {
-        path: HomePage.PAGE_NAME,
+        path: HomePage.PAGE_NAME, 
         component: HomePage,
       },
       {
@@ -70,27 +72,32 @@ export const APP_ROUTES: Routes = [
       },
       {
         path: FanPage.PAGE_NAME + "/:id",
-        component: FanPage,
+        component: FanPage, 
+        // canDeactivate : [DirtyCheckGuard],
         children: [
           {
             path: "post/:postId",
-            component: FanPage,
+            component: FanPage, 
           },
           {
             path: 'timeline',
-            component: FanPage,
+            component: FanPage, 
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'general',
-            component: FanPage,
+            component: FanPage, 
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'needs',
-            component: FanPage,
+            component: FanPage, 
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'fulfillment',
-            component: FanPage,
+            component: FanPage,  
+            // canDeactivate : [DirtyCheckGuard],
           },
         ]
       },
@@ -127,6 +134,14 @@ export const APP_ROUTES: Routes = [
       {
         path: SettingAccount.PAGE_NAME + "/settings",
         component: SettingAccount,
+      },
+      {
+        path: ObjectiveTimeline.PAGE_NAME,
+        component: ObjectiveTimeline,
+      },
+      {
+        path: EmergencyEventTimeline.PAGE_NAME,
+        component: EmergencyEventTimeline,
       },
       // {
       //   path: SettingsFanPage.PAGE_NAME,
@@ -227,10 +242,17 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'test',
-    component: TestComponent
+    component: TestComponent,
+    canDeactivate : [DirtyCheckGuard]
   },
   {
     path: 'registerpage',
     component: RegisterPageTestComponent
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(APP_ROUTES)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

@@ -44,6 +44,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
 
                 if (this.config !== undefined && this.config !== null) {
@@ -58,6 +59,10 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
                     }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
+                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
@@ -71,12 +76,19 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     clientId = this.data.clientId;
                 }
 
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
+
                 const today = moment().toDate();
-                const matchStmt = {
+                const matchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: today }
+                    hidden: false
                 };
                 if (userId !== undefined) {
                     // ! impl 
@@ -84,11 +96,24 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     // ! impl
                 }
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    matchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    matchStmt.startDateTime = { $lte: today };
+                }
+
                 const postStmt = [
                     { $match: matchStmt },
-                    { $skip: offset },
-                    { $limit: 4 },
-                    { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
@@ -97,6 +122,10 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                             as: 'page'
                         }
                     },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: 4 },
                     {
                         $lookup: {
                             from: 'User',
@@ -130,6 +159,12 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         }
                     }
                 ];
+
+                // overide search Official
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
+
                 const searchResult = await this.postsService.aggregate(postStmt);
 
                 let lastestDate = null;
@@ -286,7 +321,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
         delete post.story;
         delete post.page;
         delete post.user;
-        delete post.gallery;
+        // delete post.gallery;
         delete post.rootRefPost;
         delete post.rootRefGallery;
 

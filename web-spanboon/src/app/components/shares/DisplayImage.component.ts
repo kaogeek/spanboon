@@ -6,6 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import Glightbox from 'glightbox';
 
 @Component({
     selector: 'display-image',
@@ -21,17 +22,19 @@ export class DisplayImage {
     public class: string;
     @Input()
     public isPreload: boolean;
+    @Input()
+    public isGlightbox: boolean = true;
     @Output()
     public clickShowImage: EventEmitter<any> = new EventEmitter();
 
     constructor() {
 
     }
-    
-    ngOnInit(): void {
-    }
 
-    public showDialogGallery(data : any){
+    ngOnInit(): void { 
+    }  
+
+    public showDialogGallery(data: any) {
         this.clickShowImage.emit(data)
-      } 
+    }
 }

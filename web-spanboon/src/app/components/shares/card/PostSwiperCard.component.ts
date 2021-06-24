@@ -47,6 +47,8 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
   public isImage: boolean = false;
   @Input()
   public isButtonFulfill: boolean = true;
+  @Input()
+  public isObjective: boolean;
 
   @Output()
   public clickEventA: EventEmitter<any> = new EventEmitter();
@@ -66,6 +68,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     this.dialog = dialog;
     this.router = router;
     this.observManager = observManager;
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -156,7 +159,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 7,
+    slidesPerView: 6,
     spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
@@ -167,19 +170,19 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 4.6,
+        slidesPerView: 4.5,
       },
       899: {
-        slidesPerView: 3.3,
+        slidesPerView: 3.5,
       },
       676: {
-        slidesPerView: 2.6,
+        slidesPerView: 2.5,
       },
       655: {
-        slidesPerView: 2.7,
+        slidesPerView: 2.5,
       },
       566: {
-        slidesPerView: 2.6,
+        slidesPerView: 1.8,
       },
       479: {
         slidesPerView: 1.4,

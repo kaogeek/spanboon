@@ -19,7 +19,8 @@ import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
 import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
 import { MESSAGE } from '../../../../custom/variable';
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
+import Glightbox from 'glightbox';
 
 @Component({
   selector: 'post-data',
@@ -122,11 +123,13 @@ export class PostData {
     this.isComment = false
     this.isRepost = true;
     this.isLoading = true;
+    this.mainPostLink = window.location.origin + '/post/';
 
     setTimeout(() => {
+      // console.log('this.itemPost >>>> ', this.itemPost);
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
-          this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering) 
+          this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering)
           let galleryIndex = 0;
           for (let img of this.itemPost.referencePostObject.gallery) {
             if (img.imageURL !== '') {
@@ -174,7 +177,7 @@ export class PostData {
     }, 1000);
   }
 
-  ngAfterViewInit(): void {  
+  ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.itemPost && this.itemPost.detail) {
         if (this.itemPost.hashTags !== undefined && this.itemPost.hashTags !== null) {
@@ -207,10 +210,10 @@ export class PostData {
             }
           }
         }
-      } 
+      }
       // ordering image
       if (this.itemPost && this.itemPost.gallery && this.itemPost.gallery.length > 0) {
-        this.itemPost.gallery = this.itemPost.gallery.sort((a, b) => a.ordering - b.ordering) 
+        this.itemPost.gallery = this.itemPost.gallery.sort((a, b) => a.ordering - b.ordering)
       }
     }, 1000);
   }
@@ -439,7 +442,7 @@ export class PostData {
     this.delete.emit(post);
   }
 
-  public checkPost(post): boolean { 
+  public checkPost(post): boolean {
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {
@@ -450,17 +453,21 @@ export class PostData {
   }
 
   public showDialogGallery(imageGallery) {
-    const dialogRef = this.dialog.open(DialogMedia, {
-      width: 'auto',
-      data: imageGallery,
-      disableClose: true,
+    var lightbox = Glightbox(); 
+    let arrayImage = []
+    for (let galleryImage of imageGallery.gallerys) { 
+      arrayImage.push({
+        href: galleryImage.galleryBase64, 
+        type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
+      },)
+    }
+    lightbox.setElements(arrayImage); 
+    lightbox.openAt(imageGallery.index);  
+    lightbox.on('open', (target) => { 
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-      }
-      this.stopLoading();
-    });
+    lightbox.on('close', (target) => {
+      lightbox.destroy();
+    });    
   }
 
   private stopLoading(): void {

@@ -80,11 +80,11 @@ span:focus {
             padding: 10pt 5pt 10pt;
             margin: 5pt 0;
             border-bottom: $width-border solid $border-color;
-            cursor: pointer;
+            // cursor: pointer;
 
-            &:hover {
-                background-color: $background-hover;
-            }
+            // &:hover {
+            //     background-color: $background-hover;
+            // }
 
             .top {
                 display: flex;
@@ -120,6 +120,10 @@ span:focus {
                 > .amount-looking-for {
                     padding: 0 10pt;
                     text-align: right;
+
+                    > .quantity {
+                        @include font-size-10($font-head-100);
+                    }
 
                     > .option {
                         cursor: pointer;
@@ -262,6 +266,9 @@ span:focus {
         overflow: hidden;
         transform: scale(1, 1);
         transition: all 0.3s ease;
+        box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+        -webkit-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+        -moz-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
 
         &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -400,15 +407,15 @@ span:focus {
     }
 
     .tribute-container-hashtag {
-        color: blue;
+        color: #1b95e0;
     }
 
     .tribute-container-like {
-        color: blue;
+        color: #1b95e0;
     }
 
     .atwho-query {
-        color: blue;
+        color: #1b95e0;
     }
 
     @keyframes placeHolderShimmer {
@@ -705,8 +712,11 @@ span:focus {
         }
 
         > .icon-post-bottom {
-            bottom: 46pt;
+            bottom: 55pt;
             transition: all 0.8s ease-in-out;
+            box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+            -webkit-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+            -moz-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
 
             &.hidden {
                 bottom: 10pt;
@@ -771,6 +781,9 @@ span:focus {
         > .icon-post-bottom {
             width: 36pt;
             height: 36pt;
+            box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+            -webkit-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
+            -moz-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
 
             > .button-post {
                 width: 26px;

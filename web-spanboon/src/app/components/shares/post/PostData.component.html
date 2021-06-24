@@ -25,12 +25,12 @@
             </mat-menu>
         </ng-container>
     </ng-container>
-    <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseIconObject">
-        <div class="header-post"
-            [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
-            <div class="left"
-                [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
-                <div class="wrapper-profile-page" *ngIf="isShowProfile">
+
+    <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
+        <div class="left"
+            [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
+            <ng-container *ngIf="isShowProfile">
+                <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <ng-container
@@ -65,10 +65,18 @@
                             </ng-template>
 
                             <div class="post-data-createdBy">
-                                <div class="icon-feed"></div>
-                                <span>
-                                    {{PLATFORM_GENERAL_TEXT}}
-                                </span>
+                                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
+                                    <div class="icon-feed"></div>
+                                    <span>
+                                        {{PLATFORM_GENERAL_TEXT}}
+                                    </span>
+                                </ng-container>
+                                <ng-template #elseTemplateGeneral>
+                                    <div class="icon-feed looking"></div>
+                                    <span>
+                                        {{PLATFORM_NEEDS_TEXT}}
+                                    </span>
+                                </ng-template>
                                 <div class="post-to">
                                     <a href={{linkPost}} target="_blank"
                                         (click)="onClickEngagement($event , itemPost._id ,mainPostLink && mainPostLink.split('/')[0])">
@@ -85,7 +93,9 @@
                                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                                         </div>
                                     </a>
-                                    <ng-container *ngIf="itemPost.ownerUser">
+                                    {{isUserPage}}
+                                    <ng-container *ngIf="isUserPage">
+                                        {{1}}
                                         <a target="_blank" class="post-name"
                                             (click)="onClickEngagement($event, itemPost._id, 'profile')"
                                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
@@ -93,392 +103,223 @@
                                                 itemPost.ownerUser.name}}</span>
                                         </a>
                                     </ng-container>
+                                    <!-- <ng-container *ngIf="isUserPage; else UserPage">
+                                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                                            ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                                    </ng-container>
+                                    <ng-template #UserPage>
+                                        <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate">
+                                            <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                                        </ng-container>
+                                        <ng-template #elseTemplate>
+                                            <span>{{itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                                        </ng-template>
+                                    </ng-template> -->
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <ng-container *ngIf="!isShowProfile">
+            </ng-container>
+
+            <ng-container *ngIf="!isShowProfile">
+                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
                     <div class="icon-feed"></div>
                     <span>
                         {{PLATFORM_GENERAL_TEXT}}
                     </span>
-                    <div class="post-to">
-                        <a href={{linkPost}} target="_blank"
-                            (click)="onClickEngagement($event , itemPost._id , mainPostLink && mainPostLink.split('/')[0])">
-                            <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                        fill="#A5A5A6" />
-                                    <path
-                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                        fill="#A5A5A6" />
-                                </svg>
-                                <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
-                            </div>
-                        </a>
-                        <ng-container *ngIf="itemPost.ownerUser">
-                            <a class="post-name" target="_blank"
-                                (click)="onClickEngagement($event, itemPost._id, 'profile')"
-                                href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
-                                    itemPost.ownerUser.name}}</span>
-                            </a>
-                        </ng-container>
-                    </div>
                 </ng-container>
-            </div>
-            <div class="repost-re"
-                *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
-                <!-- <svg class="img-action" style=" margin-top: -2px;" width="20pt" height="20pt" version="1.1" id="Layer_1"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                    viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
-                    <g>
-                        <path class="st1" [ngStyle]="{'margin-right': marginPerAction,'fill': '#A5A5A6' }" d="M18.43,6.58c-0.74-0.73-1.71-1.13-2.75-1.12s-2.01,0.41-2.74,1.15l-0.89,0.9l-0.9-0.89
-        c-1.52-1.5-3.98-1.49-5.48,0.03s-1.49,3.98,0.03,5.48l5.91,5.85c0.28,0.27,0.72,0.27,1,0l0.48-0.48l-3.7-3.7l0,0L6.7,11.13
-        c-0.97-0.96-0.97-2.52-0.02-3.49c0.46-0.47,1.08-0.73,1.74-0.73c0.66,0,1.28,0.25,1.75,0.71l1.9,1.88l1.88-1.9
-        c0.46-0.47,1.08-0.73,1.74-0.73c0.66,0,1.28,0.25,1.75,0.71c0.47,0.46,0.73,1.08,0.73,1.74c0,0.66-0.25,1.28-0.71,1.75L14.56,14
-        l1,1l2.9-2.93c0.73-0.74,1.13-1.71,1.12-2.75C19.58,8.28,19.17,7.31,18.43,6.58z" />
-                        <path class="st1" [ngStyle]="{'margin-right': marginPerAction,'fill': '#A5A5A6' }"
-                            d="M15.33,13.23l0-1.38c0-0.41-0.33-0.74-0.74-0.74c-0.41,0-0.74,0.33-0.74,0.74v3.16c0,0.14,0.04,0.27,0.11,0.38
-        c0,0,0,0,0,0c0.02,0.02,0.03,0.05,0.05,0.07c0.01,0.01,0.01,0.02,0.02,0.02c0.01,0.01,0.03,0.03,0.04,0.04
-        c0.01,0.01,0.03,0.03,0.04,0.04c0.01,0.01,0.02,0.01,0.02,0.02c0.02,0.02,0.05,0.04,0.07,0.05c0,0,0,0,0,0
-        c0.11,0.07,0.24,0.11,0.38,0.11h3.16c0.41,0,0.74-0.33,0.74-0.74c0-0.41-0.33-0.74-0.74-0.74l-2.44,0L15.33,13.23L15.33,13.23z" />
-                    </g>
-                </svg> -->
+                <ng-template #elseTemplateGeneral>
+                    <ng-container *ngIf="itemPost.type === 'NEEDS'; else elseTemplateNeed">
+                        <div class="icon-feed looking"></div>
+                        <span>
+                            {{PLATFORM_NEEDS_TEXT}}
+                        </span>
+                    </ng-container>
+                    <ng-template #elseTemplateNeed>
+                        <div class="icon-feed fulfill"></div>
+                        <span>
+                            {{PLATFORM_FULFILL_TEXT}}
+                        </span>
+                    </ng-template>
+                </ng-template>
+                <div class="post-to">
+                    <a href={{linkPost}} target="_blank"
+                        (click)="onClickEngagement($event , itemPost._id , mainPostLink && mainPostLink.split('/')[0])">
+                        <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
+                            <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                    fill="#A5A5A6" />
+                                <path
+                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                    fill="#A5A5A6" />
+                            </svg>
+                            <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
+                        </div>
+                    </a>
+                    <ng-container *ngIf="isUserPage">
+                        <a class="post-name" target="_blank"
+                            (click)="onClickEngagement($event, itemPost._id, 'profile')"
+                            href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                            <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
+                                itemPost.ownerUser.name}}</span>
+                        </a>
+                    </ng-container>
+                    <!-- <ng-container *ngIf="isUserPage; else UserPages">
+                        {{2}}
+                        <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                            ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-container>
+                    <ng-template #UserPages>
+                        <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate5">
+                            <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                        </ng-container>
+                        <ng-template #elseTemplate5>
+                            <span>{{itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                        </ng-template>
+                    </ng-template> -->
+                </div>
+            </ng-container>
+        </div>
+        <div class="repost-re"  *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+           
+            <ng-container *ngIf="isUserPage; else UserPage">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
                     viewBox="0 0 56.105 47.887">
                     <path id="Path_3601" data-name="Path 3601"
                         d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
                         transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
                 </svg>
-                <ng-container *ngIf="isUserPage; else UserPage">
+                <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
+                    ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+            </ng-container>
+            <ng-template #UserPage> 
+                <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate">
+                    <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
+                        viewBox="0 0 56.105 47.887">
+                        <path id="Path_3601" data-name="Path 3601"
+                            d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
+                            transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
+                    </svg>
                     <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
                 </ng-container>
-                <ng-template #UserPage>
-                    <span
-                        *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                        || itemPost.referencePostObject.ownerUser.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                <ng-template #elseTemplate>
+                    <ng-container *ngIf="itemPost && itemPost.page && itemPost.page.name">
+                        <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
+                            viewBox="0 0 56.105 47.887">
+                            <path id="Path_3601" data-name="Path 3601"
+                                d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
+                                transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
+                        </svg>
+                        <span>{{itemPost.page && itemPost.page.name}} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
+                    </ng-container>
                 </ng-template>
+            </ng-template>
+        </div>
+    </div>
+    <div class="fulfill-profile" *ngIf="itemPost.type === 'FULFILLMENT'"
+        [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
+        <div class="fufill-name">
+            <div class="left">
+                <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
+                    target="_blank" (click)="onClickEngagement($event , itemPost._id , 'profile')">
+                    <div class="profile-left">
+                        <ng-container
+                            *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
+                            <img class="post-data-profile" src="{{apiBaseURL + itemPost.requester.imageURL+'/image'}}"
+                                alt="">
+                        </ng-container>
+                        <ng-template #elseTemplateImage>
+                            <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
+                        </ng-template>
+                        <div class="name-top">
+                            <div class="fulfill-name">{{itemPost.requester && itemPost.requester.displayName}}
+                            </div>
+                            <div class="text">ผู้ร่วม{{PLATFORM_FULFILL_TEXT}}</div>
+                        </div>
+                    </div>
+                </a>
+                <div class="middle">
+                    <svg class="icon-fulfill" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" version="1.1"
+                        width="20" height="20" x="0" y="0" viewBox="0 0 488.07 488.071"
+                        style="enable-background:new 0 0 512 512" xml:space="preserve">
+                        <g transform="matrix(1,0,0,1,0,0)">
+                            <g xmlns="http://www.w3.org/2000/svg">
+                                <g id="SvgjsG1006">
+                                    <path
+                                        d="M238.986,244.034c0,6.895-3.683,13.276-9.654,16.723L28.958,427.954c-5.971,3.452-13.333,3.452-19.306,0    C3.68,424.5,0,418.13,0,411.23V76.832c0-6.892,3.675-13.27,9.652-16.723c2.988-1.723,6.321-2.583,9.655-2.583    c3.341,0,6.663,0.864,9.655,2.583l200.379,167.2C235.304,230.759,238.986,237.137,238.986,244.034z M478.429,227.314    l-200.386-167.2c-2.978-1.724-6.312-2.583-9.651-2.583s-6.653,0.864-9.654,2.583c-5.973,3.453-9.652,9.825-9.652,16.723v334.4    c0,6.893,3.68,13.271,9.652,16.721c5.976,3.447,13.33,3.447,19.306,0l200.373-167.202c5.976-3.441,9.654-9.816,9.654-16.717    C488.08,237.142,484.392,230.759,478.429,227.314z"
+                                        fill="#84b572" data-original="#000000" style="" class="" />
+                                </g>
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                            <g xmlns="http://www.w3.org/2000/svg">
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <a href="/page/{{itemPost.pageId}}" target="_blank"
+                    (click)="onClickEngagement($event , itemPost._id , 'page')">
+                    <div class="profile-right">
+                        <ng-container
+                            *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
+                            <img class="post-data-profile"
+                                src="{{apiBaseURL + itemPost.fulfillmentPage.imageURL+'/image'}}" alt="">
+                        </ng-container>
+                        <ng-template #elseTemplateImagePage>
+                            <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
+                        </ng-template>
+                        <div class="name-top">
+                            <div class="fulfill-name">{{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
+                            </div>
+                            <ng-container
+                                *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
+                                <div class="text">สิ่งที่กำลังทำ</div>
+                            </ng-container>
+                            <ng-template #elseTemplateObjective>
+                                <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
+                            </ng-template>
+
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
-    </ng-container>
-    <ng-template #elseIconObject>
-        <ng-container *ngIf="itemPost.type === 'NEEDS';">
-            <div class="header-post"
-                [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
-                <div class="left"
-                    [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
-                    <div class="wrapper-profile-page" *ngIf="isShowProfile">
-                        <div class="page-img">
-                            <ng-container *ngIf="itemPost.page; else elseImage1">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL+'/image'}}"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseImage1>
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
-                                    alt="">
-                            </ng-template>
-                            <div class="post-data-name">
-                                <ng-container *ngIf="itemPost.page; else elseName1">
-                                    {{itemPost.page.name}}
-                                </ng-container>
-                                <ng-template #elseName1>
-                                    {{itemPost.user.displayName}}
-                                </ng-template>
-                                <div class="post-data-createdBy">
-                                    <div class="icon-feed looking"></div>
-                                    <span>
-                                        {{PLATFORM_NEEDS_TEXT}}
-                                    </span>
-                                    <div class="post-to">
-                                        <a href={{linkPost}} target="_blank"
-                                            (click)="onClickEngagement($event , itemPost._id , mainPostLink && mainPostLink.split('/')[0])">
-                                            <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                        fill="#A5A5A6" />
-                                                    <path
-                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                        fill="#A5A5A6" />
-                                                </svg>
-                                                <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
-                                            </div>
-                                        </a>
-                                        <ng-container *ngIf="isUserPage">
-                                            <a class="post-name" target="_blank"
-                                                (click)="onClickEngagement($event, itemPost._id, 'profile')"
-                                                href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                                <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
-                                                    itemPost.ownerUser.name}}</span>
-                                            </a>
-                                        </ng-container>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <ng-container *ngIf="!isShowProfile">
-                        <div class="icon-feed looking"></div>
-                        <span>
-                            {{PLATFORM_NEEDS_TEXT}}
-                        </span>
-                        <div class="post-to">
-                            <a href={{linkPost}} target="_blank"
-                                (click)="onClickEngagement($event , itemPost._id , mainPostLink && mainPostLink.split('/')[0])">
-                                <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                            fill="#A5A5A6" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                            fill="#A5A5A6" />
-                                    </svg>
-                                    <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
-                                </div>
-                            </a>
-                            <ng-container *ngIf="isUserPage">
-                                <a class="post-name" target="_blank"
-                                    (click)="onClickEngagement($event, itemPost._id, 'profile')"
-                                    href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                    <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
-                                        itemPost.ownerUser.name}}</span>
-                                </a>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </div>
-                <div class="repost-re"
-                    *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+    </div>
 
-                    <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
-                        viewBox="0 0 56.105 47.887">
-                        <path id="Path_3601" data-name="Path 3601"
-                            d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
-                            transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
-                    </svg>
-                    <ng-container *ngIf="isUserPage; else UserPage">
-                        <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
-                    </ng-container>
-                    <ng-template #UserPage>
-                        <span
-                            *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
-                    </ng-template>
-                </div>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="itemPost.type === 'FULFILLMENT';">
-            <div class="header-post"
-                [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
-                <div class="left"
-                    [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
-                    <div class="wrapper-profile-page">
-                        <div class="page-img">
-                            <!-- <ng-container *ngIf="itemPost.page; else elseImage1">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL+'/image'}}"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseImage1>
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
-                                    alt="">
-                            </ng-template> -->
-                            <!-- <div class="post-data-name">
-                                <ng-container *ngIf="itemPost.page; else elseName1">
-                                    {{itemPost.page.name}}
-                                </ng-container>
-                                <ng-template #elseName1>
-                                    {{itemPost.user.displayName}}
-                                </ng-template>
-                                <div class="post-data-createdBy">
-                                    <div class="icon-feed looking"></div>
-                                    <span>
-                                        เต็มเติม
-                                    </span>
-                                    <div class="post-to">
-                                        <a href={{linkPost}} target="_blank">
-                                            <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                        fill="#A5A5A6" />
-                                                    <path
-                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                        fill="#A5A5A6" />
-                                                </svg>
-                                                <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
-                                            </div>
-                                        </a>
-                                        <ng-container *ngIf="isUserPage">
-                                            <div class="post-name">
-                                                เผยแพร่โดย: {{itemPost.ownerUser.displayName ||
-                                                itemPost.ownerUser.name}}
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </div>
-                            </div> -->
-                        </div>
-                    </div>
-                    <ng-container *ngIf="!isShowProfile">
-                        <div class="icon-feed fulfill"></div>
-                        <span>
-                            เต็มเติม
-                        </span>
-                        <div class="post-to">
-                            <a href={{linkPost}} target="_blank"
-                                (click)="onClickEngagement($event , itemPost._id , mainPostLink && mainPostLink.split('/')[0])">
-                                <div class="date-time" [phxPreload]="itemPost" [preloadClass]="'date-time'">
-                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                            fill="#A5A5A6" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                            fill="#A5A5A6" />
-                                    </svg>
-                                    <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
-                                </div>
-                            </a>
-                            <ng-container *ngIf="isUserPage">
-                                <a class="post-name" target="_blank"
-                                    (click)="onClickEngagement($event, itemPost._id, 'profile')"
-                                    href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
-                                    <span>เผยแพร่โดย : {{ itemPost.ownerUser && itemPost.ownerUser.displayName ||
-                                        itemPost.ownerUser && itemPost.ownerUser.name}}</span>
-                                </a>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </div>
-
-                <div class="repost-re"
-                    *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
-                    <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
-                        viewBox="0 0 56.105 47.887">
-                        <path id="Path_3601" data-name="Path 3601"
-                            d="M415.311,454.16h-3.1l6.346-6.4a14.988,14.988,0,0,0-.144-21.16l.011-.011a14.983,14.983,0,0,0-21.154.108l-2.563,2.584-2.6-2.567a14.85,14.85,0,0,0-10.363-4.181c-.1,0-.2,0-.3,0a14.961,14.961,0,0,0-10.378,25.447l21.38,21.164a3.484,3.484,0,0,0,4.914,0l2.366-2.394-23.767-23.677a8.016,8.016,0,0,1,11.275-11.4l7.524,7.449,7.4-7.485a8.036,8.036,0,0,1,11.436,11.236l-6.171,6.233.019-2.8a3.592,3.592,0,1,0-7.183,0v11.447a3.621,3.621,0,0,0,.531,1.9c.076.115.151.219.331.449l.165.172a2.583,2.583,0,0,0,.326.3,3.782,3.782,0,0,0,.359.259,3.569,3.569,0,0,0,1.842.52h11.483a3.591,3.591,0,1,0,0-7.182Z"
-                            transform="translate(-366.755 -422.271)" fill="#9d9d9d" />
-                    </svg>
-                    <ng-container *ngIf="isUserPage; else UserPage">
-                        <span>คุณได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
-                    </ng-container>
-                    <ng-template #UserPage>
-                        <span
-                            *ngIf="itemPost.referencePostObject.ownerUser">{{itemPost.referencePostObject.ownerUser.displayName
-                            || itemPost.referencePostObject.ownerUser.name }} ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
-                    </ng-template>
-                </div>
-            </div>
-            <div class="fulfill-profile"
-                [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
-                <div class="fufill-name">
-                    <div class="left">
-                        <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
-                            target="_blank" (click)="onClickEngagement($event , itemPost._id , 'profile')">
-                            <div class="profile-left">
-                                <ng-container
-                                    *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
-                                    <img class="post-data-profile"
-                                        src="{{apiBaseURL + itemPost.requester.imageURL+'/image'}}" alt="">
-                                </ng-container>
-                                <ng-template #elseTemplateImage>
-                                    <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
-                                </ng-template>
-                                <div class="name-top">
-                                    <div class="fulfill-name">{{itemPost.requester && itemPost.requester.displayName}}
-                                    </div>
-                                    <div class="text">ผู้ร่วม{{PLATFORM_FULFILL_TEXT}}</div>
-                                </div>
-                            </div>
-                        </a>
-                        <div class="middle">
-                            <svg class="icon-fulfill" xmlns="http://www.w3.org/2000/svg"
-                                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"
-                                version="1.1" width="20" height="20" x="0" y="0" viewBox="0 0 488.07 488.071"
-                                style="enable-background:new 0 0 512 512" xml:space="preserve">
-                                <g transform="matrix(1,0,0,1,0,0)">
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                        <g id="SvgjsG1006">
-                                            <path
-                                                d="M238.986,244.034c0,6.895-3.683,13.276-9.654,16.723L28.958,427.954c-5.971,3.452-13.333,3.452-19.306,0    C3.68,424.5,0,418.13,0,411.23V76.832c0-6.892,3.675-13.27,9.652-16.723c2.988-1.723,6.321-2.583,9.655-2.583    c3.341,0,6.663,0.864,9.655,2.583l200.379,167.2C235.304,230.759,238.986,237.137,238.986,244.034z M478.429,227.314    l-200.386-167.2c-2.978-1.724-6.312-2.583-9.651-2.583s-6.653,0.864-9.654,2.583c-5.973,3.453-9.652,9.825-9.652,16.723v334.4    c0,6.893,3.68,13.271,9.652,16.721c5.976,3.447,13.33,3.447,19.306,0l200.373-167.202c5.976-3.441,9.654-9.816,9.654-16.717    C488.08,237.142,484.392,230.759,478.429,227.314z"
-                                                fill="#84b572" data-original="#000000" style="" class="" />
-                                        </g>
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                    <g xmlns="http://www.w3.org/2000/svg">
-                                    </g>
-                                </g>
-                            </svg>
-                        </div>
-                        <a href="/page/{{itemPost.pageId}}" target="_blank"
-                            (click)="onClickEngagement($event , itemPost._id , 'page')">
-                            <div class="profile-right">
-                                <ng-container
-                                    *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
-                                    <img class="post-data-profile"
-                                        src="{{apiBaseURL + itemPost.fulfillmentPage.imageURL+'/image'}}" alt="">
-                                </ng-container>
-                                <ng-template #elseTemplateImagePage>
-                                    <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
-                                </ng-template>
-                                <div class="name-top">
-                                    <div class="fulfill-name">{{itemPost.fulfillmentPage &&
-                                        itemPost.fulfillmentPage.name}}
-                                    </div>
-                                    <ng-container
-                                        *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
-                                        <div class="text">สิ่งที่กำลังทำ</div>
-                                    </ng-container>
-                                    <ng-template #elseTemplateObjective>
-                                        <div class="text">เพจที่{{PLATFORM_NEEDS_TEXT}}</div>
-                                    </ng-template>
-
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-    </ng-template>
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
+        <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
     <div class="topic-name" [class.active]="itemPost.referencePostObject"
         *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
@@ -486,7 +327,7 @@
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
-    </div> 
+    </div>
     <div class="wrapper-content"
         [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
         <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
@@ -505,7 +346,7 @@
                 {{itemPost.casePostId && itemPost.casePostId !== undefined &&
                 itemPost.casePostId !== '' ?
                 'โพสต์' : 'เพจ' }} </a>
-        </div>
+        </div> 
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
                 [ngStyle]="{'margin-top': itemPost.referencePostObject ? '10pt' : 'unset' , 'display' : itemPost.referencePostObject ? 'block' : 'unset'}">
@@ -533,8 +374,6 @@
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <!-- shared post to facebook or twitter -->
-        <!-- *ngIf="isPostShareData && isPostShareData.length > 0" -->
-        <!-- [ngStyle]="{'fill': isPostShareData.length > 0 ? '#FD545A' : '#212721'}" -->
         <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
             <div class="social-share">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
@@ -603,7 +442,7 @@
             </div>
             <div class="right">
                 <control-action [isAction]="'true'" [comment]="itemPost.commentCount ? itemPost.commentCount : 0 "
-                    [reboon]="itemPost.repostCount ? itemPost.repostCount : 0"
+                    [reboon]="itemPost.repostCount !== -1 ? itemPost.repostCount : 0"
                     [like]="itemPost.likeCount ? itemPost.likeCount : 0"
                     [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
                     [userLike]="itemPost.isLike" [userReboon]="itemPost.isRepost" [userComment]="itemPost.isComment"
@@ -631,7 +470,8 @@
                     </ng-template>
                 </div>
                 <div class="input-comment">
-                    <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span></div>
+                    <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span>
+                    </div>
 
                     <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
                         [(ngModel)]="value" type="text">

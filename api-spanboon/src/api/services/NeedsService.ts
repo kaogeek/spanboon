@@ -103,4 +103,56 @@ export class NeedsService {
 
         return allFulfilled;
     }
+
+    public sampleNeedsItems(matchStmt: any, simpleCount: number): Promise<Needs[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = [];
+
+                if (matchStmt === undefined || matchStmt === null) {
+                    resolve(result);
+                    return;
+                }
+
+                const aggregateObj = [
+                    { $match: matchStmt },
+                    { $sample: { size: simpleCount } },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$standardItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'customItemId',
+                            foreignField: '_id',
+                            as: 'customItem'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$customItem',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ];
+
+                const needsResult = await this.aggregate(aggregateObj);
+
+                resolve(needsResult);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 }

@@ -73,23 +73,23 @@ spanboon-footer-mobile {
   }
 
   .fix-hompage-bar {
-    transition: all 0.49s ease-in-out;
-    -webkit-transition: all 0.49s ease-in-out;
-    -moz-transition: all 0.49s ease-in-out;
-    -ms-transition: all 0.49s ease-in-out;
-    top: 38pt !important;
+    transition: all 0.49s ;
+    -webkit-transition: all 0.49s ;
+    -moz-transition: all 0.49s ;
+    -ms-transition: all 0.49s ;
+    // top: 38pt !important;
   }
 
   .fix-hompage-bar.hidden {
-    top: 15pt !important;
+    top: 0pt !important;
     font-size: 20px !important;
   }
 
   .hompage-title {
-    transition: all 0.49s ease-in-out;
-    -webkit-transition: all 0.49s ease-in-out;
-    -moz-transition: all 0.49s ease-in-out;
-    -ms-transition: all 0.49s ease-in-out;
+    transition: all 0.49s ;
+    -webkit-transition: all 0.49s ;
+    -moz-transition: all 0.49s ;
+    -ms-transition: all 0.49s ;
     font-size: 25px !important;
   }
 

@@ -58,7 +58,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete'; 
 
 import {
   HeaderTop,
@@ -89,6 +89,9 @@ import {
   SecurityInfo,
   AboutPage,
   Policy,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogImage,
   DialogAlert,
@@ -287,6 +290,9 @@ const COMPONENTS: any[] = [
   PageHashTag,
   PageRecommended,
   Redirect,
+  // timeline 
+  ObjectiveTimeline,
+  EmergencyEventTimeline,
   // shares
   DialogEditComment,
   DialogEditPost,
@@ -448,7 +454,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
-  UserEngagementFacade,
+  UserEngagementFacade, 
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

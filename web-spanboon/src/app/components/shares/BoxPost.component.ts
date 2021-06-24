@@ -22,9 +22,7 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
-import { cpuUsage } from 'process';
-import { F } from '@angular/cdk/keycodes';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';  
 
 declare var $: any;
 declare const window: any;
@@ -37,7 +35,7 @@ const TEXT_LIMIT: number = 230;
   selector: 'box-post',
   templateUrl: './BoxPost.component.html'
 })
-export class BoxPost extends AbstractPage implements OnInit {
+export class BoxPost extends AbstractPage implements OnInit  {
 
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
@@ -83,7 +81,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public accessDataPage: any;
   @Input()
-  public isRepost: boolean; 
+  public isRepost: boolean;
   @Input()
   public isListPage: boolean;
   @Input()
@@ -136,6 +134,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public submitResizeClose: EventEmitter<any> = new EventEmitter();
   @Output()
   public selectedInformation: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public changeText: EventEmitter<any> = new EventEmitter();
 
   public dialog: MatDialog;
   private postFacade: PostFacade;
@@ -152,7 +152,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public snackBar: MatSnackBar;
 
-  private masterSelected: boolean; 
+  private masterSelected: boolean;
 
   public httpItems: Observable<any[]>;
   public isShowEmergency: boolean;
@@ -245,6 +245,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   tag: Observable<string[]>;
   filtered: any;
   dataSource = new MatTableDataSource(this.resHashTag);
+  public isDirty: boolean =  false;
 
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
@@ -305,10 +306,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isButtonFulfill = false;
     this.isSelectOption = true;
     this.router = router;
-    this.data = {};
-
-    this.observManager.subscribe('authen.check', (data) => {
-    });
+    this.data = {}; 
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {
@@ -317,8 +315,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     // }).catch((error: any) => {
     //   // console.log(error) 
     // }); 
-  }
- 
+  } 
+
   public ngOnInit(): void {
     this.searchAccessPage();
     this.checkTabs();
@@ -355,7 +353,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         this.prefix_button = 'box-file-input';
       }
     }, 0);
-    if (this.isListPage && this.content) { 
+    if (this.isListPage && this.content) {
       setTimeout(() => {
         let detail = this.content && (this.content.content || this.content.detail) ? (this.content.content || this.content.detail) : '';
         if (detail.includes('#')) {
@@ -526,7 +524,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         limit: 10,
         callbacks: {
           remoteFilter: (query, callback) => {
-            let filter : SearchFilter = new SearchFilter();
+            let filter: SearchFilter = new SearchFilter();
             filter.whereConditions = {
               name: query
             };
@@ -581,12 +579,12 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.socialGetBindingTwitter();
       this.socialGetBindingFacebook();
       this.getConfigTwitter();
-      this.getConfigFacebook(); 
+      this.getConfigFacebook();
     }, 0);
   }
 
   public ngOnDestroy(): void {
-    super.ngOnDestroy(); 
+    super.ngOnDestroy();
   }
 
   isPageDirty(): boolean {
@@ -605,10 +603,16 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public updateText() {
-    document.addEventListener('paste', (evt: any) => {
-      if (evt.srcElement.className === "textarea-editor" || evt.srcElement.className === 'textarea-editor ng-star-inserted' || evt.srcElement.className === 'textarea-editor ng-star-inserted msg-error-shake' || evt.srcElement.className === 'textarea-editor msg-error-shake'
-        || evt.srcElement.className === 'header-story' || evt.srcElement.className === 'header-story ng-star-inserted' || evt.srcElement.className === 'header-story ng-star-inserted msg-error-shake' || evt.srcElement.className === 'header-story msg-error-shake') {
-        evt.preventDefault();
+    const detail = document.getElementById(this.prefix && this.prefix.detail ? this.prefix.detail + 'editableStoryPost' : 'editableStoryPost');
+    const header = document.getElementById(this.prefix && this.prefix.header ? this.prefix.header + 'topic' : 'topic');
+    this.replaceContenteditable(detail);
+    this.replaceContenteditable(header);
+  }
+
+  public replaceContenteditable(element) {
+    element.addEventListener('paste', (evt: any) => {
+      evt.preventDefault();
+      if (evt.srcElement.className) {
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
         let text = clipdata.getData('text/plain');
         document.execCommand('insertText', false, text);
@@ -616,17 +620,17 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
   }
 
-  public async checkAccessPage(pageId: string) { 
-    await this.pageFacade.getAccess(pageId).then((res: any) => { 
+  public async checkAccessPage(pageId: string) {
+    await this.pageFacade.getAccess(pageId).then((res: any) => {
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true; 
+          this.isNotAccess = true;
         }
       }
 
-    }).catch((err: any) => { 
+    }).catch((err: any) => {
       if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false; 
+        this.isNotAccess = false;
       }
     })
   }
@@ -635,7 +639,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public searchAccessPage() {
     this.userAccessFacade.getPageAccess().then((res: any) => {
       if (res.length > 0) {
-        let index = 0; 
+        let index = 0;
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
@@ -663,7 +667,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                   data.page.imageURL = null
                 } else {
                   data.page.imageURL = image.data
-                } 
+                }
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
@@ -684,7 +688,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public cloneDataCheck(cloneData: any) {
     if (cloneData && cloneData.length > 0) {
       for (let data of cloneData) {
-        if (this.router.url.split('/')[1] === "page") { 
+        if (this.router.url.split('/')[1] === "page") {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
             this.modeShowDoing = true;
@@ -983,7 +987,9 @@ export class BoxPost extends AbstractPage implements OnInit {
           userTags: this.userTag,
           postsHashTags: this.hashTag,
           postGallery: this.dataImage,
-          coverImage: this.coverImage
+          coverImage: this.coverImage,
+          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
         }
         if (this.modeShowDoing) {
           Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
@@ -1216,15 +1222,23 @@ export class BoxPost extends AbstractPage implements OnInit {
     // } else {
     //   $('.header-story').removeClass('msg-error-shake');
     // }
-
+    this.changeText.emit(true); 
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
       if (this.mStory === "") {
         var myselect = $('#topic').attr('contenteditable', 'true');
         myselect.find("br:last-child").remove();
-        $('.header-story').addClass('msg-error-shake');
-      } else {
-        // $('.header-story').removeClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.header + 'topic').addClass('msg-error-shake');
+        } else {
+          $('#topic').addClass('msg-error-shake');
+        }
+      } else { 
+        if (this.prefix) {
+          $('#' + this.prefix.header + 'topic').removeClass('msg-error-shake');
+        } else {
+          $('#topic').removeClass('msg-error-shake');
+        }
       }
     }
     if (this.isListPage) {
@@ -1251,13 +1265,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onKeyup(event) {
+    this.isDirty = true;
     clearTimeout(this.setTimeKeyup);
     this.setTimeKeyup = setTimeout(() => {
       $('.list-add-hashtaggg').click((dom) => {
         this.clickAddHashtag(dom.target.innerText);
       });
-      this.getTextLength();
-
+      this.getTextLength(); 
     }, 200);
 
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
@@ -1265,9 +1279,17 @@ export class BoxPost extends AbstractPage implements OnInit {
       if (this.mTopic.trim() === "") {
         var myselect = $('#editableStoryPost').attr('contenteditable', 'true');
         myselect.find("br:last-child").remove();
-        $('.textarea-editor').addClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.detail + 'editableStoryPost').addClass('msg-error-shake');
+        } else {
+          $('#editableStoryPost').addClass('msg-error-shake');
+        }
       } else {
-        $('.textarea-editor').removeClass('msg-error-shake');
+        if (this.prefix) {
+          $('#' + this.prefix.detail + 'editableStoryPost').removeClass('msg-error-shake');
+        } else {
+          $('#editableStoryPost').removeClass('msg-error-shake');
+        }
       }
     }
     this.postFacade.nextMessage(this.mTopic);
@@ -1514,7 +1536,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         }
       }
-    } 
+    }
 
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
@@ -2634,7 +2656,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
     });
   }
 
@@ -2659,61 +2680,62 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public socialBinding(socialBind: boolean, platform: string) {
-    if (platform === 'twitter' && !this.twitterConection) {
-      if (!socialBind) {
-        this.unbindTwitter();
-      } else {
-        let callback = environment.webBaseURL + "/callback";
-        this.twitterService.requestToken(callback).then((result: any) => {
-          this.authorizeLink += '?' + result;
-          window.open(this.authorizeLink);
-          window.bindTwitter = (resultTwitter) => {
-            if (resultTwitter !== undefined && resultTwitter !== null) {
-              const twitter = new PageSocialTW();
-              twitter.twitterOauthToken = resultTwitter.token;
-              twitter.twitterTokenSecret = resultTwitter.token_secret;
-              twitter.twitterUserId = resultTwitter.userId;
+    this.setAutoPostSocial(socialBind, platform);
+    // if (platform === 'twitter' && !this.twitterConection) {
+    //   // if (!socialBind) {
+    //   //   this.unbindTwitter();
+    //   // } else { 
+    //   //   let callback = environment.webBaseURL + "/callback";
+    //   //   this.twitterService.requestToken(callback).then((result: any) => {
+    //   //     this.authorizeLink += '?' + result;
+    //   //     window.open(this.authorizeLink);
+    //   //     window.bindTwitter = (resultTwitter) => {
+    //   //       if (resultTwitter !== undefined && resultTwitter !== null) {
+    //   //         const twitter = new PageSocialTW();
+    //   //         twitter.twitterOauthToken = resultTwitter.token;
+    //   //         twitter.twitterTokenSecret = resultTwitter.token_secret;
+    //   //         twitter.twitterUserId = resultTwitter.userId;
 
-              this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
-                if (res.data) {
-                  this.twitterConection = res.data;
-                  if (this.twitterConection) {
-                    let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
+    //   //         this.pageFacade.socialBindingTwitter(this.dataPageId.id, twitter).then((res: any) => {
+    //   //           if (res.data) {
+    //   //             this.twitterConection = res.data;
+    //   //             if (this.twitterConection) {
+    //   //               let alertMessage: string = "คุณต้องการสร้างแชร์โพสต์ไปยัง twitter อัตโนมัติไหม ?"
 
-                    const confirmEventEmitter = new EventEmitter<any>();
-                    confirmEventEmitter.subscribe(() => {
-                      this.submitDialog.emit();
-                    });
-                    const canCelEventEmitter = new EventEmitter<any>();
-                    canCelEventEmitter.subscribe(() => {
-                      this.submitCanCelDialog.emit();
-                    });
+    //   //               const confirmEventEmitter = new EventEmitter<any>();
+    //   //               confirmEventEmitter.subscribe(() => {
+    //   //                 this.submitDialog.emit();
+    //   //               });
+    //   //               const canCelEventEmitter = new EventEmitter<any>();
+    //   //               canCelEventEmitter.subscribe(() => {
+    //   //                 this.submitCanCelDialog.emit();
+    //   //               });
 
-                    let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
-                    dialog.afterClosed().subscribe((res) => {
-                      if (res) {
-                        this.setAutoPostSocial(true, 'twitter')
-                      } else {
-                        this.isAutoPostTwitter = false;
-                      }
-                    });
-                  }
-                }
-              }).catch((err: any) => {
-                if (err.error.message === 'This page was binding with Twitter Account.') {
-                  this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
-                }
-              });
-            }
-          }
-        }).catch((error: any) => {
-          console.log(error);
-          this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
-        });
-      }
-    } else {
-      this.setAutoPostSocial(socialBind, platform);
-    }
+    //   //               let dialog = this.showDialogWarming(alertMessage, "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    //   //               dialog.afterClosed().subscribe((res) => {
+    //   //                 if (res) {
+    //   //                   this.setAutoPostSocial(true, 'twitter')
+    //   //                 } else {
+    //   //                   this.isAutoPostTwitter = false;
+    //   //                 }
+    //   //               });
+    //   //             }
+    //   //           }
+    //   //         }).catch((err: any) => {
+    //   //           if (err.error.message === 'This page was binding with Twitter Account.') {
+    //   //             this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+    //   //           }
+    //   //         });
+    //   //       }
+    //   //     }
+    //   //   }).catch((error: any) => {
+    //   //     console.log(error);
+    //   //     this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    //   //   });
+    //   // }
+    // } else {
+    //   this.setAutoPostSocial(socialBind, platform);
+    // }
   }
 
   public popup(url, title, width, height, scroll) {

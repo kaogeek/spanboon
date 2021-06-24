@@ -292,6 +292,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.getRecommendedHashtag();
       this.setCardSilder();
       setTimeout(() => {
+        if (document.getElementById("0").innerText === "undefined") {
+          document.getElementById("0").style.display = "none";
+        }
         this.isPreload = false
       }, 500);
 
@@ -312,7 +315,6 @@ export class StoryPage extends AbstractPage implements OnInit {
 
 
       this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        console.log(page)
         if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
           this.linkPage = (this.mainPageLink + page.data.uniqueId)
         } else if (page.data.id !== undefined && page.data.id !== null) {

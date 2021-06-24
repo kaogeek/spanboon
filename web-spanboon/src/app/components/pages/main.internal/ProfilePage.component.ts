@@ -6,15 +6,14 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade } from '../../../services/services';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService } from '../../../services/services';
+import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { Asset } from '../../../models/Asset';
-import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../../custom/variable';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import * as moment from 'moment';
@@ -24,7 +23,6 @@ import { DialogEditProfile } from '../../shares/dialog/DialogEditProfile.compone
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
 import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
 
@@ -60,7 +58,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private recommendFacade: RecommendFacade;
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
-  public dialog: MatDialog; 
+  private postActionService: PostActionService;
+  public dialog: MatDialog;
 
   public isLoading: boolean;
   public isEditCover: boolean;
@@ -95,6 +94,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public userCloneDatas: any
   public Tab: boolean = true;
   public CheckPost: boolean = true;
+  public isPostLoading: boolean = false;
 
   private coverImageoldValue = 50;
 
@@ -106,7 +106,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -120,7 +120,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.postCommentFacade = postCommentFacade;
     this.recommendFacade = recommendFacade;
     this.engagementService = engagementService;
-    this.userEngagementFacade = userEngagementFacade; 
+    this.userEngagementFacade = userEngagementFacade;
+    this.postActionService = postActionService;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true;
@@ -205,7 +206,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         }
       }
     });
-
   }
 
   public ngOnDestroy() {
@@ -359,6 +359,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public createPost(value) {
     if (value.title) {
+      this.isPostLoading = true;
       this.pageFacade.createPost(null, value).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
@@ -554,10 +555,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           this.isLoadingPost = false;
           this.isLoadingClickTab = false;
         }, 1500);
+        this.isPostLoading = false;
       } else {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
+        this.isPostLoading = false;
         if (offset) {
           this.resPost = [];
         }
@@ -708,7 +711,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public rePositionImage(image: any) {
-
     var imgWidth;
     var imgHeight;
     var imgHeightTotal;
@@ -851,7 +853,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-
   public async clickFollow(data: any) {
     if (data.recommed.type === 'USER') {
       const followUser = await this.followUser(data.recommed._id);
@@ -861,7 +862,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             if (followUser.message === "Unfollow User Success") {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
-                console.log('res ',res)
+                console.log('res ', res)
                 if (res) {
                   Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
                 } else {
@@ -954,7 +955,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }, 1000);
   }
 
-
   public createComment(comment: any, index?: number) {
     let commentPosts = new CommentPosts
     if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
@@ -978,99 +978,31 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public async actionComment(action: any, index: number) {
-    this.postId = action.pageId
-    let pageInUser: any[]
-    let data: RePost = new RePost();
-    let dataPost: any
-    let userAsPage: any
-    let search: SearchFilter = new SearchFilter();
-    search.limit = 10;
-    search.count = false;
-    search.whereConditions = { ownerUser: this.userCloneDatas.id };
-    if (action.mod === 'REBOON') {
-      if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-        userAsPage = action.userAsPage.id
-      } else {
-        userAsPage = null
-      }
-      if (action.type === "TOPIC") {
-        var aw = await this.pageFacade.search(search).then((pages: any) => {
-          pageInUser = pages
-        }).catch((err: any) => {
-        })
-        for (let p of pageInUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+    this.isLoginCh();
+    await this.postActionService.actionPost(action, index, this.resPost).then((res: any) => {
+      //repost
+      if (res && res.type === "NOTOPIC") {
+        this.resPost.posts = res.posts;
+      } else if (res.type === "TOPIC") {
+        this.resPost.posts = res.posts;
+      } else if (res.type === "UNDOTOPIC") {
+        for (let [i, data] of this.resPost.posts.entries()) {
+          if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
+            if (data.referencePostObject._id === action.post._id) {
+              this.resPost.posts.splice(i, 1);
+              break;
+            }
+          }
         }
-        const dialogRef = this.dialog.open(DialogReboonTopic, {
-          width: '450pt',
-          data: { options: { post: action.post, page: pageInUser, userAsPage: userAsPage } }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (!result) {
-            return
-          }
-          if (result.isConfirm) {
-            if (result.pageId === 'แชร์เข้าไทมไลน์ของฉัน') {
-              data.pageId = null
-              if (result.text === "") {
-                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-                  dataPost = action.post.referencePost._id
-                } else {
-                  dataPost = action.post._id
-                }
-              } else {
-                dataPost = action.post._id
-              }
-            } else {
-              data.pageId = result.pageId
-              if (result.text === "") {
-                if (action.post.referencePost !== undefined && action.post.referencePost !== null) {
-                  dataPost = action.post.referencePost._id
-                } else {
-                  dataPost = action.post._id
-                }
-              } else {
-                dataPost = action.post._id
-              }
-            }
-            data.detail = result.text
-            if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
-              data.postAsPage = action.userAsPage.id
-            }
-            if (result.hashTag !== undefined && result.hashTag !== null) {
-              data.hashTag = result.hashTag
-            }
-            this.postFacade.rePost(dataPost, data).then((res: any) => {
-              this.resPost.posts[index].repostCount++
-            }).catch((err: any) => {
-              console.log(err)
-            })
-          }
-        });
-      } else if (action.type === "NOTOPIC") {
-        data.pageId = null
-        dataPost = action.post._id
-        this.postFacade.rePost(dataPost, data).then((res: any) => {
-          this.resPost.posts[index].repostCount++
-          this.resPost.posts[index].isRepost = true
-        }).catch((err: any) => {
-          console.log(err)
-        })
+      } else if (res.type === "POST") {
+        this.router.navigateByUrl('/post/' + action.pageId);
+      } else if (action.mod === 'LIKE') {
+        this.isLoginCh();
+        this.postLike(action, index);
       }
-
-    } else if (action.mod === 'LIKE') {
-      this.postLike(action, index);
-    } else if (action.mod === 'SHARE') {
-      this.isLoginCh();
-    } else if (action.mod === 'COMMENT') {
-      this.isLoginCh();
-    } else if (action.mod === 'POST') {
-      this.router.navigateByUrl('/post/' + action.pageId);
-    }
+    }).catch((err: any) => {
+      console.log('err ', err)
+    });
   }
 
   public deletePost(post: any, index: number) {
@@ -1094,7 +1026,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         })
       }
     });
-
   }
 
   public editPost(data: any, index: number) {
@@ -1133,7 +1064,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-
   public getAaaPost(action: any, index: number) {
     let user = this.authenManager.getCurrentUser()
     if (action.userPage.id === user.id) {
@@ -1168,7 +1098,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     }
   }
-
 
   public getImageSelector(): string[] {
     return [".checkload"];
@@ -1254,9 +1183,4 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       console.log('err ', err)
     })
   }
-
 }
-
-
-
-

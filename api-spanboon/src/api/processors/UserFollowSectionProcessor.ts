@@ -43,7 +43,9 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -56,10 +58,22 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
                     }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
+                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
+
+                // get startDateTime, endDateTime
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
+                }
 
                 let userId = undefined;
                 let clientId = undefined;
@@ -116,12 +130,25 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 lastestFilter.whereConditions.hidden = false;
                 lastestFilter.whereConditions.startDateTime = { $lte: today };
 
+                // overide start datetime
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+
+                if (dateTimeAndArray.length > 0) {
+                    lastestFilter.whereConditions['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    lastestFilter.whereConditions.startDateTime = { $lte: today };
+                }
+
                 const matchStmt = lastestFilter.whereConditions;
                 const postStmt = [
                     { $match: matchStmt },
-                    { $limit: limit },
-                    { $skip: offset },
-                    { $sort: { createdDate: -1 } },
                     {
                         $lookup: {
                             from: 'Page',
@@ -130,6 +157,10 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                             as: 'page'
                         }
                     },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'User',
@@ -147,11 +178,18 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         }
                     }
                 ];
+
+                // overide search Official
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
+
                 searchResult = await this.postsService.aggregate(postStmt);
 
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'โพสต์ที่แนะนำสำหรับคุณ';
+                result.type = 'USERFOLLOW';
                 result.iconUrl = '';
                 if (page) {
                     result.title = 'เพราะคุณติดตาม' + ' "' + page.name + '"';

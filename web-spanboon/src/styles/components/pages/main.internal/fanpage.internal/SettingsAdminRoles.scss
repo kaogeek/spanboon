@@ -96,7 +96,7 @@
                             > .search-input {
                                 height: 100%;
                                 width: 100%;
-                                @include font-size-9($font-head-400);
+                                @include font-size-9($font-content-light);
                                 border-radius: 4px 0 0 4px;
                                 border: 0.7pt solid $border-color;
                                 padding: 0 30pt 0 10pt;
