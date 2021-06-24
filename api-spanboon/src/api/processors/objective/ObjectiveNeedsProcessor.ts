@@ -65,10 +65,10 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
 
                 if (dateTimeAndArray.length > 0) {
@@ -84,6 +84,22 @@ export class ObjectiveNeedsProcessor extends AbstractTypeSectionProcessor {
                             localField: '_id',
                             foreignField: 'post',
                             as: 'needs'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'StandardItem',
+                            localField: 'needs.standardItemId',
+                            foreignField: '_id',
+                            as: 'standardItemCollection'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'CustomItem',
+                            localField: 'needs.customItemId',
+                            foreignField: '_id',
+                            as: 'customItemCollection'
                         }
                     }
                 ];

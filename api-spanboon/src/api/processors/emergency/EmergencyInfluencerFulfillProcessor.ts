@@ -41,10 +41,10 @@ export class EmergencyInfluencerFulfillProcessor extends AbstractTypeSectionProc
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime.toISOString() } });
+                    dateTimeAndArray.push({ createdDate: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime.toISOString() } });
+                    dateTimeAndArray.push({ createdDate: { $lte: endDateTime } });
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
@@ -81,8 +81,7 @@ export class EmergencyInfluencerFulfillProcessor extends AbstractTypeSectionProc
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { emergencyEvent: emergencyEventId } },
-                        { $group: { _id: '$requester', count: { $sum: 1 } } },
+                        { $match: { 'posts.emergencyEvent': emergencyEventId } },
                         {
                             $lookup: {
                                 from: 'User',
@@ -112,7 +111,7 @@ export class EmergencyInfluencerFulfillProcessor extends AbstractTypeSectionProc
                     const distinctTopInfluencer = [];
                     if (emergencyEventInflu && emergencyEventInflu.length > 0) {
                         for (const objInflu of emergencyEventInflu) {
-                            const key = objInflu._id + '';
+                            const key = objInflu.requester + '';
                             if (addedUserIds.indexOf(key) >= 0) {
                                 continue;
                             }

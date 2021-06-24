@@ -13,7 +13,8 @@ import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
-import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
+import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service'; 
+import { Observable } from 'rxjs';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -39,6 +40,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public user: any;
   public data: any;
   public isDev: boolean = true;
+  public isDirty: boolean = false;
 
   public redirection: string;
 
@@ -92,9 +94,8 @@ export class MainPage extends AbstractPage implements OnInit {
     this.observManager.createSubject('scroll.buttom');
     this.observManager.createSubject('scroll.fix');
     this.observManager.createSubject('scroll');
-    this.observManager.createSubject('menu.click');
-  }
-
+    this.observManager.createSubject('menu.click'); 
+  }  
 
   public ngOnInit(): void {
     this.isLogin();
@@ -265,8 +266,7 @@ export class MainPage extends AbstractPage implements OnInit {
         dataName = this.user.uniqueId
       } else if (this.user.displayName) {
         dataName = this.user.displayName
-      }
-
+      } 
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;

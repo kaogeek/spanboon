@@ -35,7 +35,7 @@
             <ng-container *ngFor="let itemObjective of itemData; let index = index">
                 <div class="wrapper-doing" *ngIf="index <= 5">
                     <display-image [class]="'image-tag'" [isPreload]="'true'" [isLoaded]="itemObjective.isLoaded"
-                        [base64]="itemObjective.iconBase64">
+                        [isGlightbox]="false" [base64]="itemObjective.iconBase64">
                     </display-image>
                     <span class="i_title">
                         {{itemObjective.title}}
@@ -56,7 +56,7 @@
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" *ngFor="let itemObjective of itemData; let index = index">
                         <div class="wrapper-doing">
-                            <display-image [class]="'image-tag'" [isPreload]="'true'"
+                            <display-image [isGlightbox]="false"  [class]="'image-tag'" [isPreload]="'true'"
                                 [isLoaded]="itemObjective.isLoaded" [base64]="itemObjective.iconBase64">
                             </display-image>
                             <span class="i_title">

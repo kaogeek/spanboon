@@ -495,7 +495,7 @@ export class ObjectiveController {
             pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
             pageObjTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
 
-            // pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
+            pageObjTimeline.relatedHashTags = await this.pageObjectiveService.sampleRelatedHashTags(objId, 5);
             pageObjTimeline.needItems = await this.pageObjectiveService.sampleNeedsItems(objId, 5);
             pageObjTimeline.timelines = [];
 
@@ -520,7 +520,7 @@ export class ObjectiveController {
                     objectiveId: objId,
                     startDateTime: ranges[0],
                     endDateTime: ranges[1],
-                    sampleCount: 2
+                    sampleCount: 4
                 });
                 const influencerProcsResult = await influencerProcessor.process();
                 if (influencerProcsResult !== undefined) {

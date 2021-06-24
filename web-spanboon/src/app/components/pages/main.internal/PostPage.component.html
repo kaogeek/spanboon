@@ -532,7 +532,7 @@
                                             <ng-container
                                                 *ngFor="let item of resDataPage.pageObjectives; let index = index">
                                                 <div class="wrapper-doing" *ngIf="index <= 5">
-                                                    <display-image [class]="'image-tag'" [isPreload]="'true'"
+                                                    <display-image [isGlightbox]="false"  [class]="'image-tag'" [isPreload]="'true'"
                                                         [isLoaded]="item.isLoaded" [base64]="item.iconBase64">
                                                     </display-image>
                                                     <span class="i_title">

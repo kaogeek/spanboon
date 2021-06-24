@@ -40,7 +40,9 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -52,6 +54,10 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -135,10 +141,6 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                 const postStmt = [
                     { $match: matchStmt },
-                    { $sample: { size: limit } }, // random post
-                    { $sort: { createdDate: -1 } },
-                    { $skip: offset },
-                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',
@@ -147,6 +149,10 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                             as: 'page'
                         }
                     },
+                    { $sample: { size: limit } }, // random post
+                    { $sort: { createdDate: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'User',
@@ -164,6 +170,12 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                         }
                     }
                 ];
+
+                // overide search Official
+                if (searchOfficialOnly) {
+                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                }
+
                 const searchResult = await this.postsService.aggregate(postStmt);
 
                 let lastestDate = null;

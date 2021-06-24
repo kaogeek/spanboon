@@ -24,6 +24,7 @@
                     transform="translate(-248.03 -228.703)" />
             </g>
         </svg>
+
         <div class="objective-head">
             <div class="top-objective-data">
                 <div class="objective">
@@ -92,18 +93,18 @@
                 </div>
             </div>
             <div class="needs-section">
-                <span class="title"
-                    *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
-                <needs-card *ngIf="objectiveData.needItems && objectiveData.needItems.length > 0"
-                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
-                    [isPendingFulfill]="true"
+                <span class="title" *ngIf="objectiveData && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
+                <needs-card *ngIf="objectiveData && objectiveData.needItems.length > 0"
+                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [slidesPerView]="6"
+                    [isFulfill]="true" [isPendingFulfill]="true"
                     [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
                 </needs-card>
             </div>
         </div>
         <div class="timeline-data-section">
             <div class="body">
-                <div *ngFor="let item of objectiveData.timelines; let index = index" class="strat-section-point">
+                <div *ngFor="let item of objectiveData? objectiveData.timelines:[]; let index = index"
+                    class="strat-section-point">
                     <div class="head">
                         <div class="line"></div>
                         <div class="strat-point">
@@ -111,100 +112,272 @@
                         </div>
                     </div>
                     <div class="card">
-                        <div *ngIf="item.post" class="needs-card">
-                            <div class="item" id="point" >
-                                <span class="title">สิ่งที่กำลังมองหา</span>
-                                <div class="needs">
-                                    <div class="list-needs"
-                                        *ngFor="let item of objectiveData.needItems; let index = index">
-                                        <div class="needs">
-                                            <img class="img-items" *ngIf="!item.imageURL"
-                                                src="../../../../assets/img/customize_item.svg" alt="">
-                                            <img class="img-items" *ngIf="item.imageURL"
-                                                src="{{apiBaseURL+item.imageURL+'/image'}}">
-                                        </div>
-                                        <div class="needs-data" [class.active]="isFulfill">
-                                            <div [class.active]="isFulfill">
-                                                <div class="needs-data-h">
-                                                    <div class="text-h">{{item.name || item.itemName}}</div>
-                                                </div>
-                                                <div class="needs-data-body" [class.active]="isFulfill">
-                                                    <div class="unit" [class.active]="isFulfill">
-                                                        <div class="unit-box">
-                                                            <div class="unit-num">
-                                                                <ng-container
-                                                                    *ngIf="isPendingFulfill; else elseTemplateQty">
-                                                                    <span *ngIf="isFulfillQuantity">
-                                                                        <span
-                                                                            [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
-                                                                            {{item.fulfillQuantity | shortNumber}} /
-                                                                        </span>
-                                                                    </span>
-                                                                    <span *ngIf="!isFulfill"
-                                                                        [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                                        {{item.quantity | shortNumber}}
-                                                                    </span>
-                                                                </ng-container>
-                                                                <ng-template #elseTemplateQty>
-                                                                    <span
-                                                                        [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                                        {{item.quantity | shortNumber}}
-                                                                    </span>
-                                                                </ng-template>
 
-                                                                <!-- <span *ngIf="!isFulfill"
-                                                [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
-                                                 {{item.quantity}}
-                                            </span> -->
-                                                            </div>
-
-                                                            <div class="unit-sub">{{item.unit}}</div>
-                                                        </div>
-                                                    </div>
-                                                    <ng-container *ngIf="isNeedBoxPost">
-                                                        <div class="unit-bt-box" *ngIf="!isFulfill">
-                                                            <!-- <ng-container
-                                                            *ngIf="item.fulfillQuantity > item.quantity || item.fulfillQuantity === item.quantity; else elseTemplateUnLimit">
-                                                            <div class="limit">
-                                                                <span class="material-icons"> done </span>
-                                                                ครบแล้ว
-                                                            </div>
-                                                        </ng-container>
-                                                        <ng-template #elseTemplateUnLimit>
-                                                            <spanboon-button class="btn-fulfill" [bgColor]="'#7AAF67'"
-                                                                [color]="'#FFFFFF'" [text]="PLATFORM_FULFILL_TEXT"
-                                                                [radius]="'4px'" (click)="fulfillNeeds($event,item)">
-                                                            </spanboon-button>
-                                                        </ng-template> -->
-                                                        </div>
-                                                    </ng-container>
+                        <div *ngIf="item.type === 'OBJECTIVE_START'" class="objective_start_card">
+                            <div class="left" data-aos="fade-up" data-aos-offset="20" data-aos-delay="30"
+                                data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
+                                <div class="body" id="point">
+                                    <div *ngIf="item.post.postGallery.length === 0" class="top">
+                                        <span class="title">{{item.title}}</span>
+                                        <span class="sub_title">{{item.subTitle}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="right" data-aos="fade-left" data-aos-offset="20" data-aos-delay="30"
+                                data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
+                                <div class="body">
+                                    <div *ngIf="item.post.postGallery.length > 0" class="top">
+                                        <span class="title">{{item.title}}</span>
+                                        <span class="sub_title">{{item.subTitle}}</span>
+                                    </div>
+                                    <div class="post">
+                                        <div class="head">
+                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
+                                                <div class="point"></div>
+                                                <div class="type_name">
+                                                    <span>มองหา</span>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="isFulfill">
-                                                <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity > 0">
-                                                    ยังขาดอีก <span class="quantity">{{item.quantity -
-                                                        item.fulfillQuantity}} </span><span
-                                                        class="unit">{{item.unit}}</span>
+                                            <span class="drot">•</span>
+                                            <span class="createdDate">
+                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        fill="black" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        fill="black" />
+                                                </svg>
+                                                {{item.post.createdDate | dateFormat}}
+                                            </span>
+                                        </div>
+                                        <div class="title" [innerHTML]="item.post.title"></div>
+                                        <div class="detail" [innerHTML]="item.post.detail"></div>
+                                        <div class="buttom">
+                                            <div class="botton">
+                                                <span>ไปที่โพสต์</span>
+                                                <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
+                                                    width="15pt" viewBox="0 -22 512 511"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="white"
+                                                        d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                </svg>
+                                            </div>
+                                            <div class="score">
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">การพูดถึง</span>
                                                 </div>
-                                                <div class="amonut" *ngIf="item.quantity - item.fulfillQuantity === 0">
-                                                    <span class="material-icons"> done </span>
-                                                    ได้รับครบแล้ว
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">บอกต่อ</span>
                                                 </div>
-                                            </ng-container>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">ถูกใจ</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">แชร์</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-
-
                             </div>
-                            <div class="post"></div>
                         </div>
-                        <div *ngIf="item.posts" class="post-card">
-                            post-card
+
+                        <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_needs_card">
+                            <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="30"
+                                data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
+                                <div class="body">
+                                    <div class="top">
+                                        <span class="title">{{item.title}}</span>
+                                        <span class="sub_title">{{item.subTitle}}</span>
+                                    </div>
+                                    <div class="post">
+                                        <div class="head">
+                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
+                                                <div class="point"></div>
+                                                <div class="type_name">
+                                                    <span>มองหา</span>
+                                                </div>
+                                            </div>
+                                            <span class="drot">•</span>
+                                            <span class="createdDate">
+                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        fill="black" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        fill="black" />
+                                                </svg>
+                                                {{item.post.createdDate | dateFormat}}
+                                            </span>
+                                        </div>
+                                        <div class="title" [innerHTML]="item.post.title"></div>
+                                        <div class="detail" [innerHTML]="item.post.detail"></div>
+                                        <div class="buttom">
+                                            <div class="botton">
+                                                <span>ไปที่โพสต์</span>
+                                                <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
+                                                    width="15pt" viewBox="0 -22 512 511"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="white"
+                                                        d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                </svg>
+                                            </div>
+                                            <div class="score">
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">การพูดถึง</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">บอกต่อ</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">ถูกใจ</span>
+                                                </div>
+                                                <div class="score-type">
+                                                    <span class="title">0</span>
+                                                    <span class="disiption">แชร์</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="right" data-aos="fade-up" data-aos-offset="20" data-aos-delay="40"
+                                data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                data-aos-once="false" data-aos-anchor-placement="top-center">
+                                <div class="body" id="point">
+                                    <div class="needs-card">
+                                        <div class="item">
+                                            <span class="title">สิ่งที่กำลังมองหา</span>
+                                            <div class="needs">
+                                                <div class="list-needs"
+                                                    *ngFor="let item of item.post.needs | slice:0:4; let index = index">
+                                                    <div class="needs">
+                                                        <img class="img-items" *ngIf="!item.imageURL"
+                                                            src="../../../../assets/img/customize_item.svg" alt="">
+                                                        <img class="img-items" *ngIf="item.imageURL"
+                                                            src="{{apiBaseURL+item.imageURL+'/image'}}">
+                                                    </div>
+                                                    <div class="needs-data" [class.active]="isFulfill">
+                                                        <div [class.active]="isFulfill">
+                                                            <div class="needs-data-h">
+                                                                <div class="text-h">{{item.name || item.itemName}}</div>
+                                                            </div>
+                                                            <div class="needs-data-body" [class.active]="isFulfill">
+                                                                <div class="unit" [class.active]="isFulfill">
+                                                                    <div class="unit-box">
+                                                                        <div class="unit-num">
+                                                                            <ng-container
+                                                                                *ngIf="isPendingFulfill; else elseTemplateQty">
+                                                                                <span *ngIf="isFulfillQuantity">
+                                                                                    <span
+                                                                                        [ngStyle]="{'color': item.fulfillQuantity > item.quantity ? '#fd545a' : '#7AAF67'} ">
+                                                                                        {{item.fulfillQuantity |
+                                                                                        shortNumber}} /
+                                                                                    </span>
+                                                                                </span>
+                                                                                <span *ngIf="!isFulfill"
+                                                                                    [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                                                    {{item.quantity | shortNumber}}
+                                                                                </span>
+                                                                            </ng-container>
+                                                                            <ng-template #elseTemplateQty>
+                                                                                <span
+                                                                                    [ngStyle]="{'color': isFulfillQuantity ? '#00000080' : '#000000'}">
+                                                                                    {{item.quantity | shortNumber}}
+                                                                                </span>
+                                                                            </ng-template>
+                                                                        </div>
+
+                                                                        <div class="unit-sub">{{item.unit}}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <ng-container *ngIf="isNeedBoxPost">
+                                                                    <div class="unit-bt-box" *ngIf="!isFulfill">
+                                                                    </div>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                        <div class="fullfill">
+                                                            <div class="botton">
+                                                                <span>เติมเต็ม</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill"
+                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="30" data-aos-duration="500"
+                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
+                            data-aos-anchor-placement="top-center">
+                            <div class="body">
+                            </div>
+                        </div>
+
+                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked"
+                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="30" data-aos-duration="500"
+                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
+                            data-aos-anchor-placement="top-center">
+                            <div class="body">
+                                COMING SOON
+                            </div>
+                        </div>
+
+                        <div *ngIf="item.type === 'OBJECTIVE_POST_LIKED'" class="objective_post_liked"
+                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="30" data-aos-duration="500"
+                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
+                            data-aos-anchor-placement="top-center">
+                            <div class="body">
+                                COMING SOON
+                            </div>
+                        </div>
+
+                        <div *ngIf="item.type === 'OBJECTIVE_LASTEST'" class="objective_lastest_card">
+                            <div class="body">
+                                <div class="top">
+                                    <span class="title">{{item.title}}</span>
+                                </div>
+                                <div class="posts">
+                                    <div class="post" data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
+                                        data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                        data-aos-once="false" data-aos-anchor-placement="top-center"
+                                        *ngFor="let post of item.posts; let index = index">
+                                        <post-data [itemPost]="post">
+                                        </post-data>
+                                    </div>
+                                    <div class="post" data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
+                                        data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                        data-aos-once="false" data-aos-anchor-placement="top-center"
+                                        *ngFor="let post of item.posts; let index = index">
+                                        <post-data [itemPost]="post">
+                                        </post-data>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

@@ -248,8 +248,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmit(hashtag?: string) {
+        console.log(hashtag.indexOf('#'))
         if (this.isObjective) {
-            window.open('/search?objective=' + hashtag);
+            window.open('/search?objective=' + hashtag.substring(1, hashtag.length + 1));
 
         } else {
             this.clickEvent.emit(this.postData);
