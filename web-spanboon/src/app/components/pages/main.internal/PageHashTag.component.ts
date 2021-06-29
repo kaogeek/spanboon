@@ -537,11 +537,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       if (key === 32 || key === 13) {
         this.keyword = autocomp.split(' ');
-        const index = this.keyword.indexOf("", 0);
+        const index = this.keyword.indexOf('', 0);
         if (index > -1) {
           this.keyword.splice(index, 1);
         }
-        this.searchTrendTag();
+        this.searchTrendTag(true);
       }
     }
   }
