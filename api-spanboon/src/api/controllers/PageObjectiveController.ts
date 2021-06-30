@@ -520,7 +520,7 @@ export class ObjectiveController {
                     objectiveId: objId,
                     startDateTime: ranges[0],
                     endDateTime: ranges[1],
-                    sampleCount: 2
+                    sampleCount: 4
                 });
                 const influencerProcsResult = await influencerProcessor.process();
                 if (influencerProcsResult !== undefined) {

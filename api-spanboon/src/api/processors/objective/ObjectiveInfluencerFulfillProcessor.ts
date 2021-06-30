@@ -41,10 +41,10 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
 
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $gte: startDateTime } });
                 }
                 if (endDateTime !== undefined) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                    dateTimeAndArray.push({ createdDate: { $lte: endDateTime } });
                 }
 
                 const topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
@@ -81,8 +81,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        { $match: { objective: objectiveId } },
-                        { $group: { _id: '$requester', count: { $sum: 1 } } },
+                        { $match: { 'posts.objective': objectiveId } },
                         {
                             $lookup: {
                                 from: 'User',
@@ -112,7 +111,7 @@ export class ObjectiveInfluencerFulfillProcessor extends AbstractTypeSectionProc
                     const distinctTopInfluencer = [];
                     if (objectiveInflu && objectiveInflu.length > 0) {
                         for (const objInflu of objectiveInflu) {
-                            const key = objInflu._id + '';
+                            const key = objInflu.requester + '';
                             if (addedUserIds.indexOf(key) >= 0) {
                                 continue;
                             }
