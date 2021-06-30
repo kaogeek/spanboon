@@ -163,7 +163,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                         contents.owner = this.parseUserField(user);
                     }
                     // remove page agg
-                    delete row.page;
+                    // delete row.page;
                     delete row.user;
 
                     contents.post = row;
