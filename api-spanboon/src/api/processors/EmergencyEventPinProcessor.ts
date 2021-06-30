@@ -100,7 +100,13 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                             as: 'page'
                         }
                     });
-                    postCountStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postCountStmt.splice(2, 0, {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    });
+                    postCountStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 const groupResult = await this.postsService.aggregate(postCountStmt);

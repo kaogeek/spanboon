@@ -99,7 +99,13 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                             as: 'page'
                         }
                     });
-                    postCountStmt.push({ $match: { 'page.isOfficial': true } });
+                    postCountStmt.push({
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    });
+                    postCountStmt.push({ $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 postCountStmt.push({ $group: { _id: '$emergencyEvent', count: { $sum: 1 }, commentCount: { $sum: '$commentCount' }, repostCount: { $sum: '$repostCount' }, shareCount: { $sum: '$shareCount' }, viewCount: { $sum: '$viewCount' }, likeCount: { $sum: '$likeCount' } } });

@@ -149,6 +149,12 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                             as: 'page'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
@@ -173,7 +179,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                 // overide search Official
                 if (searchOfficialOnly) {
-                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 const searchResult = await this.postsService.aggregate(postStmt);
@@ -202,7 +208,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
-                    const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
+                    const page = row.page;
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                     const firstImg = (row.gallery !== undefined && row.gallery.length > 0) ? row.gallery[0] : undefined;
 
