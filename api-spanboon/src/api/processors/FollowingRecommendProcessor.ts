@@ -13,7 +13,7 @@ import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
-import { ObjectID } from 'typeorm';
+import { ObjectID } from 'mongodb';
 
 export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
 
