@@ -125,6 +125,12 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                             as: 'page'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { startDateTime: -1 } },
                     {
@@ -147,7 +153,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
 
                 // overide search Official
                 if (searchOfficialOnly) {
-                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 // overide start datetime
@@ -182,7 +188,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     if (pageString === undefined) {
                         continue;
                     }
-                    const page = (row.page.length > 0) ? row.page[0] : undefined;
+                    const page = row.page;
 
                     if (lastestDate === null) {
                         lastestDate = row.createdDate;
