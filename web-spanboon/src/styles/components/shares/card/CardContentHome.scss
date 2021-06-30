@@ -166,6 +166,7 @@
                 position: absolute;
                 bottom: 0;
                 width: 100%;
+                display: flex;
                 > .owner {
                     display: flex;
                     -webkit-line-clamp: 1;
@@ -268,7 +269,7 @@
                     left: 0;
                     width: calc(100% - 8px);
                     height: calc(100% - 8px);
-                    border: solid 4px;
+                    border: solid 4px #adadad;
                     -o-object-fit: scale-down;
                     object-fit: cover;
                     z-index: 1;
@@ -308,7 +309,7 @@
         }
         > .bottom_medium_card {
             width: auto;
-            height: 250px;
+            height: 235px;
             word-break: break-word;
             position: relative;
             padding: 0px 5px;
@@ -322,7 +323,7 @@
                     margin-top: 5px;
                     margin-bottom: 10px;
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
+                    -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
@@ -330,7 +331,7 @@
                 }
                 > .detail {
                     display: -webkit-box;
-                    -webkit-line-clamp: 4;
+                    -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     margin-bottom: 10px;
@@ -768,7 +769,7 @@
                             left: 0;
                             width: calc(100% - 8px);
                             height: calc(100% - 8px);
-                            border: solid 4px;
+                            border: solid 4px #adadad;
                             -o-object-fit: scale-down;
                             object-fit: cover;
                             z-index: 1;
