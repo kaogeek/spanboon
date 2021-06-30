@@ -10,12 +10,12 @@
     <!-- check authen -->
     <authen-check-page></authen-check-page>
     <!-- header Start -->
-    <section class="tool-developer" *ngIf="isDev">
+    <!-- <section class="tool-developer" *ngIf="isDev">
         <span>
             เวอร์ชันทดสอบเปิดให้สมัครสมาชิกเท่านั้น
         </span>
         <button mat-flat-button (click)="clickCloseDev()">ตกลง</button>
-    </section>
+    </section> -->
 
     <header-top class="nav-header-top" [menutopprofile]="isprofile"></header-top> 
     <div class="icon-post-bottom" *ngIf="isPost" matRipple [matRippleCentered]="'centered'"

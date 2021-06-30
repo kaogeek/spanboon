@@ -157,6 +157,12 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                             as: 'page'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
@@ -170,18 +176,33 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         }
                     },
                     {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
                         $lookup: {
                             from: 'PostsGallery',
                             localField: '_id',
                             foreignField: 'post',
                             as: 'gallery'
                         }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                            'user.username': 0
+                        }
                     }
                 ];
 
                 // overide search Official
                 if (searchOfficialOnly) {
-                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 searchResult = await this.postsService.aggregate(postStmt);
@@ -202,7 +223,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
-                    const rowPage = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
+                    const rowPage = row.page;
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                     const firstImg = (row.gallery !== undefined && row.gallery.length > 0) ? row.gallery[0] : undefined;
 

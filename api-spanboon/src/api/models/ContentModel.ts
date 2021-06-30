@@ -36,4 +36,5 @@ export class ContentModel {
     public isShare: boolean;
     public isFollow: boolean;
     public rootReferencePost: any;
+    public data: any;
 }
