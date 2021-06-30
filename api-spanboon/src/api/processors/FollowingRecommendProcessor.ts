@@ -184,7 +184,7 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
 
                         result.contents.push(contentModel);
                     } else if (row.ownerUser !== undefined) {
-                        // ! follow user mode
+                        // ! follow user mode develop for the next time
                     }
                 }
 
