@@ -122,6 +122,12 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                             as: 'page'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
@@ -162,7 +168,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                 // overide search Official
                 if (searchOfficialOnly) {
-                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
 
                 const searchResult = await this.postsService.aggregate(postStmt);
