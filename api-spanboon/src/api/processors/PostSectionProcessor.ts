@@ -103,6 +103,12 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                             as: 'page'
                         }
                     },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $sample: { size: limit } }, // random post
                     { $sort: { createdDate: -1 } },
                     { $skip: offset },
@@ -132,7 +138,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 ];
 
                 if (searchOfficialOnly) {
-                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
                 
                 const postAggregate = await this.postsService.aggregate(postStmt);
@@ -157,7 +163,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                         contents.owner = this.parseUserField(user);
                     }
                     // remove page agg
-                    delete row.page;
+                    // delete row.page;
                     delete row.user;
 
                     contents.post = row;

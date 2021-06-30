@@ -137,7 +137,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                     // objectiveTag: new ObjectID(row.hashTagObj[0].name)
                                     objectiveTag: row.hashTagObj[0].name
                                 };
-                                const postStmt = [
+                                const postStmt: any = [
                                     { $match: postMatchStmt },
                                     { $sort: { createdDate: -1 } },
                                     { $limit: limit },
@@ -168,7 +168,13 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                             as: 'page'
                                         }
                                     });
-                                    postStmt.splice(2, 0, { $match: { 'page.isOfficial': true } });
+                                    postStmt.splice(2, 0, {
+                                        $unwind: {
+                                            path: '$page',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    });
+                                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                                 }
                                 const postAggregate = await this.postsService.aggregate(postStmt);
                                 contentModel.post = postAggregate;
