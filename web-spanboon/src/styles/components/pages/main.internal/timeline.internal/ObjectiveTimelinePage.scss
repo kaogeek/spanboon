@@ -1581,29 +1581,271 @@
 
                     > .objective_post_liked {
                         width: 80%;
-                        background-color: white;
-                        height: 600px;
                         display: flex;
                         align-content: center;
                         justify-content: center;
                         align-items: center;
-                        opacity: 0.6;
+                        padding: 60px 0px;
                         > .body {
                             @include font-size-3($font-head-500);
+                            width: 100%;
+                            display: flex;
+                            align-content: center;
+                            justify-content: center;
+
+                            > .left {
+                                width: 50%;
+                                display: flex;
+                                flex-direction: column;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                > .top {
+                                    background-color: white;
+                                    border-radius: 10px;
+                                    overflow: hidden;
+                                    padding: 30px;
+                                    width: 80%;
+                                    display: flex;
+                                    text-align: center;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-3($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-6($font-head-300);
+                                    }
+                                }
+                                > .icon {
+                                    border-radius: 50%;
+                                }
+                            }
+                            > .right {
+                                width: 50%;
+                                > .influencers {
+                                    position: relative;
+                                    > .influencer {
+                                        display: flex;
+                                        align-content: center;
+                                        justify-content: center;
+                                        align-items: center;
+
+                                        > .comment-follow {
+                                            position: relative;
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-content: flex-end;
+                                            justify-content: center;
+                                            align-items: flex-end;
+                                            > .comment {
+                                                @include font-size-8($font-head-500);
+                                                background-color: white;
+                                                padding: 10px 20px;
+                                                margin: 12px;
+                                                border-radius: 10px;
+                                                box-shadow: rgb(0 0 0 / 9%) 0px 10px 20px, rgb(0 0 0 / 8%) 0px 8px 43px;
+                                            }
+                                            > .follow {
+                                                @include font-size-8($font-head-400);
+                                                color: #ff7474;
+                                                background-color: white;
+                                                display: flex;
+                                                padding: 10px 20px;
+                                                margin: 12px;
+                                                border-radius: 10px;
+                                                box-shadow: rgb(0 0 0 / 9%) 0px 10px 20px, rgb(0 0 0 / 8%) 0px 8px 43px;
+                                                flex-direction: row;
+                                                flex-wrap: nowrap;
+                                                align-content: center;
+                                                align-items: center;
+                                            }
+                                        }
+                                        > .img {
+                                            position: relative;
+                                            display: flex;
+                                            width: 130px;
+                                            border-radius: 50%;
+                                            border: solid white 10px;
+                                            margin-bottom: 20px;
+                                            height: 130px;
+                                            box-shadow: rgb(0 0 0 / 9%) 0px 10px 20px, rgb(0 0 0 / 8%) 0px 8px 43px;
+                                            > .icon {
+                                                border-radius: 50%;
+                                                width: 100%;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
                     > .objective_influencer_fulfill {
                         width: 80%;
-                        background-color: white;
                         height: 600px;
                         display: flex;
                         align-content: center;
                         justify-content: center;
                         align-items: center;
-                        opacity: 0.6;
                         > .body {
                             @include font-size-3($font-head-500);
+                            width: 100%;
+                            display: flex;
+                            align-content: center;
+                            justify-content: center;
+
+                            > .left {
+                                width: 50%;
+                                display: flex;
+                                flex-direction: column;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                > .top {
+                                    background-color: white;
+                                    border-radius: 10px;
+                                    overflow: hidden;
+                                    padding: 30px;
+                                    width: 80%;
+                                    display: flex;
+                                    text-align: center;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-3($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-6($font-head-300);
+                                    }
+                                }
+                                > .icon {
+                                    border-radius: 50%;
+                                }
+                            }
+                            > .right {
+                                width: 50%;
+                                > .influencer_fulfill {
+                                    position: relative;
+                                    width: 100%;
+                                    height: 600px;
+                                    > .influencer_img {
+                                        width: 170px;
+                                        height: 170px;
+                                        border-radius: 50%;
+                                        overflow: hidden;
+                                        border: solid white 10px;
+                                        position: absolute;
+                                        top: 10%;
+                                        left: 15%;
+                                        z-index: 1;
+                                        cursor: pointer;
+                                        transition: 0.3s;
+                                        &:hover {
+                                            transition: 0.3s;
+                                            transform: scale(1.2);
+                                        }
+                                        > .img {
+                                            width: 100%;
+                                        }
+                                    }
+                                    > .influencer_img:nth-child(2) {
+                                        width: 120px;
+                                        height: 120px;
+                                        top: 33%;
+                                        left: 65%;
+                                    }
+                                    > .influencer_img:nth-child(3) {
+                                        width: 80px;
+                                        height: 80px;
+                                        top: 15%;
+                                        left: 50%;
+                                    }
+                                    > .influencer_img:nth-child(4) {
+                                        width: 90px;
+                                        height: 90px;
+                                        top: 75%;
+                                        left: 70%;
+                                    }
+                                    > .influencer_img:nth-child(5) {
+                                        width: 90px;
+                                        height: 90px;
+                                        top: 80%;
+                                        left: 10%;
+                                    }
+                                    > .star_svg_bg {
+                                        width: 100%;
+                                        height: 100%;
+                                        position: relative;
+                                        z-index: 0;
+                                        svg {
+                                            position: absolute;
+                                            top: 10%;
+                                            left: 10%;
+                                            polygon {
+                                                fill: #ff7474;
+                                                stroke: #ff7474;
+                                            }
+                                        }
+                                        svg:nth-child(2) {
+                                            top: 11%;
+                                            left: 50%;
+                                            polygon {
+                                                fill: chartreuse;
+                                                stroke: chartreuse;
+                                            }
+                                        }
+                                        svg:nth-child(3) {
+                                            top: 45%;
+                                            left: 55%;
+                                        }
+                                        svg:nth-child(4) {
+                                            top: 71%;
+                                            left: 19%;
+                                            polygon {
+                                                fill: darkorange;
+                                                stroke: darkorange;
+                                            }
+                                        }
+                                        svg:nth-child(5) {
+                                            top: 90%;
+                                            left: 68%;
+                                            polygon {
+                                                fill: chartreuse;
+                                                stroke: chartreuse;
+                                            }
+                                        }
+                                        svg:nth-child(5) {
+                                            top: 90%;
+                                            left: 68%;
+                                            width: 10px;
+                                            height: 10px;
+                                            polygon {
+                                                fill: darkred;
+                                                stroke: darkred;
+                                            }
+                                        }
+                                        // svg:nth-child(6) {
+                                        //     top: 88%;
+                                        //     left: 66%;
+                                        //     width: 14px;
+                                        //     height: 14px;
+                                        //     polygon {
+                                        //         fill: darkred;
+                                        //         stroke: darkred;
+                                        //     }
+                                        // }
+                                        svg:nth-child(7) {
+                                            top: 87%;
+                                            left: 64%;
+                                            width: 18px;
+                                            height: 18px;
+                                            polygon {
+                                                fill: chartreuse;
+                                                stroke: chartreuse;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1625,6 +1867,10 @@
 }
 
 @media (max-width: $medium) {
+    .objective-timeline-body > .objective-head > .top-objective-data {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 @media (max-width: $small) {

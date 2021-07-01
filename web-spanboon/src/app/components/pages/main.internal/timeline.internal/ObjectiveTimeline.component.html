@@ -95,19 +95,21 @@
             <div class="needs-section">
                 <span class="title" *ngIf="objectiveData && objectiveData.needItems.length > 0">สิ่งที่กำลังมองหา</span>
                 <needs-card *ngIf="objectiveData && objectiveData.needItems.length > 0"
-                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [slidesPerView]="6"
-                    [isFulfill]="true" [isPendingFulfill]="true"
+                    [itemNeeds]="objectiveData.needItems" [isFulfillQuantity]="true" [isFulfill]="true"
+                    [isPendingFulfill]="true"
                     [isImage]="objectiveData.gallery && objectiveData.gallery.length > 0 && objectiveData.title === '' ">
                 </needs-card>
             </div>
         </div>
-        <div class="timeline-data-section">
+        <!-- <div class="timeline-data-section">
             <div class="body">
                 <div *ngFor="let item of objectiveData? objectiveData.timelines:[]; let index = index"
                     class="strat-section-point">
                     <div class="head">
                         <div class="line"></div>
-                        <div class="strat-point">
+                        <div class="strat-point" data-aos="fade-up" data-aos-offset="20" data-aos-delay="30"
+                            data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                            data-aos-once="false" data-aos-anchor-placement="top-center">
                             <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':'พฤษภาคม 2564'}}</span>
                         </div>
                     </div>
@@ -325,20 +327,123 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill"
-                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="30" data-aos-duration="500"
-                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
-                            data-aos-anchor-placement="top-center">
+                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
                             <div class="body">
+                                <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="30"
+                                    data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                    <div class="top">
+                                        <span class="title">{{item.title}}</span>
+                                    </div>
+                                </div>
+                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="20"
+                                    data-aos-delay="30" data-aos-duration="500" data-aos-easing="ease-in-out"
+                                    data-aos-mirror="false" data-aos-once="false"
+                                    data-aos-anchor-placement="top-center">
+                                    <div class="influencer_fulfill">
+                                        <div class="influencer_img"
+                                            *ngFor="let influencer of item? item.influencers:[]; let index = index">
+                                            <img class="img" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                alt="">
+                                        </div>
+                                        <div class="influencer_img"
+                                            *ngFor="let influencer of item? item.influencers:[]; let index = index">
+                                            <img class="img" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                alt="">
+                                        </div>
+                                        <div class="influencer_img"
+                                            *ngFor="let influencer of item? item.influencers:[]; let index = index">
+                                            <img class="img" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                alt="">
+                                        </div>
+                                        <div class="influencer_img"
+                                            *ngFor="let influencer of item? item.influencers:[]; let index = index">
+                                            <img class="img" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                alt="">
+                                        </div>
+                                        <div class="influencer_img"
+                                            *ngFor="let influencer of item? item.influencers:[]; let index = index">
+                                            <img class="img" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                alt="">
+                                        </div>
+                                        <div class="star_svg_bg">
+                                            <svg class="starSVG" *ngFor="let influencer of [1,2,3,4,5,6,7,8,9,10]"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1"
+                                                x="0px" y="0px" width="30px" height="30px" viewBox="0 0 512 512"
+                                                enable-background="new 0 0 512 512" xml:space="preserve">
+                                                <polygon fill="#1D1D1B" stroke="#1D1D1B" stroke-width="37.6152"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-miterlimit="10"
+                                                    points="  259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08   29.274,197.007 188.165,173.919 " />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked"
-                            data-aos="fade-up" data-aos-offset="20" data-aos-delay="30" data-aos-duration="500"
-                            data-aos-easing="ease-in-out" data-aos-mirror="false" data-aos-once="false"
-                            data-aos-anchor-placement="top-center">
+                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked">
                             <div class="body">
-                                COMING SOON
+                                <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="30"
+                                    data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                    <div class="top">
+                                        <span class="title">คนเหล่านี้ ได้เข้ามาพูดคุยใน {{pageObjective.title}}</span>
+                                    </div>
+                                </div>
+                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="20"
+                                    data-aos-delay="30" data-aos-duration="500" data-aos-easing="ease-in-out"
+                                    data-aos-mirror="false" data-aos-once="false"
+                                    data-aos-anchor-placement="top-center">
+                                    <div *ngFor="let influencer of item? item.influencers:[]; let index = index"
+                                        class="influencers">
+                                        <div *ngIf="index === 0||index === 2" class="influencer">
+                                            <div class="comment-follow">
+                                                <div class="comment">
+                                                    <span>{{influencer.comment}}</span>
+                                                </div>
+                                                <div class="follow">
+                                                    <span>{{influencer.count}}</span>
+                                                    <svg class="img-action" style="margin: 0px 10px;"
+                                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                        viewBox="0 0 56.85 48.58">
+                                                        <path class="svg-icon-color-activate" id="Path_3669"
+                                                            data-name="Path 3669"
+                                                            d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
+                                                            transform="translate(-157.34 -74.77)" fill="#F8F7F2" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="img">
+                                                <img class="icon" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                    alt="">
+                                            </div>
+                                        </div>
+                                        <div *ngIf="index === 1||index === 3" class="influencer">
+                                            <div class="img">
+                                                <img class="icon" src="{{apiBaseURL+influencer.user.imageURL+'/image'}}"
+                                                    alt="">
+                                            </div>
+                                            <div class="comment-follow">
+                                                <div class="comment">
+                                                    <span>{{influencer.comment}}</span>
+                                                </div>
+                                                <div class="follow">
+                                                    <span>{{influencer.count}}</span>
+                                                    <svg class="img-action" xmlns="http://www.w3.org/2000/svg"
+                                                        width="20" height="20" style="margin: 0px 10px;"
+                                                        viewBox="0 0 56.85 48.58">
+                                                        <path class="svg-icon-color-activate" id="Path_3669"
+                                                            data-name="Path 3669"
+                                                            d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
+                                                            transform="translate(-157.34 -74.77)" fill="#F8F7F2" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -379,6 +484,6 @@
                 </div>
 
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
