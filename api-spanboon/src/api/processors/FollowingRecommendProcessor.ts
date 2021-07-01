@@ -167,7 +167,7 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                 const result: SectionModel = new SectionModel();
                 result.title = 'แนะนำให้ติดตาม';
                 result.subtitle = 'พวกเขากำลังบอกเล่าบางสิ่งบางอย่างบน' + PLATFORM_NAME_TH;
-                result.type = '';
+                result.type = 'SMALL';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
