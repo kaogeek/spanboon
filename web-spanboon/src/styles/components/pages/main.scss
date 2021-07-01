@@ -259,13 +259,12 @@ span:focus {
         height: 40pt;
         background: $brandcolor2;
         right: 11px;
-        // bottom: 10pt;
+        bottom: 10pt;
         border-radius: 50%;
         @include pointer();
         z-index: 99;
         overflow: hidden;
-        transform: scale(1, 1);
-        transform: translateY(10);
+        transform: scale(1, 1); 
         transition: all 0.3s ease-in-out;
         -webkit-transition: all 0.3s ease-in-out;
         -moz-transition: all 0.3s ease-in-out;
