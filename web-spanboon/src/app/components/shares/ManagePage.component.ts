@@ -169,6 +169,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public nextPage(item: any) {
+        document.body.style.overflowY = "auto";
         if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
             this.router.navigate(['/page/', item.page.pageUsername]);
         } else {
@@ -177,6 +178,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public clickSetting(item: any) {
+        document.body.style.overflowY = "auto";
         if (item.page.pageUsername && item.page.pageUsername !== '' && item.page.pageUsername !== null && item.page.pageUsername !== undefined) {
             this.router.navigate(['/page/' + item.page.pageUsername + '/settings']);
         } else {
