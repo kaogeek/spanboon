@@ -64,11 +64,11 @@ spanboon-footer-mobile {
     .footer-mobile {
       display: flex;
     }
-    .footer-mobile.hidden {
+    .footer-mobile.hidden { 
+      transition: all 0.3s ease-in-out;
       transform: translateY(100%);
-      // -webkit-transform: translateY(100%); //Safari
-      // -moz-transform: translateY(100%);
-      bottom: -44pt !important;
+      -webkit-transform: translateY(100%); //Safari
+      -moz-transform: translateY(100%);  
     }
   }
 
