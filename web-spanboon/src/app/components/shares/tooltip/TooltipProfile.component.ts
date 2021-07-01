@@ -92,6 +92,11 @@ export class TooltipProfile extends AbstractPage implements OnInit {
 
   public async clickFollow(owner) {
 
+    if (!this.isLogin()) {
+      this.showAlertDialog('กรุณา เข้าสู่ระบบ');
+      return
+    }
+
     if (owner.isFollow) {
       owner.followers--;
       owner.isFollow = false;

@@ -274,11 +274,11 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
-            data: data,
-        })
-            .subscribe(res => {
-            });
+        if (window.innerWidth > 998) {
+            this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+                data: data,
+            })
+        }
     }
 
     public TooltipClose($event) {
