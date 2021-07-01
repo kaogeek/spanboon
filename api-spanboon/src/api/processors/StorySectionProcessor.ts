@@ -112,11 +112,23 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                         }
                     },
                     {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
                         $lookup: {
                             from: 'User',
                             localField: 'ownerUser',
                             foreignField: '_id',
                             as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
                         }
                     },
                     {
@@ -128,7 +140,7 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                         }
                     }
                 ];
-                const searchResult = await this.postsService.aggregate(postStmt);
+                const searchResult = await this.postsService.aggregate(postStmt, { allowDiskUse: true });
 
                 let lastestDate = null;
 
@@ -139,8 +151,8 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                 result.description = '';
                 result.contents = [];
                 for (const row of searchResult) {
-                    const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
-                    const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                    const page = row.page;
+                    const user = row.user;
                     const firstImg = (row.gallery !== undefined && row.gallery.length > 0) ? row.gallery[0] : undefined;
 
                     if (lastestDate === null) {
@@ -168,7 +180,7 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                     }
 
                     delete contentModel.post.story;
-                    delete contentModel.post.page;
+                    // delete contentModel.post.page;
                     delete contentModel.post.user;
 
                     result.contents.push(contentModel);

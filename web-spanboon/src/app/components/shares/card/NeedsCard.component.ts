@@ -48,7 +48,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
   @Input()
   public isNeedBoxPost: boolean = true;
   @Input()
-  public slidesPerView: number = 6;
+  public slidesPerView: number = 3;
 
   @Output()
   public close: EventEmitter<any> = new EventEmitter();

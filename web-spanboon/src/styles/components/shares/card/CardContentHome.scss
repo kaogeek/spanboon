@@ -55,6 +55,7 @@
         }
         > .top_small_card {
             width: 200px;
+            height: 150px;
             margin-bottom: 10px;
             &.title {
                 height: 150px;
@@ -88,6 +89,7 @@
             > .other_topic {
                 background-color: #f9f9f9;
                 width: 100%;
+                @include font-size-9($font-head-400);
                 height: 100%;
                 word-break: break-word;
                 display: flex;
@@ -487,6 +489,7 @@
                 word-break: break-word;
                 display: flex;
                 flex-direction: column;
+                @include font-size-11($font-head-300);
                 text-align: center;
                 align-items: center;
                 justify-content: center;
