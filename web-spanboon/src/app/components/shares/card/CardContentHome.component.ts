@@ -218,7 +218,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public clickToStory(data) {
         this.router.navigate([]).then(() => {
-            window.open('/story' + data, '_blank');
+            window.open('/story/' + data, '_blank');
         });
     }
     public clickDataSearchs(data: any) {
