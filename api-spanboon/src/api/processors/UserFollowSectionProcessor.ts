@@ -176,11 +176,26 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                         }
                     },
                     {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
                         $lookup: {
                             from: 'PostsGallery',
                             localField: '_id',
                             foreignField: 'post',
                             as: 'gallery'
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                            'user.username': 0
                         }
                     }
                 ];
