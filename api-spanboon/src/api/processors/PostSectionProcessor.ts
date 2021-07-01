@@ -79,12 +79,12 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                 // overide start datetime
                 const dateTimeAndArray = [];
-                if (startDateTime !== undefined && startDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
-                }
-                if (endDateTime !== undefined && endDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
-                }
+                // if (startDateTime !== undefined && startDateTime !== null) {
+                //     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                // }
+                // if (endDateTime !== undefined && endDateTime !== null) {
+                //     dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                // }
 
                 if (dateTimeAndArray.length > 0) {
                     postMatchStmt['$and'] = dateTimeAndArray;
@@ -140,8 +140,11 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (searchOfficialOnly) {
                     postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
+
+                console.log('postStmt: ', JSON.stringify(postStmt));
                 
                 const postAggregate = await this.postsService.aggregate(postStmt);
+                console.log('postAggregate: ', postAggregate.length);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในเดือนนี้' : this.config.title;
