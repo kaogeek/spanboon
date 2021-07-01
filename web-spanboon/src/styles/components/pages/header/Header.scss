@@ -6,19 +6,19 @@
  */
 
 .header-top {
+  position: sticky;
   display: flex;
   justify-content: space-between;
   padding: 0 40pt;
   height: $height-header-top;
-  position: sticky;
-  top: 0pt !important;
-  transform: unset;
-  z-index: 1000;
+  top: 0pt !important; 
   background-color: $white;
-  transition: all 0.8s ease-in-out;
-  -webkit-transition: all 0.8s ease-in-out;
-  -moz-transition: all 0.8s ease-in-out;
-  -ms-transition: all 0.8s ease-in-out;
+  transform: translateY(0); 
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  z-index: 1000; 
   > .wrapper-logo {
     flex: 0 0 auto;
     display: flex;
