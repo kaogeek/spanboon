@@ -373,9 +373,10 @@ export class PostData {
   public storyTeb(post) {
     var dataPage = { id: post._id, pageId: post.pageId, type: post.type };
     sessionStorage.setItem('dataPage', JSON.stringify(dataPage));
-
-    var win = window.open('/story/' + post._id);
-    win.focus();
+    this.router.navigate([]).then(() => {
+      let win = window.open('/story/' + post._id, '_blank');
+      win.focus();
+  });
   }
 
   public postTeb(post) {

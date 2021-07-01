@@ -128,14 +128,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 }
                 if (this.keyObjArr !== undefined && this.keyObjArr !== null && this.keyObjArr !== '') {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
-                } else if (this.postData.post.gallery) {
+                } else if (this.postData.post) {
                     if (this.postData.post.gallery.length > 0) {
                         this.postCardCoverPageUrl = this.postData.post.gallery[0].imageURL;
                     }
                 }
 
                 if (this.smallCard) {
-                    this.postData.owner = this.postData.owner[0];
+                    this.postData.owner = this.postData.owner;
                 }
 
                 this.amountSocial = (this.postData.post ? this.postData.post.likeCount : 0 + this.postData.post ? this.postData.post.repostCount : 0 + this.postData.post ? this.postData.post.shareCount : 0);
@@ -211,20 +211,28 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(data, index?) {
-        window.open('/search?hashtag=' + data);
+        this.router.navigate([]).then(() => {
+            window.open('/search?hashtag=' + data, '_blank');
+        });
     }
 
     public clickToStory(data) {
-        window.open('/story/' + data);
+        this.router.navigate([]).then(() => {
+            window.open('/story' + data, '_blank');
+        });
     }
     public clickDataSearchs(data: any) {
         if (this.isObjective) {
-            window.open('/search?hashtag=' + data);
+            this.router.navigate([]).then(() => {
+                window.open('/search?hashtag=' + data, '_blank');
+            });
         }
     }
 
     public clickToPage(data) {
-        window.open(data);
+        this.router.navigate([]).then(() => {
+            window.open(data, '_blank');
+        });
     }
 
     public clickDialogDiverlop() {
@@ -247,13 +255,16 @@ export class CardContentHome extends AbstractPage implements OnInit {
         this.clickEvent.emit(this.postData);
     }
 
-    public clickEventEmit(hashtag?: string) {
-        console.log(hashtag.indexOf('#'))
-        if (this.isObjective) {
-            window.open('/search?objective=' + hashtag.substring(1, hashtag.length + 1));
-
-        } else {
+    public clickEventEmit(data?: any) {
+        if (data.post) {
             this.clickEvent.emit(this.postData);
+
+        } else if (data.owner) {
+            window.open('/search?hashtag=' + data.title.substring(1, data.title.length + 1));
+
+        } else if (data.data) {
+            window.open('/page/' + data.data._id);
+
         }
     }
 
@@ -263,11 +274,11 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
-            data: data,
-        })
-            .subscribe(res => {
-            });
+        if (window.innerWidth > 998) {
+            this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+                data: data,
+            })
+        }
     }
 
     public TooltipClose($event) {

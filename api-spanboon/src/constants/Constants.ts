@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export const MAX_SEARCH_ROWS = 200;
+export const MAX_SEARCH_ROWS = 100;
 export const DEFAULT_HOT_TOPIC_CALCULATE_CONFIG = {
     WEIGHT: 1,
     WEIGHT_X: 1,
