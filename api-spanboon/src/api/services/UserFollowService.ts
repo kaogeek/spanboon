@@ -145,14 +145,72 @@ export class UserFollowService {
     }
 
     public getUserFollower(followedUser: ObjectID, limit?: number): Promise<any[]> {
+        return this.getFollower(followedUser, SUBJECT_TYPE.USER, limit);
+    }
+
+    public getPageUserFollower(pageId: ObjectID, limit?: number): Promise<any[]> {
+        return this.getFollower(pageId, SUBJECT_TYPE.PAGE, limit);
+    }
+
+    public getFollower(pageId: ObjectID, followType: string, limit?: number): Promise<any[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const aggregateStmt: any[] = [
-                    { $match: { subjectId: followedUser, subjectType: SUBJECT_TYPE.USER } },
+                    { $match: { subjectId: pageId, subjectType: followType } },
                     {
                         $lookup: {
                             from: 'User',
-                            localField: '_id',
+                            localField: 'userId',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$user',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'user.password': 0,
+                            'user.coverPosition': 0,
+                            'user.birthdate': 0,
+                            'user.coverURL': 0,
+                        }
+                    }
+                ];
+
+                if (limit !== undefined) {
+                    aggregateStmt.splice(1, 0, { $limit: limit });
+                }
+
+                const result = await this.aggregate(aggregateStmt);
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public getFollowed(userId: ObjectID, subjectType?: string, limit?: number): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const matchStmt: any = {
+                    userId
+                };
+
+                if (subjectType !== undefined && subjectType !== null && subjectType !== '') {
+                    matchStmt.subjectType = subjectType;
+                }
+
+                const aggregateStmt: any[] = [
+                    { $match: matchStmt },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'userId',
                             foreignField: '_id',
                             as: 'user'
                         }

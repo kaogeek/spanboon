@@ -7,7 +7,6 @@
 
 import 'reflect-metadata';
 import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
-import MainPageResponse from './responses/MainPageResponse';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
@@ -50,6 +49,7 @@ import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
+import { FollowingRecommendProcessor } from '../processors/FollowingRecommendProcessor';
 
 @JsonController('/main')
 export class MainPageController {
@@ -200,10 +200,11 @@ export class MainPageController {
         });
         const emerSectionModel = await emerProcessor.process();
 
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
         postProcessor.setData({
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
         postProcessor.setConfig({
             searchOfficialOnly
@@ -295,6 +296,19 @@ export class MainPageController {
             searchOfficialOnly
         });
         processorList.push(userPageLookingProcessor);
+
+        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService);
+        followingRecommendProcessor.setData({
+            userId,
+            startDateTime: weekRanges[0],
+            endDateTime: weekRanges[1]
+        });
+        followingRecommendProcessor.setConfig({
+            limit: 5,
+            searchOfficialOnly,
+            showPage: true
+        });
+        processorList.push(followingRecommendProcessor);
 
         // open when main icon template show
         const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
@@ -1142,10 +1156,6 @@ export class MainPageController {
             const errorResponse = ResponseUtil.getErrorResponse('Search Error', error.message);
             return res.status(400).send(errorResponse);
         }
-    }
-
-    public getResponsesData(): any {
-        return MainPageResponse.data();
     }
 
     private parseUserField(user: any): any {

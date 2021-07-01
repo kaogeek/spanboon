@@ -264,8 +264,11 @@ span:focus {
         @include pointer();
         z-index: 99;
         overflow: hidden;
-        transform: scale(1, 1);
-        transition: all 0.3s ease;
+        transform: scale(1, 1); 
+        transition: all 0.3s ease-in-out;
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        -ms-transition: all 0.3s ease-in-out;
         box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
         -webkit-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
         -moz-box-shadow: 0 5px 5px 0 rgba($gray-dark, 0.5);
