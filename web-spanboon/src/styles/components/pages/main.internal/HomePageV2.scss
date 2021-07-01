@@ -366,7 +366,7 @@
                 }
                 > .isDesktop {
                     display: block;
-                    width: 45%;
+                    width: 22%;
                     margin: 0% 1%;
                 }
                 > .footer_mobile {
@@ -524,6 +524,9 @@
 @media (max-width: $xlarge) {
     .home_page_v2 > .hoem_page_body > .events_tag_top > .right {
         display: none;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section > .body > .isDesktop {
+        width: 45%;
     }
 }
 
