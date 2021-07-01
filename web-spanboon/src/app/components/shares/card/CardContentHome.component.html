@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div class="card_content_home">
-    <div (click)="clickEventEmit(postData.title)" *ngIf="smallCard && postData && !isLoad" class="small_card">
+    <div (click)="clickEventEmit(postData)" *ngIf="smallCard && postData && !isLoad" class="small_card">
         <div *ngIf="!isObjective" class="type_post">
             <div class="type" [class.need]="postData.post.type === 'NEEDS'"
                 [class.general]="postData.post.type === 'GENERAL'"></div>
@@ -28,14 +28,15 @@
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
-                    <span [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
+                    <span
+                        [innerHTML]='postData.post ? postData.post.title:postData.title ? postData.title:postData.subtitle'></span>
                 </div>
             </ng-template>
         </div>
         <div class="bottom_small_card">
             <div class="bottom_small_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title" [class.is_objective]="isObjective"
-                    [innerHTML]='postData.post ? postData.post.title:postData.title'></span>
+                    [innerHTML]='postData.post ? postData.post.title:postData.title ? postData.title:postData.subtitle'></span>
             </div>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">

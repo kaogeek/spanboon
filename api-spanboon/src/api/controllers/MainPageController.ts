@@ -200,10 +200,11 @@ export class MainPageController {
         });
         const emerSectionModel = await emerProcessor.process();
 
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
         postProcessor.setData({
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
         postProcessor.setConfig({
             searchOfficialOnly
