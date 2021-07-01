@@ -82,13 +82,13 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                 }
 
                 // for filter startDateTime mode
-                // const andStmtArray = [];
-                // if (startDateTime !== undefined && startDateTime !== null) {
-                //     andStmtArray.push({ startDateTime: { $gte: startDateTime } });
-                // }
-                // if (endDateTime !== undefined && endDateTime !== null) {
-                //     andStmtArray.push({ startDateTime: { $lte: endDateTime } });
-                // }
+                const andStmtArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    andStmtArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    andStmtArray.push({ startDateTime: { $lte: endDateTime } });
+                }
 
                 // search user follow to ignore it
                 const pageUserFollowedIds = [];
@@ -167,7 +167,7 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                 const result: SectionModel = new SectionModel();
                 result.title = 'แนะนำให้ติดตาม';
                 result.subtitle = 'พวกเขากำลังบอกเล่าบางสิ่งบางอย่างบน' + PLATFORM_NAME_TH;
-                result.type = '';
+                result.type = 'SMALL';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
