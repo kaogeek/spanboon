@@ -13,7 +13,6 @@ import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swi
 import { AuthenManager, ObservableManager } from '../../../services/services';
 import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
-import { DialogFulfill } from '../dialog/dialog';
 
 const PAGE_NAME: string = 'postswiperCard';
 
@@ -159,7 +158,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
 
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
-    slidesPerView: 6,
+    slidesPerView: 4.2,
     spaceBetween: 0,
     keyboard: false,
     mousewheel: false,
@@ -170,7 +169,7 @@ export class PostSwiperCard extends AbstractPage implements OnInit {
     },
     breakpoints: {
       991: {
-        slidesPerView: 4.5,
+        slidesPerView: 3.5,
       },
       899: {
         slidesPerView: 3.5,
