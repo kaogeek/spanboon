@@ -66,7 +66,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     // USER //
 
-    public isUserOfficial: boolean = true;
+    public isUserOfficial: boolean = false;
     public userId: string;
     public userType: string;
     public userName: string;
