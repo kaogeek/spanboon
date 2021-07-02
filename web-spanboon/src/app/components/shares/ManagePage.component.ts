@@ -42,7 +42,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     private userAccessFacade: UserAccessFacade;
     protected observManager: ObservableManager;
     public dialog: MatDialog;
-    public resListPage: any;
+    public resListPage: any; 
     // public ownerUser: string;
 
     constructor(router: Router, pageUserInfo: PageUserInfo, authenManager: AuthenManager, dialog: MatDialog, pageFacade: PageFacade, assetFacade: AssetFacade,
@@ -95,7 +95,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     }
 
     public createPage() {
-        this.drawer.toggle();
+        this.hideScroll();
         // const dialogRef = this.dialog.open(DialogCreatePage, {
         //     autoFocus: false
         // });
@@ -117,6 +117,18 @@ export class ManagePage extends AbstractPage implements OnInit {
         });
         dialog.afterClosed().subscribe((res) => {
         });
+    }
+
+    public clickMenu(){  
+        this.hideScroll();
+    }
+
+    public hideScroll(){
+        if(this.drawer.opened){
+            document.body.style.overflowY = "hidden";
+        } else {
+            document.body.style.overflowY = "auto";
+        }
     }
 
     public searchAllPage() {
