@@ -36,6 +36,13 @@
     post-data {
         > .card-feed-post {
             margin: unset;
+            overflow: unset;
+            >.header-post {
+                position: sticky;
+                z-index: 99;
+                top: 0;
+                background-color: white;
+            }
         }
     }
     preload-card {
