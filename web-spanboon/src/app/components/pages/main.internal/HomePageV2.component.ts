@@ -94,7 +94,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
 
-    console.log('model', model)
+    // console.log('model', model)
 
     this.pageModel = this.jsonParseData(model);
     this.sectionModels = this.jsonParseData(this.pageModel.sectionModels);
