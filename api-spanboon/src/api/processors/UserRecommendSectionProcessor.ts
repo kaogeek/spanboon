@@ -182,7 +182,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 result.iconUrl = '';
                 result.contents = [];
                 for (const row of searchResult) {
-                    const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
+                    const page = row.page;
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                     const firstImg = (row.gallery !== undefined && row.gallery.length > 0) ? row.gallery[0] : undefined;
 
