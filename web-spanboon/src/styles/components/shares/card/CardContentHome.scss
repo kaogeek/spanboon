@@ -168,7 +168,6 @@
                 position: absolute;
                 bottom: 0;
                 width: 100%;
-                display: flex;
                 > .owner {
                     display: flex;
                     -webkit-line-clamp: 1;
@@ -181,7 +180,7 @@
                         display: flex;
                         width: 14px;
                         height: 14px;
-                        margin: 0 5pt 0 0;
+                        margin: 5pt 5pt 0 0;
                         flex: 0 0 auto;
                         > g {
                             > path {

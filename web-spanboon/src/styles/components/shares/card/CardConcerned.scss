@@ -17,8 +17,9 @@
         height: 40pt;
         border: 0.7px solid #e5e5e5;
         display: flex;
-        @include font-size-9($font-head-500);
+        @include font-size-8($font-head-500);
         padding: 0px 20px;
+        color: #000;
         align-items: center;
     }
 
@@ -40,14 +41,14 @@
             color: gray;
         }
         .text-center {
-            @include font-size-9($font-head-500);
-            color: black;
+            @include font-size-10($font-head-500);
+            color: gray;
             &:hover {
                 color: $brandcolor2;
             }
         }
         .text-bottom {
-            @include font-size-10($font-head-400);
+            @include font-size-11($font-head-400);
             color: gray;
         }
     }
