@@ -56,10 +56,11 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a target="_blank" href={{linkUserPage}}>{{postData.owner?postData.owner.name:''}}</a>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.owner?postData.owner.name ?
+                        postData.owner.name:postData.owner.displayName:''}}</a>
                 </div>
                 <div class="amount_social">
-                    <span>{{amountSocial ? amountSocial:0}}</span> การมีส่วนร่วมกับโพสต์
+                    <span>{{amountSocial ? amountSocial:0}}</span> {{amountSocial? 'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}
                     <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
                 </div>
             </div>

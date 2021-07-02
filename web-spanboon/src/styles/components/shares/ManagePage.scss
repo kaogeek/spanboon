@@ -29,8 +29,8 @@
             &.active {
                 rect {
                     fill: $brandcolor2;
-                }
-            }
+                } 
+            } 
         }
     }
 
@@ -55,8 +55,8 @@
             display: block;
             position: fixed;
             width: 100%;
-            height: calc(100% + 55pt);
-            top: -55pt;
+            height: calc(100% + 45pt);
+            top: 45pt;
             left: 0;
             right: 0;
             bottom: 0;
@@ -65,8 +65,9 @@
                 background-color: rgba(0, 0, 0, 0.25);
                 position: relative;
                 width: 100%;
-                top: 110pt;
-                height: calc(100% - 110pt);
+                height: 100vh;
+                // top: 110pt;
+                // height: calc(100% - 110pt);
             }
         }
         .mat-drawer-shown {
