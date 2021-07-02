@@ -115,9 +115,9 @@
             // width: 80%;
             display: flex;
             &.full {
-                width: 80vw;
+                width: 80%;
             }
-            border-bottom: solid 0.5px #d3d3d3;
+            // border-bottom: solid 0.5px #d3d3d3;
             > .left {
                 padding: 15px 0px;
                 width: calc(600px - 30px);
@@ -316,7 +316,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 85vw;
+            width: 80%;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -440,7 +440,7 @@
             &.tag {
                 margin: unset;
                 padding: unset;
-                width: 90%;
+                width: 80%;
             }
         }
     }
