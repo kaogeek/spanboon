@@ -329,7 +329,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-7($font-head-500);
+                    @include font-size-9($font-head-500);
                 }
                 > .detail {
                     display: -webkit-box;
