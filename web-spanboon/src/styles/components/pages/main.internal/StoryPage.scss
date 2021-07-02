@@ -220,6 +220,13 @@
             -webkit-user-modify: read-only;
             -moz-user-modify: read-only;
             @include font-size-9($font-content-light);
+            div {
+              span {
+                a {
+                  color: #1b95e0 !important;
+                }
+              }
+            }
           }
           .ct-background-image {
             width: 100%;

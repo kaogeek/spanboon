@@ -1179,8 +1179,12 @@ export class MainPageController {
         };
 
         const config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
-        if (config !== undefined && typeof config.value === 'boolean') {
-            result.searchOfficialOnly = config.value;
+        if (config !== undefined) {
+            if (typeof config.value === 'boolean') {
+                result.searchOfficialOnly = config.value;
+            } else if (typeof config.value === 'string') {
+                result.searchOfficialOnly = (config.value.toUpperCase() === 'TRUE');
+            }
         }
 
         return result;

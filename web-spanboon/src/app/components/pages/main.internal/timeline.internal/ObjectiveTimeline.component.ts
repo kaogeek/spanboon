@@ -75,6 +75,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public async ngOnInit(): Promise<void> {
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
+        console.log('this.objectiveData', this.objectiveData);
         this._groupData();
         this.setData();
 
@@ -128,7 +129,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
 
-        console.log('this.objectiveData', this.objectiveData);
     }
 
     public ngOnDestroy(): void {
