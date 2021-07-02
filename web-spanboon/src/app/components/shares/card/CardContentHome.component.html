@@ -42,8 +42,8 @@
                 <div class="other_topic_detail">
                 </div>
             </ng-template>
-            <div class="bottom_small_card_detail_footer">
-                <div *ngIf="!isObjective" class="owner" (click)="clickToPage(linkUserPage)" #showTooltip
+            <div class="bottom_small_card_detail_footer"> 
+                <div *ngIf="!isObjective || (postData.post && postData.post.page && postData.post.page.isOfficial)" class="owner" (click)="clickToPage(linkUserPage)" #showTooltip
                     (mouseover)="Tooltip(showTooltip , postData)">
                     <svg class="new-cards-offical" id="shield" xmlns="http://www.w3.org/2000/svg" width="43.383"
                         height="47.208" viewBox="0 0 43.383 47.208" *ngIf="isUserOfficial">
@@ -56,8 +56,7 @@
                                 transform="translate(-259.715 -289.198)" />
                         </g>
                     </svg>
-                    <a target="_blank" href={{linkUserPage}}>{{postData.owner?postData.owner.name ?
-                        postData.owner.name:postData.owner.displayName:''}}</a>
+                    <a target="_blank" href={{linkUserPage}}>{{postData.post && postData.post.page && postData.post.page.name ? postData.post.page.name : postData.owner.displayName }}</a>
                 </div>
                 <div class="amount_social">
                     <span>{{amountSocial ? amountSocial:0}}</span> {{amountSocial? 'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}
