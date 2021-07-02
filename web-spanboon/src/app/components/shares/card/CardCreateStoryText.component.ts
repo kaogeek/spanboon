@@ -21,6 +21,7 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../../environments/environment';
 import { NeedsCard } from './../card/card';
 import { SimpleChanges } from '@angular/core';
+import { ValidateFileSizeImageUtils } from '../../../utils/ValidateFileSizeImageUtils';
 
 
 declare var $: any;
@@ -2190,7 +2191,11 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         size: file.size,
                         image: event.target.result
                     }
-                    this.genImages(data);
+                    if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+                        this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
+                      } else { 
+                        this.genImages(data);
+                      }
                 }
                 reader.readAsDataURL(file);
             }

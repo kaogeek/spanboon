@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Inject, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ImageCropperComponent } from "ngx-img-cropper";
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropListGroup, CdkDropList, CdkDragMove, CdkDrag } from '@angular/cdk/drag-drop';
@@ -13,13 +13,16 @@ import { ViewportRuler } from '@angular/cdk/overlay';
 import { Asset } from '../../../models/Asset';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { Platform } from '@angular/cdk/platform';
+import { ValidateFileSizeImageUtils } from '../../../utils/ValidateFileSizeImageUtils';
+import { AbstractPage } from '../../pages/AbstractPage';
+import { AuthenManager } from '../../../services/AuthenManager.service';
 
 @Component({
   selector: 'dialog-manage-image',
   templateUrl: './DialogManageImage.component.html'
 
 })
-export class DialogManageImage {
+export class DialogManageImage extends AbstractPage{ 
 
   @Input() name: string;
   @ViewChild('cropper', undefined)
@@ -41,11 +44,20 @@ export class DialogManageImage {
   private fileImageOriginal: any[] = [];
 
   constructor(public dialogRef: MatDialogRef<DialogManageImage>, @Inject(MAT_DIALOG_DATA) public fileImage: any[], private viewportRuler: ViewportRuler,
-    postFacade: PostFacade, private _platform: Platform) {
+    postFacade: PostFacade, private _platform: Platform,authenManager: AuthenManager) {
+      super(null, authenManager, null, null);
     this.postFacade = postFacade;
     this._platform = _platform
   }
-
+  isPageDirty(): boolean {
+    return false;
+  }
+  onDirtyDialogConfirmBtnClick(): EventEmitter<any> {
+    return;
+  }
+  onDirtyDialogCancelButtonClick(): EventEmitter<any> {
+    return;
+  }
   public ngOnInit(): void {
     this.fileImageOriginal = JSON.parse(JSON.stringify(this.fileImage));
   }
@@ -77,7 +89,11 @@ export class DialogManageImage {
             size: file.size,
             image: event.target.result
           }
-          this.genImages(data);
+          if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+            this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
+          } else { 
+            this.genImages(data);
+          }
         }
         reader.readAsDataURL(file);
       }

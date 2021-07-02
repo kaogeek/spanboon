@@ -12,7 +12,7 @@ import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { PageSocialTW, SearchFilter } from '../../models/models';
+import { Config, PageSocialTW, SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -22,7 +22,8 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';  
+import { FACEBOOK_AUTO_POST, MAX_FILE_SIZE, TWITTER_AUTO_POST } from '../../Config';  
+import { ValidateFileSizeImageUtils } from '../../utils/ValidateFileSizeImageUtils';
 
 declare var $: any;
 declare const window: any;
@@ -245,7 +246,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
   tag: Observable<string[]>;
   filtered: any;
   dataSource = new MatTableDataSource(this.resHashTag);
-  public isDirty: boolean =  false;
+  // public isDirty: boolean =  false;
 
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
 
@@ -1265,7 +1266,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
   }
 
   public onKeyup(event) {
-    this.isDirty = true;
+   
     clearTimeout(this.setTimeKeyup);
     this.setTimeKeyup = setTimeout(() => {
       $('.list-add-hashtaggg').click((dom) => {
@@ -1277,6 +1278,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
     if (!this.isFulfillNull) {
       if (this.mTopic.trim() === "") {
+        // this.isDirty = true;
         var myselect = $('#editableStoryPost').attr('contenteditable', 'true');
         myselect.find("br:last-child").remove();
         if (this.prefix) {
@@ -1285,6 +1287,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
           $('#editableStoryPost').addClass('msg-error-shake');
         }
       } else {
+        // this.isDirty = false;
         if (this.prefix) {
           $('#' + this.prefix.detail + 'editableStoryPost').removeClass('msg-error-shake');
         } else {
@@ -2307,7 +2310,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
 
   public onFileMultiSelectedImage(event) {
     this.isShowImage = true;
-    let files = event.target.files;
+    let files = event.target.files; 
     if (files.length === 0) {
       return;
     }
@@ -2320,8 +2323,12 @@ export class BoxPost extends AbstractPage implements OnInit  {
             fileName: file.name,
             size: file.size,
             image: event.target.result
+          }  
+          if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+            this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
+          } else { 
+            this.genImages(data);
           }
-          this.genImages(data);
         }
         reader.readAsDataURL(file);
       }
