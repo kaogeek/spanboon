@@ -8,6 +8,7 @@
 import 'reflect-metadata';
 import { JsonController, Get, Param, Res, Post, Body, Req, Delete, Authorized } from 'routing-controllers';
 import { AssetService } from '../services/AssetService';
+import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
 import { FileUtil, ResponseUtil } from '../../utils/Utils';
 import { Asset } from '../models/Asset';
@@ -23,7 +24,7 @@ export class AssetController {
     private IMAGE_ASSET_TYPE: string[] = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
     private VIDEO_ASSET_TYPE: string[] = ['video/mp4', 'video/quicktime'];
 
-    constructor(private assetService: AssetService, private configService: ConfigService) { }
+    constructor(private assetService: AssetService, private configService: ConfigService, private s3Service: S3Service) { }
 
     // Find Asset API
     /**
@@ -48,7 +49,7 @@ export class AssetController {
         if (asset) {
             const url = 'data:' + asset.mimeType + ';base64,' + asset.data;
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got Asset', url);
-            return res.status(200).set('Cache-Control', 'public,must-revalidate,max-age=864000' ).send(successResponse);
+            return res.status(200).set('Cache-Control', 'public,must-revalidate,max-age=864000').send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return res.status(400).send(errorResponse);
@@ -85,6 +86,18 @@ export class AssetController {
                 assetExpTime = assetExpTimeCfg.value;
             }
 
+            // s3 upload by cofig
+            const assetUploadToS3Cfg = await this.configService.getConfig(ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD);
+            let assetUploadToS3 = DEFAULT_ASSET_CONFIG_VALUE.S3_STORAGE_UPLOAD;
+
+            if (assetUploadToS3Cfg && assetUploadToS3Cfg.value) {
+                if (typeof assetUploadToS3Cfg.value === 'boolean') {
+                    assetUploadToS3 = assetUploadToS3Cfg.value;
+                } else if (typeof assetUploadToS3Cfg.value === 'string') {
+                    assetUploadToS3 = (assetUploadToS3Cfg.value.toUpperCase() === 'TRUE');
+                }
+            }
+
             const userId = req.user.id;
             const userObjId = new ObjectID(userId);
             const assets = tempFile.asset;
@@ -97,11 +110,25 @@ export class AssetController {
             asset.fileName = fileName;
             asset.mimeType = assets.mimeType;
             asset.size = assets.size;
+            if (assetUploadToS3) {
+                const base64Data = Buffer.from(assets.data, 'base64');
+                try {
+                    let s3Path = userId + '/' + fileName;
+                    s3Path = FileUtil.appendFileType(s3Path, asset.mimeType);
+                    const s3Result = await this.s3Service.imageUpload(s3Path, base64Data, asset.mimeType);
+
+                    if (s3Result.path !== undefined) {
+                        asset.s3FilePath = s3Path;
+                    }
+                } catch (error) {
+                    console.log('Cannot Store to S3: ', error);
+                }
+            }
 
             if (assets.expirationDate !== null && assets.expirationDate !== undefined) {
-                asset.expirationDate = moment().add(assetExpTime, 'minutes').toDate();
-            } else {
                 asset.expirationDate = assets.expirationDate;
+            } else {
+                asset.expirationDate = moment().add(assetExpTime, 'minutes').toDate();
             }
 
             const assetCreate: Asset = await this.assetService.create(asset);
@@ -145,6 +172,16 @@ export class AssetController {
             for (const asset of assets) {
                 const assetObjId = new ObjectID(asset.id);
                 const query = { _id: assetObjId };
+
+                if (asset.s3FilePath !== undefined && asset.s3FilePath !== '') {
+                    try {
+                        const s3Path = asset.s3FilePath;
+                        await this.s3Service.deleteFile(s3Path);
+                    } catch (error) {
+                        console.log('Cannot Delete file from S3: ', error);
+                    }
+                }
+
                 const tempDelete = await this.assetService.delete(query);
                 tempDeleted.push(tempDelete);
             }
@@ -160,7 +197,7 @@ export class AssetController {
 
     // decode base64 to image API
     /**
-     * @api {get} /api/file/:id/image  Resize Image On The Fly
+     * @api {get} /api/file/:id/image change base64 to image link
      * @apiGroup Get Image File API
      * @apiSuccessExample {json} Success
      *    HTTP/1.1 200 OK
@@ -168,7 +205,7 @@ export class AssetController {
      *      "message": "Successfully resize image",
      *      "status": "1"
      *    }
-     *    @apiSampleRequest /api/media/image-resize
+     * @apiSampleRequest /api/file/:id/image
      * @apiErrorExample {json} media error
      *    HTTP/1.1 500 Internal Server Error
      *    {
@@ -177,7 +214,7 @@ export class AssetController {
      *    }
      */
     @Get('/:id/image')
-    public async image_resize(@Param('id') id: string, @Res() response: any): Promise<any> {
+    public async decodeImage(@Param('id') id: string, @Res() response: any): Promise<any> {
         const imgId = new ObjectID(id);
         const asset: Asset = await this.assetService.findOne({ where: { _id: imgId } });
 
