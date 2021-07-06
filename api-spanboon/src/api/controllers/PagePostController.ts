@@ -328,6 +328,17 @@ export class PagePostController {
         } else {
             pageObjId = new ObjectID(pageId);
             pageData = await this.pageService.find({ where: { _id: pageObjId, ownerUser: userObjId } });
+
+            if (pageData === undefined) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
+            }
+
+            // Check PageAccess
+            const accessLevels = [PAGE_ACCESS_LEVEL.OWNER, PAGE_ACCESS_LEVEL.ADMIN, PAGE_ACCESS_LEVEL.MODERATOR, PAGE_ACCESS_LEVEL.POST_MODERATOR];
+            const canAccess: boolean = await this.pageAccessLevelService.isUserHasAccessPage(req.user.id + '', pageId, accessLevels);
+            if (!canAccess) {
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit post of this page.', undefined));
+            }
         }
 
         if (postUserTag !== null && postUserTag !== undefined) {
