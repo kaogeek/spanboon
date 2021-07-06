@@ -1368,26 +1368,36 @@ export class PagePostController {
             const today = moment().toDate();
             let startDateTime = postPages.startDateTime;
 
-            if (pageId !== undefined && pageId !== '') {
+            // page mode
+            let isPageMode = false;
+            if (pageId !== undefined && pageId !== '' && pageId !== 'null' && pageId !== null && pageId !== 'undefined') {
                 pageObjId = new ObjectID(pageId);
                 pageData = await this.pageService.findOne({ _id: pageObjId, ownerUser });
-            }
+                isPageMode = true;
 
-            if (pageData === undefined) {
-                return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
-            }
+                if (pageData === undefined) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
+                }
 
-            // Check PageAccess
-            const accessLevels = [PAGE_ACCESS_LEVEL.OWNER, PAGE_ACCESS_LEVEL.ADMIN, PAGE_ACCESS_LEVEL.MODERATOR, PAGE_ACCESS_LEVEL.POST_MODERATOR];
-            const canAccess: boolean = await this.pageAccessLevelService.isUserHasAccessPage(req.user.id + '', pageId, accessLevels);
-            if (!canAccess) {
-                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit post of this page.', undefined));
+                // Check PageAccess
+                const accessLevels = [PAGE_ACCESS_LEVEL.OWNER, PAGE_ACCESS_LEVEL.ADMIN, PAGE_ACCESS_LEVEL.MODERATOR, PAGE_ACCESS_LEVEL.POST_MODERATOR];
+                const canAccess: boolean = await this.pageAccessLevelService.isUserHasAccessPage(req.user.id + '', pageId, accessLevels);
+                if (!canAccess) {
+                    return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit post of this page.', undefined));
+                }
             }
 
             const post: Posts = await this.postsService.findOne({ $and: [{ _id: pagePostsObjId }, { deleted: false }] });
 
             if (post === undefined || post === null) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Post was not found', undefined));
+            }
+
+            if (!isPageMode) {
+                // Check if Post user is own the post
+                if (post.ownerUser + '' !== ownerUser + '') {
+                    return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit post of timeline.', undefined));
+                }
             }
 
             if (postUserTag !== null && postUserTag !== undefined) {
