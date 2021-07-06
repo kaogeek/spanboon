@@ -107,6 +107,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                     if (row) {
                         const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                         const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
+                        const moreData: any = {};
 
                         if (lastestDate === null) {
                             lastestDate = row.createdDate;
@@ -114,7 +115,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         const contentModel = new ContentModel();
                         contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
                         contentModel.subtitle = row.name;
-                        contentModel.iconUrl = row.iconURL;
+                        contentModel.iconUrl = row.iconURL; 
 
                         hastagRowMap[row.hashTag] = row;
                         hashtagNames.push(row.hashTag);
@@ -125,9 +126,9 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         }
 
                         if (row.hashTagObj.length > 0) {
-
                             // saerch all post with objective hashtag
                             if (hashtagNames.length > 0) {
+                                moreData.objectiveId = row.hashTagObj[0]._id;
                                 const today = moment().toDate();
                                 const postMatchStmt: any = {
                                     isDraft: false,
@@ -182,6 +183,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                         }
 
+                        contentModel.data = moreData;
                         result.contents.push(contentModel);
                     }
                 }
