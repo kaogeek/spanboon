@@ -158,6 +158,7 @@ export class EmergencyEventController {
         emergencyEvent.isPin = isPin;
         emergencyEvent.isClose = false;
         emergencyEvent.coverPageURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        emergencyEvent.s3CoverPageURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result = await this.emergencyEventService.create(emergencyEvent);
 
@@ -296,6 +297,7 @@ export class EmergencyEventController {
             let assetId;
             let newAssetId;
             let coverPageURL;
+            let s3CoverPageURL;
 
             if (assetData !== null && assetData !== undefined) {
                 const data = assetData.data;
@@ -322,9 +324,11 @@ export class EmergencyEventController {
 
                 if (assetResult) {
                     coverPageURL = assetResult ? ASSET_PATH + newAssetId : '';
+                    s3CoverPageURL = assetResult ? assetResult.s3CoverPageURL : '';
                 }
             } else {
                 coverPageURL = emergencyCoverPageURL;
+                s3CoverPageURL = emergencyUpdate.s3CoverPageURL;
             }
 
             const today = moment().toDate();
@@ -352,7 +356,7 @@ export class EmergencyEventController {
             }
 
             const updateQuery = { _id: objId };
-            const newValue = { $set: { title: emergencyTitle, detail: emergencyDetail, coverPageURL, hashTag, isClose, isPin } };
+            const newValue = { $set: { title: emergencyTitle, detail: emergencyDetail, coverPageURL, hashTag, isClose, isPin, s3CoverPageURL } };
             const emergencySave = await this.emergencyEventService.update(updateQuery, newValue);
 
             if (emergencySave) {
@@ -412,6 +416,18 @@ export class EmergencyEventController {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid EmergencyEvent Id', undefined));
         }
 
+        // remove asset of objective
+        if (emergencyEvent.coverPageURL !== undefined && emergencyEvent.coverPageURL !== undefined && emergencyEvent.coverPageURL !== '') {
+            const fileId = emergencyEvent.coverPageURL.replace(ASSET_PATH, '');
+            const assetQuery = { _id: new ObjectID(fileId) };
+
+            try {
+                await this.assetService.delete(assetQuery);
+            } catch (error) {
+                console.log('Cannot remove asset file: ' + fileId);
+            }
+        }
+
         const query = { _id: objId };
         const deleteObjective = await this.emergencyEventService.delete(query);
 
@@ -438,4 +454,4 @@ export class EmergencyEventController {
         const emergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ $or: [{ title }, { hashTag }] });
         return (emergencyEvent !== null && emergencyEvent !== undefined) ? emergencyEvent : (null || undefined);
     }
-} 
+}
