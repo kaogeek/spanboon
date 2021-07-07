@@ -227,6 +227,7 @@
                 justify-content: center;
                 flex-direction: column;
                 position: relative;
+                max-width: 1600px;
                 > .head {
                     width: 100%;
                     position: relative;
@@ -273,7 +274,7 @@
                             justify-content: center;
                             align-items: center;
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 > .top {
                                     background-color: white;
                                     border-radius: 10px;
@@ -341,6 +342,12 @@
                                             justify-content: center;
                                             align-items: center;
                                             border-radius: 30px;
+                                            cursor: pointer;
+                                            transition: 0.3s;
+                                            &:hover {
+                                                transition: 0.3s;
+                                                transform: scale(1.1);
+                                            }
                                         }
                                     }
                                 }
@@ -579,7 +586,7 @@
                             height: 100%;
                             padding: 30px;
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 margin-top: 50px;
                                 > .top {
                                     background-color: white;
@@ -629,7 +636,7 @@
                                         }
                                     }
                                     > .title {
-                                        @include font-size-3($font-head-500);
+                                        @include font-size-5($font-head-500);
                                     }
                                     > .detail {
                                         margin-top: 30px;
@@ -917,7 +924,7 @@
                             align-items: center;
 
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 margin-top: 50px;
                                 > .top {
                                     background-color: white;
@@ -967,7 +974,7 @@
                                         }
                                     }
                                     > .title {
-                                        @include font-size-3($font-head-500);
+                                        @include font-size-5($font-head-500);
                                     }
                                     > .detail {
                                         margin-top: 30px;
@@ -1246,7 +1253,7 @@
                             padding: 30px;
 
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 > .top {
                                     background-color: white;
                                     border-radius: 10px;
@@ -1634,6 +1641,67 @@
                                         @include font-size-6($font-head-300);
                                     }
                                 }
+                                > .post {
+                                    display: flex;
+                                    flex-direction: column;
+                                    > .head {
+                                        display: flex;
+                                        margin-bottom: 10px;
+                                        > .type {
+                                            display: flex;
+                                            align-content: center;
+                                            align-items: center;
+                                            > .point {
+                                                width: 15px;
+                                                height: 15px;
+                                                border-radius: 50%;
+                                                margin: 0px 10px 0px 0px;
+                                                background-color: $status-post-need;
+                                            }
+                                            > .type_name {
+                                                opacity: 0.2;
+                                                @include font-size-8($font-head-500);
+                                            }
+                                        }
+                                        > .drot {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                            margin: 0 5pt;
+                                        }
+                                        > .createdDate {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                        }
+                                    }
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .detail {
+                                        margin-top: 30px;
+                                        @include font-size-9($font-head-300);
+                                    }
+                                    > .buttom {
+                                        margin-top: 30px;
+                                        > .botton {
+                                            @include font-size-9($font-head-300);
+                                            padding: 15px;
+                                            background-color: #fd5454;
+                                            color: white;
+                                            width: 120px;
+                                            display: flex;
+                                            align-content: center;
+                                            justify-content: center;
+                                            align-items: center;
+                                            border-radius: 30px;
+                                            cursor: pointer;
+                                            transition: 0.3s;
+                                            &:hover {
+                                                transition: 0.3s;
+                                                transform: scale(1.1);
+                                            }
+                                        }
+                                    }
+                                }
                                 > .icon {
                                     border-radius: 50%;
                                 }
@@ -1863,6 +1931,92 @@
         align-items: center;
         align-content: center;
         justify-content: center;
+        background-color: white;
+    }
+
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        > .objective_start_card {
+            > .right {
+                > .body > .post > .buttom {
+                    > .score {
+                    }
+                }
+            }
+        }
+        > .objective_lastest_card > .body > .posts {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            width: 100%;
+            flex-direction: row;
+            > .post {
+                width: 42%;
+            }
+        }
+    }
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        margin: unset;
+        > .objective_post_liked {
+            height: unset;
+            > .body {
+                flex-direction: column;
+                > .left {
+                    width: 100%;
+                }
+                > .right {
+                    width: 100%;
+                }
+            }
+        }
+        > .objective_influencer_fulfill {
+            height: unset;
+            > .body {
+                flex-direction: column;
+                > .left {
+                    width: 100%;
+                    > .influencer_fulfill > .star_svg_bg .star_one {
+                        display: none !important;
+                    }
+                }
+                > .right {
+                    width: 100%;
+                }
+            }
+        }
+        > .objective_needs_card {
+            padding: unset;
+            flex-direction: column;
+            > .left {
+                width: 100%;
+                > .body {
+                    > .top {
+                        text-align: center;
+                    }
+                    > .post > .buttom {
+                        align-items: center;
+                        justify-content: center;
+                        align-content: center;
+                        > .score {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            > .right {
+                width: 100%;
+                padding: unset;
+                > .body > .needs-card > .item > {
+                    .needs {
+                        width: 100%;
+                    }
+                    .title {
+                        padding: unset;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1939,6 +2093,40 @@
 }
 
 @media (max-width: $lmedium) {
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        margin: 20px 0px;
+        > .objective_start_card {
+            padding: unset;
+            > .right {
+                padding: unset;
+                width: 100%;
+                > .body > .post > .buttom {
+                    margin-top: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    > .score {
+                        display: none;
+                    }
+                }
+            }
+        }
+        > .objective_lastest_card {
+            padding: 60px 20px;
+            > .body > .posts {
+                display: inline-flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+                width: 100%;
+                flex-direction: column;
+                > .post {
+                    width: 100%;
+                }
+            }
+        }
+    }
 }
 
 @media (max-width: $medium) {
@@ -1963,6 +2151,7 @@
                     margin-left: 0pt !important;
                     margin-top: 30pt;
                     display: flex !important;
+                    flex-direction: column !important;
                     > .main-score {
                         @include font-size-8($font-head-500);
                         > .score-type {
@@ -1987,14 +2176,16 @@
                     > .sub-score {
                         @include font-size-10($font-head-500);
                         display: flex;
-                        flex-direction: column;
                         align-content: flex-start;
                         justify-content: center;
                         align-items: flex-start;
                         margin-left: 10px;
-                        > .score-type > .title {
-                            margin-right: 5px;
-                            color: $brandcolor2;
+                        > .score-type {
+                            margin: 10px 15px;
+                            > .title {
+                                margin-right: 5px;
+                                color: $brandcolor2;
+                            }
                         }
                     }
                 }
