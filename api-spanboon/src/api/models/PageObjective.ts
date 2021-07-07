@@ -37,6 +37,9 @@ export class PageObjective extends BaseModel {
     @Column({ name: 'hashTag' })
     public hashTag: ObjectID;
 
+    @Column({ name: 's3IconURL' })
+    public s3IconURL: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();
