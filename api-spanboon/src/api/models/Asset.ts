@@ -44,6 +44,9 @@ export class Asset extends BaseModel {
     @Column({ name: 'expirationDate' })
     public expirationDate: Date;
 
+    @Column({ name: 's3FilePath' })
+    public s3FilePath: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

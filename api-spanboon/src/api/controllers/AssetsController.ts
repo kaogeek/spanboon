@@ -48,7 +48,7 @@ export class AssetController {
         if (asset) {
             const url = 'data:' + asset.mimeType + ';base64,' + asset.data;
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got Asset', url);
-            return res.status(200).set('Cache-Control', 'public,must-revalidate,max-age=864000' ).send(successResponse);
+            return res.status(200).set('Cache-Control', 'public,must-revalidate,max-age=864000').send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return res.status(400).send(errorResponse);
@@ -99,9 +99,9 @@ export class AssetController {
             asset.size = assets.size;
 
             if (assets.expirationDate !== null && assets.expirationDate !== undefined) {
-                asset.expirationDate = moment().add(assetExpTime, 'minutes').toDate();
-            } else {
                 asset.expirationDate = assets.expirationDate;
+            } else {
+                asset.expirationDate = moment().add(assetExpTime, 'minutes').toDate();
             }
 
             const assetCreate: Asset = await this.assetService.create(asset);
@@ -145,6 +145,7 @@ export class AssetController {
             for (const asset of assets) {
                 const assetObjId = new ObjectID(asset.id);
                 const query = { _id: assetObjId };
+
                 const tempDelete = await this.assetService.delete(query);
                 tempDeleted.push(tempDelete);
             }
@@ -160,7 +161,7 @@ export class AssetController {
 
     // decode base64 to image API
     /**
-     * @api {get} /api/file/:id/image  Resize Image On The Fly
+     * @api {get} /api/file/:id/image change base64 to image link
      * @apiGroup Get Image File API
      * @apiSuccessExample {json} Success
      *    HTTP/1.1 200 OK
@@ -168,7 +169,7 @@ export class AssetController {
      *      "message": "Successfully resize image",
      *      "status": "1"
      *    }
-     *    @apiSampleRequest /api/media/image-resize
+     * @apiSampleRequest /api/file/:id/image
      * @apiErrorExample {json} media error
      *    HTTP/1.1 500 Internal Server Error
      *    {
@@ -177,7 +178,7 @@ export class AssetController {
      *    }
      */
     @Get('/:id/image')
-    public async image_resize(@Param('id') id: string, @Res() response: any): Promise<any> {
+    public async decodeImage(@Param('id') id: string, @Res() response: any): Promise<any> {
         const imgId = new ObjectID(id);
         const asset: Asset = await this.assetService.findOne({ where: { _id: imgId } });
 
