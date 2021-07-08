@@ -101,6 +101,7 @@ export const aws_setup = {
     AWS_SECRET_ACCESS_KEY: getOsEnv('AWS_SECRET_ACCESS_KEY'),
     AWS_DEFAULT_REGION: getOsEnv('AWS_DEFAULT_REGION'),
     AWS_BUCKET: getOsEnv('AWS_BUCKET'),
+    AWS_CLOUDFRONT_PREFIX: getOsEnv('AWS_CLOUDFRONT_PREFIX'),
 };
 
 // Facebook Setup
