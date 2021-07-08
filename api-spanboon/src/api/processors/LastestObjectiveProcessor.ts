@@ -161,13 +161,11 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     //     contentModel.isShare = userAction.isShare;
                     // }
 
-                    if(hashtag !== undefined){
-                        moreData.objectiveId = hashtag._id;
-                    }
-
                     hastagRowMap[row.hashTag] = row;
                     hashtagNames.push(row.hashTag);
 
+                    moreData.objectiveId = row._id;
+                    contentModel.data = moreData;
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);
