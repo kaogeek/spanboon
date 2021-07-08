@@ -8,6 +8,7 @@
 .objective-timeline-body {
     width: 100%;
     height: 100%;
+    min-width: 400px;
     z-index: 2;
     background-color: #fcfcfd00;
     position: relative;
@@ -82,6 +83,24 @@
                                 }
                             }
                         }
+                        > .score-cout {
+                            display: none !important;
+                            > .score-type {
+                                display: flex;
+                                margin-right: 60px;
+                                margin-top: 60px;
+                                flex-direction: column;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                > .title {
+                                    @include font-size-5($font-head-500);
+                                }
+                                > .disiption {
+                                    @include font-size-9($font-head-400);
+                                }
+                            }
+                        }
                         > .buttom {
                             margin-top: 60px;
                             margin-left: 40pt;
@@ -107,7 +126,7 @@
                     > .page {
                         margin-top: 10px;
                         border-radius: 5px;
-                        border: solid 0.5 gray;
+                        border: solid 1px #e6e6e6;
                         background-color: white;
                         padding: 10px;
                         display: flex;
@@ -177,7 +196,7 @@
 
         > .needs-section {
             max-width: 1660px;
-            width: 80%;
+            width: 60%;
             margin-top: 30px;
             position: relative;
             z-index: 1;
@@ -208,6 +227,7 @@
                 justify-content: center;
                 flex-direction: column;
                 position: relative;
+                max-width: 1600px;
                 > .head {
                     width: 100%;
                     position: relative;
@@ -254,7 +274,7 @@
                             justify-content: center;
                             align-items: center;
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 > .top {
                                     background-color: white;
                                     border-radius: 10px;
@@ -273,7 +293,6 @@
                                 > .post {
                                     display: flex;
                                     flex-direction: column;
-                                    padding: 30px;
                                     > .head {
                                         display: flex;
                                         margin-bottom: 10px;
@@ -323,6 +342,12 @@
                                             justify-content: center;
                                             align-items: center;
                                             border-radius: 30px;
+                                            cursor: pointer;
+                                            transition: 0.3s;
+                                            &:hover {
+                                                transition: 0.3s;
+                                                transform: scale(1.1);
+                                            }
                                         }
                                     }
                                 }
@@ -561,7 +586,7 @@
                             height: 100%;
                             padding: 30px;
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 margin-top: 50px;
                                 > .top {
                                     background-color: white;
@@ -611,7 +636,7 @@
                                         }
                                     }
                                     > .title {
-                                        @include font-size-3($font-head-500);
+                                        @include font-size-5($font-head-500);
                                     }
                                     > .detail {
                                         margin-top: 30px;
@@ -899,7 +924,7 @@
                             align-items: center;
 
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 margin-top: 50px;
                                 > .top {
                                     background-color: white;
@@ -949,7 +974,7 @@
                                         }
                                     }
                                     > .title {
-                                        @include font-size-3($font-head-500);
+                                        @include font-size-5($font-head-500);
                                     }
                                     > .detail {
                                         margin-top: 30px;
@@ -1228,7 +1253,7 @@
                             padding: 30px;
 
                             > .body {
-                                width: 80%;
+                                width: 100%;
                                 > .top {
                                     background-color: white;
                                     border-radius: 10px;
@@ -1616,6 +1641,67 @@
                                         @include font-size-6($font-head-300);
                                     }
                                 }
+                                > .post {
+                                    display: flex;
+                                    flex-direction: column;
+                                    > .head {
+                                        display: flex;
+                                        margin-bottom: 10px;
+                                        > .type {
+                                            display: flex;
+                                            align-content: center;
+                                            align-items: center;
+                                            > .point {
+                                                width: 15px;
+                                                height: 15px;
+                                                border-radius: 50%;
+                                                margin: 0px 10px 0px 0px;
+                                                background-color: $status-post-need;
+                                            }
+                                            > .type_name {
+                                                opacity: 0.2;
+                                                @include font-size-8($font-head-500);
+                                            }
+                                        }
+                                        > .drot {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                            margin: 0 5pt;
+                                        }
+                                        > .createdDate {
+                                            opacity: 0.2;
+                                            @include font-size-8($font-head-500);
+                                        }
+                                    }
+                                    > .title {
+                                        @include font-size-5($font-head-500);
+                                    }
+                                    > .detail {
+                                        margin-top: 30px;
+                                        @include font-size-9($font-head-300);
+                                    }
+                                    > .buttom {
+                                        margin-top: 30px;
+                                        > .botton {
+                                            @include font-size-9($font-head-300);
+                                            padding: 15px;
+                                            background-color: #fd5454;
+                                            color: white;
+                                            width: 120px;
+                                            display: flex;
+                                            align-content: center;
+                                            justify-content: center;
+                                            align-items: center;
+                                            border-radius: 30px;
+                                            cursor: pointer;
+                                            transition: 0.3s;
+                                            &:hover {
+                                                transition: 0.3s;
+                                                transform: scale(1.1);
+                                            }
+                                        }
+                                    }
+                                }
                                 > .icon {
                                     border-radius: 50%;
                                 }
@@ -1696,33 +1782,6 @@
 
                             > .left {
                                 width: 50%;
-                                display: flex;
-                                flex-direction: column;
-                                align-content: center;
-                                justify-content: center;
-                                align-items: center;
-                                > .top {
-                                    background-color: white;
-                                    border-radius: 10px;
-                                    overflow: hidden;
-                                    padding: 30px;
-                                    width: 80%;
-                                    display: flex;
-                                    text-align: center;
-                                    flex-direction: column;
-                                    > .title {
-                                        @include font-size-3($font-head-500);
-                                    }
-                                    > .sub_title {
-                                        @include font-size-6($font-head-300);
-                                    }
-                                }
-                                > .icon {
-                                    border-radius: 50%;
-                                }
-                            }
-                            > .right {
-                                width: 50%;
                                 > .influencer_fulfill {
                                     position: relative;
                                     width: 100%;
@@ -1766,84 +1825,67 @@
                                         left: 70%;
                                     }
                                     > .influencer_img:nth-child(5) {
-                                        width: 90px;
-                                        height: 90px;
-                                        top: 80%;
-                                        left: 10%;
+                                        width: 70px;
+                                        height: 70px;
+                                        top: 40%;
+                                        left: 45%;
                                     }
                                     > .star_svg_bg {
                                         width: 100%;
                                         height: 100%;
                                         position: relative;
                                         z-index: 0;
-                                        svg {
+                                        .star_one {
                                             position: absolute;
-                                            top: 10%;
-                                            left: 10%;
-                                            polygon {
-                                                fill: #ff7474;
-                                                stroke: #ff7474;
-                                            }
+                                            top: 15%;
+                                            left: 40%;
+                                            transform: scale(0.8);
                                         }
-                                        svg:nth-child(2) {
-                                            top: 11%;
-                                            left: 50%;
-                                            polygon {
-                                                fill: chartreuse;
-                                                stroke: chartreuse;
-                                            }
+                                        .star_two {
+                                            position: absolute;
+                                            top: 5%;
+                                            left: 15%;
+                                            transform: scale(1.3);
                                         }
-                                        svg:nth-child(3) {
-                                            top: 45%;
-                                            left: 55%;
-                                        }
-                                        svg:nth-child(4) {
-                                            top: 71%;
-                                            left: 19%;
-                                            polygon {
-                                                fill: darkorange;
-                                                stroke: darkorange;
-                                            }
-                                        }
-                                        svg:nth-child(5) {
-                                            top: 90%;
-                                            left: 68%;
-                                            polygon {
-                                                fill: chartreuse;
-                                                stroke: chartreuse;
-                                            }
-                                        }
-                                        svg:nth-child(5) {
-                                            top: 90%;
-                                            left: 68%;
-                                            width: 10px;
-                                            height: 10px;
-                                            polygon {
-                                                fill: darkred;
-                                                stroke: darkred;
-                                            }
-                                        }
-                                        // svg:nth-child(6) {
-                                        //     top: 88%;
-                                        //     left: 66%;
-                                        //     width: 14px;
-                                        //     height: 14px;
-                                        //     polygon {
-                                        //         fill: darkred;
-                                        //         stroke: darkred;
-                                        //     }
-                                        // }
-                                        svg:nth-child(7) {
-                                            top: 87%;
-                                            left: 64%;
-                                            width: 18px;
-                                            height: 18px;
-                                            polygon {
-                                                fill: chartreuse;
-                                                stroke: chartreuse;
+                                        .pop {
+                                            position: absolute;
+                                            bottom: 5%;
+                                            left: 15%;
+                                            transform: scale(1);
+                                            transition: 0.3s;
+                                            &:hover {
+                                                transition: 0.3s;
+                                                transform: scale(1.1);
                                             }
                                         }
                                     }
+                                }
+                            }
+                            > .right {
+                                width: 50%;
+                                display: flex;
+                                flex-direction: column;
+                                align-content: center;
+                                justify-content: center;
+                                align-items: center;
+                                > .top {
+                                    background-color: white;
+                                    border-radius: 10px;
+                                    overflow: hidden;
+                                    padding: 30px;
+                                    width: 80%;
+                                    display: flex;
+                                    text-align: center;
+                                    flex-direction: column;
+                                    > .title {
+                                        @include font-size-3($font-head-500);
+                                    }
+                                    > .sub_title {
+                                        @include font-size-6($font-head-300);
+                                    }
+                                }
+                                > .icon {
+                                    border-radius: 50%;
                                 }
                             }
                         }
@@ -1858,18 +1900,297 @@
 }
 
 @media (max-width: $xlarge) {
+    .objective-timeline-body > .objective-head {
+        width: 90%;
+    }
+    .objective-timeline-body > .objective-head > .needs-section {
+        width: 70%;
+    }
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card > .objective_start_card {
+        flex-direction: column;
+    }
+    .objective-timeline-body
+        > .timeline-data-section
+        > .body
+        > .strat-section-point
+        > .card
+        > .objective_start_card
+        > .left {
+        width: 100%;
+    }
+    .objective-timeline-body
+        > .timeline-data-section
+        > .body
+        > .strat-section-point
+        > .card
+        > .objective_start_card
+        > .right {
+        width: calc(100% - 60px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        > .objective_start_card {
+            > .right {
+                > .body > .post > .buttom {
+                    > .score {
+                    }
+                }
+            }
+        }
+        > .objective_lastest_card > .body > .posts {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            width: 100%;
+            flex-direction: row;
+            > .post {
+                width: 42%;
+            }
+        }
+    }
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        margin: unset;
+        > .objective_post_liked {
+            height: unset;
+            > .body {
+                flex-direction: column;
+                > .left {
+                    width: 100%;
+                }
+                > .right {
+                    width: 100%;
+                }
+            }
+        }
+        > .objective_influencer_fulfill {
+            height: unset;
+            > .body {
+                flex-direction: column;
+                > .left {
+                    width: 100%;
+                    > .influencer_fulfill > .star_svg_bg .star_one {
+                        display: none !important;
+                    }
+                }
+                > .right {
+                    width: 100%;
+                }
+            }
+        }
+        > .objective_needs_card {
+            padding: unset;
+            flex-direction: column;
+            > .left {
+                width: 100%;
+                > .body {
+                    > .top {
+                        text-align: center;
+                    }
+                    > .post > .buttom {
+                        align-items: center;
+                        justify-content: center;
+                        align-content: center;
+                        > .score {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            > .right {
+                width: 100%;
+                padding: unset;
+                > .body > .needs-card > .item > {
+                    .needs {
+                        width: 100%;
+                    }
+                    .title {
+                        padding: unset;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @media (max-width: $large) {
+    .objective-timeline-body > .objective-head > .top-objective-data {
+        flex-direction: column;
+    }
+    .objective-timeline-body > .objective-head > .top-objective-data > .objective {
+        width: 100%;
+        > .data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    }
+    .objective-timeline-body > .objective-head > .needs-section {
+        width: calc(100% - 30px);
+    }
+    .top-objective-data > .objective-owner {
+        width: 100% !important;
+        > .owner > .page > .disiption {
+            font-size: 16pt !important;
+            > span {
+                cursor: pointer;
+                transition: 0.3s;
+                &:hover {
+                    transition: 0.3s;
+                    transform: scale(1.1);
+                }
+            }
+        }
+    }
+
+    .objective-timeline-body
+        > .objective-head
+        > .objective-timeline-body
+        > .objective-head
+        > .top-objective-data
+        > .objective
+        > .data
+        > .data-text
+        > .text {
+        margin-left: 0pt;
+    }
+    .score {
+        margin-left: 0pt;
+    }
+    .buttom {
+        font-size: 16pt !important;
+        margin-left: 0pt !important;
+        > .btn-follow {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            > .button-follow {
+                width: 200px !important;
+                border: 2px solid rgb(253, 84, 90) !important;
+                font-size: 20px !important;
+            }
+        }
+    }
+    .objective-timeline-body > .objective-head > .top-objective-data > .objective-owner > .owner > .detail {
+        display: none !important;
+    }
+    .follow-fullfill {
+        display: none !important;
+    }
+
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .head > .strat-point > .title {
+        @include font-size-8($font-head-500);
+        color: $brandcolor2;
+    }
 }
 
 @media (max-width: $lmedium) {
+    .objective-timeline-body > .timeline-data-section > .body > .strat-section-point > .card {
+        margin: 20px 0px;
+        > .objective_start_card {
+            padding: unset;
+            > .right {
+                padding: unset;
+                width: 100%;
+                > .body > .post > .buttom {
+                    margin-top: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    > .score {
+                        display: none;
+                    }
+                }
+            }
+        }
+        > .objective_lastest_card {
+            padding: 60px 20px;
+            > .body > .posts {
+                display: inline-flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+                width: 100%;
+                flex-direction: column;
+                > .post {
+                    width: 100%;
+                }
+            }
+        }
+    }
 }
 
 @media (max-width: $medium) {
-    .objective-timeline-body > .objective-head > .top-objective-data {
-        display: flex;
-        flex-direction: column;
+    .objective-timeline-body {
+        > .objective-head > .top-objective-data {
+            display: flex;
+            flex-direction: column;
+            .objective > .data > .data-text {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                align-content: center;
+                > .text {
+                    margin-left: 0pt !important;
+                    margin-top: 30pt;
+                }
+                > .score {
+                    display: none !important;
+                }
+                > .score-cout {
+                    margin-left: 0pt !important;
+                    margin-top: 30pt;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    > .main-score {
+                        @include font-size-8($font-head-500);
+                        > .score-type {
+                            display: flex;
+                            flex-direction: column;
+                            align-content: center;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            > .title {
+                                @include font-size-2($font-head-500);
+                                color: $brandcolor2;
+                                line-height: 60px;
+                            }
+                            transition: 0.3s;
+                            &:hover {
+                                transition: 0.3s;
+                                transform: scale(1.1);
+                            }
+                        }
+                    }
+                    > .sub-score {
+                        @include font-size-10($font-head-500);
+                        display: flex;
+                        align-content: flex-start;
+                        justify-content: center;
+                        align-items: flex-start;
+                        margin-left: 10px;
+                        > .score-type {
+                            margin: 10px 15px;
+                            > .title {
+                                margin-right: 5px;
+                                color: $brandcolor2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
