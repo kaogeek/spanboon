@@ -10,12 +10,14 @@ export const PLATFORM_NAME_ENG = 'MFP Today';
 
 export const ASSET_CONFIG_NAME = {
     EXPIRE_MINUTE: 'asset.expiration.minute',
-    S3_STORAGE_UPLOAD: 'asset.s3.storage.upload'
+    S3_STORAGE_UPLOAD: 'asset.s3.storage.upload',
+    S3_SIGN_EXPIRING_SEC: 'asset.s3.sign.expires.sec'
 };
 
 export const DEFAULT_ASSET_CONFIG_VALUE = {
     EXPIRE_MINUTE: 60,
-    S3_STORAGE_UPLOAD: false
+    S3_STORAGE_UPLOAD: false,
+    S3_SIGN_EXPIRING_SEC: 3600 // 1 hour
 };
 
 export const USER_EXPIRED_TIME_CONFIG = 'user.expiration.time';
