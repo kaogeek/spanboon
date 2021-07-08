@@ -10,11 +10,15 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Asset } from '../models/Asset';
 import { AssetRepository } from '../repositories/AssetRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
+import { FileUtil } from '../../utils/FileUtil';
+import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
+import { S3Service } from '../services/S3Service';
+import { ConfigService } from '../services/ConfigService';
 
 @Service()
 export class AssetService {
 
-    constructor(@OrmRepository() private assetRepository: AssetRepository) { }
+    constructor(@OrmRepository() private assetRepository: AssetRepository, private configService: ConfigService, private s3Service: S3Service) { }
 
     // find asset
     public async find(findCondition: any): Promise<any> {
@@ -28,6 +32,32 @@ export class AssetService {
 
     // create asset
     public async create(asset: Asset): Promise<Asset> {
+        // s3 upload by cofig
+        const assetUploadToS3Cfg = await this.configService.getConfig(ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD);
+        let assetUploadToS3 = DEFAULT_ASSET_CONFIG_VALUE.S3_STORAGE_UPLOAD;
+
+        if (assetUploadToS3Cfg && assetUploadToS3Cfg.value) {
+            if (typeof assetUploadToS3Cfg.value === 'boolean') {
+                assetUploadToS3 = assetUploadToS3Cfg.value;
+            } else if (typeof assetUploadToS3Cfg.value === 'string') {
+                assetUploadToS3 = (assetUploadToS3Cfg.value.toUpperCase() === 'TRUE');
+            }
+        }
+
+        if (assetUploadToS3) {
+            try {
+                const base64Data = Buffer.from(asset.data, 'base64');
+                let s3Path = asset.userId + '/' + asset.fileName;
+                s3Path = FileUtil.appendFileType(s3Path, asset.mimeType);
+                const s3Result = await this.s3Service.imageUpload(s3Path, base64Data, asset.mimeType);
+
+                if (s3Result.path !== undefined) {
+                    asset.s3FilePath = s3Path;
+                }
+            } catch (error) {
+                console.log('Cannot Store to S3: ', error);
+            }
+        }
         return await this.assetRepository.save(asset);
     }
 
@@ -38,6 +68,17 @@ export class AssetService {
 
     // delete asset
     public async delete(query: any, options?: any): Promise<any> {
+        const assets: Asset[] = await this.find(query);
+        for (const asset of assets) {
+            if (asset.s3FilePath !== undefined && asset.s3FilePath !== '') {
+                try {
+                    const s3Path = asset.s3FilePath;
+                    await this.s3Service.deleteFile(s3Path);
+                } catch (error) {
+                    console.log('Cannot Delete file from S3: ', error);
+                }
+            }
+        }
         return await this.assetRepository.deleteOne(query, options);
     }
 
@@ -56,16 +97,4 @@ export class AssetService {
             return this.assetRepository.find(condition);
         }
     }
-
-    /*
-    public async createBase64Asset(fileName: string, data: string): Promise<Asset> {
-        return new Promise((resolve, reject) => {
-            if (!fileName) {
-                reject('ไม่มีชื่อไฟล์');
-            }
-
-            resolve(undefined);
-        });
-    }
-    */
 }

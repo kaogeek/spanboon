@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
 import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { AbstractPage } from '../../AbstractPage';
 import AOS from 'aos';
@@ -60,24 +60,20 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public pageObjective: any;
     public pageOwner: any;
 
-    public apiBaseURL = environment.apiBaseURL;
+    public objectiveId: string;
 
-    constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager,
+    public apiBaseURL = environment.apiBaseURL;
+    private routeActivated: ActivatedRoute;
+
+    constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
+        this.routeActivated = routeActivated;
         this.objectiveFacade = objectiveFacade;
-
-    }
-
-    public async ngOnInit(): Promise<void> {
-        this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
-        console.log('this.objectiveData', this.objectiveData);
-        this._groupData();
-        this.setData();
 
         // You can also pass an optional settings object
         // below listed default settings
@@ -94,7 +90,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
 
             // Settings that can be overridden on per-element basis, by `data-aos-*` attributes:
-            offset: 120, // offset (in px) from the original trigger point
+            offset: 40, // offset (in px) from the original trigger point
             delay: 0, // values from 0 to 3000, with step 50ms
             duration: 400, // values from 0 to 3000, with step 50ms
             easing: 'ease', // default easing for AOS animations
@@ -104,6 +100,21 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
         });
 
+    }
+
+    public async ngOnInit(): Promise<void> {
+        this.routeActivated.params.subscribe((params) => {
+            this.objectiveId = params['id'];
+        })
+
+        this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
+        this._groupData();
+        this.setData();
+        setTimeout(() => {
+            if (this.objectiveData === null || this.objectiveData === undefined) {
+                this.showAlertDialog('ไม่พบ สิ่งที่กำลังทำ นี้');
+            }
+        }, 5000);
     }
 
     private _groupData(): void {
@@ -129,6 +140,12 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
 
+    }
+
+    public clickDataSearch(post: any): void {
+        this.router.navigate([]).then(() => {
+            window.open('/post/' + post.post._id, '_blank');
+        });
     }
 
     public ngOnDestroy(): void {

@@ -185,6 +185,7 @@ export class ObjectiveController {
         objective.detail = detail;
         objective.hashTag = hashTag;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result: any = await this.pageObjectiveService.create(objective);
 
@@ -370,6 +371,7 @@ export class ObjectiveController {
         let assetId;
         let newAssetId;
         let iconURL;
+        let s3IconURL;
 
         if (objectiveAsset !== null && objectiveAsset !== undefined) {
             assetData = objectiveAsset.data;
@@ -397,13 +399,15 @@ export class ObjectiveController {
 
             if (assetResult) {
                 iconURL = assetResult ? ASSET_PATH + newAssetId : '';
+                s3IconURL = assetResult ? assetResult.s3IconURL : '';
             }
         } else {
             iconURL = objectiveIconURL;
+            s3IconURL = objectiveUpdate.s3IconURL;
         }
 
         const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag } };
+        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
@@ -440,6 +444,18 @@ export class ObjectiveController {
 
         if (!objective) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid PageObjective Id', undefined));
+        }
+
+        // remove asset of objective
+        if (objective.iconURL !== undefined && objective.iconURL !== undefined && objective.iconURL !== '') {
+            const fileId = objective.iconURL.replace(ASSET_PATH, '');
+            const assetQuery = { _id: new ObjectID(fileId) };
+
+            try {
+                await this.assetService.delete(assetQuery);
+            } catch (error) {
+                console.log('Cannot remove asset file: ' + fileId);
+            }
         }
 
         const query = { _id: objId };
