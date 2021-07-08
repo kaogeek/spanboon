@@ -194,4 +194,17 @@ export class AssetController {
             return response.status(400).send(errorResponse);
         }
     }
+
+    @Get('/:id/sign')
+    public async sign(@Param('id') id: string, @Res() response: any): Promise<any> {
+        const imgId = new ObjectID(id);
+        const asset = await this.assetService.getAssetSignedUrl({ where: { _id: imgId } });
+
+        if (asset) {
+            return response.status(200).send(ResponseUtil.getSuccessResponse('Delete Temp Success', asset));
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
+            return response.status(400).send(errorResponse);
+        }
+    }
 }
