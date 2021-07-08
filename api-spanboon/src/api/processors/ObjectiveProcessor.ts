@@ -128,7 +128,6 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         if (row.hashTagObj.length > 0) {
                             // saerch all post with objective hashtag
                             if (hashtagNames.length > 0) {
-                                moreData.objectiveId = row.hashTagObj[0]._id;
                                 const today = moment().toDate();
                                 const postMatchStmt: any = {
                                     isDraft: false,
@@ -183,6 +182,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                         }
 
+                        moreData.objectiveId = row._id;
                         contentModel.data = moreData;
                         result.contents.push(contentModel);
                     }
