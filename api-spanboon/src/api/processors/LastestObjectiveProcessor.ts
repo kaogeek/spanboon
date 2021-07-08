@@ -168,6 +168,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     hastagRowMap[row.hashTag] = row;
                     hashtagNames.push(row.hashTag);
 
+                    contentModel.data = moreData;
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);
