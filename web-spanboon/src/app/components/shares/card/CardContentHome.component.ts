@@ -259,12 +259,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
         if (data.post) {
             this.clickEvent.emit(this.postData);
 
+        } else if (data.data.objectiveId) {
+            window.open('/objectivetimeline/' + data.data.objectiveId);
+
         } else if (data.owner) {
             window.open('/search?hashtag=' + data.title.substring(1, data.title.length + 1));
 
         } else if (data.data) {
             window.open('/page/' + data.data._id);
-
         }
     }
 
