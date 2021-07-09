@@ -108,13 +108,9 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         })
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
+        console.log('this.objectiveData', this.objectiveData)
         this._groupData();
         this.setData();
-        setTimeout(() => {
-            if (this.objectiveData === null || this.objectiveData === undefined) {
-                this.showAlertDialog('ไม่พบ สิ่งที่กำลังทำ นี้');
-            }
-        }, 5000);
     }
 
     private _groupData(): void {
@@ -124,7 +120,9 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             if (item.type === "OBJECTIVE_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
-                    n.imageURL = standardItem.imageURL;
+                    if (standardItem !== undefined && standardItem !== null) {
+                        n.imageURL = standardItem.imageURL;
+                    }
                 }
             }
             if (item.type === "OBJECTIVE_POST_LIKED") {
