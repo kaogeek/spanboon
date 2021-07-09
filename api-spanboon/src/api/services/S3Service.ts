@@ -283,7 +283,11 @@ export class S3Service {
         });
     }
 
-    public getPrefixBucketURL(): string {
-        return 'https://s3.amazonaws.com' + '/' + aws_setup.AWS_BUCKET;
+    public getPrefixBucketURL(): string[] {
+        const prefixArray = [];
+        prefixArray.push('https://s3.amazonaws.com' + '/' + aws_setup.AWS_BUCKET);
+        prefixArray.push('https://s3.' + aws_setup.AWS_DEFAULT_REGION + '.amazonaws.com' + '/' + aws_setup.AWS_BUCKET);
+
+        return prefixArray;
     }
 }
