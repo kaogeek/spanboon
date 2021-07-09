@@ -309,8 +309,9 @@ export class EmergencyEventController {
                     assetId = new ObjectID(emergencyCoverPageURL.split(ASSET_PATH)[1]);
                     const assetQuery = { _id: assetId };
                     const newAssetValue = { $set: { data, mimeType, size, fileName } };
-                    assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                    await this.assetService.update(assetQuery, newAssetValue);
                     newAssetId = assetId;
+                    assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
                 } else {
                     const asset = new Asset();
                     asset.data = data;
@@ -324,7 +325,7 @@ export class EmergencyEventController {
 
                 if (assetResult) {
                     coverPageURL = assetResult ? ASSET_PATH + newAssetId : '';
-                    s3CoverPageURL = assetResult ? assetResult.s3CoverPageURL : '';
+                    s3CoverPageURL = assetResult ? assetResult.s3FilePath : '';
                 }
             } else {
                 coverPageURL = emergencyCoverPageURL;

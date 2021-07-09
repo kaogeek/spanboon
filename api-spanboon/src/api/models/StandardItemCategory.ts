@@ -27,6 +27,9 @@ export class StandardItemCategory {
     @Column({ name: 'imageURL' })
     public imageURL: string;
 
+    @Column({ name: 's3ImageURL' })
+    public s3ImageURL: string;
+
     @Column({ name: 'description' })
     public description: string;
 

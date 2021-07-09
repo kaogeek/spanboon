@@ -414,7 +414,7 @@ export class PageController {
                     * {token: string, expires_in: number as a second to expired, type: string as type of token} 
                     */
                     pageAccessToken = await this.facebookService.extendsPageAccountToken(registPageAccessToken, socialBinding.facebookPageId);
-                } else if(pageAccessToken !== undefined){
+                } else if (pageAccessToken !== undefined) {
                     pageAccessToken = await this.facebookService.extendsAccessToken(pageAccessToken);
                 }
             } catch (err) {
@@ -1542,6 +1542,7 @@ export class PageController {
         page.detail = pages.detail;
         page.ownerUser = userObjId;
         page.imageURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        page.s3ImageURL = assetCreate ? assetCreate.s3FilePath : '';
         page.coverURL = '';
         page.coverPosition = pages.coverPosition;
         page.color = pages.color;
@@ -1613,6 +1614,7 @@ export class PageController {
         let newAssetId;
         let pageObjId;
         let pageStmt;
+        let newS3CoverURL;
 
         try {
             pageObjId = new ObjectID(pageId);
@@ -1637,8 +1639,9 @@ export class PageController {
                 assetId = new ObjectID(page.coverURL.split(ASSET_PATH)[1]);
                 const assetQuery = { _id: assetId, userId: userObjId };
                 const newValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
-                assetResult = await this.assetService.update(assetQuery, newValue);
+                await this.assetService.update(assetQuery, newValue);
                 newAssetId = assetId;
+                assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -1656,7 +1659,9 @@ export class PageController {
         }
 
         if (assetResult) {
-            const coverURLUpdate = await this.pageService.update({ _id: pageObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: assetCoverPosition, updateDate: updatedDate } });
+            newS3CoverURL = assetResult.s3FilePath;
+
+            const coverURLUpdate = await this.pageService.update({ _id: pageObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: assetCoverPosition, updateDate: updatedDate, s3CoverURL: newS3CoverURL } });
             if (coverURLUpdate) {
                 const pages: Page = await this.pageService.findOne({ _id: pageObjId });
                 const successResponse = ResponseUtil.getSuccessResponse('Edit CoverURL Success', pages);
@@ -1700,6 +1705,7 @@ export class PageController {
         let assetResult;
         let assetId;
         let newAssetId;
+        let newS3AssetURL;
 
         const page: Page = await this.pageService.findOne({ _id: pageObjId });
         if (page !== null && page !== undefined) {
@@ -1709,6 +1715,7 @@ export class PageController {
                 const newValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
                 assetResult = await this.assetService.update(assetQuery, newValue);
                 newAssetId = assetId;
+                newS3AssetURL = assetResult.s3FilePath;
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -1719,6 +1726,7 @@ export class PageController {
                 asset.scope = ASSET_SCOPE.PUBLIC;
                 assetResult = await this.assetService.create(asset);
                 newAssetId = assetResult.id;
+                newS3AssetURL = assetResult.s3FilePath;
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('PageId Not Found', undefined);
@@ -1726,7 +1734,7 @@ export class PageController {
         }
 
         if (assetResult) {
-            const imageURLUpdate = await this.pageService.update({ _id: pageObjId }, { $set: { imageURL: ASSET_PATH + newAssetId, updateDate: updatedDate } });
+            const imageURLUpdate = await this.pageService.update({ _id: pageObjId }, { $set: { imageURL: ASSET_PATH + newAssetId, updateDate: updatedDate, s3ImageURL: newS3AssetURL } });
             if (imageURLUpdate) {
                 const pages = await this.pageService.findOne({ _id: pageObjId });
                 const successResponse = ResponseUtil.getSuccessResponse('Edit ImageURL Success', pages);

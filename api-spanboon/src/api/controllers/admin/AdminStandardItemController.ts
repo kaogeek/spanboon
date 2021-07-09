@@ -192,6 +192,7 @@ export class AdminStandardItemController {
             let assetId;
             let newAssetId;
             let imageURL;
+            let newS3ImageURL;
 
             if (assetData !== null && assetData !== undefined) {
                 const data = assetData.data;
@@ -203,8 +204,9 @@ export class AdminStandardItemController {
                     assetId = new ObjectID(stdItemImageURL.split(ASSET_PATH)[1]);
                     const assetQuery = { _id: assetId };
                     const newAssetValue = { $set: { data, mimeType, size, fileName } };
-                    assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                    await this.assetService.update(assetQuery, newAssetValue);
                     newAssetId = assetId;
+                    assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
                 } else {
                     const asset = new Asset();
                     asset.data = data;
@@ -218,9 +220,11 @@ export class AdminStandardItemController {
 
                 if (assetResult) {
                     imageURL = assetResult ? ASSET_PATH + newAssetId : '';
+                    newS3ImageURL = assetResult ? assetResult.s3FilePath : '';
                 }
             } else {
                 imageURL = stdItemImageURL;
+                newS3ImageURL = stdItemUpdate.s3ImageURL;
             }
 
             let stdItemCat: StandardItemCategory;
@@ -241,7 +245,7 @@ export class AdminStandardItemController {
             const updateDate = moment().toDate();
 
             const updateQuery = { _id: objId };
-            const newValue = { $set: { name: standardItem.name, unit: standardItem.unit, category: changeCategory, imageURL, updateDate } };
+            const newValue = { $set: { name: standardItem.name, unit: standardItem.unit, category: changeCategory, imageURL, updateDate, s3ImageURL: newS3ImageURL } };
 
             const itemSave = await this.standardItemService.update(updateQuery, newValue);
 
@@ -393,4 +397,4 @@ export class AdminStandardItemController {
             return res.status(400).send(errorResponse);
         }
     }
-} 
+}

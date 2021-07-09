@@ -97,8 +97,14 @@ export class User extends BaseModel {
     @Column({ name: 'imageURL' })
     public imageURL: string;
 
+    @Column({ name: 's3ImageURL' })
+    public s3ImageURL: string;
+
     @Column({ name: 'coverURL' })
     public coverURL: string;
+
+    @Column({ name: 's3CoverURL' })
+    public s3CoverURL: string;
 
     @Column({ name: 'coverPosition' })
     public coverPosition: number;
