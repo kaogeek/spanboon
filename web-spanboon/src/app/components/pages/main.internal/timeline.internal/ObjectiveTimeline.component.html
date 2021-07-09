@@ -6,7 +6,7 @@
 -->
 <div id="canvas-wrap">
     <canvas id="canvas"></canvas>
-    <div class="objective-timeline-body" id="body">
+    <div *ngIf="objectiveData" class="objective-timeline-body" id="body">
         <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="700.899" height="700.899"
             viewBox="10 0 22.899 22.899">
             <g id="mission" transform="translate(0)">
@@ -124,12 +124,12 @@
             </div>
         </div>
         <div class="timeline-data-section">
-            <div class="body">
+            <div class="body" *ngIf="objectiveData.timelines.length > 1">
                 <div *ngFor="let item of objectiveData? objectiveData.timelines:[]; let index = index"
                     class="strat-section-point">
                     <div class="head">
                         <div class="line"></div>
-                        <div class="strat-point" data-aos="fade-up" data-aos-offset="20" data-aos-delay="15"
+                        <div class="strat-point" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
                             data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                             data-aos-once="false" data-aos-anchor-placement="top-center">
                             <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':'พฤษภาคม 2564'}}</span>
@@ -138,23 +138,27 @@
                     <div class="card">
 
                         <div *ngIf="item.type === 'OBJECTIVE_START'" class="objective_start_card">
-                            <div class="left" data-aos="fade-up" data-aos-offset="20" data-aos-delay="15"
+                            <div class="left" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
-                                <div class="body" id="point">
+                                <div class="body" [class.gallery]="item.post.postGallery.length > 0" id="point">
                                     <div *ngIf="item.post.postGallery.length === 0" class="top">
-                                        <span class="title">{{item.title}}</span>
-                                        <span class="sub_title">{{item.subTitle}}</span>
+                                        <span class="title">{{item.subTitle}}</span>
+                                        <span class="sub_title">{{item.title}}</span>
+                                    </div>
+                                    <div *ngIf="item.post.postGallery.length > 0" class="top">
+                                        <img class="iconURL"
+                                            src="{{apiBaseURL+item.post.postGallery[0].imageURL+'/image'}}" alt="">
                                     </div>
                                 </div>
                             </div>
-                            <div class="right" data-aos="fade-left" data-aos-offset="20" data-aos-delay="15"
+                            <div class="right" data-aos="fade-left" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                 <div class="body">
                                     <div *ngIf="item.post.postGallery.length > 0" class="top">
-                                        <span class="title">{{item.title}}</span>
-                                        <span class="sub_title">{{item.subTitle}}</span>
+                                        <span class="title">{{item.subTitle}}</span>
+                                        <span class="sub_title">{{item.title}}</span>
                                     </div>
                                     <div class="post">
                                         <div class="head">
@@ -215,13 +219,13 @@
                         </div>
 
                         <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_needs_card">
-                            <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="15"
+                            <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                 <div class="body">
                                     <div class="top">
-                                        <span class="title">{{item.title}}</span>
-                                        <span class="sub_title">{{item.subTitle}}</span>
+                                        <span class="title">{{item.subTitle}}</span>
+                                        <span class="sub_title">{{item.title}}</span>
                                     </div>
                                     <div class="post">
                                         <div class="head">
@@ -279,7 +283,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="right" data-aos="fade-up" data-aos-offset="20" data-aos-delay="40"
+                            <div class="right" data-aos="fade-up" data-aos-offset="10" data-aos-delay="40"
                                 data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                 <div class="body" id="point">
@@ -351,7 +355,7 @@
 
                         <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
                             <div class="body">
-                                <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="15"
+                                <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                     data-aos-once="false" data-aos-anchor-placement="top-center">
                                     <div class="influencer_fulfill">
@@ -1085,12 +1089,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="20"
+                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="10"
                                     data-aos-delay="15" data-aos-duration="500" data-aos-easing="ease-in-out"
                                     data-aos-mirror="false" data-aos-once="false"
                                     data-aos-anchor-placement="top-center">
                                     <div class="top">
-                                        <span class="title">{{item.title}}</span>
+                                        <span class="title">{{item.subTitle}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1098,7 +1102,7 @@
 
                         <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked">
                             <div class="body">
-                                <div class="left" data-aos="fade-right" data-aos-offset="20" data-aos-delay="15"
+                                <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                     data-aos-once="false" data-aos-anchor-placement="top-center">
                                     <div class="top">
@@ -1141,7 +1145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="20"
+                                <div class="right" id="point" data-aos="fade-up" data-aos-offset="10"
                                     data-aos-delay="15" data-aos-duration="500" data-aos-easing="ease-in-out"
                                     data-aos-mirror="false" data-aos-once="false"
                                     data-aos-anchor-placement="top-center">
@@ -1199,31 +1203,13 @@
                         <div *ngIf="item.type === 'OBJECTIVE_LASTEST'" class="objective_lastest_card">
                             <div class="body">
                                 <div class="top">
-                                    <span data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
+                                    <span data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
-                                        class="title">{{item.title}}</span>
+                                        class="title">{{item.subTitle}}</span>
                                 </div>
                                 <div class="posts">
-                                    <div class="post" data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
-                                        data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                        data-aos-once="false" data-aos-anchor-placement="top-center"
-                                        *ngFor="let post of item.posts; let index = index">
-                                        <post-data [itemPost]="post">
-                                        </post-data>
-                                    </div>
-                                </div>
-                                <div class="posts">
-                                    <div class="post" data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
-                                        data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                        data-aos-once="false" data-aos-anchor-placement="top-center"
-                                        *ngFor="let post of item.posts; let index = index">
-                                        <post-data [itemPost]="post">
-                                        </post-data>
-                                    </div>
-                                </div>
-                                <div class="posts">
-                                    <div class="post" data-aos="fade-up" data-aos-offset="20" data-aos-delay="70"
+                                    <div class="post" data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
                                         *ngFor="let post of item.posts; let index = index">
@@ -1238,6 +1224,19 @@
                 </div>
 
             </div>
+            <div class="body" *ngIf="objectiveData.timelines.length === 1 || objectiveData.timelines.length === 0">
+                <div class="not-found">
+                    <div class="text">
+                        <span>ขออภัยไม่พบ Timeline ของ</span>
+                        <span class="objective">{{pageObjective.title}}</span>
+                        <span>ในขณะนี้</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="objective-timeline-body" *ngIf="!objectiveData">
+        <Preload-card style="width: 100%;" [isShowCard1]="true" [isShowCard2]="false">
+        </Preload-card>
     </div>
 </div>
