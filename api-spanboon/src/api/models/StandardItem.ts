@@ -32,6 +32,9 @@ export class StandardItem extends BaseModel {
     @Column({ name: 'imageURL' })
     public imageURL: string;
 
+    @Column({ name: 's3ImageURL' })
+    public s3ImageURL: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

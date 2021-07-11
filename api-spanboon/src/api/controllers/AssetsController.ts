@@ -201,7 +201,7 @@ export class AssetController {
         const asset = await this.assetService.getAssetSignedUrl({ where: { _id: imgId } });
 
         if (asset) {
-            return response.status(200).send(ResponseUtil.getSuccessResponse('Delete Temp Success', asset));
+            return response.status(200).send(ResponseUtil.getSuccessResponse('Sign Image Success', asset));
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got Asset', undefined);
             return response.status(400).send(errorResponse);

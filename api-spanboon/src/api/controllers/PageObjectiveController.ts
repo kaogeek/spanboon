@@ -383,8 +383,9 @@ export class ObjectiveController {
 
                 const assetQuery = { _id: assetId, userId: userObjId };
                 const newAssetValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
-                assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                await this.assetService.update(assetQuery, newAssetValue);
                 newAssetId = assetId;
+                assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -399,7 +400,7 @@ export class ObjectiveController {
 
             if (assetResult) {
                 iconURL = assetResult ? ASSET_PATH + newAssetId : '';
-                s3IconURL = assetResult ? assetResult.s3IconURL : '';
+                s3IconURL = assetResult ? assetResult.s3FilePath : '';
             }
         } else {
             iconURL = objectiveIconURL;
