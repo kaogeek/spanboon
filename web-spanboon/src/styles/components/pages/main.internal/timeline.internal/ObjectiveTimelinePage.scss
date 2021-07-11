@@ -135,6 +135,8 @@
                         background-color: white;
                         padding: 10px;
                         display: flex;
+                        transition: 0.3s;
+                        cursor: pointer;
                         > .iconURL {
                             border-radius: 50%;
                             width: 50px;
@@ -147,6 +149,10 @@
                             align-content: center;
                             align-items: center;
                             @include font-size-10($font-head-300);
+                        }
+                        &:hover {
+                            // transition: 0.3s;
+                            // transform: scale(1.01);
                         }
                     }
                     > .detail {
@@ -1920,8 +1926,9 @@
                 align-items: center;
                 @include font-size-5($font-head-500);
                 > .text {
-                    width: 80%;
+                    width: 60%;
                     height: auto;
+                    text-align: center;
                     > .objective {
                         color: $brandcolor2;
                         margin: 10px;

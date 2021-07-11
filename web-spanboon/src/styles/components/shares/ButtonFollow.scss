@@ -19,6 +19,7 @@
     display: flex;
     justify-content: center;
     border: unset;
+    transition: 0.3s;
     -webkit-user-select: none;
     /* Safari 3.1+ */
     -moz-user-select: none;
@@ -39,6 +40,10 @@
     }
     &::selection {
         background: transparent;
+    }
+    &:hover {
+        transition: 0.3s;
+        transform: scale(1.1);
     }
 
     > .mat-ripple-element {
