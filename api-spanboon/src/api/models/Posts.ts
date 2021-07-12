@@ -76,6 +76,9 @@ export class Posts extends BaseModel {
     @Column({ name: 'coverImage' })
     public coverImage: string;
 
+    @Column({ name: 's3CoverImage' })
+    public s3CoverImage: string;
+
     @Column({ name: 'postsHashTags' })
     public postsHashTags: any[];
 

@@ -31,6 +31,7 @@ import { PostSectionProcessor } from '../processors/PostSectionProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { S3Service } from '../services/S3Service';
 import { UserRecommendSectionProcessor } from '../processors/UserRecommendSectionProcessor';
 import { UserFollowSectionProcessor } from '../processors/UserFollowSectionProcessor';
 import { UserPageLookingSectionProcessor } from '../processors/UserPageLookingSectionProcessor';
@@ -63,7 +64,8 @@ export class MainPageController {
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private s3Service: S3Service
     ) { }
 
     // Find Page API
@@ -89,7 +91,7 @@ export class MainPageController {
 
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
-                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
+                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
                 emerProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
@@ -191,7 +193,7 @@ export class MainPageController {
         let processorList: any[] = [];
 
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
             showUserAction: true,
             offset,
@@ -253,13 +255,13 @@ export class MainPageController {
         });
         processorList.push(userRecProcessor);
 
-        const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService);
+        const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emergencyPinProcessor.setConfig({
             searchOfficialOnly
         });
         const emergencyPinModel = await emergencyPinProcessor.process();
 
-        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService);
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service);
         objectiveProcessor.setData({
             userId,
             startDateTime: weekRanges[0],

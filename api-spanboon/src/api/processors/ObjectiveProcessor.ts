@@ -12,6 +12,7 @@ import { ObjectiveProcessorData } from './data/ObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { PostsService } from '../services/PostsService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
+import { S3Service } from '../services/S3Service';
 import moment from 'moment';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -22,6 +23,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -115,7 +117,16 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         const contentModel = new ContentModel();
                         contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
                         contentModel.subtitle = row.name;
-                        contentModel.iconUrl = row.iconURL; 
+                        contentModel.iconUrl = row.iconURL;
+
+                        if (row.s3IconURL !== undefined && row.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getSignedUrl(row.s3IconURL);
+                                contentModel.signUrl = signUrl;
+                            } catch (error) {
+                                console.log('ObjectiveProcessor: ' + error);
+                            }
+                        }
 
                         hastagRowMap[row.hashTag] = row;
                         hashtagNames.push(row.hashTag);
@@ -123,6 +134,16 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         contentModel.owner = {};
                         if (page !== undefined) {
                             contentModel.owner = this.parsePageField(page);
+
+                            // sign image url of s3
+                            if (page.s3ImageURL !== undefined && page.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getSignedUrl(row.s3ImageURL);
+                                    contentModel.owner.signUrl = signUrl;
+                                } catch (error) {
+                                    console.log('ObjectiveProcessor: ' + error);
+                                }
+                            }
                         }
 
                         if (row.hashTagObj.length > 0) {

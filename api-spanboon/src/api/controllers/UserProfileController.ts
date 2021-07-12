@@ -418,6 +418,7 @@ export class UserProfileController {
         let assetResult: Asset;
         let assetId;
         let newAssetId;
+        let newS3CoverURL;
 
         const user: User = await this.userService.findOne({ _id: userObjId });
         if (user !== null && user !== undefined) {
@@ -425,8 +426,9 @@ export class UserProfileController {
                 assetId = new ObjectID(user.coverURL.split(ASSET_PATH)[1]);
                 const assetQuery = { _id: assetId, userId: userObjId };
                 const newValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate, expirationDate: null } };
-                assetResult = await this.assetService.update(assetQuery, newValue);
+                await this.assetService.update(assetQuery, newValue);
                 newAssetId = assetId;
+                assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -445,7 +447,9 @@ export class UserProfileController {
         }
 
         if (assetResult) {
-            const coverURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: userCoverPosition } });
+            newS3CoverURL = assetResult.s3FilePath;
+
+            const coverURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: userCoverPosition, s3CoverURL: newS3CoverURL } });
             if (coverURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
                 users = this.userService.cleanAdminUserField(users);
@@ -489,6 +493,7 @@ export class UserProfileController {
         let assetResult;
         let assetId;
         let newAssetId;
+        let newS3ImageURL;
 
         const user: User = await this.userService.findOne({ _id: userObjId });
         if (user !== null && user !== undefined) {
@@ -496,8 +501,9 @@ export class UserProfileController {
                 assetId = new ObjectID(user.imageURL.split(ASSET_PATH)[1]);
                 const assetQuery = { _id: assetId, userId: userObjId };
                 const newValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate, expirationDate: null } };
-                assetResult = await this.assetService.update(assetQuery, newValue);
+                await this.assetService.update(assetQuery, newValue);
                 newAssetId = assetId;
+                assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -516,7 +522,8 @@ export class UserProfileController {
         }
 
         if (assetResult) {
-            const imageURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { imageURL: ASSET_PATH + newAssetId } });
+            newS3ImageURL = assetResult.s3FilePath;
+            const imageURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { imageURL: ASSET_PATH + newAssetId, s3ImageURL: newS3ImageURL } });
             if (imageURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
                 users = this.userService.cleanAdminUserField(users);
