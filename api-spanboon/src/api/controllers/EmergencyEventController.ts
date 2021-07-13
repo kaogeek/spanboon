@@ -297,6 +297,14 @@ export class EmergencyEventController {
                 }
             }
 
+            // add hashTag name to pageObjective
+            if (emergencyEventTimeline.emergencyEvent !== undefined && emergencyEventTimeline.emergencyEvent.hashTag) {
+                const hashTag = await this.hashTagService.findOne({ _id: new ObjectID(emergencyEventTimeline.emergencyEvent.hashTag + '') });
+                if (hashTag !== undefined) {
+                    emergencyEventTimeline.emergencyEvent.hashTagName = hashTag.name;
+                }
+            }
+
             const pageObjFulfillResult = await this.emergencyEventService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             emergencyEventTimeline.fulfillmentCount = pageObjFulfillResult.count;
             emergencyEventTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;

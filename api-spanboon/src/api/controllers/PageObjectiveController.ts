@@ -515,6 +515,14 @@ export class ObjectiveController {
             pageObjTimeline.followedCount = followingUsers.count;
             pageObjTimeline.isFollow = isFollowed;
 
+            // add hashTag name to pageObjective
+            if (pageObjTimeline.pageObjective !== undefined && pageObjTimeline.pageObjective.hashTag) {
+                const hashTag = await this.hashTagService.findOne({ _id: new ObjectID(pageObjTimeline.pageObjective.hashTag + '') });
+                if (hashTag !== undefined) {
+                    pageObjTimeline.pageObjective.hashTagName = hashTag.name;
+                }
+            }
+
             const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;
             pageObjTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
