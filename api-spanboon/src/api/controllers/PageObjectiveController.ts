@@ -500,12 +500,20 @@ export class ObjectiveController {
             // generate timeline
             const page = await this.pageService.findOne({ _id: objective.pageId });
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.OBJECTIVE, 5);
+            let isFollowed = false;
+            if (userId !== null && userId !== undefined && userId !== '') {
+                const userPageObjFollow = await this.userFollowService.findOne({ userId: new ObjectID(userId), subjectId: objId, subjectType: SUBJECT_TYPE.OBJECTIVE });
+                if (userPageObjFollow !== undefined) {
+                    isFollowed = true;
+                }
+            }
 
             const pageObjTimeline = new PageObjectiveTimelineResponse();
             pageObjTimeline.pageObjective = objective;
             pageObjTimeline.page = page;
             pageObjTimeline.followedUser = followingUsers.followers;
             pageObjTimeline.followedCount = followingUsers.count;
+            pageObjTimeline.isFollow = isFollowed;
 
             const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;
