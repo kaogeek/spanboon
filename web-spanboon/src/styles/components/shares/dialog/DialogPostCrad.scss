@@ -17,7 +17,7 @@
     }
     > .onClose {
         padding: 10px;
-        background-color: #d3d3d3;
+        // background-color: #d3d3d3;
         position: absolute;
         border-radius: 4px;
         top: 1%;
@@ -36,6 +36,13 @@
     post-data {
         > .card-feed-post {
             margin: unset;
+            overflow: unset;
+            >.header-post {
+                position: sticky;
+                z-index: 99;
+                top: 0;
+                background-color: white;
+            }
         }
     }
     preload-card {

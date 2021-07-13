@@ -192,7 +192,9 @@ export class LoginPage extends AbstractPage implements OnInit {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
       this.authorizeLink += '?' + result;
-      window.open(this.authorizeLink);
+      this.router.navigate([]).then(() => {
+        window.open(this.authorizeLink, '_blank');
+      });
     }).catch((error: any) => {
       console.log(error);
       if (error && error.message) {
@@ -336,7 +338,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public onClickLogin() {
     let body = {
-      email: this.email.nativeElement.value,
+      email: this.email.nativeElement.value.toLowerCase(),
       password: this.password.nativeElement.value
     }
     let mode = "EMAIL"

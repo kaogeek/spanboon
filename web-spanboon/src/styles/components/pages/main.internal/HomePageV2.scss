@@ -24,10 +24,11 @@
 
         > .events_tag_top {
             // width: calc(100% - 40px);
-            width: 100%;
+            width: 90%;
             height: 60px;
             display: flex;
             align-items: center;
+            overflow: hidden;
             justify-content: center;
             > .left {
                 align-items: flex-start;
@@ -114,9 +115,9 @@
             // width: 80%;
             display: flex;
             &.full {
-                width: 80vw;
+                width: 80%;
             }
-            border-bottom: solid 0.5px #d3d3d3;
+            // border-bottom: solid 0.5px #d3d3d3;
             > .left {
                 padding: 15px 0px;
                 width: calc(600px - 30px);
@@ -210,7 +211,7 @@
                     @include font-size-6($font-head-500);
                 }
                 > .line {
-                    border-bottom: 1px solid black;
+                    border-bottom: 1px solid #e6e6e6;
                     width: 100%;
                     position: absolute;
                     top: 50%;
@@ -270,7 +271,7 @@
                     @include font-size-6($font-head-500);
                 }
                 > .line {
-                    border-bottom: 1px solid black;
+                    border-bottom: 1px solid #e6e6e6;
                     width: 100%;
                     position: absolute;
                     top: 50%;
@@ -315,7 +316,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 85vw;
+            width: 80%;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -333,7 +334,7 @@
                     @include font-size-6($font-head-500);
                 }
                 > .line {
-                    border-bottom: 1px solid black;
+                    border-bottom: 1px solid #e6e6e6;
                     width: 100%;
                     position: absolute;
                     top: 50%;
@@ -365,6 +366,8 @@
                 }
                 > .isDesktop {
                     display: block;
+                    width: 22%;
+                    margin: 0% 1%;
                 }
                 > .footer_mobile {
                     display: none;
@@ -437,7 +440,7 @@
             &.tag {
                 margin: unset;
                 padding: unset;
-                width: 80vw;
+                width: 80%;
             }
         }
     }
@@ -495,11 +498,11 @@
 }
 @media (max-width: $xxlarge + 10px) {
     .home_page_v2 > .hoem_page_body {
-        width: 100%;
+        width: 99%;
         // zoom: 0.8;
     }
     .home_page_v2 > .hoem_page_body > .events_top.full {
-        width: 90%;
+        width: 100%;
     }
     .home_page_v2 > .hoem_page_body > .around_section {
         width: 90%;
@@ -522,11 +525,14 @@
     .home_page_v2 > .hoem_page_body > .events_tag_top > .right {
         display: none;
     }
+    .home_page_v2 > .hoem_page_body > .other_section > .body > .isDesktop {
+        width: 45%;
+    }
 }
 
 @media (max-width: $xlarge - 80px) {
     .home_page_v2 > .hoem_page_body {
-        width: 1200px;
+        // width: 1200px;
         // zoom: 0.8;
     }
     .home_page_v2 > .hoem_page_body > .events_top > .right > .tagCardRight {
@@ -551,27 +557,27 @@
     .home_page_v2 > .hoem_page_body > .other_section {
         margin: 10px 0px;
         padding: 10px 0px;
-        width: 90%;
+        width: 95%;
     }
     .home_page_v2 > .hoem_page_body > .rated_section {
         margin: 10px 0px;
         padding: 10px 0px;
-        width: 100%;
+        width: 95%;
     }
     .home_page_v2 > .hoem_page_body > .needs_section {
         margin: 10px 0px;
         padding: 10px 0px;
-        width: 100%;
+        width: 95%;
     }
     .home_page_v2 > .hoem_page_body > .around_section {
         margin: 10px 0px;
         padding: 10px 0px;
-        width: 100%;
+        width: 95%;
     }
     .home_page_v2 > .hoem_page_body > .other_section > .around_section {
         margin: 10px 0px;
         padding: 10px 0px;
-        width: 100%;
+        width: 95%;
     }
 }
 

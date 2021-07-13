@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
+import { Observable } from 'rxjs';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -39,6 +40,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public user: any;
   public data: any;
   public isDev: boolean = true;
+  public isDirty: boolean = false;
 
   public redirection: string;
 
@@ -95,7 +97,6 @@ export class MainPage extends AbstractPage implements OnInit {
     this.observManager.createSubject('menu.click');
   }
 
-
   public ngOnInit(): void {
     this.isLogin();
     this.searchAccessPage();
@@ -110,24 +111,35 @@ export class MainPage extends AbstractPage implements OnInit {
 
   ngAfterViewInit(): void {
     var prev = 0;
-    // var spanboonHome = $('#menubottom');
-    var spanboonHome = $(window).scrollTop();
+    // var spanboonHome = $('#menubottom'); 
     // console.log('spanboonHome ',spanboonHome.scrollTop())
     $(window).scroll(() => {
       this.scrollTop();
       var scrollTop = $(window).scrollTop();
-      // var scrollTop = spanboonHome.scrollTop();  
-      $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
-      $('.header-top').toggleClass('hidden', scrollTop > prev);
-      // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
-      // $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
-      // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
-      $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
+      // var scrollTop = spanboonHome.scrollTop();   
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        // you're at the bottom of the page
+        $('.header-top').addClass('hidden');
+        $('.footer-mobile').addClass('hidden'); 
+      } else {  
+        if(window.scrollY === 0){
+          $('.icon-post-bottom').removeClass('hidden');
+        } else { 
+          $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
+          $('.header-top').toggleClass('hidden', scrollTop > prev);
+          // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
+          // $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
+          // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
+          $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
+        }
+      }
+
       prev = scrollTop;
       if (scrollTop < 10) {
         $('.header-top').removeClass('hidden');
         $('.footer-mobile').removeClass('hidden');
       }
+
     });
 
   }
@@ -159,7 +171,7 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.observManager.publish('scroll.buttom', null);
     // }
     // var scrolltotop = document.getElementById("menubottom"); 
-    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 250)) { 
+    if ($(window).scrollTop() + $(window).height() > ($(document).height() - 250)) {
       this.observManager.publish('scroll.buttom', null);
     }
 
@@ -266,7 +278,6 @@ export class MainPage extends AbstractPage implements OnInit {
       } else if (this.user.displayName) {
         dataName = this.user.displayName
       }
-
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
       this.data.isEdit = false;

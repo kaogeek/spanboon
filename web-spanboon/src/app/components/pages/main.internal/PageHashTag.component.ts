@@ -952,11 +952,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isMaxLoadingPost = true;
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
-        // this.resPost = [];
-        if (offset) {
-          this.resPost = [];
-        }
-      }
+        this.resPost = [];
+        // console.log('offset ',offset)
+        // if (offset) {
+        //   this.resPost = [];
+        // }
+      } 
     }).catch((error: any) => {
       console.log(error);
     });

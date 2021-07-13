@@ -93,7 +93,7 @@
                                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                                         </div>
                                     </a>
-                                    {{isUserPage}}
+                                    <!-- {{isUserPage}}
                                     <ng-container *ngIf="isUserPage">
                                         {{1}}
                                         <a target="_blank" class="post-name"
@@ -102,7 +102,7 @@
                                             <span>เผยแพร่โดย : {{itemPost.ownerUser.displayName ||
                                                 itemPost.ownerUser.name}}</span>
                                         </a>
-                                    </ng-container>
+                                    </ng-container> -->
                                     <!-- <ng-container *ngIf="isUserPage; else UserPage">
                                         <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
                                             ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
@@ -319,6 +319,7 @@
 
     <ng-container *ngIf="itemPost.gallery && itemPost.gallery.length > 0">
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
+        <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
     <div class="topic-name" [class.active]="itemPost.referencePostObject"
         *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">

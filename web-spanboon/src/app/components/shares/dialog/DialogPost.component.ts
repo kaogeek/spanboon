@@ -51,6 +51,7 @@ export class DialogPost extends AbstractPage {
   public isPreload: boolean = true;
   public isFulfillNull: boolean = false;
   public isSharePost: boolean = false;
+  public isPostLoading: boolean = false;
   public snackBar: MatSnackBar;
   public selectedAccessPage: any;
 
@@ -192,10 +193,11 @@ export class DialogPost extends AbstractPage {
 
   }
 
-  public createPost(data) {
+  public createPost(data) { 
     if (this.isEdit) {
       if (data.title) {
         let pageId = this.data.pageId;
+        this.isPostLoading = true;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
           if (res.status === 1) {
@@ -222,6 +224,7 @@ export class DialogPost extends AbstractPage {
     } else {
       if (data.title) {
         let pageId = data.id;
+        this.isPostLoading = true;
         this.pageFacade.createPost(pageId, data).then((res) => {
           let alertMessages: string;
           if (res.status === 1) {
@@ -248,8 +251,9 @@ export class DialogPost extends AbstractPage {
     }
   }
 
-  public createFullfillPost(data) {
+  public createFullfillPost(data) { 
     if (this.isFulfill) {
+      this.isPostLoading = true;
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
         if (res.status === 1) {
           if (res.message === 'Create Post of FulfillmentCase Complete') {

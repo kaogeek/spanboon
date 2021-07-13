@@ -24,6 +24,7 @@ import {
 
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
+import { DirtyCheckGuard } from './dirty-check.guard';
 
 export const APP_ROUTES: Routes = [
   {
@@ -72,6 +73,7 @@ export const APP_ROUTES: Routes = [
       {
         path: FanPage.PAGE_NAME + "/:id",
         component: FanPage,
+        // canDeactivate : [DirtyCheckGuard],
         children: [
           {
             path: "post/:postId",
@@ -80,18 +82,22 @@ export const APP_ROUTES: Routes = [
           {
             path: 'timeline',
             component: FanPage,
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'general',
             component: FanPage,
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'needs',
             component: FanPage,
+            // canDeactivate : [DirtyCheckGuard],
           },
           {
             path: 'fulfillment',
             component: FanPage,
+            // canDeactivate : [DirtyCheckGuard],
           },
         ]
       },
@@ -130,7 +136,7 @@ export const APP_ROUTES: Routes = [
         component: SettingAccount,
       },
       {
-        path: ObjectiveTimeline.PAGE_NAME,
+        path: ObjectiveTimeline.PAGE_NAME + "/:id",
         component: ObjectiveTimeline,
       },
       {
@@ -236,10 +242,17 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'test',
-    component: TestComponent
+    component: TestComponent,
+    canDeactivate: [DirtyCheckGuard]
   },
   {
     path: 'registerpage',
     component: RegisterPageTestComponent
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(APP_ROUTES)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

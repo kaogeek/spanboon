@@ -94,6 +94,8 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
 
+    // console.log('model', model)
+
     this.pageModel = this.jsonParseData(model);
     this.sectionModels = this.jsonParseData(this.pageModel.sectionModels);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
@@ -150,12 +152,17 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+
   public clickDataSearch(data) {
-    window.open('/search?hashtag=' + data);
+    this.router.navigate([]).then(() => {
+      window.open('/search?hashtag=' + data, '_blank');
+    });
   }
 
   public clickDataSearchTodo(data) {
-    window.open('/search?hashtag=' + data);
+    this.router.navigate([]).then(() => {
+      window.open('/search?hashtag=' + data, '_blank');
+    });
   }
 
   public smallType(data): boolean {

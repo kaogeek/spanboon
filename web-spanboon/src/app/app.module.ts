@@ -42,7 +42,8 @@ import {
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import {
-  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime, HighlightText
+  PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
+  PipeThDatetime, HighlightText
 } from './components/shares/pipes/pipes';
 
 import {
@@ -58,7 +59,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete'; 
 
 import {
   HeaderTop,
@@ -400,6 +401,7 @@ const PIPE_CLASSES: any[] = [
   PrefixNumberPipe,
   PipeDatetime,
   PipeThFormatDatetime,
+  PipeThDatetime,
   HighlightText,
   SafePipe,
   RemoveBadWords
@@ -454,7 +456,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
-  UserEngagementFacade,
+  UserEngagementFacade, 
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig

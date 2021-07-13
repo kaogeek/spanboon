@@ -25,6 +25,7 @@ import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
+import { DirtyComponent } from 'src/app/dirty-component';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -37,7 +38,7 @@ declare var $: any;
   selector: 'spanboon-fan-page',
   templateUrl: './FanPage.component.html',
 })
-export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestroy {
+export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestroy, DirtyComponent {
   private cacheConfigInfo: CacheConfigInfo;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -121,10 +122,16 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public resAboutPage: any;
   public latitudeAboutPage: any;
   public longtitudeAboutPage: any;
-  public localtion: any;
+  public localtion: any; 
   public selectedIndex: number;
 
   public CheckPost: boolean = true;
+  public isPostLoading: boolean = false;
+  public isDirty: boolean = false;
+
+  canDeactivate(): boolean {
+    return this.isDirty;
+  }
 
   private coverImageoldValue = 50;
   public index: number;
@@ -422,6 +429,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
         this.resPost.posts = originalpost
+        this.isPostLoading = false;
         for (let post of this.resPost.posts) {
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
             let search: SearchFilter = new SearchFilter();
@@ -463,6 +471,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
         this.isLoadDataPost = false;
+        this.isPostLoading = false;
         if (offset) {
           this.resPost = [];
         }
@@ -691,6 +700,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       } else {
         pageId = this.resDataPage.id;
       }
+      this.isPostLoading = true;
       this.pageFacade.createPost(pageId, value, value.postSocialTW, value.postSocialFB).then((res) => {
         let alertMessages: string;
         if (res.status === 1) {
@@ -780,7 +790,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.selectedIndex = data.index;
       }
     }
-  }
+  } 
 
   public async followPage(pageId: string) {
     if (!this.isLogin()) {
@@ -798,16 +808,16 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public linkDataType(link: any) {
+  public linkDataType(link: any) { 
     if (link === 'BACK') {
       this.resDataPost = null
       this.isPost = false
-      this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline');
-    } else {
-      this.isLoadingClickTab = true;
-      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword);
+      this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline'); 
+    } else {  
+      this.isLoadingClickTab = true;  
+      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword); 
     }
-  }
+  }  
 
   public showProfilePage(url): void {
     this.pageFacade.getProfilePage(url).then((res) => {
