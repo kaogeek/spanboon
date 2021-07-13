@@ -289,11 +289,27 @@ export class EmergencyEventController {
             emergencyEventTimeline.emergencyEvent = emergencyEvent;
             emergencyEventTimeline.followedUser = followingUsers.followers;
             emergencyEventTimeline.followedCount = followingUsers.count;
+            let isFollowed = false;
+            if (userId !== null && userId !== undefined && userId !== '') {
+                const userPageObjFollow = await this.userFollowService.findOne({ userId: new ObjectID(userId), subjectId: objId, subjectType: SUBJECT_TYPE.EMERGENCY_EVENT });
+                if (userPageObjFollow !== undefined) {
+                    isFollowed = true;
+                }
+            }
+
+            // add hashTag name to pageObjective
+            if (emergencyEventTimeline.emergencyEvent !== undefined && emergencyEventTimeline.emergencyEvent.hashTag) {
+                const hashTag = await this.hashTagService.findOne({ _id: new ObjectID(emergencyEventTimeline.emergencyEvent.hashTag + '') });
+                if (hashTag !== undefined) {
+                    emergencyEventTimeline.emergencyEvent.hashTagName = hashTag.name;
+                }
+            }
 
             const pageObjFulfillResult = await this.emergencyEventService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             emergencyEventTimeline.fulfillmentCount = pageObjFulfillResult.count;
             emergencyEventTimeline.fulfillmentUser = pageObjFulfillResult.fulfillmentUser;
             emergencyEventTimeline.fulfillmentUserCount = pageObjFulfillResult.fulfillmentUserCount;
+            emergencyEventTimeline.isFollow = isFollowed;
 
             emergencyEventTimeline.relatedHashTags = await this.emergencyEventService.sampleRelatedHashTags(objId, 5);
             emergencyEventTimeline.needItems = await this.emergencyEventService.sampleNeedsItems(objId, 5);
