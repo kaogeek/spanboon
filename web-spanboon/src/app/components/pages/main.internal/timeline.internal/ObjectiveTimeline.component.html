@@ -37,48 +37,53 @@
                             </div>
                             <div class="score">
                                 <div class="score-type">
-                                    <span class="title">20</span>
-                                    <span class="disiption">การพูดถึง</span>
-                                </div>
-                                <div class="score-type">
-                                    <span class="title">20</span>
-                                    <span class="disiption">บอกต่อ</span>
-                                </div>
-                                <div class="score-type">
-                                    <span class="title">20</span>
+                                    <span class="title">{{objectiveData.followedCount}}</span>
                                     <span class="disiption">ติดตาม</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">20</span>
+                                    <span class="title">0</span>
+                                    <span class="disiption">การพูดถึง</span>
+                                </div>
+                                <div class="score-type">
+                                    <span class="title">0</span>
+                                    <span class="disiption">บอกต่อ</span>
+                                </div>
+                                <div class="score-type">
+                                    <span class="title">0</span>
                                     <span class="disiption">แชร์</span>
                                 </div>
                             </div>
                             <div class="score-cout">
                                 <div class="main-score">
                                     <div class="score-type">
-                                        <span class="title">99</span>
+                                        <span class="title">{{objectiveData.followedCount}}</span>
                                         <span class="disiption">ติดตาม</span>
                                     </div>
                                 </div>
                                 <div class="sub-score">
                                     <div class="score-type">
-                                        <span class="title">10</span>
+                                        <span class="title">0</span>
                                         <span class="disiption">แชร์</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">20</span>
+                                        <span class="title">0</span>
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">30</span>
+                                        <span class="title">0</span>
                                         <span class="disiption">บอกต่อ</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="buttom">
                                 <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
-                                <button-follow style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
-                                    [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                <button-follow *ngIf="!isFollow" (click)="followObjective()" style="margin-top: 15px;"
+                                    class="btn-follow" [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
+                                    [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                </button-follow>
+                                <button-follow *ngIf="isFollow" (click)="followObjective()" style="margin-top: 15px;"
+                                    class="btn-follow" [color]="'#fff'" [border]="'0.7px solid #FD545A'"
+                                    [bgColor]="'#fd5454'" [text]="'ยกเลิกติดตาม'">
                                 </button-follow>
                             </div>
                         </div>
@@ -87,7 +92,7 @@
                 <div class="objective-owner">
                     <div class="owner">
                         <span class="title">ผู้สร้าง</span>
-                        <div class="page">
+                        <div class="page" #showTooltip (mouseover)="Tooltip(showTooltip , pageOwner)">
                             <img class="iconURL" src="{{apiBaseURL+pageOwner.imageURL+'/image'}}" alt="">
                             <div class="disiption">
                                 <span>{{pageOwner.name}}</span>
@@ -100,14 +105,14 @@
                         <div class="follow-fullfill">
                             <div class="follow">
                                 <div class="text">
-                                    <span class="title">ติดตามทั้งหมด</span>
-                                    <span class="score"> 0 </span>
+                                    <!-- <span class="title">ติดตามทั้งหมด</span>
+                                    <span class="score"> 0 </span> -->
                                 </div>
                             </div>
                             <div class="fullfill">
                                 <div class="text">
-                                    <span class="title">ติดตามทั้งหมด</span>
-                                    <span class="score"> 0 </span>
+                                    <!-- <span class="title">ติดตามทั้งหมด</span>
+                                    <span class="score"> 0 </span> -->
                                 </div>
                             </div>
                         </div>
@@ -132,7 +137,8 @@
                         <div class="strat-point" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
                             data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                             data-aos-once="false" data-aos-anchor-placement="top-center">
-                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':'พฤษภาคม 2564'}}</span>
+                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':currentDate |
+                                thdatetime}}</span>
                         </div>
                     </div>
                     <div class="card">

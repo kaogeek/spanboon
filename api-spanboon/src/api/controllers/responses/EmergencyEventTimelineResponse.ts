@@ -10,6 +10,7 @@ export class EmergencyEventTimelineResponse {
     public relatedHashTags: any[];
     public followedUser: any[];
     public followedCount: number;
+    public isFollow: boolean;
     public fulfillmentCount: number;
     public fulfillmentUserCount: number;
     public fulfillmentUser: any[];
