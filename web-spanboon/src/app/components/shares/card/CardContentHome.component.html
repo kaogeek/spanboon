@@ -61,8 +61,13 @@
                         postData.post.page.name ? postData.post.page.name : postData.owner.displayName }}</a>
                 </div>
                 <div class="amount_social">
-                    <span>{{amountSocial ? amountSocial:0}}</span> {{amountSocial? 'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}
+                    <span *ngIf="postData.post">{{amountSocial ? amountSocial:0}}{{amountSocial?
+                        'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}</span>
                     <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
+                    <!-- <div class="foot_but" *ngIf="postData.data">
+                        <div class="follow" *ngIf="postData.data.pageUsername">
+                            ติดตาม</div>
+                    </div> -->
                 </div>
             </div>
         </div>
