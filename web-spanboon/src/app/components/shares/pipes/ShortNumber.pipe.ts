@@ -26,7 +26,7 @@ export class ShortNumberPipe implements PipeTransform {
       { key: 'T', value: Math.pow(10, 12) },
       { key: 'B', value: Math.pow(10, 9) },
       { key: 'M', value: Math.pow(10, 6) },
-      { key: 'พัน', value: Math.pow(10, 3) },
+      { key: 'K', value: Math.pow(10, 3) },
     ];
 
     for (let i = 0; i < powers.length; i++) {

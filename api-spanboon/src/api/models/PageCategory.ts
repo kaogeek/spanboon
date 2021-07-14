@@ -25,4 +25,7 @@ export class PageCategory {
 
     @Column({ name: 'iconURL' })
     public iconURL: string;
+
+    @Column({ name: 's3IconURL' })
+    public s3IconURL: string;
 }

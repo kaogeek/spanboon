@@ -138,12 +138,13 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 for (const row of searchResult) {
                     const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
+                    const moreData: any = {};
 
                     if (lastestDate === null) {
                         lastestDate = row.createdDate;
                     }
                     const contentModel = new ContentModel();
-                    contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
+                    contentModel.title = (hashtag) ? '#' + hashtag.name : '-';
                     contentModel.subtitle = row.name;
                     contentModel.iconUrl = row.iconURL;
                     // contentModel.commentCount = row.commentCount;
@@ -163,6 +164,8 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     hastagRowMap[row.hashTag] = row;
                     hashtagNames.push(row.hashTag);
 
+                    moreData.objectiveId = row._id;
+                    contentModel.data = moreData;
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);

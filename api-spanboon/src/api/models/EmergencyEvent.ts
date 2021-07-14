@@ -37,6 +37,9 @@ export class EmergencyEvent extends BaseModel {
     @Column({ name: 'isPin' })
     public isPin: boolean;
 
+    @Column({ name: 's3CoverPageURL' })
+    public s3CoverPageURL: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

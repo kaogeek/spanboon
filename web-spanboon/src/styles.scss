@@ -314,6 +314,7 @@ input:focus {
     position: relative;
     width: auto;
     height: auto;
+    overflow: hidden;
 }
 #canvas-wrap canvas {
     position: absolute;
@@ -321,4 +322,9 @@ input:focus {
     left: 0;
     z-index: 0;
     background-color: #fbfbfc;
+}
+@media (max-width: $large) {
+    #canvas-wrap canvas {
+        display: none !important;
+    }
 }
