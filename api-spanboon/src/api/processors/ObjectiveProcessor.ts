@@ -62,43 +62,49 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 result.contents = [];
 
                 const pageObjectiveResult: any[] = [];
-                for (let index = 0; pageObjectiveResult.length < 5; index++) {
-
-                    const pageObjStmt = [
-                        { $match: matchStmt },
-                        { $sort: { createdDate: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
-                                as: 'page'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'HashTag',
-                                localField: 'hashTag',
-                                foreignField: '_id',
-                                as: 'hashTagObj'
-                            }
+                const pageObjStmt = [
+                    { $match: matchStmt },
+                    { $sort: { createdDate: -1 } },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
                         }
-                    ];
-                    const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
-                    if (searchResult.length === 0) {
-                        resolve(result);
-                        break;
-                    }
-
-                    for (const iterator of searchResult) {
-                        if (iterator.hashTagObj.length > 0) {
-                            pageObjectiveResult.push(iterator);
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
+                    { $skip: offset },
+                    { $limit: limit },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'HashTag',
+                            localField: 'hashTag',
+                            foreignField: '_id',
+                            as: 'hashTagObj'
                         }
                     }
-                    offset = (offset + searchResult.length);
-
+                ];
+                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+                for (const iterator of searchResult) {
+                    if (iterator.hashTagObj.length > 0) {
+                        pageObjectiveResult.push(iterator);
+                    }
                 }
 
                 let lastestDate = null;
