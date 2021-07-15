@@ -64,6 +64,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public currentDate: any;
 
     public isFollow: boolean = false;
+    public isLoginUser: boolean = false;
 
     public objectiveId: string;
 
@@ -108,6 +109,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     }
 
     public async ngOnInit(): Promise<void> {
+        this.isLoginUser = this.isLogin();
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
@@ -115,7 +117,13 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
-        console.log('this.objectiveData', this.objectiveData)
+        console.log('this.objectiveData', this.objectiveData);
+        this.objectiveData.page;
+        const pageType = { type: "PAGE" };
+        const origin = this.objectiveData.page;
+
+        const dataPageTypeAssign = Object.assign(pageType, origin);
+        this.objectiveData.page = { owner: dataPageTypeAssign };
         this._groupData();
         this.setData();
     }
@@ -163,11 +171,12 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        // if (window.innerWidth > 998) {
-        //     this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
-        //         data: data,
-        //     })
-        // }
+        console.log('data', data)
+        if (window.innerWidth > 998) {
+            this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+                data: data,
+            })
+        }
     }
 
     public TooltipClose($event) {

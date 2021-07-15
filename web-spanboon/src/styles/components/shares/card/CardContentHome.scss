@@ -200,6 +200,16 @@
                 > .amount_social {
                     color: #a1a1a1;
                     @include font-size-11($font-head-400);
+                    > .foot_but {
+                        > .follow {
+                            padding: 5px;
+                            border: 0.7px solid $brandcolor2 !important;
+                            border-radius: 40px;
+                            text-align: center;
+                            color: $brandcolor2;
+                            width: 60px;
+                        }
+                    }
                 }
             }
         }

@@ -141,7 +141,7 @@ export const APP_ROUTES: Routes = [
         component: ObjectiveTimeline,
       },
       {
-        path: EmergencyEventTimeline.PAGE_NAME,
+        path: EmergencyEventTimeline.PAGE_NAME + "/:id",
         component: EmergencyEventTimeline,
       },
       // {
