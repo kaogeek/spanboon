@@ -465,6 +465,15 @@
 }
 
 @media (max-width: $xlarge) {
+  .post-story-not-found > .box > .sub-text {
+    font-size: 15pt;
+    font-family: "Kanit-400";
+    color: #a5a5a6;
+    display: flex;
+    align-items: center;
+    margin: 7px 0px;
+    flex-direction: column;
+  }
   .loding .stoey-buttom {
     width: 90%;
   }
@@ -519,6 +528,7 @@
 
     .post-story-not-found {
       > .box {
+        text-align: center !important;
         > .text {
           @include font-size-6($font-head-500);
           text-align: center;
