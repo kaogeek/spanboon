@@ -11,4 +11,5 @@ export * from './Safe.pipe';
 export * from './RemoveBadWords.pipe';
 export * from './PipeDatetime.pipe';
 export * from './PipeThFormatDatetime.pipe'; 
+export * from './PipeThDatetime.pipe'; 
 export * from './HighlightText.pipe'; 

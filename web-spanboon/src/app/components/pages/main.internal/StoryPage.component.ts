@@ -266,7 +266,15 @@ export class StoryPage extends AbstractPage implements OnInit {
         this.imageCover = res.data
       }).catch((err: any) => {
       });
-      document.getElementById("storyBody").innerHTML = this.postStoryData.story.story
+      // remove contenteditable to fix bug for firefox like unable to click
+      let storyText = this.postStoryData.story.story;
+      if (this.postStoryData.story !== undefined) {
+        if (storyText !== undefined && storyText !== '') {
+          const regex = /contenteditable=""/ig;
+          storyText = storyText.replaceAll(regex, '');
+        }
+      }
+      document.getElementById("storyBody").innerHTML = storyText;
       document.querySelectorAll('contenteditable').forEach(function (element) {
         element.removeAttribute("contenteditable");
       });
@@ -325,6 +333,11 @@ export class StoryPage extends AbstractPage implements OnInit {
 
       this.pageName = this.postStoryData.pageData.data.name;
       this.story = this.postStoryData.story;
+      // remove contenteditable to fix bug for firefox like unable to click
+      if (this.story !== undefined && this.story.story !== undefined && this.story.story !== '') {
+        const regex = /contenteditable=""/ig;
+        this.story.story = this.story.story.replaceAll(regex, '');
+      }
       this.title = this.postStoryData.title;
 
       this.isComment = this.postStoryData.isComment;

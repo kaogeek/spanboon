@@ -102,6 +102,22 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 const pageObjStmt = [
                     { $match: matchStmt },
                     { $sort: { createdDate: -1 } },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
                     { $skip: offset },
                     { $limit: limit },
                     {
@@ -161,13 +177,11 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     //     contentModel.isShare = userAction.isShare;
                     // }
 
-                    if(hashtag !== undefined){
-                        moreData.objectiveId = hashtag._id;
-                    }
-
                     hastagRowMap[row.hashTag] = row;
                     hashtagNames.push(row.hashTag);
 
+                    moreData.objectiveId = row._id;
+                    contentModel.data = moreData;
                     contentModel.owner = {};
                     if (page !== undefined) {
                         contentModel.owner = this.parsePageField(page);

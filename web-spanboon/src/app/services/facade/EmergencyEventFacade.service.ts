@@ -36,6 +36,20 @@ export class EmergencyEventFacade extends AbstractFacade {
     });
   }
 
+  public getEmergencyTimeline(emergencyId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
+      let body: any = {};
+
+      this.http.get(url, body).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
 
   // public contentView(id: string): Promise<any> {
   //   if (id === undefined || id === null || id === '') {

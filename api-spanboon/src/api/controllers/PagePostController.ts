@@ -639,6 +639,7 @@ export class PagePostController {
                         postsGallery.post = postPageId;
                         postsGallery.fileId = assetObjId;
                         postsGallery.imageURL = ASSET_PATH + assetObjId;
+                        postsGallery.s3ImageURL = assetObj.s3FilePath;
                         postsGallery.ordering = item.asset.ordering;
                         const postsGalleryCreate: PostsGallery = await this.postGalleryService.create(postsGallery);
 
@@ -1199,6 +1200,15 @@ export class PagePostController {
                         const postId = posts._id;
                         postList.push(new ObjectID(postId));
                         referencePostList.push(postId);
+
+                        if (posts.gallery !== undefined) {
+                            for (const postGallery of posts.gallery) {
+                                if (postGallery.s3ImageURL !== undefined && postGallery.s3ImageURL !== '') {
+                                    const assetSignURL = await this.assetService.getAssetSignedUrl({ _id: postGallery.fileId });
+                                    postGallery.signURL = assetSignURL.signURL;
+                                }
+                            }
+                        }
                     }
 
                     if (referencePostList !== null && referencePostList !== undefined && referencePostList.length > 0) {
@@ -1507,6 +1517,7 @@ export class PagePostController {
                         gallery.fileId = new ObjectID(image.id);
                         gallery.post = post.id;
                         gallery.imageURL = assetResultUpload ? ASSET_PATH + assetResultUpload.id : '';
+                        gallery.s3ImageURL = assetResultUpload.s3FilePath;
                         gallery.ordering = image.asset.ordering;
                         await this.postGalleryService.create(gallery);
                     }
@@ -1539,7 +1550,8 @@ export class PagePostController {
                                 }
                             };
 
-                            assetResult = await this.assetService.update(updateImageQuery, newImageValue);
+                            await this.assetService.update(updateImageQuery, newImageValue);
+                            assetResult = await this.assetService.find(updateImageQuery);
                             isCreateAsset = false;
                         }
                     }
@@ -1588,6 +1600,7 @@ export class PagePostController {
                 coverImage = post.coverImage;
             }
             coverImage = assetResult ? ASSET_PATH + assetResult.id : '';
+            const s3CoverImage = assetResult ? assetResult.s3FilePath : '';
 
             if (isDraft === null || isDraft === undefined) {
                 isDraft = post.isDraft;
@@ -1785,7 +1798,7 @@ export class PagePostController {
                 $set: {
                     title, detail, type, startDateTime, story, isDraft, coverImage,
                     objective: objectiveID, objectiveTag, userTags, postHashTag,
-                    emergencyEvent: emergencyEventID, emergencyEventTag,
+                    emergencyEvent: emergencyEventID, emergencyEventTag, s3CoverImage
                 }
             };
             const postPageSave = await this.postsService.update(updateQuery, newValue);

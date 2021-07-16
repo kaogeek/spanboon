@@ -11,6 +11,7 @@ import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
 import { Service } from 'typedi';
 import { aws_setup } from '../../env';
 import * as fs from 'fs';
+import { DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
 
 const s3 = new AWS.S3();
 
@@ -179,7 +180,6 @@ export class S3Service {
         });
     }
 
-    // delete file
     public imageUpload(folderName: string = '', base64Image: any, imageType: string): Promise<any> {
         AWS.config.update({ accessKeyId: aws_setup.AWS_ACCESS_KEY_ID, secretAccessKey: aws_setup.AWS_SECRET_ACCESS_KEY });
         const params = {
@@ -263,5 +263,31 @@ export class S3Service {
                 return resolve(dataFile);
             });
         });
+    }
+
+    public getSignedUrl(folderName: string = '', expiresSeconds: number = DEFAULT_ASSET_CONFIG_VALUE.S3_SIGN_EXPIRING_SEC): Promise<any> {
+        AWS.config.update({ accessKeyId: aws_setup.AWS_ACCESS_KEY_ID, secretAccessKey: aws_setup.AWS_SECRET_ACCESS_KEY });
+        const params = {
+            Bucket: aws_setup.AWS_BUCKET,
+            Key: folderName,
+            Expires: expiresSeconds
+        };
+
+        return new Promise((resolve, reject) => {
+            s3.getSignedUrl('putObject', params, (err, data: any) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(data);
+            });
+        });
+    }
+
+    public getPrefixBucketURL(): string[] {
+        const prefixArray = [];
+        prefixArray.push('https://s3.amazonaws.com' + '/' + aws_setup.AWS_BUCKET);
+        prefixArray.push('https://s3.' + aws_setup.AWS_DEFAULT_REGION + '.amazonaws.com' + '/' + aws_setup.AWS_BUCKET);
+
+        return prefixArray;
     }
 }

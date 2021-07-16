@@ -10,6 +10,7 @@ import { SectionModel } from '../models/SectionModel';
 import { ContentModel } from '../models/ContentModel';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { PostsService } from '../services/PostsService';
+import { S3Service } from '../services/S3Service';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 
 export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
@@ -19,7 +20,8 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
 
     constructor(
         private emergencyEvent: EmergencyEventService,
-        private postsService: PostsService
+        private postsService: PostsService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -154,6 +156,15 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     contentModel.shareCount = postShareCount;
                     contentModel.likeCount = postLikeCount;
                     contentModel.viewCount = postViewCount;
+
+                    if (row.s3CoverPageURL !== undefined && row.s3CoverPageURL !== '') {
+                        try {
+                            const signUrl = await this.s3Service.getSignedUrl(row.s3CoverPageURL);
+                            contentModel.signUrl = signUrl;
+                        } catch (error) {
+                            console.log('EmergencyEventPinProcessor: '+error);
+                        }
+                    }
 
                     contentModel.dateTime = row.createdDate;
 

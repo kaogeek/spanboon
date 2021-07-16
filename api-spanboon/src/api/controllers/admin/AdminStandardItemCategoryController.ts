@@ -272,6 +272,7 @@ export class AdminStandardItemCategoryController {
             let assetId;
             let newAssetId;
             let imageURL;
+            let newS3ImageURL;
 
             if (assetData !== null && assetData !== undefined) {
                 const data = assetData.data;
@@ -283,8 +284,9 @@ export class AdminStandardItemCategoryController {
                     assetId = new ObjectID(stdItemCatImageURL.split(ASSET_PATH)[1]);
                     const assetQuery = { _id: assetId };
                     const newAssetValue = { $set: { data, mimeType, size, fileName } };
-                    assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                    await this.assetService.update(assetQuery, newAssetValue);
                     newAssetId = assetId;
+                    assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
                 } else {
                     const asset = new Asset();
                     asset.data = data;
@@ -298,9 +300,11 @@ export class AdminStandardItemCategoryController {
 
                 if (assetResult) {
                     imageURL = assetResult ? ASSET_PATH + newAssetId : '';
+                    newS3ImageURL = assetResult ? assetResult.s3FilePath : '';
                 }
             } else {
                 imageURL = stdItemCatImageURL;
+                newS3ImageURL = stdItemCatUpdate.s3ImageURL;
             }
 
             const isValid = await this.standardItemCatValidate(item, parentId);
@@ -308,7 +312,7 @@ export class AdminStandardItemCategoryController {
             let newValue;
 
             if (isValid) {
-                newValue = { $set: { name: stdItemCat.name, description: stdItemCat.description, parent: new ObjectID(parentId), imageURL } };
+                newValue = { $set: { name: stdItemCat.name, description: stdItemCat.description, parent: new ObjectID(parentId), imageURL, s3ImageURL: newS3ImageURL } };
             } else {
                 newValue = { $set: { name: stdItemCat.name, description: stdItemCat.description, parent: '', imageURL } };
             }
