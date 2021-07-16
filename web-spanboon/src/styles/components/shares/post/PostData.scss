@@ -12,6 +12,7 @@
   border-radius: $border-radius-4px;
   overflow: hidden;
   position: relative;
+  z-index: 0;
 
   > .header-post {
     display: flex;

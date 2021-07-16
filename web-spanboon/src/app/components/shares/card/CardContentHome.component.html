@@ -105,13 +105,13 @@
             <div class="bottom_medium_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title" [innerHTML]='postData.post.title | highlight'></span>
                 <span class="detail" [innerHTML]='postData.post.detail | highlight'></span>
-                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                <span *ngIf="postData.story === null" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
                     ...</span>
             </div>
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
                     <span>{{postData.post.detail}}</span>
-                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                    <span *ngIf="postData.story === null" (click)="clickToStory(postData.post._id)"
                         class="story">อ่านสตอรี่ ...</span>
                 </div>
             </ng-template>
@@ -181,14 +181,14 @@
             <div class="bottom_large_card_detail" *ngIf="postCardCoverPageUrl;else other_topic_detail">
                 <span class="title" [innerHTML]='postData.post.title | highlight'></span>
                 <span [innerHTML]='postData.post.detail | highlight'></span>
-                <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
+                <span *ngIf="postData.story === null" (click)="clickToStory(postData.post._id)" class="story">อ่านสตอรี่
                     ...</span>
             </div>
             <!-- <a>อ่านต่อ...</a> -->
             <ng-template #other_topic_detail>
                 <div class="other_topic_detail">
                     <span [innerHTML]='postData.post.detail | highlight'></span>
-                    <span *ngIf="postData.coverPageUrl" (click)="clickToStory(postData.post._id)"
+                    <span *ngIf="postData.story === null" (click)="clickToStory(postData.post._id)"
                         class="story">อ่านสตอรี่ ...</span>
                 </div>
             </ng-template>
@@ -263,9 +263,9 @@
                     </svg> เหตุการณ์ด่วน</div>
                 <img src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
             </div>
-            <div class="body_card">
+            <div (click)="clickDataSearch(eventTitle)" class="body_card">
                 <div class="title">
-                    <a (click)="clickDataSearch(eventTitle)" class="event_title">{{eventTitle}}</a>
+                    <a class="event_title">{{eventTitle}}</a>
                     <span class="date_time">{{dateTime | dateFormat}}</span>
                 </div>
                 <span class="description">{{eventDescription}}</span>
