@@ -102,6 +102,22 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 const pageObjStmt = [
                     { $match: matchStmt },
                     { $sort: { createdDate: -1 } },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
                     { $skip: offset },
                     { $limit: limit },
                     {
