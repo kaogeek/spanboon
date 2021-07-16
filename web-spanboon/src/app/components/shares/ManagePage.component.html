@@ -20,7 +20,7 @@
             </g>
         </svg>
     </div>
-    <mat-drawer-container [class.active]="drawer.opened" [hasBackdrop]="false">
+    <mat-drawer-container [class.active]="drawer.opened" (click)="hideScroll()" [hasBackdrop]="false">
         <mat-drawer #drawer [mode]="'over'" [position]="'end'">
             <div class="list-page">
                 <div class="wrapper-header-list">
