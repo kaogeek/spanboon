@@ -32,7 +32,7 @@
                         <img class="iconURL" src="{{apiBaseURL+pageObjective.iconURL+'/image'}}" alt="">
                         <div class="data-text">
                             <div class="text">
-                                <span class="title">{{pageObjective.title}}</span>
+                                <span class="title">{{pageObjective.hashTagName}}</span>
                                 <span class="disiption">#{{pageObjective.title}}</span>
                             </div>
                             <div class="score">
@@ -75,15 +75,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="buttom">
+                            <div class="buttom" *ngIf="isLoginUser">
                                 <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
-                                <button-follow *ngIf="!isFollow" (click)="followObjective()" style="margin-top: 15px;"
-                                    class="btn-follow" [color]="'#FD545A'" [border]="'0.7px solid #FD545A'"
-                                    [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                <button-follow *ngIf="!objectiveData.isFollow" (click)="followObjective()"
+                                    style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
+                                    [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
                                 </button-follow>
-                                <button-follow *ngIf="isFollow" (click)="followObjective()" style="margin-top: 15px;"
-                                    class="btn-follow" [color]="'#fff'" [border]="'0.7px solid #FD545A'"
-                                    [bgColor]="'#fd5454'" [text]="'ยกเลิกติดตาม'">
+                                <button-follow *ngIf="objectiveData.isFollow" (click)="followObjective()"
+                                    style="margin-top: 15px;" class="btn-follow" [color]="'#fff'"
+                                    [border]="'0.7px solid #FD545A'" [bgColor]="'#fd5454'" [text]="'ยกเลิกติดตาม'">
                                 </button-follow>
                             </div>
                         </div>
@@ -93,9 +93,9 @@
                     <div class="owner">
                         <span class="title">ผู้สร้าง</span>
                         <div class="page" #showTooltip (mouseover)="Tooltip(showTooltip , pageOwner)">
-                            <img class="iconURL" src="{{apiBaseURL+pageOwner.imageURL+'/image'}}" alt="">
+                            <img class="iconURL" src="{{apiBaseURL+pageOwner.owner.imageURL+'/image'}}" alt="">
                             <div class="disiption">
-                                <span>{{pageOwner.name}}</span>
+                                <span>{{pageOwner.owner.name}}</span>
                             </div>
                         </div>
                         <div class="detail">
