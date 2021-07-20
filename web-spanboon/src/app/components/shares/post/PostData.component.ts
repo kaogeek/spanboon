@@ -125,6 +125,9 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
+
+    this.user = this.authenManager.getCurrentUser();
+
     setTimeout(() => {
       // console.log('this.itemPost >>>> ', this.itemPost);
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
@@ -216,11 +219,6 @@ export class PostData {
         this.itemPost.gallery = this.itemPost.gallery.sort((a, b) => a.ordering - b.ordering)
       }
     }, 1000);
-  }
-
-  public isLogin(): boolean {
-    this.user = this.authenManager.getCurrentUser();
-    return this.user !== undefined && this.user !== null;
   }
 
   private getDataGallery(imageURL: any, galleryIndex: number): void {
@@ -376,7 +374,7 @@ export class PostData {
     this.router.navigate([]).then(() => {
       let win = window.open('/story/' + post._id, '_blank');
       win.focus();
-  });
+    });
   }
 
   public postTeb(post) {
@@ -454,21 +452,21 @@ export class PostData {
   }
 
   public showDialogGallery(imageGallery) {
-    var lightbox = Glightbox(); 
+    var lightbox = Glightbox();
     let arrayImage = []
-    for (let galleryImage of imageGallery.gallerys) { 
+    for (let galleryImage of imageGallery.gallerys) {
       arrayImage.push({
-        href: galleryImage.galleryBase64, 
+        href: galleryImage.galleryBase64,
         type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
-      },)
+      })
     }
-    lightbox.setElements(arrayImage); 
-    lightbox.openAt(imageGallery.index);  
-    lightbox.on('open', (target) => { 
+    lightbox.setElements(arrayImage);
+    lightbox.openAt(imageGallery.index);
+    lightbox.on('open', (target) => {
     });
     lightbox.on('close', (target) => {
       lightbox.destroy();
-    });    
+    });
   }
 
   private stopLoading(): void {
