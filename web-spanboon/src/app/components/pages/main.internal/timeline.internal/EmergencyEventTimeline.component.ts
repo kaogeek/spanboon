@@ -132,7 +132,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         let numloop: number = 0
 
         for (let item of this.objectiveData.timelines) {
-            if (item.type === "OBJECTIVE_NEEDS") {
+            if (item.type === "EMERGENCY_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
                     if (standardItem !== undefined && standardItem !== null) {
@@ -140,7 +140,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                     }
                 }
             }
-            if (item.type === "OBJECTIVE_POST_LIKED") {
+            if (item.type === "EMERGENCY_POST_LIKED") {
                 if (item.galleries.length === 0) {
                     this.objectiveData.timelines.splice(numloop, 1);
                 }
@@ -171,7 +171,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        console.log('data', data)
         if (window.innerWidth > 998) {
             this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
                 data: data,
