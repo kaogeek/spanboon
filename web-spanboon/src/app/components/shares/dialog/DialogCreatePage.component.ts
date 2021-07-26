@@ -146,7 +146,7 @@ export class DialogCreatePage extends AbstractPage {
         this.resPageType = res;
         let index = 0;
         for (let dataImage of res) {
-          if(dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null){
+          if (dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null) {
             this.getDataIcon(dataImage.iconURL, index);
             index++;
           }
@@ -301,8 +301,8 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public onClose(): void {
-    // this.dialogRef.close();
-    this.router.navigate(["/home"]);
+    this.dialogRef.close();
+    // this.router.navigate(["/home"]);
   }
 
   private stopLoading(): void {
