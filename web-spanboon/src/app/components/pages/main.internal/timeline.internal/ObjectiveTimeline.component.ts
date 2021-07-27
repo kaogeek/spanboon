@@ -65,6 +65,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public isFollow: boolean = false;
     public isLoginUser: boolean = false;
+    public isLoding: boolean = true;
 
     public objectiveId: string;
 
@@ -109,15 +110,17 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     }
 
     public async ngOnInit(): Promise<void> {
+        console.log('this.objectiveData', this.objectiveData)
+        setTimeout(() => {
+            this.isLoding = false;
+        }, 1500);
         this.isLoginUser = this.isLogin();
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
-
         this.currentDate = new Date();
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
-        console.log('this.objectiveData', this.objectiveData);
         this.objectiveData.page;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
