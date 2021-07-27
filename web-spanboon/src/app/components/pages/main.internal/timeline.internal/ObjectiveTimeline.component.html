@@ -1230,7 +1230,8 @@
                 </div>
 
             </div>
-            <div class="body" *ngIf="objectiveData.timelines.length === 1 || objectiveData.timelines.length === 0">
+            <div class="body"
+                *ngIf="objectiveData.timelines.length === 1 || objectiveData.timelines.length === 0 || !objectiveData">
                 <div class="not-found">
                     <div class="text">
                         <span>ขออภัยไม่พบ Timeline ของ</span>
@@ -1241,7 +1242,7 @@
             </div>
         </div>
     </div>
-    <div class="objective-timeline-body" *ngIf="!objectiveData">
+    <div class="objective-timeline-body" *ngIf="isLoding">
         <Preload-card style="width: 100%;" [isShowCard1]="true" [isShowCard2]="false">
         </Preload-card>
     </div>

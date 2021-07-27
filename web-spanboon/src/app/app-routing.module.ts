@@ -137,6 +137,10 @@ export const APP_ROUTES: Routes = [
         component: SettingAccount,
       },
       {
+        path: ObjectiveTimeline.PAGE_NAME,
+        redirectTo: '/home',
+      },
+      {
         path: ObjectiveTimeline.PAGE_NAME + "/:id",
         component: ObjectiveTimeline,
       },
