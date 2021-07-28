@@ -149,6 +149,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     }
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
+                    const moreData: any = {};
+                    moreData.emergencyEventId = row._id;
+
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
@@ -170,6 +173,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     }
 
                     contentModel.dateTime = row.createdDate;
+                    contentModel.data = moreData;
                     result.contents.push(contentModel);
                 }
                 result.dateTime = lastestDate;
