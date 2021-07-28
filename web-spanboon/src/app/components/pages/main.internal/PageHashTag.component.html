@@ -433,9 +433,9 @@
                         <ng-container *ngIf="resPost && resPost.length > 0 else elsePost">
                             <ng-container *ngFor="let item of resPost;let index = index">
                                 <post-data [itemPost]="item.post" [user]="userImage" [isComments]="isLogin()"
-                                    [isShowProfile]="true" [isSearchHashTag]="true"
+                                    [isShowProfile]="true" [isSearchHashTag]="false"
                                     [isUserPage]="isLogin() && isNotAccess" (action)="actionComment($event,index)"
-                                    (comment)="createComment($event)" [pageUser]="pageUser" [isPage]="isNotAccess"
+                                    (comment)="createComment($event,index)" [pageUser]="pageUser" [isPage]="isNotAccess"
                                     [isNotAccess]="isNotAccess" [isShowUser]="false"
                                     (delete)="deletePost($event,index)"></post-data>
                             </ng-container>
