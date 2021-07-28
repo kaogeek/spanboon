@@ -293,36 +293,45 @@ export class PostData {
   }
 
   public clickDevelop(data, text) {
-    let url = '';
-    let type = '';
-    let eventId = '';
     if (data.index === 1) {
-      url += "emergency=#" + text.emergencyEventTag
-      type = "emergency";
-      eventId = text.emergencyEvent.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/emergencyeventtimeline/' + text.emergencyEvent._id);
+      });
     } else if (data.index === 2) {
-      url += "objective=" + text.objectiveTag;
-      type = "objective";
-      eventId = text.objective.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/objectivetimeline/' + text.objective._id);
+      });
     }
-    let click = this.engagementService.getEngagement(data.event, eventId, type);
-    this.engagement.emit(click)
+    // let url = '';
+    // let type = '';
+    // let eventId = '';
+    // if (data.index === 1) {
+    //   url += "emergency=#" + text.emergencyEventTag
+    //   type = "emergency";
+    //   eventId = text.emergencyEvent.hashTag;
+    // } else if (data.index === 2) {
+    //   url += "objective=" + text.objectiveTag;
+    //   type = "objective";
+    //   eventId = text.objective.hashTag;
+    // }
+    // let click = this.engagementService.getEngagement(data.event, eventId, type);
+    // this.engagement.emit(click)
 
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-        bottomColorText2: "black",
-        // btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.router.navigateByUrl('/search?' + url);
-      }
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+    //     bottomColorText2: "black",
+    //     // btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    //   if (res) {
+    //     this.router.navigateByUrl('/search?' + url);
+    //   }
+    // });
   }
 
   private getComment(limit?) {

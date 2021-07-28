@@ -70,11 +70,11 @@ export class CardItem extends AbstractPage implements OnInit {
 
         this.authenManager = authenManager;
         this.dialog = dialog;
-        this.router = router; 
+        this.router = router;
     }
 
     ngOnInit(): void {
-        this.checkResp(); 
+        this.checkResp();
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -97,7 +97,7 @@ export class CardItem extends AbstractPage implements OnInit {
     public showDialogEdit() {
         this.submit.emit();
     }
-    public fulfillNeeds(item: any, index: number) { 
+    public fulfillNeeds(item: any, index: number) {
         if (!this.isLogin()) {
             this.showAlertLoginDialog(this.router.url);
         } else {
@@ -186,4 +186,11 @@ export class CardItem extends AbstractPage implements OnInit {
     public onResize($event) {
         this.checkResp();
     }
+
+    public test(data) {
+        this.router.navigate([]).then(() => {
+            window.open('/objectivetimeline/' + data.id);
+        });
+    }
+
 }
