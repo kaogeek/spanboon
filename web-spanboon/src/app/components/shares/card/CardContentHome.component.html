@@ -24,7 +24,7 @@
         </div>
         <div class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
             <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img [class.is_objective]="isObjective" [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -61,7 +61,7 @@
                         postData.post.page.name ? postData.post.page.name : postData.owner.displayName }}</a>
                 </div>
                 <div class="amount_social">
-                    <span *ngIf="postData.post">{{amountSocial ? amountSocial:0}}  {{amountSocial?
+                    <span *ngIf="postData.post">{{amountSocial ? amountSocial:0}} {{amountSocial?
                         'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}</span>
                     <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
                     <!-- <div class="foot_but" *ngIf="postData.data">
@@ -92,8 +92,8 @@
         </div>
         <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img class="bottom_coverPage_cover" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
-                <img class="other_topic_coverPage" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img class="bottom_coverPage_cover" [src]="postCardCoverPageUrl">
+                <img class="other_topic_coverPage" [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -169,7 +169,7 @@
         <div (click)="clickEventEmit()" class="top_large_card"
             [class.title]="postCardCoverPageUrl === undefined || postCardCoverPageUrl === null || postCardCoverPageUrl === ''">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
