@@ -96,6 +96,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public eventCommentCount: number;
     public eventShareCount: number;
 
+    public emergencyEventId: string;
+
     public dateTime: any;
 
     // hashTag //
@@ -152,6 +154,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.eventLikeCount = this.eventData[0].likeCount;
                 this.eventCommentCount = this.eventData[0].commentCount;
                 this.eventShareCount = this.eventData[0].shareCount;
+                this.emergencyEventId = this.eventData[0].data.emergencyEventId;
 
                 for (let index = 0; index < this.eventData.length; index++) {
                     this.eventData.splice(0, 1);
@@ -212,7 +215,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public clickDataSearch(data, index?) {
         this.router.navigate([]).then(() => {
-            window.open('/search?hashtag=' + data, '_blank');
+            window.open('/emergencyeventtimeline/' + data);
         });
     }
 
@@ -261,6 +264,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
         } else if (data.data.objectiveId) {
             window.open('/objectivetimeline/' + data.data.objectiveId);
+
+        } else if (data.data.emergencyEventId) {
+            window.open('/emergencyeventtimeline/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
             window.open('/search?hashtag=' + data.title.substring(1, data.title.length + 1));

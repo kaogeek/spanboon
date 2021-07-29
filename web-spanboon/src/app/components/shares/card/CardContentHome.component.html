@@ -229,7 +229,7 @@
 
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.full]="!isData">
-            <div (click)="clickDataSearch(eventTitle)" class="top_coverPage" [class.full]="!isData">
+            <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="!isData">
                 <img class="top_coverPage_cover" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
@@ -263,7 +263,7 @@
                     </svg> เหตุการณ์ด่วน</div>
                 <img src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
             </div>
-            <div (click)="clickDataSearch(eventTitle)" class="body_card">
+            <div (click)="clickDataSearch(emergencyEventId)" class="body_card">
                 <div class="title">
                     <a class="event_title">{{eventTitle}}</a>
                     <span class="date_time">{{dateTime | dateFormat}}</span>
@@ -288,14 +288,14 @@
         </div>
         <div class="bottom" [class.full]="!isData">
             <div class="other_teg_event">
-                <div class="teg_event_list" (click)="clickDataSearch(event.title,index)"
+                <div class="teg_event_list" (click)="clickDataSearch(event.data.emergencyEventId,index)"
                     *ngFor="let event of eventData; let index = index">
                     <div class="img_box" [class.open]="index === selectIndex && !isData">
                         <img class="bottom_coverPage_cover" src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
                         <img src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
                     </div>
                     <div class="title">
-                        <a (click)="clickDataSearch(eventTitle)">{{event.title}}</a>
+                        <a (click)="clickDataSearch(emergencyEventId)">{{event.title}}</a>
                         <!-- <div class="date_time">
                             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
