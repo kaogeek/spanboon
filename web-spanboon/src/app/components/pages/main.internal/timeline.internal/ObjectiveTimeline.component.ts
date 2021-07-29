@@ -17,7 +17,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 
-const PAGE_NAME: string = 'objectivetimeline';
+const PAGE_NAME: string = 'objective';
 
 @Component({
     selector: 'objective-timeline',
@@ -117,7 +117,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
-        console.log('this.objectiveData', this.objectiveData)
         this.objectiveData.page;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
@@ -171,7 +170,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        console.log('data', data)
         if (window.innerWidth > 998) {
             this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
                 data: data,

@@ -17,7 +17,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 
-const PAGE_NAME: string = 'emergencyeventtimeline';
+const PAGE_NAME: string = 'emergencyevent';
 
 @Component({
     selector: 'emergency-event-timeline',
@@ -117,7 +117,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId);
-        console.log('this.objectiveData', this.objectiveData);
         this.objectiveData.page;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
