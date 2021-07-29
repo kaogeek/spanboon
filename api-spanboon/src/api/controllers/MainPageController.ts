@@ -51,6 +51,11 @@ import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
 import { FollowingRecommendProcessor } from '../processors/FollowingRecommendProcessor';
+import { LIKE_TYPE } from '../../constants/LikeType';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
+import { PostsCommentService } from '../services/PostsCommentService';
+import { PostsComment } from '../models/PostsComment';
 
 @JsonController('/main')
 export class MainPageController {
@@ -65,7 +70,9 @@ export class MainPageController {
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
         private configService: ConfigService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private userLikeService: UserLikeService,
+        private postsCommentService: PostsCommentService
     ) { }
 
     // Find Page API
@@ -655,6 +662,7 @@ export class MainPageController {
     @Post('/content/search')
     public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
         try {
+            const uId = req.headers.userid;
             let search: any = {};
             const searchResults = [];
             const postStmt = [];
@@ -1118,9 +1126,13 @@ export class MainPageController {
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
 
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
+                const postIdList = [];
+                const postMap = {};
                 for (const post of postResult) {
                     const result = new SearchContentResponse();
                     result.post = post;
+                    postIdList.push(post._id);
+                    postMap[post._id + ''] = post;
 
                     let postPage;
                     if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '') {
@@ -1140,6 +1152,45 @@ export class MainPageController {
                     result.page = postPage;
 
                     searchResults.push(result);
+                }
+
+                if (uId !== null && uId !== undefined && uId !== '') {
+                    const userObjId = new ObjectID(uId);
+                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
+                    
+                    if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
+                        for (const like of userLikes) {
+                            const postId = like.subjectId;
+                            const likeAsPage = like.likeAsPage;
+                            const postIdKey = postId + '';
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                                    if (postMap[postIdKey] !== undefined) {
+                                        postMap[postIdKey].likeAsPage = true;
+                                    }
+                                }
+
+                                if (postMap[postIdKey] !== undefined) {
+                                    postMap[postIdKey].isLike = true;
+                                }
+                            }
+                        }
+                    }
+
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    if (postComments !== null && postComments !== undefined && postComments.length > 0) {
+                        for (const comment of postComments) {
+                            const postId = comment.post;
+                            const postIdKey = postId + '';
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (postMap[postIdKey] !== undefined) {
+                                    postMap[postIdKey].isComment = true;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 search = searchResults;
