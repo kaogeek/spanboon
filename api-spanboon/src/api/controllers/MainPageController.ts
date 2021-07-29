@@ -1157,7 +1157,7 @@ export class MainPageController {
                 if (uId !== null && uId !== undefined && uId !== '') {
                     const userObjId = new ObjectID(uId);
                     const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
-                    console.log('userLikes: ', userLikes.length);
+                    
                     if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
                         for (const like of userLikes) {
                             const postId = like.subjectId;
