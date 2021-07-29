@@ -8,7 +8,7 @@
 import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { publish } from 'rxjs/operators';
-import { MenuContextualService } from 'src/app/services/services';
+import { MenuContextualService, AssetFacade } from 'src/app/services/services';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import { environment } from 'src/environments/environment';
 import { AuthenManager } from '../../../services/services';
@@ -22,6 +22,7 @@ import { AbstractPage } from '../../pages/AbstractPage';
 export class CardContentHome extends AbstractPage implements OnInit {
 
     protected router: Router;
+    protected assetFacade: AssetFacade;
 
     @Input()
     public postData: any;
@@ -111,8 +112,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public isLoad: boolean = true;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, dialog: MatDialog, private viewContainerRef: ViewContainerRef) {
+    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, private popupService: MenuContextualService, dialog: MatDialog, private viewContainerRef: ViewContainerRef) {
         super(null, authenManager, dialog, router);
+        this.assetFacade = assetFacade;
     }
 
     ngOnInit(): void {
@@ -177,6 +179,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             setTimeout(() => {
                 this.isLoad = false;
+                this.passSignUrl();
             }, 1000);
 
         }, 3000);
@@ -327,6 +330,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     }
 
+    public async passSignUrl(url?: any): Promise<any> {
+        let signData: any = await this.assetFacade.getPathFileSign(this.postCardCoverPageUrl);
+        return this.postCardCoverPageUrl = signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+    }
 
     /// PUBLIC
 
