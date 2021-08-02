@@ -41,9 +41,8 @@
                                 </sat-datepicker>
                                 <sat-datepicker-toggle matSuffix [for]="picker2"></sat-datepicker-toggle>
                             </mat-form-field>
-                            <spanboon-button class="btn"  [color]="'#FFFFFF'" [text]="'ล้างค่า'"
-                                [fontSize]="fontSize" [height]="heightBtn" [width]="widthBtn" (click)="clearDate()"
-                                [radius]="'6px'">
+                            <spanboon-button class="btn" [color]="'#FFFFFF'" [text]="'ล้างค่า'" [fontSize]="fontSize"
+                                [height]="heightBtn" [width]="widthBtn" (click)="clearDate()" [radius]="'6px'">
                             </spanboon-button>
                         </div>
                     </div>
@@ -117,7 +116,7 @@
                             </div>
                         </ng-template>
                     </div>
-                    <!-- <card-checkbox [title]="'สถานที่'"></card-checkbox> --> 
+                    <!-- <card-checkbox [title]="'สถานที่'"></card-checkbox> -->
                     <card-checkbox [title]="'ประเภทเพจ'" [data]="resPageType" [typePage]="page"
                         [isMutipleCheckbox]="'true'" (clickMutiple)="getPagecategory($event)"
                         (loadMore)="loadMore($event)" [isLoadMorePageCategory]="isLoadMorePageCategory"></card-checkbox>
@@ -162,9 +161,7 @@
                                                             <div class="list-autocomp">
                                                                 <ng-container
                                                                     *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
-                                                                    <img class="img"
-                                                                        src="{{apiBaseURL+user.imageURL+'/image'}}"
-                                                                        alt="">
+                                                                    <img class="img" [src]="user.imageURL" alt="">
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
@@ -189,8 +186,7 @@
                                                 <div class="left">
                                                     <ng-container
                                                         *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
-                                                        <img class="page-img"
-                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                        <img class="page-img" [src]="item.imageURL" alt="">
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">
@@ -226,11 +222,10 @@
                             </div>
                             <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
-                                (loadMore)="loadMore($event)"  ></card-checkbox>
+                                (loadMore)="loadMore($event)"></card-checkbox>
                             <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
-                                [dataParam]="objective" (click)="getObjective($event)"
-                                (loadMore)="loadMore($event)" >
-                            </card-checkbox> 
+                                [dataParam]="objective" (click)="getObjective($event)" (loadMore)="loadMore($event)">
+                            </card-checkbox>
                             <card-checkbox [title]="'อยู่ในกระแส'" [data]="resHashTag" [hashtag]="matHashTag"
                                 [isRemove]="true" [isMutipleCheckbox]="true" (clickMutiple)="checkBoxMutiple($event)"
                                 [matHashtag]="test" (loadMore)="loadMore($event)">
@@ -275,8 +270,7 @@
                                         </div>
                                         <div class="wrapper-btn-follow">
                                             <button-follow class="btn-follow" [color]="'#FFFFFF'"
-                                                [border]="'0.7px solid #FD545A'" 
-                                                [text]="'กำลังติดตาม'">
+                                                [border]="'0.7px solid #FD545A'" [text]="'กำลังติดตาม'">
                                             </button-follow>
                                         </div>
                                     </div>
@@ -315,7 +309,7 @@
             </div>
             <div class="body-recommended">
                 <div class="recommended-left" *ngIf="!showLoading">
-                    <div class="feed-body-search" #feedbodysearch > 
+                    <div class="feed-body-search" #feedbodysearch>
                         <div class="feed-header-search">
                             <div class="filter">
                                 <svg class="btn-filter" (click)="clickfilter()" xmlns="http://www.w3.org/2000/svg"
@@ -425,11 +419,11 @@
                                 </mat-menu>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                     <ng-container *ngIf="isLoadingClickTab; else IsLoadingPost">
                         <Preload-card [isShowCard1]="true" [isShowCard2]="true"></Preload-card>
                     </ng-container>
-                    <ng-template #IsLoadingPost> 
+                    <ng-template #IsLoadingPost>
                         <ng-container *ngIf="resPost && resPost.length > 0 else elsePost">
                             <ng-container *ngFor="let item of resPost;let index = index">
                                 <post-data [itemPost]="item.post" [user]="userImage" [isComments]="isLogin()"
@@ -452,7 +446,7 @@
 
                 <ng-container *ngIf="showLoading">
                     <Preload-card *ngFor="let item of [0]" [isShowCard1]="true" [isShowCard2]="false"
-                        class="recommended-left"> 
+                        class="recommended-left">
                     </Preload-card>
                 </ng-container>
 
@@ -498,9 +492,7 @@
                                                             <div class="list-autocomp">
                                                                 <ng-container
                                                                     *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
-                                                                    <img class="img"
-                                                                        src="{{apiBaseURL+user.imageURL+'/image'}}"
-                                                                        alt="">
+                                                                    <img class="img" [src]="user.imageURL" alt="">
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
@@ -525,8 +517,7 @@
                                                 <div class="left">
                                                     <ng-container
                                                         *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
-                                                        <img class="page-img"
-                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                        <img class="page-img" [src]="item.imageURL" alt="">
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">
@@ -562,14 +553,16 @@
                             </div>
                             <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
-                                (loadMore)="loadMore($event)" [isLoadMorePageEmergency]="isLoadMorePageEmergency"></card-checkbox>
+                                (loadMore)="loadMore($event)" [isLoadMorePageEmergency]="isLoadMorePageEmergency">
+                            </card-checkbox>
                             <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
-                                [dataParam]="objective" (click)="getObjective($event)"  
-                                (loadMore)="loadMore($event)" [isLoadMoreObjective]="isLoadMoreObjective">
-                            </card-checkbox> 
+                                [dataParam]="objective" (click)="getObjective($event)" (loadMore)="loadMore($event)"
+                                [isLoadMoreObjective]="isLoadMoreObjective">
+                            </card-checkbox>
                             <card-checkbox [title]="'อยู่ในกระแส'" [data]="resHashTag" [hashtag]="matHashTag"
                                 [isRemove]="true" [isMutipleCheckbox]="true" (clickMutiple)="checkBoxMutiple($event)"
-                                [matHashtag]="test" (loadMore)="loadMore($event)" [isLoadMoreHashTag]="isLoadMoreHashTag">
+                                [matHashtag]="test" (loadMore)="loadMore($event)"
+                                [isLoadMoreHashTag]="isLoadMoreHashTag">
                             </card-checkbox>
 
                             <div class="box-right" style="margin-top: 5pt;">
@@ -611,8 +604,7 @@
                                         </div>
                                         <div class="wrapper-btn-follow">
                                             <button-follow class="btn-follow" [color]="'#FFFFFF'"
-                                                [border]="'0.7px solid #FD545A'" 
-                                                [text]="'กำลังติดตาม'">
+                                                [border]="'0.7px solid #FD545A'" [text]="'กำลังติดตาม'">
                                             </button-follow>
                                         </div>
                                     </div>

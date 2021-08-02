@@ -122,7 +122,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public resAboutPage: any;
   public latitudeAboutPage: any;
   public longtitudeAboutPage: any;
-  public localtion: any; 
+  public localtion: any;
   public selectedIndex: number;
 
   public CheckPost: boolean = true;
@@ -790,7 +790,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.selectedIndex = data.index;
       }
     }
-  } 
+  }
 
   public async followPage(pageId: string) {
     if (!this.isLogin()) {
@@ -808,16 +808,16 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public linkDataType(link: any) { 
+  public linkDataType(link: any) {
     if (link === 'BACK') {
       this.resDataPost = null
       this.isPost = false
-      this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline'); 
-    } else {  
-      this.isLoadingClickTab = true;  
-      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword); 
+      this.router.navigateByUrl('/page/' + this.url + "/" + 'timeline');
+    } else {
+      this.isLoadingClickTab = true;
+      this.router.navigateByUrl('/page/' + this.url + "/" + link.keyword);
     }
-  }  
+  }
 
   public showProfilePage(url): void {
     this.pageFacade.getProfilePage(url).then((res) => {
@@ -928,8 +928,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public getRecommend() {
     let limit: number = 3;
     let offset: number = 0;
-    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+    this.recommendFacade.getRecommend(limit, offset).then(async (res) => {
       this.dataRecommend = res.data;
+      for (let data of this.dataRecommend) {
+        if (data.imageURL) {
+          data.imageURL = await this.passSignUrl(data.imageURL);
+        }
+      }
     }).catch((err: any) => {
       console.log('err ', err)
     });
@@ -1405,6 +1410,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       console.log('err ', err)
     })
   }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+  }
+
 }
 
 
