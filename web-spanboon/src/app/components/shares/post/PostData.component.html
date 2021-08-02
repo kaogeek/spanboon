@@ -35,8 +35,7 @@
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <ng-container
                                 *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL +'/image'}}"
-                                    alt="">
+                                <img class="post-data-profile" [src]="itemPost.page.imageURL" alt="">
                             </ng-container>
                             <ng-template #elseTemplateFileImage>
                                 <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
@@ -45,8 +44,7 @@
                         <ng-template #elseImage>
                             <ng-container
                                 *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
-                                    alt="">
+                                <img class="post-data-profile" [src]="itemPost.user.imageURL" alt="">
                             </ng-container>
                             <ng-template #elseTemplateProfile>
                                 <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
