@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager } from 'src/app/services/services';
+import { AuthenManager, AssetFacade } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from 'src/environments/environment';
 import { DialogFulfill } from '../dialog/DialogFulfill.component';
@@ -23,6 +23,8 @@ const PAGE_NAME: string = 'carditem';
 export class CardItem extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
+
+    private assetFacade: AssetFacade;
 
     @Input()
     public itemData: any;
@@ -65,16 +67,22 @@ export class CardItem extends AbstractPage implements OnInit {
     public index: number;
     public item: any;
 
-    constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
+    constructor(authenManager: AuthenManager, assetFacade: AssetFacade, dialog: MatDialog, router: Router) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.authenManager = authenManager;
         this.dialog = dialog;
         this.router = router;
+        this.assetFacade = assetFacade;
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.checkResp();
+        for (let data of this.itemData) {
+            if (data.imageURL) {
+                data.imageURL = await this.passSignUrl(data.imageURL);
+            }
+        }
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -191,6 +199,11 @@ export class CardItem extends AbstractPage implements OnInit {
         this.router.navigate([]).then(() => {
             window.open('/objectivetimeline/' + data.id);
         });
+    }
+
+    public async passSignUrl(url?: any): Promise<any> {
+        let signData: any = await this.assetFacade.getPathFileSign(url);
+        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
     }
 
 }

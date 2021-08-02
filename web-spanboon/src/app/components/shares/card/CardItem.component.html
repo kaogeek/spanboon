@@ -86,8 +86,7 @@
                     <img *ngIf="!item.imageURL" class="icon-looking-for"
                         src="../../../../assets/img/customize_item.svg">
 
-                    <img *ngIf="item.imageURL" class="icon-looking-for" src="{{apiBaseURL+item.imageURL+'/image'}}"
-                        alt="">
+                    <img *ngIf="item.imageURL" class="icon-looking-for" [src]="item.imageURL" alt="">
                     <div class="title-looking-for">
                         <div class="top">{{item.name}}</div>
                     </div>
@@ -108,8 +107,7 @@
                             <div class="div-img">
                                 <img *ngIf="!item.imageURL" class="icon-ob"
                                     src="../../../../assets/img/customize_item.svg">
-                                <img *ngIf="item.imageURL" class="icon-ob" src="{{apiBaseURL+item.imageURL+'/image'}}"
-                                    alt="">
+                                <img *ngIf="item.imageURL" class="icon-ob" [src]="item.imageURL" alt="">
                             </div>
                             <div class="bottom-ob">
                                 <div class="name-ob">{{item.name}}</div>

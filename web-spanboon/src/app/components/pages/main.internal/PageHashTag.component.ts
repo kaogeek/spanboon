@@ -494,6 +494,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.accountFacade.search(data).then((res) => {
       this.dataUser = res;
+
+      for (let data of this.dataUser) {
+        if (data.imageURL !== null && data.imageURL !== undefined) {
+          data.imageURL = this.passSignUrl(data.imageURL);
+        }
+      }
+
       this.isLoading = false;
     }).catch((err) => {
       this.isLoading = false;
@@ -1431,6 +1438,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     setTimeout(() => {
       this.showLoading = false
     }, 3000);
+  }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
   }
 
   public onResize() {
