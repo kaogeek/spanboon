@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -32,6 +32,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public observManager: ObservableManager;
     public emergencyEventFacade: EmergencyEventFacade;
     public hashTagFacade: HashTagFacade;
+    public assetFacade: AssetFacade;
 
     // test
 
@@ -71,11 +72,12 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
+    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
+        this.assetFacade = assetFacade;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
         this.routeActivated = routeActivated;
@@ -148,8 +150,19 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         }
     }
 
-    public setData(): void {
+    public async setData(): Promise<void> {
         this.pageObjective = this.objectiveData.emergencyEvent;
+        if (this.pageObjective.coverPageURL) {
+            this.pageObjective.coverPageURL = await this.passSignUrl(this.pageObjective.coverPageURL);
+        }
+        for (let data of this.objectiveData.timelines) {
+            if (data.post) {
+                if (data.post.postGallery) {
+                    data.post.postGallery[0].imageURL = await this.passSignUrl(data.post.postGallery[0].imageURL);
+                }
+            }
+
+        }
         this.pageOwner = this.objectiveData.page;
 
     }
@@ -200,4 +213,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         // throw new Error('Method not implemented.');
         return;
     }
+
+    public async passSignUrl(url?: any): Promise<any> {
+        let signData: any = await this.assetFacade.getPathFileSign(url);
+        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+    }
+
 }

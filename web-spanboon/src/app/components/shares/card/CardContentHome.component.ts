@@ -121,7 +121,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     ngAfterViewInit(): void {
-        setTimeout(() => {
+        setTimeout(async () => {
 
             if (this.isDerTy(this.postData)) {
                 if (this.isDerTy(this.postData.post)) {
@@ -157,6 +157,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.eventCommentCount = this.eventData[0].commentCount;
                 this.eventShareCount = this.eventData[0].shareCount;
                 this.emergencyEventId = this.eventData[0].data.emergencyEventId;
+
+                if (this.eventCoverPageUrl) {
+                    this.eventCoverPageUrl = await this.passSignUrlConv(this.eventCoverPageUrl);
+                }
 
                 for (let index = 0; index < this.eventData.length; index++) {
                     this.eventData.splice(0, 1);
@@ -218,7 +222,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public clickDataSearch(data, index?) {
         this.router.navigate([]).then(() => {
-            window.open('/emergencyeventtimeline/' + data);
+            window.open('/emergencyevent/' + data);
         });
     }
 
@@ -266,10 +270,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
             this.clickEvent.emit(this.postData);
 
         } else if (data.data.objectiveId) {
-            window.open('/objectivetimeline/' + data.data.objectiveId);
+            window.open('/objective/' + data.data.objectiveId);
 
         } else if (data.data.emergencyEventId) {
-            window.open('/emergencyeventtimeline/' + data.data.emergencyEventId);
+            window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
             window.open('/search?hashtag=' + data.title.substring(1, data.title.length + 1));
@@ -333,6 +337,11 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public async passSignUrl(url?: any): Promise<any> {
         let signData: any = await this.assetFacade.getPathFileSign(this.postCardCoverPageUrl);
         return this.postCardCoverPageUrl = signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+    }
+
+    public async passSignUrlConv(url?: any): Promise<any> {
+        let signData: any = await this.assetFacade.getPathFileSign(url);
+        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
     }
 
     /// PUBLIC

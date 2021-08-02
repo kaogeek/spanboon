@@ -87,13 +87,11 @@
                                                     *ngIf="(item.standardItem && item.standardItem.imageURL && item.standardItem.imageURL !== null && item.standardItem.imageURL !== undefined && item.standardItem.imageURL !== '') || (item.imageURL && item.imageURL !== undefined && item.imageURL !== '' && item.imageURL !== null) ; else elseBase64">
                                                     <ng-container
                                                         *ngIf="item.standardItem && item.standardItem.imageURL; else elseTemplateIcon">
-                                                        <img class="icon-category"
-                                                            src="{{apiBaseURL+item.standardItem.imageURL+'/image'}}"
+                                                        <img class="icon-category" [src]="item.standardItem.imageURL"
                                                             alt="">
                                                     </ng-container>
                                                     <ng-template #elseTemplateIcon>
-                                                        <img class="icon-category"
-                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                        <img class="icon-category" [src]="item.imageURL" alt="">
                                                     </ng-template>
                                                 </ng-container>
                                                 <ng-template #elseBase64>
@@ -179,8 +177,7 @@
                                         <div class="wrapper-category">
                                             <ng-container
                                                 *ngIf="listItem.imageURL !== '' && listItem.imageURL !== null && listItem.imageURL !== undefined else elseImage">
-                                                <img class="img-category"
-                                                    src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
+                                                <img class="img-category" [src]="listItem.imageURL" alt="">
                                             </ng-container>
                                             <ng-template #elseImage>
                                                 <img class="img-category"

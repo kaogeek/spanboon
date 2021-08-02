@@ -230,7 +230,7 @@
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.full]="!isData">
             <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="!isData">
-                <img class="top_coverPage_cover" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+                <img class="top_coverPage_cover" [src]="eventCoverPageUrl">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
@@ -261,7 +261,7 @@
                                 height="3" rx="0.5" transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                         </g>
                     </svg> เหตุการณ์ด่วน</div>
-                <img src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+                <img [src]="eventCoverPageUrl">
             </div>
             <div (click)="clickDataSearch(emergencyEventId)" class="body_card">
                 <div class="title">
