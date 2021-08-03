@@ -10,11 +10,12 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
+import { S3Service } from '../services/S3Service';
 
 @Service()
 export class UserService {
 
-    constructor(@OrmRepository() private userLoginRepository: UserRepository) { }
+    constructor(@OrmRepository() private userLoginRepository: UserRepository, private s3Service: S3Service) { }
 
     // find user
     public find(findCondition?: any): Promise<User[]> {
@@ -32,8 +33,23 @@ export class UserService {
     }
 
     // find user
-    public findOne(findCondition: any): Promise<User> {
-        return this.userLoginRepository.findOne(findCondition);
+    public findOne(findCondition: any, options?: any): Promise<User> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.userLoginRepository.findOne(findCondition);
+                if (result && result.s3ImageURL && result.s3ImageURL !== '' && options && options.signURL) {
+                    try {
+                        const signUrl = await this.s3Service.getSignedUrl(result.s3ImageURL);
+                        Object.assign(result, { signURL: (signUrl ? signUrl : '') });
+                    } catch (error) {
+                        console.log('User Find one Error: ', error);
+                    }
+                }
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     // create user

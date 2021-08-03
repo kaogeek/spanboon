@@ -1073,7 +1073,7 @@ export class GuestController {
         } else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
             if (pageUserId !== undefined) {
-                user = await this.userService.findOne({ where: { _id: new ObjectID(pageUserId) } });
+                user = await this.userService.findOne({ where: { _id: new ObjectID(pageUserId) } }, { signURL: true });
             }
         }
 
