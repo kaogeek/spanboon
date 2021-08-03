@@ -20,7 +20,28 @@ export class PageCategoryService {
 
     // find PageCategory
     public find(findCondition: any): Promise<any> {
-        return this.pageCategoryRepository.find(findCondition);
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageCategoryRepository.find(findCondition);
+
+                if (result) {
+                    for (const category of result) {
+                        if (category.s3IconURL && category.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getSignedUrl(category.s3IconURL);
+                                Object.assign(category, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageCategory Error: ', error);
+                            }
+                        }
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     // find PageCategory
@@ -50,28 +71,7 @@ export class PageCategoryService {
         if (filter.count) {
             return this.pageCategoryRepository.count(condition);
         } else {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const result = await this.pageCategoryRepository.find(condition);
-
-                    if (result) {
-                        for (const category of result) {
-                            if (category.s3IconURL && category.s3IconURL !== '') {
-                                try {
-                                    const signUrl = await this.s3Service.getSignedUrl(category.s3IconURL);
-                                    Object.assign(category, { iconSignURL: (signUrl ? signUrl : '') });
-                                } catch (error) {
-                                    console.log('Search PageCategory Error: ', error);
-                                }
-                            }
-                        }
-                    }
-
-                    resolve(result);
-                } catch (error) {
-                    reject(error);
-                }
-            });
+            return this.find(condition);
         }
     }
 }
