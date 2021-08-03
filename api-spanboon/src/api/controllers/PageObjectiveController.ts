@@ -46,6 +46,7 @@ import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareP
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { truncate } from 'fs';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -273,9 +274,9 @@ export class ObjectiveController {
                 objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
             }
 
-            objectiveLists = await this.pageObjectiveService.find(objectiveStmt);
+            objectiveLists = await this.pageObjectiveService.find(objectiveStmt, { signURL: true });
         } else {
-            objectiveLists = await this.pageObjectiveService.search(filter);
+            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {

@@ -19,12 +19,12 @@ export class PageCategoryService {
     constructor(@OrmRepository() private pageCategoryRepository: PageCategoryRepository, private s3Service: S3Service) { }
 
     // find PageCategory
-    public find(findCondition: any): Promise<any> {
+    public find(findCondition: any, options?: any): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = await this.pageCategoryRepository.find(findCondition);
 
-                if (result) {
+                if (result && options && options.signURL) {
                     for (const category of result) {
                         if (category.s3IconURL && category.s3IconURL !== '') {
                             try {
@@ -65,13 +65,13 @@ export class PageCategoryService {
     }
 
     // Search PageCategory
-    public search(filter: SearchFilter): Promise<any> {
+    public search(filter: SearchFilter, options?: any): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
             return this.pageCategoryRepository.count(condition);
         } else {
-            return this.find(condition);
+            return this.find(condition, options);
         }
     }
 }
