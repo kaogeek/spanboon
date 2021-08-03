@@ -78,6 +78,7 @@ export class AdminPageCategoryController {
         pageCategory.name = pageCategories.name;
         pageCategory.description = pageCategories.description;
         pageCategory.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        pageCategory.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result = await this.pageCategoryService.create(pageCategory);
 

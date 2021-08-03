@@ -11,11 +11,12 @@ import { PageCategory } from '../models/PageCategory';
 import { PageCategoryRepository } from '../repositories/PageCategoryRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 
 @Service()
 export class PageCategoryService {
 
-    constructor(@OrmRepository() private pageCategoryRepository: PageCategoryRepository) { }
+    constructor(@OrmRepository() private pageCategoryRepository: PageCategoryRepository, private s3Service: S3Service) { }
 
     // find PageCategory
     public find(findCondition: any): Promise<any> {
@@ -49,7 +50,28 @@ export class PageCategoryService {
         if (filter.count) {
             return this.pageCategoryRepository.count(condition);
         } else {
-            return this.pageCategoryRepository.find(condition);
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const result = await this.pageCategoryRepository.find(condition);
+
+                    if (result) {
+                        for (const category of result) {
+                            if (category.s3IconURL && category.s3IconURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getSignedUrl(category.s3IconURL);
+                                    Object.assign(category, { iconSignURL: (signUrl ? signUrl : '') });
+                                } catch (error) {
+                                    console.log('Search PageCategory Error: ', error);
+                                }
+                            }
+                        }
+                    }
+
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            });
         }
     }
 }

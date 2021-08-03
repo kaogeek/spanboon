@@ -5,6 +5,7 @@ import { StorySectionProcessorData } from './data/StorySectionProcessorData';
 import { PostsService } from '../services/PostsService';
 import { HashTagService } from '../services/HashTagService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
@@ -16,6 +17,7 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
     constructor(
         private postsService: PostsService,
         private hashTagService: HashTagService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -170,6 +172,15 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
 
                     if (firstImg) {
                         contentModel.coverPageUrl = firstImg.imageURL;
+
+                        if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getSignedUrl(firstImg.s3FilePath);
+                                contentModel.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('StorySectionProcessor: ' + error);
+                            }
+                        }
                     }
 
                     contentModel.owner = {};
