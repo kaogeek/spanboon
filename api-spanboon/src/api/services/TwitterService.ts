@@ -286,7 +286,7 @@ export class TwitterService {
         if (authenId === undefined) {
             return Promise.resolve(undefined);
         }
-        return await this.userService.findOne({ _id: authenId.user });
+        return await this.userService.findOne({ _id: authenId.user }, { signURL: true });
     }
 
     public postImageByToken(accessToken: string, tokenSecret: string, imageBase64: string): Promise<any> {
