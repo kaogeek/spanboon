@@ -128,7 +128,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         if (row.s3IconURL !== undefined && row.s3IconURL !== '') {
                             try {
                                 const signUrl = await this.s3Service.getSignedUrl(row.s3IconURL);
-                                contentModel.signUrl = signUrl;
+                                contentModel.iconSignUrl = signUrl;
                             } catch (error) {
                                 console.log('ObjectiveProcessor: ' + error);
                             }
