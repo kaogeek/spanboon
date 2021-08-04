@@ -158,7 +158,7 @@ export class PageCategoryController {
      */
     @Post('/search')
     public async searchPageCategory(@Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
-        const pageLists: any = await this.pageCategoryService.search(filter);
+        const pageLists: any = await this.pageCategoryService.search(filter, { signURL: true });
 
         if (pageLists) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page Category', pageLists);
@@ -259,4 +259,4 @@ export class PageCategoryController {
             }
         }
     }
-} 
+}

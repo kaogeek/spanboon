@@ -15,6 +15,7 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import moment from 'moment';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectID } from 'mongodb';
+import { S3Service } from '../services/S3Service';
 
 export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -23,7 +24,8 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
     constructor(
         private postsService: PostsService,
-        private userFollowService: UserFollowService
+        private userFollowService: UserFollowService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -260,6 +262,15 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                     if (firstImg) {
                         contentModel.coverPageUrl = firstImg.imageURL;
+
+                        if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImg.s3FilePath);
+                                contentModel.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('UserRecommendSectionProcessor: ' + error);
+                            }
+                        }
                     }
 
                     if (row.rootReferencePost !== undefined) {
@@ -270,6 +281,15 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                         }
                         if (rootRefFirstImg) {
                             contentModel.coverPageUrl = rootRefFirstImg.imageURL;
+
+                            if (rootRefFirstImg.s3FilePath !== undefined && rootRefFirstImg.s3FilePath !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(rootRefFirstImg.s3FilePath);
+                                    contentModel.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('UserRecommendSectionProcessor: ' + error);
+                                }
+                            }
                         }
                         contentModel.rootReferencePost = rootRefPost;
                         this.removePostField(contentModel.rootReferencePost);

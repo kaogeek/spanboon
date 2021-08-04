@@ -133,7 +133,7 @@ export class PageController {
             pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }] };
         }
 
-        const page: Page = await this.pageService.findOne(pageStmt);
+        const page: Page = await this.pageService.findOne(pageStmt, { signURL: true });
 
         if (page !== null && page !== undefined) {
             result = page;
@@ -178,7 +178,7 @@ export class PageController {
 
             const postPageIdStmt = { where: { pageId: postPageObjId } };
 
-            const pageObjectives: PageObjective[] = await this.pageObjectiveService.find(postPageIdStmt);
+            const pageObjectives: PageObjective[] = await this.pageObjectiveService.find(postPageIdStmt, { signURL: true });
 
             if (pageObjectives !== null && pageObjectives !== undefined && pageObjectives.length > 0) {
                 result.pageObjectives = pageObjectives;
@@ -1791,7 +1791,7 @@ export class PageController {
             filter.whereConditions = {};
         }
 
-        const pageLists: any = await this.pageService.search(filter);
+        const pageLists: any = await this.pageService.search(filter, { signURL: true });
 
         if (pageLists) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page', pageLists);

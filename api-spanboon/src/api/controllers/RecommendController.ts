@@ -17,6 +17,9 @@ import { RecommendStoryParam } from './params/RecomendStoryParam';
 import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { UserService } from '../services/UserService';
 import { PageService } from '../services/PageService';
+import { AssetService } from '../services/AssetService';
+import { S3Service } from '../services/S3Service';
+import { ImageUtil } from '../../utils/ImageUtil';
 
 @JsonController('/recommend')
 export class RecommendController {
@@ -27,6 +30,8 @@ export class RecommendController {
         private hashTagService: HashTagService,
         private userService: UserService,
         private pageService: PageService,
+        private assetService: AssetService,
+        private s3Service: S3Service
     ) { }
 
     // Get Recommend API
@@ -116,6 +121,8 @@ export class RecommendController {
                 );
                 const userFollow = await this.userService.aggregate(stmt);
                 for (const user of userFollow) {
+                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, user.imageURL, { prefix: '/file/' });
+                    Object.assign(user, { signURL: (signURL ? signURL : '') });
                     Object.assign(user, { type: 'USER' });
                     result.push(user);
                 }
@@ -133,6 +140,8 @@ export class RecommendController {
                 );
                 const pageFollow = await this.pageService.aggregate(stmt);
                 for (const page of pageFollow) {
+                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, page.imageURL, { prefix: '/file/' });
+                    Object.assign(page, { signURL: (signURL ? signURL : '') });
                     Object.assign(page, { type: 'PAGE' });
                     result.push(page);
                 }
@@ -150,6 +159,8 @@ export class RecommendController {
                 ];
                 const userFollow = await this.userService.aggregate(stmt);
                 for (const data of userFollow) {
+                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                    Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'USER' });
                     result.push(data);
                 }
@@ -163,6 +174,8 @@ export class RecommendController {
                 ];
                 const pageFollow = await this.pageService.aggregate(stmtPage);
                 for (const data of pageFollow) {
+                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                    Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'PAGE' });
                     result.push(data);
                 }
@@ -207,6 +220,8 @@ export class RecommendController {
             ];
             const userFollow = await this.userService.aggregate(stmt);
             for (const data of userFollow) {
+                const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                Object.assign(data, { signURL: (signURL ? signURL : '') });
                 Object.assign(data, { type: 'USER' });
                 result.push(data);
             }
@@ -220,6 +235,8 @@ export class RecommendController {
             ];
             const pageFollow = await this.pageService.aggregate(stmtPage);
             for (const data of pageFollow) {
+                const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                Object.assign(data, { signURL: (signURL ? signURL : '') });
                 Object.assign(data, { type: 'PAGE' });
                 result.push(data);
             }
@@ -279,7 +296,7 @@ export class RecommendController {
             offset
         };
 
-        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService);
+        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);
         processor.setData(data);
         processor.setConfig(config);
         result = await processor.process();

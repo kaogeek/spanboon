@@ -11,20 +11,75 @@ import { Page } from '../models/Page';
 import { PageRepository } from '../repositories/PageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 
 @Service()
 export class PageService {
 
-    constructor(@OrmRepository() private pageRepository: PageRepository) { }
+    constructor(@OrmRepository() private pageRepository: PageRepository, private s3Service: S3Service) { }
 
     // find page
-    public find(findCondition: any): Promise<Page[]> {
-        return this.pageRepository.find(findCondition);
+    public find(findCondition: any, options?: any): Promise<Page[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageRepository.find(findCondition);
+
+                if (result && options && options.signURL) {
+                    for (const page of result) {
+                        if (page.s3CoverURL && page.s3CoverURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(page.s3CoverURL);
+                                Object.assign(page, { coverSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search Page Error: ', error);
+                            }
+                        }
+                        if (page.s3ImageURL && page.s3ImageURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(page.s3ImageURL);
+                                Object.assign(page, { signURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search Page Error: ', error);
+                            }
+                        }
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     // find page
-    public findOne(findCondition: any): Promise<Page> {
-        return this.pageRepository.findOne(findCondition);
+    public findOne(findCondition: any, options?: any): Promise<Page> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageRepository.findOne(findCondition);
+                if (result && options && options.signURL) {
+                    if (result.s3ImageURL && result.s3ImageURL !== '') {
+                        try {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3ImageURL);
+                            Object.assign(result, { signURL: (signUrl ? signUrl : '') });
+                        } catch (error) {
+                            console.log('Page Find one Error: ', error);
+                        }
+                    }
+                    if (result.s3CoverURL && result.s3CoverURL !== '') {
+                        try {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3CoverURL);
+                            Object.assign(result, { coverSignURL: (signUrl ? signUrl : '') });
+                        } catch (error) {
+                            console.log('Page Find one Error: ', error);
+                        }
+                    }
+                }
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     // find page
@@ -48,13 +103,13 @@ export class PageService {
     }
 
     // Search Page
-    public search(filter: SearchFilter): Promise<any> {
+    public search(filter: SearchFilter, options?: any): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
             return this.pageRepository.count(filter.whereConditions);
         } else {
-            return this.pageRepository.find(condition);
+            return this.find(condition, options);
         }
     }
 }
