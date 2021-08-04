@@ -265,7 +265,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                         if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(firstImg.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImg.s3FilePath);
                                 contentModel.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('UserRecommendSectionProcessor: ' + error);
@@ -284,7 +284,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
 
                             if (rootRefFirstImg.s3FilePath !== undefined && rootRefFirstImg.s3FilePath !== '') {
                                 try {
-                                    const signUrl = await this.s3Service.getSignedUrl(rootRefFirstImg.s3FilePath);
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(rootRefFirstImg.s3FilePath);
                                     contentModel.coverPageSignUrl = signUrl;
                                 } catch (error) {
                                     console.log('UserRecommendSectionProcessor: ' + error);

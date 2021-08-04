@@ -127,7 +127,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                         if (row.s3IconURL !== undefined && row.s3IconURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(row.s3IconURL);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3IconURL);
                                 contentModel.iconSignUrl = signUrl;
                             } catch (error) {
                                 console.log('ObjectiveProcessor: ' + error);
@@ -144,7 +144,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                             // sign image url of s3
                             if (page.s3ImageURL !== undefined && page.s3ImageURL !== '') {
                                 try {
-                                    const signUrl = await this.s3Service.getSignedUrl(row.s3ImageURL);
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3ImageURL);
                                     contentModel.owner.signUrl = signUrl;
                                 } catch (error) {
                                     console.log('ObjectiveProcessor: ' + error);

@@ -159,7 +159,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
 
                     if (row.s3CoverPageURL !== undefined && row.s3CoverPageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getSignedUrl(row.s3CoverPageURL);
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverPageURL);
                             contentModel.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('EmergencyEventPinProcessor: '+error);

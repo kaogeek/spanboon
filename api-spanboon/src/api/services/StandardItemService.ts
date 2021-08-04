@@ -31,7 +31,7 @@ export class StandardItemService {
                 if (result && options && options.signURL) {
                     if (result.s3ImageURL && result.s3ImageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getSignedUrl(result.s3ImageURL);
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3ImageURL);
                             Object.assign(result, { signURL: (signUrl ? signUrl : '') });
                         } catch (error) {
                             console.log('StandardItem Find one Error: ', error);
