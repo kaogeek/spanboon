@@ -1303,7 +1303,7 @@ export class PostsController {
             offset,
             limit
         };
-        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService);
+        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);
         processor.setData(data);
         processor.setConfig(config);
         result = await processor.process();
