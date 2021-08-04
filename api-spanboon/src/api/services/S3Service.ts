@@ -11,12 +11,15 @@ import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
 import { Service } from 'typedi';
 import { aws_setup } from '../../env';
 import * as fs from 'fs';
-import { DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
-
+import { DEFAULT_ASSET_CONFIG_VALUE, ASSET_CONFIG_NAME } from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 const s3 = new AWS.S3();
 
 @Service()
 export class S3Service {
+
+    constructor(private configService: ConfigService) { }
+
     // Bucket list
     public listBucker(limit: number = 0, marker: string = '', folderName: string = ''): Promise<any> {
         AWS.config.update({ accessKeyId: aws_setup.AWS_ACCESS_KEY_ID, secretAccessKey: aws_setup.AWS_SECRET_ACCESS_KEY });
@@ -281,6 +284,32 @@ export class S3Service {
                 return resolve(data);
             });
         });
+    }
+
+    public async getConfigedSignedUrl(folderName: string = ''): Promise<string> {
+        const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+        let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+
+        if (signExpireConfig && signExpireConfig.value) {
+            try {
+                if (typeof signExpireConfig.value === 'number') {
+                    expireSecond = signExpireConfig.value;
+                } else if (typeof signExpireConfig.value === 'string') {
+                    expireSecond = parseFloat(signExpireConfig.value);
+                }
+            } catch (error) {
+                console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+            }
+        }
+
+        let signURL = await this.getSignedUrl(folderName, expireSecond);
+        if (signURL !== undefined) {
+            for (const prefix of this.getPrefixBucketURL()) {
+                signURL = signURL.replace(prefix, aws_setup.AWS_CLOUDFRONT_PREFIX);
+            }
+        }
+
+        return signURL;
     }
 
     public getPrefixBucketURL(): string[] {
