@@ -15,16 +15,38 @@ import { ObjectID } from 'mongodb';
 import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { PostsService } from '../services/PostsService';
 import { POST_TYPE } from '../../constants/PostType';
+import { S3Service } from '../services/S3Service';
 
 @Service()
 export class PageObjectiveService {
 
     constructor(@OrmRepository() private pageObjectiveRepository: PageObjectiveRepository,
-        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService) { }
+        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService, private s3Service: S3Service) { }
 
     // find PageObjective
-    public find(findCondition?: any): Promise<any[]> {
-        return this.pageObjectiveRepository.find(findCondition);
+    public find(findCondition?: any, options?: any): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageObjectiveRepository.find(findCondition);
+
+                if (result && options && options.signURL) {
+                    for (const objective of result) {
+                        if (objective.s3IconURL && objective.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageObjective Error: ', error);
+                            }
+                        }
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     // find PageObjective
@@ -52,13 +74,13 @@ export class PageObjectiveService {
     }
 
     // Search PageObjective
-    public search(filter: SearchFilter): Promise<any> {
+    public search(filter: SearchFilter, options?: any): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
             return this.pageObjectiveRepository.count();
         } else {
-            return this.pageObjectiveRepository.find(condition);
+            return this.find(condition, options);
         }
     }
 

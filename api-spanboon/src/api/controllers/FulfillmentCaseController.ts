@@ -68,6 +68,7 @@ import { FulfillmentAllocateStatement } from '../models/FulfillmentAllocateState
 import { FulfillmentAllocateStatementService } from '../services/FulfillmentAllocateStatementService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
+import { S3Service } from '../services/S3Service';
 
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -92,7 +93,8 @@ export class FulfillmentController {
         private needsService: NeedsService,
         private stdItemService: StandardItemService,
         private customItemService: CustomItemService,
-        private fulfillStmtService: FulfillmentAllocateStatementService
+        private fulfillStmtService: FulfillmentAllocateStatementService,
+        private s3Service: S3Service
     ) { }
 
     /**
@@ -408,6 +410,16 @@ export class FulfillmentController {
                     fulfilCaseResponse.approveDateTime = fulfill.approveDateTime;
                     fulfilCaseResponse.pageOfficial = fulfill.page.isOfficial;
 
+                    if (fulfill.page.s3ImageURL !== undefined && fulfill.page.s3ImageURL !== '') {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(fulfill.page.s3ImageURL);
+                        fulfilCaseResponse.pageSignURL = signUrl;
+                    }
+
+                    if (fulfill.users !== undefined && fulfill.users.s3ImageURL !== '') {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(fulfill.users.s3ImageURL);
+                        fulfilCaseResponse.userSignURL = signUrl;
+                    }
+
                     let unreadCount = 0;
                     if (fulfillChat !== null && fulfillChat !== undefined && fulfillChat.length > 0) {
                         fulfilCaseResponse.isRead = false;
@@ -448,7 +460,7 @@ export class FulfillmentController {
                             if (senderType === SENDER_TYPE.PAGE) {
                                 let pageObj = senderPageMap[senderIdString];
                                 if (pageObj === undefined) {
-                                    pageObj = await this.pageService.findOne({ _id: new ObjectID(senderIdString) });
+                                    pageObj = await this.pageService.findOne({ _id: new ObjectID(senderIdString) }, { signURL: true });
                                     senderPageMap[senderIdString] = pageObj;
                                 }
 
@@ -456,12 +468,13 @@ export class FulfillmentController {
                                     id: pageObj.id,
                                     name: pageObj.name,
                                     type: SENDER_TYPE.PAGE,
-                                    imageURL: pageObj.imageURL
+                                    imageURL: pageObj.imageURL,
+                                    signURL: pageObj.signURL
                                 };
                             } else if (senderType === SENDER_TYPE.USER) {
                                 let userObj = senderUserMap[senderIdString];
                                 if (userObj === undefined) {
-                                    userObj = await this.userService.findOne({ _id: new ObjectID(senderIdString) });
+                                    userObj = await this.userService.findOne({ _id: new ObjectID(senderIdString) }, { signURL: true });
                                     senderUserMap[senderIdString] = userObj;
                                 }
 
@@ -469,7 +482,8 @@ export class FulfillmentController {
                                     id: userObj.id,
                                     name: userObj.displayName,
                                     type: SENDER_TYPE.USER,
-                                    imageURL: userObj.imageURL
+                                    imageURL: userObj.imageURL,
+                                    signURL: userObj.signURL
                                 };
                             }
 
@@ -781,11 +795,17 @@ export class FulfillmentController {
                                     const senderType = chat.senderType;
                                     let sender;
                                     let imageURL;
+                                    let signURL;
 
                                     if (pageSender !== null && pageSender !== undefined) {
                                         if (senderType === SENDER_TYPE.PAGE) {
                                             sender = pageSender.name;
                                             imageURL = pageSender.imageURL;
+
+                                            if (pageSender.s3ImageURL !== undefined && pageSender.s3ImageURL !== '') {
+                                                const signUrl = await this.s3Service.getConfigedSignedUrl(pageSender.s3ImageURL);
+                                                signURL = signUrl;
+                                            }
                                         }
                                     }
 
@@ -793,6 +813,11 @@ export class FulfillmentController {
                                         if (senderType === SENDER_TYPE.USER) {
                                             sender = userSender.displayName;
                                             imageURL = userSender.imageURL;
+
+                                            if (userSender.s3ImageURL !== undefined && userSender.s3ImageURL !== '') {
+                                                const signUrl = await this.s3Service.getConfigedSignedUrl(userSender.s3ImageURL);
+                                                signURL = signUrl;
+                                            }
                                         }
                                     }
 
@@ -805,6 +830,7 @@ export class FulfillmentController {
                                         sender,
                                         senderType,
                                         imageURL,
+                                        signURL,
                                         message: chat.message,
                                         room: chat.room,
                                         fileId: chat.fileId,

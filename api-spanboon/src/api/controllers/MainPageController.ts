@@ -56,6 +56,8 @@ import { UserLikeService } from '../services/UserLikeService';
 import { UserLike } from '../models/UserLike';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { PostsComment } from '../models/PostsComment';
+import { AssetService } from '../services/AssetService';
+import { ImageUtil } from '../../utils/ImageUtil';
 
 @JsonController('/main')
 export class MainPageController {
@@ -72,7 +74,8 @@ export class MainPageController {
         private configService: ConfigService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private postsCommentService: PostsCommentService
+        private postsCommentService: PostsCommentService,
+        private assetService: AssetService
     ) { }
 
     // Find Page API
@@ -118,7 +121,7 @@ export class MainPageController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (section === 'LASTEST') {
-                const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+                const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
                 lastestLKProcessorSec.setData({
                     userId,
                     startDateTime: undefined,
@@ -166,7 +169,7 @@ export class MainPageController {
                 const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                 return res.status(400).send(errorResponse);
             } else if (section === 'RECOMMEND') {
-                const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
+                const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
                 userRecProcessorSec.setData({
                     userId,
                     startDateTime: undefined,
@@ -210,7 +213,7 @@ export class MainPageController {
         const emerSectionModel = await emerProcessor.process();
 
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
-        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
+        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service);
         postProcessor.setData({
             startDateTime: monthRanges[0],
             endDateTime: monthRanges[1]
@@ -220,7 +223,7 @@ export class MainPageController {
         });
         const postSectionModel = await postProcessor.process();
 
-        const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+        const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
         lastestLKProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -248,7 +251,7 @@ export class MainPageController {
         // });
         // processorList.push(stillLKProcessor);
 
-        const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
+        const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
         userRecProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -280,7 +283,7 @@ export class MainPageController {
         });
         const objectiveSectionModel = await objectiveProcessor.process();
 
-        const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
+        const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService, this.s3Service);
         userFollowProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -293,7 +296,7 @@ export class MainPageController {
         });
         processorList.push(userFollowProcessor);
 
-        const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
+        const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
         userPageLookingProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -1134,6 +1137,19 @@ export class MainPageController {
                     postIdList.push(post._id);
                     postMap[post._id + ''] = post;
 
+                    // inject sign URL
+                    const covImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, post.coverImage, { prefix: '/file/' });
+                    Object.assign(post, { coverImageSignURL: (covImageSignURL ? covImageSignURL : '') });
+
+                    if (post.gallery && Array.isArray(post.gallery)) {
+                        for (const galImage of post.gallery) {
+                            const signURL = await ImageUtil.generateAssetSignURL(this.assetService, galImage.imageURL, { prefix: '/file/' });
+                            Object.assign(galImage, { signURL: (signURL ? signURL : '') });
+                            delete galImage.s3ImageURL;
+                        }
+                    }
+                    // end inject sign URL
+
                     let postPage;
                     if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '') {
                         if (pageMap[post.pageId] === undefined) {
@@ -1157,7 +1173,7 @@ export class MainPageController {
                 if (uId !== null && uId !== undefined && uId !== '') {
                     const userObjId = new ObjectID(uId);
                     const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
-                    
+
                     if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
                         for (const like of userLikes) {
                             const postId = like.subjectId;

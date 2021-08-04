@@ -11,6 +11,7 @@ import { AbstractSectionModelProcessor } from './AbstractSectionModelProcessor';
 import { UserPageLookingProcessorData } from './data/UserPageLookingProcessorData';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
+import { S3Service } from '../services/S3Service';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { POST_TYPE } from '../../constants/PostType';
 import { ObjectID } from 'mongodb';
@@ -25,6 +26,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
     constructor(
         private postsService: PostsService,
         private userFollowService: UserFollowService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -257,6 +259,15 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
 
                     if (firstImg) {
                         contentModel.coverPageUrl = firstImg.imageURL;
+
+                        if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImg.s3FilePath);
+                                contentModel.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('UserPageLookingSectionProcessor: ' + error);
+                            }
+                        }
                     }
 
                     if (showUserAction) {

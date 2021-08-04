@@ -45,6 +45,7 @@ import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLast
 import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
+import { SearchFilter } from './requests/SearchFilterRequest';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -234,10 +235,14 @@ export class ObjectiveController {
         }
 
         const hashTag = search.hashTag;
-        const filter = search.filter;
+        let filter = search.filter;
         const hashTagIdList = [];
         const hashTagMap = {};
         let hashTagList: HashTag[];
+
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
 
         if (hashTag !== null && hashTag !== undefined && hashTag !== '') {
             hashTagList = await this.hashTagService.find({ name: { $regex: '.*' + hashTag + '.*', $options: 'si' } });
@@ -256,7 +261,7 @@ export class ObjectiveController {
         let objectiveLists: PageObjective[];
         let objectiveStmt;
 
-        if (Object.keys(filter.whereConditions).length > 0 && filter.whereConditions !== null && filter.whereConditions !== undefined) {
+        if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0) {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
 
@@ -268,9 +273,9 @@ export class ObjectiveController {
                 objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
             }
 
-            objectiveLists = await this.pageObjectiveService.find(objectiveStmt);
+            objectiveLists = await this.pageObjectiveService.find(objectiveStmt, { signURL: true });
         } else {
-            objectiveLists = await this.pageObjectiveService.search(filter);
+            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
