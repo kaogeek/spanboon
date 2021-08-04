@@ -230,7 +230,8 @@
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.full]="!isData">
             <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="!isData">
-                <img class="top_coverPage_cover" [src]="eventCoverPageUrl">
+                <img class="top_coverPage_cover"
+                    [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
@@ -261,7 +262,8 @@
                                 height="3" rx="0.5" transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                         </g>
                     </svg> เหตุการณ์ด่วน</div>
-                <img [src]="eventCoverPageUrl">
+                <img
+                    [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
             </div>
             <div (click)="clickDataSearch(emergencyEventId)" class="body_card">
                 <div class="title">
@@ -289,10 +291,12 @@
         <div class="bottom" [class.full]="!isData">
             <div class="other_teg_event">
                 <div class="teg_event_list" (click)="clickDataSearch(event.data.emergencyEventId,index)"
-                    *ngFor="let event of eventData; let index = index">
+                    *ngFor="let event of eventData | slice:1 ; let index=index">
                     <div class="img_box" [class.open]="index === selectIndex && !isData">
-                        <img class="bottom_coverPage_cover" src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
-                        <img src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
+                        <img class="bottom_coverPage_cover"
+                            [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
+                        <img
+                            [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
                     </div>
                     <div class="title">
                         <a (click)="clickDataSearch(emergencyEventId)">{{event.title}}</a>
@@ -379,7 +383,7 @@
             <div class="page_info">
                 <div class="page_logo">
                     <img style="border-radius: 50%;" width="30px"
-                        src="{{apiBaseURL+tagData.hashtag.coverPageUrl+'/image'}}">
+                        [src]="tagData.hashtag.signURL?tagData.hashtag.signURL:tagData.hashtag.coverPageSignURL?tagData.hashtag.coverPageSignURL:apiBaseURL+tagData.hashtag.coverPageUrl+'/image'">
                 </div>
                 <div class="hashtag_user">
                     <a class="hashtag" (click)="clickDataSearch(tagData.hashtag.title)">{{tagData.hashtag.title}}</a>
@@ -452,7 +456,8 @@
                     </div>
                     <div class="img">
                         <div class="image_base64" *ngIf="datahashTagPost.coverImage;else other_topics">
-                            <img src="{{apiBaseURL+datahashTagPost.coverImage+'/image'}}">
+                            <img
+                                [src]="datahashTagPost.signURL?datahashTagPost.signURL:datahashTagPost.coverImageSignURL?datahashTagPost.coverImageSignURL:apiBaseURL+datahashTagPost.coverImage+'/image'">
                         </div>
                         <ng-template #other_topics>
                             <div class="other_topic">

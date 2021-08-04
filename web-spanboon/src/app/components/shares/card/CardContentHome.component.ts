@@ -134,7 +134,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 } else if (this.postData.post) {
                     if (this.postData.post.gallery.length > 0) {
-                        this.postCardCoverPageUrl = this.postData.post.gallery[0].imageURL;
+                        this.postCardCoverPageUrl = this.postData.post.gallery[0].signURL ? this.postData.post.gallery[0].signURL : this.postData.post.gallery[0].coverSignURL ? this.postData.post.gallery[0].coverSignURL : this.apiBaseURL + this.postData.post.gallery[0].imageURL + '/image';
                     }
                 }
 
@@ -147,7 +147,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (this.isDerTy(this.eventData)) {
                 this.eventDataAct = this.eventData[0];
-                this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
+                this.eventCoverPageUrl = this.eventData[0].signURL ? this.eventData[0].signURL : this.eventData[0].coverSignURL ? this.eventData[0].coverSignURL : this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
                 this.eventDescription = this.eventData[0].description;
                 this.dateTime = this.eventData[0].dateTime;
@@ -158,16 +158,12 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.eventShareCount = this.eventData[0].shareCount;
                 this.emergencyEventId = this.eventData[0].data.emergencyEventId;
 
-                if (this.eventCoverPageUrl) {
-                    this.eventCoverPageUrl = await this.passSignUrlConv(this.eventCoverPageUrl);
-                }
-
-                for (let index = 0; index < this.eventData.length; index++) {
-                    this.eventData.splice(0, 1);
-                    if (this.eventData.length == 3) {
-                        break
-                    }
-                }
+                // for (let index = 0; index < this.eventData.length; index++) {
+                //     this.eventData.splice(0, 1);
+                //     if (this.eventData.length == 3) {
+                //         break
+                //     }
+                // }
             }
             if (this.isDerTy(this.tagData)) {
                 this.datahashTagArrPosts = this.tagData.posts
@@ -183,7 +179,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             setTimeout(() => {
                 this.isLoad = false;
-                this.passSignUrl();
             }, 1000);
 
         }, 3000);
@@ -316,10 +311,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (indexKey === keyObjs.length) {
                 if (indexKey === 1) {
-                    return Obj[key];
+                    return this.apiBaseURL + Obj[key] + '/image';
                 } else {
-
-                    return Obj[key];
+                    return this.apiBaseURL + Obj[key] + '/image';
                 }
 
             } else {
@@ -332,16 +326,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
         return "Not found"
 
-    }
-
-    public async passSignUrl(url?: any): Promise<any> {
-        let signData: any = await this.assetFacade.getPathFileSign(this.postCardCoverPageUrl);
-        return this.postCardCoverPageUrl = signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
-    }
-
-    public async passSignUrlConv(url?: any): Promise<any> {
-        let signData: any = await this.assetFacade.getPathFileSign(url);
-        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
     }
 
     /// PUBLIC

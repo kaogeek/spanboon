@@ -97,20 +97,11 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public async ngOnInit(): Promise<void> {
         if (this.data && this.data.arrListItem !== undefined && this.data.arrListItem.length > 0) {
             this.arrListItem = this.data.arrListItem;
-            console.log('this.arrListItem', this.arrListItem)
             this.readdChildSelectMap();
         }
 
         if (this.data && this.data.fulfill !== undefined && this.data.fulfill.length > 0) {
             this.resFulfill = this.data.fulfill;
-
-            for (let data of this.resFulfill) {
-                if (data.standardItem) {
-                    data.standardItem.imageURL = await this.passSignUrl(data.standardItem.imageURL);
-                } else if (data.imageURL) {
-                    data.imageURL = await this.passSignUrl(data.imageURL);
-                }
-            }
 
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
@@ -572,11 +563,6 @@ export class FulfillItem extends AbstractPage implements OnInit {
         this.arrListItem = [];
         this.resFulfill = [];
         this.data = undefined;
-    }
-
-    public async passSignUrl(url?: any): Promise<any> {
-        let signData: any = await this.assetFacade.getPathFileSign(url);
-        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
     }
 
 }

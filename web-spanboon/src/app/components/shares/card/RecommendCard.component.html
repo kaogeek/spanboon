@@ -14,7 +14,8 @@
             <div class="follow">
                 <ng-container
                     *ngIf="recommed && recommed.imageURL !== '' && recommed.imageURL !== null && recommed.imageURL !== undefined; else elseTemplateImageURL">
-                    <img class="img-user" [src]="recommed.imageURL">
+                    <img class="img-user"
+                        [src]="recommed.signURL?recommed.signURL:recommed.imageSignURL?recommed.imageSignURL:apiBaseURL+recommed.imageURL+'/image'">
                 </ng-container>
                 <ng-template #elseTemplateImageURL>
                     <div class="label-image">
