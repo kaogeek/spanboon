@@ -217,7 +217,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
 
                         if (row.s3CoverImage !== undefined && row.s3CoverImage !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(row.s3CoverImage);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverImage);
                                 contentModel.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('LastestLookingSectionProcessor: ' + error);

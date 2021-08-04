@@ -28,7 +28,7 @@ export class PageCategoryService {
                     for (const category of result) {
                         if (category.s3IconURL && category.s3IconURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(category.s3IconURL);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(category.s3IconURL);
                                 Object.assign(category, { iconSignURL: (signUrl ? signUrl : '') });
                             } catch (error) {
                                 console.log('Search PageCategory Error: ', error);

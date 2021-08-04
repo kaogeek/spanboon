@@ -37,4 +37,6 @@ export class FulfillmentListResponse {
     public updatedByUserDate: Date;
     public approveDateTime: Date;
     public unreadMessageCount: number;
+    public pageSignURL: string;
+    public userSignURL: string;
 }

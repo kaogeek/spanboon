@@ -175,7 +175,7 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
 
                         if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(firstImg.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImg.s3FilePath);
                                 contentModel.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('StorySectionProcessor: ' + error);

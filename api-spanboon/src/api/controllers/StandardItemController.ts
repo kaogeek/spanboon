@@ -41,7 +41,7 @@ export class StandardItemController {
     public async findStandardItem(@Param('id') id: string, @Res() response: any): Promise<any> {
         const objId = new ObjectID(id);
 
-        const standardItem:StandardItem = await this.standardItemService.findOne({ where: { _id: objId } });
+        const standardItem: StandardItem = await this.standardItemService.findOne({ where: { _id: objId } }, { signURL: true });
 
         if (standardItem) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got StandardItem', standardItem);
@@ -151,4 +151,4 @@ export class StandardItemController {
             }
         }
     }
-} 
+}

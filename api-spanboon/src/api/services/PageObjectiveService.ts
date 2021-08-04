@@ -33,7 +33,7 @@ export class PageObjectiveService {
                     for (const objective of result) {
                         if (objective.s3IconURL && objective.s3IconURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getSignedUrl(objective.s3IconURL);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
                                 Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
                             } catch (error) {
                                 console.log('Search PageObjective Error: ', error);

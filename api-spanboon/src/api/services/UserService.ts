@@ -39,7 +39,7 @@ export class UserService {
                 const result = await this.userLoginRepository.findOne(findCondition);
                 if (result && result.s3ImageURL && result.s3ImageURL !== '' && options && options.signURL) {
                     try {
-                        const signUrl = await this.s3Service.getSignedUrl(result.s3ImageURL);
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3ImageURL);
                         Object.assign(result, { signURL: (signUrl ? signUrl : '') });
                     } catch (error) {
                         console.log('User Find one Error: ', error);
