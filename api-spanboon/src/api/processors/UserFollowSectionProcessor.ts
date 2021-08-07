@@ -15,6 +15,7 @@ import { UserFollowService } from '../services/UserFollowService';
 import { PageService } from '../services/PageService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
@@ -27,7 +28,8 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
     constructor(
         private postsService: PostsService,
         private userFollowService: UserFollowService,
-        private pageService: PageService
+        private pageService: PageService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -272,6 +274,15 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
                     if (firstImg) {
                         contentModel.coverPageUrl = firstImg.imageURL;
+
+                        if (firstImg.s3FilePath !== undefined && firstImg.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImg.s3FilePath);
+                                contentModel.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('UserFollowSectionProcessor: ' + error);
+                            }
+                        }
                     }
 
                     if (showUserAction) {

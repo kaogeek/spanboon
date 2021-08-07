@@ -8,7 +8,7 @@
 import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { publish } from 'rxjs/operators';
-import { MenuContextualService } from 'src/app/services/services';
+import { MenuContextualService, AssetFacade } from 'src/app/services/services';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import { environment } from 'src/environments/environment';
 import { AuthenManager } from '../../../services/services';
@@ -22,6 +22,7 @@ import { AbstractPage } from '../../pages/AbstractPage';
 export class CardContentHome extends AbstractPage implements OnInit {
 
     protected router: Router;
+    protected assetFacade: AssetFacade;
 
     @Input()
     public postData: any;
@@ -96,6 +97,8 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public eventCommentCount: number;
     public eventShareCount: number;
 
+    public emergencyEventId: string;
+
     public dateTime: any;
 
     // hashTag //
@@ -109,15 +112,16 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public isLoad: boolean = true;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, dialog: MatDialog, private viewContainerRef: ViewContainerRef) {
+    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, private popupService: MenuContextualService, dialog: MatDialog, private viewContainerRef: ViewContainerRef) {
         super(null, authenManager, dialog, router);
+        this.assetFacade = assetFacade;
     }
 
     ngOnInit(): void {
     }
 
     ngAfterViewInit(): void {
-        setTimeout(() => {
+        setTimeout(async () => {
 
             if (this.isDerTy(this.postData)) {
                 if (this.isDerTy(this.postData.post)) {
@@ -130,7 +134,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
                     this.postCardCoverPageUrl = this.duplicateObjFunction(this.postData, this.keyObjArr);
                 } else if (this.postData.post) {
                     if (this.postData.post.gallery.length > 0) {
-                        this.postCardCoverPageUrl = this.postData.post.gallery[0].imageURL;
+                        this.postCardCoverPageUrl = this.postData.post.gallery[0].signURL ? this.postData.post.gallery[0].signURL : this.postData.post.gallery[0].coverSignURL ? this.postData.post.gallery[0].coverSignURL : this.apiBaseURL + this.postData.post.gallery[0].imageURL + '/image';
                     }
                 }
 
@@ -143,7 +147,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (this.isDerTy(this.eventData)) {
                 this.eventDataAct = this.eventData[0];
-                this.eventCoverPageUrl = this.eventData[0].coverPageUrl;
+                this.eventCoverPageUrl = this.eventData[0].signURL ? this.eventData[0].signURL : this.eventData[0].coverSignURL ? this.eventData[0].coverSignURL : this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
                 this.eventDescription = this.eventData[0].description;
                 this.dateTime = this.eventData[0].dateTime;
@@ -152,13 +156,14 @@ export class CardContentHome extends AbstractPage implements OnInit {
                 this.eventLikeCount = this.eventData[0].likeCount;
                 this.eventCommentCount = this.eventData[0].commentCount;
                 this.eventShareCount = this.eventData[0].shareCount;
+                this.emergencyEventId = this.eventData[0].data.emergencyEventId;
 
-                for (let index = 0; index < this.eventData.length; index++) {
-                    this.eventData.splice(0, 1);
-                    if (this.eventData.length == 3) {
-                        break
-                    }
-                }
+                // for (let index = 0; index < this.eventData.length; index++) {
+                //     this.eventData.splice(0, 1);
+                //     if (this.eventData.length == 3) {
+                //         break
+                //     }
+                // }
             }
             if (this.isDerTy(this.tagData)) {
                 this.datahashTagArrPosts = this.tagData.posts
@@ -212,7 +217,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
     public clickDataSearch(data, index?) {
         this.router.navigate([]).then(() => {
-            window.open('/search?hashtag=' + data, '_blank');
+            window.open('/emergencyevent/' + data);
         });
     }
 
@@ -260,7 +265,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
             this.clickEvent.emit(this.postData);
 
         } else if (data.data.objectiveId) {
-            window.open('/objectivetimeline/' + data.data.objectiveId);
+            window.open('/objective/' + data.data.objectiveId);
+
+        } else if (data.data.emergencyEventId) {
+            window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
             window.open('/search?hashtag=' + data.title.substring(1, data.title.length + 1));
@@ -303,10 +311,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (indexKey === keyObjs.length) {
                 if (indexKey === 1) {
-                    return Obj[key];
+                    return this.apiBaseURL + Obj[key] + '/image';
                 } else {
-
-                    return Obj[key];
+                    return this.apiBaseURL + Obj[key] + '/image';
                 }
 
             } else {
@@ -320,7 +327,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
         return "Not found"
 
     }
-
 
     /// PUBLIC
 

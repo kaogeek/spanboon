@@ -8,7 +8,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
 import { environment } from '../../../../environments/environment';
-import { ObservableManager } from '../../../services/services';
+import { ObservableManager, AssetFacade } from '../../../services/services';
 import { PLATFORM_FULFILL_TEXT } from '../../../../custom/variable';
 
 @Component({
@@ -87,4 +87,5 @@ export class CardContact {
     public getFulfillmentCase(event: any) {
         this.onClick.emit(this.data);
     }
+
 }

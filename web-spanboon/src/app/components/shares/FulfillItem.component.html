@@ -88,12 +88,13 @@
                                                     <ng-container
                                                         *ngIf="item.standardItem && item.standardItem.imageURL; else elseTemplateIcon">
                                                         <img class="icon-category"
-                                                            src="{{apiBaseURL+item.standardItem.imageURL+'/image'}}"
+                                                            [src]="item.standardItem.signURL?item.standardItem.signURL:item.standardItem.imageSignURL?item.standardItem.imageSignURL:apiBaseURL+item.standardItem.imageURL+'/image'"
                                                             alt="">
                                                     </ng-container>
                                                     <ng-template #elseTemplateIcon>
                                                         <img class="icon-category"
-                                                            src="{{apiBaseURL+item.imageURL+'/image'}}" alt="">
+                                                            [src]="item.signURL?item.signURL:item.imageSignURL?item.imageSignURL:apiBaseURL+item.imageURL+'/image'"
+                                                            alt="">
                                                     </ng-template>
                                                 </ng-container>
                                                 <ng-template #elseBase64>
@@ -180,7 +181,8 @@
                                             <ng-container
                                                 *ngIf="listItem.imageURL !== '' && listItem.imageURL !== null && listItem.imageURL !== undefined else elseImage">
                                                 <img class="img-category"
-                                                    src="{{apiBaseURL+listItem.imageURL+'/image'}}" alt="">
+                                                    [src]="listItem.signURL?listItem.signURL:listItem.imageSignURL?listItem.imageSignURL:apiBaseURL+listItem.imageURL+'/image'"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImage>
                                                 <img class="img-category"

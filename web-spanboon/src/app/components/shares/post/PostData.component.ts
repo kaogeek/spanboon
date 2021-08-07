@@ -125,8 +125,10 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
-    setTimeout(() => {
-      // console.log('this.itemPost >>>> ', this.itemPost);
+
+    this.user = this.authenManager.getCurrentUser();
+
+    setTimeout(async () => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering)
@@ -218,11 +220,6 @@ export class PostData {
     }, 1000);
   }
 
-  public isLogin(): boolean {
-    this.user = this.authenManager.getCurrentUser();
-    return this.user !== undefined && this.user !== null;
-  }
-
   private getDataGallery(imageURL: any, galleryIndex: number): void {
     this.assetFacade.getPathFile(imageURL).then((res: any) => {
       if (res.status === 1) {
@@ -295,36 +292,45 @@ export class PostData {
   }
 
   public clickDevelop(data, text) {
-    let url = '';
-    let type = '';
-    let eventId = '';
     if (data.index === 1) {
-      url += "emergency=#" + text.emergencyEventTag
-      type = "emergency";
-      eventId = text.emergencyEvent.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/emergencyevent/' + text.emergencyEvent._id);
+      });
     } else if (data.index === 2) {
-      url += "objective=" + text.objectiveTag;
-      type = "objective";
-      eventId = text.objective.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/objective/' + text.objective._id);
+      });
     }
-    let click = this.engagementService.getEngagement(data.event, eventId, type);
-    this.engagement.emit(click)
+    // let url = '';
+    // let type = '';
+    // let eventId = '';
+    // if (data.index === 1) {
+    //   url += "emergency=#" + text.emergencyEventTag
+    //   type = "emergency";
+    //   eventId = text.emergencyEvent.hashTag;
+    // } else if (data.index === 2) {
+    //   url += "objective=" + text.objectiveTag;
+    //   type = "objective";
+    //   eventId = text.objective.hashTag;
+    // }
+    // let click = this.engagementService.getEngagement(data.event, eventId, type);
+    // this.engagement.emit(click)
 
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-        bottomColorText2: "black",
-        // btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.router.navigateByUrl('/search?' + url);
-      }
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+    //     bottomColorText2: "black",
+    //     // btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    //   if (res) {
+    //     this.router.navigateByUrl('/search?' + url);
+    //   }
+    // });
   }
 
   private getComment(limit?) {
@@ -376,7 +382,7 @@ export class PostData {
     this.router.navigate([]).then(() => {
       let win = window.open('/story/' + post._id, '_blank');
       win.focus();
-  });
+    });
   }
 
   public postTeb(post) {
@@ -454,21 +460,21 @@ export class PostData {
   }
 
   public showDialogGallery(imageGallery) {
-    var lightbox = Glightbox(); 
+    var lightbox = Glightbox();
     let arrayImage = []
-    for (let galleryImage of imageGallery.gallerys) { 
+    for (let galleryImage of imageGallery.gallerys) {
       arrayImage.push({
-        href: galleryImage.galleryBase64, 
+        href: galleryImage.galleryBase64,
         type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
-      },)
+      })
     }
-    lightbox.setElements(arrayImage); 
-    lightbox.openAt(imageGallery.index);  
-    lightbox.on('open', (target) => { 
+    lightbox.setElements(arrayImage);
+    lightbox.openAt(imageGallery.index);
+    lightbox.on('open', (target) => {
     });
     lightbox.on('close', (target) => {
       lightbox.destroy();
-    });    
+    });
   }
 
   private stopLoading(): void {

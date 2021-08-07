@@ -10,7 +10,7 @@ import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter, ViewChil
 import { MatDialog } from '@angular/material';
 import { NavigationExtras, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
-import { AuthenManager, ObservableManager } from '../../../services/services';
+import { AuthenManager, ObservableManager, AssetFacade } from '../../../services/services';
 import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { DialogFulfill } from '../dialog/dialog';
@@ -62,19 +62,21 @@ export class NeedsCard extends AbstractPage implements OnInit {
   // public offsetHeightCard: number;
   private needsResult: any[] = [];
   private observManager: ObservableManager;
+  private assetFacade: AssetFacade;
   private rout: ActivatedRoute;
 
   public apiBaseURL = environment.apiBaseURL;
 
   mySubscription: any;
 
-  constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, rout: ActivatedRoute, observManager: ObservableManager) {
+  constructor(authenManager: AuthenManager, dialog: MatDialog, assetFacade: AssetFacade, router: Router, rout: ActivatedRoute, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.dialog = dialog;
     this.router = router;
     this.rout = rout;
     this.observManager = observManager;
+    this.assetFacade = assetFacade;
 
   }
 
@@ -125,11 +127,14 @@ export class NeedsCard extends AbstractPage implements OnInit {
     // });
   }
 
-  public getNeeds(close?: boolean) {
+  public async getNeeds(close?: boolean) {
     let Data: any[] = []
     this.originalNeeds = []
     if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
+        if (needs.imageURL) {
+          needs.imageURL = await this.passSignUrl(needs.imageURL);
+        }
         Data.push(needs)
       }
       if (Data.length > 0) {
@@ -219,58 +224,6 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.directiveRef.update();
   }
 
-  // public getNeeds(index?: number, next?: boolean) {
-  //   let need: any[]
-  //   this.needs = []
-  //   if (index !== undefined && index !== null) {
-  //     if (next === true) {
-  //       for (let indexs = index; indexs < this.itemNeeds.needs.length; indexs++) {
-  //         this.needs.push(this.itemNeeds.needs[indexs])
-  //         this.index++
-  //         if (this.needs.length === 3) {
-  //           if (((this.index + 1) === this.needs.length)) {
-  //             return this.isNext = false, this.isBack = true
-  //           } else {
-  //             return this.isNext = true, this.isBack = true
-  //           }
-  //         } else if ((this.index + 1) === this.itemNeeds.needs.length) {
-  //           this.needs.push(this.itemNeeds.needs[indexs])
-  //           this.index++
-  //           return this.isNext = false
-  //         }
-  //         this.needs
-  //       }
-  //     } else if (next === false) {
-  //       console.log('next', next)
-  //       console.log('index', index)
-  //       for (let indexs = (index); indexs < this.itemNeeds.needs.length; indexs++) {
-  //         this.needs.push(this.itemNeeds.needs[indexs])
-  //         this.index--
-  //         if (this.needs.length === 3) {
-  //           return
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     for (let needs of this.itemNeeds.needs) {
-  //       this.needs.push(needs)
-  //       this.index++
-  //       if (this.needs.length === 3) {
-  //         if (((this.index + 1) === this.needs.length)) {
-  //           return this.isNext = false
-  //         } else {
-  //           return this.isNext = true
-  //         }
-  //       }
-  //     }
-  //   }
-
-  // }
-
-  // public next(type?: boolean) {
-  //   this.getNeeds(this.index, type)
-  // }
-
   public configSlider1: SwiperConfigInterface = {
     direction: 'horizontal',
     slidesPerView: this.slidesPerView,
@@ -300,4 +253,10 @@ export class NeedsCard extends AbstractPage implements OnInit {
       },
     },
   }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+  }
+
 }

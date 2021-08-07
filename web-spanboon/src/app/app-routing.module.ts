@@ -140,6 +140,10 @@ export const APP_ROUTES: Routes = [
         component: ObjectiveTimeline,
       },
       {
+        path: ObjectiveTimeline.PAGE_NAME,
+        redirectTo: '/home',
+      },
+      {
         path: EmergencyEventTimeline.PAGE_NAME + "/:id",
         component: EmergencyEventTimeline,
       },

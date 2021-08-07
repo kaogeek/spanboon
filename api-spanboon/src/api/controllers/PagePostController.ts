@@ -19,6 +19,7 @@ import { NeedsService } from '../services/NeedsService';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { StandardItemService } from '../services/StandardItemService';
 import { AssetService } from '../services/AssetService';
+import { S3Service } from '../services/S3Service';
 import { PagePostRequest } from './requests/PagePostsRequest';
 import { Posts } from '../models/Posts';
 import { Needs } from '../models/Needs';
@@ -78,7 +79,8 @@ export class PagePostController {
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
         private pageAccessLevelService: PageAccessLevelService,
-        private pageSocialAccountService: PageSocialAccountService
+        private pageSocialAccountService: PageSocialAccountService,
+        private s3Service: S3Service
     ) { }
 
     // PagePost List API
@@ -1207,6 +1209,18 @@ export class PagePostController {
                                     const assetSignURL = await this.assetService.getAssetSignedUrl({ _id: postGallery.fileId });
                                     postGallery.signURL = assetSignURL.signURL;
                                 }
+                            }
+                        }
+
+                        if (posts.s3CoverImage !== undefined && posts.s3CoverImage !== '') {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(posts.s3CoverImage);
+                            Object.assign(posts, { coverSignURL: (signUrl ? signUrl : '') });
+                        }
+
+                        if (posts.ownerUser !== undefined) {
+                            if (posts.ownerUser.s3ImageURL !== undefined && posts.ownerUser.s3ImageURL !== '') {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(posts.ownerUser.s3ImageURL);
+                                Object.assign(posts.ownerUser, { signURL: (signUrl ? signUrl : '') });
                             }
                         }
                     }

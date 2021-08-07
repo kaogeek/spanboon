@@ -51,6 +51,13 @@ import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
 import { FollowingRecommendProcessor } from '../processors/FollowingRecommendProcessor';
+import { LIKE_TYPE } from '../../constants/LikeType';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
+import { PostsCommentService } from '../services/PostsCommentService';
+import { PostsComment } from '../models/PostsComment';
+import { AssetService } from '../services/AssetService';
+import { ImageUtil } from '../../utils/ImageUtil';
 
 @JsonController('/main')
 export class MainPageController {
@@ -65,7 +72,10 @@ export class MainPageController {
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
         private configService: ConfigService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private userLikeService: UserLikeService,
+        private postsCommentService: PostsCommentService,
+        private assetService: AssetService
     ) { }
 
     // Find Page API
@@ -111,7 +121,7 @@ export class MainPageController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (section === 'LASTEST') {
-                const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+                const lastestLKProcessorSec: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
                 lastestLKProcessorSec.setData({
                     userId,
                     startDateTime: undefined,
@@ -159,7 +169,7 @@ export class MainPageController {
                 const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                 return res.status(400).send(errorResponse);
             } else if (section === 'RECOMMEND') {
-                const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
+                const userRecProcessorSec: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
                 userRecProcessorSec.setData({
                     userId,
                     startDateTime: undefined,
@@ -203,7 +213,7 @@ export class MainPageController {
         const emerSectionModel = await emerProcessor.process();
 
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
-        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService);
+        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service);
         postProcessor.setData({
             startDateTime: monthRanges[0],
             endDateTime: monthRanges[1]
@@ -213,7 +223,7 @@ export class MainPageController {
         });
         const postSectionModel = await postProcessor.process();
 
-        const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
+        const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
         lastestLKProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -241,7 +251,7 @@ export class MainPageController {
         // });
         // processorList.push(stillLKProcessor);
 
-        const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService);
+        const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
         userRecProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -273,7 +283,7 @@ export class MainPageController {
         });
         const objectiveSectionModel = await objectiveProcessor.process();
 
-        const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService);
+        const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService, this.s3Service);
         userFollowProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -286,7 +296,7 @@ export class MainPageController {
         });
         processorList.push(userFollowProcessor);
 
-        const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService);
+        const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
         userPageLookingProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -655,6 +665,7 @@ export class MainPageController {
     @Post('/content/search')
     public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
         try {
+            const uId = req.headers.userid;
             let search: any = {};
             const searchResults = [];
             const postStmt = [];
@@ -1115,12 +1126,29 @@ export class MainPageController {
 
             const pageMap = {};
             const userMap = {};
-            const postResult = await this.postsService.aggregate(searchPostStmt);
+            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
 
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
+                const postIdList = [];
+                const postMap = {};
                 for (const post of postResult) {
                     const result = new SearchContentResponse();
                     result.post = post;
+                    postIdList.push(post._id);
+                    postMap[post._id + ''] = post;
+
+                    // inject sign URL
+                    const covImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, post.coverImage, { prefix: '/file/' });
+                    Object.assign(post, { coverImageSignURL: (covImageSignURL ? covImageSignURL : '') });
+
+                    if (post.gallery && Array.isArray(post.gallery)) {
+                        for (const galImage of post.gallery) {
+                            const signURL = await ImageUtil.generateAssetSignURL(this.assetService, galImage.imageURL, { prefix: '/file/' });
+                            Object.assign(galImage, { signURL: (signURL ? signURL : '') });
+                            delete galImage.s3ImageURL;
+                        }
+                    }
+                    // end inject sign URL
 
                     let postPage;
                     if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '') {
@@ -1140,6 +1168,45 @@ export class MainPageController {
                     result.page = postPage;
 
                     searchResults.push(result);
+                }
+
+                if (uId !== null && uId !== undefined && uId !== '') {
+                    const userObjId = new ObjectID(uId);
+                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
+
+                    if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
+                        for (const like of userLikes) {
+                            const postId = like.subjectId;
+                            const likeAsPage = like.likeAsPage;
+                            const postIdKey = postId + '';
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                                    if (postMap[postIdKey] !== undefined) {
+                                        postMap[postIdKey].likeAsPage = true;
+                                    }
+                                }
+
+                                if (postMap[postIdKey] !== undefined) {
+                                    postMap[postIdKey].isLike = true;
+                                }
+                            }
+                        }
+                    }
+
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    if (postComments !== null && postComments !== undefined && postComments.length > 0) {
+                        for (const comment of postComments) {
+                            const postId = comment.post;
+                            const postIdKey = postId + '';
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (postMap[postIdKey] !== undefined) {
+                                    postMap[postIdKey].isComment = true;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 search = searchResults;

@@ -110,8 +110,7 @@
         <div class="content">
             <div class="left">
                 <div class="head">
-                    <img class="img-user"
-                        src="{{postStoryData ? apiBaseURL+postStoryData.ownerUser.imageURL+'/image' : ''}}">
+                    <img class="img-user" [src]="postStoryData ? postStoryData.ownerUser.imageURL:''">
                     <div class="page-display">
                         <div class="type">
                             <div *ngIf="type === 'GENERAL'" class="type-status-general"></div>
@@ -155,8 +154,7 @@
                     <ng-container
                         *ngIf="userCloneDatas && userCloneDatas.imageURL && userCloneDatas.imageURL !== undefined && userCloneDatas.imageURL !== null && userCloneDatas.imageURL !== '' ; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
-                            <img class="image-profile"
-                                src="{{postStoryData ? apiBaseURL+userCloneDatas.imageURL+'/image' : ''}}">
+                            <img class="image-profile" src="{{postStoryData ? userCloneDatas.imageURL : ''}}">
                         </div>
                     </ng-container>
                     <ng-template #elseImage>
@@ -212,7 +210,7 @@
         </div>
     </div>
 </div>
-<div class="post-story-not-found" *ngIf="postStoryData">
+<div class="post-story-not-found" *ngIf="!postStoryData">
     <div class="box">
         <div class="text">
             ไม่พบเนื้อหา เรื่องราวหรือโพสต์อาจถูกลบ

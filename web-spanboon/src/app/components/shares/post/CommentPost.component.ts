@@ -52,7 +52,7 @@ export class CommentPost {
     return data
   }
 
-  public checkAccessCustom(uuId:string): boolean {
+  public checkAccessCustom(uuId: string): boolean {
     return uuId === this.userId;
   }
 

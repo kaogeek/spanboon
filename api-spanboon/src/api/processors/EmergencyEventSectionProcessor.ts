@@ -149,6 +149,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     }
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
+                    const moreData: any = {};
+                    moreData.emergencyEventId = row._id;
+
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
@@ -162,14 +165,15 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                     if (row.s3CoverPageURL !== undefined && row.s3CoverPageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getSignedUrl(row.s3CoverPageURL);
-                            contentModel.signUrl = signUrl;
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverPageURL);
+                            contentModel.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('EmergencyEventSectionProcessor: ' + error);
                         }
                     }
 
                     contentModel.dateTime = row.createdDate;
+                    contentModel.data = moreData;
                     result.contents.push(contentModel);
                 }
                 result.dateTime = lastestDate;

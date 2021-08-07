@@ -120,7 +120,7 @@ export class FacebookService {
                         return;
                     }
 
-                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
+                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }, { signURL: true }).then((authUser) => {
                         if (authUser) {
                             authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });
