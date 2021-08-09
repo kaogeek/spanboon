@@ -930,11 +930,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let offset: number = 0;
     this.recommendFacade.getRecommend(limit, offset).then(async (res) => {
       this.dataRecommend = res.data;
-      for (let data of this.dataRecommend) {
-        if (data.imageURL) {
-          data.imageURL = await this.passSignUrl(data.imageURL);
-        }
-      }
     }).catch((err: any) => {
       console.log('err ', err)
     });
@@ -1409,11 +1404,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }).catch((err: any) => {
       console.log('err ', err)
     })
-  }
-
-  public async passSignUrl(url?: any): Promise<any> {
-    let signData: any = await this.assetFacade.getPathFileSign(url);
-    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
   }
 
 }
