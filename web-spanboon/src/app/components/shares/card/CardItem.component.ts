@@ -78,11 +78,6 @@ export class CardItem extends AbstractPage implements OnInit {
 
     async ngOnInit(): Promise<void> {
         this.checkResp();
-        for (let data of this.itemData) {
-            if (data.imageURL) {
-                data.imageURL = await this.passSignUrl(data.imageURL);
-            }
-        }
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -199,11 +194,6 @@ export class CardItem extends AbstractPage implements OnInit {
         this.router.navigate([]).then(() => {
             window.open('/objectivetimeline/' + data.id);
         });
-    }
-
-    public async passSignUrl(url?: any): Promise<any> {
-        let signData: any = await this.assetFacade.getPathFileSign(url);
-        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
     }
 
 }

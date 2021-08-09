@@ -40,7 +40,8 @@
                             <ng-container
                                 *ngIf="item.page && item.page.imageURL && item.page.imageURL !== ''; else elseImg">
                                 <div class="image-page">
-                                    <img class="img" src="{{item.page.imageURL}}">
+                                    <img class="img"
+                                        [src]="item.page.signURL?item.page.signURL:item.page.imageSignURL?item.page.imageSignURL:apiBaseURL+item.page.imageURL+'/image'">
                                 </div>
                             </ng-container>
                             <ng-template #elseImg>

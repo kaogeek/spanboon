@@ -129,7 +129,6 @@ export class PostData {
     this.user = this.authenManager.getCurrentUser();
 
     setTimeout(async () => {
-      // console.log('this.itemPost >>>> ', this.itemPost);
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering)
@@ -174,12 +173,6 @@ export class PostData {
           }
           this.itemPost.needs.push(fulfill)
         }
-      }
-      if (this.itemPost.page) {
-        this.itemPost.page.imageURL = await this.passSignUrl(this.itemPost.page.imageURL);
-      }
-      if (this.itemPost.user) {
-        this.itemPost.user.imageURL = await this.passSignUrl(this.itemPost.user.imageURL);
       }
       this.linkPost = (this.mainPostLink + this.itemPost._id);
       this.isLoading = false;
@@ -515,11 +508,6 @@ export class PostData {
   public fulfillEngagement(event, postId: string) {
     let data = this.engagementService.getEngagement(event, postId, "fulfillment");
     this.engagement.emit(data);
-  }
-
-  public async passSignUrl(url?: any): Promise<any> {
-    let signData: any = await this.assetFacade.getPathFileSign(url);
-    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
   }
 
 }
