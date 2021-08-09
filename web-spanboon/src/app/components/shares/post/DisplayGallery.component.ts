@@ -6,7 +6,7 @@
  */
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { environment } from '../../../../environments/environment'; 
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'display-gallery',
@@ -25,7 +25,8 @@ export class DisplayGallery {
 
   }
 
-  public showDialogGallery(index: any) {  
-    this.clickShowImage.emit({index: index, gallerys: this.gallery});
+  public showDialogGallery(index: any) {
+    console.log('gallery', this.gallery)
+    this.clickShowImage.emit({ index: index, gallerys: this.gallery });
   }
 }
