@@ -32,7 +32,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
-                let searchOfficialOnly: number = undefined;
+                let searchOfficialOnly = undefined;
 
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
@@ -61,8 +61,24 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     isClose: false,
                     isPin: true
                 };
-                const searchResult = await this.emergencyEvent.aggregate([
+                const emergencyAggregateArray = [
                     { $match: searchFilter.whereConditions },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
                     { $skip: offset },
                     { $limit: limit },
                     {
@@ -73,7 +89,8 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                             as: 'hashTagObj'
                         }
                     }
-                ]);
+                ];
+                const searchResult = await this.emergencyEvent.aggregate(emergencyAggregateArray);
 
                 // search count all from post of emergency
                 const emerEventIds = [];
@@ -162,7 +179,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                             const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverPageURL);
                             contentModel.coverPageSignUrl = signUrl;
                         } catch (error) {
-                            console.log('EmergencyEventPinProcessor: '+error);
+                            console.log('EmergencyEventPinProcessor: ' + error);
                         }
                     }
 
