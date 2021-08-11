@@ -27,9 +27,8 @@
         }
     }
     > .mat-dialog-content {
-        margin: unset;
-        padding: unset;
-        padding: 20pt 20pt 0 20pt; 
+        margin: unset !important; 
+        padding: 15pt !important; 
         span {
             @include font-size-9($font-head-500);
         }
