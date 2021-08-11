@@ -154,7 +154,9 @@ export class ManagePage extends AbstractPage implements OnInit {
                         //         this.resListPage = res
                         //     }
                         // })
+                        this.resListPage = res
                     } else {
+
                         this.resListPage = res
                     }
                 }
