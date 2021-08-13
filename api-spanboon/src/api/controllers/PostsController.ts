@@ -39,6 +39,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { S3Service } from '../services/S3Service';
 import { Page } from '../models/Page';
 
 @JsonController('/post')
@@ -55,7 +56,8 @@ export class PostsController {
         private notificationService: NotificationService,
         private pageNotificationService: PageNotificationService,
         private hashTagService: HashTagService,
-        private emergencyEventService: EmergencyEventService
+        private emergencyEventService: EmergencyEventService,
+        private s3Service: S3Service
     ) { }
 
     // New Post API
@@ -1301,7 +1303,7 @@ export class PostsController {
             offset,
             limit
         };
-        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService);
+        const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);
         processor.setData(data);
         processor.setConfig(config);
         result = await processor.process();
@@ -1350,7 +1352,7 @@ export class PostsController {
             offset,
             limit
         };
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setData(data);
         emerProcessor.setConfig(config);
         result = await emerProcessor.process();

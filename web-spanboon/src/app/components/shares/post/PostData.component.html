@@ -35,7 +35,8 @@
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <ng-container
                                 *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.page.imageURL +'/image'}}"
+                                <img class="post-data-profile"
+                                    [src]="itemPost.page.signURL?itemPost.page.signURL:itemPost.page.imageSignURL?itemPost.page.imageSignURL:apiBaseURL+itemPost.page.imageURL+'/image'"
                                     alt="">
                             </ng-container>
                             <ng-template #elseTemplateFileImage>
@@ -45,7 +46,8 @@
                         <ng-template #elseImage>
                             <ng-container
                                 *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
-                                <img class="post-data-profile" src="{{apiBaseURL+itemPost.user.imageURL+'/image'}}"
+                                <img class="post-data-profile"
+                                    [src]="itemPost.user.signURL?itemPost.user.signURL:itemPost.user.imageSignURL?itemPost.user.imageSignURL:apiBaseURL+itemPost.user.imageURL+'/image'"
                                     alt="">
                             </ng-container>
                             <ng-template #elseTemplateProfile>
@@ -184,8 +186,9 @@
                 </div>
             </ng-container>
         </div>
-        <div class="repost-re"  *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
-           
+        <div class="repost-re"
+            *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+
             <ng-container *ngIf="isUserPage; else UserPage">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
                     viewBox="0 0 56.105 47.887">
@@ -196,7 +199,7 @@
                 <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
                     ได้บอกต่อ{{PLATFORM_STORY_TALE}}</span>
             </ng-container>
-            <ng-template #UserPage> 
+            <ng-template #UserPage>
                 <ng-container *ngIf="isUserPage && isNotAccess; else elseTemplate">
                     <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
                         viewBox="0 0 56.105 47.887">
@@ -229,7 +232,8 @@
                     <div class="profile-left">
                         <ng-container
                             *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
-                            <img class="post-data-profile" src="{{apiBaseURL + itemPost.requester.imageURL+'/image'}}"
+                            <img class="post-data-profile"
+                                [src]="itemPost.requester.signURL?itemPost.requester.signURL:itemPost.requester.imageSignURL?itemPost.requester.imageSignURL:apiBaseURL+itemPost.requester.imageURL+'/image'"
                                 alt="">
                         </ng-container>
                         <ng-template #elseTemplateImage>
@@ -294,7 +298,8 @@
                         <ng-container
                             *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
                             <img class="post-data-profile"
-                                src="{{apiBaseURL + itemPost.fulfillmentPage.imageURL+'/image'}}" alt="">
+                                [src]="itemPost.fulfillmentPage.signURL?itemPost.fulfillmentPage.signURL:itemPost.fulfillmentPage.imageSignURL?itemPost.fulfillmentPage.imageSignURL:apiBaseURL+itemPost.fulfillmentPage.imageURL+'/image'"
+                                alt="">
                         </ng-container>
                         <ng-template #elseTemplateImagePage>
                             <img class="post-data-profile" src="../../../../assets/img/profile1.svg" alt="">
@@ -346,7 +351,7 @@
                 {{itemPost.casePostId && itemPost.casePostId !== undefined &&
                 itemPost.casePostId !== '' ?
                 'โพสต์' : 'เพจ' }} </a>
-        </div> 
+        </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
                 [ngStyle]="{'margin-top': itemPost.referencePostObject ? '10pt' : 'unset' , 'display' : itemPost.referencePostObject ? 'block' : 'unset'}">
@@ -479,7 +484,8 @@
             </div>
             <ng-container *ngIf="commentpost.length > 0">
                 <div class="post-comment" *ngIf="!isSearchHashTag">
-                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [commentdata]="commentpost">
+                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="user.id"
+                        [commentdata]="commentpost">
                     </comment-post>
                 </div>
             </ng-container>

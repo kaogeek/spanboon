@@ -82,6 +82,12 @@ export class Page extends BaseModel {
     @Column({ name: 'email' })
     public email: string;
 
+    @Column({ name: 's3ImageURL' })
+    public s3ImageURL: string;
+
+    @Column({ name: 's3CoverURL' })
+    public s3CoverURL: string;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

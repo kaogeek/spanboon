@@ -12,6 +12,7 @@ import { ObjectiveProcessorData } from './data/ObjectiveProcessorData';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { PostsService } from '../services/PostsService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
+import { S3Service } from '../services/S3Service';
 import moment from 'moment';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
@@ -22,6 +23,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -60,43 +62,49 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 result.contents = [];
 
                 const pageObjectiveResult: any[] = [];
-                for (let index = 0; pageObjectiveResult.length < 5; index++) {
-
-                    const pageObjStmt = [
-                        { $match: matchStmt },
-                        { $sort: { createdDate: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
-                                as: 'page'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'HashTag',
-                                localField: 'hashTag',
-                                foreignField: '_id',
-                                as: 'hashTagObj'
-                            }
+                const pageObjStmt = [
+                    { $match: matchStmt },
+                    { $sort: { createdDate: -1 } },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
                         }
-                    ];
-                    const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
-                    if (searchResult.length === 0) {
-                        resolve(result);
-                        break;
-                    }
-
-                    for (const iterator of searchResult) {
-                        if (iterator.hashTagObj.length > 0) {
-                            pageObjectiveResult.push(iterator);
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
+                    { $skip: offset },
+                    { $limit: limit },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'HashTag',
+                            localField: 'hashTag',
+                            foreignField: '_id',
+                            as: 'hashTagObj'
                         }
                     }
-                    offset = (offset + searchResult.length);
-
+                ];
+                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+                for (const iterator of searchResult) {
+                    if (iterator.hashTagObj.length > 0) {
+                        pageObjectiveResult.push(iterator);
+                    }
                 }
 
                 let lastestDate = null;
@@ -107,6 +115,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                     if (row) {
                         const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                         const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
+                        const moreData: any = {};
 
                         if (lastestDate === null) {
                             lastestDate = row.createdDate;
@@ -116,16 +125,34 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         contentModel.subtitle = row.name;
                         contentModel.iconUrl = row.iconURL;
 
+                        if (row.s3IconURL !== undefined && row.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3IconURL);
+                                contentModel.iconSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('ObjectiveProcessor: ' + error);
+                            }
+                        }
+
                         hastagRowMap[row.hashTag] = row;
                         hashtagNames.push(row.hashTag);
 
                         contentModel.owner = {};
                         if (page !== undefined) {
                             contentModel.owner = this.parsePageField(page);
+
+                            // sign image url of s3
+                            if (page.s3ImageURL !== undefined && page.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3ImageURL);
+                                    contentModel.owner.signUrl = signUrl;
+                                } catch (error) {
+                                    console.log('ObjectiveProcessor: ' + error);
+                                }
+                            }
                         }
 
                         if (row.hashTagObj.length > 0) {
-
                             // saerch all post with objective hashtag
                             if (hashtagNames.length > 0) {
                                 const today = moment().toDate();
@@ -182,6 +209,8 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
                         }
 
+                        moreData.objectiveId = row._id;
+                        contentModel.data = moreData;
                         result.contents.push(contentModel);
                     }
                 }

@@ -9,7 +9,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager, FulfillFacade } from '../../services/services';
+import { AuthenManager, FulfillFacade, AssetFacade } from '../../services/services';
 import { environment } from 'src/environments/environment';
 import { isArray } from 'util';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -53,6 +53,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public dataList: any = [{ name: this.PLATFORM_FULFILL_TEXT, id: 'defaultOpen1' }, { name: 'รายการ', id: 'defaultOpen2' }];
     // Facade
     private fulfillFacade: FulfillFacade;
+    private assetFacade: AssetFacade;
     // Variable
     public arrListItem: any[] = [];
     public resFulfill: any[] = [];
@@ -75,12 +76,13 @@ export class FulfillItem extends AbstractPage implements OnInit {
     public isFrom: any;
     public isAddItem: any;
 
-    constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, fulfillFacade: FulfillFacade, public dialogRef: MatDialogRef<DialogFulfill>) {
+    constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, fulfillFacade: FulfillFacade, assetFacade: AssetFacade, public dialogRef: MatDialogRef<DialogFulfill>) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.fulfillFacade = fulfillFacade;
         this.dialog = dialog;
         this.router = router;
+        this.assetFacade = assetFacade;
         this.isListItem = false;
         this.isUnit = false;
         this.isUnitSelect = false;
@@ -92,7 +94,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
     }
 
-    public ngOnInit(): void {
+    public async ngOnInit(): Promise<void> {
         if (this.data && this.data.arrListItem !== undefined && this.data.arrListItem.length > 0) {
             this.arrListItem = this.data.arrListItem;
             this.readdChildSelectMap();
@@ -100,6 +102,7 @@ export class FulfillItem extends AbstractPage implements OnInit {
 
         if (this.data && this.data.fulfill !== undefined && this.data.fulfill.length > 0) {
             this.resFulfill = this.data.fulfill;
+
             if (this.data.isFrom !== null && this.data.isFrom !== undefined && this.data.isFrom !== '') {
                 this.isFrom = this.data.isFrom;
                 this.isPage = this.data.isPage;
@@ -561,4 +564,5 @@ export class FulfillItem extends AbstractPage implements OnInit {
         this.resFulfill = [];
         this.data = undefined;
     }
+
 }

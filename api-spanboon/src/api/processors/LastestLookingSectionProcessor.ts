@@ -13,6 +13,7 @@ import { NeedsService } from '../services/NeedsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { LastestLookingProcessorData } from './data/LastestLookingProcessorData';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
+import { S3Service } from '../services/S3Service';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
 
@@ -28,6 +29,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
         private postsService: PostsService,
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -212,6 +214,15 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                         contentModel.coverPageUrl = coverImageUrl;
                         contentModel.dateTime = row.createdDate;
                         contentModel.owner = this.parsePageField(page);
+
+                        if (row.s3CoverImage !== undefined && row.s3CoverImage !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverImage);
+                                contentModel.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('LastestLookingSectionProcessor: ' + error);
+                            }
+                        }
 
                         if (userId !== null && userId !== undefined && userId !== '') {
                             userObjId = new ObjectID(userId);

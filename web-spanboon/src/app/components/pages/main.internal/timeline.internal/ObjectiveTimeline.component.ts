@@ -5,17 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
 import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
+import { TooltipProfile } from '../../../shares/tooltip/TooltipProfile.component';
 import { AbstractPage } from '../../AbstractPage';
+import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 
-const PAGE_NAME: string = 'objectivetimeline';
+const PAGE_NAME: string = 'objective';
 
 @Component({
     selector: 'objective-timeline',
@@ -59,25 +61,26 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public objectiveData: any;
     public pageObjective: any;
     public pageOwner: any;
+    public currentDate: any;
+
+    public isFollow: boolean = false;
+    public isLoginUser: boolean = false;
+    public isLoding: boolean = true;
+
+    public objectiveId: string;
 
     public apiBaseURL = environment.apiBaseURL;
+    private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager,
+    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
+        this.routeActivated = routeActivated;
         this.objectiveFacade = objectiveFacade;
-
-    }
-
-    public async ngOnInit(): Promise<void> {
-        this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline('60a1e9c7030abb44081a8b6e');
-        console.log('this.objectiveData', this.objectiveData);
-        this._groupData();
-        this.setData();
 
         // You can also pass an optional settings object
         // below listed default settings
@@ -94,7 +97,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
 
             // Settings that can be overridden on per-element basis, by `data-aos-*` attributes:
-            offset: 120, // offset (in px) from the original trigger point
+            offset: 40, // offset (in px) from the original trigger point
             delay: 0, // values from 0 to 3000, with step 50ms
             duration: 400, // values from 0 to 3000, with step 50ms
             easing: 'ease', // default easing for AOS animations
@@ -106,6 +109,24 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     }
 
+    public async ngOnInit(): Promise<void> {
+        this.isLoginUser = this.isLogin();
+        this.routeActivated.params.subscribe((params) => {
+            this.objectiveId = params['id'];
+        })
+        this.currentDate = new Date();
+
+        this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
+        this.objectiveData.page;
+        const pageType = { type: "PAGE" };
+        const origin = this.objectiveData.page;
+
+        const dataPageTypeAssign = Object.assign(pageType, origin);
+        this.objectiveData.page = { owner: dataPageTypeAssign };
+        this._groupData();
+        this.setData();
+    }
+
     private _groupData(): void {
         let numloop: number = 0
 
@@ -113,7 +134,9 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             if (item.type === "OBJECTIVE_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
-                    n.imageURL = standardItem.imageURL;
+                    if (standardItem !== undefined && standardItem !== null) {
+                        n.imageURL = standardItem.imageURL;
+                    }
                 }
             }
             if (item.type === "OBJECTIVE_POST_LIKED") {
@@ -131,8 +154,38 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     }
 
+    public clickDataSearch(post: any): void {
+        this.router.navigate([]).then(() => {
+            window.open('/post/' + post.post._id, '_blank');
+        });
+    }
+
+    public followObjective() {
+        this.objectiveFacade.followObjective(this.objectiveId);
+        this.isFollow = !this.isFollow;
+    }
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+    }
+
+    public Tooltip(origin: any, data) {
+        if (window.innerWidth > 998) {
+            this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
+                data: data,
+            })
+        }
+    }
+
+    public TooltipClose($event) {
+
+        setTimeout(() => {
+
+            if ($event.toElement.className !== "ng-star-inserted") {
+                this.popupService.close(null);
+            }
+
+        }, 400);
     }
 
     isPageDirty(): boolean {

@@ -14,8 +14,6 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageAccessLevelResponse } from './responses/PageAccessLevelResponse';
 import { UserService } from '../services/UserService';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
-import { User } from '../models/User';
-import { Page } from '../models/Page';
 
 @JsonController('/useraccess')
 export class UserAccessController {
@@ -58,26 +56,28 @@ export class UserAccessController {
 
             const pgObjId = new ObjectID(pg.page);
             const pageStmt = { where: { _id: pgObjId } };
-            const page: Page = await this.pageService.findOne(pageStmt);
+            const page: any = await this.pageService.findOne(pageStmt, { signURL: true });
             if (page !== undefined) {
                 userAccLV.page = {
                     id: page.id,
                     name: page.name,
                     pageUsername: page.pageUsername,
                     imageURL: page.imageURL,
+                    signURL: page.signURL,
                     isOfficial: page.isOfficial
                 };
             }
 
             const pguserObjId = new ObjectID(pg.user);
             const userStmt = { where: { _id: pguserObjId } };
-            const pguser: User = await this.userService.findOne(userStmt);
+            const pguser: any = await this.userService.findOne(userStmt, { signURL: true });
 
             if (pguser !== undefined) {
                 userAccLV.user = {
                     id: pg.user,
                     displayName: pguser.displayName,
-                    imageURL: pguser.imageURL
+                    imageURL: pguser.imageURL,
+                    signURL: pguser.signURL
                 };
                 userAccLV.level = pg.level;
             }

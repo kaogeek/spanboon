@@ -45,6 +45,7 @@ import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLast
 import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
+import { SearchFilter } from './requests/SearchFilterRequest';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -185,6 +186,7 @@ export class ObjectiveController {
         objective.detail = detail;
         objective.hashTag = hashTag;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result: any = await this.pageObjectiveService.create(objective);
 
@@ -233,10 +235,14 @@ export class ObjectiveController {
         }
 
         const hashTag = search.hashTag;
-        const filter = search.filter;
+        let filter = search.filter;
         const hashTagIdList = [];
         const hashTagMap = {};
         let hashTagList: HashTag[];
+
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
 
         if (hashTag !== null && hashTag !== undefined && hashTag !== '') {
             hashTagList = await this.hashTagService.find({ name: { $regex: '.*' + hashTag + '.*', $options: 'si' } });
@@ -255,7 +261,7 @@ export class ObjectiveController {
         let objectiveLists: PageObjective[];
         let objectiveStmt;
 
-        if (Object.keys(filter.whereConditions).length > 0 && filter.whereConditions !== null && filter.whereConditions !== undefined) {
+        if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0) {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
 
@@ -267,9 +273,9 @@ export class ObjectiveController {
                 objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
             }
 
-            objectiveLists = await this.pageObjectiveService.find(objectiveStmt);
+            objectiveLists = await this.pageObjectiveService.find(objectiveStmt, { signURL: true });
         } else {
-            objectiveLists = await this.pageObjectiveService.search(filter);
+            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
@@ -370,6 +376,7 @@ export class ObjectiveController {
         let assetId;
         let newAssetId;
         let iconURL;
+        let s3IconURL;
 
         if (objectiveAsset !== null && objectiveAsset !== undefined) {
             assetData = objectiveAsset.data;
@@ -381,8 +388,9 @@ export class ObjectiveController {
 
                 const assetQuery = { _id: assetId, userId: userObjId };
                 const newAssetValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
-                assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                await this.assetService.update(assetQuery, newAssetValue);
                 newAssetId = assetId;
+                assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
             } else {
                 const asset = new Asset();
                 asset.userId = userObjId;
@@ -397,13 +405,15 @@ export class ObjectiveController {
 
             if (assetResult) {
                 iconURL = assetResult ? ASSET_PATH + newAssetId : '';
+                s3IconURL = assetResult ? assetResult.s3FilePath : '';
             }
         } else {
             iconURL = objectiveIconURL;
+            s3IconURL = objectiveUpdate.s3IconURL;
         }
 
         const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag } };
+        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
@@ -440,6 +450,18 @@ export class ObjectiveController {
 
         if (!objective) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid PageObjective Id', undefined));
+        }
+
+        // remove asset of objective
+        if (objective.iconURL !== undefined && objective.iconURL !== undefined && objective.iconURL !== '') {
+            const fileId = objective.iconURL.replace(ASSET_PATH, '');
+            const assetQuery = { _id: new ObjectID(fileId) };
+
+            try {
+                await this.assetService.delete(assetQuery);
+            } catch (error) {
+                console.log('Cannot remove asset file: ' + fileId);
+            }
         }
 
         const query = { _id: objId };
@@ -483,12 +505,28 @@ export class ObjectiveController {
             // generate timeline
             const page = await this.pageService.findOne({ _id: objective.pageId });
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.OBJECTIVE, 5);
+            let isFollowed = false;
+            if (userId !== null && userId !== undefined && userId !== '') {
+                const userPageObjFollow = await this.userFollowService.findOne({ userId: new ObjectID(userId), subjectId: objId, subjectType: SUBJECT_TYPE.OBJECTIVE });
+                if (userPageObjFollow !== undefined) {
+                    isFollowed = true;
+                }
+            }
 
             const pageObjTimeline = new PageObjectiveTimelineResponse();
             pageObjTimeline.pageObjective = objective;
             pageObjTimeline.page = page;
             pageObjTimeline.followedUser = followingUsers.followers;
             pageObjTimeline.followedCount = followingUsers.count;
+            pageObjTimeline.isFollow = isFollowed;
+
+            // add hashTag name to pageObjective
+            if (pageObjTimeline.pageObjective !== undefined && pageObjTimeline.pageObjective.hashTag) {
+                const hashTag = await this.hashTagService.findOne({ _id: new ObjectID(pageObjTimeline.pageObjective.hashTag + '') });
+                if (hashTag !== undefined) {
+                    pageObjTimeline.pageObjective.hashTagName = hashTag.name;
+                }
+            }
 
             const pageObjFulfillResult = await this.pageObjectiveService.sampleFulfillmentUser(objId, 5, FULFILLMENT_STATUS.CONFIRM);
             pageObjTimeline.fulfillmentCount = pageObjFulfillResult.count;

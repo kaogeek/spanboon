@@ -98,4 +98,18 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public followObjective(objectiveId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/follow';
+      let body: any = {};
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
 }

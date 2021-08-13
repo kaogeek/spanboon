@@ -10,6 +10,7 @@ import { SectionModel } from '../models/SectionModel';
 import { ContentModel } from '../models/ContentModel';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { PostsService } from '../services/PostsService';
+import { S3Service } from '../services/S3Service';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 
 export class EmergencyEventSectionProcessor extends AbstractSectionModelProcessor {
@@ -19,7 +20,8 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
     constructor(
         private emergencyEvent: EmergencyEventService,
-        private postsService: PostsService
+        private postsService: PostsService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -61,6 +63,22 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                 const searchResult = await this.emergencyEvent.aggregate([
                     { $match: searchFilter.whereConditions },
                     { $sort: { createdDate: -1 } },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
                     { $skip: offset },
                     { $limit: limit },
                     {
@@ -147,6 +165,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     }
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
+                    const moreData: any = {};
+                    moreData.emergencyEventId = row._id;
+
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
@@ -158,7 +179,17 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     contentModel.likeCount = postLikeCount;
                     contentModel.viewCount = postViewCount;
 
+                    if (row.s3CoverPageURL !== undefined && row.s3CoverPageURL !== '') {
+                        try {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(row.s3CoverPageURL);
+                            contentModel.coverPageSignUrl = signUrl;
+                        } catch (error) {
+                            console.log('EmergencyEventSectionProcessor: ' + error);
+                        }
+                    }
+
                     contentModel.dateTime = row.createdDate;
+                    contentModel.data = moreData;
                     result.contents.push(contentModel);
                 }
                 result.dateTime = lastestDate;

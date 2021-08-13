@@ -249,13 +249,16 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.limit = 5;
     search.count = false;
     search.whereConditions = { _id: this.url };
-    await this.postFacade.searchPostStory(search).then((res: any) => {
+    await this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.postStoryData = res[0]
       this.type = this.postStoryData.type
       this.objectiveTag = this.postStoryData.objectiveTag
       this.emergencyEventTag = this.postStoryData.emergencyEventTag
       this.createdDate = this.postStoryData.createdDate;
       this.ownerUser = this.postStoryData.ownerUser;
+      if (this.postStoryData.imageURL) {
+        this.postStoryData.imageURL = await this.passSignUrl(this.postStoryData.imageURL);
+      }
       if (this.postStoryData.pageId !== null && this.postStoryData.pageId !== undefined) {
         this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
           this.postStoryData.pageData = page
@@ -266,7 +269,15 @@ export class StoryPage extends AbstractPage implements OnInit {
         this.imageCover = res.data
       }).catch((err: any) => {
       });
-      document.getElementById("storyBody").innerHTML = this.postStoryData.story.story
+      // remove contenteditable to fix bug for firefox like unable to click
+      let storyText = this.postStoryData.story.story;
+      if (this.postStoryData.story !== undefined) {
+        if (storyText !== undefined && storyText !== '') {
+          const regex = /contenteditable=""/ig;
+          storyText = storyText.replaceAll(regex, '');
+        }
+      }
+      document.getElementById("storyBody").innerHTML = storyText;
       document.querySelectorAll('contenteditable').forEach(function (element) {
         element.removeAttribute("contenteditable");
       });
@@ -309,6 +320,9 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.searchPageInUser(this.user.id)
       this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
       this.userId = this.userCloneDatas.id
+      if (this.userCloneDatas.imageURL) {
+        this.userCloneDatas.imageURL = await this.passSignUrl(this.userCloneDatas.imageURL);
+      }
     }
 
     setTimeout(() => {
@@ -325,6 +339,11 @@ export class StoryPage extends AbstractPage implements OnInit {
 
       this.pageName = this.postStoryData.pageData.data.name;
       this.story = this.postStoryData.story;
+      // remove contenteditable to fix bug for firefox like unable to click
+      if (this.story !== undefined && this.story.story !== undefined && this.story.story !== '') {
+        const regex = /contenteditable=""/ig;
+        this.story.story = this.story.story.replaceAll(regex, '');
+      }
       this.title = this.postStoryData.title;
 
       this.isComment = this.postStoryData.isComment;
@@ -734,6 +753,11 @@ export class StoryPage extends AbstractPage implements OnInit {
       return true
     } else
       return false
+  }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
   }
 
 }

@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { DialogCreatePage } from './dialog/DialogCreatePage.component';
 import { MESSAGE } from '../../../custom/variable';
 import { DialogAlert } from './dialog/DialogAlert.component';
+import { environment } from 'src/environments/environment';
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -42,7 +43,8 @@ export class ManagePage extends AbstractPage implements OnInit {
     private userAccessFacade: UserAccessFacade;
     protected observManager: ObservableManager;
     public dialog: MatDialog;
-    public resListPage: any; 
+    public resListPage: any;
+    public apiBaseURL = environment.apiBaseURL;
     // public ownerUser: string;
 
     constructor(router: Router, pageUserInfo: PageUserInfo, authenManager: AuthenManager, dialog: MatDialog, pageFacade: PageFacade, assetFacade: AssetFacade,
@@ -96,13 +98,12 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     public createPage() {
         this.hideScroll();
-        // const dialogRef = this.dialog.open(DialogCreatePage, {
-        //     autoFocus: false
-        // });
-        // dialogRef.afterClosed().subscribe(res => {
-        //     console.log(res)
-        // });
-        // this.clickSystemDevelopment();
+        const dialogRef = this.dialog.open(DialogCreatePage, {
+            autoFocus: false
+        });
+        dialogRef.afterClosed().subscribe(res => {
+            console.log(res)
+        });
     }
 
     public clickSystemDevelopment(): void {
@@ -119,12 +120,12 @@ export class ManagePage extends AbstractPage implements OnInit {
         });
     }
 
-    public clickMenu(){  
+    public clickMenu() {
         this.hideScroll();
     }
 
-    public hideScroll(){
-        if(this.drawer.opened){
+    public hideScroll() {
+        if (this.drawer.opened) {
             document.body.style.overflowY = "hidden";
         } else {
             document.body.style.overflowY = "auto";
@@ -136,24 +137,26 @@ export class ManagePage extends AbstractPage implements OnInit {
             if (res.length > 0) {
                 for (let data of res) {
                     if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
-                        this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
-                            if (image.status === 1) {
-                                if (!this.validBase64Image(image.data)) {
-                                    data.page.imageURL = null
-                                } else {
-                                    data.page.imageURL = image.data
-                                }
-                                setTimeout(() => {
-                                    this.resListPage = res
-                                }, 1000);
-                            }
-                        }).catch((err: any) => {
-                            if (err.error.message === "Unable got Asset") {
-                                data.page.imageURL = ''
-                                this.resListPage = res
-                            }
-                        })
+                        // this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
+                        //     if (image.status === 1) {
+                        //         if (!this.validBase64Image(image.data)) {
+                        //             data.page.imageURL = null
+                        //         } else {
+                        //             data.page.imageURL = image.data
+                        //         }
+                        //         setTimeout(() => {
+                        //             this.resListPage = res
+                        //         }, 1000);
+                        //     }
+                        // }).catch((err: any) => {
+                        //     if (err.error.message === "Unable got Asset") {
+                        //         data.page.imageURL = ''
+                        //         this.resListPage = res
+                        //     }
+                        // })
+                        this.resListPage = res
                     } else {
+
                         this.resListPage = res
                     }
                 }

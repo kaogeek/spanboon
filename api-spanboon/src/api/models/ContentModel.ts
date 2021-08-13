@@ -14,6 +14,7 @@ export class ContentModel {
     public link: string;
     public contents: any[];
     public iconUrl: string;
+    public iconSignUrl: string;
     public dateTime: Date;
     public templateType: string;
     public postCount: number;
@@ -28,6 +29,7 @@ export class ContentModel {
     public fulfillUsers: User[];
     public followUsers: User[];
     public coverPageUrl: string;
+    public coverPageSignUrl: string;
     public followUserCount: number;
     public owner: any; // id, uniqueId, iconImage, isOfficial
     public isLike: boolean;

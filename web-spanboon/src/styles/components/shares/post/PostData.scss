@@ -12,6 +12,7 @@
   border-radius: $border-radius-4px;
   overflow: hidden;
   position: relative;
+  z-index: 0;
 
   > .header-post {
     display: flex;
@@ -414,6 +415,9 @@
     > .title {
       @include font-size-8($font-head-500);
       line-height: 26px;
+      > .highlight-text {
+        color: #1b95e0 !important;
+      }
     }
 
     > .content {
@@ -421,6 +425,9 @@
       color: $color-black;
       @include font-size-10($font-content-light);
       min-height: unset;
+      > .highlight-text {
+        color: #1b95e0 !important;
+      }
     }
     > .page-give {
       display: -webkit-box;

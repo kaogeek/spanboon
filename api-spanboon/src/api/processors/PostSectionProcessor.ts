@@ -9,6 +9,7 @@ import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProce
 import { SectionModel } from '../models/SectionModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 import moment from 'moment';
 
 export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
@@ -17,7 +18,8 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
-        private postsService: PostsService
+        private postsService: PostsService,
+        private s3Service: S3Service
     ) {
         super();
     }
@@ -140,7 +142,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (searchOfficialOnly) {
                     postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
-                
+
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
@@ -153,12 +155,22 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
                 for (const row of postAggregate) {
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                    const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
                     const contents: any = {};
                     contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                    if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        try {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                            contents.coverPageSignUrl = signUrl;
+                        } catch (error) {
+                            console.log('PostSectionProcessor: ' + error);
+                        }
+                    }
+
                     contents.owner = {};
-                    if (row.page !== undefined && row.page.length > 0) {
-                        contents.owner = this.parsePageField(row.page[0]);
+                    if (row.page !== undefined) {
+                        contents.owner = this.parsePageField(row.page);
                     } else {
                         contents.owner = this.parseUserField(user);
                     }

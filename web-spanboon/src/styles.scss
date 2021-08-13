@@ -107,6 +107,13 @@ p {
 .cdk-overlay-pane {
     max-width: 100vw !important;
 }
+
+.mat-dialog-content {
+    margin: unset !important ;
+    padding: unset !important;
+    // max-height: unset;
+}
+
 @media only screen and (max-width: $large) {
     .customize-dialog {
         max-width: 100vw !important;
@@ -123,10 +130,6 @@ p {
         height: 100%;
         min-height: calc(100vh - 7em) !important;
         overflow-y: auto;
-
-        .mat-dialog-content {
-            // max-height: unset;
-        }
     }
 }
 
@@ -314,6 +317,7 @@ input:focus {
     position: relative;
     width: auto;
     height: auto;
+    overflow: hidden;
 }
 #canvas-wrap canvas {
     position: absolute;
@@ -321,4 +325,9 @@ input:focus {
     left: 0;
     z-index: 0;
     background-color: #fbfbfc;
+}
+@media (max-width: $large) {
+    #canvas-wrap canvas {
+        display: none !important;
+    }
 }

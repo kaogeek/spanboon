@@ -78,6 +78,7 @@ export class AdminPageCategoryController {
         pageCategory.name = pageCategories.name;
         pageCategory.description = pageCategories.description;
         pageCategory.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+        pageCategory.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result = await this.pageCategoryService.create(pageCategory);
 
@@ -144,6 +145,7 @@ export class AdminPageCategoryController {
             let assetId;
             let newAssetId;
             let iconURL;
+            let newS3IconURL;
 
             if (assetData !== null && assetData !== undefined) {
                 const data = assetData.data;
@@ -155,8 +157,9 @@ export class AdminPageCategoryController {
                     assetId = new ObjectID(pageCatIconURL.split(ASSET_PATH)[1]);
                     const assetQuery = { _id: assetId };
                     const newAssetValue = { $set: { data, mimeType, size, fileName } };
-                    assetResult = await this.assetService.update(assetQuery, newAssetValue);
+                    await this.assetService.update(assetQuery, newAssetValue);
                     newAssetId = assetId;
+                    assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
                 } else {
                     const asset = new Asset();
                     asset.data = data;
@@ -170,13 +173,15 @@ export class AdminPageCategoryController {
 
                 if (assetResult) {
                     iconURL = assetResult ? ASSET_PATH + newAssetId : '';
+                    newS3IconURL = assetResult ? assetResult.s3FilePath : '';
                 }
             } else {
                 iconURL = pageCatIconURL;
+                newS3IconURL = pageCategoryUpdate.s3IconURL;
             }
 
             const updateQuery = { _id: objId };
-            const newValue = { $set: { name: pageCategories.name, description: pageCategories.description, iconURL, lastActiveDate: moment().toDate() } };
+            const newValue = { $set: { name: pageCategories.name, description: pageCategories.description, iconURL, lastActiveDate: moment().toDate(), s3IconURL: newS3IconURL } };
             const pageCategorySave = await this.pageCategoryService.update(updateQuery, newValue);
 
             if (pageCategorySave) {
@@ -258,4 +263,4 @@ export class AdminPageCategoryController {
             return res.status(200).send(successResponse);
         }
     }
-} 
+}

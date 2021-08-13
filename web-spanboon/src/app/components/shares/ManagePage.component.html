@@ -20,14 +20,14 @@
             </g>
         </svg>
     </div>
-    <mat-drawer-container [class.active]="drawer.opened" [hasBackdrop]="false">
+    <mat-drawer-container [class.active]="drawer.opened" (click)="hideScroll()" [hasBackdrop]="false">
         <mat-drawer #drawer [mode]="'over'" [position]="'end'">
             <div class="list-page">
                 <div class="wrapper-header-list">
                     <div class="page-name-div">
                         เพจของคุณ
                     </div>
-                    <div class="btn-create-page" (click)="createPage()" [routerLink]="'/createpage-temporary'">
+                    <div class="btn-create-page" (click)="createPage()">
                         <span class="material-icons add-page">
                             add
                         </span>
@@ -40,7 +40,8 @@
                             <ng-container
                                 *ngIf="item.page && item.page.imageURL && item.page.imageURL !== ''; else elseImg">
                                 <div class="image-page">
-                                    <img class="img" src="{{item.page.imageURL}}">
+                                    <img class="img"
+                                        [src]="item.page.signURL?item.page.signURL:item.page.imageSignURL?item.page.imageSignURL:apiBaseURL+item.page.imageURL+'/image'">
                                 </div>
                             </ng-container>
                             <ng-template #elseImg>

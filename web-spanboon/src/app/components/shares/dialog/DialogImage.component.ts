@@ -7,42 +7,42 @@
 
 import { Component, Input, Inject, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { ImageCropperComponent, CropperSettings } from "ngx-img-cropper"; 
+import { ImageCropperComponent, CropperSettings } from "ngx-img-cropper";
 
 @Component({
   selector: 'dialog-image',
   templateUrl: './DialogImage.component.html'
-  
+
 })
 export class DialogImage {
 
-    @Input() name: string;
-    public cropperSettings: CropperSettings;  
-    public imageCropData:any;
-    @ViewChild('cropper', undefined)
-    public cropper:ImageCropperComponent;
-    @ViewChild('fileimg', undefined)
-    public fileimg: ElementRef<HTMLElement>;
+  @Input() name: string;
+  public cropperSettings: CropperSettings;
+  public imageCropData: any;
+  @ViewChild('cropper', undefined)
+  public cropper: ImageCropperComponent;
+  @ViewChild('fileimg', undefined)
+  public fileimg: ElementRef<HTMLElement>;
 
-    @Output()
-    public submit: EventEmitter<any> = new EventEmitter();
-    @Output()
-    public submitCanCel: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public submit: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public submitCanCel: EventEmitter<any> = new EventEmitter();
 
-  constructor(public dialogRef: MatDialogRef<DialogImage>, @Inject(MAT_DIALOG_DATA) public data: any) {    
-    
+  constructor(public dialogRef: MatDialogRef<DialogImage>, @Inject(MAT_DIALOG_DATA) public data: any) {
+
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.noFileInput = true;
     this.cropperSettings.width = 100;
     this.cropperSettings.height = 100;
     this.cropperSettings.croppedWidth = 300;
-    this.cropperSettings.croppedHeight = 300; 
+    this.cropperSettings.croppedHeight = 300;
     this.cropperSettings.rounded = true;
     this.cropperSettings.cropperDrawSettings.strokeWidth = 2;
     this.cropperSettings.minWidth = 300;
     this.cropperSettings.minHeight = 300;
     this.imageCropData = {};
-  }  
+  }
 
   public onNoClick(): void {
     this.dialogRef.close();
@@ -51,35 +51,37 @@ export class DialogImage {
   public onClickImg(): void {
 
     const inputimage = document.getElementById("inputimage");
-    if (inputimage != null) { 
+    if (inputimage != null) {
       this.dialogRef.close(this.imageCropData);
-      
-    }  
+
+    }
   }
 
   public fileChangeListener($event) {
-    var image:any = new Image();
-    var file:File = $event.target.files[0];
-    var myReader:FileReader = new FileReader();
+    var file: File = $event.target.files[0];
+    var myReader: FileReader = new FileReader();
     this.imageCropData.name = file.name;
     this.imageCropData.size = file.size;
-    var that = this;
-    myReader.onloadend = (loadEvent:any) => {
-        image.src = loadEvent.target.result; 
-        that.cropper.setImage(image);
+    myReader.onloadend = (loadEvent: any) => {
+      var image: any = new Image();
+      image.src = loadEvent.target.result;
+      // delay to fix bug for firefox not show image
+      setTimeout(() => {
+        this.cropper.setImage(image);
+      }, 100);
     };
     myReader.readAsDataURL(file);
   }
 
-  public getImageData(){
+  public getImageData() {
     fetch(this.imageCropData.image)
-        .then(res => res.blob())
-        .then(blob => {
-          var fd = new FormData()
-          fd.append('image', blob, 'filename')
-          // Upload
-          // fetch('upload', {method: 'POST', body: fd})
-        })
+      .then(res => res.blob())
+      .then(blob => {
+        var fd = new FormData()
+        fd.append('image', blob, 'filename')
+        // Upload
+        // fetch('upload', {method: 'POST', body: fd})
+      })
   }
 
   public ngOnInit(): void {

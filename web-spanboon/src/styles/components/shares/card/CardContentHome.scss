@@ -200,6 +200,16 @@
                 > .amount_social {
                     color: #a1a1a1;
                     @include font-size-11($font-head-400);
+                    > .foot_but {
+                        > .follow {
+                            padding: 5px;
+                            border: 0.7px solid $brandcolor2 !important;
+                            border-radius: 40px;
+                            text-align: center;
+                            color: $brandcolor2;
+                            width: 60px;
+                        }
+                    }
                 }
             }
         }
@@ -208,7 +218,7 @@
         background-color: rgb(255, 255, 255);
         width: 100%;
         margin: 0px 10px;
-        padding: 15px;
+        padding: 14px;
         border-radius: 5px;
         cursor: pointer;
         border: solid 0.2px #e4e4e400;
@@ -622,6 +632,18 @@
                     // color: white !important;
                 }
             }
+            &.max {
+                width: calc(100% - 30px);
+                padding: 10px 10px;
+                border-radius: 5px;
+                border: solid 0.2px #e4e4e400;
+                &:hover {
+                    transition: 0.2s;
+                    // background-color: #f0f0f0;
+                    border: solid 0.2px #e4e4e4;
+                    // color: white !important;
+                }
+            }
             > .top_coverPage {
                 width: 100%;
                 height: 350px;
@@ -740,6 +762,9 @@
             &.full {
                 width: calc(40% - 30px);
                 padding: 0px 15px;
+            }
+            &.dis {
+                display: none;
             }
             > .other_teg_event {
                 @include font-size-10($font-head-400);
@@ -1187,7 +1212,7 @@
     }
     .home_page_v2 > .hoem_page_body > .other_section {
         background-color: white;
-        width: calc(100% - 2px);
+        width: calc(100% - 2px) !important;
         padding: unset;
         border-bottom: unset;
     }
