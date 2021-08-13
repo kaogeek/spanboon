@@ -228,8 +228,8 @@
 
 
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
-        <div class="top" [class.full]="!isData">
-            <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="!isData">
+        <div class="top" [class.max]="eventData.length === 1" [class.full]="!isData">
+            <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="true">
                 <img class="top_coverPage_cover"
                     [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
@@ -288,10 +288,10 @@
                 </div>
             </div>
         </div>
-        <div class="bottom" [class.full]="!isData">
+        <div class="bottom" [class.full]="!isData" [class.dis]="eventData.length === 1">
             <div class="other_teg_event">
                 <div class="teg_event_list" (click)="clickDataSearch(event.data.emergencyEventId,index)"
-                    *ngFor="let event of eventData | slice:1 ; let index=index">
+                    *ngFor="let event of eventData | slice:1:4; let index=index">
                     <div class="img_box" [class.open]="index === selectIndex && !isData">
                         <img class="bottom_coverPage_cover"
                             [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
@@ -299,7 +299,7 @@
                             [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
                     </div>
                     <div class="title">
-                        <a (click)="clickDataSearch(emergencyEventId)">{{event.title}}</a>
+                        <a >{{event.title}}</a>
                         <!-- <div class="date_time">
                             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -344,7 +344,7 @@
                     <div class="description">
                         <span [class.full]="isData">{{event.description}}</span>
                     </div>
-                    <div class="social">
+                    <!-- <div class="social">
                         <div class="social_control">
                             <div class="amount_social">
                                 <span class="count-aontrol">{{event.eventRepostCount | shortNumber}}</span>
@@ -372,7 +372,7 @@
                             </svg>
                             {{event.dateTime | thformatdatetime}}
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

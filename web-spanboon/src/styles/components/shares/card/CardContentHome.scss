@@ -632,6 +632,18 @@
                     // color: white !important;
                 }
             }
+            &.max {
+                width: calc(100% - 30px);
+                padding: 10px 10px;
+                border-radius: 5px;
+                border: solid 0.2px #e4e4e400;
+                &:hover {
+                    transition: 0.2s;
+                    // background-color: #f0f0f0;
+                    border: solid 0.2px #e4e4e4;
+                    // color: white !important;
+                }
+            }
             > .top_coverPage {
                 width: 100%;
                 height: 350px;
@@ -750,6 +762,9 @@
             &.full {
                 width: calc(40% - 30px);
                 padding: 0px 15px;
+            }
+            &.dis {
+                display: none;
             }
             > .other_teg_event {
                 @include font-size-10($font-head-400);
@@ -1197,7 +1212,7 @@
     }
     .home_page_v2 > .hoem_page_body > .other_section {
         background-color: white;
-        width: calc(100% - 2px);
+        width: calc(100% - 2px) !important;
         padding: unset;
         border-bottom: unset;
     }
