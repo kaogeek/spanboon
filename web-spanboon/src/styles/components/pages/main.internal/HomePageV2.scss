@@ -127,12 +127,52 @@
             }
             > .right {
                 padding: 15px;
+                width: 50%;
                 > .tagCardRight {
                     width: 100%;
                 }
                 > .tagCard {
                     display: flex;
+                    flex-direction: column;
                     width: 100%;
+                    > .post-tag-title {
+                        width: auto;
+                        display: flex;
+                        padding: 15px;
+                        justify-content: space-between;
+                        align-items: center;
+                        border-radius: 4px;
+                        background-color: #f9f9f9;
+                        border: solid 0.2px #e4e4e4;
+                        margin-bottom: 20px;
+                        > .title {
+                            font-size: 13pt;
+                            font-family: "Kanit-400";
+                        }
+                        &.dis {
+                            display: none;
+                        }
+                    }
+                    > .post-tag {
+                        width: auto;
+                        cursor: pointer;
+                        display: flex;
+                        padding: 15px;
+                        justify-content: space-between;
+                        align-items: center;
+                        border-radius: 4px;
+                        background-color: #f9f9f9;
+                        border: solid 0.2px #e4e4e4;
+                        margin-left: 15px;
+                        margin-bottom: 10px;
+                        > .title {
+                            font-size: 10pt;
+                            font-family: "Kanit-400";
+                        }
+                        &.dis {
+                            display: none;
+                        }
+                    }
                 }
                 &.dis {
                     display: none;
@@ -316,7 +356,7 @@
         > .other_section {
             margin: 10px 0px;
             padding: 10px 0px;
-            width: 80%;
+            width: 80% !important;
             > .top {
                 color: $brandcolor2;
                 display: flex;
@@ -367,7 +407,7 @@
                 > .isDesktop {
                     display: block;
                     width: 22%;
-                    margin: 0% 1%;
+                    margin: 0% 1.5%;
                 }
                 > .footer_mobile {
                     display: none;
@@ -440,7 +480,7 @@
             &.tag {
                 margin: unset;
                 padding: unset;
-                width: 80%;
+                width: 90%;
             }
         }
     }
@@ -517,7 +557,7 @@
         width: 90%;
     }
     .home_page_v2 > .hoem_page_body > .other_section {
-        width: 90%;
+        width: 90% !important;
     }
 }
 
@@ -526,7 +566,8 @@
         display: none;
     }
     .home_page_v2 > .hoem_page_body > .other_section > .body > .isDesktop {
-        width: 45%;
+        width: 44%;
+        margin: 0% 2.5%;
     }
 }
 
@@ -702,6 +743,9 @@
         max-width: unset;
         min-width: calc(360px - 20px);
         border: 1px solid #00000024;
+    }
+    .home_page_v2 > .hoem_page_body > .other_section > .around_section > .top > .text_svg {
+        padding: 0px 8px !important;
     }
     .home_page_v2 > .hoem_page_body {
         display: flex;

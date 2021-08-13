@@ -26,7 +26,7 @@
 
         <div class="events_tag_top">
             <div class="left">
-                <div class="text_h">
+                <!-- <div class="text_h">
                     <span class="text">มาใหม่ :</span>
                 </div>
                 <div class="tag_list hide-scrollbar" id="style-1">
@@ -34,32 +34,41 @@
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
                     <div style="width: 10%;height: 10%;"></div>
-                </div>
+                </div> -->
             </div>
             <div class="right">
-                <span class="text">มาแรง :</span>
+                <!-- <span class="text">มาแรง :</span>
                 <div class="tag_list hide-scrollbar" id="style-1">
                     <div class="tag" *ngFor="let item of emergencyEventsArrTitle let i=index">
                         <a (click)="clickDataSearch(item)">{{item}}</a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
         <!-- ///////////////////////// -->
 
-        <div class="events_top" [class.full]="!isDoing">
-            <div class="left" [class.full]="!isDoing">
+        <div class="events_top" [class.full]="true">
+            <div class="left" [class.full]="true">
                 <card-contant-home [eventCard]='true' [isData]="isDoing" [eventData]='emergencyEvents'>
                 </card-contant-home>
             </div>
             <div class="right" [class.dis]="!isDoing">
-                <div class="tagCardRight">
+                <!-- <div class="tagCardRight">
                     <card-contant-home [tagCard]='true' [tagCardIsOpenRight]='true' [tagData]='doingEventsNo2'>
                     </card-contant-home>
-                </div>
+                    <card-contant-home [tagCard]='true' [tagCardIsOpenRight]='true' [tagData]='doingEventsNo2'>
+                    </card-contant-home>
+                </div> -->
                 <div class="tagCard">
                     <card-contant-home [tagCard]='true' [tagData]='doingEventsNo1'></card-contant-home>
+                    <div class="post-tag-title" [class.dis]="!isDoing">
+                        <span class="title">โพสค์ใหม่ล่าสุด</span>
+                    </div>
+                    <div [class.dis]="!isDoing" class="post-tag"
+                        *ngFor="let post of postSectionModel.contents | slice:0:6;">
+                        <div class="title" [innerHTML]="post.post.title"></div>
+                    </div>
                     <card-contant-home style="margin-left: 10px;" [tagCard]='true' [tagData]='doingEventsNo3'>
                     </card-contant-home>
                 </div>

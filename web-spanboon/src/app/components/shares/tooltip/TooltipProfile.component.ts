@@ -67,6 +67,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   public ngOnInit(): void {
+    console.log('this.data', this.data)
     if (this.data.owner.length > 0) {
       this.data.owner = this.data.owner[0];
     }

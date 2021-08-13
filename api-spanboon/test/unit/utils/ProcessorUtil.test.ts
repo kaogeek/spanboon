@@ -7,7 +7,7 @@ import { EmergencyEventSectionProcessor } from '../../../src/api/processors/Emer
 function generateMockProcessor(): any[] {
     const result = [];
 
-    let processor1 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
+    const processor1 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
     processor1.process = function () {
         const sectionModel = new SectionModel();
         sectionModel.title = '1';
@@ -15,7 +15,7 @@ function generateMockProcessor(): any[] {
     };
     result.push(processor1);
 
-    let processor2 = new StillLookingSectionProcessor(undefined, undefined, undefined);
+    const processor2 = new StillLookingSectionProcessor(undefined, undefined, undefined);
     processor2.process = function () {
         const sectionModel = new SectionModel();
         sectionModel.title = '2';
@@ -23,7 +23,7 @@ function generateMockProcessor(): any[] {
     };
     result.push(processor2);
 
-    let processor3 = new EmergencyEventSectionProcessor(undefined, undefined);
+    const processor3 = new EmergencyEventSectionProcessor(undefined, undefined);
     processor3.process = function () {
         const sectionModel = new SectionModel();
         sectionModel.title = '3';
@@ -31,7 +31,7 @@ function generateMockProcessor(): any[] {
     };
     result.push(processor3);
 
-    let processor4 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
+    const processor4 = new LastestLookingSectionProcessor(undefined, undefined, undefined);
     processor4.process = function () {
         const sectionModel = new SectionModel();
         sectionModel.title = '4';
