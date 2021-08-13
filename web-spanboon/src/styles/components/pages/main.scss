@@ -264,7 +264,7 @@ span:focus {
         @include pointer();
         z-index: 99;
         overflow: hidden;
-        transform: scale(1, 1); 
+        transform: scale(1, 1);
         transition: all 0.3s ease-in-out;
         -webkit-transition: all 0.3s ease-in-out;
         -moz-transition: all 0.3s ease-in-out;
@@ -411,6 +411,9 @@ span:focus {
 
     .tribute-container-hashtag {
         color: #1b95e0;
+        > .highlight-text {
+            color: #1b95e0 !important;
+        }
     }
 
     .tribute-container-like {
@@ -481,7 +484,7 @@ span:focus {
 
     .highlight-text {
         @include pointer();
-        color: rgb(27, 149, 224);
+        color: rgb(27, 149, 224) !important;
 
         &:hover {
             color: rgba($brandcolor2, 0.95);
@@ -1020,6 +1023,19 @@ $baby-blue: #f8faff;
 
         > button {
             @include font-size-10($font-head-500);
+        }
+    }
+}
+
+.card-feed-post > .wrapper-content > .title {
+    font-size: 15pt;
+    font-family: "Kanit-500";
+    line-height: 26px;
+    > .atwho-inserted {
+        > .tribute-container-hashtag {
+            > a {
+                color: #1b95e0 !important;
+            }
         }
     }
 }
