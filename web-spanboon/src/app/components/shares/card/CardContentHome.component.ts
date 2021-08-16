@@ -56,6 +56,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     @Output()
     public clickEvent: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    public isLodingEvent: EventEmitter<any> = new EventEmitter();
+
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
     public selectIndex: number = 0;
@@ -179,9 +182,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             setTimeout(() => {
                 this.isLoad = false;
-            }, 1000);
+                this.isLodingEvent.emit(this.isLoad);
+            }, 400);
 
-        }, 3000);
+        }, 800);
 
 
     }
@@ -268,6 +272,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
             window.open('/objective/' + data.data.objectiveId);
 
         } else if (data.data.emergencyEventId) {
+            console.log('emergencyevent', data.data.emergencyEventId);
             window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {

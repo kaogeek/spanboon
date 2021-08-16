@@ -29,7 +29,9 @@
             <div class="top-objective-data">
                 <div class="objective">
                     <div class="data">
-                        <img class="iconURL" [src]="pageObjective.coverPageURL" alt="">
+                        <img class="iconURL"
+                            [src]="pageObjective.signURL?pageObjective.signURL:pageObjective.coverPageSignURL?pageObjective.coverPageSignURL:apiBaseURL+pageObjective.coverPageURL+'/image'"
+                            alt="">
                         <div class="data-text">
                             <div class="text">
                                 <span class="title">{{pageObjective.hashTagName}}</span>
