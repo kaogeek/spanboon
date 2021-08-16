@@ -635,9 +635,7 @@
                         </div>
                         <div *ngIf="!showLoading" class="wrapper-feed">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateCheckPost">
-                                <div *ngIf="!isPost" class="main-feed">
-                                    {{isNotAccess}}
-                                    {{isLogin()}}
+                                <div *ngIf="!isPost" class="main-feed"> 
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
