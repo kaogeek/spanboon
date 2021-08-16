@@ -152,17 +152,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     public async setData(): Promise<void> {
         this.pageObjective = this.objectiveData.emergencyEvent;
-        if (this.pageObjective.coverPageURL) {
-            this.pageObjective.coverPageURL = await this.passSignUrl(this.pageObjective.coverPageURL);
-        }
-        for (let data of this.objectiveData.timelines) {
-            if (data.post) {
-                if (data.post.postGallery) {
-                    data.post.postGallery[0].imageURL = await this.passSignUrl(data.post.postGallery[0].imageURL);
-                }
-            }
-
-        }
         this.pageOwner = this.objectiveData.page;
 
     }
