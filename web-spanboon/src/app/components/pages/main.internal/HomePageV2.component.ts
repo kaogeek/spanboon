@@ -82,11 +82,12 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       await this.getMainPageModel();
       this.searchPageInUser();
     }
-    this.getPost();
-    setTimeout(() => {
-      this.isLoding = false;
+    // this.getPost();
+    // setTimeout(() => {
+    //   this.isLoding = false;
 
-    }, 3500);
+    // }, 2700);
+
 
   }
 
@@ -157,6 +158,12 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+
+  public lodingSucceed(event: any) {
+    setTimeout(() => {
+      this.isLoding = false;
+    }, 800);
+  }
 
   public clickDataSearch(data) {
     this.router.navigate([]).then(() => {
@@ -250,75 +257,58 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
-  private async getPost(): Promise<any> {
-    let search: SearchFilter = new SearchFilter();
-    search.limit = 10;
-    search.count = false;
-    let post = await this.postFacade.search(search);
-    this.setFormetDataSectionModels(post);
-  }
+  // private async getPost(): Promise<any> {
+  //   let search: SearchFilter = new SearchFilter();
+  //   search.limit = 10;
+  //   search.count = false;
+  //   let post = await this.postFacade.search(search);
+  //   this.setFormetDataSectionModels(post);
+  // }
 
-  private setFormetDataSectionModels(post): any {
-    let month: any[] = [];
-    let time: any[] = [];
-    let index: number = 1;
+  // private setFormetDataSectionModels(post): any {
+  //   let month: any[] = [];
+  //   let time: any[] = [];
+  //   let index: number = 1;
 
-    let dat = this.formetDateTime(post);
-    time.push(dat);
+  //   let dat = this.formetDateTime(post);
+  //   time.push(dat);
 
-    for (let t of time) {
-      if (month.length === 0) {
-        month.push({ 'day': t.day, 'month': t.month });
-      } else {
-        var indexMonth = month.map(function (e) { return e.day; }).indexOf(t.day);
-        if (indexMonth < 0) {
-          month.push({ 'day': t.day, 'month': t.month });
-        }
-      }
+  //   for (let t of time) {
+  //     if (month.length === 0) {
+  //       month.push({ 'day': t.day, 'month': t.month });
+  //     } else {
+  //       var indexMonth = month.map(function (e) { return e.day; }).indexOf(t.day);
+  //       if (indexMonth < 0) {
+  //         month.push({ 'day': t.day, 'month': t.month });
+  //       }
+  //     }
 
-      for (let m of month) {
-        for (let p of post) {
-
-
-
-        }
-      }
-
-    }
-
-    // for (let t of time) {
-    //   if (month.length === 0) {
-    //     month.push(t);
-    //   } else {
-    //     var indexMonthIndex = section.map(function (e) { return e.monthIndex; }).indexOf(t.monthIndex);
-
-    //     if (indexMonthIndex < 0) {
-    //       section.push({'Month':t.monthIndex});
-    //     }
-
-    //   }
-    //   console.log('section', section);
-    // }
-
-  }
-
-  private formetDateTime(post: any): any {
-    let dataArr: any[] = [];
-
-    for (let p of post) {
-
-      const date = new Date(p.createdDate); // had to remove the colon (:) after the T in order to make it work
-      const day = date.getDate();
-      const month = date.getMonth();
-
-      p.date = { 'day': day, 'month': month };
+  //     for (let m of month) {
+  //       for (let p of post) {
 
 
-      // var indexMonth = month.map(function (e) { return e.day; }).indexOf(t.day);
-    }
 
-    // return { 'day': day, 'month': month }
-  }
+  //       }
+  //     }
+
+  //   }
+
+  // }
+
+  // private formetDateTime(post: any): any {
+  //   let dataArr: any[] = [];
+
+  //   for (let p of post) {
+
+  //     const date = new Date(p.createdDate); // had to remove the colon (:) after the T in order to make it work
+  //     const day = date.getDate();
+  //     const month = date.getMonth();
+
+  //     p.date = { 'day': day, 'month': month };
+
+  //   }
+
+  // }
 
   private postInDoing(arr): any {
     let doings: any[] = []
