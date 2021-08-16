@@ -37,10 +37,10 @@ export class SeoService {
         ]);
     }
 
-    public updateMetaInfo(keywords: any, description: string, author?: string, url?: string) {
+    public updateMetaInfo(keywords: any, description: string, author?: string, url?: string ) {
 
         if (keywords.length > 0 && keywords !== '' && keywords !== undefined && keywords !== null) {
-            console.log('keywords ',keywords)
+            // console.log('keywords ',keywords)
             this.meta.updateTag({ name: 'keywords', content: keywords });
         } else {
             this.meta.removeTag("name='keywords'")
@@ -49,7 +49,8 @@ export class SeoService {
             this.meta.updateTag({ name: 'description', content: description });
         } else {
             this.meta.removeTag("name='description'")
-        }
+        } 
+        this.meta.updateTag({ property : 'og:image' , content: '../../asset/img/favicon.svg' })
 
         this.meta.updateTag({ name: 'og:url', content: this.webBaseURL + url });
         this.meta.updateTag({ name: 'robots', content: 'index, follow' });
