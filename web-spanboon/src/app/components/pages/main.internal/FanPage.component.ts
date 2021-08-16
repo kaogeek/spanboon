@@ -116,6 +116,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public linkmain: any = '';
   public labelStatus: string;
   public pathPostId: string;
+  public pathUrlPost: string;
   public isCheck: boolean = true;
   public countScroll: number;
   public dataRecommend: any;
@@ -170,6 +171,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
 
+    this.seoService.removeMeta();
+
     this.mySubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -195,15 +198,15 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
                 this.showProfilePage(this.url);
               }
             }
-          }
+          } 
 
           if (!this.msgPageNotFound) {
             if (splitTpye !== undefined && splitTpye !== null) {
               this.splitTpyeClone = splitTpye
-              this.initPage(splitTpye);
+              this.initPage(splitTpye); 
             } else {
               this.splitTpyeClone = 'timeline'
-              this.initPage('timeline');
+              this.initPage('timeline'); 
             }
           }
           const pathPost = url && url.split('/')[3];
@@ -214,8 +217,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         } else if (pathUrlPost === 'post') {
           this.CheckPost = false;
           this.searchPostById(postId);
-        }
-      }
+        } 
+      } 
     });
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
@@ -481,7 +484,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public async searchPostById(postId: string) {
+  public async searchPostById(postId: string) { 
     var postIdSubstring = postId.substring(0, 24);
     let search: SearchFilter = new SearchFilter();
     search.limit = 10;
@@ -498,9 +501,15 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.isMaxLoadingPost = true;
         let postIndex: number = 0
         let galleryIndex = 0;
-        for (let post of this.resDataPost) {
-          this.seoService.updateTitle(post.title);
-          this.seoService.updateMetaInfo(post.hashTag, post.detail);
+        for (let post of this.resDataPost) {  
+          let arrayHashTag = [];
+          if(post.hashTags.length > 0){ 
+            for(let hashtag of post.hashTags){
+              arrayHashTag.push(hashtag.name)
+            }
+          }
+          let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;  
+          this.seoService.updateMetaInfo(text, post.detail,'',this.router.url);
           if (post.gallery.length > 0) {
             for (let img of post.gallery) {
               if (img.imageURL !== '') {
@@ -819,7 +828,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
-  public showProfilePage(url): void {
+  public showProfilePage(url): void { 
     this.pageFacade.getProfilePage(url).then((res) => {
       this.checkAccessPage(res.data.id);
       if (res.pageUsername !== null && res.pageUsername !== undefined) {
@@ -850,6 +859,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           this.name = this.resDataPage.pageUsername
         } else if (this.resDataPage.displayName) {
           this.name = this.resDataPage.displayName
+        } 
+        this.seoService.updateTitle(this.resDataPage.name); 
+        if(this.router.url.split('/')[3] !== 'post'){ 
+          this.seoService.updateMetaInfo(this.resDataPage.name,this.resDataPage.name,'',this.router.url);
         }
         this.searchAboutPage();
 
