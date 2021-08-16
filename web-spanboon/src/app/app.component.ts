@@ -23,8 +23,7 @@ export class AppComponent {
   constructor(router: Router , private seoSerive : SeoService) {
     this.router = router;
     this.router.events.subscribe((event) => { 
-      window.scroll(0,0);
-      this.seoSerive.showMeta();
+      window.scroll(0,0); 
     });
   } 
 
