@@ -1,4 +1,12 @@
 # Spanboon API
+## Social Civic Platform
+[![Spanboon](https://spanboon.com/assets/img/logo/logo.svg)](https://github.com/kaogeek/spanboon)
+
+## **Getting Started**
+#### Prerequisites
+- Download and ***install npm*** from [Node.js](https://nodejs.org/en/download)
+- Install MongoDB Community Edition
+  - Please read [installation steps](https://docs.mongodb.com/manual/installation) carefully.
 
 ### Steps to run Spanboon API
 

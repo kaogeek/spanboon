@@ -1,4 +1,10 @@
 # Spanboon Admin
+## Social Civic Platform
+[![Spanboon](https://spanboon.com/assets/img/logo/logo.svg)](https://github.com/kaogeek/spanboon)
+
+## **Getting Started**
+#### Prerequisites
+- Download and ***install npm*** from [Node.js](https://nodejs.org/en/download)
 
 ### Steps to run Spanboon Admin
 
