@@ -7,7 +7,7 @@
 
 import { Injectable } from '@angular/core';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser'
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment'; 
 @Injectable({
     providedIn: 'root'
 })
@@ -27,33 +27,40 @@ export class SeoService {
         this.title.setTitle(title);
     }
 
-    public addMetaInfo(keywords: string, url: string) {
+    public addMetaInfo(keywords: any, description: string, title: string, url?: string) {
         this.meta.addTags([
             { name: 'keywords', content: keywords },
-            { name: 'description', content: '#' + keywords },
-            { name: 'robots', content: 'index, follow' },
-            // { name: 'author', content: 'John Smith' },  
+            { name: 'title', content: keywords },
+            { name: 'description', content: '#' + keywords }, 
             { name: 'og:url', content: this.webBaseURL + url },
         ]);
     }
 
-    public updateMetaInfo(keywords: any, description: string, author?: string, url?: string ) {
+    public updateMetaInfo(keywords: any, description: string, title: string, url?: string , image? : string) {
 
         if (keywords.length > 0 && keywords !== '' && keywords !== undefined && keywords !== null) {
             // console.log('keywords ',keywords)
             this.meta.updateTag({ name: 'keywords', content: keywords });
+            this.meta.updateTag({ property: 'og:keywords', content: keywords });
         } else {
             this.meta.removeTag("name='keywords'")
         }
         if (description !== '' && description !== undefined && description !== null) {
             this.meta.updateTag({ name: 'description', content: description });
+            this.meta.updateTag({ property: 'og:description', content: description });
         } else {
             this.meta.removeTag("name='description'")
         } 
-        this.meta.updateTag({ property : 'og:image' , content: '../../asset/img/favicon.svg' })
+        if (title !== '' && title !== undefined && title !== null) {
+            this.meta.updateTag({ name: 'title', content: title });
+            this.meta.updateTag({ property: 'og:title', content: title });
+        } else {
+            this.meta.removeTag("name='description'")
+        }  
 
-        this.meta.updateTag({ name: 'og:url', content: this.webBaseURL + url });
-        this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+        this.meta.updateTag({ property : 'og:image' , content: this.webBaseURL + image })
+        this.meta.updateTag({ name: 'og:url', content: this.webBaseURL + url }); 
+        this.meta.updateTag({ property: 'og:url', content: this.webBaseURL + url }); 
 
     }
 
