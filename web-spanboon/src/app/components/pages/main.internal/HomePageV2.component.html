@@ -62,13 +62,13 @@
                     </card-contant-home>
                 </div> -->
                 <div *ngIf="postSectionModel" class="tagCard">
-                    <card-contant-home [tagCard]='true' [tagData]='doingEventsNo1'></card-contant-home>
+                    <card-contant-home [tagCard]='true' (clickEvent)="testCrad($event)" [tagData]='doingEventsNo1'></card-contant-home>
                     <div class="post-tag-title" [class.dis]="!isDoing">
                         <span class="title">โพสค์ใหม่ล่าสุด</span>
                     </div>
                     <div [class.dis]="!isDoing" class="post-tag"
                         *ngFor="let post of postSectionModel.contents | slice:0:6;">
-                        <div class="title" [innerHTML]="post.post.title"></div>
+                        <div class="title" (click)="testCrad(post)" [innerHTML]="post.post.title"></div>
                     </div>
                     <card-contant-home style="margin-left: 10px;" [tagCard]='true' [tagData]='doingEventsNo3'>
                     </card-contant-home>
