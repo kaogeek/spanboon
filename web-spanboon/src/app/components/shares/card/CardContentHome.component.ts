@@ -284,6 +284,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
             window.open('/objective/' + data.data.objectiveId);
 
         } else if (data.data.emergencyEventId) {
+            console.log('emergencyevent', data.data.emergencyEventId);
             window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
