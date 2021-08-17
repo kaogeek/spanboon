@@ -9,8 +9,6 @@
 
 ## **Getting Started**
 #### Prerequisites
-- Install MongoDB Community Edition
-  - Please read [installation steps](https://docs.mongodb.com/manual/installation) carefully.
 - Download and ***install npm*** from [Node.js](https://nodejs.org/en/download)
 - Download and ***install git*** tool you prefer, eg.
   - [Sourcetree](https://www.sourcetreeapp.com)
@@ -21,6 +19,8 @@
   ```
     npm install
   ```
+- Install MongoDB Community Edition
+  - Please read [installation steps](https://docs.mongodb.com/manual/installation) carefully.
 
 #### Running Spanboon API Server
 - You can run the Spanboon API server by executing:
@@ -35,12 +35,24 @@
   ```
 
 ### Building Spanboon API
-- `npm start build` (development)
-- `npm start build production` (production)
+- For Development
+```
+    npm start build
+```
+- For Production
+```
+    npm start build production
+```
 
 ### Building Spanboon Web and Admin
-- `npm run build` (development)
-- `npm run prod` (production)
+- For Development
+```
+    npm run build
+```
+- For Production
+```
+    npm run prod
+```
 
 ### Feature Requests and Bug Reports
 When you file a feature request or when you are submitting a bug report to the [issue tracker](https://github.com/kaogeek/spanboon/issues), make sure you add steps to reproduce it. Especially if that bug is some weird/rare one.
