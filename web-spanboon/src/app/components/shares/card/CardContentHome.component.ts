@@ -225,6 +225,12 @@ export class CardContentHome extends AbstractPage implements OnInit {
         });
     }
 
+    public clickObjTimeline(data) {
+        this.router.navigate([]).then(() => {
+            window.open('/objective/' + data.posts[0].objectiveId);
+        });
+    }
+
     public clickToStory(data) {
         this.router.navigate([]).then(() => {
             window.open('/story/' + data, '_blank');
@@ -265,14 +271,19 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmit(data?: any) {
+        console.log('data', data);
         if (data.post) {
             this.clickEvent.emit(this.postData);
+        } else if (data._id) {
+            this.clickEvent.emit(data);
+
+        } else if (data.page) {
+            window.open('/page/' + data.page.id);
 
         } else if (data.data.objectiveId) {
             window.open('/objective/' + data.data.objectiveId);
 
         } else if (data.data.emergencyEventId) {
-            console.log('emergencyevent', data.data.emergencyEventId);
             window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
