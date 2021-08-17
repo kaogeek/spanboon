@@ -171,7 +171,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
 
-    this.seoService.removeMeta();
+    // this.seoService.removeMeta();
 
     this.mySubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -501,7 +501,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.isMaxLoadingPost = true;
         let postIndex: number = 0
         let galleryIndex = 0;
-        for (let post of this.resDataPost) {  
+        for (let post of this.resDataPost) { 
+          console.log('post ',post) 
           let arrayHashTag = [];
           if(post.hashTags.length > 0){ 
             for(let hashtag of post.hashTags){
@@ -509,7 +510,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
           }
           let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;  
-          this.seoService.updateMetaInfo(text, post.detail,'',this.router.url);
+          this.seoService.updateMetaInfo(text,post.title + post.detail,post.title,this.router.url,post.gallery[0].imageURL);
           if (post.gallery.length > 0) {
             for (let img of post.gallery) {
               if (img.imageURL !== '') {
