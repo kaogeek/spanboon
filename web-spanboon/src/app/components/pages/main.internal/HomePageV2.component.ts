@@ -198,19 +198,35 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   }
 
   public testCrad($event) {
-    const dialogRef = this.dialog.open(DialogPostCrad, {
-      width: 'auto',
-      disableClose: false,
-      data: {
-        post: $event.post,
-        isNotAccess: this.isNotAccess,
-        user: this.userCloneDatas,
-        pageUser: this.pageUser,
-      }
-    });
+    if ($event.post) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event.post,
+          isNotAccess: this.isNotAccess,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-    });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    } else if ($event._id) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event,
+          isNotAccess: this.isNotAccess,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 
   }
 

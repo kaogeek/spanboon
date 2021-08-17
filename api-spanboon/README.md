@@ -1,6 +1,6 @@
 # Spanboon API
 
-### Steps to run this project:
+### Steps to run Spanboon API
 
 1. Run `npm install` command
 2. Create `.env` file
@@ -33,5 +33,10 @@
         - TWITTER_BEARER_TOKEN=`TWITTER_BEARER_TOKEN`
         - TWITTER_ACCESS_TOKEN=`TWITTER_ACCESS_TOKEN`
         - TWITTER_TOKEN_SECRET=`TWITTER_TOKEN_SECRET`
-4. Run `npm start serv` command to start API
+4. Run `npm start serv` command to start Spanboon API
 
+### Feature Requests and Bug Reports
+When you file a feature request or when you are submitting a bug report to the [issue tracker](https://github.com/kaogeek/spanboon/issues), make sure you add steps to reproduce it. Especially if that bug is some weird/rare one.
+
+## License
+This project is currently licensed under the [MIT License](https://github.com/kaogeek/spanboon/blob/main/LICENSE).
