@@ -57,6 +57,9 @@
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
                         word-break: unset;
+                        > a {
+                            line-height: 26px;
+                        }
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
@@ -103,6 +106,9 @@
                         padding: 0px 10px;
                         border-right: solid 0.5px #d3d3d3;
                         word-break: unset;
+                        > a {
+                            line-height: 26px;
+                        }
                         &:hover {
                             transition: 0.1s;
                             color: $brandcolor2;
