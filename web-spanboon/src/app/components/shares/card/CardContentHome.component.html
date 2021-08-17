@@ -229,7 +229,8 @@
 
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
         <div class="top" [class.max]="eventData.length === 1" [class.full]="!isData">
-            <div (click)="clickDataSearch(emergencyEventId)" class="top_coverPage" [class.full]="true">
+            <div (click)="clickDataSearch(eventData[0].data.emergencyEventId)" class="top_coverPage"
+                [class.full]="true">
                 <img class="top_coverPage_cover"
                     [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
@@ -299,7 +300,7 @@
                             [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
                     </div>
                     <div class="title">
-                        <a >{{event.title}}</a>
+                        <a>{{event.title}}</a>
                         <!-- <div class="date_time">
                             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -386,11 +387,11 @@
                         [src]="tagData.hashtag.signURL?tagData.hashtag.signURL:tagData.hashtag.coverPageSignURL?tagData.hashtag.coverPageSignURL:apiBaseURL+tagData.hashtag.coverPageUrl+'/image'">
                 </div>
                 <div class="hashtag_user">
-                    <a class="hashtag" (click)="clickDataSearch(tagData.hashtag.title)">{{tagData.hashtag.title}}</a>
+                    <a class="hashtag" (click)="clickObjTimeline(tagData)">{{tagData.hashtag.title}}</a>
                     <div class="user">
                         <span>โดย: </span>
                         <div class="page_name">
-                            <span (click)="clickDialogDiverlop()">{{tagData.page.name}}</span>
+                            <span (click)="clickEventEmit(tagData)">{{tagData.page.name}}</span>
                         </div>
                         <span class="drot">•</span>
                         <span>ผู้ติดตาม </span>
@@ -420,7 +421,7 @@
         </div>
         <div class="body">
             <div class="left">
-                <div class="post_card_list" (click)="clickDialogDiverlop()"
+                <div class="post_card_list" (click)="clickEventEmit(item)"
                     *ngFor="let item of datahashTagArrPosts | slice:0:4; let i=index">
                     <div class="type" [class.need]="item.type === 'NEEDS'" [class.general]="item.type === 'GENERAL'"
                         [class.fulfillment]="item.type === 'FULFILLMENT'">
