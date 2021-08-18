@@ -271,7 +271,6 @@ export class CardContentHome extends AbstractPage implements OnInit {
     }
 
     public clickEventEmit(data?: any) {
-        console.log('data', data);
         if (data.post) {
             this.clickEvent.emit(this.postData);
         } else if (data._id) {
@@ -328,9 +327,17 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (indexKey === keyObjs.length) {
                 if (indexKey === 1) {
-                    return this.apiBaseURL + Obj[key] + '/image';
+                    if (Obj[key] !== undefined) {
+                        return this.apiBaseURL + Obj[key] + '/image';
+                    } else {
+                        return undefined;
+                    }
                 } else {
-                    return this.apiBaseURL + Obj[key] + '/image';
+                    if (Obj[key] !== undefined) {
+                        return this.apiBaseURL + Obj[key] + '/image';
+                    } else {
+                        return undefined;
+                    }
                 }
 
             } else {
@@ -341,7 +348,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
             indexKey++
         }
 
-        return "Not found"
+        return undefined;
 
     }
 
