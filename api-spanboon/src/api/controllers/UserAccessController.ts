@@ -14,8 +14,6 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageAccessLevelResponse } from './responses/PageAccessLevelResponse';
 import { UserService } from '../services/UserService';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
-import { User } from '../models/User';
-import { Page } from '../models/Page';
 
 @JsonController('/useraccess')
 export class UserAccessController {

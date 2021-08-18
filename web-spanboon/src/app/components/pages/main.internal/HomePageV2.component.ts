@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener, EventEmitter } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
-import { AuthenManager, MainPageSlideFacade, PageFacade, AssetFacade } from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, PageFacade, AssetFacade, PostFacade } from '../../../services/services';
 import { NgxGalleryOptions, NgxGalleryImage } from 'ngx-gallery';
 import { AbstractPage } from '../AbstractPage';
 import { SearchFilter } from '../../../models/SearchFilter';
@@ -28,6 +28,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   private mainPageModelFacade: MainPageSlideFacade;
   private pageFacade: PageFacade;
   private assetFacade: AssetFacade;
+  private postFacade: PostFacade;
 
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
@@ -57,16 +58,17 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   public postSectionModel: any;
 
   public isLoding: boolean = true;
-  public isDoing: boolean;
+  public isDoing: boolean = true;
   public isNotAccess: boolean;
   public isLodingMore: boolean = false;
 
-  constructor(router: Router, authenManager: AuthenManager, pageFacade: PageFacade, mainPageModelFacade: MainPageSlideFacade, assetFacade: AssetFacade, dialog: MatDialog) {
+  constructor(router: Router, authenManager: AuthenManager, pageFacade: PageFacade, postFacade: PostFacade, mainPageModelFacade: MainPageSlideFacade, assetFacade: AssetFacade, dialog: MatDialog) {
     super(null, authenManager, dialog, router);
 
     this.mainPageModelFacade = mainPageModelFacade;
     this.pageFacade = pageFacade;
     this.assetFacade = assetFacade;
+    this.postFacade = postFacade;
 
   }
 
@@ -80,11 +82,12 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       await this.getMainPageModel();
       this.searchPageInUser();
     }
+    // this.getPost();
+    // setTimeout(() => {
+    //   this.isLoding = false;
 
-    setTimeout(() => {
-      this.isLoding = false;
+    // }, 2700);
 
-    }, 3500);
 
   }
 
@@ -94,19 +97,21 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
     let model = await this.mainPageModelFacade.getMainPageModel(userId);
 
-    // console.log('model', model)
-
     this.pageModel = this.jsonParseData(model);
     this.sectionModels = this.jsonParseData(this.pageModel.sectionModels);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
+    // this.emergencyEvents = this.emergencyEvents.slice(0, 1)
+    // this.emergencyEvents = this.emergencyEvents.slice(0, 2)
     this.postSectionModel = this.jsonParseData(this.pageModel.postSectionModel);
 
+    if (this.emergencyEvents.length > 1) {
+      this.isDoing = false
+    }
     for (let m of this.sectionModels) {
       m.isLodingMore = false;
     }
 
     if (this.pageModel.objectiveEvents.contents.length > 0) {
-      this.isDoing = false
       this.aroundSectionModels = this.jsonParseData(this.pageModel.objectiveEvents);
 
       let dataAroundSection = this.postInDoing(this.pageModel.objectiveEvents.contents);
@@ -125,6 +130,7 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     }
 
     this.emergencyEventsArrTitle = this.getEmergencyEventsTitle(this.pageModel.emergencyEvents.contents);
+    this.emergencyEventsArrTitle = this.emergencyEventsArrTitle.slice(0, 1)
 
   }
 
@@ -152,6 +158,12 @@ export class HomePageV2 extends AbstractPage implements OnInit {
 
   }
 
+
+  public lodingSucceed(event: any) {
+    setTimeout(() => {
+      this.isLoding = false;
+    }, 800);
+  }
 
   public clickDataSearch(data) {
     this.router.navigate([]).then(() => {
@@ -186,19 +198,35 @@ export class HomePageV2 extends AbstractPage implements OnInit {
   }
 
   public testCrad($event) {
-    const dialogRef = this.dialog.open(DialogPostCrad, {
-      width: 'auto',
-      disableClose: false,
-      data: {
-        post: $event.post,
-        isNotAccess: this.isNotAccess,
-        user: this.userCloneDatas,
-        pageUser: this.pageUser,
-      }
-    });
+    if ($event.post) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event.post,
+          isNotAccess: this.isNotAccess,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-    });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    } else if ($event._id) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event,
+          isNotAccess: this.isNotAccess,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 
   }
 
@@ -244,6 +272,59 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     }, 5000);
 
   }
+
+  // private async getPost(): Promise<any> {
+  //   let search: SearchFilter = new SearchFilter();
+  //   search.limit = 10;
+  //   search.count = false;
+  //   let post = await this.postFacade.search(search);
+  //   this.setFormetDataSectionModels(post);
+  // }
+
+  // private setFormetDataSectionModels(post): any {
+  //   let month: any[] = [];
+  //   let time: any[] = [];
+  //   let index: number = 1;
+
+  //   let dat = this.formetDateTime(post);
+  //   time.push(dat);
+
+  //   for (let t of time) {
+  //     if (month.length === 0) {
+  //       month.push({ 'day': t.day, 'month': t.month });
+  //     } else {
+  //       var indexMonth = month.map(function (e) { return e.day; }).indexOf(t.day);
+  //       if (indexMonth < 0) {
+  //         month.push({ 'day': t.day, 'month': t.month });
+  //       }
+  //     }
+
+  //     for (let m of month) {
+  //       for (let p of post) {
+
+
+
+  //       }
+  //     }
+
+  //   }
+
+  // }
+
+  // private formetDateTime(post: any): any {
+  //   let dataArr: any[] = [];
+
+  //   for (let p of post) {
+
+  //     const date = new Date(p.createdDate); // had to remove the colon (:) after the T in order to make it work
+  //     const day = date.getDate();
+  //     const month = date.getMonth();
+
+  //     p.date = { 'day': day, 'month': month };
+
+  //   }
+
+  // }
 
   private postInDoing(arr): any {
     let doings: any[] = []

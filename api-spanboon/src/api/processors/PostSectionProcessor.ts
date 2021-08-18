@@ -142,7 +142,7 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (searchOfficialOnly) {
                     postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                 }
-                
+
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
@@ -169,8 +169,8 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                     }
 
                     contents.owner = {};
-                    if (row.page !== undefined && row.page.length > 0) {
-                        contents.owner = this.parsePageField(row.page[0]);
+                    if (row.page !== undefined) {
+                        contents.owner = this.parsePageField(row.page);
                     } else {
                         contents.owner = this.parseUserField(user);
                     }

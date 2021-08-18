@@ -56,6 +56,9 @@ export class CardContentHome extends AbstractPage implements OnInit {
     @Output()
     public clickEvent: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    public isLodingEvent: EventEmitter<any> = new EventEmitter();
+
     public amountSocial: number = 0;
     public eventDataAct: number = 0;
     public selectIndex: number = 0;
@@ -179,9 +182,10 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             setTimeout(() => {
                 this.isLoad = false;
-            }, 1000);
+                this.isLodingEvent.emit(this.isLoad);
+            }, 400);
 
-        }, 3000);
+        }, 800);
 
 
     }
@@ -218,6 +222,12 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public clickDataSearch(data, index?) {
         this.router.navigate([]).then(() => {
             window.open('/emergencyevent/' + data);
+        });
+    }
+
+    public clickObjTimeline(data) {
+        this.router.navigate([]).then(() => {
+            window.open('/objective/' + data.posts[0].objectiveId);
         });
     }
 
@@ -263,11 +273,17 @@ export class CardContentHome extends AbstractPage implements OnInit {
     public clickEventEmit(data?: any) {
         if (data.post) {
             this.clickEvent.emit(this.postData);
+        } else if (data._id) {
+            this.clickEvent.emit(data);
+
+        } else if (data.page) {
+            window.open('/page/' + data.page.id);
 
         } else if (data.data.objectiveId) {
             window.open('/objective/' + data.data.objectiveId);
 
         } else if (data.data.emergencyEventId) {
+            console.log('emergencyevent', data.data.emergencyEventId);
             window.open('/emergencyevent/' + data.data.emergencyEventId);
 
         } else if (data.owner) {
@@ -311,9 +327,17 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (indexKey === keyObjs.length) {
                 if (indexKey === 1) {
-                    return this.apiBaseURL + Obj[key] + '/image';
+                    if (Obj[key] !== undefined) {
+                        return this.apiBaseURL + Obj[key] + '/image';
+                    } else {
+                        return undefined;
+                    }
                 } else {
-                    return this.apiBaseURL + Obj[key] + '/image';
+                    if (Obj[key] !== undefined) {
+                        return this.apiBaseURL + Obj[key] + '/image';
+                    } else {
+                        return undefined;
+                    }
                 }
 
             } else {
@@ -324,7 +348,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
             indexKey++
         }
 
-        return "Not found"
+        return undefined;
 
     }
 
