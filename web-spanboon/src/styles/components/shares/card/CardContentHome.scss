@@ -98,7 +98,13 @@
                 align-items: center;
                 justify-content: center;
                 > span {
-                    @include font-size-9($font-head-500);
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                > div {
+                    @include font-size-7($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
@@ -180,7 +186,7 @@
                         display: flex;
                         width: 14px;
                         height: 14px;
-                        margin: 5pt 5pt 0 0;
+                        margin: 3pt 3pt 0 0;
                         flex: 0 0 auto;
                         > g {
                             > path {
@@ -338,7 +344,7 @@
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     line-height: 25px;
-                    @include font-size-9($font-head-500);
+                    @include font-size-7($font-head-500);
                 }
                 > .detail {
                     display: -webkit-box;

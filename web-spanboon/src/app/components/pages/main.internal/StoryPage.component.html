@@ -110,7 +110,8 @@
         <div class="content">
             <div class="left">
                 <div class="head">
-                    <img class="img-user" [src]="postStoryData ? postStoryData.ownerUser.imageURL:''">
+                    <img class="img-user"
+                        [src]="postStoryData.ownerUser.signURL?postStoryData.ownerUser.signURL:postStoryData.ownerUser.imageSignURL?postStoryData.ownerUser.imageSignURL:apiBaseURL+postStoryData.ownerUser.imageURL+'/image'">
                     <div class="page-display">
                         <div class="type">
                             <div *ngIf="type === 'GENERAL'" class="type-status-general"></div>
@@ -154,7 +155,8 @@
                     <ng-container
                         *ngIf="userCloneDatas && userCloneDatas.imageURL && userCloneDatas.imageURL !== undefined && userCloneDatas.imageURL !== null && userCloneDatas.imageURL !== '' ; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
-                            <img class="image-profile" src="{{postStoryData ? userCloneDatas.imageURL : ''}}">
+                            <img class="image-profile"
+                                [src]="userCloneDatas.signURL?userCloneDatas.signURL:userCloneDatas.imageSignURL?userCloneDatas.imageSignURL:apiBaseURL+userCloneDatas.imageURL+'/image'">
                         </div>
                     </ng-container>
                     <ng-template #elseImage>
