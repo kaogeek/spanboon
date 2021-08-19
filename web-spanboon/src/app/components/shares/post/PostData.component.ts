@@ -43,6 +43,7 @@ export class PostData {
   public isComment: boolean
   public referencePost: any
   public reboonData: any
+  public usercurrent: any
 
   @Input()
   public isRepost: boolean
@@ -127,6 +128,9 @@ export class PostData {
 
 
     this.user = this.authenManager.getCurrentUser();
+    this.usercurrent = this.authenManager.getCurrentUser();
+
+    console.log('isComments', this.isComments);
 
     setTimeout(async () => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
