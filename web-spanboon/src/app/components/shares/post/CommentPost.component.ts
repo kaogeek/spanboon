@@ -53,6 +53,8 @@ export class CommentPost {
   }
 
   public checkAccessCustom(uuId: string): boolean {
+    console.log('uuId', uuId);
+    console.log('this.userId', this.userId);
     return uuId === this.userId;
   }
 

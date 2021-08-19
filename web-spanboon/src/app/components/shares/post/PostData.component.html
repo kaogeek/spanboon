@@ -486,7 +486,7 @@
             </div>
             <ng-container *ngIf="commentpost.length > 0">
                 <div class="post-comment" *ngIf="!isSearchHashTag">
-                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="user.id"
+                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="usercurrent.id"
                         [commentdata]="commentpost">
                     </comment-post>
                 </div>
