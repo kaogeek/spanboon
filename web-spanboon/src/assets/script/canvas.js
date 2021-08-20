@@ -18,6 +18,7 @@ Controller = (function () {
         if (canvas) {
             window.scrollTo(0, 0);
             var elms = document.querySelectorAll("[id='point']");
+            var canvas = document.createElement('canvas');
             var ctx = canvas.getContext("2d");
             canvas.height = document.getElementById('body').getBoundingClientRect().height
             canvas.width = document.getElementById('body').getBoundingClientRect().width

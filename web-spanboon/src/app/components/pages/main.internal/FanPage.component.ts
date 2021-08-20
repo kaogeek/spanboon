@@ -214,6 +214,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (pathPost !== undefined && pathPost !== null) {
             this.initPage(pathPost)
           }
+            // if check path not exist post
+            if (pathPost !== 'post') {
+              this.CheckPost = true; 
+              this.isPost = false; 
+              this.showLoading = true;
+            }
+
         } else if (pathUrlPost === 'post') {
           this.CheckPost = false;
           this.searchPostById(postId);
@@ -509,7 +516,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
           }
           let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;
-          this.seoService.updateMetaInfo(text, post.title + post.detail, post.title, this.router.url, post.gallery[0].imageURL);
+          this.seoService.setMetaInfo(this.router.url,post.title,post.title + post.detail +text,post.gallery[0].imageURL,text);
           if (post.gallery.length > 0) {
             for (let img of post.gallery) {
               if (img.imageURL !== '') {
@@ -537,6 +544,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       }
     }
+    this.showLoading = false;
     // setTimeout(() => {
     //   if (this.resDataPost[0].needs.length > 0) {
     //     this.needsCard.fulfillNeeds('sdsad', 'asdsadasd');
@@ -858,12 +866,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.seoService.updateTitle(this.resDataPage.name);
         if (this.router.url.split('/')[3] !== 'post') {
-          this.seoService.updateMetaInfo(this.resDataPage.name, this.resDataPage.name, '', this.router.url);
+          this.seoService.setMetaInfo(this.router.url,this.resDataPage.name,this.resDataPage.name,this.resDataPage.imageURL,this.resDataPage.name);
         }
         this.searchAboutPage();
 
         setTimeout(() => {
           this.isLoading = false;
+          this.showLoading = false;
         }, 1000);
       }
       if (this.boxPost !== undefined) {
@@ -976,6 +985,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (postArr.length > 0) {
         this.resPost.posts = postArr;
       }
+      this.showLoading = false;
     }).catch((err: any) => {
       console.log(err)
     })
