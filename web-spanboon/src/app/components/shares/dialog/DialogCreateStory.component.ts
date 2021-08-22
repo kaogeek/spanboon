@@ -157,7 +157,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     if (this.data.imagesTimeline.length > 0) {
       this.image = this.data.imagesTimeline[0].image
       this.coverImage = this.data.imagesTimeline[0]
-    } 
+    }
     if (this.data.dataStroy.storyAry !== null && this.data.dataStroy.storyAry !== undefined && this.data.dataStroy.storyAry.length > 0) {
       setTimeout(() => {
         this.ary = this.data.dataStroy.storyAry
@@ -304,13 +304,17 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     for (let n of this.ary) {
       if (n.htmlType === "TEXT") {
         n.value = document.getElementById(index.toString()).innerHTML
+      } else if (n.htmlType === "IMAGE") {
+        document.getElementById('$##' + n.imgId).setAttribute("src", "");
       }
       index++
     }
+
     let asset = { data: this.image.split(',')[1], name: this.coverImage.name, type: this.coverImage.type, size: this.coverImage.size }
     let story = document.getElementById("storybody").innerHTML
     let coverImages: any = { img64: this.image, asset: asset }
     let data = { story: story, storyAry: this.ary, coverImages: coverImages }
+    console.log('story', story)
     this.dialogRef.close(data);
   }
 
@@ -604,9 +608,27 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
         var b64 = reader.result;
         // this.image = b64
         this.ary[this.selectIndex].image64 = b64
+        const asset = new Asset();
+        asset.mimeType = file.type;
+        asset.data = this.ary[this.selectIndex].image64;
+        asset.fileName = file.name;
+        asset.size = file.size;
+
+        let temp = {
+          asset
+        }
+        this.assetFacade.upload(temp).then((res: any) => {
+
+          this.ary[this.selectIndex].imgId = res.data.id;
+        }).catch((err: any) => {
+          console.log(err)
+        })
       }
       reader.readAsDataURL(file);
     }
+
+
+
     this.ary[this.selectIndex].image64 = this.image
   }
 
@@ -622,6 +644,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       }
       reader.readAsDataURL(file);
     }
+
     this.ary[this.selectIndex].image64 = this.image
   }
 

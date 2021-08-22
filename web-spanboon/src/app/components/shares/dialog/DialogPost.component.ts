@@ -75,17 +75,19 @@ export class DialogPost extends AbstractPage {
       this.isPreload = false
     }, 1000);
 
+
+
     this.observManager.createSubject(REFRESH_DATA);
-    this.observManager.createSubject('scroll.fix'); 
+    this.observManager.createSubject('scroll.fix');
     if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
       this.isFulfill = this.data.isFulfill;
       this.isEdit = this.data.isEdit;
       this.isListPage = this.data.isListPage;
-      if(this.data && !this.data.isSharePost){ 
+      if (this.data && !this.data.isSharePost) {
         this.isSharePost = this.data.isSharePost;
-      } else {  
+      } else {
         this.isSharePost = true;
-      }   
+      }
     }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
@@ -193,7 +195,7 @@ export class DialogPost extends AbstractPage {
 
   }
 
-  public createPost(data) { 
+  public createPost(data) {
     if (this.isEdit) {
       if (data.title) {
         let pageId = this.data.pageId;
@@ -215,7 +217,7 @@ export class DialogPost extends AbstractPage {
           if (err && err.error && err.error.message === 'Objective was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
             this.showAlertDialogWarming(alertMessages, "none");
-          } else if (err && err.error && err.error.message === 'Emergency Event was not found.'){
+          } else if (err && err.error && err.error.message === 'Emergency Event was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
             this.showAlertDialogWarming(alertMessages, "none");
           }
@@ -251,7 +253,7 @@ export class DialogPost extends AbstractPage {
     }
   }
 
-  public createFullfillPost(data) { 
+  public createFullfillPost(data) {
     if (this.isFulfill) {
       this.isPostLoading = true;
       this.fulfillFacade.createFulfillmentPostFromCase(data.fulfillCaseId, data, data.asPage).then((res) => {
@@ -301,13 +303,13 @@ export class DialogPost extends AbstractPage {
           this.postFacade.nextMessage(this.data.content);
           this.dialogRef.close();
         }
-      }); 
+      });
     } else {
       this.dialogRef.close(this.data);
     }
   }
 
-  public selectedInformation(data : any){ 
+  public selectedInformation(data: any) {
     this.selectedAccessPage = data.name || data.displayName;
   }
 }

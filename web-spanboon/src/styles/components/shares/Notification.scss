@@ -24,8 +24,8 @@
 
     &.active {
         svg {
-            
-            g,path {
+            g,
+            path {
                 fill: $brandcolor2 !important;
             }
         }
@@ -119,6 +119,9 @@
             &.active {
                 // background-color: rgb(243, 243, 243);
                 background: rgb(255, 255, 255);
+            }
+            &.dis {
+                display: none;
             }
 
             > div {
