@@ -41,6 +41,7 @@ export class Notification extends AbstractPage implements OnInit {
   public linkPost: string;
   public preload: boolean; 
   public notiOrigin: any[] = [];
+  public apiBaseURL = environment.apiBaseURL;
 
   private mainPostLink: string = window.location.origin
 
@@ -105,12 +106,6 @@ export class Notification extends AbstractPage implements OnInit {
     if (this.notiOrigin && this.notiOrigin.length !== this.noti && this.noti !== undefined && this.noti !== null && this.noti.length) {
       this.notiisRead = []
       for (let noti of this.noti) {
-        if (noti.sender && noti.sender.imageURL !== '' && noti.sender.imageURL !== undefined && noti.sender.imageURL !== null) {
-          this.assetFacade.getPathFile(noti.sender.imageURL).then((res: any) => {
-            noti.sender.avatarURL = res.data
-          }).catch((err: any) => {
-          });
-        }
         if (!noti.notification.isRead) {
           this.notiisRead.push(noti)
           noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
