@@ -305,7 +305,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       if (n.htmlType === "TEXT") {
         n.value = document.getElementById(index.toString()).innerHTML
       } else if (n.htmlType === "IMAGE") {
-        document.getElementById('$##' + n.imgId).setAttribute("src", "");
+        // document.getElementById('$##' + n.imgId).setAttribute("src", "");
       }
       index++
     }
@@ -314,7 +314,6 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
     let story = document.getElementById("storybody").innerHTML
     let coverImages: any = { img64: this.image, asset: asset }
     let data = { story: story, storyAry: this.ary, coverImages: coverImages }
-    console.log('story', story)
     this.dialogRef.close(data);
   }
 
