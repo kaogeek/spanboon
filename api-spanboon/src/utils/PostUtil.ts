@@ -59,7 +59,7 @@ export class PostUtil {
             const imgKey = PostUtil.IMG_ID_PREFIX + imageId;
             if (!useS3Link) {
                 if (!fileMapping[imgKey]) {
-                    fileMapping[imgKey] = root + '/api/file/' + imageId;
+                    fileMapping[imgKey] = root + '/api/file/' + imageId + '/image';
                 }
             } else {
                 // use s3 link
@@ -78,6 +78,11 @@ export class PostUtil {
 
             if (imgId && fileMapping[imgId]) {
                 item.setAttribute('src', fileMapping[imgId]);
+            } else {
+                if (imgId.length >= 3) {
+                    const realImgId = imgId.substring(3, imgId.length);
+                    item.setAttribute('src', root + '/api/file/' + realImgId + '/image');
+                }
             }
         });
 

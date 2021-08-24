@@ -565,7 +565,17 @@ export class PostsController {
             const isUploadToS3 = await this._isUploadToS3();
 
             if (result !== null && result !== undefined) {
-                result.map(async(data) => {
+                for (const data of result) {
+                    const story = data.story;
+                    if (!isHideStory) {
+                        if (story !== null && story !== undefined && data.story.story !== null && data.story.story !== undefined) {
+                            const parseFileLinkStory = await PostUtil.parseImagePostStory(data.story.story, this.assetService, isUploadToS3);
+                            data.story.story = parseFileLinkStory;
+                        }
+                    }
+                }
+
+                result.map((data) => {
                     const postId = data._id;
                     const story = data.story;
                     const ownerUser = data.ownerUser;
@@ -577,11 +587,6 @@ export class PostsController {
                             data.story = {};
                         } else {
                             data.story = null;
-                        }
-                    } else {
-                        if (story !== null && story !== undefined && data.story.story !== null && data.story.story !== undefined) {
-                            const parseFileLinkStory = await PostUtil.parseImagePostStory(data.story.story, this.assetService, isUploadToS3);
-                            data.story.story = parseFileLinkStory;
                         }
                     }
 
