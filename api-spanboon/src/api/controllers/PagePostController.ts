@@ -57,6 +57,7 @@ import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
+import { PostUtil } from '../../utils/PostUtil';
 
 @JsonController('/page')
 export class PagePostController {
@@ -375,7 +376,24 @@ export class PagePostController {
                 coverImageAsset.size = assetSize;
                 coverImageAsset.expirationDate = null;
                 coverImageAsset.scope = ASSET_SCOPE.PUBLIC;
-                assetResult = await this.assetService.create(coverImageAsset);
+                try {
+                    assetResult = await this.assetService.create(coverImageAsset);
+                } catch (error) {
+                    assetResult = undefined;
+                    console.log('Error create coverImage: ', error);
+                }
+            }
+
+            // find id from story and change expirationDate = null
+            if (postStory.story !== undefined && postStory.story !== null && postStory.story !== '') {
+                const imageIds = PostUtil.getImageIdsFromStory(postStory.story);
+                for (const imgId of imageIds) {
+                    try {
+                        await this.assetService.update({ _uuid: new ObjectID(imgId) }, { $set: { expirationDate: null } });
+                    } catch (error) {
+                        console.log('Error create story Image: ', error);
+                    }
+                }
             }
         }
 
