@@ -389,7 +389,7 @@ export class PagePostController {
                 const imageIds = PostUtil.getImageIdsFromStory(postStory.story);
                 for (const imgId of imageIds) {
                     try {
-                        await this.assetService.update({ _uuid: new ObjectID(imgId) }, { $set: { expirationDate: null } });
+                        await this.assetService.update({ _id: new ObjectID(imgId) }, { $set: { expirationDate: null } });
                     } catch (error) {
                         console.log('Error create story Image: ', error);
                     }
