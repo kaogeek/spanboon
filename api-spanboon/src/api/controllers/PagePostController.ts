@@ -505,6 +505,57 @@ export class PagePostController {
             }
         }
 
+        // check image gallery before create post
+        const assetIdList = [];
+        const orderingList = [];
+        const duplicateAssetIdList = [];
+        const duplicateOrderingList = [];
+
+        if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
+            for (const item of postGallery) {
+                if (assetIdList.includes(item.id)) {
+                    // throw error
+                    duplicateAssetIdList.push(new ObjectID(item.id));
+                } else {
+                    assetIdList.push(new ObjectID(item.id));
+                }
+
+                if (orderingList.includes(item.asset.ordering)) {
+                    // throw error
+                    duplicateOrderingList.push(item.asset.ordering);
+                } else {
+                    orderingList.push(item.asset.ordering);
+                }
+            }
+
+            if (duplicateAssetIdList.length > 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('Asset Id Duplicate', { id: duplicateAssetIdList });
+                return res.status(400).send(errorResponse);
+            }
+
+            if (duplicateOrderingList.length > 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('Ordering Duplicate', { ordering: duplicateOrderingList });
+                return res.status(400).send(errorResponse);
+            }
+
+            const findAssets: Asset[] = await this.assetService.find({ $and: [{ _id: { $in: assetIdList } }] });
+
+            if (findAssets) {
+                for (const asset of findAssets) {
+                    if (asset.expirationDate !== undefined && asset.expirationDate !== null) {
+                        if (asset.expirationDate < today) {
+                            const errorResponse = ResponseUtil.getErrorResponse('File has Expired', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                    }
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Asset Not Found', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+        // end check image gallery
+
         if (pageData) {
             postPage.pageId = pageObjId;
             postPage.referencePost = null;
@@ -623,27 +674,8 @@ export class PagePostController {
                     }
                 }
 
-                const assetIdList = [];
-                const orderingList = [];
-                const duplicateAssetIdList = [];
-                const duplicateOrderingList = [];
-
                 if (postGallery !== null && postGallery !== undefined && postGallery.length > 0) {
                     for (const item of postGallery) {
-                        if (assetIdList.includes(item.id)) {
-                            // throw error
-                            duplicateAssetIdList.push(new ObjectID(item.id));
-                        } else {
-                            assetIdList.push(new ObjectID(item.id));
-                        }
-
-                        if (orderingList.includes(item.asset.ordering)) {
-                            // throw error
-                            duplicateOrderingList.push(item.asset.ordering);
-                        } else {
-                            orderingList.push(item.asset.ordering);
-                        }
-
                         const assetObjId = new ObjectID(item.id);
                         const assetObj = await this.assetService.findOne({ _id: assetObjId });
                         if (assetObj === undefined) {
@@ -666,30 +698,6 @@ export class PagePostController {
                         if (postsGalleryCreate) {
                             await this.assetService.update({ _id: assetObjId, userId: userObjId }, { $set: { expirationDate: null } });
                         }
-                    }
-
-                    if (duplicateAssetIdList.length > 0) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Asset Id Duplicate', { id: duplicateAssetIdList });
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (duplicateOrderingList.length > 0) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Ordering Duplicate', { ordering: duplicateOrderingList });
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const findAssets: Asset[] = await this.assetService.find({ $and: [{ _id: { $in: assetIdList } }] });
-
-                    if (findAssets) {
-                        for (const asset of findAssets) {
-                            if (asset.expirationDate < today) {
-                                const errorResponse = ResponseUtil.getErrorResponse('File has Expired', undefined);
-                                return res.status(400).send(errorResponse);
-                            }
-                        }
-                    } else {
-                        const errorResponse = ResponseUtil.getErrorResponse('Asset Not Found', undefined);
-                        return res.status(400).send(errorResponse);
                     }
                 }
 
