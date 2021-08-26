@@ -305,8 +305,9 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       if (n.htmlType === "TEXT") {
         n.value = document.getElementById(index.toString()).innerHTML
       } else if (n.htmlType === "IMAGE") {
-        // document.getElementById('$##' + n.imgId).setAttribute("src", "");
+        document.getElementById('$##' + n.imgId).setAttribute("src", "");
       }
+      n.image64 = ''
       index++
     }
 
@@ -609,7 +610,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
         this.ary[this.selectIndex].image64 = b64
         const asset = new Asset();
         asset.mimeType = file.type;
-        asset.data = this.ary[this.selectIndex].image64;
+        asset.data = this.ary[this.selectIndex].image64.split(',')[1];
         asset.fileName = file.name;
         asset.size = file.size;
 
