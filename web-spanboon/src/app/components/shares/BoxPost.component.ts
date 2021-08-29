@@ -22,7 +22,7 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, MAX_FILE_SIZE, TWITTER_AUTO_POST } from '../../Config';  
+import { FACEBOOK_AUTO_POST, MAX_FILE_SIZE, TWITTER_AUTO_POST } from '../../Config';
 import { ValidateFileSizeImageUtils } from '../../utils/ValidateFileSizeImageUtils';
 
 declare var $: any;
@@ -36,7 +36,7 @@ const TEXT_LIMIT: number = 230;
   selector: 'box-post',
   templateUrl: './BoxPost.component.html'
 })
-export class BoxPost extends AbstractPage implements OnInit  {
+export class BoxPost extends AbstractPage implements OnInit {
 
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
@@ -307,7 +307,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
     this.isButtonFulfill = false;
     this.isSelectOption = true;
     this.router = router;
-    this.data = {}; 
+    this.data = {};
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {
@@ -316,7 +316,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
     // }).catch((error: any) => {
     //   // console.log(error) 
     // }); 
-  } 
+  }
 
   public ngOnInit(): void {
     this.searchAccessPage();
@@ -967,7 +967,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
       }
       if (result) {
         this.isStoryResultData = false
-        this.dataStroy = { story: result.story, storyAry: result.storyAry, coverImage: result.coverImages.img64 }
+        this.dataStroy = { story: result.story, storyAry: result.storyAry }
         // delete this.dataStroy.item;
         // delete this.dataStroy.cloneStory;
         if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
@@ -976,7 +976,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
           asset.fileName = result.coverImages.asset.name;
           asset.size = result.coverImages.asset.size;
           asset.data = result.coverImages.asset.data;
-          this.coverImage = asset
+          this.coverImage = asset;
         }
         let data = {
           title: topic,
@@ -1223,7 +1223,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
     // } else {
     //   $('.header-story').removeClass('msg-error-shake');
     // }
-    this.changeText.emit(true); 
+    this.changeText.emit(true);
     this.mStory = event.target.innerText.trim();
     if (!this.isFulfillNull) {
       if (this.mStory === "") {
@@ -1234,7 +1234,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
         } else {
           $('#topic').addClass('msg-error-shake');
         }
-      } else { 
+      } else {
         if (this.prefix) {
           $('#' + this.prefix.header + 'topic').removeClass('msg-error-shake');
         } else {
@@ -1266,13 +1266,13 @@ export class BoxPost extends AbstractPage implements OnInit  {
   }
 
   public onKeyup(event) {
-   
+
     clearTimeout(this.setTimeKeyup);
     this.setTimeKeyup = setTimeout(() => {
       $('.list-add-hashtaggg').click((dom) => {
         this.clickAddHashtag(dom.target.innerText);
       });
-      this.getTextLength(); 
+      this.getTextLength();
     }, 200);
 
     this.mTopic = event && event.target && event.target.innerText ? event.target.innerText : "";
@@ -2310,7 +2310,7 @@ export class BoxPost extends AbstractPage implements OnInit  {
 
   public onFileMultiSelectedImage(event) {
     this.isShowImage = true;
-    let files = event.target.files; 
+    let files = event.target.files;
     if (files.length === 0) {
       return;
     }
@@ -2323,10 +2323,10 @@ export class BoxPost extends AbstractPage implements OnInit  {
             fileName: file.name,
             size: file.size,
             image: event.target.result
-          }  
-          if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+          }
+          if (ValidateFileSizeImageUtils.sizeImage(file.size)) {
             this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
-          } else { 
+          } else {
             this.genImages(data);
           }
         }

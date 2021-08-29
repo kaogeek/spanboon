@@ -431,7 +431,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public toStory($event) {
-    alert('asdasdasd');
     this.isLoding = true
     this.router.navigate(["/story/" + $event.post._id]);
     setTimeout(() => {
