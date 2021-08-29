@@ -160,8 +160,15 @@ export class RecommendController {
                 const userFollow = await this.userService.aggregate(stmt);
                 for (const data of userFollow) {
                     const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                    let isFollowed = false;
+                    if (userObjId !== null && userObjId !== undefined) {
+                        const follow = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.USER, subjectId: data._id });
+                        isFollowed = (follow !== undefined && follow.length > 0) ? true : false;
+                    }
+
                     Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'USER' });
+                    Object.assign(data, { isFollowed });
                     result.push(data);
                 }
 
@@ -175,8 +182,16 @@ export class RecommendController {
                 const pageFollow = await this.pageService.aggregate(stmtPage);
                 for (const data of pageFollow) {
                     const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                    let isFollowed = false;
+                    if (userObjId !== null && userObjId !== undefined) {
+                        const parseData: any = data;
+                        const follow = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.PAGE, subjectId: parseData._id });
+                        isFollowed = (follow !== undefined && follow.length > 0) ? true : false;
+                    }
+
                     Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'PAGE' });
+                    Object.assign(data, { isFollowed });
                     result.push(data);
                 }
             }

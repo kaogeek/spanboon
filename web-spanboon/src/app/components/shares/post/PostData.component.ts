@@ -70,6 +70,8 @@ export class PostData {
   @Input()
   public itemPost: any;
   @Input()
+  public ownerPost: any;
+  @Input()
   public user: any;
   @Input()
   public userImage: any;
@@ -129,8 +131,8 @@ export class PostData {
 
     this.user = this.authenManager.getCurrentUser();
     this.usercurrent = this.authenManager.getCurrentUser();
-
-    console.log('isComments', this.isComments);
+    setTimeout(() => {
+    }, 500);
 
     setTimeout(async () => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
