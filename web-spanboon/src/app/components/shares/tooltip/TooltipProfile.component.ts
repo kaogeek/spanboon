@@ -50,6 +50,7 @@ export class TooltipProfile extends AbstractPage implements OnInit {
   public unset: any;
   public mainProfileLink: any;
   public resDataPage: any;
+  public setTimeing: any
 
   constructor(authenManager: AuthenManager, router: Router, pageFacade: PageFacade, dialog: MatDialog, observManager: ObservableManager, public popupService: MenuContextualService) {
     super(PAGE_NAME, authenManager, dialog, router);
@@ -61,13 +62,17 @@ export class TooltipProfile extends AbstractPage implements OnInit {
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.popupService.close(this.data);
     });
+
+    this.setTimeing = setTimeout(() => {
+      this.close();
+    }, 20000);
+
   }
   public apiBaseURL = environment.apiBaseURL;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   public ngOnInit(): void {
-    console.log('this.data', this.data)
     if (this.data.owner.length > 0) {
       this.data.owner = this.data.owner[0];
     }
@@ -122,9 +127,9 @@ export class TooltipProfile extends AbstractPage implements OnInit {
       let uniqueId = page.uniqueId;
 
       if ((pageId !== null && pageId !== undefined && pageId !== '') && (uniqueId === null || uniqueId === undefined || uniqueId === '')) {
-        this.router.navigate(["/page/" + pageId]);
+        window.open("/page/" + pageId);
       } else {
-        this.router.navigate(["/page/" + uniqueId]);
+        window.open("/page/" + uniqueId);
       }
     }
   }
@@ -133,6 +138,10 @@ export class TooltipProfile extends AbstractPage implements OnInit {
 
     this.showAlertDevelopDialog();
 
+  }
+
+  public close() {
+    this.popupService.close(undefined);
   }
 
   public Links = [
@@ -158,22 +167,31 @@ export class TooltipProfile extends AbstractPage implements OnInit {
     },
   ];
 
-  public tooltipClose(event) {
-    let BUTTON_CLASS: string = "button-follow mat-ripple radius";
-    let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
-    let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";
-    let TOOLTIP_CLASS: string = "tooltip-body"
-    let ARROW_CLASS: string = "arrow-bottom";
-    let MAT_BUTTON_CLASS: string = "mat-button-wrapper";
-    let TOOLTIP_BUTTON_CLASS: string = "tooltip-bottom";
-    let ICON_CLASS: string = "material-icons";
-    let TOOL_DROP_CLASS: string = "but-send tool-dropdow mat-stroked-button mat-button-base";
+  public tooltipClose(event): any {
 
-    if (event.toElement && event.toElement.className && event.toElement.className !== TOOL_DROP_CLASS && event.toElement.className !== ICON_CLASS && event.toElement.className !== MAT_BUTTON_CLASS && event.toElement.className !== TOOLTIP_BUTTON_CLASS && event.toElement.className !== TOOLTIP_CLASS && event.toElement.className !== ARROW_CLASS && event.toElement.className !== BUTTON_CLASS && event.toElement.className !== BUTTON_CLASS_RIGHT && event.toElement.className !== BUTTON_CLASS_SEND) {
+    clearTimeout(this.setTimeing);
 
-      this.popupService.close(undefined);
+    // console.log('event.toElement', event.toElement)
+    // console.log('event.className', event.toElement.className)
+    // let BUTTON_CLASS: string = "button-follow mat-ripple radius";
+    // let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
+    // let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";
+    // let TOOLTIP_CLASS: string = "tooltip-body"
+    // let ARROW_CLASS: string = "arrow-bottom";
+    // let MAT_BUTTON_CLASS: string = "mat-button-wrapper";
+    // let TOOLTIP_BUTTON_CLASS: string = "tooltip-bottom";
+    // let ICON_CLASS: string = "material-icons";
+    // let TOOL_DROP_CLASS: string = "but-send tool-dropdow mat-stroked-button mat-button-base";
+    // let DETAIL: string = "detail";
+    // let RIGHT: string = "right";
+    // let FOLLOW: string = "follow-left";
+    // let COUNT: string = "count"
 
-    }
+    // if (event.toElement && event.toElement.className && event.toElement.className !== COUNT && event.toElement && event.toElement.className && event.toElement.className !== FOLLOW && event.toElement && event.toElement.className && event.toElement.className !== RIGHT && event.toElement && event.toElement.className && event.toElement.className !== DETAIL && event.toElement && event.toElement.className && event.toElement.className !== TOOL_DROP_CLASS && event.toElement.className !== ICON_CLASS && event.toElement.className !== MAT_BUTTON_CLASS && event.toElement.className !== TOOLTIP_BUTTON_CLASS && event.toElement.className !== TOOLTIP_CLASS && event.toElement.className !== ARROW_CLASS && event.toElement.className !== BUTTON_CLASS && event.toElement.className !== BUTTON_CLASS_RIGHT && event.toElement.className !== BUTTON_CLASS_SEND) {
+
+    //   this.popupService.close(undefined);
+
+    // }
   }
 
 }

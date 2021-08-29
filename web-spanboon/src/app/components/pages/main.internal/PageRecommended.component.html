@@ -58,11 +58,12 @@
                             คนที่คุณอาจรู้จัก
                         </div>
                         <div class="wrapper-card">
-                            <div class="card-follow" *ngFor="let item of dataRecommend">
+                            <div class="card-follow" *ngFor="let item of dataRecommend; let index = index">
                                 <div class="follow">
                                     <img class="img-user"
                                         *ngIf="item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null "
-                                        [src]="item.imageURL" alt="">
+                                        [src]="item.signURL?item.signURL:item.imageSignURL?item.imageSignURL:apiBaseURL+item.imageURL+'/image'"
+                                        alt="">
                                     <div class="img-user img-user-displayname" *ngIf="!item.imageURL">
                                         {{item.name || item.displayName | slice : 0 : 1}}
                                     </div>
@@ -103,8 +104,11 @@
                                         </div>
                                     </ng-template>
                                 </div>
-                                <div class="wrapper-btn-follow">
-                                    <button-follow [bgColor]="'#FFFFFF'" [text]="'ติดตาม'"></button-follow>
+                                <div *ngIf="isUserLogin" class="wrapper-btn-follow">
+                                    <button-follow (click)="followUser(item._id,index);"
+                                        [bgColor]="item.isFollow ? '#fd5454':'#FFFFFF'"
+                                        [color]="item.isFollow ? '#FFFFFF':'#fd5454'" [text]="'ติดตาม'">
+                                    </button-follow>
                                 </div>
                             </div>
                             <!-- <div class="card-follow">
@@ -139,9 +143,9 @@
                                 </div>
                             </div> -->
                         </div>
-                        <div class="follow-all">
+                        <!-- <div class="follow-all">
                             ดูทั้งหมด
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
