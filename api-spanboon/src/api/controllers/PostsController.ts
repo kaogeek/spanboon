@@ -41,6 +41,10 @@ import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSect
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { S3Service } from '../services/S3Service';
 import { Page } from '../models/Page';
+import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
+import { AssetService } from '../services/AssetService';
+import { PostUtil } from '../../utils/PostUtil';
 
 @JsonController('/post')
 export class PostsController {
@@ -57,7 +61,9 @@ export class PostsController {
         private pageNotificationService: PageNotificationService,
         private hashTagService: HashTagService,
         private emergencyEventService: EmergencyEventService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private configService: ConfigService,
+        private assetService: AssetService
     ) { }
 
     // New Post API
@@ -555,7 +561,20 @@ export class PostsController {
                 result = postLists;
             }
 
+            // s3 sign as config
+            const isUploadToS3 = await this._isUploadToS3();
+
             if (result !== null && result !== undefined) {
+                for (const data of result) {
+                    const story = data.story;
+                    if (!isHideStory) {
+                        if (story !== null && story !== undefined && data.story.story !== null && data.story.story !== undefined) {
+                            const parseFileLinkStory = await PostUtil.parseImagePostStory(data.story.story, this.assetService, isUploadToS3);
+                            data.story.story = parseFileLinkStory;
+                        }
+                    }
+                }
+
                 result.map((data) => {
                     const postId = data._id;
                     const story = data.story;
@@ -1362,5 +1381,21 @@ export class PostsController {
         } else {
             return res.status(200).send(ResponseUtil.getErrorResponse('Get Post HashTag Recommended Story Success', {}));
         }
+    }
+
+    private async _isUploadToS3(): Promise<boolean> {
+        // s3 upload by cofig
+        const assetUploadToS3Cfg = await this.configService.getConfig(ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD);
+        let assetUploadToS3 = DEFAULT_ASSET_CONFIG_VALUE.S3_STORAGE_UPLOAD;
+
+        if (assetUploadToS3Cfg && assetUploadToS3Cfg.value) {
+            if (typeof assetUploadToS3Cfg.value === 'boolean') {
+                assetUploadToS3 = assetUploadToS3Cfg.value;
+            } else if (typeof assetUploadToS3Cfg.value === 'string') {
+                assetUploadToS3 = (assetUploadToS3Cfg.value.toUpperCase() === 'TRUE');
+            }
+        }
+
+        return assetUploadToS3;
     }
 }
