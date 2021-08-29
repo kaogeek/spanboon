@@ -82,11 +82,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
       await this.getMainPageModel();
       this.searchPageInUser();
     }
-    // this.getPost();
-    // setTimeout(() => {
-    //   this.isLoding = false;
-
-    // }, 2700);
 
 
   }
@@ -100,8 +95,6 @@ export class HomePageV2 extends AbstractPage implements OnInit {
     this.pageModel = this.jsonParseData(model);
     this.sectionModels = this.jsonParseData(this.pageModel.sectionModels);
     this.emergencyEvents = this.jsonParseData(this.pageModel.emergencyEvents.contents);
-    // this.emergencyEvents = this.emergencyEvents.slice(0, 1)
-    // this.emergencyEvents = this.emergencyEvents.slice(0, 2)
     this.postSectionModel = this.jsonParseData(this.pageModel.postSectionModel);
 
     if (this.emergencyEvents.length > 1) {
