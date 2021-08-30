@@ -111,7 +111,7 @@
             <div class="left">
                 <div class="head">
                     <img class="img-user"
-                        [src]="postStoryData.ownerUser.signURL?postStoryData.ownerUser.signURL:postStoryData.ownerUser.imageSignURL?postStoryData.ownerUser.imageSignURL:apiBaseURL+postStoryData.ownerUser.imageURL+'/image'">
+                        [src]="postStoryData ? postStoryData.ownerUser.signURL?postStoryData.ownerUser.signURL:postStoryData.ownerUser.imageSignURL?postStoryData.ownerUser.imageSignURL:apiBaseURL+postStoryData.ownerUser.imageURL+'/image':''">
                     <div class="page-display">
                         <div class="type">
                             <div *ngIf="type === 'GENERAL'" class="type-status-general"></div>

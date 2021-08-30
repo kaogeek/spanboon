@@ -728,6 +728,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }).catch((err: any) => {
+        this.stopLoading();
         console.log(err);
       })
     }
