@@ -219,6 +219,7 @@
             margin: 10px 0px;
             -webkit-user-modify: read-only;
             -moz-user-modify: read-only;
+            color: black;
             @include font-size-9($font-content-light);
             div {
               span {
