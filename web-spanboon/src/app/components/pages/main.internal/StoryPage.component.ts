@@ -321,35 +321,37 @@ export class StoryPage extends AbstractPage implements OnInit {
 
     setTimeout(() => {
 
+      if (this.postStoryData !== undefined && this.postStoryData !== null) {
 
-      this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
-        if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
-          this.linkPage = (this.mainPageLink + page.data.uniqueId)
-        } else if (page.data.id !== undefined && page.data.id !== null) {
-          this.linkPage = (this.mainPageLink + page.data.id)
+        this.pageFacade.getProfilePage(this.postStoryData.pageId).then((page: any) => {
+          if (page.data.uniqueId !== undefined && page.data.uniqueId !== null) {
+            this.linkPage = (this.mainPageLink + page.data.uniqueId)
+          } else if (page.data.id !== undefined && page.data.id !== null) {
+            this.linkPage = (this.mainPageLink + page.data.id)
+          }
+        }).catch((err: any) => {
+        });
+
+        this.pageName = this.postStoryData.pageData.data.name;
+        this.story = this.postStoryData.story;
+        // remove contenteditable to fix bug for firefox like unable to click
+        if (this.story !== undefined && this.story.story !== undefined && this.story.story !== '') {
+          const regex = /contenteditable=""/ig;
+          this.story.story = this.story.story.replaceAll(regex, '');
         }
-      }).catch((err: any) => {
-      });
+        this.title = this.postStoryData.title;
 
-      this.pageName = this.postStoryData.pageData.data.name;
-      this.story = this.postStoryData.story;
-      // remove contenteditable to fix bug for firefox like unable to click
-      if (this.story !== undefined && this.story.story !== undefined && this.story.story !== '') {
-        const regex = /contenteditable=""/ig;
-        this.story.story = this.story.story.replaceAll(regex, '');
+        this.isComment = this.postStoryData.isComment;
+        this.isRepost = this.postStoryData.isRepost;
+        this.isLike = this.postStoryData.isLike;
+        this.isShare = this.postStoryData.isShare;
+        this.commentCount = this.postStoryData.commentCount;
+        this.repostCount = this.postStoryData.repostCount;
+        this.likeCount = this.postStoryData.likeCount;
+        this.shareCount = this.postStoryData.shareCount;
+        this.needs = this.postStoryData.needs;
+        this.isLoding = false;
       }
-      this.title = this.postStoryData.title;
-
-      this.isComment = this.postStoryData.isComment;
-      this.isRepost = this.postStoryData.isRepost;
-      this.isLike = this.postStoryData.isLike;
-      this.isShare = this.postStoryData.isShare;
-      this.commentCount = this.postStoryData.commentCount;
-      this.repostCount = this.postStoryData.repostCount;
-      this.likeCount = this.postStoryData.likeCount;
-      this.shareCount = this.postStoryData.shareCount;
-      this.needs = this.postStoryData.needs;
-      this.isLoding = false;
 
 
     }, 6500);
