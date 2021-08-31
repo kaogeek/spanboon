@@ -354,7 +354,7 @@ export class StoryPage extends AbstractPage implements OnInit {
       }
 
 
-    }, 6500);
+    }, 7500);
   }
 
   private setCardSilder() {
