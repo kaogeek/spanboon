@@ -12,7 +12,7 @@
   justify-content: center;
   align-items: stretch;
   > .container {
-    width: calc(1400px);
+    width: calc(1200px);
     height: 100%;
     background-color: white;
     > .secsione-emer {
@@ -31,6 +31,7 @@
             > .col1-col1 {
               width: 100%;
               height: 500px;
+              cursor: pointer;
               > .col-img {
                 width: 100%;
                 height: 300px;
@@ -56,6 +57,9 @@
                   @include font-size-8($font-head-400);
                   > h3 {
                     margin: 0;
+                    &:hover {
+                      color: rgba($brandcolor2, 0.95);
+                    }
                   }
                 }
                 > .content {
@@ -94,7 +98,7 @@
             }
             > .col1-col2 {
               width: 100%;
-              height: 300px;
+              height: 200px;
               > .col-colum-detail {
                 width: calc(100% - 20px);
                 // height: calc(90px - 4px);
@@ -119,6 +123,10 @@
                   > .detail {
                     > .title {
                       @include font-size-8($font-head-400);
+                      cursor: pointer;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
                     }
                     > .content {
                       margin-top: 0px;
@@ -144,6 +152,10 @@
                   align-items: flex-end;
                   > .title {
                     @include font-size-9($font-head-500);
+                    cursor: pointer;
+                    &:hover {
+                      color: rgba($brandcolor2, 0.95);
+                    }
                   }
                   > .content {
                     margin-top: 0px;
@@ -195,6 +207,7 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    cursor: pointer;
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
@@ -206,6 +219,9 @@
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
                     }
                   }
                   > .post-col2 {
@@ -217,6 +233,7 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    cursor: pointer;
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
@@ -228,6 +245,9 @@
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
                     }
                   }
                 }
@@ -254,22 +274,30 @@
                         background-color: gray;
                       }
                       > span {
-                        @include font-size-11($font-content-light);
+                        @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
                     > .date-time {
                       > span {
-                        @include font-size-11($font-content-light);
+                        cursor: pointer;
+                        @include font-size-11($font-head-500);
                         color: gray;
+                        &:hover {
+                          color: rgba($brandcolor2, 0.95);
+                        }
                       }
                     }
                   }
                   > .body {
                     width: 100%;
                     > .image-post {
+                      cursor: pointer;
                       width: 100%;
-                      height: 220px;
+                      height: 180px;
+                      @media (max-width: 900px) {
+                        height: 300px;
+                      }
                       > .image {
                         width: 100%;
                         height: 100%;
@@ -277,6 +305,7 @@
                       }
                     }
                     > .detail {
+                      cursor: pointer;
                       @include font-size-9($font-head-500);
                       padding: 20px 0px;
                       > span {
@@ -294,7 +323,7 @@
             }
             > .col2-col2 {
               width: 100%;
-              height: 400px;
+              height: 350px;
               @media (max-width: 900px) {
                 margin-top: 30px;
                 height: auto;
@@ -327,6 +356,7 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    cursor: pointer;
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
@@ -338,6 +368,9 @@
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
                     }
                   }
                   > .post-col2 {
@@ -349,6 +382,7 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    cursor: pointer;
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
@@ -360,6 +394,9 @@
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
                     }
                   }
                 }
@@ -386,22 +423,38 @@
                         background-color: gray;
                       }
                       > span {
-                        @include font-size-11($font-content-light);
+                        @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
                     > .date-time {
                       > span {
-                        @include font-size-11($font-content-light);
+                        @include font-size-11($font-head-500);
                         color: gray;
+                        cursor: pointer;
+                        &:hover {
+                          color: rgba($brandcolor2, 0.95);
+                        }
                       }
                     }
                   }
                   > .body {
                     width: 100%;
                     > .image-post {
+                      cursor: pointer;
                       width: 100%;
-                      height: 220px;
+                      height: 180px;
+                      display: flex;
+                      justify-content: center;
+                      text-align: center;
+                      background-color: #f8f8f8;
+                      align-items: center;
+                      @media (max-width: 900px) {
+                        height: 300px;
+                      }
+                      > span{
+                        @include font-size-9($font-head-500);
+                      }
                       > .image {
                         width: 100%;
                         height: 100%;
@@ -409,6 +462,7 @@
                       }
                     }
                     > .detail {
+                      cursor: pointer;
                       @include font-size-9($font-head-500);
                       margin: 20px 0px;
                       display: -webkit-box;
@@ -484,10 +538,187 @@
         }
       }
     }
-    @media (max-width: 1400px) {
-      width: calc(1200px);
+    > .other_section {
+      width: calc(100%);
+      .div-wrapper {
+        width: calc(100%);
+        > .container {
+          width: calc(100%);
+          max-width: 1600px;
+          height: auto;
+          display: flex;
+          flex-direction: column;
+          > .section {
+            width: calc(100% - 30px);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            > .title {
+              @include font-size-6($font-head-500);
+              position: relative;
+              width: 100%;
+              display: flex;
+              > .text {
+                background-color: white;
+                position: relative;
+                width: auto;
+                z-index: 1;
+                padding: 0px 10px 0px 0px;
+              }
+              > .line {
+                width: 100%;
+                height: 1px;
+                background-color: black;
+                position: absolute;
+                top: 50%;
+              }
+            }
+            > .cards {
+              > .card-small-type {
+                width: calc(100%);
+                display: flex;
+                overflow: auto;
+                > .card {
+                  cursor: pointer;
+                  transition: 0.1s;
+                  width: 160px;
+                  height: auto;
+                  padding: 5px;
+                  display: flex;
+                  margin: 15px;
+                  border: 1px solid #f7f7f7;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  border-radius: 10px;
+                  &:hover {
+                    transition: 0.1s;
+                    border: 1px solid #cdcdcd;
+                    > .text {
+                      > span {
+                        color: rgba($brandcolor2, 0.95);
+                      }
+                    }
+                  }
+                  > img {
+                    width: 150px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                  }
+                  > .text {
+                    width: 150px;
+                    @include font-size-9($font-head-500);
+                    text-align: center;
+                    margin: 10pt 0pt;
+                    > span {
+                      display: -webkit-box;
+                      -webkit-line-clamp: 2;
+                      line-height: 26px;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
+                    }
+                  }
+                }
+              }
+              > .card-me-type {
+                width: calc(100%);
+                display: flex;
+                @media (max-width: 900px) {
+                  flex-direction: column;
+                }
+                > .card {
+                  cursor: pointer;
+                  transition: 0.1s;
+                  width: 390px;
+                  height: auto;
+                  padding: 5px;
+                  display: flex;
+                  margin: 5px;
+                  flex-direction: column;
+                  border-radius: 10px;
+                  @media (max-width: 900px) {
+                    width: 570px;
+                  }
+                  > img {
+                    width: 100%;
+                    height: 260px;
+                    object-fit: cover;
+                  }
+                  > .text {
+                    width: 100%;
+                    @include font-size-8($font-head-500);
+                    margin: 10pt 0pt;
+                    height: 150px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    > span {
+                      display: -webkit-box;
+                      -webkit-line-clamp: 3;
+                      line-height: 26px;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
+                      &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                      }
+                    }
+                    > .more {
+                      fill: slategray;
+                      @include font-size-11($font-head-500);
+                    }
+                    > .bottom {
+                      width: 100%;
+                      > .owner-offical {
+                        display: flex;
+                        align-content: center;
+                        align-items: stretch;
+                        justify-content: flex-start;
+                        > .new-cards-offical {
+                          display: flex;
+                          width: 14px;
+                          height: 14px;
+                          fill: slategray;
+                          margin: 3pt 3pt 0 0;
+                          flex: 0 0 auto;
+                        }
+                        > .owner {
+                          @include font-size-11($font-head-500);
+                          color: slategray;
+                        }
+                      }
+                      > .count {
+                        display: flex;
+                        align-items: flex-end;
+                        color: slategray;
+                        margin-top: 5px;
+                        @include font-size-11($font-head-400);
+                        > .count-aontrol {
+                        }
+
+                        > .title-control {
+                          margin-left: 2px;
+                        }
+
+                        > .drot {
+                          margin: 0 5pt;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
     @media (max-width: 1200px) {
+      width: calc(1000px);
+    }
+    @media (max-width: 1000px) {
       width: calc(900px);
     }
     @media (max-width: 900px) {
