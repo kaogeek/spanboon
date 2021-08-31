@@ -333,7 +333,7 @@ export class StoryPage extends AbstractPage implements OnInit {
         });
 
         this.pageName = this.postStoryData.pageData.data.name;
-        this.story = this.postStoryData.story;
+        this.story = this.postStoryData.story.story;
         // remove contenteditable to fix bug for firefox like unable to click
         if (this.story !== undefined && this.story.story !== undefined && this.story.story !== '') {
           const regex = /contenteditable=""/ig;
