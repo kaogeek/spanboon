@@ -13,13 +13,15 @@ import * as moment from 'moment';
 })
 
 export class HighlightText implements PipeTransform {
-    transform(text: any): string { 
-        var pattern = text.match(/#[\wก-๙]+/g); 
-        if (pattern !== null && pattern.length > 0) { 
-            for (let item of pattern) {  
-                text = text.replace(item, (match) => `<a class="highlight-text" href="/search?hashtag=${item.replace("#", "")}" target="_blank">${match}</a>`)
-            } 
-        } 
-        return text; 
+    transform(text: any): string {
+        if (text !== undefined && text !== null) {
+            var pattern = text.match(/#[\wก-๙]+/g);
+            if (pattern !== null && pattern.length > 0) {
+                for (let item of pattern) {
+                    text = text.replace(item, (match) => `<a class="highlight-text" href="/search?hashtag=${item.replace("#", "")}" target="_blank">${match}</a>`)
+                }
+            }
+            return text;
+        }
     }
 }

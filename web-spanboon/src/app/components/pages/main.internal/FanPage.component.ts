@@ -214,12 +214,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (pathPost !== undefined && pathPost !== null) {
             this.initPage(pathPost)
           }
-            // if check path not exist post
-            if (pathPost !== 'post') {
-              this.CheckPost = true; 
-              this.isPost = false; 
-              this.showLoading = true;
-            }
+          // if check path not exist post
+          if (pathPost !== 'post') {
+            this.CheckPost = true;
+            this.isPost = false;
+            this.showLoading = true;
+          }
 
         } else if (pathUrlPost === 'post') {
           this.CheckPost = false;
@@ -516,7 +516,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
           }
           let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;
-          this.seoService.setMetaInfo(this.router.url,post.title,post.title + post.detail +text,post.gallery[0].imageURL,text);
+          this.seoService.setMetaInfo(this.router.url, post.title, post.title + post.detail + text, post.gallery[0].imageURL, text);
           if (post.gallery.length > 0) {
             for (let img of post.gallery) {
               if (img.imageURL !== '') {
@@ -728,6 +728,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         }
       }).catch((err: any) => {
+        this.stopLoading();
         console.log(err);
       })
     }
@@ -866,7 +867,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.seoService.updateTitle(this.resDataPage.name);
         if (this.router.url.split('/')[3] !== 'post') {
-          this.seoService.setMetaInfo(this.router.url,this.resDataPage.name,this.resDataPage.name,this.resDataPage.imageURL,this.resDataPage.name);
+          this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
         }
         this.searchAboutPage();
 
