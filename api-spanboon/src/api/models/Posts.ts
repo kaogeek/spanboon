@@ -6,7 +6,7 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn, Index } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
@@ -26,10 +26,12 @@ export class Posts extends BaseModel {
     public title: string;
 
     @Column({ name: 'detail' })
+    @Index()
     public detail: string;
 
     @Column({ name: 'story' })
-    public story: string;
+    @Index()
+    public story: any;
 
     @Column({ name: 'isDraft' })
     public isDraft: boolean;
