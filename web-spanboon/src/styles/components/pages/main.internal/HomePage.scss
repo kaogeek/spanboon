@@ -20,6 +20,7 @@
       background-color: white;
       @media (max-width: 600px) {
         margin: 20px 15px;
+        width: calc(100% - 30px);
       }
       .div-wrapper {
         width: calc(100%);
@@ -28,44 +29,17 @@
           max-width: 1600px;
           height: auto;
           display: flex;
-          @media (max-width: 900px) {
-            background-color: #fafafa;
-          }
           > .col1 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
             display: flex;
             > span {
-              @include font-size-9($font-head-500);
+              @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
             > .hastags {
-              @include font-size-9($font-head-500);
-              display: flex;
-              > .hastag {
-                > span {
-                  padding: 0px 12px;
-                  border-right: solid 1px #5e5e5e;
-                  cursor: pointer;
-                  &:hover {
-                    color: rgba($brandcolor2, 0.95);
-                  }
-                }
-              }
-            }
-          }
-          > .col2 {
-            width: calc(50% - 30px);
-            height: auto;
-            padding: 15px;
-            display: flex;
-            > span {
-              @include font-size-9($font-head-500);
-              color: $brandcolor2;
-            }
-            > .hastags {
-              @include font-size-9($font-head-500);
+              @include font-size-10($font-head-500);
               display: flex;
               > .hastag {
                 > span {
@@ -80,6 +54,30 @@
             }
             @media (max-width: 1200px) {
               display: none;
+            }
+          }
+          > .col2 {
+            width: calc(50% - 30px);
+            height: auto;
+            padding: 15px;
+            display: flex;
+            > span {
+              @include font-size-10($font-head-500);
+              color: $brandcolor2;
+            }
+            > .hastags {
+              @include font-size-10($font-head-500);
+              display: flex;
+              > .hastag {
+                > span {
+                  padding: 0px 12px;
+                  border-right: solid 1px #5e5e5e;
+                  cursor: pointer;
+                  &:hover {
+                    color: rgba($brandcolor2, 0.95);
+                  }
+                }
+              }
             }
           }
           @media (max-width: 1900px) {
@@ -153,7 +151,7 @@
           height: auto;
           display: flex;
           @media (max-width: 900px) {
-            background-color: #fafafa;
+            background-color: white;
           }
           > .col1 {
             width: calc(50% - 30px);
@@ -338,22 +336,108 @@
                 > .sub-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
+
                   > .post-col1 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
-                    margin-top: 30px;
+                    margin-top: 10px;
                     margin-right: 20px;
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    width: 100%;
                     cursor: pointer;
+                    > .top {
+                      width: calc(100%);
+                      height: 30px;
+                      display: flex;
+                      flex-direction: row;
+                      align-content: center;
+                      justify-content: space-between;
+                      align-items: center;
+                      display: none;
+                      // padding: 0px 10px;
+                      > .status {
+                        display: flex;
+                        align-content: center;
+                        align-items: center;
+                        > .status-g {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-general;
+                        }
+                        > .status-n {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-need;
+                        }
+                        > span {
+                          @include font-size-11($font-head-500);
+                          margin-left: 6px;
+                        }
+                      }
+                      > .date-time {
+                        > span {
+                          cursor: pointer;
+                          @include font-size-11($font-head-500);
+                          color: gray;
+                          &:hover {
+                            color: rgba($brandcolor2, 0.95);
+                          }
+                        }
+                      }
+                      @media (max-width: 900px) {
+                        display: flex;
+                      }
+                    }
+                    > .body {
+                      width: 100%;
+                      display: none;
+                      > .image-post {
+                        cursor: pointer;
+                        width: 100%;
+                        height: 180px;
+                        display: flex;
+                        justify-content: center;
+                        text-align: center;
+                        background-color: #f8f8f8;
+                        align-items: center;
+                        @media (max-width: 900px) {
+                          height: 300px;
+                        }
+                        > span {
+                          cursor: pointer;
+                          @include font-size-9($font-head-500);
+                          padding: 20px 0px;
+                        }
+                        > .image {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                        }
+                      }
+
+                      > .detail {
+                        cursor: pointer;
+                        @include font-size-9($font-head-500);
+                        padding: 20px 0px;
+                      }
+                      @media (max-width: 900px) {
+                        display: unset;
+                      }
+                    }
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+                      @media (max-width: 900px) {
+                        display: none;
+                      }
                     }
                     > .date {
                       @include font-size-11($font-head-500);
@@ -362,6 +446,10 @@
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
+                      @media (max-width: 900px) {
+                        display: none;
+                      }
                     }
                   }
                   > .post-col2 {
@@ -369,17 +457,101 @@
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
                     margin-top: 30px;
+                    width: 100%;
                     margin-right: 20px;
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
+                    > .top {
+                      width: calc(100%);
+                      height: 30px;
+                      display: flex;
+                      flex-direction: row;
+                      align-content: center;
+                      justify-content: space-between;
+                      align-items: center;
+                      display: none;
+                      // padding: 0px 10px;
+                      > .status {
+                        display: flex;
+                        align-content: center;
+                        align-items: center;
+                        > .status-g {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-general;
+                        }
+                        > .status-n {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-need;
+                        }
+                        > span {
+                          @include font-size-11($font-head-500);
+                          margin-left: 6px;
+                        }
+                      }
+                      > .date-time {
+                        > span {
+                          cursor: pointer;
+                          @include font-size-11($font-head-500);
+                          color: gray;
+                          &:hover {
+                            color: rgba($brandcolor2, 0.95);
+                          }
+                        }
+                      }
+                      @media (max-width: 900px) {
+                        display: flex;
+                      }
+                    }
+                    > .body {
+                      width: 100%;
+                      display: none;
+                      > .image-post {
+                        cursor: pointer;
+                        width: 100%;
+                        height: 180px;
+                        display: flex;
+                        justify-content: center;
+                        text-align: center;
+                        background-color: #f8f8f8;
+                        align-items: center;
+                        @media (max-width: 900px) {
+                          height: 300px;
+                        }
+                        > span {
+                          cursor: pointer;
+                          @include font-size-9($font-head-500);
+                          padding: 20px 0px;
+                        }
+                        > .image {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                        }
+                      }
+                      > .detail {
+                        cursor: pointer;
+                        @include font-size-9($font-head-500);
+                        padding: 20px 0px;
+                      }
+                      @media (max-width: 900px) {
+                        display: unset;
+                      }
+                    }
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+                      @media (max-width: 900px) {
+                        display: none;
+                      }
                     }
                     > .date {
                       @include font-size-11($font-head-500);
@@ -387,6 +559,9 @@
                       margin-top: 10px;
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
+                      }
+                      @media (max-width: 900px) {
+                        display: none;
                       }
                     }
                   }
@@ -492,18 +667,102 @@
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
-                    margin-top: 30px;
+                    margin-top: 10px;
                     margin-right: 20px;
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
+                    width: calc(100%);
                     cursor: pointer;
+                    > .top {
+                      width: calc(100%);
+                      height: 30px;
+                      display: flex;
+                      flex-direction: row;
+                      align-content: center;
+                      justify-content: space-between;
+                      align-items: center;
+                      display: none;
+                      // padding: 0px 10px;
+                      > .status {
+                        display: flex;
+                        align-content: center;
+                        align-items: center;
+                        > .status-g {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-general;
+                        }
+                        > .status-n {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-need;
+                        }
+                        > span {
+                          @include font-size-11($font-head-500);
+                          margin-left: 6px;
+                        }
+                      }
+                      > .date-time {
+                        > span {
+                          cursor: pointer;
+                          @include font-size-11($font-head-500);
+                          color: gray;
+                          &:hover {
+                            color: rgba($brandcolor2, 0.95);
+                          }
+                        }
+                      }
+                      @media (max-width: 900px) {
+                        display: flex;
+                      }
+                    }
+                    > .body {
+                      width: 100%;
+                      display: none;
+                      > .image-post {
+                        cursor: pointer;
+                        width: 100%;
+                        height: 180px;
+                        display: flex;
+                        justify-content: center;
+                        text-align: center;
+                        background-color: #f8f8f8;
+                        align-items: center;
+                        @media (max-width: 900px) {
+                          height: 300px;
+                        }
+                        > span {
+                          cursor: pointer;
+                          @include font-size-9($font-head-500);
+                          padding: 20px 0px;
+                        }
+                        > .image {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                        }
+                      }
+                      > .detail {
+                        cursor: pointer;
+                        @include font-size-9($font-head-500);
+                        padding: 20px 0px;
+                      }
+                      @media (max-width: 900px) {
+                        display: unset;
+                      }
+                    }
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+                      @media (max-width: 900px) {
+                        display: none;
+                      }
                     }
                     > .date {
                       @include font-size-11($font-head-500);
@@ -511,6 +770,9 @@
                       margin-top: 10px;
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
+                      }
+                      @media (max-width: 900px) {
+                        display: none;
                       }
                     }
                   }
@@ -520,16 +782,102 @@
                     padding-bottom: 30px;
                     margin-top: 30px;
                     margin-right: 20px;
+                    width: calc(100%);
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
+                    > .top {
+                      width: calc(100%);
+                      height: 30px;
+                      display: flex;
+                      flex-direction: row;
+                      align-content: center;
+                      justify-content: space-between;
+                      align-items: center;
+                      display: none;
+                      // padding: 0px 10px;
+                      > .status {
+                        display: flex;
+                        align-content: center;
+                        align-items: center;
+                        > .status-g {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-general;
+                        }
+                        > .status-n {
+                          width: 10px;
+                          height: 10px;
+                          border-radius: 50px;
+                          background-color: $status-post-need;
+                        }
+                        > span {
+                          @include font-size-11($font-head-500);
+                          margin-left: 6px;
+                        }
+                      }
+                      > .date-time {
+                        > span {
+                          cursor: pointer;
+                          @include font-size-11($font-head-500);
+                          color: gray;
+                          &:hover {
+                            color: rgba($brandcolor2, 0.95);
+                          }
+                        }
+                      }
+                      @media (max-width: 900px) {
+                        display: flex;
+                      }
+                    }
+                    > .body {
+                      width: 100%;
+                      display: none;
+                      > .image-post {
+                        cursor: pointer;
+                        width: 100%;
+                        height: 180px;
+                        display: flex;
+                        justify-content: center;
+                        text-align: center;
+                        background-color: #f8f8f8;
+                        align-items: center;
+                        @media (max-width: 900px) {
+                          height: 300px;
+                        }
+                        > .detail {
+                          > span {
+                            cursor: pointer;
+                            @include font-size-9($font-head-500);
+                            padding: 20px 0px;
+                          }
+                        }
+                        > .image {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                        }
+                      }
+                      > .detail {
+                        cursor: pointer;
+                        @include font-size-9($font-head-500);
+                        padding: 20px 0px;
+                      }
+                      @media (max-width: 900px) {
+                        display: unset;
+                      }
+                    }
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+                      @media (max-width: 900px) {
+                        display: none;
+                      }
                     }
                     > .date {
                       @include font-size-11($font-head-500);
@@ -537,6 +885,9 @@
                       margin-top: 10px;
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
+                      }
+                      @media (max-width: 900px) {
+                        display: none;
                       }
                     }
                   }
@@ -620,9 +971,6 @@
               }
             }
           }
-          @media (max-width: 1900px) {
-            width: 1600px;
-          }
           @media (max-width: 1600px) {
             width: 1200px;
           }
@@ -647,6 +995,7 @@
             }
             > .col2 > .col2-col1 > .posts > .sub-post {
               width: calc(100% - 20px);
+              border-top: 1px solid #00000024;
             }
             > .col2 > .col2-col1 > .posts > .main-post {
               width: calc(100% - 20px);
@@ -661,6 +1010,7 @@
             }
             > .col2 > .col2-col2 > .posts > .sub-post {
               width: calc(100% - 20px);
+              border-top: 1px solid #00000024;
             }
             > .col2 > .col2-col2 > .posts > .main-post {
               width: calc(100% - 20px);
@@ -723,6 +1073,15 @@
                 width: auto;
                 z-index: 1;
                 padding: 0px 10px 0px 0px;
+                display: flex;
+                flex-direction: column;
+                > .subtitle {
+                  @include font-size-10($font-head-500);
+                  color: rgb(121, 121, 121);
+                }
+                &.small {
+                  @include font-size-8($font-head-500);
+                }
               }
               > .line {
                 width: 100%;
