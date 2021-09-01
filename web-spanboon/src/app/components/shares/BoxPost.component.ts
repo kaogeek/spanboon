@@ -923,8 +923,16 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public showDialogCreateStory(isEdit?: boolean): void {
-    const topic = this.topic.nativeElement.innerHTML;
-    const storyPostShort = this.storyPost.nativeElement.innerText
+    // const topic = this.topic.nativeElement.innerHTML;
+    // const storyPostShort = this.storyPost.nativeElement.innerText
+    let topic: any, storyPostShort: any;
+    if (this.isListPage) {
+      topic = document.getElementById(this.prefix.header + 'topic').innerText;
+      storyPostShort = document.getElementById(this.prefix.detail + 'editableStoryPost').innerText;
+    } else {
+      topic = document.getElementById('topic').innerText;
+      storyPostShort = document.getElementById('editableStoryPost').innerText;
+    }
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content && this.content.story ? this.content.story : {};
     const storyPost = this.storyPost.nativeElement.innerText
