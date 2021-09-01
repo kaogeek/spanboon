@@ -11,7 +11,7 @@ import { JSDOM } from 'jsdom';
 import { spanboon_web } from '../env';
 
 export class PostUtil {
-    public static IMG_ID_PREFIX = '$##';
+    public static IMG_ID_PREFIX = '$$';
 
     public static getImageIdsFromStory(text: string): string[] {
         const result = [];
@@ -26,7 +26,7 @@ export class PostUtil {
 
             if (imgId && imgId !== '') {
                 if (imgId.startsWith(PostUtil.IMG_ID_PREFIX)) {
-                    imgId = imgId.substring(3, imgId.length);
+                    imgId = imgId.substring(PostUtil.IMG_ID_PREFIX.length, imgId.length);
 
                     if (imgId !== '') {
                         result.push(imgId);
@@ -79,8 +79,8 @@ export class PostUtil {
             if (imgId && fileMapping[imgId]) {
                 item.setAttribute('src', fileMapping[imgId]);
             } else {
-                if (imgId.length >= 3) {
-                    const realImgId = imgId.substring(3, imgId.length);
+                if (imgId.length >= PostUtil.IMG_ID_PREFIX.length) {
+                    const realImgId = imgId.substring(PostUtil.IMG_ID_PREFIX.length, imgId.length);
                     item.setAttribute('src', root + '/api/file/' + realImgId + '/image');
                 }
             }

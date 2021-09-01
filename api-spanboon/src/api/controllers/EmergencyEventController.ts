@@ -420,10 +420,10 @@ export class EmergencyEventController {
                 emergencyEventTimeline.timelines.push(lastestProcsResult);
             }
 
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully got PageObjective', emergencyEventTimeline);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully got EmergencyEvent', emergencyEventTimeline);
             return res.status(200).send(successResponse);
         } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Unable got PageObjective', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Unable got EmergencyEvent', undefined);
             return res.status(400).send(errorResponse);
         }
     }

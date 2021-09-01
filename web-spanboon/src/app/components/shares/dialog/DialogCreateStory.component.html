@@ -543,7 +543,7 @@
                                                 <div class="centered">Drop your file here!</div>
                                             </div>
                                         </div>
-                                        <img id=$##{{item.imgId}} class="ct-background-image" *ngIf="item.image64"
+                                        <img id=$${{item.imgId}} class="ct-background-image" *ngIf="item.image64"
                                             [ngStyle]="{'width': item.imageStyle.imageSize}" (click)="fileImage.click()"
                                             style="cursor: pointer;" [src]="item.image64 ">
                                         <span>{{item.imageDetail}}</span>
