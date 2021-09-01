@@ -22,11 +22,38 @@
 
 <section *ngIf="model !== undefined" class="home-page-main">
     <section class="container">
+        <div class="secsione-list">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="col1">
+                        <span>มาใหม่ :</span>
+                        <div class="hastags">
+                            <div class="hastag" (click)="clickToPage(list.title?list.title:list.label,list.type)"
+                                *ngFor="let list of hashTag | slice:0:3;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col2">
+                        <span>มาแรง :</span>
+                        <div class="hastags">
+                            <div class="hastag"
+                                (click)="clickToPageUser(list.owner?list.data.objectiveId:list.data.pageUsername?list.data.pageUsername:list.data._id,list.owner?'ture':undefined)"
+                                *ngFor="let list of model.objectiveEvents.contents | slice:0:3;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="secsione-emer">
             <div class="div-wrapper">
                 <div class="container">
                     <div class="col1">
-                        <div class="col1-col1">
+                        <div class="col1-col1"
+                            (click)="clickToPage(model.emergencyPin.contents.length > 0?
+                            model.emergencyPin.contents[0].data.emergencyEventId:model.emergencyEvents.contents[0].data.emergencyEventId)">
                             <div class="col-img">
                                 <div class="teg_event"> <svg style="margin-right: 10px;"
                                         xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
@@ -104,6 +131,7 @@
                         </div>
                         <div class="col1-col2">
                             <div class="col-colum-detail"
+                                (click)="clickToPage(item.title?item.title:item.label,item.type)"
                                 *ngFor="let item of model.emergencyPin.contents.length > 0?model.emergencyPin.contents:model.emergencyEvents.length >1?model.emergencyEvents.contents:hashTag | slice:0:3;let index = index">
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
@@ -143,15 +171,19 @@
                             <div class="posts">
                                 <div class="sub-post">
                                     <div class="post-col1">
-                                        <span class="text"
+                                        <span (click)="openDilogPost(model.postSectionModel.contents[1])" class="text"
                                             [innerHTML]='model.postSectionModel.contents[1].post.title | highlight'></span>
-                                        <span class="date">{{model.postSectionModel.contents[2].post.createdDate |
+                                        <span class="date"
+                                            (click)="clickToPost(model.postSectionModel.contents[1].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                            |
                                             thformatdatetime}}</span>
                                     </div>
                                     <div class="post-col2">
-                                        <span class="text"
+                                        <span (click)="openDilogPost(model.postSectionModel.contents[2])" class="text"
                                             [innerHTML]='model.postSectionModel.contents[2].post.title | highlight'></span>
-                                        <span class="date">{{model.postSectionModel.contents[2].post.createdDate |
+                                        <span class="date"
+                                            (click)="clickToPost(model.postSectionModel.contents[2].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                            |
                                             thformatdatetime}}</span>
                                     </div>
                                 </div>
@@ -171,19 +203,22 @@
                                                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                                     class="svg-color-gray" />
                                             </svg>
-                                            <span>{{model.postSectionModel.contents[0].post.createdDate |
+                                            <span
+                                                (click)="clickToPost(model.postSectionModel.contents[0].post._id)">{{model.postSectionModel.contents[0].post.createdDate
+                                                |
                                                 thformatdatetime}}</span>
                                         </div>
                                     </div>
                                     <div class="body">
                                         <div class="image-post">
-                                            <!-- <img class="image"
-                                                src="https://today-api.moveforwardparty.org/api/file/6128b48c949e111314c2a63c/image"> -->
-                                            <img class="image"
-                                                [src]="model.postSectionModel.contents[0].post.signURL?model.postSectionModel.contents[0].post.signURL:model.postSectionModel.contents[0].post.coverImageSignURL?model.postSectionModel.contents[0].post.coverImageSignURL:apiBaseURL+model.postSectionModel.contents[0].post.coverImage+'/image'">
+                                            <img (click)="openDilogPost(model.postSectionModel.contents[0])"
+                                                class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
+                                                [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
+                                            <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
+                                                [innerHTML]='model.postSectionModel[0].post.length > 1? model.postSectionModel[0].post[0].title: model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
-                                        <div class="detail">
-                                            <span
+                                        <div class="detail" (click)="openDilogPost(model.postSectionModel.contents[0])">
+                                            <span *ngIf="model.postSectionModel.contents[0].coverPageUrl"
                                                 [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
                                     </div>
@@ -196,18 +231,29 @@
                             </div>
                             <div class="posts">
                                 <div class="sub-post">
-                                    <div class="post-col1" *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
+                                    <div class="post-col1"
+                                        *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
                                         <span class="text"
+                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]: model.postSectionModel.contents[5].post)"
                                             [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
-                                        <span class="date">{{model.objectiveEvents.contents[0].post.length > 1?
+                                        <span (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                            model.objectiveEvents.contents[0].post[1]._id:
+                                            model.postSectionModel.contents[5].post._id)"
+                                            class="date">{{model.objectiveEvents.contents[0].post.length > 1?
                                             model.objectiveEvents.contents[0].post[1].createdDate:
                                             model.postSectionModel.contents[5].post.createdDate |
                                             thformatdatetime}}</span>
                                     </div>
-                                    <div class="post-col2" *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
+                                    <div class="post-col2"
+                                        *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
                                         <span class="text"
+                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]: model.postSectionModel.contents[2].post)"
                                             [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
-                                        <span class="date">{{model.objectiveEvents.contents[0].post.length > 1?
+                                        <span class="date"
+                                            (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                            model.objectiveEvents.contents[0].post[2]._id:
+                                            model.postSectionModel.contents[6].post._id)">{{model.objectiveEvents.contents[0].post.length
+                                            > 1?
                                             model.objectiveEvents.contents[0].post[2].createdDate:
                                             model.postSectionModel.contents[6].post.createdDate |
                                             thformatdatetime}}</span>
@@ -229,7 +275,11 @@
                                                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                                     class="svg-color-gray" />
                                             </svg>
-                                            <span>{{model.objectiveEvents.contents[0].post.length > 1?
+                                            <span
+                                                (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                                model.objectiveEvents.contents[0].post[0]._id:
+                                                model.postSectionModel.contents[4].post._id)">{{model.objectiveEvents.contents[0].post.length
+                                                > 1?
                                                 model.objectiveEvents.contents[0].post[0].createdDate:
                                                 model.postSectionModel.contents[4].post.createdDate |
                                                 thformatdatetime}}</span>
@@ -237,12 +287,109 @@
                                     </div>
                                     <div class="body">
                                         <div class="image-post">
-                                            <img class="image"
-                                                src="https://www.khaosod.co.th/wpapp/uploads/2021/08/%E0%B8%A1%E0%B9%87%E0%B8%AD%E0%B8%9A-4.jpg">
-                                        </div>
-                                        <div class="detail">
-                                            <span
+                                            <img class="image" *ngIf="model.postSectionModel.contents[4].coverPageUrl"
+                                                (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)"
+                                                [src]="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignURL?model.postSectionModel.contents[4].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
+                                            <span *ngIf="!model.postSectionModel.contents[4].coverPageUrl"
                                                 [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                        </div>
+                                        <div class="detail"
+                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)">
+                                            <span *ngIf="model.postSectionModel.contents[4].coverPageUrl"
+                                                [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="other_section">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="section" *ngFor="let data of model.sectionModels;let index = index">
+                        <div class="title">
+                            <div class="text">
+                                <span>{{data.title}}</span>
+                            </div>
+                            <div class="line"></div>
+                        </div>
+                        <div class="cards">
+                            <div *ngIf="data.type === 'SMALL'" class="card-small-type">
+                                <div class="card" *ngFor="let content of data.contents;let index=index"
+                                    (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
+                                    <img
+                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.iconUrl+'/image'">
+                                    <div class="text">
+                                        <span [innerHTML]='content.subtitle?content.subtitle:content.title'></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="data.type !== 'SMALL'" class="card-me-type">
+                                <div class="card" *ngFor="let content of data.contents| slice:0:3;let index=index"
+                                    (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
+                                    <div class="top">
+                                        <div class="status" *ngIf="content.post.type === 'GENERAL'">
+                                            <div class="status-g"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="status" *ngIf="content.post.type === 'NEED'">
+                                            <div class="status-n"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="date-time">
+                                            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                                width="10px" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                    class="svg-color-gray" />
+                                                <path
+                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                    class="svg-color-gray" />
+                                            </svg>
+                                            <span (click)="clickToPost(content.post._id)">{{content.post.createdDate
+                                                |
+                                                thformatdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <img (click)="openDilogPost(content.post)"
+                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
+                                    <div class="text">
+                                        <span (click)="openDilogPost(content.post)"
+                                            [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'></span>
+                                        <!-- <span class="more" *ngIf="content.coverPageUrl">อ่านต่อ...</span> -->
+                                        <div class="bottom">
+                                            <div class="owner-offical"
+                                                (click)="clickToPageUser(content.owner.uniqueId?content.owner.uniqueId:content.owner.id)">
+                                                <svg class="new-cards-offical" id="shield"
+                                                    xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
+                                                    viewBox="0 0 43.383 47.208" *ngIf="content.owner.isOfficial">
+                                                    <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                                                        <path id="Path_141" data-name="Path 141"
+                                                            d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                                            transform="translate(-36.867)" />
+                                                        <path id="Path_142" data-name="Path 142"
+                                                            d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                                            transform="translate(-259.715 -289.198)" />
+                                                    </g>
+                                                </svg>
+                                                <span class="owner">{{content.owner.name}}</span>
+                                            </div>
+                                            <div class="count">
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">ความเห็น</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">บอกต่อ</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">ถูกใจ</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">แชร์</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

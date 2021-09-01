@@ -18,12 +18,13 @@ import { Router } from '@angular/router';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../../shares/dialog/dialog';
+import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { environment } from 'src/environments/environment';
 import { MESSAGE } from '../../../../custom/variable';
 
 declare var $: any;
 
-const PAGE_NAME: string = 'homeV2';
+const PAGE_NAME: string = 'home';
 const PAGE_SIZE: number = 6;
 
 @Component({
@@ -111,6 +112,67 @@ export class HomePage extends AbstractPage implements OnInit {
           });
         }
       }
+    }
+
+  }
+
+  public clickToPage(dataId: any, type?: any) {
+    if (type !== null && type !== undefined) {
+      this.router.navigate([]).then(() => {
+        window.open('/search?hashtag=' + dataId, '_blank');
+      });
+    } else {
+      this.router.navigate([]).then(() => {
+        window.open('/emergencyevent/' + dataId);
+      });
+    }
+  }
+
+  public clickToPost(postId: any) {
+    this.router.navigate([]).then(() => {
+      window.open('/post/' + postId);
+    });
+  }
+
+  public clickToPageUser(pageId: any, owner?: any) {
+    this.router.navigate([]).then(() => {
+      if (owner !== undefined && owner !== null) {
+        window.open('/objective/' + pageId);
+      } else {
+        window.open('/page/' + pageId);
+      }
+    });
+  }
+
+  public openDilogPost($event) {
+    if ($event.post) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event.post,
+          isNotAccess: false,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    } else if ($event._id) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event,
+          isNotAccess: false,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
     }
 
   }
