@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, ProfileFacade, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -44,7 +44,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
   private searchHashTagFacade: HashTagFacade;
-  private profileFacade: ProfileFacade;
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
   protected observManager: ObservableManager;
@@ -56,7 +55,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public url: string;
   public subPage: string;
   public isLoading: boolean;
-  public isUserLogin: boolean;
   public msgPageNotFound: boolean;
   public imageCoverSize: number;
   public position: number;
@@ -71,14 +69,13 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public apiBaseURL = environment.apiBaseURL;
 
   files: FileHandle[] = [];
-  constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, profileFacade: ProfileFacade, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
+  constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade,
     recommendFacade: RecommendFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
     this.assetFacade = assetFacade;
-    this.profileFacade = profileFacade;
     this.observManager = observManager;
     this.routeActivated = routeActivated;
     this.searchHashTagFacade = searchHashTagFacade;
@@ -90,7 +87,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
     });
-    this.isUserLogin = this.isLogin();
   }
 
   public ngOnInit(): void {
@@ -188,26 +184,23 @@ export class PageRecommended extends AbstractPage implements OnInit {
     })
   }
 
-  public async followUser(userId: string, index: number) {
-    let status = await this.profileFacade.follow(userId)
-    if (status.status === 1) {
-      this.dataRecommend[index].isFollow = true;
-    } else {
-      this.dataRecommend[index].isFollow = false;
-    }
-  }
-
   public getRecommend() {
-    let limit: number = 6;
+    let limit: number = 3;
     let offset: number = 0;
     this.recommendFacade.getRecommend(limit, offset).then(async (res) => {
       this.dataRecommend = res.data;
+      for (let data of this.dataRecommend) {
+        if (data.imageURL) {
+          data.imageURL = await this.passSignUrl(data.imageURL);
+        }
+      }
     }).catch((err: any) => {
       console.log('err ', err)
     });
   }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+  }
 }
-
-
-
-
