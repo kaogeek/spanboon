@@ -188,6 +188,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     }
 
                     contentModel.dateTime = row.createdDate;
+                    contentModel.data = moreData;
 
                     result.contents.push(contentModel);
                 }
