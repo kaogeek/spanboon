@@ -22,6 +22,31 @@
 
 <section *ngIf="model !== undefined" class="home-page-main">
     <section class="container">
+        <div class="secsione-list">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="col1">
+                        <span>มาใหม่ :</span>
+                        <div class="hastags">
+                            <div class="hastag" (click)="clickToPage(list.title?list.title:list.label,list.type)"
+                                *ngFor="let list of hashTag | slice:0:3;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col2">
+                        <span>มาแรง :</span>
+                        <div class="hastags">
+                            <div class="hastag"
+                                (click)="clickToPageUser(list.owner?list.data.objectiveId:list.data.pageUsername?list.data.pageUsername:list.data._id,list.owner?'ture':undefined)"
+                                *ngFor="let list of model.objectiveEvents.contents | slice:0:3;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="secsione-emer">
             <div class="div-wrapper">
                 <div class="container">
@@ -187,11 +212,13 @@
                                     <div class="body">
                                         <div class="image-post">
                                             <img (click)="openDilogPost(model.postSectionModel.contents[0])"
-                                                class="image"
+                                                class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
                                                 [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
+                                            <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
+                                                [innerHTML]='model.postSectionModel[0].post.length > 1? model.postSectionModel[0].post[0].title: model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
                                         <div class="detail" (click)="openDilogPost(model.postSectionModel.contents[0])">
-                                            <span
+                                            <span *ngIf="model.postSectionModel.contents[0].coverPageUrl"
                                                 [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
                                     </div>
@@ -283,14 +310,14 @@
             <div class="div-wrapper">
                 <div class="container">
                     <div class="section" *ngFor="let data of model.sectionModels;let index = index">
-                        <div class="title" *ngIf="data.contents.length > 1">
+                        <div class="title">
                             <div class="text">
                                 <span>{{data.title}}</span>
                             </div>
                             <div class="line"></div>
                         </div>
                         <div class="cards">
-                            <div *ngIf="data.type === 'SMALL' && data.contents.length > 1" class="card-small-type">
+                            <div *ngIf="data.type === 'SMALL'" class="card-small-type">
                                 <div class="card" *ngFor="let content of data.contents;let index=index"
                                     (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
                                     <img
@@ -303,14 +330,39 @@
                             <div *ngIf="data.type !== 'SMALL'" class="card-me-type">
                                 <div class="card" *ngFor="let content of data.contents| slice:0:3;let index=index"
                                     (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
-                                    <img
+                                    <div class="top">
+                                        <div class="status" *ngIf="content.post.type === 'GENERAL'">
+                                            <div class="status-g"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="status" *ngIf="content.post.type === 'NEED'">
+                                            <div class="status-n"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="date-time">
+                                            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                                width="10px" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                    class="svg-color-gray" />
+                                                <path
+                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                    class="svg-color-gray" />
+                                            </svg>
+                                            <span (click)="clickToPost(content.post._id)">{{content.post.createdDate
+                                                |
+                                                thformatdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <img (click)="openDilogPost(content.post)"
                                         [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
                                     <div class="text">
-                                        <span
+                                        <span (click)="openDilogPost(content.post)"
                                             [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'></span>
                                         <!-- <span class="more" *ngIf="content.coverPageUrl">อ่านต่อ...</span> -->
                                         <div class="bottom">
-                                            <div class="owner-offical">
+                                            <div class="owner-offical"
+                                                (click)="clickToPageUser(content.owner.uniqueId?content.owner.uniqueId:content.owner.id)">
                                                 <svg class="new-cards-offical" id="shield"
                                                     xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
                                                     viewBox="0 0 43.383 47.208" *ngIf="content.owner.isOfficial">
