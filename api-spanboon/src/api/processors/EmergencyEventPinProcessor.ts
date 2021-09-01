@@ -68,7 +68,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                             from: 'Posts',
                             let: { 'id': '$_id' },
                             pipeline: [
-                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] } } },
+                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] }, 'deleted': false } },
                                 { $limit: 1 }
                             ],
                             as: 'samplePost'

@@ -64,7 +64,7 @@
                 <div *ngIf="postSectionModel" class="tagCard">
                     <card-contant-home [tagCard]='true' (clickEvent)="testCrad($event)" [tagData]='doingEventsNo1'></card-contant-home>
                     <div class="post-tag-title" [class.dis]="!isDoing">
-                        <span class="title">โพสค์ใหม่ล่าสุด</span>
+                        <span class="title">โพสต์ใหม่ล่าสุด</span>
                     </div>
                     <div [class.dis]="!isDoing" class="post-tag"
                         *ngFor="let post of postSectionModel.contents | slice:0:6;">
