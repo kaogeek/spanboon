@@ -63,22 +63,23 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                 };
                 const emergencyAggregateArray = [
                     { $match: searchFilter.whereConditions },
-                    { // sample post for one
-                        $lookup: {
-                            from: 'Posts',
-                            let: { 'id': '$_id' },
-                            pipeline: [
-                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] }, 'deleted': false } },
-                                { $limit: 1 }
-                            ],
-                            as: 'samplePost'
-                        }
-                    },
-                    {
-                        $match: {
-                            'samplePost.0': { $exists: true }
-                        }
-                    },
+                    // open if u want to search only emergency event that has post
+                    // { // sample post for one
+                    //     $lookup: {
+                    //         from: 'Posts',
+                    //         let: { 'id': '$_id' },
+                    //         pipeline: [
+                    //             { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] }, 'deleted': false } },
+                    //             { $limit: 1 }
+                    //         ],
+                    //         as: 'samplePost'
+                    //     }
+                    // },
+                    // {
+                    //     $match: {
+                    //         'samplePost.0': { $exists: true }
+                    //     }
+                    // },
                     { $skip: offset },
                     { $limit: limit },
                     {
