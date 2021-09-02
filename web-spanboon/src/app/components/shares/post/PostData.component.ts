@@ -421,8 +421,13 @@ export class PostData {
       });
       dialog.afterClosed().subscribe((res) => {
         if (res) {
+          this.commentpost.splice(data.index, 1);
+          this.itemPost.commentCount = this.itemPost.commentCount - 1;
+          this.itemPost.isComment = false;
           this.postCommentFacade.delete(this.itemPost._id, data.commentdata).then((res: any) => {
             this.commentpost.splice(data.index, 1);
+            this.itemPost.commentCount = this.itemPost.commentCount - 1;
+            this.itemPost.isComment = false;
           }).catch((err: any) => {
           })
         }
