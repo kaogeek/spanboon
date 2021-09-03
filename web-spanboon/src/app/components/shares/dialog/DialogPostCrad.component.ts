@@ -78,7 +78,6 @@ export class DialogPostCrad extends AbstractPage {
 
   public async actionComment(action: any, index?: number) {
     this.isLoginCh();
-    // this.postId = action.postData.pageId
     let pageInUser: any[]
     let data: RePost = new RePost();
     let dataPost: any

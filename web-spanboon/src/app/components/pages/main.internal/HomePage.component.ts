@@ -89,7 +89,6 @@ export class HomePage extends AbstractPage implements OnInit {
     }).catch(error => {
       console.log(error);
     });
-    console.log('model', this.model);
   }
 
   public async searchPageInUser(userId?) {
@@ -122,9 +121,24 @@ export class HomePage extends AbstractPage implements OnInit {
         window.open('/search?hashtag=' + dataId, '_blank');
       });
     } else {
-      this.router.navigate([]).then(() => {
-        window.open('/emergencyevent/' + dataId);
-      });
+      if (typeof (dataId) === 'object') {
+        const dialogRef = this.dialog.open(DialogPostCrad, {
+          width: 'auto',
+          disableClose: false,
+          data: {
+            post: dataId,
+            isNotAccess: false,
+            user: this.userCloneDatas,
+            pageUser: this.pageUser,
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      } else {
+        this.router.navigate([]).then(() => {
+          window.open('/emergencyevent/' + dataId);
+        });
+      }
     }
   }
 

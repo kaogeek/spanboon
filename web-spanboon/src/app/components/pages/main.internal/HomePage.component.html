@@ -26,8 +26,8 @@
             <div class="div-wrapper">
                 <div class="container">
                     <div class="col1">
-                        <span>มาใหม่ :</span>
-                        <div class="hastags">
+                        <span *ngIf="hashTag.length > 0">มาใหม่ :</span>
+                        <div class="hastags" *ngIf="hashTag.length > 0">
                             <div class="hastag" (click)="clickToPage(list.title?list.title:list.label,list.type)"
                                 *ngFor="let list of hashTag | slice:0:3;">
                                 <span>{{list.title?list.title:list.label}}</span>
@@ -35,8 +35,8 @@
                         </div>
                     </div>
                     <div class="col2">
-                        <span>มาแรง :</span>
-                        <div class="hastags">
+                        <span *ngIf="model.objectiveEvents.contents.length > 0">มาแรง :</span>
+                        <div class="hastags" *ngIf="model.objectiveEvents.contents.length > 0">
                             <div class="hastag"
                                 (click)="clickToPageUser(list.owner?list.data.objectiveId:list.data.pageUsername?list.data.pageUsername:list.data._id,list.owner?'ture':undefined)"
                                 *ngFor="let list of model.objectiveEvents.contents | slice:0:3;">
@@ -51,9 +51,11 @@
             <div class="div-wrapper">
                 <div class="container">
                     <div class="col1">
-                        <div class="col1-col1"
-                            (click)="clickToPage(model.emergencyPin.contents.length > 0?
-                            model.emergencyPin.contents[0].data.emergencyEventId:model.emergencyEvents.contents[0].data.emergencyEventId)">
+                        <div class="col1-col1" (click)="clickToPage(model.emergencyPin.contents.length > 0?
+                            model.emergencyPin.contents[0].data.emergencyEventId:
+                            model.emergencyEvents.contents.length > 0?
+                            model.emergencyEvents.contents[0].data.emergencyEventId:
+                            model.postSectionModel.contents[0].post)">
                             <div class="col-img">
                                 <div class="teg_event"> <svg style="margin-right: 10px;"
                                         xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
@@ -94,37 +96,51 @@
                                         </g>
                                     </svg> เหตุการณ์ด่วน</div>
                                 <img class="image-back"
-                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image'">
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                                 <img class="image"
-                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image'">
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                             </div>
                             <div class="col-detail">
                                 <div class="title">
-                                    <h3>{{model.emergencyPin.contents.length > 0?
-                                        model.emergencyPin.contents[0].title:model.emergencyEvents.contents[0].title}}
-                                    </h3>
+                                    <span
+                                        [innerHTML]='model.emergencyPin.contents.length >
+                                        0?model.emergencyPin.contents[0].title:model.emergencyEvents.contents.length >
+                                        0?model.emergencyEvents.contents[0].title:model.postSectionModel.contents[6].post.title | highlight'>
+                                    </span>
                                 </div>
-                                <div class="content">
-                                    <span>{{model.emergencyPin.contents.length > 0?
-                                        model.emergencyPin.contents[0].description:model.emergencyEvents.contents[0].description}}</span>
+                                <div class="content"
+                                    *ngIf="model.emergencyPin.contents.length >0 && model.emergencyEvents.contents.length >0">
+                                    <span
+                                        [innerHTML]='model.emergencyPin.contents.length >
+                                        0?model.emergencyPin.contents[0].description:model.emergencyEvents.contents.length
+                                        >
+                                        0?model.emergencyEvents.contents[0].description:model.postSectionModel.contents[6].post.description | highlight'></span>
                                 </div>
                                 <div class="participation">
                                     <div class="social_control">
                                         <div class="amount_social">
-                                            <span class="count-aontrol">{{model.emergencyPin.contents.length > 0?
-                                                model.emergencyPin.contents[0].commentCount:model.emergencyEvents.contents[0].commentCount}}</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].commentCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].commentCount:model.postSectionModel.contents[6].post.commentCount}}</span>
                                             <span class="title-control">ความเห็น</span>
                                             <span class="drot">•</span>
-                                            <span class="count-aontrol">{{model.emergencyPin.contents.length > 0?
-                                                model.emergencyPin.contents[0].repostCount:model.emergencyEvents.contents[0].repostCount}}</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].repostCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].repostCount:model.postSectionModel.contents[6].post.repostCount}}</span>
                                             <span class="title-control">บอกต่อ</span>
                                             <span class="drot">•</span>
-                                            <span class="count-aontrol">{{model.emergencyPin.contents.length > 0?
-                                                model.emergencyPin.contents[0].likeCount:model.emergencyEvents.contents[0].likeCount}}</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].likeCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].likeCount:model.postSectionModel.contents[6].post.likeCount}}</span>
                                             <span class="title-control">ถูกใจ</span>
                                             <span class="drot">•</span>
-                                            <span class="count-aontrol">{{model.emergencyPin.contents.length > 0?
-                                                model.emergencyPin.contents[0].shareCount:model.emergencyEvents.contents[0].shareCount}}</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].shareCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].shareCount:model.postSectionModel.contents[6].post.shareCount}}</span>
                                             <span class="title-control">แชร์</span>
                                         </div>
                                     </div>
@@ -160,8 +176,6 @@
                                 <div class="colum-detail-2">
                                     <span class="title">{{item.postCount?item.postCount:item.count?item.count:'0'}}
                                         ครั้ง</span>
-                                    <!-- <span class="content">{{item.postCount?item.createdDate:item.createdDate |
-                                        dateFormat}}</span> -->
                                 </div>
                             </div>
                         </div>
@@ -315,22 +329,23 @@
                             </div>
                         </div>
                         <div class="col2-col2">
-                            <div class="title" *ngIf="model.objectiveEvents.contents[0].post.length > 1">
+                            <div class="title"
+                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1">
                                 <span class="text">{{model.objectiveEvents.contents[0].title}}</span>
                             </div>
                             <div class="posts">
                                 <div class="sub-post">
                                     <div class="post-col1"
-                                        *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
+                                        *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
 
                                         <div class="top">
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'GENERAL'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'GENERAL'">
                                                 <div class="status-g"></div>
                                                 <span>ทั่วไป</span>
                                             </div>
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'NEED'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'NEED'">
                                                 <div class="status-n"></div>
                                                 <span>มองหา</span>
                                             </div>
@@ -346,7 +361,9 @@
                                                         class="svg-color-gray" />
                                                 </svg>
                                                 <span
-                                                    (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[5].post._id)">{{model.objectiveEvents.contents[0].post.length
+                                                    (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[5].post._id)">{{
+                                                    model.objectiveEvents.contents.length > 0 &&
+                                                    model.objectiveEvents.contents[0].post.length
                                                     > 1?
                                                     model.objectiveEvents.contents[0].post[1].createdDate:
                                                     model.postSectionModel.contents[5].post.createdDate |
@@ -355,42 +372,43 @@
                                         </div>
                                         <div class="body">
                                             <div class="image-post">
-                                                <img (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1?
+                                                <img (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                 model.objectiveEvents.contents[0]:
-                                                model.postSectionModel.contents[5])" class="image" *ngIf="model.objectiveEvents.contents[0].post.length > 1?
+                                                model.postSectionModel.contents[5])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                     model.objectiveEvents.contents[0].coverPageUrl:
                                                     model.postSectionModel.contents[5].coverPageUrl"
-                                                    [src]="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[5].signURL?model.postSectionModel.contents[5].signURL:model.postSectionModel.contents[5].coverPageSignURL?model.postSectionModel.contents[5].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[5].coverPageUrl+'/image'">
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[5].signURL?model.postSectionModel.contents[5].signURL:model.postSectionModel.contents[5].coverPageSignURL?model.postSectionModel.contents[5].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[5].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[5].coverPageUrl"
-                                                    [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
                                             </div>
                                             <div class="detail"
                                                 (click)="openDilogPost(model.postSectionModel.contents[5])">
                                                 <span *ngIf="model.postSectionModel.contents[5].coverPageUrl"
-                                                    [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
                                             </div>
                                         </div>
                                         <span class="text"
-                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]: model.postSectionModel.contents[5].post)"
-                                            [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
-                                        <span (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]: model.postSectionModel.contents[5].post)"
+                                            [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                        <span (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                             model.objectiveEvents.contents[0].post[1]._id:
                                             model.postSectionModel.contents[5].post._id)"
-                                            class="date">{{model.objectiveEvents.contents[0].post.length > 1?
+                                            class="date">{{model.objectiveEvents.contents.length > 0 &&
+                                            model.objectiveEvents.contents[0].post.length > 1?
                                             model.objectiveEvents.contents[0].post[1].createdDate:
                                             model.postSectionModel.contents[5].post.createdDate |
                                             thformatdatetime}}</span>
                                     </div>
                                     <div class="post-col2"
-                                        *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
+                                        *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
                                         <div class="top">
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'GENERAL'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'GENERAL'">
                                                 <div class="status-g"></div>
                                                 <span>ทั่วไป</span>
                                             </div>
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'NEED'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'NEED'">
                                                 <div class="status-n"></div>
                                                 <span>มองหา</span>
                                             </div>
@@ -406,7 +424,9 @@
                                                         class="svg-color-gray" />
                                                 </svg>
                                                 <span
-                                                    (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[6].post._id)">{{model.objectiveEvents.contents[0].post.length
+                                                    (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[6].post._id)">{{
+                                                    model.objectiveEvents.contents.length > 0 &&
+                                                    model.objectiveEvents.contents[0].post.length
                                                     > 1?
                                                     model.objectiveEvents.contents[0].post[1].createdDate:
                                                     model.postSectionModel.contents[6].post.createdDate |
@@ -415,28 +435,29 @@
                                         </div>
                                         <div class="body">
                                             <div class="image-post">
-                                                <img (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1?
+                                                <img (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                 model.objectiveEvents.contents[0]:
-                                                model.postSectionModel.contents[6])" class="image" *ngIf="model.objectiveEvents.contents[0].post.length > 1?
+                                                model.postSectionModel.contents[6])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                     model.objectiveEvents.contents[0].coverPageUrl:
                                                     model.postSectionModel.contents[6].coverPageUrl"
-                                                    [src]="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].signURL?model.postSectionModel.contents[6].signURL:model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].signURL?model.postSectionModel.contents[6].signURL:model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[6].coverPageUrl"
-                                                    [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[6].post.title | highlight'></span>
                                             </div>
                                             <div class="detail"
                                                 (click)="openDilogPost(model.postSectionModel.contents[6])">
                                                 <span *ngIf="model.postSectionModel.contents[6].coverPageUrl"
-                                                    [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[6].post.title | highlight'></span>
                                             </div>
                                         </div>
                                         <span class="text"
-                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]: model.postSectionModel.contents[2].post)"
-                                            [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]: model.postSectionModel.contents[2].post)"
+                                            [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
                                         <span class="date"
-                                            (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                            (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                             model.objectiveEvents.contents[0].post[2]._id:
-                                            model.postSectionModel.contents[6].post._id)">{{model.objectiveEvents.contents[0].post.length
+                                            model.postSectionModel.contents[6].post._id)">{{model.objectiveEvents.contents.length > 0
+                                            && model.objectiveEvents.contents[0].post.length
                                             > 1?
                                             model.objectiveEvents.contents[0].post[2].createdDate:
                                             model.postSectionModel.contents[6].post.createdDate |
@@ -460,11 +481,13 @@
                                                     class="svg-color-gray" />
                                             </svg>
                                             <span
-                                                (click)="clickToPost(model.objectiveEvents.contents[0].post.length > 1?
+                                                (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                 model.objectiveEvents.contents[0].post[0]._id:
-                                                model.postSectionModel.contents[4].post._id)">{{model.objectiveEvents.contents[0].post.length
-                                                > 1?
+                                                model.postSectionModel.contents[4].post._id)">{{model.objectiveEvents.contents.length>
+                                                1?
+                                                model.objectiveEvents.contents[0].post.length> 1?
                                                 model.objectiveEvents.contents[0].post[0].createdDate:
+                                                model.postSectionModel.contents[4].post.createdDate:
                                                 model.postSectionModel.contents[4].post.createdDate |
                                                 thformatdatetime}}</span>
                                         </div>
@@ -472,15 +495,15 @@
                                     <div class="body">
                                         <div class="image-post">
                                             <img class="image" *ngIf="model.postSectionModel.contents[4].coverPageUrl"
-                                                (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)"
-                                                [src]="model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignURL?model.postSectionModel.contents[4].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
+                                                (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)"
+                                                [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].signURL?model.objectiveEvents.contents[0].signURL:model.objectiveEvents.contents[0].coverPageSignURL?model.objectiveEvents.contents[0].coverPageSignURL:apiBaseURL+model.objectiveEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignURL?model.postSectionModel.contents[4].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
                                             <span *ngIf="!model.postSectionModel.contents[4].coverPageUrl"
-                                                [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                                [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
                                         </div>
                                         <div class="detail"
-                                            (click)="openDilogPost(model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)">
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)">
                                             <span *ngIf="model.postSectionModel.contents[4].coverPageUrl"
-                                                [innerHTML]='model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                                [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
                                         </div>
                                     </div>
                                 </div>
