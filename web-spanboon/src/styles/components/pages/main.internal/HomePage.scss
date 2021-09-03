@@ -205,7 +205,15 @@
                 padding: 0px 15px;
                 > .title {
                   margin-top: 10pt;
-                  @include font-size-8($font-head-400);
+                  @include font-size-7($font-head-500);
+                  display: -webkit-box;
+                  -webkit-line-clamp: 5;
+                  overflow: hidden;
+                  line-height: 30px;
+                  -webkit-box-orient: vertical;
+                  &.post {
+                    @include font-size-8($font-head-500);
+                  }
                   > h3 {
                     margin: 0;
                     &:hover {
