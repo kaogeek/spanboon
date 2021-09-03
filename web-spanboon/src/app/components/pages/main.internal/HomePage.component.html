@@ -93,6 +93,8 @@
                                                 transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                                         </g>
                                     </svg> เหตุการณ์ด่วน</div>
+                                <img class="image-back"
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image'">
                                 <img class="image"
                                     [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image'">
                             </div>
@@ -132,7 +134,7 @@
                         <div class="col1-col2">
                             <div class="col-colum-detail"
                                 (click)="clickToPage(item.title?item.title:item.label,item.type)"
-                                *ngFor="let item of model.emergencyPin.contents.length > 0?model.emergencyPin.contents:model.emergencyEvents.length >1?model.emergencyEvents.contents:hashTag | slice:0:3;let index = index">
+                                *ngFor="let item of model.emergencyPin.contents.length > 1?model.emergencyPin.contents:model.emergencyEvents.length >1?model.emergencyEvents.contents:hashTag | slice:0:3;let index = index">
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
                                         <img
@@ -156,7 +158,8 @@
                                     </div>
                                 </div>
                                 <div class="colum-detail-2">
-                                    <span class="title">{{item.postCount?item.postCount:item.count}} ครั้ง</span>
+                                    <span class="title">{{item.postCount?item.postCount:item.count?item.count:'0'}}
+                                        ครั้ง</span>
                                     <!-- <span class="content">{{item.postCount?item.createdDate:item.createdDate |
                                         dateFormat}}</span> -->
                                 </div>
