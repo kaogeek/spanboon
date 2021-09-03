@@ -180,7 +180,10 @@
                   position: absolute;
                   color: white;
                   padding: 10px;
+                  top: 0;
+                  left: 0;
                   @include font-size-9($font-head-500);
+                  z-index: 5;
                 }
                 > .image-back {
                   z-index: 1;
