@@ -188,6 +188,13 @@ export class DialogPostCrad extends AbstractPage {
 
   public postLike(data: any, index: number) {
     let userId: any;
+
+    this.data.post.isLike = !this.data.post.isLike;
+    if (this.data.post.isLike) {
+      this.data.post.likeCount = this.data.post.likeCount + 1
+    } else {
+      this.data.post.likeCount = this.data.post.likeCount - 1
+    }
     if (data.userAsPage !== undefined && data.userAsPage !== null) {
       userId = data.userAsPage.id
     } else {

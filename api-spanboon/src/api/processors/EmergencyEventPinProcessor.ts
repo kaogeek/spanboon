@@ -64,22 +64,22 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                 const emergencyAggregateArray = [
                     { $match: searchFilter.whereConditions },
                     // open if u want to search only emergency event that has post
-                    // { // sample post for one
-                    //     $lookup: {
-                    //         from: 'Posts',
-                    //         let: { 'id': '$_id' },
-                    //         pipeline: [
-                    //             { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] }, 'deleted': false } },
-                    //             { $limit: 1 }
-                    //         ],
-                    //         as: 'samplePost'
-                    //     }
-                    // },
-                    // {
-                    //     $match: {
-                    //         'samplePost.0': { $exists: true }
-                    //     }
-                    // },
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$emergencyEvent'] }, 'deleted': false } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
                     { $skip: offset },
                     { $limit: limit },
                     {
@@ -164,6 +164,9 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     }
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
 
+                    const moreData: any = {};
+                    moreData.emergencyEventId = row._id;
+
                     const contentModel = new ContentModel();
                     contentModel.coverPageUrl = row.coverPageURL;
                     contentModel.title = hashtag === undefined ? '#' : '#' + hashtag.name;
@@ -185,6 +188,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     }
 
                     contentModel.dateTime = row.createdDate;
+                    contentModel.data = moreData;
 
                     result.contents.push(contentModel);
                 }
