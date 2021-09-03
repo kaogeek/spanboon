@@ -55,10 +55,12 @@
                             model.emergencyPin.contents[0].data.emergencyEventId:
                             model.emergencyEvents.contents.length > 0?
                             model.emergencyEvents.contents[0].data.emergencyEventId:
-                            model.postSectionModel.contents[0].post)">
+                            model.postSectionModel.contents[6].post)">
                             <div class="col-img">
-                                <div class="teg_event"> <svg style="margin-right: 10px;"
-                                        xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
+                                <div class="teg_event"
+                                    *ngIf="model.emergencyPin.contents.length >0 && model.emergencyEvents.contents.length >0">
+                                    <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
+                                        height="21" viewBox="0 0 23 21">
                                         <g id="Group_1312" data-name="Group 1312"
                                             transform="translate(-672.701 -415.463)">
                                             <path class="svg-icon-color-activate" id="Subtraction_2"
