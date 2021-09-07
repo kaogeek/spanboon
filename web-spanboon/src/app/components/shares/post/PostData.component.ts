@@ -422,12 +422,12 @@ export class PostData {
       dialog.afterClosed().subscribe((res) => {
         if (res) {
           this.commentpost.splice(data.index, 1);
+          let index = this.commentpost.map(function (e) { return e.user.id; }).indexOf(this.usercurrent.id);
           this.itemPost.commentCount = this.itemPost.commentCount - 1;
-          this.itemPost.isComment = false;
-          this.postCommentFacade.delete(this.itemPost._id, data.commentdata).then((res: any) => {
-            this.commentpost.splice(data.index, 1);
-            this.itemPost.commentCount = this.itemPost.commentCount - 1;
+          if (index > 0) {
             this.itemPost.isComment = false;
+          }
+          this.postCommentFacade.delete(this.itemPost._id, data.commentdata).then((res: any) => {
           }).catch((err: any) => {
           })
         }
