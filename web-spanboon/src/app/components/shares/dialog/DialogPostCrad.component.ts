@@ -65,6 +65,8 @@ export class DialogPostCrad extends AbstractPage {
     this.postFacade = postFacade;
     this.imageCover = {}
 
+    console.log('data.post', data.post);
+
   }
 
   ngOnInit() {
@@ -153,8 +155,8 @@ export class DialogPostCrad extends AbstractPage {
               data.hashTag = result.hashTag
             }
             this.postFacade.rePost(dataPost, data).then((res: any) => {
-              this.data.post[index].repostCount++
-              this.data.post[index].isRepost = false;
+              this.data.post.repostCount++
+              this.data.post.isRepost = true;
             }).catch((err: any) => {
               console.log(err)
             })
@@ -163,15 +165,15 @@ export class DialogPostCrad extends AbstractPage {
       } else if (action.type === "NOTOPIC") {
         dataPost = action.post._id;
         this.postFacade.rePost(dataPost, data).then((res: any) => {
-          this.data.post[index].repostCount++;
-          this.data.post[index].isRepost = true;
+          this.data.post.repostCount++;
+          this.data.post.isRepost = true;
         }).catch((err: any) => {
           console.log(err);
         })
       } else if (action.type === "UNDOTOPIC") {
         this.postFacade.undoPost(action.post._id).then((res: any) => {
-          this.data.post[index].repostCount--;
-          this.data.post[index].isRepost = false;
+          this.data.post.repostCount--;
+          this.data.post.isRepost = false;
         }).catch((err: any) => {
           console.log(err);
         })
@@ -186,6 +188,9 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public postLike(data: any, index: number) {
+    if (!this.isLogin()) {
+      return
+    }
     let userId: any;
 
     this.data.post.isLike = !this.data.post.isLike;

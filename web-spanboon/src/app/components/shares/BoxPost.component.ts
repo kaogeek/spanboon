@@ -264,6 +264,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
   selectedValue: string = "เลือกหมวดหมู่";
 
+
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
 
@@ -308,6 +309,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isSelectOption = true;
     this.router = router;
     this.data = {};
+
+    console.log('this.chooseStorys', this.chooseStorys);
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {

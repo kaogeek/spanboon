@@ -192,7 +192,7 @@ export class CardItem extends AbstractPage implements OnInit {
 
     public test(data) {
         this.router.navigate([]).then(() => {
-            window.open('/objectivetimeline/' + data.id);
+            window.open('/objective/' + data.id);
         });
     }
 

@@ -160,7 +160,7 @@
             padding: 15px;
             > .col1-col1 {
               width: 100%;
-              height: 500px;
+              height: auto;
               cursor: pointer;
               @media (max-width: 1200px) {
                 height: 600px;
@@ -204,7 +204,8 @@
               }
               > .col-detail {
                 width: calc(100% - 30px);
-                height: calc(200px);
+                // height: calc(200px);
+                height: auto;
                 padding: 0px 15px;
                 > .title {
                   margin-top: 10pt;
@@ -273,6 +274,7 @@
                 padding: 10px;
                 > .colum-detail-1 {
                   display: flex;
+                  width: 80%;
                   > .image {
                     margin-right: 20px;
                     > img {
@@ -286,6 +288,12 @@
                     > .title {
                       @include font-size-8($font-head-400);
                       cursor: pointer;
+                      line-height: 26px;
+                      display: -webkit-box;
+                      -webkit-line-clamp: 1;
+                      line-height: 26px;
+                      -webkit-box-orient: vertical;
+                      overflow: hidden;
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
@@ -636,6 +644,10 @@
                       cursor: pointer;
                       width: 100%;
                       height: 180px;
+                      display: flex;
+                      align-items: center;
+                      text-align: center;
+                      @include font-size-9($font-head-500);
                       @media (max-width: 900px) {
                         height: 300px;
                       }
@@ -1241,6 +1253,12 @@
                     width: 100%;
                     height: 260px;
                     object-fit: cover;
+                  }
+                  > .content-post-img {
+                    @include font-size-9($font-head-500);
+                    height: 130px;
+                    text-align: center;
+                    padding: 130px 40px 0px 40px;
                   }
                   > .text {
                     width: 100%;
