@@ -324,7 +324,7 @@
                                                 class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
                                                 [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
                                             <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
-                                                [innerHTML]='model.postSectionModel[0].post.length > 1? model.postSectionModel[0].post[0].title: model.postSectionModel.contents[0].post.title | highlight'></span>
+                                                [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
                                         <div class="detail" (click)="openDilogPost(model.postSectionModel.contents[0])">
                                             <span *ngIf="model.postSectionModel.contents[0].coverPageUrl"
@@ -573,9 +573,10 @@
                                     <span class="content-post-img" *ngIf="!content.post.gallery[0]"
                                         [innerHTML]='content.post.title | highlight'></span>
                                     <div class="text">
-                                        <div (click)="openDilogPost(content.post)" >
+                                        <div (click)="openDilogPost(content.post)">
                                             <span
-                                                [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title' *ngIf="content.post.gallery[0]"></span>
+                                                [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'
+                                                *ngIf="content.post.gallery[0]"></span>
                                         </div>
                                         <!-- <span class="more" *ngIf="content.coverPageUrl">อ่านต่อ...</span> -->
                                         <div class="bottom">
