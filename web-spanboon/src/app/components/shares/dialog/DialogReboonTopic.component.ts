@@ -47,6 +47,7 @@ export class DialogReboonTopic {
     } if (this.data.options.pageUserAsPage !== null && this.data.options.pageUserAsPage !== undefined) {
       this.pageUserAsPage = (' ไปยัง ' + this.data.options.pageUserAsPage.name)
     }
+    console.log('this.data', this.data);
   }
 
   ngOnInit() {

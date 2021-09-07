@@ -112,7 +112,7 @@
                                     </span>
                                 </div>
                                 <div class="content"
-                                    *ngIf="model.emergencyPin.contents.length >0 && model.emergencyEvents.contents.length >0">
+                                    *ngIf="model.emergencyPin.contents.length >0 || model.emergencyEvents.contents.length >0">
                                     <span
                                         [innerHTML]='model.emergencyPin.contents.length >
                                         0?model.emergencyPin.contents[0].description:model.emergencyEvents.contents.length
@@ -223,9 +223,9 @@
                                             </div>
                                         </div>
                                         <div class="body">
-                                            <div class="image-post">
-                                                <img (click)="openDilogPost(model.postSectionModel.contents[1])"
-                                                    class="image"
+                                            <div class="image-post"
+                                                (click)="openDilogPost(model.postSectionModel.contents[1])">
+                                                <img class="image"
                                                     *ngIf="model.postSectionModel.contents[1].coverPageUrl"
                                                     [src]="model.postSectionModel.contents[1].signURL?model.postSectionModel.contents[1].signURL:model.postSectionModel.contents[1].coverPageSignURL?model.postSectionModel.contents[1].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[1].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[1].coverPageUrl"
@@ -274,9 +274,9 @@
                                             </div>
                                         </div>
                                         <div class="body">
-                                            <div class="image-post">
-                                                <img (click)="openDilogPost(model.postSectionModel.contents[2])"
-                                                    class="image"
+                                            <div class="image-post"
+                                                (click)="openDilogPost(model.postSectionModel.contents[2])">
+                                                <img class="image"
                                                     *ngIf="model.postSectionModel.contents[2].coverPageUrl"
                                                     [src]="model.postSectionModel.contents[2].signURL?model.postSectionModel.contents[2].signURL:model.postSectionModel.contents[2].coverPageSignURL?model.postSectionModel.contents[2].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[2].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[2].coverPageUrl"
