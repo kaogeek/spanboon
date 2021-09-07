@@ -46,7 +46,7 @@ export class HomePage extends AbstractPage implements OnInit {
   public userCloneDatas: any;
   public pageUser: any;
   public model: any = undefined;
-  public hashTag: any = undefined;
+  public hashTag: any = [];
 
   public apiBaseURL = environment.apiBaseURL;
 
@@ -85,10 +85,14 @@ export class HomePage extends AbstractPage implements OnInit {
       filter
     }
     this.hashTagFacade.searchTrend(data).then(res => {
-      this.hashTag = res;
+      if (res.length > 0) {
+        this.hashTag = res;
+      }
     }).catch(error => {
       console.log(error);
     });
+    console.log('this.hashTag', this.hashTag);
+    console.log('model', this.model);
   }
 
   public async searchPageInUser(userId?) {
