@@ -91,8 +91,6 @@ export class HomePage extends AbstractPage implements OnInit {
     }).catch(error => {
       console.log(error);
     });
-    console.log('this.hashTag', this.hashTag);
-    console.log('model', this.model);
   }
 
   public async searchPageInUser(userId?) {

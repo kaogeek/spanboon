@@ -473,7 +473,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     });
 
     this.searchHashTagFacade.search(filter, dataHashTag.value).then((res: any) => {
-      // console.log(res)
     }).catch((err: any) => {
       console.log(err)
     })

@@ -82,7 +82,6 @@ export class SeoService {
 
     // public updateMetaInfo(keywords: any, description: string, title: string, url?: string, image?: string) {
 
-    //     console.log('keywords ', this.meta.getTags('name=description'))
     //     if (keywords.length > 0 && keywords !== '' && keywords !== undefined && keywords !== null) {
     //         this.meta.updateTag({ name: 'keywords', content: keywords });
     //         this.meta.updateTag({ property: 'og:keywords', content: keywords });
