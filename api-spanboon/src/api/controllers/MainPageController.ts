@@ -1195,7 +1195,7 @@ export class MainPageController {
                         }
                     }
 
-                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
                     if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                         for (const comment of postComments) {
                             const postId = comment.post;
