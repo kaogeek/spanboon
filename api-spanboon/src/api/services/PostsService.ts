@@ -160,7 +160,7 @@ export class PostsService {
                         }
                     };
                     if (searchAsPage) {
-                        commentStmt = { where: { commentAsPage: userObjId, post: postObjId } };
+                        commentStmt = { where: { commentAsPage: userObjId, post: postObjId, deleted: false } };
                     }
                     const postComment: any = await this.postsCommentService.findOne(commentStmt);
                     if (postComment) {
@@ -298,7 +298,7 @@ export class PostsService {
                     resolve(result);
                     return;
                 }
-                
+
                 const postIds = [];
                 for (const post of postSearchResult) {
                     postIds.push(post._id);

@@ -304,7 +304,7 @@ export class UserProfileController {
                                 }
                             }
 
-                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: usObjId, post: { $in: postsList } });
+                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: usObjId, post: { $in: postsList }, deleted: false });
                             if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                                 for (const comment of postComments) {
                                     const postId = comment.post;
