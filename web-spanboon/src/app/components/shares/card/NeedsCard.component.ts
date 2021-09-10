@@ -132,9 +132,6 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.originalNeeds = []
     if (this.itemNeeds !== null && this.itemNeeds !== undefined && this.itemNeeds.length > 0) {
       for (let needs of this.itemNeeds) {
-        if (needs.imageURL) {
-          needs.imageURL = await this.passSignUrl(needs.imageURL);
-        }
         Data.push(needs)
       }
       if (Data.length > 0) {
@@ -253,10 +250,4 @@ export class NeedsCard extends AbstractPage implements OnInit {
       },
     },
   }
-
-  public async passSignUrl(url?: any): Promise<any> {
-    let signData: any = await this.assetFacade.getPathFileSign(url);
-    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
-  }
-
 }

@@ -275,8 +275,6 @@ export class MenuContextualService {
 			var arrowTop = $('.arrow-top');
 			var arrowBottom = $('.arrow-bottom');
 			var y = x.style.cssText;
-			// console.log('y', y);
-			// console.log('x.style', x.style);
 
 			if (y !== null && y !== undefined) {
 				if ((y.includes('bottom') > 0)) {

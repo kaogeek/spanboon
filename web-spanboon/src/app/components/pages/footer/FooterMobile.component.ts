@@ -80,10 +80,7 @@ export class FooterMobile extends AbstractPage implements OnInit{
 
   // @HostListener('window:scroll', ['$event'])
   // onScroll($event) {
-  //   console.log("scrolle")
 
-    // console.log(document.body.scrollTop)
-    // console.log($event)
     // console.debug("Scroll Event", window.pageYOffset);
     // if (document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
     //   document.body.classList.add("bottommenu");
