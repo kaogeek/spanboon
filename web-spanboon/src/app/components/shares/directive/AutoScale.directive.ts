@@ -27,12 +27,10 @@ export class AutoScale implements OnInit, OnDestroy {
       //   this.setHeight();
       // }, 1000);
       this.setHeight();
-      // console.log('0');
     });
 
     $(window).on('load', () => {
       this.setHeight();
-      // console.log('1');
     });
 
     // $(window).load(() => {

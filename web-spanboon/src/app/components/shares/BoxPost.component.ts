@@ -264,6 +264,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   selectedAccessPage: string = "โพสต์เข้าไทม์ไลน์ของฉัน"
   selectedValue: string = "เลือกหมวดหมู่";
 
+
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
 
@@ -308,6 +309,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isSelectOption = true;
     this.router = router;
     this.data = {};
+
+    console.log('this.chooseStorys', this.chooseStorys);
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {
@@ -1495,7 +1498,6 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     var item = $('div.textarea-editor:contains("@")').text();
     // const replace = mention.match(/@[\wก-๙]+/g) || [];
-    // console.log('replace ',replace)
     // this.userTag = user
 
     let atwhoInsertedUser = $('.atwho-inserted').find('.tribute-container');
@@ -2547,7 +2549,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     // for (let data of this.arrListItem) {
     //   if (data.standardItemId === item.standardItemId) {
     //     this.arrListItem.splice(index, 1);
-    //     console.log('this.arrListItem ',this.arrListItem)
     //     break;
     //   }
     //   index++; 

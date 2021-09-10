@@ -310,8 +310,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       n.image64 = ''
       index++
     }
-
-    let asset = { data: this.image.split(',')[1], name: this.coverImage.name, type: this.coverImage.type, size: this.coverImage.size }
+    let asset = { data: this.image.split(',')[1], name: this.coverImage.name, type: this.coverImage.type ? this.coverImage.type : "image/jpeg", size: this.coverImage.size }
     let story = document.getElementById("storybody").innerHTML
     let coverImages: any = { img64: this.image, asset: asset }
     let data = { story: story, storyAry: this.ary, coverImages: coverImages }

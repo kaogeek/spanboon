@@ -218,7 +218,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (pathPost !== 'post') {
             this.CheckPost = true;
             this.isPost = false;
-            this.showLoading = true;
+            // this.showLoading = true;
           }
 
         } else if (pathUrlPost === 'post') {

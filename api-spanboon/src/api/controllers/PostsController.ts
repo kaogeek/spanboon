@@ -549,7 +549,7 @@ export class PostsController {
                         }
                     }
 
-                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
                     if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                         for (const comment of postComments) {
                             const postId = comment.post;
@@ -783,7 +783,7 @@ export class PostsController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Repost', undefined));
             }
-        } catch (err) {
+        } catch (err: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Error', err.message));
         }
     }

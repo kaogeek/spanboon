@@ -1134,7 +1134,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                                     // let chatIds: string[] = [];
                                                     // chatIds.push(this.chatRoomId); 
                                                     // this.chatFacade.markReadChatMessage(chatIds, this.asPage).then((readResult) => {
-                                                    //     console.log('readResult ',readResult)
                                                     //     if (readResult !== null && readResult !== undefined) {
                                                     //         for (let result of readResult.data) {
                                                     //             if (data.chatMessage.id === result.id) {

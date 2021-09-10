@@ -10,7 +10,11 @@ import { SectionModel } from '../models/SectionModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
+import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
 
 export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
@@ -19,7 +23,8 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
     constructor(
         private postsService: PostsService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private userLikeService: UserLikeService
     ) {
         super();
     }
@@ -48,12 +53,14 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
+                let userId = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
+                    userId = this.data.userId;
                 }
 
                 const searchFilter: SearchFilter = new SearchFilter();
@@ -165,6 +172,15 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                             contents.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('PostSectionProcessor: ' + error);
+                        }
+                    }
+
+                    // search isLike
+                    row.isLike = false;
+                    if(userId !== undefined && userId !== undefined && userId !== ''){
+                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                        if(userLikes.length > 0){
+                            row.isLike = true;
                         }
                     }
 

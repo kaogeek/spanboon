@@ -6,7 +6,7 @@
  */
 
 .dialog_post_card {
-    width: 600px;
+    width: 800px;
     max-width: 100%;
     overflow: auto;
     height: auto;
@@ -33,11 +33,20 @@
         }
     }
 
+    @media (max-width: 900px) {
+        width: 100vw;
+        height: 100vh;
+        max-height: unset;
+        > .mat-dialog-content {
+            max-height: unset;
+        }
+    }
+
     post-data {
         > .card-feed-post {
             margin: unset;
             overflow: unset;
-            >.header-post {
+            > .header-post {
                 position: sticky;
                 z-index: 99;
                 top: 0;
@@ -62,14 +71,4 @@
             flex-wrap: nowrap;
         }
     }
-}
-
-@media (max-width: $medium) {
-    .dialog_post_card {
-        width: 95vw;
-        max-height: 100vh;
-    }
-}
-
-@media (max-width: $small) {
 }
