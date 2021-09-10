@@ -112,7 +112,6 @@ export class MainPage extends AbstractPage implements OnInit {
   ngAfterViewInit(): void {
     var prev = 0;
     // var spanboonHome = $('#menubottom'); 
-    // console.log('spanboonHome ',spanboonHome.scrollTop())
     $(window).scroll(() => {
       this.scrollTop();
       var scrollTop = $(window).scrollTop();

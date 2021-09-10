@@ -962,11 +962,13 @@ export class PagePostController {
                     { $sort: { startDateTime: -1 } },
                     { $skip: offset },
                     { $limit: limit },
-                    {
+                    { // filter only comment that not deleted
                         $lookup: {
                             from: 'PostsComment',
-                            localField: '_id',
-                            foreignField: 'post',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$post'] }, 'deleted': false } },
+                            ],
                             as: 'comment'
                         }
                     },
@@ -1292,7 +1294,7 @@ export class PagePostController {
                                 }
                             }
 
-                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postList } });
+                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postList }, deleted: false });
                             if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                                 for (const comment of postComments) {
                                     const postId = comment.post;

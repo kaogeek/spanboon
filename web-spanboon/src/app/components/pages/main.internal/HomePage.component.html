@@ -152,7 +152,8 @@
                         </div>
                         <div class="col1-col2">
                             <div class="col-colum-detail"
-                                (click)="clickToPage(item.title?item.title:item.label,item.type)" *ngFor="let item of model.emergencyPin.contents.length > 1?
+                                (click)="clickToPage(item.post?item.post:item.title?item.title:item.label,item.type)"
+                                *ngFor="let item of model.emergencyPin.contents.length > 1?
                                 model.emergencyPin.contents:model.emergencyEvents.length >1?
                                 model.emergencyEvents.contents:hashTag.length >1?
                                 hashTag:model.postSectionModel.contents | slice:8:10;let index = index">

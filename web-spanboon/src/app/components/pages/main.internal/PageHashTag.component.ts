@@ -356,7 +356,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
           // this.searchTrendTag();
           // const splitText = substringPath.split('=');
-          // console.log('splitText ',splitText)
           // let hashtag: string = '';
           // if (splitText.length > 1) {
           //   // [0] must be text as 'hashtag'
@@ -374,7 +373,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           //   };
           //   this.mainPageFacade.searchMainContent(keywordFilter).then((res: any) => {
           //     this.resHashTag = res.result
-          //     console.log(this.resHashTag);
           //   }).catch((error: any) => {
           //   });
           // }
@@ -423,7 +421,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     /* // this is for query param check
     this.routeActivated.queryParams.subscribe(params => {
-      console.log('---> show hashtag'+params['hashtag']);
     });*/
   }
 
@@ -964,7 +961,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
         this.resPost = [];
-        // console.log('offset ',offset)
         // if (offset) {
         //   this.resPost = [];
         // }
@@ -1390,7 +1386,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public createComment(comment: any, index?: number) {
-    console.log('comment', comment)
     let commentPosts = new CommentPosts
     if (comment.userAsPage !== undefined && comment.userAsPage !== null) {
       commentPosts.commentAsPage = comment.userAsPage.id

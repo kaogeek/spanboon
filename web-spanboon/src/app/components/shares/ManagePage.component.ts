@@ -102,7 +102,6 @@ export class ManagePage extends AbstractPage implements OnInit {
             autoFocus: false
         });
         dialogRef.afterClosed().subscribe(res => {
-            console.log(res)
         });
     }
 

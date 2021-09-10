@@ -422,9 +422,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let originalpost: any[] = this.resPost.posts;
     this.pageFacade.searchPostType(data, this.url).then(async (res: any) => {
       if (!Array.isArray(res) && res.posts.length > 0) {
-        console.log('if 1 : ')
         if (res.posts.length !== 5) {
-          console.log('if 2 : ')
           this.isMaxLoadingPost = true
           this.isLoadingPost = false
         }
@@ -432,7 +430,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           originalpost.push(post);
         }
         if (this.resDataPage && this.resDataPage.pageObjectives && this.resDataPage.pageObjectives.length > 0) {
-          console.log('if 3 : ')
           let index = 0;
           for (let result of this.resDataPage.pageObjectives) {
             if (result.iconURL !== '') {
