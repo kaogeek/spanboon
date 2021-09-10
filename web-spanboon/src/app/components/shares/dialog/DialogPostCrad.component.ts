@@ -65,7 +65,6 @@ export class DialogPostCrad extends AbstractPage {
     this.postFacade = postFacade;
     this.imageCover = {}
 
-    console.log('data.post', data.post);
 
   }
 

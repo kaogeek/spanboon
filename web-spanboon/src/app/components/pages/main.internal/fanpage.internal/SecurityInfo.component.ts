@@ -135,7 +135,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 }
             });
         } else if (text === 'twitter' && !bind) { 
-            console.log('this.connectTwitter ',this.connectTwitter)
             
             this.isPreLoadIng = true;
             this.isLoadingTwitter = true;

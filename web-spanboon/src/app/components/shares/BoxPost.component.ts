@@ -1498,7 +1498,6 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     var item = $('div.textarea-editor:contains("@")').text();
     // const replace = mention.match(/@[\wก-๙]+/g) || [];
-    // console.log('replace ',replace)
     // this.userTag = user
 
     let atwhoInsertedUser = $('.atwho-inserted').find('.tribute-container');
@@ -2550,7 +2549,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     // for (let data of this.arrListItem) {
     //   if (data.standardItemId === item.standardItemId) {
     //     this.arrListItem.splice(index, 1);
-    //     console.log('this.arrListItem ',this.arrListItem)
     //     break;
     //   }
     //   index++; 

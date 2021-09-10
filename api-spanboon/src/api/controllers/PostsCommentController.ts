@@ -62,7 +62,7 @@ export class PostsCommentController {
     public async findPostsComment(@Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const postPageObjId = new ObjectID(postId);
 
-        const postsComment: PostsComment[] = await this.postsCommentService.find({ where: { $and: [{ post: postPageObjId }] } });
+        const postsComment: PostsComment[] = await this.postsCommentService.find({ where: { $and: [{ post: postPageObjId, deleted: false }] } });
 
         if (postsComment) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PostsComment', postsComment);
@@ -487,7 +487,7 @@ export class PostsCommentController {
 
                 if (userEngagementAction) {
                     await this.postsCommentService.update({ _id: commentObjId }, { $set: { likeCount } });
-                    const unLikedPost = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId } });
+                    const unLikedPost = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId, deleted: false } });
                     result['comment'] = unLikedPost;
                     const successResponse = ResponseUtil.getSuccessResponse('UnLike Post Comment Success', result);
                     return res.status(200).send(successResponse);
@@ -552,7 +552,7 @@ export class PostsCommentController {
 
                 if (userEngagementAction) {
                     await this.postsCommentService.update({ _id: commentObjId }, { $set: { likeCount } });
-                    const likedPostComment = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId } });
+                    const likedPostComment = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId, deleted: false } });
                     result['comment'] = likedPostComment;
                     const successResponse = ResponseUtil.getSuccessResponse('Like Post Comment Success', result);
                     return res.status(200).send(successResponse);
@@ -593,7 +593,7 @@ export class PostsCommentController {
             const username = req.user.id;
 
             const postsCommentData: PostsComment = await this.postsCommentService.findOne({
-                $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }]
+                $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, {deleted: false}]
             });
 
             if (!postsCommentData) {
@@ -606,7 +606,7 @@ export class PostsCommentController {
 
             if (postsCommentEdit) {
                 const postsCommentUpdated: PostsComment = await this.postsCommentService.findOne({
-                    $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }]
+                    $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, {deleted: false}]
                 });
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Update PostsComment Successful', postsCommentUpdated));

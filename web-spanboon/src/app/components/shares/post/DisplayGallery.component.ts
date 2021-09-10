@@ -26,7 +26,6 @@ export class DisplayGallery {
   }
 
   public showDialogGallery(index: any) {
-    console.log('gallery', this.gallery)
     this.clickShowImage.emit({ index: index, gallerys: this.gallery });
   }
 }
