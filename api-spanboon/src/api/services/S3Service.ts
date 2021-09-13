@@ -302,7 +302,12 @@ export class S3Service {
             }
         }
 
-        let signURL = await this.getSignedUrl(folderName, expireSecond);
+        let signURL = undefined;
+        try {
+            signURL = await this.getSignedUrl(folderName, expireSecond);
+        } catch (error) {
+            console.log(error);
+        }
         if (signURL !== undefined) {
             for (const prefix of this.getPrefixBucketURL()) {
                 signURL = signURL.replace(prefix, aws_setup.AWS_CLOUDFRONT_PREFIX);
