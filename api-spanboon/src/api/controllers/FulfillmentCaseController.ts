@@ -582,7 +582,7 @@ export class FulfillmentController {
             } else {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Not Found', []));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('List FulfillmentCase Error', error.message));
         }
     }
@@ -619,7 +619,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('PostId Invalid', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Get FulfillmentCase From Post Error', error.message));
         }
     }
@@ -858,13 +858,13 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Get FulfillmentCase', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Get FulfillmentCase Error', error.message));
         }
     }
 
     /**
-     * @api {get} /api/fulfillment_case/list Find Main Page Data API
+     * @api {get} /api/fulfillment_case/:caseId/request Find Main Page Data API
      * @apiGroup MainPage
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
@@ -873,7 +873,7 @@ export class FulfillmentController {
      *      "data":"{}"
      *      "status": "1"
      * }
-     * @apiSampleRequest /api/fulfillment_case/list
+     * @apiSampleRequest /api/fulfillment_case/:caseId/request
      * @apiErrorExample {json} Page error
      * HTTP/1.1 500 Internal Server Error
      */
@@ -991,7 +991,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Search FulfillmentRequest', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Get FulfillmentRequest Error', error.message));
         }
     }
@@ -1321,7 +1321,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentCase Failed', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentCase Error', error.message));
         }
     }
@@ -1444,7 +1444,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cancel FulfillmentCase Error', error.message));
         }
     }
@@ -1584,7 +1584,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Error', error.message));
         }
     }
@@ -1857,7 +1857,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Error', error.message));
         }
     }
@@ -1988,7 +1988,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Case was not found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cancel Confirm FulfillmentCase Error', error.message));
         }
     }
@@ -2112,7 +2112,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentCase Not Found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentCase Error', error.message));
         }
     }
@@ -2403,7 +2403,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Fulfillment CaseId Invalid', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentRequest Error', error.message));
         }
     }
@@ -2575,7 +2575,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentCaseId Not Found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Update FulfillmentRequest Error', error.message));
         }
     }
@@ -2693,7 +2693,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('FulfillmentCaseId Not Found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Delete FulfillmentCase Error', error.message));
         }
     }
@@ -2852,7 +2852,7 @@ export class FulfillmentController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Invalid FulfillmentRequest', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Delete FulfillmentRequest Error', error.message));
         }
     }
