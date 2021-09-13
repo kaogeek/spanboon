@@ -118,6 +118,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
         this.objectiveData.page;
+        console.log('objectiveData',this.objectiveData);
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
 
