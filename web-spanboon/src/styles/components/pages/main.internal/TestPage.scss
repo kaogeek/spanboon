@@ -81,15 +81,7 @@
     > .col-comment {
         width: 1200px;
         display: flex;
-        > .col-body {
-            padding: 30px;
-            padding-top: 0;
-            > .head {
-                > span {
-                    @include font-size-8($font-head-500);
-                }
-            }
-        }
+
         @media (max-width: 1200px) {
             width: 900px;
             flex-direction: column;
@@ -173,6 +165,54 @@
                 @include font-size-9($font-content-light);
                 padding-bottom: 20px;
                 border-bottom: solid 1px #e9e9e9;
+            }
+            > .col-body {
+                padding: 30px 0px 30px 0px;
+                > .head {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 25px;
+                    > span {
+                        @include font-size-8($font-head-500);
+                    }
+                }
+                > .body {
+                    > .input-comment {
+                        flex: 1 1 0%;
+                        position: relative;
+                        > .send-button {
+                            display: flex;
+                            position: absolute;
+                            right: 15pt;
+                            top: 5pt;
+                            color: $color-gray;
+
+                            > .material-icons {
+                                &:hover {
+                                    color: $brandcolor2;
+                                    @include pointer();
+                                }
+                            }
+                        }
+                        > .comment-text {
+                            border: 1px solid rgb($black, 0.1);
+                            width: calc(100% - 24px - 2px - 10pt);
+                            border-radius: 25px;
+                            padding: 6pt 12pt;
+                            @include font-size-10($font-content-light);
+                        }
+                    }
+                }
+                > .post-comment {
+                    display: flex;
+                    height: auto;
+                    padding: 15px 0px;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-top: 0.7px solid rgba(229, 229, 229, 0.7);
+                    word-break: break-word;
+                    overflow: hidden;
+                  }
             }
             @media (max-width: 1200px) {
                 width: calc(100% - 20px);

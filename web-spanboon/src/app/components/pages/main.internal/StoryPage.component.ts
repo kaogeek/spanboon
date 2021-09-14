@@ -65,7 +65,11 @@ export class StoryPage extends AbstractPage implements OnInit {
   public recommendedStory: any;
   public recommendedStorys: any;
   public pageUser: any;
+  public userAspage: any = null;
+  public value: any
   public url: string;
+  public isComments: boolean = true;
+  public isShowUser: boolean = true;
 
   public apiBaseURL = environment.apiBaseURL;
 
@@ -97,7 +101,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
     this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.STORY = res;
-      console.log('this.STORY', this.STORY);
       this.TimeoutRuntimeSet();
       this.getRecommendedHashtag(this.STORY[0]._id);
       this.getRecommendedStory(this.STORY[0]._id);
@@ -106,12 +109,14 @@ export class StoryPage extends AbstractPage implements OnInit {
       console.log(err)
     })
 
+
   }
 
   public TimeoutRuntimeSet() {
     setTimeout(() => {
       $('.comSelect').remove();
       $('.comDelet').remove();
+      console.log('this.STORY', this.STORY);
     }, 400);
   }
 
@@ -119,7 +124,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedHashtag(id: string) {
     this.postFacade.recommendedHashtag(id).then((res: any) => {
       this.recommendedHashtag = res.data
-      console.log('recommendedHashtag', res);
     }).catch((err: any) => {
     })
   }
@@ -127,7 +131,6 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedStory(id: string) {
     this.postFacade.recommendedStory(id).then((res: any) => {
       this.recommendedStory = res.data
-      console.log('recommendedStory', res);
     }).catch((err: any) => {
     })
   }
@@ -135,9 +138,21 @@ export class StoryPage extends AbstractPage implements OnInit {
   public getRecommendedStorys(id: string, pageId: string) {
     this.postFacade.recommendedStorys(id, pageId).then((res: any) => {
       this.recommendedStorys = res.data
-      console.log('recommendedStorys', res);
     }).catch((err: any) => {
     })
+  }
+
+  public postAction(action) {
+    this.userAspage = action.id ? action : this.userAspage;
+    if (action.mod === 'COMMENT') {
+      alert('COMMENT');
+    } else if (action.mod === 'LIKE') {
+      alert('LIKE');
+    } else if (action.mod === 'REBOON') {
+      alert('REBOON');
+    } else if (action.mod === 'SHARE') {
+      alert('SHARE');
+    }
   }
 
   public clickToPage(dataId: any, type?: any) {
@@ -170,7 +185,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   public async searchPageInUser(userId?) {
     if (userId) {
       let search: SearchFilter = new SearchFilter();
-      search.limit = 2;
+      search.limit = 20;
       search.count = false;
       search.whereConditions = { ownerUser: userId };
       var aw = await this.pageFacade.search(search).then((pages: any) => {
@@ -188,6 +203,32 @@ export class StoryPage extends AbstractPage implements OnInit {
         }
       }
     }
+
+  }
+
+  public onClickComment(data: any) {
+    let comment = ({ value: this.value, pageId: this.STORY[0]._id, userAsPage: this.userAspage ? this.userAspage : this.userCloneDatas.id });
+    this.createComment(comment);
+    setTimeout(() => {
+      // this.isComment = true
+      this.value = ''
+    }, 100);
+  }
+
+
+  public createComment(comment: any, index?: number) {
+    let commentPosts = new CommentPosts
+    if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
+      commentPosts.commentAsPage = comment.userAsPage.id
+    }
+    commentPosts.comment = comment.value
+    commentPosts.asset = undefined
+    this.postCommentFacade.create(commentPosts, comment.pageId).then((res: any) => {
+    }).catch((err: any) => {
+    })
+  }
+
+  public commentAction(data: any) {
 
   }
 

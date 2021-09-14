@@ -310,7 +310,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.router = router;
     this.data = {};
 
-    console.log('this.chooseStorys', this.chooseStorys);
 
     // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
     //   if (config.value !== undefined) {

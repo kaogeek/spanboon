@@ -118,7 +118,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
         this.objectiveData.page;
-        console.log('objectiveData',this.objectiveData);
+        console.log('objectiveData', this.objectiveData);
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
 
@@ -163,7 +163,12 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public followObjective() {
         this.objectiveFacade.followObjective(this.objectiveId);
-        this.isFollow = !this.isFollow;
+        if (this.objectiveData.isFollow) {
+            this.objectiveData.followedCount--
+        } else {
+            this.objectiveData.followedCount++
+        }
+        this.objectiveData.isFollow = !this.objectiveData.isFollow;
     }
 
     public ngOnDestroy(): void {

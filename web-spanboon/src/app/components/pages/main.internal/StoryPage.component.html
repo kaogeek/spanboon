@@ -69,6 +69,33 @@
             </div>
             <div class="col-stoey-body" [innerHTML]='STORY[0].story.story | highlight'>
             </div>
+
+            <div class="col-body">
+                <div class="head">
+                    <control-action [isAction]="'true'" [comment]="STORY[0].commentCount ? STORY[0].commentCount : 0 "
+                        [reboon]="STORY[0].repostCount !== -1 ? STORY[0].repostCount : 0"
+                        [like]="STORY[0].likeCount ? STORY[0].likeCount : 0"
+                        [share]="STORY[0].shareCount ? STORY[0].shareCount : 0" [isBlack]="'true'"
+                        [userLike]="STORY[0].isLike" [userReboon]="STORY[0].isRepost" [userComment]="STORY[0].isComment"
+                        [isPage]="isComments" [accessPage]="pageUser" (emitpage)="postAction($event)"
+                        (submit)="postAction($event)" [isShowUser]="isShowUser">
+                    </control-action>
+                </div>
+                <div class="body">
+                    <div class="input-comment">
+                        <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send
+                            </span>
+                        </div>
+                        <input class="comment-text" (keyup.enter)="onClickComment($event);" [(ngModel)]="value"
+                            placeholder="แสดงความคิดเห็น..." type="text">
+                    </div>
+                </div>
+                <div class="post-comment">
+                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="userCloneDatas.id"
+                        [commentdata]="STORY[0].comment">
+                    </comment-post>
+                </div>
+            </div>
         </div>
         <div class="col-needs-body">
             <div class="needs-teb">
@@ -97,11 +124,6 @@
         </div>
     </div>
     <div class="col-comment">
-        <div class="col-body">
-            <div class="head">
-            </div>
-            <div class="body"></div>
-        </div>
     </div>
     <div class="col-contianer" *ngIf="recommendedStorys">
         <div class="col-footer">

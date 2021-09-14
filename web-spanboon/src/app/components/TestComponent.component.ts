@@ -87,7 +87,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
     search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
     this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.STORY = res;
-      console.log('this.STORY', this.STORY);
       this.TimeoutRuntimeSet();
       this.getRecommendedHashtag(this.STORY[0]._id);
       this.getRecommendedStory(this.STORY[0]._id);
@@ -114,7 +113,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   public getRecommendedHashtag(id: string) {
     this.postFacade.recommendedHashtag(id).then((res: any) => {
       this.recommendedHashtag = res.data
-      console.log('recommendedHashtag', res);
     }).catch((err: any) => {
     })
   }
@@ -122,7 +120,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   public getRecommendedStory(id: string) {
     this.postFacade.recommendedStory(id).then((res: any) => {
       this.recommendedStory = res.data
-      console.log('recommendedStory', res);
     }).catch((err: any) => {
     })
   }
@@ -130,7 +127,6 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   public getRecommendedStorys(id: string, pageId: string) {
     this.postFacade.recommendedStorys(id, pageId).then((res: any) => {
       this.recommendedStorys = res.data
-      console.log('recommendedStorys', res);
     }).catch((err: any) => {
     })
   }

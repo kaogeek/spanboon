@@ -543,8 +543,7 @@
                                 </div>
                             </div>
                             <div *ngIf="data.type !== 'SMALL'" class="card-me-type">
-                                <div class="card" *ngFor="let content of data.contents| slice:0:3;let index=index"
-                                    (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
+                                <div class="card" *ngFor="let content of data.contents| slice:0:3;let index=index">
                                     <div class="top">
                                         <div class="status" *ngIf="content.post.type === 'GENERAL'">
                                             <div class="status-g"></div>
@@ -571,10 +570,10 @@
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
                                         [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
-                                    <span class="content-post-img" *ngIf="!content.post.gallery[0]"
+                                    <span class="content-post-img" (click)="openDilogPost(content.post)" *ngIf="!content.post.gallery[0]"
                                         [innerHTML]='content.post.title | highlight'></span>
                                     <div class="text">
-                                        <div (click)="openDilogPost(content.post)">
+                                        <div class="col-text" (click)="openDilogPost(content.post)">
                                             <span
                                                 [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'
                                                 *ngIf="content.post.gallery[0]"></span>

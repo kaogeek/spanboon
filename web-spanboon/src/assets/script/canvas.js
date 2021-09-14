@@ -8,7 +8,7 @@ setTimeout(() => {
             Controller.prototype.timeline();
         }, true);
     }
-}, 5000);
+}, 2000);
 
 var Controller;
 

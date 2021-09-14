@@ -182,6 +182,7 @@ export class PostData {
       }
       this.linkPost = (this.mainPostLink + this.itemPost._id);
       this.isLoading = false;
+      console.log('itemPost', this.itemPost);
     }, 1000);
   }
 

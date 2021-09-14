@@ -134,15 +134,17 @@ export class PostActionService extends AbstractFacade {
                 return new Promise((resolve, reject) => {
                     this.dataPost = action.post._id;
                     this.postFacade.rePost(this.dataPost, this.data).then(async (res: any) => {
-                        resPost.posts[index].repostCount++;
-                        resPost.posts[index].isRepost = true;
-                        if (repostShare === "PAGE") {
-                            if (this.data.pageId === null && this.data.postAsPage === null) {
-                                return;
-                            }
-                        } else {
-                            if (this.data.pageId !== null && this.data.postAsPage !== null) {
-                                return;
+                        if (resPost.posts) {
+                            resPost.posts[index].repostCount++;
+                            resPost.posts[index].isRepost = true;
+                            if (repostShare === "PAGE") {
+                                if (this.data.pageId === null && this.data.postAsPage === null) {
+                                    return;
+                                }
+                            } else {
+                                if (this.data.pageId !== null && this.data.postAsPage !== null) {
+                                    return;
+                                }
                             }
                         }
 
