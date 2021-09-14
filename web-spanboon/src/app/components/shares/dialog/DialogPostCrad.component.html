@@ -20,9 +20,9 @@
     </span>
 
     <mat-dialog-content>
-        <post-data [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()" [isUserPage]="isLogin()" [isShowUser]="true"
-            [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess" (action)="actionComment($event)"
-            [pageUser]="data.pageUser" (comment)="createComment($event)">
+        <post-data [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()" [isUserPage]="false"
+            [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
+            (action)="actionComment($event)" [pageUser]="data.pageUser" (comment)="createComment($event)">
         </post-data>
         <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false" [class]="'preload-profile'">
         </Preload-card>

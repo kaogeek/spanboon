@@ -12,7 +12,7 @@ import { LastestObjectiveProcessorData } from './data/LastestObjectiveProcessorD
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
-// import { PostsService } from '../services/PostsService';
+import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
 // import moment from 'moment';
 
@@ -24,7 +24,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        // private postsService: PostsService,
+        private postsService: PostsService,
     ) {
         super();
     }
@@ -40,7 +40,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
-                // let showUserAction = false;
+                let showUserAction = false;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -50,9 +50,9 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                         offset = this.config.offset;
                     }
 
-                    // if (typeof this.config.showUserAction === 'boolean') {
-                    //     showUserAction = this.config.showUserAction;
-                    // }
+                    if (typeof this.config.showUserAction === 'boolean') {
+                        showUserAction = this.config.showUserAction;
+                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
@@ -169,13 +169,13 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     // contentModel.likeCount = row.likeCount;
                     // contentModel.viewCount = row.viewCount;
 
-                    // if (showUserAction) {
-                    //     const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
-                    //     contentModel.isLike = userAction.isLike;
-                    //     contentModel.isRepost = userAction.isRepost;
-                    //     contentModel.isComment = userAction.isComment;
-                    //     contentModel.isShare = userAction.isShare;
-                    // }
+                    if (showUserAction) {
+                        const userAction: any = await this.postsService.getUserPostAction(row._id + '', userId, true, true, true, true);
+                        contentModel.isLike = userAction.isLike;
+                        contentModel.isRepost = userAction.isRepost;
+                        contentModel.isComment = userAction.isComment;
+                        contentModel.isShare = userAction.isShare;
+                    }
 
                     hastagRowMap[row.hashTag] = row;
                     hashtagNames.push(row.hashTag);
