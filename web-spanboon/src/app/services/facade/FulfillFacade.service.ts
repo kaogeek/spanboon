@@ -8,7 +8,7 @@
 import { AbstractFacade } from "./AbstractFacade";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { Injectable } from '@angular/core'; 
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
@@ -25,8 +25,8 @@ export class FulfillFacade extends AbstractFacade {
         this.message.next(message);
     }
 
-    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number ,caseId? :string): Promise<any> {
-        
+    public listFulfillmentCase(status?: string, asPage?: string, orderBy?: any, groupBy?: any, filterType?: any, limit?: number, offset?: number, caseId?: string): Promise<any> {
+
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/fulfillment_case/list";
             let queryParams: string = "";

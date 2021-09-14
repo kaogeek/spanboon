@@ -156,7 +156,7 @@ export class StillLookingSectionProcessor extends AbstractSectionModelProcessor 
                     }
 
                     if (showUserAction) {
-                        const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
+                        const userAction: any = await this.postsService.getUserPostAction(row._id + '', userId, true, true, true, true);
                         contentModel.isLike = userAction.isLike;
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
