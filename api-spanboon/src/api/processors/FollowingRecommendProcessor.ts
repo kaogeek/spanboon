@@ -41,6 +41,7 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                 let searchOfficialOnly: number = undefined;
                 let showUser = true;
                 let showPage = true;
+                let showUserAction = false;
 
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
@@ -59,6 +60,9 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                     }
                     if (typeof this.config.showPage === 'boolean') {
                         showPage = this.config.showPage;
+                    }
+                    if (typeof this.config.showUserAction === 'boolean') {
+                        showUserAction = this.config.showUserAction;
                     }
                 }
 
@@ -181,6 +185,14 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
                         contentModel.subtitle = row.page.name;
                         contentModel.iconUrl = row.page.imageURL;
                         contentModel.data = row.page;
+
+                        if (showUserAction) {
+                            const userAction: any = await this.postsService.getUserPostAction(row._id+'', userId, true, true, true, true);
+                            contentModel.isLike = userAction.isLike;
+                            contentModel.isRepost = userAction.isRepost;
+                            contentModel.isComment = userAction.isComment;
+                            contentModel.isShare = userAction.isShare;
+                        }
 
                         result.contents.push(contentModel);
                     } else if (row.ownerUser !== undefined) {
