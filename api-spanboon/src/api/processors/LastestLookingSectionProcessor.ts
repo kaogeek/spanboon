@@ -54,7 +54,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                 let offset: number = undefined;
                 let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
-                
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -241,7 +241,7 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     }
 
                     if (showUserAction) {
-                        const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
+                        const userAction: any = await this.postsService.getUserPostAction(row._id + '', userId, true, true, true, true);
                         contentModel.isLike = userAction.isLike;
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;
