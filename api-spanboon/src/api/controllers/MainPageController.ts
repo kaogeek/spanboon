@@ -319,12 +319,13 @@ export class MainPageController {
         followingRecommendProcessor.setConfig({
             limit: 5,
             searchOfficialOnly,
-            showPage: true
+            showPage: true,
+            showUserAction: true
         });
         processorList.push(followingRecommendProcessor);
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
         lastestObjProcessor.setData({
             userId,
             startDateTime: weekRanges[0],

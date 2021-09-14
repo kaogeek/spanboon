@@ -647,6 +647,7 @@
                       display: flex;
                       align-items: center;
                       text-align: center;
+                      justify-content: center;
                       @include font-size-9($font-head-500);
                       @media (max-width: 900px) {
                         height: 300px;
@@ -1258,7 +1259,14 @@
                     @include font-size-9($font-head-500);
                     height: 130px;
                     text-align: center;
+                    cursor: pointer;
                     padding: 130px 40px 0px 40px;
+                    background-color: #00000008;
+                    transition: 0.3s;
+                    &:hover {
+                      transition: 0.3s;
+                      background-color: #0000001c;
+                    }
                   }
                   > .text {
                     width: 100%;
@@ -1268,14 +1276,16 @@
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
-                    > span {
-                      display: -webkit-box;
-                      -webkit-line-clamp: 3;
-                      line-height: 26px;
-                      -webkit-box-orient: vertical;
-                      overflow: hidden;
-                      &:hover {
-                        color: rgba($brandcolor2, 0.95);
+                    > .col-text {
+                      > span {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        line-height: 26px;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        &:hover {
+                          color: rgba($brandcolor2, 0.95);
+                        }
                       }
                     }
                     > .more {

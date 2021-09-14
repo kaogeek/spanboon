@@ -221,7 +221,7 @@
                                     <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
                                 </div>
                             </div>
-                            <div class="list-item" (click)="showFulFill()">
+                            <div class="list-item" style="color: #28a745;" (click)="showFulFill()">
                                 <span>รายการ{{PLATFORM_FULFILL_TEXT}} {{reqData.length}} รายการ</span>
                             </div>
                         </div>
@@ -256,7 +256,7 @@
                                 <ng-container *ngIf="asPage; else elseAsPage">
                                     <ng-container
                                         *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
-                                        <img class="img" [src]="userImageURL">
+                                        <img class="img" [src]="apiBaseURL+userImageURL+'/image'">
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">
@@ -269,7 +269,7 @@
                                 <ng-template #elseAsPage>
                                     <ng-container
                                         *ngIf="(pageImageURL !== null && pageImageURL !== undefined && pageImageURL !==''); else elseUserImageURL">
-                                        <img class="img" [src]="pageImageURL">
+                                        <img class="img" [src]="apiBaseURL+pageImageURL+'/image'">
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">

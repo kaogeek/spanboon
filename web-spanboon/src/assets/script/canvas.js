@@ -1,14 +1,14 @@
 setTimeout(() => {
     let Url = document.URL;
     let indexEmergencyevent = Url.indexOf('emergencyevent')
-    let indexObjectivetimeline = Url.indexOf('objectivetimeline')
+    let indexObjectivetimeline = Url.indexOf('objective')
     if (indexEmergencyevent > 0 || indexObjectivetimeline > 0) {
         Controller.prototype.timeline();
         window.addEventListener('resize', function (event) {
             Controller.prototype.timeline();
         }, true);
     }
-}, 5000);
+}, 2000);
 
 var Controller;
 
