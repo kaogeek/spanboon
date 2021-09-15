@@ -226,7 +226,7 @@ export class PostsCommentController {
                     {
                         $unwind: {
                             path: '$page',
-                            preserveNullAndEmptyArrays: false
+                            preserveNullAndEmptyArrays: true
                         }
                     },
                     { $project: { _id: 0, id: '$_id', comment: 1, mediaURL: 1, post: 1, commentAsPage: 1, likeCount: 1, createdDate: 1, 'page._id': 1, 'page.name': 1, 'page.pageUsername': 1, 'page.imageURL': 1, 'page.s3ImageURL': 1, 'page.isOfficial': 1, 'user.id': '$user._id', 'user.imageURL': 1, 'user.displayName': 1 } }
@@ -277,7 +277,6 @@ export class PostsCommentController {
 
                     postCommentLists.map((result) => {
                         const commentId = result.id;
-                        const pageId = result.page._id;
 
                         if (userLikeMap[commentId]) {
                             result.isLike = true;
@@ -292,6 +291,7 @@ export class PostsCommentController {
                         }
 
                         if (result.page !== undefined) {
+                            const pageId = result.page._id;
                             if (pageSignURLMap[pageId]) {
                                 result.page.signURL = pageSignURLMap[pageId];
                             }
