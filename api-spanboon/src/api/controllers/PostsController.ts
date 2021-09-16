@@ -924,8 +924,6 @@ export class PostsController {
                     let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
 
-                    console.log('postObj >>>> ', postObj);
-
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {
                         // create noti for page
                         const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
@@ -1183,8 +1181,6 @@ export class PostsController {
             for (const item of currentNeeds) {
                 needsIdList.push(new ObjectID(item));
             }
-
-            console.log('needsIdList >>> ', needsIdList);
 
             const needsQuery = { _id: { $in: needsIdList }, pageId: pageObjId, post: postObjId };
 
