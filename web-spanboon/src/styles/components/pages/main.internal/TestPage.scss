@@ -212,7 +212,7 @@
                     border-top: 0.7px solid rgba(229, 229, 229, 0.7);
                     word-break: break-word;
                     overflow: hidden;
-                  }
+                }
             }
             @media (max-width: 1200px) {
                 width: calc(100% - 20px);
@@ -263,6 +263,10 @@
                 display: flex;
                 > .user-name {
                     padding: 0px 10px;
+                    cursor: pointer;
+                    &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                    }
                 }
 
                 @media (max-width: 900px) {

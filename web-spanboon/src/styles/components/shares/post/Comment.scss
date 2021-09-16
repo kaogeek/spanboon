@@ -23,6 +23,7 @@ comment-post {
       > .comment-img {
         flex: 0 0 auto;
         margin-right: 10pt;
+        cursor: pointer;
 
         > .menu-user {
           &.displayName {
@@ -57,6 +58,10 @@ comment-post {
           > .username {
             color: $brandcolor2;
             @include font-size-10($font-head-500);
+            cursor: pointer;
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
           }
 
           > .comment-comment {

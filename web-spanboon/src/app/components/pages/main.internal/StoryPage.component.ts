@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Renderer2, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostActionService, PostCommentFacade, PostFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
 import { AbstractPage } from '../AbstractPage';
@@ -50,6 +50,7 @@ export class StoryPage extends AbstractPage implements OnInit {
   protected pageFacade: PageFacade;
   protected postCommentFacade: PostCommentFacade;
   protected postFacade: PostFacade;
+  protected postActionService: PostActionService;
   private routeActivated: ActivatedRoute;
   private mainPostLink: string = window.location.origin + '/post/'
   private mainPageLink: string = window.location.origin + '/page/'
@@ -64,16 +65,17 @@ export class StoryPage extends AbstractPage implements OnInit {
   public recommendedHashtag: any;
   public recommendedStory: any;
   public recommendedStorys: any;
+  public commentList: any;
   public pageUser: any;
   public userAspage: any = null;
   public value: any
   public url: string;
-  public isComments: boolean = true;
+  public isComments: boolean = false;
   public isShowUser: boolean = true;
 
   public apiBaseURL = environment.apiBaseURL;
 
-  constructor(router: Router, postCommentFacade: PostCommentFacade, private renderer: Renderer2, postFacade: PostFacade, dialog: MatDialog, myElement: ElementRef, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
+  constructor(router: Router, postCommentFacade: PostCommentFacade, private renderer: Renderer2, postFacade: PostFacade, postActionService: PostActionService, dialog: MatDialog, myElement: ElementRef, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
@@ -81,9 +83,10 @@ export class StoryPage extends AbstractPage implements OnInit {
     this.pageFacade = pageFacade;
     this.routeActivated = routeActivated;
     this.postCommentFacade = postCommentFacade;
+    this.postActionService = postActionService;
     this.postFacade = postFacade;
 
-
+    this.isComments = this.isLogin();
 
     let user = this.authenManager.getCurrentUser()
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
@@ -93,18 +96,20 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     this.routeActivated.params.subscribe((params) => {
-      this.url = params['postId']
+      // this.url = params['postId'] 
+      this.url = '6128b4d7949e111314c2a648';
     })
     let search: SearchFilter = new SearchFilter();
     search.limit = 5;
     search.count = false;
-    search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
+    search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.STORY = res;
       this.TimeoutRuntimeSet();
       this.getRecommendedHashtag(this.STORY[0]._id);
       this.getRecommendedStory(this.STORY[0]._id);
       this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
+      this.getCommentList();
     }).catch((err: any) => {
       console.log(err)
     })
@@ -120,6 +125,16 @@ export class StoryPage extends AbstractPage implements OnInit {
     }, 400);
   }
 
+  public getCommentList() {
+    let search: SearchFilter = new SearchFilter();
+    search.limit = 10;
+    search.count = false;
+    search.whereConditions = { _id: this.url };
+    this.postCommentFacade.search(search, this.url).then((res: any) => {
+      this.commentList = res;
+    }).catch((err: any) => {
+    })
+  }
 
   public getRecommendedHashtag(id: string) {
     this.postFacade.recommendedHashtag(id).then((res: any) => {
@@ -142,17 +157,34 @@ export class StoryPage extends AbstractPage implements OnInit {
     })
   }
 
-  public postAction(action) {
-    this.userAspage = action.id ? action : this.userAspage;
+  public async postAction(action: any, index: number) {
+    let actions: any;
+    let Arr: any = { posts: [this.STORY[0]] };
     if (action.mod === 'COMMENT') {
-      alert('COMMENT');
     } else if (action.mod === 'LIKE') {
-      alert('LIKE');
+      this.postFacade.like(this.STORY[0]._id, this.userAspage ? this.userAspage.id : this.userCloneDatas._id)
     } else if (action.mod === 'REBOON') {
-      alert('REBOON');
-    } else if (action.mod === 'SHARE') {
-      alert('SHARE');
+      actions = { mod: action.mod, postData: this.STORY[0]._id, type: action.type, post: this.STORY[0], userAsPage: this.userAspage ? this.userAspage : this.userCloneDatas };
+      await this.postActionService.actionPost(actions, index, Arr, "PAGE").then((res: any) => {
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
     }
+
+  }
+
+  public postAspage(action: any) {
+
+    this.userAspage = action;
+
+  }
+
+  public clickHashTags(data: any) {
+    window.open('/search?hashtag=' + data, '_blank');
+  }
+
+  public clickToUser(data: any) {
+    window.open('/page/' + data, '_blank');
   }
 
   public clickToPage(dataId: any, type?: any) {
@@ -230,6 +262,56 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   public commentAction(data: any) {
 
+    if (data.action === "LIKE") {
+      if (this.userCloneDatas.id !== undefined && this.userCloneDatas.id !== null) {
+        this.postCommentFacade.like(this.STORY[0]._id, data.commentdata, this.userCloneDatas.id).then((res: any) => {
+          this.commentList[data.index].likeCount = res.likeCount
+          this.commentList[data.index].isLike = res.isLike
+        }).catch((err: any) => {
+        })
+      } else {
+        this.postCommentFacade.like(this.STORY[0]._id, data.commentdata).then((res: any) => {
+          this.commentList[data.index].likeCount = res.likeCount
+          this.commentList[data.index].isLike = res.isLike
+        }).catch((err: any) => {
+        })
+      }
+    } else if (data.action === "DELETE") {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: MESSAGE.TEXT_TITLE_DELETE_COMMENT_CONFIRM,
+          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+          bottomColorText2: "black",
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.commentList.splice(data.index, 1);
+          let index = this.commentList.map(function (e) { return e.user.id; }).indexOf(this.userCloneDatas.id);
+          this.STORY[0].commentCount = this.STORY[0].commentCount - 1;
+          if (index > 0) {
+            this.STORY[0].isComment = false;
+          }
+          this.postCommentFacade.delete(this.STORY[0]._id, data.commentdata).then((res: any) => {
+          }).catch((err: any) => {
+          })
+        }
+      });
+    } else if (data.action === "EDIT") {
+      let cloneComment = JSON.parse(JSON.stringify(this.commentList));
+      if (data.commentEdit !== cloneComment[data.index].comment) {
+        this.postCommentFacade.edit(this.STORY[0]._id, data.commentdata, data.commentEdit).then((res: any) => {
+          this.commentList[data.index].comment = res.comment
+          this.commentList[data.index].isEdit = false;
+        }).catch((err: any) => {
+        })
+      } else {
+        this.commentList[data.index].isEdit = true;
+      }
+    } else if (data.action === 'CANCEL') {
+      this.commentList[data.index].isEdit = false;
+    }
   }
 
   public ngOnDestroy(): void {
