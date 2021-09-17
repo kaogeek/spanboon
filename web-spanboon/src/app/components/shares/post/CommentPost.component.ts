@@ -8,6 +8,7 @@
 import { I } from '@angular/cdk/keycodes';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { PostCommentFacade } from '../../../services/services';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'comment-post',
@@ -19,12 +20,16 @@ export class CommentPost {
 
   public user: any = { displayName: 'Natthaphong Ruengpanyawut', imageURL: undefined }
 
+  public apiBaseURL = environment.apiBaseURL;
+
   @Input()
   public commentdata: any;
   @Input()
-  public isLogin: boolean
+  public isLogin: boolean;
   @Input()
-  public userId: string
+  public isImgSing: boolean = false;
+  @Input()
+  public userId: string;
   @Output()
   public submit: EventEmitter<any> = new EventEmitter();
 
@@ -56,5 +61,16 @@ export class CommentPost {
     return uuId === this.userId;
   }
 
-  public menuProfile(): void { }
+  public clickToUser(data: any) {
+    let pageId = data._id ? data._id : data.id;
+    if (data.id) {
+      window.open('/profile/' + pageId, '_blank');
+    } else {
+      window.open('/page/' + pageId, '_blank');
+    }
+  }
+
+  public menuProfile(data: any) {
+    console.log('data', data);
+  }
 }

@@ -256,7 +256,7 @@
                                 <ng-container *ngIf="asPage; else elseAsPage">
                                     <ng-container
                                         *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
-                                        <img class="img" [src]="apiBaseURL+userImageURL+'/image'">
+                                        <img class="img" [src]="apiBaseURL+userImageURL+'/image'" >
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">

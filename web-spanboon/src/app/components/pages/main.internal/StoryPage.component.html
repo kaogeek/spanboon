@@ -32,16 +32,16 @@
                 </div>
                 <div class="col-detail">
                     <div class="content">
-                        <span class="count-aontrol">0</span>
+                        <span class="count-aontrol">{{STORY[0].commentCount?STORY[0].commentCount:'0'}}</span>
                         <span class="title-control">ความเห็น</span>
                         <span class="drot">•</span>
-                        <span class="count-aontrol">0</span>
+                        <span class="count-aontrol">{{STORY[0].repostCount?STORY[0].repostCount:'0'}}</span>
                         <span class="title-control">บอกต่อ</span>
                         <span class="drot">•</span>
-                        <span class="count-aontrol">0</span>
+                        <span class="count-aontrol">{{STORY[0].likeCount?STORY[0].likeCount:'0'}}</span>
                         <span class="title-control">ถูกใจ</span>
                         <span class="drot">•</span>
-                        <span class="count-aontrol">0</span>
+                        <span class="count-aontrol">{{STORY[0].shareCount?STORY[0].shareCount:'0'}}</span>
                         <span class="title-control">แชร์</span>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                     </div>
                     <div class="name">
                         <span class="user-type"> เผยแพร่โดย : </span>
-                        <span class="user-name">{{STORY[0].page[0].name}}</span>
+                        <span class="user-name" (click)="clickToUser(STORY[0].page[0])">{{STORY[0].page[0].name}}</span>
                     </div>
 
                 </div>
@@ -77,12 +77,12 @@
                         [like]="STORY[0].likeCount ? STORY[0].likeCount : 0"
                         [share]="STORY[0].shareCount ? STORY[0].shareCount : 0" [isBlack]="'true'"
                         [userLike]="STORY[0].isLike" [userReboon]="STORY[0].isRepost" [userComment]="STORY[0].isComment"
-                        [isPage]="isComments" [accessPage]="pageUser" (emitpage)="postAction($event)"
-                        (submit)="postAction($event)" [isShowUser]="isShowUser">
+                        [isPage]="isComments" [accessPage]="pageUser" (emitpage)="postAspage($event)"
+                        (submit)="postAction($event,0)" [isShowUser]="isShowUser">
                     </control-action>
                 </div>
                 <div class="body">
-                    <div class="input-comment">
+                    <div class="input-comment" *ngIf="isComments">
                         <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send
                             </span>
                         </div>
@@ -91,8 +91,8 @@
                     </div>
                 </div>
                 <div class="post-comment">
-                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="userCloneDatas.id"
-                        [commentdata]="STORY[0].comment">
+                    <comment-post [isImgSing]="true" (isLogin)="isComments" (submit)="commentAction($event)"
+                        [userId]="userCloneDatas?userCloneDatas.id:''" [commentdata]="commentList">
                     </comment-post>
                 </div>
             </div>
@@ -104,7 +104,8 @@
                         <span>เหตุการณ์ด่วน ที่เกี่ยวข้อง</span>
                     </div>
                     <div class="body">
-                        <div class="hashTags-crad" *ngFor="let item of recommendedHashtag.contents">
+                        <div (click)="clickHashTags(item.title)" class="hashTags-crad"
+                            *ngFor="let item of recommendedHashtag.contents">
                             <span>{{item.title}}</span>
                         </div>
                     </div>
@@ -114,7 +115,8 @@
                         <span>แฮชแท็ก ที่เกี่ยวข้อง</span>
                     </div>
                     <div class="body">
-                        <div class="hashTags-crad" *ngFor="let item of STORY[0].hashTags">
+                        <div (click)="clickHashTags('#'+item.name)" class="hashTags-crad"
+                            *ngFor="let item of STORY[0].hashTags">
                             <span>#{{item.name}}</span>
                         </div>
                     </div>
@@ -129,7 +131,8 @@
         <div class="col-footer">
             <div class="col-footer-haed">
                 <span class="text"> เรื่องราวอื่นๆของ :</span>
-                <span class="user-name">{{STORY[0].page[0].name}}</span>
+                <span class="user-name"
+                    (click)="clickToUser(STORY[0].page[0].pageUsername?STORY[0].page[0].pageUsername:STORY[0].page[0]._id)">{{STORY[0].page[0].name}}</span>
             </div>
             <div class="story-list-crads">
                 <div class="crad" (click)="clickToPage(item.post)" *ngFor=" let item of recommendedStorys.contents">
@@ -148,7 +151,7 @@
                                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                     fill="#a2a2a2" />
                             </svg>
-                            <span>{{item.post.createdDate | dateFormat}}</span>
+                            <span class="createdDate" >{{item.post.createdDate | dateFormat}}</span>
                         </div>
                     </div>
                     <div class="post-img">

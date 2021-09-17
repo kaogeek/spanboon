@@ -462,6 +462,7 @@ export class PostData {
   }
 
   public checkPost(post): boolean {
+    console.log('post', post);
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {
