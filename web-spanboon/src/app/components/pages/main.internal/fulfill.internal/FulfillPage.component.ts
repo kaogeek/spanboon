@@ -460,7 +460,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
 
                     for (let data of fulfillCases) {
                         if (data !== null && data !== undefined) {
-                            console.log('data', data);
                             this.title = data.title;
                             this.emergencyEvent = data.emergencyEvent;
                             this.objective = data.objective;
