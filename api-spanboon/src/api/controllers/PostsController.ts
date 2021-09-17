@@ -601,9 +601,6 @@ export class PostsController {
                 result.map((data) => {
                     const postId = data._id;
                     const story = data.story;
-                    const ownerUser = data.ownerUser;
-                    const postAsPage = data.postAsPage;
-                    let dataKey;
 
                     if (isHideStory === true) {
                         if (story !== null && story !== undefined) {
@@ -614,18 +611,8 @@ export class PostsController {
                     }
 
                     if (postId !== null && postId !== undefined && postId !== '') {
-                        if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
-                            dataKey = postAsPage + ':' + postId + ':' + ownerUser;
-                        } else {
-                            dataKey = postId + ':' + ownerUser;
-                        }
-
-                        if (postId !== null && postId !== undefined && postId !== '') {
-                            if (repostCountMap[postId]) {
-                                data.isRepost = true;
-                            } else {
-                                data.isRepost = false;
-                            }
+                        if (repostCountMap[postId]) {
+                            data.isRepost = true;
                         } else {
                             data.isRepost = false;
                         }
