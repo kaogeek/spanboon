@@ -96,8 +96,8 @@ export class StoryPage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     this.routeActivated.params.subscribe((params) => {
-      // this.url = params['postId'] 
-      this.url = '6128b4d7949e111314c2a648';
+      this.url = params['postId'];
+      // this.url = '6128b4d7949e1113104c2a648';
     })
     let search: SearchFilter = new SearchFilter();
     search.limit = 5;
@@ -163,6 +163,14 @@ export class StoryPage extends AbstractPage implements OnInit {
     if (action.mod === 'COMMENT') {
     } else if (action.mod === 'LIKE') {
       this.postFacade.like(this.STORY[0]._id, this.userAspage ? this.userAspage.id : this.userCloneDatas._id)
+      if (this.STORY[0].isLike) {
+        if (this.STORY[0].likeCount !== 0) {
+          this.STORY[0].likeCount--
+        }
+      } else {
+        this.STORY[0].likeCount++
+      }
+      this.STORY[0].isLike = !this.STORY[0].isLike
     } else if (action.mod === 'REBOON') {
       actions = { mod: action.mod, postData: this.STORY[0]._id, type: action.type, post: this.STORY[0], userAsPage: this.userAspage ? this.userAspage : this.userCloneDatas };
       await this.postActionService.actionPost(actions, index, Arr, "PAGE").then((res: any) => {

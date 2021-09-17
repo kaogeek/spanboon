@@ -305,6 +305,12 @@
                                 height: 10px;
                                 margin-right: 5px;
                             }
+                            > .createdDate {
+                                cursor: pointer;
+                                &:hover {
+                                    color: rgba($brandcolor2, 0.95);
+                                }
+                            }
                         }
                     }
                     > .post-img {
@@ -347,9 +353,6 @@
 
                     @media (max-width: 900px) {
                         width: calc(50% - 22px);
-                    }
-                    &:hover {
-                        color: rgba($brandcolor2, 0.95);
                     }
                 }
                 @media (max-width: 900px) {
