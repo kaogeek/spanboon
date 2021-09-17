@@ -117,7 +117,6 @@ export class PostActionService extends AbstractFacade {
 
                             this.postFacade.rePost(this.dataPost, this.data).then((res: any) => {
                                 resPost.posts[index].repostCount++
-                                resPost.posts[index].isRepost = false;
 
                                 let data = {
                                     res,

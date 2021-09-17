@@ -81,16 +81,15 @@ export class DialogPostCrad extends AbstractPage {
 
   public async actionComment(action: any, index?: number) {
     this.isLoginCh();
-    let Arr: any = [0, 1];
+    let Arr: any = { posts: [this.data.post] };
     let pageInUser: any[]
     let data: RePost = new RePost();
     let dataPost: any
     let userAsPage: any
     if (action.mod === 'REBOON') {
-      await this.postActionService.actionPost(action, index, Arr, "PAGE").then((res: any) => {
-        console.log('res', res);
+      await this.postActionService.actionPost(action, 0, Arr, "PAGE").then((res: any) => {
+        console.log('data.post', this.data.post);
       }).catch((err: any) => {
-        console.log('err ', err)
       });
     } else if (action.mod === 'LIKE') {
       this.postLike(action, index);
