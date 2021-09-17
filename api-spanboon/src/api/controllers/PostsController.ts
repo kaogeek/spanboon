@@ -254,7 +254,7 @@ export class PostsController {
         if (postLists !== null && postLists !== undefined) {
             const postIdList = [];
             const referencePostList = [];
-            const postsMap: any = {};
+            const repostCountMap: any = {};
 
             for (const post of postLists) {
                 const referencePost = post.referencePost;
@@ -556,6 +556,29 @@ export class PostsController {
                             postsCommentMap[postId] = comment;
                         }
                     }
+
+                    // search repost
+                    if (postIdList.length > 0) {
+                        // search for one if has repost
+                        const repostAggress: any = [
+                            {
+                                $match: {
+                                    ownerUser: userObjId, referencePost: { $in: postIdList }, deleted: false, hidden: false,
+                                    $or: [
+                                        { postAsPage: { $exists: false } },
+                                        { postAsPage: null }
+                                    ]
+                                }
+                            },
+                            { $group: { _id: '$referencePost', count: { $sum: 1 } } },
+                        ];
+                        const postRepostsAggs: any = await this.postsService.aggregate(repostAggress);
+                        if (postRepostsAggs) {
+                            for (const aggRow of postRepostsAggs) {
+                                repostCountMap[aggRow._id + ''] = aggRow.count;
+                            }
+                        }
+                    }
                 }
             } else {
                 result = postLists;
@@ -597,8 +620,8 @@ export class PostsController {
                             dataKey = postId + ':' + ownerUser;
                         }
 
-                        if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
-                            if (postsMap[dataKey]) {
+                        if (postId !== null && postId !== undefined && postId !== '') {
+                            if (repostCountMap[postId]) {
                                 data.isRepost = true;
                             } else {
                                 data.isRepost = false;
