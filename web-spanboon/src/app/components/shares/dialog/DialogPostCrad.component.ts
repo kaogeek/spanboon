@@ -155,7 +155,8 @@ export class DialogPostCrad extends AbstractPage {
 
   private isLoginCh() {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/homeV2/");
+      this.showAlertLoginDialog("/home/");
+      this.onClose('');
       return
     }
   }
