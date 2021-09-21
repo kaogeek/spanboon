@@ -1235,7 +1235,9 @@ export class PagePostController {
                             for (const postGallery of posts.gallery) {
                                 if (postGallery.s3ImageURL !== undefined && postGallery.s3ImageURL !== '') {
                                     const assetSignURL = await this.assetService.getAssetSignedUrl({ _id: postGallery.fileId });
-                                    postGallery.signURL = assetSignURL.signURL;
+                                    if (assetSignURL !== undefined) {
+                                        postGallery.signURL = assetSignURL.signURL;
+                                    }
                                 }
                             }
                         }

@@ -1285,7 +1285,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    console.log('this.action', action);
     this.isLoginCh();
     await this.postActionService.actionPost(action, index, this.resPost, "PAGE").then((res: any) => {
       if (res !== undefined && res !== null) {

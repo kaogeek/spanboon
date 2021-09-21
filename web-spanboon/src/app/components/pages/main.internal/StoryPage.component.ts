@@ -121,7 +121,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     setTimeout(() => {
       $('.comSelect').remove();
       $('.comDelet').remove();
-      console.log('this.STORY', this.STORY);
     }, 400);
   }
 
@@ -250,7 +249,8 @@ export class StoryPage extends AbstractPage implements OnInit {
     let comment = ({ value: this.value, pageId: this.STORY[0]._id, userAsPage: this.userAspage ? this.userAspage : this.userCloneDatas.id });
     this.createComment(comment);
     setTimeout(() => {
-      // this.isComment = true
+      this.STORY[0].isComment = true
+      this.getCommentList();
       this.value = ''
     }, 100);
   }

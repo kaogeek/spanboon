@@ -51,7 +51,7 @@ export class EmergencyShareProcessor extends AbstractTypeSectionProcessor {
 
                 let topInfluencer = await this.userFollowService.getTopInfluencerUserFollow(sampleCount);
 
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     const userFriend = await this.userFollowService.getUserFollower(new ObjectID(userId), sampleCount);
                     if (userFriend && userFriend.length > 0) {
                         topInfluencer = topInfluencer.concat(userFriend);

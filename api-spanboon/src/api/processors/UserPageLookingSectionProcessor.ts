@@ -88,7 +88,7 @@ export class UserPageLookingSectionProcessor extends AbstractSectionModelProcess
                 }
 
                 let pageFollow: any = undefined;
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     const followStmt = [
                         { $match: { userId: new ObjectID(userId + '') } },
                         { $sample: { size: 1 } },

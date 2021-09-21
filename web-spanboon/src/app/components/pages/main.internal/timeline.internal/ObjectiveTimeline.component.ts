@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostActionService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -31,6 +31,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public router: Router;
     public observManager: ObservableManager;
     public objectiveFacade: ObjectiveFacade;
+    public postActionService: PostActionService;
     public hashTagFacade: HashTagFacade;
 
     // test
@@ -72,7 +73,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
+    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, postActionService: PostActionService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
@@ -80,6 +81,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
         this.routeActivated = routeActivated;
+        this.postActionService = postActionService;
         this.objectiveFacade = objectiveFacade;
 
         // You can also pass an optional settings object
@@ -118,7 +120,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
         this.objectiveData.page;
-        console.log('objectiveData', this.objectiveData);
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
 
@@ -146,6 +147,13 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
                 }
             }
             numloop++
+        }
+    }
+
+    private isLoginCh() {
+        if (!this.isLogin()) {
+            this.showAlertLoginDialog("/objective/" + this.objectiveId);
+            return
         }
     }
 

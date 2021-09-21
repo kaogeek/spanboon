@@ -92,7 +92,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     deleted: false,
                     hidden: false
                 };
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     // ! impl 
                 } else if (clientId !== undefined) {
                     // ! impl
