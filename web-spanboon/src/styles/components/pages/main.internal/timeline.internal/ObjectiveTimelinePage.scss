@@ -1624,6 +1624,9 @@
                                             min-height: unset;
                                             height: 100px;
                                         }
+                                        .card-feed-post > .wrapper-content {
+                                            pointer-events: none;
+                                        }
                                     }
                                 }
                             }

@@ -423,7 +423,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public getImagePageProfile(pageUserId) {
         window['FB'].api("/" + pageUserId + "/picture?redirect=0&access_token=" + this.accessToken.fbtoken, (picture) => {
             if (picture && !picture.error) {
-                // console.log('picture ', picture)
                 /* handle the result */
             }
         })

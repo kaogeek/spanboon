@@ -182,7 +182,6 @@ export class PostData {
       }
       this.linkPost = (this.mainPostLink + this.itemPost._id);
       this.isLoading = false;
-      console.log('itemPost', this.itemPost);
     }, 1000);
   }
 
@@ -462,7 +461,6 @@ export class PostData {
   }
 
   public checkPost(post): boolean {
-    console.log('post', post);
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {
