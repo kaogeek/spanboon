@@ -137,21 +137,27 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   public getRecommendedHashtag(id: string) {
     this.postFacade.recommendedHashtag(id).then((res: any) => {
-      this.recommendedHashtag = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedHashtag = res.data
+      }
     }).catch((err: any) => {
     })
   }
 
   public getRecommendedStory(id: string) {
     this.postFacade.recommendedStory(id).then((res: any) => {
-      this.recommendedStory = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedStory = res.data
+      }
     }).catch((err: any) => {
     })
   }
 
   public getRecommendedStorys(id: string, pageId: string) {
     this.postFacade.recommendedStorys(id, pageId).then((res: any) => {
-      this.recommendedStorys = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedStorys = res.data
+      }
     }).catch((err: any) => {
     })
   }
