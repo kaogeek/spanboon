@@ -87,6 +87,7 @@ export class DialogPostCrad extends AbstractPage {
     let dataPost: any
     let userAsPage: any
     if (action.mod === 'REBOON') {
+      this.onClose('');
       await this.postActionService.actionPost(action, 0, Arr, "PAGE").then((res: any) => {
       }).catch((err: any) => {
       });
