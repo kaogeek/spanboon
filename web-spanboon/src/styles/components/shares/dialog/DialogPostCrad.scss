@@ -52,6 +52,9 @@
                 top: 0;
                 background-color: white;
             }
+            display-gallery {
+                pointer-events: none;
+            }
         }
     }
     preload-card {
