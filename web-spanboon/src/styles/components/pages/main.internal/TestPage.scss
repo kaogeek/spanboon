@@ -99,6 +99,9 @@
         > .col-stoey-contianer {
             width: calc(800px - 60px);
             padding: 30px;
+            &.max {
+                width: calc(1200px - 60px);
+            }
             > .col-user {
                 display: flex;
                 @include font-size-10($font-head-500);
@@ -223,6 +226,9 @@
             width: calc(400px - 60px);
             padding: 30px;
             height: auto;
+            &.hide {
+                display: none;
+            }
             > .needs-teb {
                 position: sticky;
                 top: 100px;
