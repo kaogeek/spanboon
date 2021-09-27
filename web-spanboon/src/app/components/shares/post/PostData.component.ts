@@ -128,6 +128,7 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
+    console.log('this.user', this.user);
 
     this.user = this.authenManager.getCurrentUser();
     this.usercurrent = this.authenManager.getCurrentUser();

@@ -462,9 +462,10 @@
                     <ng-container
                         *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
-                            <img class="image-profile"
+                            <!-- <img class="image-profile"
                                 [src]="user.signURL?user.signURL:user.imageSignURL?user.imageSignURL:apiBaseURL+user.imageURL+'/image'"
-                                alt="">
+                                alt=""> -->
+                            <img class="image-profile" [src]="user.imageURL" alt="">
                         </div>
                     </ng-container>
                     <ng-template #elseImage>

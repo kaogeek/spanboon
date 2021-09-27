@@ -138,7 +138,7 @@
         </ng-container>
         <ng-template #showChatRoom1>
             <ng-container *ngIf="canAccessCase && canAccessChatRoom ; else elseTemplateChatRoom">
-                <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
+                <div class="fulfill-right" style="height: 100%;" id="fulfill-right" [class.active]="isActiveClass">
                     <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
                         [class.activeTransition]="isTransition"
                         [ngStyle]="{'height': ( fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
