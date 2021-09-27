@@ -179,7 +179,6 @@ export class DialogPostCrad extends AbstractPage {
   }
 
   public dataRepost(data?: any) {
-    console.log('data', data);
     this.isRepost = false;
   }
 
