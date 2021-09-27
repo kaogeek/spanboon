@@ -30,7 +30,7 @@
                 *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
                 <div class="page-message">
                     <div class="talking-m">
-                        <div class="talking-time">
+                        <div [class.hide]="item.chatMessage.messageType !== 'INFO' && item.chatMessage.messageType !== 'FULFILLMENT_CASE_CONFIRM'" class="talking-time">
                             <span class="material-icons" *ngIf="item.chatMessage.isRead">
                                 done
                             </span>
@@ -67,17 +67,16 @@
                                 [messageType]="item.chatMessage.messageType" (submit)="submit.emit()">
                             </chat-fulfill>
                         </ng-template>
-
-                        <a href="{{asPage ? linkPage : linkUser}}" target="_blank">
-                            <ng-container
-                                *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseSenderImage">
-                                <img src="{{item.senderImage}}" alt="" class="m-profile">
-                            </ng-container>
-                            <ng-template #elseSenderImage>
-                                <div class="donator user"> {{item.senderName | slice: 0:1 }} </div>
-                            </ng-template>
-                        </a>
                     </div>
+                    <a href="{{asPage ? linkPage : linkUser}}" target="_blank">
+                        <ng-container
+                            *ngIf="item.senderImage !== null && item.senderImage !== undefined && item.senderImage !== ''; else elseSenderImage">
+                            <img src="{{item.senderImage}}" alt="" class="m-profile">
+                        </ng-container>
+                        <ng-template #elseSenderImage>
+                            <div class="donator user"> {{item.senderName | slice: 0:1 }} </div>
+                        </ng-template>
+                    </a>
                 </div>
             </ng-container>
             <ng-template #elseSenderType>

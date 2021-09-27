@@ -165,7 +165,7 @@
                 margin-left: 8px;
 
                 > .material-icons {
-                    font-family: 'Material Icons' !important;
+                    font-family: "Material Icons" !important;
                     color: $brandcolor2;
                     font-weight: 900;
                     font-size: $font-size-icon-large;
@@ -189,26 +189,6 @@
                     justify-content: flex-end;
                     // margin: 15px 15px 20px 20px;
 
-                    a {
-                        > .donator {
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            width: 30pt;
-                            height: 30pt;
-                            // margin: 0 10pt;
-                            border-radius: 50%;
-                            box-shadow: 2.5px 0px 0px 0 #ffffff;
-                            overflow: hidden;
-                            color: $brandcolor;
-                            background: $brandcolor2;
-                            @include font-size-10($font-head-500);
-                        }
-                        > .user {
-                            margin-left: 10pt;
-                        }
-                    }
-
                     > .talking-time {
                         flex: 0 0 auto;
                         display: flex;
@@ -218,7 +198,7 @@
                         margin-right: 8px;
 
                         > .material-icons {
-                            font-family: 'Material Icons' !important;
+                            font-family: "Material Icons" !important;
                             color: $brandcolor2;
                             font-weight: 900;
                             font-size: $font-size-icon-large;
@@ -228,6 +208,10 @@
                             margin-top: -4px;
                             @include font-size-10($font-head-400);
                             color: rgb($black, 0.7);
+                        }
+
+                        &.hide {
+                            display: none;
                         }
                     }
 
@@ -282,6 +266,36 @@
                             margin-left: 15px;
                             flex: 0 0 auto;
                         }
+                    }
+                }
+
+                a {
+                    > .donator {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 30pt;
+                        height: 30pt;
+                        // margin: 0 10pt;
+                        border-radius: 50%;
+                        box-shadow: 2.5px 0px 0px 0 #ffffff;
+                        overflow: hidden;
+                        color: $brandcolor;
+                        background: $brandcolor2;
+                        @include font-size-10($font-head-500);
+                    }
+                    > .user {
+                        margin-left: 10pt;
+                    }
+                }
+                a {
+                    > .m-profile {
+                        width: 32pt;
+                        height: 32pt;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        margin-left: 15px;
+                        flex: 0 0 auto;
                     }
                 }
             }
@@ -413,7 +427,7 @@
             flex: 0 0 auto;
 
             .material-icons {
-                font-family: 'Material Icons' !important;
+                font-family: "Material Icons" !important;
                 font-size: 20pt;
                 color: $brandcolor2;
             }
@@ -550,7 +564,7 @@
                     left: 9pt;
                     border-radius: 50%;
                     background: $bg-grey;
-                    font-family: 'Material Icons' !important;
+                    font-family: "Material Icons" !important;
                     @include pointer();
                 }
             }
