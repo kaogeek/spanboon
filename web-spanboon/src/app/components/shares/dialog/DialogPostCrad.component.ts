@@ -45,11 +45,15 @@ export class DialogPostCrad extends AbstractPage {
   public isLoading: boolean;
   public isShowCheckboxTag: boolean;
   public showLoading: boolean = true;
+  public isRepost: boolean = false;
 
   public imageCover: any;
   public config: any;
+  public content: any;
+  public datas: any;
   public setTimeoutAutocomp: any;
   public resDataObjective: any[] = [];
+  public prefix: any;
 
   public Editor = ClassicEditor;
 
@@ -66,6 +70,7 @@ export class DialogPostCrad extends AbstractPage {
     this.assetFacade = assetFacade;
     this.postFacade = postFacade;
     this.imageCover = {}
+    this.prefix = {};
 
 
   }
@@ -82,13 +87,24 @@ export class DialogPostCrad extends AbstractPage {
   public async actionComment(action: any, index?: number) {
     this.isLoginCh();
     let Arr: any = { posts: [this.data.post] };
-    let pageInUser: any[]
+    let pageInUser: any[];
     let data: RePost = new RePost();
-    let dataPost: any
-    let userAsPage: any
+    let dataPost: any;
+    let userAsPage: any;
+    this.prefix.header = 'header';
+    this.prefix.detail = 'post';
+    this.showLoading = true;
     if (action.mod === 'REBOON') {
-      this.onClose('');
-      await this.postActionService.actionPost(action, 0, Arr, "PAGE").then((res: any) => {
+      this.postActionService.actionPost(action, 0, Arr, "PAGE", true).then((res: any) => {
+        this.onClose('');
+        // if (res.isDialog) {
+        //   this.isRepost = true;
+        //   this.datas = res;
+        //   this.content = res.options;
+        //   this.showLoading = false;
+        // } else {
+        //   this.showLoading = false;
+        // }
       }).catch((err: any) => {
       });
     } else if (action.mod === 'LIKE') {
@@ -160,6 +176,11 @@ export class DialogPostCrad extends AbstractPage {
       this.onClose('');
       return
     }
+  }
+
+  public dataRepost(data?: any) {
+    console.log('data', data);
+    this.isRepost = false;
   }
 
   isPageDirty(): boolean {
