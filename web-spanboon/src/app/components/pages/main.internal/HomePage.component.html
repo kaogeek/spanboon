@@ -320,9 +320,9 @@
                                         </div>
                                     </div>
                                     <div class="body">
-                                        <div class="image-post">
-                                            <img (click)="openDilogPost(model.postSectionModel.contents[0])"
-                                                class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
+                                        <div class="image-post"
+                                            (click)="openDilogPost(model.postSectionModel.contents[0])">
+                                            <img class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
                                                 [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
                                             <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
                                                 [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
@@ -490,12 +490,12 @@
                                             <span
                                                 (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                 model.objectiveEvents.contents[0].post[0]._id:
-                                                model.postSectionModel.contents[4].post._id)">{{model.objectiveEvents.contents.length>
+                                                model.postSectionModel.contents[4].post._id)">{{(model.objectiveEvents.contents.length>
                                                 1?
                                                 model.objectiveEvents.contents[0].post.length> 1?
                                                 model.objectiveEvents.contents[0].post[0].createdDate:
                                                 model.postSectionModel.contents[4].post.createdDate:
-                                                model.postSectionModel.contents[4].post.createdDate |
+                                                model.postSectionModel.contents[4].post.createdDate) |
                                                 thformatdatetime}}</span>
                                         </div>
                                     </div>
@@ -570,7 +570,8 @@
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
                                         [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
-                                    <span class="content-post-img" (click)="openDilogPost(content.post)" *ngIf="!content.post.gallery[0]"
+                                    <span class="content-post-img" (click)="openDilogPost(content.post)"
+                                        *ngIf="!content.post.gallery[0]"
                                         [innerHTML]='content.post.title | highlight'></span>
                                     <div class="text">
                                         <div class="col-text" (click)="openDilogPost(content.post)">

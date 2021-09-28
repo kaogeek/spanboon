@@ -131,8 +131,7 @@
         <div class="col-footer">
             <div class="col-footer-haed">
                 <span class="text"> เรื่องราวอื่นๆของ :</span>
-                <span class="user-name"
-                    (click)="clickToUser(STORY[0].page[0].pageUsername?STORY[0].page[0].pageUsername:STORY[0].page[0]._id)">{{STORY[0].page[0].name}}</span>
+                <span class="user-name" (click)="clickToUser(STORY[0].page[0])">{{STORY[0].page[0].name}}</span>
             </div>
             <div class="story-list-crads">
                 <div class="crad" (click)="clickToPage(item.post)" *ngFor=" let item of recommendedStorys.contents">
