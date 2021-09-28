@@ -285,29 +285,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public getProfileImage() {
-    let userCloneData = JSON.parse(JSON.stringify(this.user));
-    this.searchPageInUser(this.user.id)
-    this.userCloneDatas = JSON.parse(JSON.stringify(this.user));
-    if (userCloneData && userCloneData.imageURL && userCloneData.imageURL !== '' && userCloneData.imageURL !== null && userCloneData.imageURL !== undefined) {
-      this.assetFacade.getPathFile(userCloneData.imageURL).then((res: any) => {
-        this.userImage = userCloneData;
-        if (res.status === 1) {
-          if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-            this.userImage.imageURL = res.data;
-          } else {
-            this.userImage.imageURL = null
-          }
-        }
-      }).catch((err: any) => {
-        console.log(err)
-        if (err.error.message === "Unable got Asset") {
-          this.userImage.imageURL = '';
-        }
-      });
+    let user = this.authenManager.getCurrentUser()
+    this.searchPageInUser(user.id)
+    this.userCloneDatas = JSON.parse(JSON.stringify(user));
+    if (this.userCloneDatas.imageURL && this.userCloneDatas.imageURL && this.userCloneDatas.imageURL !== '') {
+      this.userImage.imageURL = this.userCloneDatas.imageURL
     } else {
-      this.userImage = userCloneData;
+      this.userImage = this.userCloneDatas
     }
-
   }
 
   private initPage(subPage: string) {
@@ -1089,7 +1074,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.pageUser.reverse();
     }).catch((err: any) => {
     });
-    if (this.pageUser) {
+    if (this.pageUser.length > 0) {
       for (let p of this.pageUser) {
         var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
           p.img64 = res.data

@@ -99,8 +99,13 @@
         > .col-stoey-contianer {
             width: calc(800px - 60px);
             padding: 30px;
+            word-break: break-word;
             &.max {
                 width: calc(1200px - 60px);
+                @media (max-width: 1200px) {
+                    width: calc(100% - 20px);
+                    padding: 10px;
+                }
             }
             > .col-user {
                 display: flex;
