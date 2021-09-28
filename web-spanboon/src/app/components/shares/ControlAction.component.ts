@@ -92,13 +92,10 @@ export class ControlAction {
     setTimeout(() => {
       if (this.accessPage !== undefined && this.accessPage !== null) {
         for (let accessPage of this.accessPage) {
-          this.assetFacade.getPathFile(accessPage.imageURL).then((res: any) => {
-            accessPage.img64 = res.data;
-          }).catch((err: any) => {
-          });
         }
+        console.log('this.accessPage', this.accessPage);
 
-        if (this.accessPage[0].img64 !== null && this.accessPage[0].img64 !== '') {
+        if (this.accessPage[0].imageURL !== null && this.accessPage[0].imageURL !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
           this.isImges = true
           this.isDis = false

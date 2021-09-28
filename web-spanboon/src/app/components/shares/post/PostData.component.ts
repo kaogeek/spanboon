@@ -281,7 +281,6 @@ export class PostData {
 
   public pageAction(action: any) {
     let comments: any[] = []
-    action.imageURL = action.img64
     this.user = action
     if (this.commentpost.length !== 0) {
       for (let c of this.commentpost) {

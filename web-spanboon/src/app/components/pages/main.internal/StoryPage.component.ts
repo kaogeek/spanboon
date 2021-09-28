@@ -197,7 +197,8 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public clickToUser(data: any) {
-    window.open('/page/' + data, '_blank');
+    console.log('data', data);
+    window.open('/page/' + data._id, '_blank');
   }
 
   public clickToPage(dataId: any, type?: any) {
