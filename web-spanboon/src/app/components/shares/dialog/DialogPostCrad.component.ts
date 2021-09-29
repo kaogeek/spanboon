@@ -93,8 +93,8 @@ export class DialogPostCrad extends AbstractPage {
     let userAsPage: any;
     this.prefix.header = 'header';
     this.prefix.detail = 'post';
-    this.showLoading = true;
     if (action.mod === 'REBOON') {
+      this.showLoading = true;
       this.postActionService.actionPost(action, 0, Arr, "PAGE", true).then((res: any) => {
         this.onClose('');
         // if (res.isDialog) {
