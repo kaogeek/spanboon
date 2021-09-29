@@ -813,7 +813,7 @@
                 </ng-container>
                 <ng-template #elseIsFulfill>
                     <ng-container *ngIf="isEdit; else elseIsEdit">
-                        <div class="edit-post" (click)="onClickGetDataPost()">
+                        <div class="edit-post" (click)="onClickGetDataPost(false,false)">
                             แก้ไขโพสต์
                         </div>
                     </ng-container>
