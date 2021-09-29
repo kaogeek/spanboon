@@ -330,7 +330,7 @@ export class PagePostController {
             pageData = await this.pageService.find({ where: { pageId: null, ownerUser: userObjId } });
         } else {
             pageObjId = new ObjectID(pageId);
-            pageData = await this.pageService.find({ where: { _id: pageObjId, ownerUser: userObjId } });
+            pageData = await this.pageService.find({ where: { _id: pageObjId } });
 
             if (pageData === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
@@ -1437,7 +1437,7 @@ export class PagePostController {
             let isPageMode = false;
             if (pageId !== undefined && pageId !== '' && pageId !== 'null' && pageId !== null && pageId !== 'undefined') {
                 pageObjId = new ObjectID(pageId);
-                pageData = await this.pageService.findOne({ _id: pageObjId, ownerUser });
+                pageData = await this.pageService.findOne({ _id: pageObjId });
                 isPageMode = true;
 
                 if (pageData === undefined) {
