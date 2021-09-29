@@ -196,6 +196,7 @@ export class DialogPost extends AbstractPage {
   }
 
   public createPost(data) {
+    console.log('data', data);
     if (this.isEdit) {
       if (data.title) {
         let pageId = this.data.pageId;

@@ -35,7 +35,7 @@
             height: auto;
             padding: 15px;
             display: flex;
-            > span {
+            > .spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
@@ -62,7 +62,7 @@
             height: auto;
             padding: 15px;
             display: flex;
-            > span {
+            > .spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
@@ -131,12 +131,36 @@
           @media (max-width: 620px) {
             flex-direction: column;
             > .col1 {
-              width: calc(100%);
+              width: 320px;
               padding: unset;
+
+              > .hastags {
+                font-size: 11pt;
+                font-family: "Kanit-500";
+                display: flex;
+                overflow: auto;
+              }
+
+              > .spans {
+                @include font-size-10($font-head-500);
+                color: $brandcolor2;
+              }
             }
             > .col2 {
               width: 320px;
               padding: unset;
+
+              > .hastags {
+                font-size: 11pt;
+                font-family: "Kanit-500";
+                display: flex;
+                overflow: auto;
+              }
+
+              > .spans {
+                @include font-size-10($font-head-500);
+                color: $brandcolor2;
+              }
             }
           }
         }
