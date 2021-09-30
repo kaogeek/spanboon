@@ -12,7 +12,6 @@ import { ObjectID } from 'mongodb';
 import { ObjectUtil, ResponseUtil } from '../../utils/Utils';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTagService } from '../services/HashTagService';
-import { HashTag } from '../models/HashTag';
 import { FindHashTagRequest } from './requests/FindHashTagRequest';
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagement } from '../models/UserEngagement';
@@ -115,53 +114,61 @@ export class EmergencyEventController {
 
         const filter = search.filter;
         const hashTag = search.hashTag;
-        const hashTagIdList = [];
-        const hashTagMap = {};
 
-        if (hashTag !== null && hashTag !== undefined && hashTag !== '') {
-            filter.whereConditions = { name: { $regex: '.*' + hashTag + '.*', $options: 'si' } };
-        } else {
-            filter.whereConditions = {};
+        //  whereConditions will be in object search only
+        const emergencyEventAggr: any[] = [];
+        if (filter.whereConditions !== undefined && typeof filter.whereConditions === 'object') {
+            emergencyEventAggr.push({ $match: filter.whereConditions });
         }
 
-        const hashTagList: HashTag[] = await this.hashTagService.search(filter);
+        if (filter.offset === undefined) {
+            filter.offset = 0;
+        }
+        if (filter.limit === undefined) {
+            filter.limit = 10;
+        }
 
-        if (hashTagList !== null && hashTagList !== undefined && hashTagList.length > 0) {
-            for (const masterHashTag of hashTagList) {
-                const id = masterHashTag.id;
-                hashTagMap[id] = masterHashTag;
-                hashTagIdList.push(new ObjectID(id));
+        emergencyEventAggr.push({
+            $lookup: {
+                from: 'HashTag',
+                localField: 'hashTag',
+                foreignField: '_id',
+                as: 'hasTagObj'
             }
-        } else {
-            const successResponse = ResponseUtil.getSuccessResponse('Hashtag Not Found', []);
-            return res.status(200).send(successResponse);
+        });
+        emergencyEventAggr.push({
+            $unwind: {
+                path: '$hasTagObj',
+                preserveNullAndEmptyArrays: true
+            }
+        });
+        if (hashTag !== null && hashTag !== undefined && hashTag !== '') {
+            emergencyEventAggr.push({
+                $match: {
+                    'hasTagObj.name': { $regex: '.*' + hashTag + '.*', $options: 'si' }
+                }
+            });
         }
+        emergencyEventAggr.push({ $skip: filter.offset });
+        emergencyEventAggr.push({ $limit: filter.limit });
+        emergencyEventAggr.push({ $addFields: { id: '$_id' } });
+        emergencyEventAggr.push({ $project: { '_id': 0 } });
 
-        let emergencyLists: EmergencyEvent[];
+        const emergencyEventAggResult = await this.emergencyEventService.aggregate(emergencyEventAggr);
 
-        if (hashTagIdList !== null && hashTagIdList !== undefined && hashTagIdList.length > 0) {
-            emergencyLists = await this.emergencyEventService.find({ hashTag: { $in: hashTagIdList } });
-        } else {
-            emergencyLists = await this.emergencyEventService.find();
-        }
-
-        if (emergencyLists !== null && emergencyLists !== undefined) {
-            emergencyLists.map((data) => {
-                const hashTagKey = data.hashTag;
-                const emergencyHashTag = hashTagMap[hashTagKey];
-
-                if (emergencyHashTag) {
-                    const hashTagName = emergencyHashTag.name;
+        if (emergencyEventAggResult !== null && emergencyEventAggResult !== undefined) {
+            // change hashTag from id to name string
+            emergencyEventAggResult.map((data) => {
+                if (data.hasTagObj) {
+                    const hashTagName = data.hasTagObj.name;
                     data.hashTag = hashTagName;
                 }
             });
 
-            const emergencyResult = ObjectUtil.removeDuplicateJSONValue(emergencyLists, data => data.hashTag);
-
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyResult);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyEventAggResult);
             return res.status(200).send(successResponse);
         } else {
-            const errorResponse = ResponseUtil.getSuccessResponse('EmergencyEvent Not Found', undefined);
+            const errorResponse = ResponseUtil.getSuccessResponse('EmergencyEvent Not Found', []);
             return res.status(200).send(errorResponse);
         }
     }
@@ -318,7 +325,8 @@ export class EmergencyEventController {
             // Lock for first section
             const startProcessor = new EmergencyStartPostProcessor(this.emergencyEventService, this.postsService);
             startProcessor.setData({
-                emergencyEventId: objId
+                emergencyEventId: objId,
+                userId
             });
             const startObjvResult = await startProcessor.process();
             if (startObjvResult !== undefined) {
@@ -412,7 +420,7 @@ export class EmergencyEventController {
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
-                limit: 4,
+                limit: 10,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();
