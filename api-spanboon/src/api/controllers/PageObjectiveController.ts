@@ -635,7 +635,7 @@ export class ObjectiveController {
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 objectiveId: objId,
-                limit: 4,
+                limit: 10,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();
