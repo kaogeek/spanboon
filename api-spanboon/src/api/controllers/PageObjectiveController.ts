@@ -540,7 +540,8 @@ export class ObjectiveController {
             // fix for first section
             const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
             startProcessor.setData({
-                objectiveId: objId
+                objectiveId: objId,
+                userId
             });
             const startObjvResult = await startProcessor.process();
             if (startObjvResult !== undefined) {
