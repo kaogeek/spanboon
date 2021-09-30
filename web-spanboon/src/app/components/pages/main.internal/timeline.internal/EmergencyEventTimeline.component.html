@@ -78,6 +78,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="buttom" *ngIf="isLoginUser">
+                                <span>กดติดตามสิ่งที่กำลังทำได้ที่นี้</span>
+                                <button-follow *ngIf="!objectiveData.isFollow" (click)="followObjective()"
+                                    style="margin-top: 15px;" class="btn-follow" [color]="'#FD545A'"
+                                    [border]="'0.7px solid #FD545A'" [bgColor]="'rgb(49 63 64 / 0%)'" [text]="'ติดตาม'">
+                                </button-follow>
+                                <button-follow *ngIf="objectiveData.isFollow" (click)="followObjective()"
+                                    style="margin-top: 15px;" class="btn-follow" [color]="'#fff'"
+                                    [border]="'0.7px solid #FD545A'" [bgColor]="'#fd5454'" [text]="'ยกเลิกติดตาม'">
+                                </button-follow>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,7 +96,9 @@
                     <div class="owner">
                         <div class="detail">
                             <span class="title">แท็กที่เกี่ยวข้อง</span>
-                            <span class="disiption">#โควิด</span>
+                            <span class="disiption"
+                                *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                (click)="clickToPage(item.name)">#{{item.name}}</span>
                         </div>
                         <div class="follow-fullfill">
                             <div class="follow">
@@ -134,7 +147,8 @@
                                         <span class="sub_title">{{item.title}}</span>
                                     </div>
                                     <div *ngIf="item.post.postGallery.length > 0" class="top">
-                                        <img class="iconURL" [src]="item.post.postGallery[0].imageURL" alt="">
+                                        <img class="iconURL"
+                                            [src]="apiBaseURL+item.post.postGallery[0].imageURL+'/image'" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -167,8 +181,8 @@
                                                 {{item.post.createdDate | dateFormat}}
                                             </span>
                                         </div>
-                                        <div class="title" [innerHTML]="item.post.title"></div>
-                                        <div class="detail" [innerHTML]="item.post.detail"></div>
+                                        <div class="title" [innerHTML]="item.post.title | highlight"></div>
+                                        <div class="detail" [innerHTML]="item.post.detail | highlight"></div>
                                         <div class="buttom">
                                             <div class="botton" (click)="clickDataSearch(item)">
                                                 <span>ไปที่โพสต์</span>
@@ -1197,8 +1211,8 @@
                                     <div class="post" data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
-                                        *ngFor="let post of item.posts; let index = index">
-                                        <post-data [itemPost]="post">
+                                        *ngFor="let post of item.posts; let indexa = index">
+                                        <post-data [itemPost]="post" (action)="actionComment($event,index,indexa)">
                                         </post-data>
                                     </div>
                                 </div>

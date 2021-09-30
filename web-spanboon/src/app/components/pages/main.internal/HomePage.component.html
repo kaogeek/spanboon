@@ -157,10 +157,10 @@
                         <div class="col1-col2">
                             <div class="col-colum-detail"
                                 (click)="clickToPage(item.post?item.post:item.title?item.title:item.label,item.type)"
-                                *ngFor="let item of model.emergencyPin.contents.length > 1?
+                                *ngFor="let item of (model.emergencyPin.contents.length > 1?
                                 model.emergencyPin.contents:model.emergencyEvents.length >1?
                                 model.emergencyEvents.contents:hashTag.length >1?
-                                hashTag:model.postSectionModel.contents | slice:8:10;let index = index">
+                                hashTag:model.postSectionModel.contents) | slice:0:4;let index = index">
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
                                         <img
