@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostActionService } from '../../../../services/services';
+import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostFacade, PostActionService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -32,6 +32,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public observManager: ObservableManager;
     public objectiveFacade: ObjectiveFacade;
     public postActionService: PostActionService;
+    public postFacade: PostFacade;
     public hashTagFacade: HashTagFacade;
 
     // test
@@ -73,13 +74,14 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, postActionService: PostActionService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
+    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, postFacade: PostFacade, postActionService: PostActionService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
+        this.postFacade = postFacade;
         this.routeActivated = routeActivated;
         this.postActionService = postActionService;
         this.objectiveFacade = objectiveFacade;
@@ -169,6 +171,12 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         });
     }
 
+    public clickToPage(dataId: any, type?: any) {
+        this.router.navigate([]).then(() => {
+            window.open('/search?hashtag=' + dataId, '_blank');
+        });
+    }
+
     public followObjective() {
         this.objectiveFacade.followObjective(this.objectiveId);
         if (this.objectiveData.isFollow) {
@@ -188,6 +196,48 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
                 data: data,
             })
+        }
+    }
+
+    public async actionComment(action: any, index: number, indexa: number) {
+
+        await this.postActionService.actionPost(action, index, undefined, "PAGE").then((res: any) => {
+            if (res !== undefined && res !== null) {
+                if (res && res.type === "NOTOPIC") {
+                } else if (res.type === "TOPIC") {
+                } else if (res.type === "UNDOTOPIC") {
+                } else if (res.type === "POST") {
+                    this.router.navigateByUrl('/post/' + action.pageId);
+                } else if (action.mod === 'LIKE') {
+                    if (this.objectiveData.timelines[index].posts[indexa].isLike) {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount--
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    } else {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount++
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    }
+                    this.postLike(action, index);
+                }
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    public postLike(data: any, index: number) {
+        if (!this.isLogin()) {
+        } else {
+            this.postFacade.like(data.postData._id).then((res: any) => {
+                if (res.isLike) {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                } else {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                }
+            }).catch((err: any) => {
+                console.log(err)
+            });
         }
     }
 

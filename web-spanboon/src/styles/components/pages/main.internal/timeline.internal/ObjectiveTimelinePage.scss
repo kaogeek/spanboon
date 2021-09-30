@@ -167,6 +167,10 @@
                         }
                         > .disiption {
                             @include font-size-10($font-head-300);
+                            cursor: pointer;
+                            &:hover {
+                                color: rgba($brandcolor2, 0.95);
+                            }
                         }
                     }
                     > .follow-fullfill {
@@ -291,11 +295,12 @@
                                 > .top {
                                     background-color: white;
                                     border-radius: 10px;
-                                    overflow: hidden;
                                     padding: 30px;
                                     display: flex;
                                     text-align: center;
                                     flex-direction: column;
+                                    align-content: center;
+                                    align-items: center;
                                     > .title {
                                         @include font-size-3($font-head-500);
                                     }
@@ -303,12 +308,15 @@
                                         @include font-size-6($font-head-300);
                                     }
                                     > img {
-                                        width: 360px;
+                                        width: 420px;
                                         transform: rotate(-5deg);
                                         border: solid 10px white;
                                         border-bottom: solid 30px white;
                                         border-radius: 3px;
                                         box-shadow: rgb(0 0 0 / 35%) 0px 12px 13px, rgb(0 0 0 / 13%) 10px 24px 9px;
+                                        @media (max-width: 620px) {
+                                            width: 300px;
+                                        }
                                     }
                                     &.gallery {
                                         background-color: unset;
@@ -1614,7 +1622,6 @@
                                             font-size: 15pt;
                                             font-family: "Kanit-500";
                                             line-height: 26px;
-                                            height: 60px;
                                         }
                                         .card-feed-post > .wrapper-content > .content {
                                             white-space: pre-wrap;
@@ -1622,10 +1629,8 @@
                                             font-size: 11pt;
                                             font-family: "Sarabun-Light";
                                             min-height: unset;
-                                            height: 100px;
                                         }
                                         .card-feed-post > .wrapper-content {
-                                            pointer-events: none;
                                         }
                                     }
                                 }
@@ -3657,6 +3662,11 @@
             }
         }
     }
+    > .gradien {
+        height: 200px;
+        width: 350px;
+        background: linear-gradient(to right, rgba(169, 208, 113, 0), rgba(136, 173, 215, 1));
+    }
 }
 
 @media (max-width: $xxlarge) {
@@ -3773,6 +3783,7 @@
                 > .body > .needs-card > .item > {
                     .needs {
                         width: 100%;
+                        background-color: white;
                     }
                     .title {
                         padding: unset;

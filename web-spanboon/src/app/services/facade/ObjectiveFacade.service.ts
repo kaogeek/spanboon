@@ -88,9 +88,9 @@ export class ObjectiveFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/objective/' + objectiveId + '/timeline';
-      let body: any = {};
+      let options = this.getDefaultOptions();
 
-      this.http.get(url, body).toPromise().then((response: any) => {
+      this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);
