@@ -845,7 +845,6 @@ export class PostsController {
         const contentType = ENGAGEMENT_CONTENT_TYPE.POST;
 
         let userEngagementAction: UserEngagement;
-        let userLiked: UserLike[];
         let result = {};
         let userLikeStmt;
         let action;
@@ -879,7 +878,7 @@ export class PostsController {
 
                     engagement = await this.userEngagementService.getEngagement(postObjId, userObjId, action, contentType, likeAsPageObjId);
 
-                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST, likeAsPage: likeAsPageObjId } };
+                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST } };
                 } else {
                     userEngagement.likeAsPage = null;
 
@@ -895,8 +894,16 @@ export class PostsController {
                 }
 
                 userEngagementAction = await this.userEngagementService.create(userEngagement);
-                userLiked = await this.userLikeService.find(userLikeStmt);
-                likeCount = userLiked.length;
+                const matchStmt: any = [
+                    { $match: userLikeStmt.where },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } }
+                ];
+                const countLikeAggr: any[] = await this.userLikeService.aggregate(matchStmt);
+                if (countLikeAggr && countLikeAggr.length > 0) {
+                    likeCount = countLikeAggr[0].count;
+                } else {
+                    likeCount = 0;
+                }
 
                 result['isLike'] = false;
                 result['likeCount'] = likeCount;
@@ -962,7 +969,7 @@ export class PostsController {
 
                     engagement = await this.userEngagementService.getEngagement(postObjId, userObjId, action, contentType, likeAsPageObjId);
 
-                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST, likeAsPage: likeAsPageObjId } };
+                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST } };
                 } else {
                     userEngagement.likeAsPage = null;
 
@@ -978,8 +985,17 @@ export class PostsController {
                 }
 
                 userEngagementAction = await this.userEngagementService.create(userEngagement);
-                userLiked = await this.userLikeService.find(userLikeStmt);
-                likeCount = userLiked.length;
+
+                const matchStmt: any = [
+                    { $match: userLikeStmt.where },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } }
+                ];
+                const countLikeAggr: any[] = await this.userLikeService.aggregate(matchStmt);
+                if (countLikeAggr && countLikeAggr.length > 0) {
+                    likeCount = countLikeAggr[0].count;
+                } else {
+                    likeCount = 0;
+                }
 
                 result['isLike'] = true;
                 result['likeCount'] = likeCount;

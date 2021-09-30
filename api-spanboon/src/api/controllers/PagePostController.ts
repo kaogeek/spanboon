@@ -1514,19 +1514,6 @@ export class PagePostController {
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
                     if (gallery.length > 0) {
-                        // const isContain = gallery.find(object => {  
-                        //     console.log('object.fileId ',object.fileId)
-                        //     console.log('data.fileId ',data.fileId)
-                        //     console.log('>>> ',new ObjectID(object.fileId) === new ObjectID(data.fileId) ? 'true' : 'false')
-                        //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
-                        // });
-                        // if(isContain){
-                        //     continue;
-                        // } else {
-                        //     console.log('isContain ',data)
-                        // }
-                        // console.log(isContain);
-
                         const updateImageQuery = { _id: new ObjectID(data.id) };
                         const newImageValue = {
                             $set: {
@@ -1672,7 +1659,14 @@ export class PagePostController {
                     return res.status(400).send(ResponseUtil.getErrorResponse('Objective was not found.', undefined));
                 }
 
-                objectiveTag = obj.hashTag;
+                let objHashTag = undefined;
+                try {
+                    objHashTag = await this.hashTagService.findOne({ _id: obj.hashTag });
+                } catch (error) {
+                    console.log('find objective hashTag error: ', error);
+                }
+
+                objectiveTag = objHashTag === undefined ? '' : objHashTag.name;
             }
 
             // emergencyEvent
@@ -1686,7 +1680,14 @@ export class PagePostController {
                     return res.status(400).send(ResponseUtil.getErrorResponse('Emergency Event was not found.', undefined));
                 }
 
-                emergencyEventTag = emerEvent.hashTag;
+                let emerHashTag = undefined;
+                try {
+                    emerHashTag = await this.hashTagService.findOne({ _id: emerEvent.hashTag });
+                } catch (error) {
+                    console.log('find emergency hashTag error: ', error);
+                }
+
+                emergencyEventTag = emerHashTag === undefined ? '' : emerHashTag.name;
             }
 
             // need
