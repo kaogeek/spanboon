@@ -325,7 +325,8 @@ export class EmergencyEventController {
             // Lock for first section
             const startProcessor = new EmergencyStartPostProcessor(this.emergencyEventService, this.postsService);
             startProcessor.setData({
-                emergencyEventId: objId
+                emergencyEventId: objId,
+                userId
             });
             const startObjvResult = await startProcessor.process();
             if (startObjvResult !== undefined) {
@@ -419,7 +420,7 @@ export class EmergencyEventController {
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
-                limit: 4,
+                limit: 10,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();

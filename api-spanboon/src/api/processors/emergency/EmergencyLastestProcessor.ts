@@ -22,9 +22,11 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
             try {
                 let emergencyEventId = undefined;
                 let limit = undefined;
+                let userId = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
+                    userId = this.data.userId;
                 }
 
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
@@ -54,6 +56,22 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
+                    // insert isLike Action
+                    if (userId !== undefined && userId !== null && userId !== '') {
+                        for(const post of searchResult){
+                            const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
+                            const isLike = userAction.isLike;
+                            const isRepost = userAction.isRepost;
+                            const isComment = userAction.isComment;
+                            const isShare = userAction.isShare;
+
+                            post.isLike = isLike;
+                            post.isRepost = isRepost;
+                            post.isComment = isComment;
+                            post.isShare = isShare;
+                        }
+                    }
+                    
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
                         subTitle: '',

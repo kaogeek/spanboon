@@ -22,8 +22,10 @@ export class EmergencyStartPostProcessor extends AbstractTypeSectionProcessor {
         return new Promise(async (resolve, reject) => {
             try {
                 let emergencyEventId = undefined;
+                let userId = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
+                    userId = this.data.userId;
                 }
 
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
@@ -67,12 +69,29 @@ export class EmergencyStartPostProcessor extends AbstractTypeSectionProcessor {
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
+
+                    let isLike = false;
+                    let isRepost = false;
+                    let isComment = false;
+                    let isShare = false;
+                    if (userId !== undefined && userId !== null && userId !== '') {
+                        const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
+                        isLike = userAction.isLike;
+                        isRepost = userAction.isRepost;
+                        isComment = userAction.isComment;
+                        isShare = userAction.isShare;
+                    }
+
                     result = {
                         title: emergencyEvent.title, // as a emergencyEvent name
                         subTitle: (emergencyEvent.hashTag !== undefined && emergencyEvent.hashTag.length > 0) ? '#' + emergencyEvent.hashTag[0].name : '', // as a emergencyEvent hashtag
                         detail: emergencyEvent.detail,
                         post,
-                        type: this.type
+                        type: this.type,
+                        isLike,
+                        isRepost,
+                        isComment,
+                        isShare
                     };
                 }
 

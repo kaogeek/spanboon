@@ -540,7 +540,8 @@ export class ObjectiveController {
             // fix for first section
             const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
             startProcessor.setData({
-                objectiveId: objId
+                objectiveId: objId,
+                userId
             });
             const startObjvResult = await startProcessor.process();
             if (startObjvResult !== undefined) {
@@ -634,7 +635,7 @@ export class ObjectiveController {
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 objectiveId: objId,
-                limit: 4,
+                limit: 10,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();
