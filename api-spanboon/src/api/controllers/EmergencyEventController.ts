@@ -12,7 +12,6 @@ import { ObjectID } from 'mongodb';
 import { ObjectUtil, ResponseUtil } from '../../utils/Utils';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTagService } from '../services/HashTagService';
-import { HashTag } from '../models/HashTag';
 import { FindHashTagRequest } from './requests/FindHashTagRequest';
 import { UserFollow } from '../models/UserFollow';
 import { UserEngagement } from '../models/UserEngagement';
@@ -36,7 +35,6 @@ import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLast
 import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
-import { SearchFilter } from './requests/SearchFilterRequest';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
