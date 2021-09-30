@@ -120,8 +120,9 @@ export class PostActionService extends AbstractFacade {
                             }
 
                             this.postFacade.rePost(this.dataPost, this.data).then((res: any) => {
-                                resPost.posts[index].repostCount++
-
+                                if (resPost !== undefined && resPost !== null) {
+                                    resPost.posts[index].repostCount++
+                                }
                                 let data = {
                                     res,
                                     type: "TOPIC"

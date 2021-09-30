@@ -1427,7 +1427,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.selectedInformation.emit(event);
   }
 
-  public onClickGetDataPost(isDraft?: boolean,isEdit?: boolean) {
+  public onClickGetDataPost(isDraft?: boolean, isEdit?: boolean) {
     if (this.getTextLength() > TEXT_LIMIT) {
       return this.showAlertDialogWarming("เนื้อหาโพสต์ของคุณเกิน 230 คำ", "none");
     }

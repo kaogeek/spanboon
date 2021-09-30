@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -16,6 +16,7 @@ import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
+import { E } from '@angular/cdk/keycodes';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -32,6 +33,8 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public observManager: ObservableManager;
     public emergencyEventFacade: EmergencyEventFacade;
     public hashTagFacade: HashTagFacade;
+    public postActionService: PostActionService;
+    public postFacade: PostFacade;
     public assetFacade: AssetFacade;
 
     // test
@@ -72,11 +75,13 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
+    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
+        this.postActionService = postActionService;
+        this.postFacade = postFacade;
         this.assetFacade = assetFacade;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
@@ -162,9 +167,63 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         });
     }
 
+    public clickToPage(dataId: any, type?: any) {
+        this.router.navigate([]).then(() => {
+            window.open('/search?hashtag=' + dataId, '_blank');
+        });
+    }
+
+    public async actionComment(action: any, index: number, indexa: number) {
+
+        await this.postActionService.actionPost(action, index, undefined, "PAGE").then((res: any) => {
+            if (res !== undefined && res !== null) {
+                if (res && res.type === "NOTOPIC") {
+                } else if (res.type === "TOPIC") {
+                } else if (res.type === "UNDOTOPIC") {
+                } else if (res.type === "POST") {
+                    this.router.navigateByUrl('/post/' + action.pageId);
+                } else if (action.mod === 'LIKE') {
+                    if (this.objectiveData.timelines[index].posts[indexa].isLike) {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount--
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    } else {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount++
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    }
+                    this.postLike(action, index);
+                }
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    public postLike(data: any, index: number) {
+        if (!this.isLogin()) {
+        } else {
+            this.postFacade.like(data.postData._id).then((res: any) => {
+                if (res.isLike) {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                } else {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                }
+            }).catch((err: any) => {
+                console.log(err)
+            });
+        }
+    }
+
+
     public followObjective() {
-        // this.objectiveFacade.followObjective(this.objectiveId);
-        this.isFollow = !this.isFollow;
+        this.emergencyEventFacade.followEmergency(this.objectiveId);
+        if (this.objectiveData.isFollow) {
+            this.objectiveData.followedCount--
+        } else {
+            this.objectiveData.followedCount++
+        }
+        this.objectiveData.isFollow = !this.objectiveData.isFollow;
     }
 
     public ngOnDestroy(): void {

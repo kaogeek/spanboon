@@ -40,9 +40,23 @@ export class EmergencyEventFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
-      let body: any = {};
+      let options = this.getDefaultOptions();
 
-      this.http.get(url, body).toPromise().then((response: any) => {
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public followEmergency(emergencyId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/emergency/' + emergencyId + '/follow';
+      let body: any = {};
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);
