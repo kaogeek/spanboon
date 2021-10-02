@@ -743,6 +743,12 @@ export class PagePostController {
                 }
             }
 
+            // update post hastag
+            if (createResult !== null && createResult !== undefined && postMasterHashTagList.length > 0) {
+                // beware slow becase count all post
+                await this.postsService.recalculateHashTagCount(postMasterHashTagList);
+            }
+
             if (createResult !== null && createResult !== undefined) {
                 let link = '';
 
@@ -1607,6 +1613,35 @@ export class PagePostController {
                 }
             }
 
+            const allHashTagsString = [];
+            if (post.postsHashTags !== undefined) {
+                for (const tagObjId of post.postsHashTags) {
+                    allHashTagsString.push(tagObjId + '');
+                }
+            }
+
+            let postsHashTags: any[] = post.postsHashTags;
+            const postMasterHashTagList: any[] = [];
+            // if postHashTag is undefined or null postHashTags will use an old value
+            if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
+                const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
+
+                for (const hashTag of masterHashTagList) {
+                    const id = hashTag.id + '';
+                    if (allHashTagsString.indexOf(id) < 0) {
+                        allHashTagsString.push(id);
+                    }
+                    postMasterHashTagList.push(new ObjectID(id));
+                }
+
+                postsHashTags = postMasterHashTagList;
+            }
+
+            const allHashTags = [];
+            for (const hashTagString of allHashTagsString) {
+                allHashTags.push(new ObjectID(hashTagString));
+            }
+
             if (title === null || title === undefined) {
                 title = post.title;
             }
@@ -1842,7 +1877,7 @@ export class PagePostController {
             const newValue = {
                 $set: {
                     title, detail, type, startDateTime, story, isDraft, coverImage,
-                    objective: objectiveID, objectiveTag, userTags, postHashTag,
+                    objective: objectiveID, objectiveTag, userTags, postsHashTags,
                     emergencyEvent: emergencyEventID, emergencyEventTag, s3CoverImage
                 }
             };
@@ -1886,6 +1921,16 @@ export class PagePostController {
                 await this.userEngagementService.create(engagement);
 
                 const pageUpdated: Posts = await this.postsService.findOne({ _id: pagePostsObjId });
+                // update post hastag
+                try {
+                    // beware slow becase count all post
+                    if (allHashTags.length > 0) {
+                        await this.postsService.recalculateHashTagCount(allHashTags);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Update PagePost Successful', pageUpdated));
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
@@ -1936,6 +1981,14 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            // store deleted hashtag
+            const allHashTags = [];
+            if (posts.postsHashTags !== undefined) {
+                for (const tagObjId of posts.postsHashTags) {
+                    allHashTags.push(tagObjId);
+                }
+            }
+
             const referencePost = new ObjectID(posts.referencePost);
 
             const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
@@ -1974,6 +2027,16 @@ export class PagePostController {
             const deletePagePost = await this.postsService.update(deleteQuery, newValue);
 
             if (deletePagePost) {
+                // update post hastag
+                if (allHashTags.length > 0) {
+                    try {
+                        // beware slow becase count all post
+                        await this.postsService.recalculateHashTagCount(allHashTags);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully delete PagePost', pagePostsObjId);
                 return res.status(200).send(successResponse);
             } else {
