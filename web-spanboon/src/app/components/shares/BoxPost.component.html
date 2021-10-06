@@ -801,11 +801,11 @@
                 </div>
             </div>
             <div class="box-right" [class.active]="isClickPostPreLoad">
-                <div class="div-gatdata-post" (click)="onClickGetDataPost()"></div>
+                <div class="div-gatdata-post" (click)="onClickGetDataPost(false,true)"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
                         <mat-select [(value)]="selected1">
-                            <mat-option *ngIf="isFulfill" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                            <mat-option *ngIf="isFulfill" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                 โพสต์
                             </mat-option>
                         </mat-select>
@@ -820,10 +820,10 @@
                     <ng-template #elseIsEdit>
                         <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
                             <mat-select [(value)]="selected1">
-                                <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
-                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
                                 <mat-option *ngIf="isRepost" [value]="'บันทึกฉบับร่าง'"
