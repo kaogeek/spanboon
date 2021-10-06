@@ -1553,6 +1553,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
+    console.log('isEdit', isEdit)
+    console.log('isEdit', (this.isStory && (this.isStoryResultData || !this.isEmptyObject(this.dataStroy)) && isEdit))
     if (this.isStory && (this.isStoryResultData || !this.isEmptyObject(this.dataStroy)) && isEdit) {
       this.showDialogCreateStory();
     } else {
