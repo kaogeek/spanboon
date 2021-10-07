@@ -201,13 +201,20 @@ export class UserController {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
-        const pageFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: followUserObjId, subjectType: SUBJECT_TYPE.USER } });
+        const userFollowObj: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: followUserObjId, subjectType: SUBJECT_TYPE.USER } });
         let userEngagementAction: UserEngagement;
         let userFollower: UserFollow[];
         let result = {};
         let userFollowerStmt;
 
-        if (pageFollow) {
+        // find page
+        const user = await this.userService.findOne({ _id: userObjId });
+        if (user === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('User was not found', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (userFollowObj) {
             const unfollow = await this.userFollowService.delete({ userId: userObjId, subjectId: followUserObjId, subjectType: SUBJECT_TYPE.USER });
             if (unfollow) {
                 const userEngagement = new UserEngagement();
