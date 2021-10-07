@@ -1836,6 +1836,13 @@ export class PageController {
         let userFollowStmt;
         let action;
 
+        // find page
+        const page = await this.pageService.findOne({ _id: pageObjId });
+        if (page === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Page was not found', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if (pageFollow) {
             const unfollow = await this.userFollowService.delete({ userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE });
             if (unfollow) {
