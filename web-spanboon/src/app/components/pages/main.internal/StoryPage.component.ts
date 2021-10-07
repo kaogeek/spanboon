@@ -121,7 +121,6 @@ export class StoryPage extends AbstractPage implements OnInit {
     setTimeout(() => {
       $('.comSelect').remove();
       $('.comDelet').remove();
-      console.log('this.STORY', this.STORY);
     }, 400);
   }
 
@@ -138,21 +137,27 @@ export class StoryPage extends AbstractPage implements OnInit {
 
   public getRecommendedHashtag(id: string) {
     this.postFacade.recommendedHashtag(id).then((res: any) => {
-      this.recommendedHashtag = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedHashtag = res.data
+      }
     }).catch((err: any) => {
     })
   }
 
   public getRecommendedStory(id: string) {
     this.postFacade.recommendedStory(id).then((res: any) => {
-      this.recommendedStory = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedStory = res.data
+      }
     }).catch((err: any) => {
     })
   }
 
   public getRecommendedStorys(id: string, pageId: string) {
     this.postFacade.recommendedStorys(id, pageId).then((res: any) => {
-      this.recommendedStorys = res.data
+      if (res.data.contents.length > 0) {
+        this.recommendedStorys = res.data
+      }
     }).catch((err: any) => {
     })
   }
@@ -192,7 +197,8 @@ export class StoryPage extends AbstractPage implements OnInit {
   }
 
   public clickToUser(data: any) {
-    window.open('/page/' + data, '_blank');
+    console.log('data', data);
+    window.open('/page/' + data._id, '_blank');
   }
 
   public clickToPage(dataId: any, type?: any) {
@@ -250,7 +256,8 @@ export class StoryPage extends AbstractPage implements OnInit {
     let comment = ({ value: this.value, pageId: this.STORY[0]._id, userAsPage: this.userAspage ? this.userAspage : this.userCloneDatas.id });
     this.createComment(comment);
     setTimeout(() => {
-      // this.isComment = true
+      this.STORY[0].isComment = true
+      this.getCommentList();
       this.value = ''
     }, 100);
   }

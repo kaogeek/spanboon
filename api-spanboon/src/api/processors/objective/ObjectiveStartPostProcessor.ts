@@ -22,8 +22,10 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
         return new Promise(async (resolve, reject) => {
             try {
                 let objectiveId = undefined;
+                let userId = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     objectiveId = this.data.objectiveId;
+                    userId = this.data.userId;
                 }
 
                 if (objectiveId === undefined || objectiveId === null || objectiveId === '') {
@@ -67,12 +69,29 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
+
+                    let isLike = false;
+                    let isRepost = false;
+                    let isComment = false;
+                    let isShare = false;
+                    if (userId !== undefined && userId !== null && userId !== '') {
+                        const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
+                        isLike = userAction.isLike;
+                        isRepost = userAction.isRepost;
+                        isComment = userAction.isComment;
+                        isShare = userAction.isShare;
+                    }
+
                     result = {
                         title: objective.title, // as a objective name
                         subTitle: (objective.hashTag !== undefined && objective.hashTag.length > 0) ? '#' + objective.hashTag[0].name : '', // as a objective hashtag
                         detail: objective.detail,
                         post,
-                        type: this.type
+                        type: this.type,
+                        isLike,
+                        isRepost,
+                        isComment,
+                        isShare
                     };
                 }
 

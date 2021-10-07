@@ -128,6 +128,7 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
+    console.log('this.user', this.user);
 
     this.user = this.authenManager.getCurrentUser();
     this.usercurrent = this.authenManager.getCurrentUser();
@@ -182,7 +183,6 @@ export class PostData {
       }
       this.linkPost = (this.mainPostLink + this.itemPost._id);
       this.isLoading = false;
-      console.log('itemPost', this.itemPost);
     }, 1000);
   }
 
@@ -281,7 +281,6 @@ export class PostData {
 
   public pageAction(action: any) {
     let comments: any[] = []
-    action.imageURL = action.img64
     this.user = action
     if (this.commentpost.length !== 0) {
       for (let c of this.commentpost) {
@@ -462,7 +461,6 @@ export class PostData {
   }
 
   public checkPost(post): boolean {
-    console.log('post', post);
     if (post === 'UNDEFINED PAGE') {
       return false
     } else if (post === undefined && post === null && post === '') {

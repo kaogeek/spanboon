@@ -66,7 +66,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 }
 
                 const pageFollowIds: any[] = [];
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     const followStmt = [
                         { $match: { userId: new ObjectID(userId + '') } },
                         { $sample: { size: 5 } },

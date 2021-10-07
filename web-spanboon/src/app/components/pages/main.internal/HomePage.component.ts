@@ -72,6 +72,7 @@ export class HomePage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     super.ngOnInit();
+    // type: "FULFILLMENT"
   }
 
   private async getMainPageModel(userId?) {

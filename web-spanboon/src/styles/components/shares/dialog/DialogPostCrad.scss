@@ -33,6 +33,22 @@
         }
     }
 
+    > .mat-dialog-content {
+        box-post {
+            > .box-post {
+                > .box {
+                    > .textarea-editor {
+                        padding: 20px 20pt;
+                    }
+                }
+            }
+        }
+
+        &.hide {
+            overflow: hidden;
+        }
+    }
+
     @media (max-width: 900px) {
         width: 100vw;
         height: 100vh;
@@ -51,6 +67,9 @@
                 z-index: 99;
                 top: 0;
                 background-color: white;
+            }
+            display-gallery {
+                pointer-events: none;
             }
         }
     }

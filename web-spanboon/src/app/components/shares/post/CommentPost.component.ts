@@ -71,6 +71,5 @@ export class CommentPost {
   }
 
   public menuProfile(data: any) {
-    console.log('data', data);
   }
 }

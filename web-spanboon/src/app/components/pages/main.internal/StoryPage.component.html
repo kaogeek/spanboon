@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="col-contianer" *ngIf="STORY">
-        <div class="col-stoey-contianer">
+        <div class="col-stoey-contianer" [class.max]="!recommendedHashtag && STORY[0].hashTags.length === 0">
             <div class="col-user">
                 <div class="col-1">
                     <img [src]="apiBaseURL+STORY[0].page[0].imageURL+'/image'">
@@ -97,7 +97,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-needs-body">
+        <div class="col-needs-body" [class.hide]="!recommendedHashtag && STORY[0].hashTags.length === 0">
             <div class="needs-teb">
                 <div class="contianer" *ngIf="recommendedHashtag">
                     <div class="head">
@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="contianer" style="margin-top: 20px;" *ngIf="recommendedHashtag">
+                <div class="contianer" style="margin-top: 20px;" *ngIf="STORY[0].hashTags.length > 0">
                     <div class="head">
                         <span>แฮชแท็ก ที่เกี่ยวข้อง</span>
                     </div>
@@ -131,8 +131,7 @@
         <div class="col-footer">
             <div class="col-footer-haed">
                 <span class="text"> เรื่องราวอื่นๆของ :</span>
-                <span class="user-name"
-                    (click)="clickToUser(STORY[0].page[0].pageUsername?STORY[0].page[0].pageUsername:STORY[0].page[0]._id)">{{STORY[0].page[0].name}}</span>
+                <span class="user-name" (click)="clickToUser(STORY[0].page[0])">{{STORY[0].page[0].name}}</span>
             </div>
             <div class="story-list-crads">
                 <div class="crad" (click)="clickToPage(item.post)" *ngFor=" let item of recommendedStorys.contents">
@@ -151,7 +150,7 @@
                                     d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
                                     fill="#a2a2a2" />
                             </svg>
-                            <span class="createdDate" >{{item.post.createdDate | dateFormat}}</span>
+                            <span class="createdDate">{{item.post.createdDate | dateFormat}}</span>
                         </div>
                     </div>
                     <div class="post-img">

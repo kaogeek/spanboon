@@ -75,6 +75,7 @@ export class RepostData {
     this.isComment = false
     this.isRepost = false
     this.router = router;
+
   }
 
   ngAfterViewInit(): void {

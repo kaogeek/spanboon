@@ -47,7 +47,7 @@
                     > span {
                         display: -webkit-box;
                         -webkit-line-clamp: 3;
-                        line-height: 24px;
+                        line-height: 36px;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
                     }
@@ -99,6 +99,14 @@
         > .col-stoey-contianer {
             width: calc(800px - 60px);
             padding: 30px;
+            word-break: break-word;
+            &.max {
+                width: calc(1200px - 60px);
+                @media (max-width: 1200px) {
+                    width: calc(100% - 20px);
+                    padding: 10px;
+                }
+            }
             > .col-user {
                 display: flex;
                 @include font-size-10($font-head-500);
@@ -223,6 +231,9 @@
             width: calc(400px - 60px);
             padding: 30px;
             height: auto;
+            &.hide {
+                display: none;
+            }
             > .needs-teb {
                 position: sticky;
                 top: 100px;
