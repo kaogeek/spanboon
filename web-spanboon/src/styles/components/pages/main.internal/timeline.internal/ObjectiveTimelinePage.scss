@@ -8,7 +8,7 @@
 .objective-timeline-body {
     width: 100%;
     height: 100%;
-    min-width: 400px;
+    // min-width: 400px;
     z-index: 2;
     background-color: #fcfcfd00;
     position: relative;
@@ -3674,7 +3674,7 @@
 
 @media (max-width: $xlarge) {
     .objective-timeline-body > .objective-head {
-        width: 90%;
+        width: 100%;
     }
     .objective-timeline-body > .objective-head > .needs-section {
         width: 70%;
@@ -3886,7 +3886,7 @@
             }
         }
         > .objective_lastest_card {
-            padding: 60px 20px;
+            padding: 10px;
             > .body > .posts {
                 display: inline-flex;
                 flex-wrap: wrap;

@@ -21,7 +21,7 @@ Controller = (function () {
     Controller.prototype.timeline = function () {
         var w = window.innerWidth;
         if (canvas) {
-            window.scrollTo(0, 0);
+            // window.scrollTo(0, 0);
             var elms = document.querySelectorAll("[id='point']");
             var ctx = canvas.getContext("2d");
             canvas.height = document.getElementById('body').getBoundingClientRect().height
