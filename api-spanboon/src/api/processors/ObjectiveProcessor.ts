@@ -188,6 +188,14 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                         }
                                     },
                                     {
+                                        $lookup: {
+                                            from: 'PostsGallery',
+                                            localField: '_id',
+                                            foreignField: 'post',
+                                            as: 'gallery'
+                                        }
+                                    },
+                                    {
                                         $project: {
                                             story: 0
                                         }
@@ -224,6 +232,22 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                             post.isLike = true;
                                         } else {
                                             post.isLike = false;
+                                        }
+
+                                        if (post.gallery !== undefined) {
+                                            for (const gal of post.gallery) {
+                                                if (gal.s3ImageURL !== undefined && gal.s3ImageURL !== '') {
+                                                    try {
+                                                        const signUrl = await this.s3Service.getConfigedSignedUrl(gal.s3ImageURL);
+                                                        gal.signURL = signUrl;
+                                                    } catch (error) {
+                                                        console.log('objective post gallery: ' + error);
+                                                    }
+                                                }
+
+                                                // remove s3ImageURL attribute
+                                                delete gal.s3ImageURL;
+                                            }
                                         }
                                     }
                                 }
