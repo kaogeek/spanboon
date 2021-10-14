@@ -113,6 +113,7 @@ export const facebook_setup = {
     FACEBOOK_COOKIE: getOsEnv('FACEBOOK_COOKIE'),
     FACEBOOK_XFBML: getOsEnv('FACEBOOK_XFBML'),
     FACEBOOK_VERSION: getOsEnv('FACEBOOK_VERSION'),
+    FACEBOOK_VERIFY_TOKEN: getOsEnv('FACEBOOK_VERIFY_TOKEN'),
 };
 
 // Google Setup
