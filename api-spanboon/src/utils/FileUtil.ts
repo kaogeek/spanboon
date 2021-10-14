@@ -125,4 +125,37 @@ export class FileUtil {
 
         return (result !== undefined && result.length > 0) ? result[0] : undefined;
     }
+
+    public static getFileNameMimeType(fileName: string): string {
+        if (fileName === undefined || fileName === null || fileName === '') {
+            return undefined;
+        }
+
+        const fileExtenstion = this.getFileNameExtension(fileName);
+
+        return this.getExtensionMimeType(fileExtenstion);
+    }
+
+    public static getExtensionMimeType(fileExtension: string): string {
+        console.log('fileExtension', fileExtension);
+        if (fileExtension === undefined || fileExtension === null || fileExtension === '') {
+            return undefined;
+        }
+
+        for (const mimeType of Object.keys(this.MIME_TYPE_MAPPING)) {
+            const value = this.MIME_TYPE_MAPPING[mimeType];
+
+            if (fileExtension.indexOf('.') === 0) {
+                if (value === fileExtension) {
+                    return mimeType;
+                }
+            } else {
+                if (value === '.' + fileExtension) {
+                    return mimeType;
+                }
+            }
+        }
+
+        return undefined;
+    }
 }
