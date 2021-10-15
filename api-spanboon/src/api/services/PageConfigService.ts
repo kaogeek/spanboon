@@ -6,6 +6,7 @@
  */
 
 import { Service } from 'typedi';
+import { ObjectID } from 'typeorm';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { PageConfigRepository } from '../repositories/PageConfigRepository';
@@ -34,8 +35,8 @@ export class PageConfigService {
         return await this.pageConfigRepository.updateOne(query, newValue);
     }
 
-    public async getConfig(name: string): Promise<any> {
-        const condition = { name };
+    public async getConfig(name: string, pageId: ObjectID): Promise<any> {
+        const condition = { name, page: pageId };
         return await this.pageConfigRepository.findOne(condition);
     }
 

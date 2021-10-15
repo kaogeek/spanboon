@@ -1052,7 +1052,7 @@ export class GuestController {
 
                 const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
                 user = fbUser.user;
-            } catch (ex) {
+            } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
@@ -1066,7 +1066,7 @@ export class GuestController {
 
                 const keyMap = ObjectUtil.parseQueryParamToMap(decryptToken.token);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
-            } catch (ex) {
+            } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
