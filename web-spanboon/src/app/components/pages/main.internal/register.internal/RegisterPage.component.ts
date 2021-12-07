@@ -247,6 +247,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.activeEmail = false;
     }
 
+    if(!this.uuid) {
+      return;
+    }
+
     if (this.mode === "normal") {
       if (formData.password === "" && formData.repassword === "") {
         this.activePass = true;
