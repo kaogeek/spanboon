@@ -9,13 +9,14 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
+import { PageRepository } from '../repositories/PageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { S3Service } from '../services/S3Service';
 
 @Service()
 export class UserService {
 
-    constructor(@OrmRepository() private userLoginRepository: UserRepository, private s3Service: S3Service) { }
+    constructor(@OrmRepository() private userLoginRepository: UserRepository, @OrmRepository() private pageRepository: PageRepository, private s3Service: S3Service) { }
 
     // find user
     public find(findCondition?: any): Promise<User[]> {
@@ -76,6 +77,29 @@ export class UserService {
         } else {
             return this.userLoginRepository.find(condition);
         }
+    }
+
+    public isContainsUniqueId(uniqueId: string): Promise<boolean> {
+        if (uniqueId === undefined || uniqueId === null || uniqueId === '') {
+            return Promise.resolve(undefined);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const checkUniqueIdUserQuey = { where: { uniqueId } };
+                const checkUniqueIdUser: User = await this.findOne(checkUniqueIdUserQuey);
+                const checkPageUsernameQuey = { where: { pageUsername: uniqueId } };
+                const checkPageUsername: any = await this.pageRepository.findOne(checkPageUsernameQuey);
+
+                if ((checkUniqueIdUser !== null && checkUniqueIdUser !== undefined) || (checkPageUsername !== null && checkPageUsername !== undefined)) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     public cleanUserField(user: any): any {
