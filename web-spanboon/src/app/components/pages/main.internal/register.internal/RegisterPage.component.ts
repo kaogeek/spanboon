@@ -247,6 +247,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.activeEmail = false;
     }
 
+    if(!this.uuid) {
+      return;
+    }
+
     if (this.mode === "normal") {
       if (formData.password === "" && formData.repassword === "") {
         this.activePass = true;
@@ -530,8 +534,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.displayName = userInfo.name;
       this.data.firstName = userInfo.first_name;
       this.data.lastName = userInfo.last_name;
-      this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
-      this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined; 
+      // this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
+      // this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined; 
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=large';
       // console.log('this.images ',this.images)
       this.images = userInfo.picture.data.url;

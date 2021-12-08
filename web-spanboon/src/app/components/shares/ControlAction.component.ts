@@ -93,8 +93,6 @@ export class ControlAction {
       if (this.accessPage !== undefined && this.accessPage !== null) {
         for (let accessPage of this.accessPage) {
         }
-        console.log('this.accessPage', this.accessPage);
-
         if (this.accessPage[0].imageURL !== null && this.accessPage[0].imageURL !== '') {
           this.selectedAccessPageimges = this.accessPage[0]
           this.isImges = true

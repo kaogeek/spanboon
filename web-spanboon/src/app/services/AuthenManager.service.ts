@@ -196,6 +196,47 @@ export class AuthenManager {
     });
   }
 
+  public loginWithFacebookTest(token: string, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/login/test';
+      let body: any = {
+        "token": token
+      };
+
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+      });
+
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+
+      let httpOptions = {
+        headers: headers
+      };
+
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        let result: any = {
+          token: response.data.token,
+          user: response.data.user
+        };
+
+        this.token = result.token;
+        this.user = result.user;
+        this.facebookMode = true;
+
+        localStorage.setItem(TOKEN_KEY, result.token);
+        localStorage.setItem(TOKEN_MODE_KEY, 'FB');
+        sessionStorage.setItem(TOKEN_KEY, result.token);
+        sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
+
+        resolve(result);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
