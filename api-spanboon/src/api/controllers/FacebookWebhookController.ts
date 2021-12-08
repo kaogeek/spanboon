@@ -17,19 +17,22 @@ import { PostsService } from '../services/PostsService';
 import { SocialPostService } from '../services/SocialPostService';
 import { AssetService } from '../services/AssetService';
 import { PostsGalleryService } from '../services/PostsGalleryService';
+import { PageConfigService } from '../services/PageConfigService';
 import { FacebookWebhookLogs } from '../models/FacebookWebhookLogs';
 import { Posts } from '../models/Posts';
 import { PostsGallery } from '../models/PostsGallery';
 import { SocialPost } from '../models/SocialPost';
+import { PageConfig } from '../models/PageConfig';
 import { POST_TYPE } from '../../constants/PostType';
 import { ASSET_PATH } from '../../constants/AssetScope';
+import { PAGE_CONFIGS } from '../../constants/PageConfigs';
 import { facebook_setup } from '../../env';
 
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(private pageSocialAccountService: PageSocialAccountService, private facebookWebhookLogsService: FacebookWebhookLogsService,
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
-        private assetService: AssetService, private postsGalleryService: PostsGalleryService) { }
+        private assetService: AssetService, private postsGalleryService: PostsGalleryService, private pageConfigService: PageConfigService) { }
 
     /**
      * @api {get} /api/fb_webhook/page_feeds WebHook for page feed
@@ -94,6 +97,12 @@ export class FacebookWebhookController {
 
                                 const spanboonPage = await this.pageService.findOne({ _id: pageSocialAccount.page, banned: false });
                                 if (spanboonPage === undefined) {
+                                    createLog = false;
+                                    continue;
+                                }
+
+                                const isFetchPage = await this.isFetchPage(pageSocialAccount.page);
+                                if (!isFetchPage) {
                                     createLog = false;
                                     continue;
                                 }
@@ -204,5 +213,35 @@ export class FacebookWebhookController {
         post.story = null;
 
         return post;
+    }
+
+    private async isFetchPage(pageId: ObjectID): Promise<boolean> {
+        if (pageId === undefined) {
+            return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
+        }
+
+        const config = await this.pageConfigService.getConfig(PAGE_CONFIGS.PAGE_SOCIAL_FACEBOOK_FETCHPOST, pageId);
+        if (config !== undefined && config.value !== undefined) {
+            if (typeof config.value === 'string') {
+                const valueString = config.value.toUpperCase();
+
+                return (valueString === 'TRUE') ? true : false;
+            } else if (typeof config.value === 'boolean') {
+                return config.value;
+            }
+
+            return config.value;
+        } else {
+            // auto create page config
+            const pageConfig = new PageConfig();
+            pageConfig.page = pageId;
+            pageConfig.name = PAGE_CONFIGS.PAGE_SOCIAL_FACEBOOK_FETCHPOST;
+            pageConfig.type = 'boolean';
+            pageConfig.value = PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST ? 'TRUE' : 'FALSE';
+
+            await this.pageConfigService.create(pageConfig);
+        }
+
+        return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
     }
 }
