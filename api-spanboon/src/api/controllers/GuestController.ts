@@ -102,7 +102,7 @@ export class GuestController {
             const data: User = await this.userService.findOne({ where: { username: registerEmail } });
 
             if (data) {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', data);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
                 return res.status(400).send(errorResponse);
             } else {
                 if (registerPassword === null || registerPassword === undefined) {
@@ -138,6 +138,18 @@ export class GuestController {
                     user.customGender = null;
                 } else {
                     user.customGender = customGender;
+                }
+
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
 
                 let result = await this.userService.create(user);
@@ -281,6 +293,18 @@ export class GuestController {
                     user.customGender = customGender;
                 }
 
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', users);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+
                 const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
@@ -419,6 +443,18 @@ export class GuestController {
                     user.customGender = null;
                 } else {
                     user.customGender = customGender;
+                }
+
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', users);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
 
                 const resultData: User = await this.userService.create(user);
