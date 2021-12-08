@@ -79,16 +79,42 @@ export class UserService {
         }
     }
 
-    public isContainsUniqueId(uniqueId: string): Promise<boolean> {
+    public isContainsUniqueId(uniqueId: string, ignoreUserUniqueId?: string, ignorePageUniqueId?: string): Promise<boolean> {
         if (uniqueId === undefined || uniqueId === null || uniqueId === '') {
             return Promise.resolve(undefined);
         }
 
         return new Promise(async (resolve, reject) => {
             try {
-                const checkUniqueIdUserQuey = { where: { uniqueId } };
+                let checkUniqueIdUserQuey: any = { where: { uniqueId } };
+                if (ignoreUserUniqueId !== undefined && ignoreUserUniqueId !== null && ignoreUserUniqueId !== '') {
+                    checkUniqueIdUserQuey = {
+                        $and: [
+                            {
+                                uniqueId
+                            }, {
+                                uniqueId: {
+                                    $nin: [ignoreUserUniqueId]
+                                }
+                            }
+                        ]
+                    };
+                }
                 const checkUniqueIdUser: User = await this.findOne(checkUniqueIdUserQuey);
-                const checkPageUsernameQuey = { where: { pageUsername: uniqueId } };
+                let checkPageUsernameQuey: any = { where: { pageUsername: uniqueId } };
+                if (ignorePageUniqueId !== undefined && ignorePageUniqueId !== null && ignorePageUniqueId !== '') {
+                    checkPageUsernameQuey = {
+                        $and: [
+                            {
+                                pageUsername: uniqueId
+                            }, {
+                                pageUsername: {
+                                    $nin: [ignorePageUniqueId]
+                                }
+                            }
+                        ]
+                    };
+                }
                 const checkPageUsername: any = await this.pageRepository.findOne(checkPageUsernameQuey);
 
                 if ((checkUniqueIdUser !== null && checkUniqueIdUser !== undefined) || (checkPageUsername !== null && checkPageUsername !== undefined)) {
