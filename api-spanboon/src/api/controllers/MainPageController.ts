@@ -665,7 +665,7 @@ export class MainPageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/content/search')
-    public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
+    public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @QueryParam('isHideStory') isHideStory: boolean, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
         try {
             const uId = req.headers.userid;
             let search: any = {};
@@ -1210,6 +1210,18 @@ export class MainPageController {
                         }
                     }
                 }
+
+                searchResults.map((dataMap) => {
+                    const story = dataMap.post.story;
+
+                    if (isHideStory === true) {
+                        if (story !== null && story !== undefined) {
+                            dataMap.post.story = {};
+                        } else {
+                            dataMap.post.story = null;
+                        }
+                    }
+                });
 
                 search = searchResults;
 
