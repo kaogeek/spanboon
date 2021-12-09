@@ -847,7 +847,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             if (followUser.message === "Unfollow User Success") {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
-                console.log('res ', res)
                 if (res) {
                   Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
                 } else {

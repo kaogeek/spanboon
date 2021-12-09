@@ -19,6 +19,7 @@ import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
+import { POST_TYPE } from '../../constants/PostType';
 
 export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -131,6 +132,9 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 lastestFilter.whereConditions.deleted = false;
                 lastestFilter.whereConditions.hidden = false;
                 lastestFilter.whereConditions.startDateTime = { $lte: today };
+                lastestFilter.whereConditions.type= {
+                    $nin: [POST_TYPE.FULFILLMENT]
+                }; // remove fulfillment post type comment this for showing all post type.
 
                 // overide start datetime
                 const dateTimeAndArray = [];
@@ -212,7 +216,6 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'โพสต์ที่แนะนำสำหรับคุณ';
-                result.type = 'USERFOLLOW';
                 result.iconUrl = '';
                 if (page) {
                     result.title = 'เพราะคุณติดตาม' + ' "' + page.name + '"';

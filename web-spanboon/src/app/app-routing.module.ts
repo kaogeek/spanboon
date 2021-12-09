@@ -25,6 +25,7 @@ import {
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 import { DirtyCheckGuard } from './dirty-check.guard';
+import { LoginPageTest } from './components/pages/main.internal/LoginPageTest.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -185,6 +186,10 @@ export const APP_ROUTES: Routes = [
       {
         path: LoginPage.PAGE_NAME,
         component: LoginPage,
+      },
+      {
+        path: LoginPageTest.PAGE_NAME,
+        component: LoginPageTest,
       },
       {
         path: forgotPasswordPage.PAGE_NAME,
