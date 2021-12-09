@@ -5,8 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export const PLATFORM_NAME_TH = 'ก้าวไกลทูเดย์';
-export const PLATFORM_NAME_ENG = 'MFP Today';
+export const PLATFORM_NAME_TH = 'สะพานบุญ';
+export const PLATFORM_NAME_ENG = 'Spanboon';
 
 export const ASSET_CONFIG_NAME = {
     EXPIRE_MINUTE: 'asset.expiration.minute',
