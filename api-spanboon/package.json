@@ -79,6 +79,7 @@
     "graphql": "15.4.0",
     "helmet": "^4.2.0",
     "imagemagick": "^0.1.3",
+    "jsdom": "^17.0.0",
     "jsonfile": "6.1.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
