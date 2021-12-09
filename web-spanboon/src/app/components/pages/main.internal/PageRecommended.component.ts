@@ -129,7 +129,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
 
     const result = this.engagementService.getEngagement(event, data.label, "hashTag");
     const dataEngagement: UserEngagement = this.engagementService.engagementPost(result.contentType, result.contentId, result.dom);
-    this.userEngagementFacade.create(dataEngagement).then((res: any) => { 
+    this.userEngagementFacade.create(dataEngagement).then((res: any) => {
     }).catch((err: any) => {
       console.log('err ', err)
     });
@@ -187,14 +187,20 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public getRecommend() {
     let limit: number = 3;
     let offset: number = 0;
-    this.recommendFacade.getRecommend(limit, offset).then((res) => {
+    this.recommendFacade.getRecommend(limit, offset).then(async (res) => {
       this.dataRecommend = res.data;
+      for (let data of this.dataRecommend) {
+        if (data.imageURL) {
+          data.imageURL = await this.passSignUrl(data.imageURL);
+        }
+      }
     }).catch((err: any) => {
       console.log('err ', err)
     });
   }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+  }
 }
-
-
-
-

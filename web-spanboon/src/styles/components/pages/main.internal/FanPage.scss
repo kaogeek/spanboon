@@ -280,6 +280,7 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
+                cursor: pointer;
               }
             }
 
@@ -491,7 +492,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-right: $width-border solid $border-color; 
+                border-right: $width-border solid $border-color;
                 text-decoration: none;
 
                 &:last-of-type {
@@ -526,7 +527,7 @@
                       fill: #6fc32e;
                     }
                   }
-                  >.location {
+                  > .location {
                     > svg,
                     g,
                     path {
@@ -544,7 +545,7 @@
                     > svg,
                     g,
                     path {
-                      fill: #FCD12A;
+                      fill: #fcd12a;
                     }
                   }
                   > .web {
@@ -554,7 +555,7 @@
                       fill: #3b85c7;
                     }
                   }
-                } 
+                }
               }
             }
 
@@ -705,7 +706,7 @@
 
                   > .mat-button-wrapper {
                     > .material-icons {
-                      font-family: 'Material Icons' !important;
+                      font-family: "Material Icons" !important;
                       font-size: $font-size-icon-small;
                     }
                   }
@@ -1106,7 +1107,7 @@
                 }
               }
               recommend-card {
-                >.recommend-card {
+                > .recommend-card {
                   margin-top: 5pt;
                 }
               }

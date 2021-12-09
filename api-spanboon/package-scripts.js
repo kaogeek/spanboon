@@ -45,14 +45,14 @@ module.exports = {
             inspector: {
                 script: series(
                     'nps banner.serve',
-                    'apidoc -i src -o src/public/apidoc',
+                    // 'apidoc -i src -o src/public/apidoc',
                     'nodemon --watch src --watch .env --inspect'
                 ),
                 description: 'Serves the current app and watches for changes to restart it, you may attach inspector to it.'
             },
             script: series(
                 'nps banner.serve',
-                'apidoc -i src -o src/public/apidoc',
+                // 'apidoc -i src -o src/public/apidoc',
                 'nodemon --watch src --watch .env'
             ),
             description: 'Serves the current app and watches for changes to restart it'
@@ -69,12 +69,12 @@ module.exports = {
         /**
          * Generate the api documentation
          */
-        generateapidoc: {
-            script: series(
-                'apidoc -i src -o src/public/apidoc'
-            ),
-            description: 'Setup`s the development environment(npm & database)'
-        },
+        // generateapidoc: {
+        //     script: series(
+        //         'apidoc -i src -o src/public/apidoc'
+        //     ),
+        //     description: 'Setup`s the development environment(npm & database)'
+        // },
         /**
          * Setup of the database sample data
          */
@@ -104,7 +104,7 @@ module.exports = {
                 'nps lint',
                 'nps clean.dist',
                 'nps transpile',
-                'nps generateapidoc',
+                // 'nps generateapidoc',
                 'nps copy',
                 'nps copy.tmp',
                 'nps clean.tmp'
@@ -152,17 +152,17 @@ module.exports = {
             default: {
                 script: series(
                     `nps copy.public`,
-                    `nps copy.apidoc`
+                    // `nps copy.apidoc`
                 ),
                 hiddenFromHelp: true
             },
-            apidoc: {
-                script: copyDir(
-                    './src/public/',
-                    './dist/public/'
-                ),
-                hiddenFromHelp: true
-            },
+            // apidoc: {
+            //     script: copyDir(
+            //         './src/public/',
+            //         './dist/public/'
+            //     ),
+            //     hiddenFromHelp: true
+            // },
             public: {
                 script: copy(
                     './src/public/*',

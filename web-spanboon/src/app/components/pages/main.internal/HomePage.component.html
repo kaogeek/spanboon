@@ -5,400 +5,645 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="spanboon-home-page">
-    <!-- Header - Start -->
-    <section class="section-header">
-        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyEvents;">
-            <status-bar class="status-header fix-hompage-bar" [topic]="dataMainPage.emergencyEvents.title"
-                [isStausIcon]="'true'" [status]="dataMainPage.emergencyEvents.subtitle" (submit)="showAlertDialog()"
-                [count]="dataMainPage.emergencyEvents.contentCount | shortNumber">
-            </status-bar>
-        </ng-container>
-        <ng-container
-            *ngIf="dataMainPage && dataMainPage.emergencyEvents && dataMainPage.emergencyEvents.contents.length > 0">
-            <div class="swiper-container" [swiper]="config">
-                <div class="swiper-wrapper"
-                    *ngFor="let dataEmergency of dataMainPage.emergencyEvents.contents; let index = index;">
-                    <ng-container *ngIf="index === 0 || index <= 5">
-                        <!-- <ng-container *ngIf="index === 0 || index <= 5">  -->
-                        <image-card style="pointer-events: none;" class="swiper-slide" [showLoading]="isLoadingImage"
-                            [images]="dataEmergency.coverBase64" [hashTag]="dataEmergency.title"
-                            [name]="dataEmergency.owner" [isWhite]="true"
-                            [countFacebook]="dataEmergency.facebookCount  | shortNumber"
-                            [countTwitter]="dataEmergency.twitterCount  | shortNumber"
-                            [comment]="dataEmergency.commentCount | shortNumber "
-                            [reboon]="dataEmergency.repostCount | shortNumber "
-                            [like]="dataEmergency.likeCount | shortNumber"
-                            [share]="dataEmergency.shareCount | shortNumber"
-                            [countSpanboon]="dataEmergency.postCount  | shortNumber" [marginPerAction]="'10pt'"
-                            [isAction]="'true'" [widthBtnAction]="'36pt'" [showsocial]="true" [isComment]="false"
-                            [isReboon]="false" [isLike]="false" [isShare]="false" [showDefault]="false"
-                            [isShowtext]="false" [isShowtext2]="true" [showSottomSocial]="true"
-                            [linkMore]="'/search?hashtag='+ dataEmergency.title.substring(1)">
-                        </image-card>
-                        <!-- </ng-container> -->
-                    </ng-container>
-                    <ng-template #elseEmercency>
-
-                    </ng-template>
-                </div>
-                <div class="swiper-button-prev">
-                    <div class="material-icons">
-                        chevron_left
-                    </div>
-                </div>
-                <div class="swiper-button-next">
-                    <div class="material-icons">
-                        chevron_right
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-
-    </section>
-    <!-- Header - End -->
-
-    <!-- Looking - Start -->
-    <section class="section-wrapper-looking-for">
-        <div class="wrapper-card-left" *ngIf="dataMainPage && dataMainPage.lastest">
-            <status-bar-looking class="header-card-left fix-hompage-bar" [topic]="dataMainPage.lastest.title"
-                (submit)="showAlertDialog()" [status]="dataMainPage.lastest.subtitle"
-                [createDate]="dataMainPage.lastest.dateTime | dateFormat " [isStausDate]="'true'"
-                [isStatusIcon]="'true'"></status-bar-looking>
-            <ng-container *ngIf="dataMainPage.lastest.contents; else elseLastest">
-                <new-card class="wrapper-new-card"
-                    *ngFor="let dataLastests of dataMainPage.lastest.contents| slice:0:1; "
-                    (submit)="actionComment($event,index,'NEWCARD')" [data]="dataLastests" [showLoading]="showLoading"
-                    [topic]="dataLastests.post.title" [content]="dataLastests.post.detail"
-                    [countUserFollow]="dataLastests.followUserCount | shortNumber"
-                    [comment]="dataLastests.commentCount | shortNumber "
-                    [pageName]="dataLastests.owner.uniqueId ? dataLastests.owner.uniqueId : dataLastests.owner.name "
-                    [image]="dataLastests.owner.imageBase64" [isWhite]="true"
-                    [createDate]="dataLastests.post.createdDate | dateFormat" [userLike]="dataLastests.isLike"
-                    [userComment]="dataLastests.isComment" [userReboon]="dataLastests.isReboon"
-                    [reboon]="dataLastests.rePostCount | shortNumber " [like]="dataLastests.likeCount | shortNumber"
-                    [share]="dataLastests.shareCount | shortNumber" [isAction]="'true'" [marginPerAction]="'10pt'"
-                    [widthBtnAction]="'18pt'" [fontSize]="'18px'" [heightBtn]="'36pt'" [widthBtn]="'95pt'"
-                    [isOfficial]="dataLastests.owner.isOfficial ? dataLastests.owner.isOfficial : false"
-                    [butNeeds]="dataLastests.post.type === 'NEEDS'">
-                </new-card>
-            </ng-container>
-            <ng-template #elseLastest>
-
-            </ng-template>
+<div *ngIf="model === undefined" class="loding">
+    <div class="top">
+        <div class="top_for_loding" *ngFor="let number of [0,1 ]">
+            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+            </Preload-card>
         </div>
-        <ng-container *ngIf="dataMainPage && dataMainPage.looking">
-            <div class="wrapper-card-right">
-                <status-bar-looking class="header-card-right fix-hompage-bar" [topic]="dataMainPage.looking.title"
-                    (submit)="showAlertDialog()" [count]="dataMainPage.looking.contentCount | shortNumber"
-                    [status]="dataMainPage.looking.subtitle" [isStatusIcon]="'true'">
-                </status-bar-looking>
-                <ng-container *ngIf="dataMainPage.looking.contents; else elseLooking">
-                    <div class="card-right-fix">
-                        <div class="wrapper-flip-card"
-                            [class.active-item-2]="dataMainPage && dataMainPage.looking.contents && dataMainPage.looking.contents.length > 2">
-                            <new-cards class="card-new-looking"
-                                *ngFor="let dataLooking of dataMainPage.looking.contents let index = index; "
-                                (submit)="actionComment($event,index,'NEWCARDS')" [data]="dataLooking"
-                                [showLoading]="showLoading" [userLike]="dataLooking.isLike"
-                                [userComment]="dataLooking.isComment" [userReboon]="dataLooking.isReboon"
-                                [isWhite]="true" [comment]="dataLooking.commentCount | shortNumber "
-                                [countUserFollow]="dataLooking.followUserCount | shortNumber"
-                                [topic]="dataLooking.post.title"
-                                [pageName]="dataLooking.owner.name ? dataLooking.owner.name : dataLooking.owner.displayName ? dataLooking.owner.displayName : dataLooking.owner.uniqueId"
-                                [content]="dataLooking.post.detail" [reboon]="dataLooking.rePostCount | shortNumber "
-                                [like]="dataLooking.likeCount | shortNumber"
-                                [share]="dataLooking.shareCount | shortNumber"
-                                [createDate]="dataLooking.dateTime | dateFormat" [widthBtnAction]="'14pt'"
-                                [fontSize]="'14px'" [heightBtn]="'28pt'" [widthBtn]="'70pt'" [marginPerAction]="'6pt'"
-                                [isAction]="'true'" [isStausIcon]="'true'"
-                                [isOfficial]="dataLooking.owner.isOfficial ? dataLooking.owner.isOfficial : false"
-                                [butNeeds]="dataLooking.post.type === 'NEEDS'">
-                            </new-cards>
-                        </div>
-                    </div>
-                </ng-container>
-                <ng-template #elseLooking>
-
-                </ng-template>
-            </div>
-        </ng-container>
-    </section>
-    <!-- Looking - End -->
-
-    <!-- Missed - Start -->
-    <section class="section-wrapper-missed" *ngIf="dataMainPage && dataMainPage.viewSection;">
-        <status-bar class="missed-head fix-hompage-bar" [topic]="dataMainPage.viewSection.title"
-            [status]="dataMainPage.viewSection.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'"
-            [bgColor]="'transparent'"></status-bar>
-        <ng-container *ngIf="dataMainPage.viewSection.contents; else elseViewSection">
-            <ng-container *ngIf="dataMainPage.viewSection.isList; else elseTemplateviewSection">
-                <div class="missed-wrap">
-                    <post-card class="card-missed"
-                        *ngFor="let dataViewSection of dataMainPage.viewSection.contents;let index = index"
-                        [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
-                        [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
-                        [images]="dataViewSection.imageBase64" [isWhite]="true"
-                        [pageName]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
-                        [username]="dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
-                        [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
-                        [countUserFollow]="dataViewSection.followUserCount | shortNumber"
-                        [userLike]="dataViewSection.isLike" [userComment]="dataViewSection.isComment"
-                        [userReboon]="dataViewSection.isReboon" [share]="dataViewSection.shareCount | shortNumber"
-                        [comment]="dataViewSection.commentCount | shortNumber "
-                        [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
-                        [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
-                        [textLink]="'อ่านสตอรี่'"
-                        [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false"
-                        [butNeeds]="dataViewSection.post.type === 'NEEDS'">
-                    </post-card>
-                </div>
-            </ng-container>
-            <ng-template #elseTemplateviewSection>
-                <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
-                    <div class="swiper-wrapper">
-                        <post-card class="swiper-slide"
-                            *ngFor="let dataViewSection of dataMainPage.viewSection.contents;let index = index"
-                            [cardWidth]="'300pt'" (submit)="actionComment($event,index,'POSTCARD')" [isAction]="'true'"
-                            [showLoading]="showLoading" [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
-                            [images]="dataViewSection.imageBase64" [isWhite]="true"
-                            [username]="dataViewSection.owner.displayName ? dataViewSection.owner.displayName : dataViewSection.owner.uniqueId"
-                            [pageName]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
-                            [username]="dataViewSection.owner.uniqueId ? dataViewSection.owner.uniqueId : dataViewSection.owner.name ? dataViewSection.owner.name : dataViewSection.owner.displayName ? dataViewSection.owner.displayName : 'PAGE'"
-                            [title]="dataViewSection.title" [like]="dataViewSection.likeCount | shortNumber"
-                            [countUserFollow]="dataViewSection.followUserCount | shortNumber"
-                            [userLike]="dataViewSection.isLike" [userComment]="dataViewSection.isComment"
-                            [userReboon]="dataViewSection.isReboon" [share]="dataViewSection.shareCount | shortNumber"
-                            [comment]="dataViewSection.commentCount | shortNumber "
-                            [reboon]="dataViewSection.rePostCount | shortNumber " [data]="dataViewSection"
-                            [create]="dataViewSection.dateTime | dateFormat" [content]="dataViewSection.post.detail"
-                            [textLink]="'อ่านสตอรี่'"
-                            [isOfficial]="dataViewSection.owner.isOfficial ? dataViewSection.owner.isOfficial : false"
-                            [butNeeds]="dataViewSection.post.type === 'NEEDS'">
-                        </post-card>
-                    </div>
-                    <div class="swiper-button-prev">
-                        <div class="material-icons">
-                            chevron_left
-                        </div>
-                    </div>
-                    <div class="swiper-button-next">
-                        <div class="material-icons">
-                            chevron_right
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-        </ng-container>
-        <ng-template #elseViewSection>
-
-        </ng-template>
-    </section>
-    <!-- Missed - End -->
-
-    <!-- Pin Tag - Start -->
-    <section class="section-pin-tag">
-        <ng-container *ngIf="dataMainPage && dataMainPage.emergencyPin;">
-            <ng-container *ngFor="let cardPin of dataMainPage.emergencyPin.contents">
-                <image-card class="card-img-pin-tag" [widthImg]="'100%'" [isPin]="'true'" [isWhite]="true"
-                    [showLoading]="showLoading" [data]="cardPin" [countFacebook]="cardPin.facebookCount | shortNumber"
-                    [countTwitter]="cardPin.twitterCount | shortNumber"
-                    [images]="apiBaseURL+cardPin.coverPageUrl+'/image'"
-                    [countSpanboon]="cardPin.postCount | shortNumber" [hashTag]="cardPin.title" [name]="cardPin.owner">
-                </image-card>
-                <div class="wrapper-pin-img">
-                    <div *ngIf="!showLoading" class="wrapper-header">
-                        <div class="label-header">
-                            <div class="label-sub-header" #titleDiv (mousemove)="onMouseEnter($event, titleDiv)">
-                                <div matTooltipShowDelay="{{800}}" matTooltip="{{cardPin.title}}" class="TooltipShow"
-                                    [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
-                                </div>
-                                {{cardPin.title}}
-                            </div>
-                        </div>
-                        <div class="wrapper-img-detail" #descriptionDiv
-                            (mousemove)="onMouseEnter($event, descriptionDiv)">
-                            <div matTooltipShowDelay="{{800}}" matTooltip="{{cardPin.description}}" class="TooltipShow"
-                                [ngStyle]="{'position': 'absolute','top': ganY,'left': ganX}">
-                            </div>
-                            {{cardPin.description | slice:0:280}}
-                            <ng-container *ngIf="cardPin.description.length > 280">
-                                <span>...</span>
-                            </ng-container>
-                            <span class="btn-read-more">{{textLink}}</span>
-                        </div>
-                    </div>
-                    <div *ngIf="!showLoading" class="btn-follow">
-                        <spanboon-button (click)="showAlertDialog()" [width]="'90pt'" [height]="'30pt'"
-                            [text]="'ติดตาม'">
-                        </spanboon-button>
-                    </div>
-                    <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false">
-                    </Preload-card>
-                </div>
-            </ng-container>
-        </ng-container>
-    </section>
-    <!-- Pin Tag - End -->
-
-    <ng-container *ngIf="dataMainPage && dataMainPage.sectionModels;">
-        <ng-container *ngFor="let item of dataMainPage.sectionModels; let i = index">
-
-            <!-- MULTIPLE - Start -->
-            <section class="section-wrapper-missed2" *ngIf="item.templateType === 'MULTIPLE'">
-                <status-bar class="missed2-heead fix-hompage-bar" [bgColor]="'transparent'" [topic]="item.title"
-                    [status]="item.subtitle" (submit)="showAlertDialog()" [isSeeAll]="'true'" [isImage]="'true'"
-                    [images]="item.iconBase64" [dataName]="item"></status-bar>
-                <ng-container *ngIf="item.contents; else elseMutiple">
-                    <ng-container *ngIf="item.isList; else elseTemplateMULTIPLE">
-                        <div class="missed2-wrap">
-                            <post-card class="card-missed2" *ngFor="let cardSide of item.contents;let index = index"
-                                (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
-                                [showLoading]="showLoading" [title]="cardSide.title"
-                                [comment]="cardSide.commentCount | shortNumber "
-                                [pageName]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                [username]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
-                                [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
-                                [reboon]="cardSide.rePostCount | shortNumber "
-                                [countUserFollow]="cardSide.followUserCount | shortNumber " [userLike]="cardSide.isLike"
-                                [userComment]="cardSide.isComment" [userReboon]="cardSide.isReboon"
-                                [like]="cardSide.likeCount | shortNumber" [share]="cardSide.shareCount | shortNumber"
-                                [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
-                                [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'"
-                                [butNeeds]="cardSide.post.type === 'NEEDS'">
-                            </post-card>
-                        </div>
-                    </ng-container>
-                    <ng-template #elseTemplateMULTIPLE>
-                        <div class="swiper-container" [swiper]="configSlider2" [(index)]="index">
-                            <div class="swiper-wrapper">
-                                <post-card class="swiper-slide" *ngFor="let cardSide of item.contents;let index = index"
-                                    (submit)="actionComment($event,index,'POSTCARD2')" [isAction]="'true'"
-                                    [showLoading]="showLoading" [title]="cardSide.title"
-                                    [comment]="cardSide.commentCount | shortNumber "
-                                    [pageName]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                    [username]="cardSide.owner.name ? cardSide.owner.name : cardSide.owner.displayName ? cardSide.owner.displayName : 'PAGE'"
-                                    [isOfficial]="cardSide.owner.isOfficial ? cardSide.owner.isOfficial : false"
-                                    [isWhite]="true" [images]="cardSide.imageBase64" [content]="cardSide.post.detail"
-                                    [reboon]="cardSide.rePostCount | shortNumber "
-                                    [countUserFollow]="cardSide.followUserCount | shortNumber "
-                                    [userLike]="cardSide.isLike" [userComment]="cardSide.isComment"
-                                    [userReboon]="cardSide.isReboon" [like]="cardSide.likeCount | shortNumber"
-                                    [share]="cardSide.shareCount | shortNumber"
-                                    [create]="cardSide.dateTime | dateFormat " [cardWidth]="'300pt'" [data]="cardSide"
-                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'" [textLink]="'อ่านสตอรี่'"
-                                    [butNeeds]="cardSide.post.type === 'NEEDS'">
-                                </post-card>
-                            </div>
-                            <div class="swiper-button-prev">
-                                <div class="material-icons">
-                                    chevron_left
-                                </div>
-                            </div>
-                            <div class="swiper-button-next">
-                                <div class="material-icons">
-                                    chevron_right
-                                </div>
-                            </div>
-                        </div>
-
-                    </ng-template>
-
-                </ng-container>
-                <ng-template #elseMutiple>
-
-                </ng-template>
-            </section>
-            <!-- MULTIPLE - End -->
-
-            <!-- ICON - Start -->
-            <section class="section-personal-tag" *ngIf="item.templateType === 'ICON'">
-                <status-bar [topic]="item.title" class="fix-hompage-bar" [status]="item.subtitle"
-                    (submit)="showAlertDialog()" [isSeeAll]="'true'" [bgColor]="'transparent'"></status-bar>
-                <ng-container *ngIf="item.contents; else elseIcon">
-                    <ng-container *ngIf="item.isList; else elseTemplateICON">
-                        <div class="tag-wrap">
-                            <icon-tag-card class="card-list" *ngFor="let cardIcon of item.contents;" [data]="cardIcon"
-                                [isAction]="'true'" [comment]="cardIcon.commentCount | shortNumber "
-                                [reboon]="cardIcon.rePostCount | shortNumber " [like]="cardIcon.likeCount | shortNumber"
-                                [share]="cardIcon.shareCount | shortNumber" [marginPerAction]="'5pt'" [isBlack]="'true'"
-                                [hashTag]="cardIcon.title" [images]="cardIcon.iconBase64"
-                                [countUserFollow]="cardIcon.followUserCount | shortNumber"
-                                [isOfficial]="cardIcon && cardIcon.owner && cardIcon.owner.isOfficial ? cardIcon.owner.isOfficial : false"
-                                [pageName]="cardIcon.owner.uniqueId ? cardIcon.owner.uniqueId : cardIcon.owner.name">
-                            </icon-tag-card>
-                        </div>
-                    </ng-container>
-                    <ng-template #elseTemplateICON>
-                        <div class="swiper-container" [swiper]="configIcon" [(index)]="index">
-                            <div class="swiper-wrapper">
-                                <icon-tag-card class="swiper-slide" *ngFor="let cardIcon of item.contents;"
-                                    [data]="cardIcon" [isAction]="'true'"
-                                    [comment]="cardIcon.commentCount | shortNumber "
-                                    [reboon]="cardIcon.rePostCount | shortNumber "
-                                    [like]="cardIcon.likeCount | shortNumber"
-                                    [share]="cardIcon.shareCount | shortNumber" [marginPerAction]="'5pt'"
-                                    [isBlack]="'true'" [hashTag]="cardIcon.title" [images]="cardIcon.iconBase64"
-                                    [countUserFollow]="cardIcon.followUserCount | shortNumber"
-                                    [isOfficial]="cardIcon && cardIcon.owner && cardIcon.owner.isOfficial ? cardIcon.owner.isOfficial : false"
-                                    [pageName]="cardIcon.owner.uniqueId ? cardIcon.owner.uniqueId : cardIcon.owner.name">
-                                </icon-tag-card>
-                            </div>
-                            <div class="swiper-button-prev">
-                                <div class="material-icons">
-                                    chevron_left
-                                </div>
-                            </div>
-                            <div class="swiper-button-next">
-                                <div class="material-icons">
-                                    chevron_right
-                                </div>
-                            </div>
-                        </div>
-                    </ng-template>
-                </ng-container>
-                <ng-template #elseIcon>
-
-                </ng-template>
-            </section>
-            <!-- ICON - End -->
-
-            <!-- TWIN - Start -->
-            <section class="section-footer-twin" *ngIf="item.templateType === 'TWIN'">
-                <ng-container *ngFor="let card of item.contents">
-                    <div class="wrapper-footer-header" [class.full-row]="item.contents.length === 1">
-                        <status-bar class="head-footer-twin fix-hompage-bar" [topic]="card.title"
-                            [status]="card.subtitle" [isSeeAll]="'true'" [isImage]="'true'" (submit)="showAlertDialog()"
-                            [images]="card.iconBase64" [dataName]="card">
-                        </status-bar>
-                        <div class="wrapper-footer-body">
-                            <ng-container *ngFor="let cardTwin of card.contents;let index = index">
-                                <post-card
-                                    *ngIf="(item.contents.length === 1 && index < 4) || (item.contents.length > 1 && index < 2)"
-                                    class="card-post-spanboon" [isAction]="'true'" [showLoading]="showLoading"
-                                    [data]="cardTwin" (submit)="actionComment($event,index,'POSTCARD3')"
-                                    [title]="cardTwin.post.title" [content]="cardTwin.post.detail"
-                                    [images]="cardTwin.post && cardTwin.imageBase64"
-                                    [pageName]="cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
-                                    [username]="cardTwin.owner.name ? cardTwin.owner.name : cardTwin.owner.displayName ? cardTwin.owner.displayName : 'PAGE'"
-                                    [isOfficial]="cardTwin.owner.isOfficial ? cardTwin.owner.isOfficial : false "
-                                    [countUserFollow]="cardTwin.followUserCount | shortNumber "
-                                    [comment]="cardTwin.commentCount | shortNumber "
-                                    [reboon]="cardTwin.rePostCount | shortNumber " [userLike]="cardTwin.isLike"
-                                    [userComment]="cardTwin.isComment" [userReboon]="cardTwin.isReboon" [isWhite]="true"
-                                    [like]="cardTwin.likeCount | shortNumber"
-                                    [share]="cardTwin.shareCount | shortNumber" [data]="cardTwin"
-                                    [marginPerAction]="'6pt'" [widthBtnAction]="'14pt'"
-                                    [create]="cardTwin.post.createdDate | dateFormat" [textLink]="'อ่านสตอรี่'"
-                                    [butNeeds]="cardTwin.post.type === 'NEEDS'">
-                                </post-card>
-                            </ng-container>
-                        </div>
-                    </div>
-                </ng-container>
-            </section>
-            <!-- TWIN - End -->
-        </ng-container>
-    </ng-container>
+    </div>
+    <div class="buttom">
+        <div class="buttom_for_loding" *ngFor="let number of [0,1,2,3 ]">
+            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+            </Preload-card>
+        </div>
+    </div>
 </div>
+
+<section *ngIf="model" class="home-page-main">
+    <section class="container">
+        <div class="secsione-list">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="col2" *ngIf="model.objectiveEvents">
+                        <div class="spans">
+                            <span *ngIf="model.objectiveEvents.contents.length > 0">มาแรง :</span>
+                        </div>
+                        <div class="hastags" *ngIf="model.objectiveEvents.contents.length > 0">
+                            <div class="hastag"
+                                (click)="clickToPageUser(list.owner?list.data.objectiveId:list.data.pageUsername?list.data.pageUsername:list.data._id,list.owner?'ture':undefined)"
+                                *ngFor="let list of model.objectiveEvents.contents | slice:0:2;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col1" *ngIf="hashTag">
+                        <div class="spans">
+                            <span *ngIf="hashTag.length > 0">มาใหม่ :</span>
+                        </div>
+                        <div class="hastags" *ngIf="hashTag.length > 0">
+                            <div class="hastag" (click)="clickToPage(list.title?list.title:list.label,list.type)"
+                                *ngFor="let list of hashTag | slice:0:2;">
+                                <span>{{list.title?list.title:list.label}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="secsione-emer">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="col1">
+                        <div class="col1-col1" *ngIf="model" (click)="clickToPage(model.emergencyPin.contents.length > 0?
+                            model.emergencyPin.contents[0].data.emergencyEventId:
+                            model.emergencyEvents.contents.length > 0?
+                            model.emergencyEvents.contents[0].data.emergencyEventId:
+                            model.postSectionModel.contents[6].post)">
+                            <div class="col-img">
+                                <div class="teg_event"
+                                    *ngIf="model.emergencyPin.contents.length >0 && model.emergencyEvents.contents.length >0">
+                                    <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
+                                        height="21" viewBox="0 0 23 21">
+                                        <g id="Group_1312" data-name="Group 1312"
+                                            transform="translate(-672.701 -415.463)">
+                                            <path class="svg-icon-color-activate" id="Subtraction_2"
+                                                data-name="Subtraction 2"
+                                                d="M-6438.83,1006.048h-12.47V999.7a6.241,6.241,0,0,1,6.235-6.233,6.241,6.241,0,0,1,6.235,6.233v6.351Zm-5.186-11.363a5.776,5.776,0,0,0-3.925,1.269,5.394,5.394,0,0,0-1.9,4.091.55.55,0,0,0,.583.563.55.55,0,0,0,.583-.563,4.24,4.24,0,0,1,1.561-3.267,4.628,4.628,0,0,1,3.1-.928.55.55,0,0,0,.563-.583A.55.55,0,0,0-6444.015,994.686Z"
+                                                transform="translate(7129.611 -573.082)" fill="#747474"
+                                                stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" />
+                                            <path class="svg-icon-color-activate" id="Rectangle_572"
+                                                data-name="Rectangle 572"
+                                                d="M2,0H17a2,2,0,0,1,2,2V2a0,0,0,0,1,0,0H0A0,0,0,0,1,0,2V2A2,2,0,0,1,2,0Z"
+                                                transform="translate(674.701 434.463)" fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_573"
+                                                data-name="Rectangle 573" width="2" height="3" rx="1"
+                                                transform="translate(683.701 415.463)" fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_574"
+                                                data-name="Rectangle 574" width="1.398" height="3.962" rx="0.699"
+                                                transform="translate(678.115 416.918) rotate(-30)" fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_575"
+                                                data-name="Rectangle 575" width="1.398" height="3.962" rx="0.699"
+                                                transform="matrix(0.523, -0.852, 0.852, 0.523, 674.045, 421.339)"
+                                                fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_576"
+                                                data-name="Rectangle 576" width="1.398" height="3.962" rx="0.699"
+                                                transform="matrix(0.506, 0.862, -0.862, 0.506, 694.212, 420.343)"
+                                                fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_577"
+                                                data-name="Rectangle 577" width="1.398" height="3.962" rx="0.699"
+                                                transform="translate(689.761 416.304) rotate(31.145)" fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_578"
+                                                data-name="Rectangle 578" width="1" height="3" rx="0.5"
+                                                transform="translate(672.701 427.463) rotate(-90)" fill="#747474" />
+                                            <rect class="svg-icon-color-activate" id="Rectangle_579"
+                                                data-name="Rectangle 579" width="1" height="3" rx="0.5"
+                                                transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
+                                        </g>
+                                    </svg> เหตุการณ์ด่วน
+                                </div>
+                                <img class="image-back"
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                <img class="image"
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                            </div>
+                            <div class="col-detail">
+                                <div class="title">
+                                    <span
+                                        [innerHTML]='model.emergencyPin.contents.length >
+                                        0?model.emergencyPin.contents[0].title:model.emergencyEvents.contents.length >
+                                        0?model.emergencyEvents.contents[0].title:model.postSectionModel.contents[6].post.title | highlight'>
+                                    </span>
+                                </div>
+                                <div class="content"
+                                    *ngIf="model.emergencyPin.contents.length >0 || model.emergencyEvents.contents.length >0">
+                                    <span
+                                        [innerHTML]='model.emergencyPin.contents.length >
+                                        0?model.emergencyPin.contents[0].description:model.emergencyEvents.contents.length
+                                        >
+                                        0?model.emergencyEvents.contents[0].description:model.postSectionModel.contents[6].post.description | highlight'></span>
+                                </div>
+                                <div class="participation">
+                                    <div class="social_control">
+                                        <div class="amount_social">
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].commentCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].commentCount:model.postSectionModel.contents[6].post.commentCount}}</span>
+                                            <span class="title-control">ความเห็น</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].repostCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].repostCount:model.postSectionModel.contents[6].post.repostCount}}</span>
+                                            <span class="title-control">บอกต่อ</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].likeCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].likeCount:model.postSectionModel.contents[6].post.likeCount}}</span>
+                                            <span class="title-control">ถูกใจ</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">{{model.emergencyPin.contents.length >
+                                                0?model.emergencyPin.contents[0].shareCount:model.emergencyEvents.contents.length
+                                                >
+                                                0?model.emergencyEvents.contents[0].shareCount:model.postSectionModel.contents[6].post.shareCount}}</span>
+                                            <span class="title-control">แชร์</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col1-col2">
+                            <div class="col-colum-detail"
+                                (click)="clickToPage(item.post?item.post:item.title?item.title:item.label,item.type)"
+                                *ngFor="let item of (model.emergencyPin.contents.length > 1?
+                                model.emergencyPin.contents:model.emergencyEvents.length >1?
+                                model.emergencyEvents.contents:hashTag.length >1?
+                                hashTag:model.postSectionModel.contents) | slice:0:4;let index = index">
+                                <div class="colum-detail-1">
+                                    <div class="image" *ngIf="index === 0 && !item.type">
+                                        <img
+                                            [src]="item.signURL?item.signURL:item.coverPageSignURL?item.coverPageSignURL:apiBaseURL+item.coverPageUrl+'/image'">
+                                    </div>
+                                    <div class="detail">
+                                        <span class="title"
+                                            [innerHTML]='item.title?item.title:item.label?item.label:item.post.title'></span>
+                                        <div class="content" *ngIf="!item.type">
+                                            <span class="count-aontrol">0</span>
+                                            <span class="title-control">ความเห็น</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">0</span>
+                                            <span class="title-control">บอกต่อ</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">0</span>
+                                            <span class="title-control">ถูกใจ</span>
+                                            <span class="drot">•</span>
+                                            <span class="count-aontrol">0</span>
+                                            <span class="title-control">แชร์</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="colum-detail-2">
+                                    <span class="title">{{item.postCount?item.postCount:item.count?item.count:'0'}}
+                                        ครั้ง</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col2">
+                        <div class="col2-col1">
+                            <div class="title">
+                                <span class="text">โพสต์ใหม่ล่าสุด</span>
+                            </div>
+                            <div class="posts">
+                                <div class="sub-post">
+                                    <div class="post-col1">
+                                        <div class="top">
+                                            <div class="status"
+                                                *ngIf="model.postSectionModel.contents[1].post.type === 'GENERAL'">
+                                                <div class="status-g"></div>
+                                                <span>ทั่วไป</span>
+                                            </div>
+                                            <div class="status"
+                                                *ngIf="model.postSectionModel.contents[1].post.type === 'NEED'">
+                                                <div class="status-n"></div>
+                                                <span>มองหา</span>
+                                            </div>
+                                            <div class="date-time">
+                                                <svg style="margin: 0px 5px 0px 14px;" height="10px"
+                                                    viewBox="0 0 512 512" width="10px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        class="svg-color-gray" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        class="svg-color-gray" />
+                                                </svg>
+                                                <span
+                                                    (click)="clickToPost(model.postSectionModel.contents[1].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                                    |
+                                                    thformatdatetime}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="body">
+                                            <div class="image-post"
+                                                (click)="openDilogPost(model.postSectionModel.contents[1])">
+                                                <img class="image"
+                                                    *ngIf="model.postSectionModel.contents[1].coverPageUrl"
+                                                    [src]="model.postSectionModel.contents[1].signURL?model.postSectionModel.contents[1].signURL:model.postSectionModel.contents[1].coverPageSignURL?model.postSectionModel.contents[1].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[1].coverPageUrl+'/image'">
+                                                <span *ngIf="!model.postSectionModel.contents[1].coverPageUrl"
+                                                    [innerHTML]='model.postSectionModel.contents[1].post.title | highlight'></span>
+                                            </div>
+                                            <div class="detail"
+                                                (click)="openDilogPost(model.postSectionModel.contents[1])">
+                                                <span *ngIf="model.postSectionModel.contents[1].coverPageUrl"
+                                                    [innerHTML]='model.postSectionModel.contents[1].post.title | highlight'></span>
+                                            </div>
+                                        </div>
+                                        <span (click)="openDilogPost(model.postSectionModel.contents[1])" class="text"
+                                            [innerHTML]='model.postSectionModel.contents[1].post.title | highlight'></span>
+                                        <span class="date"
+                                            (click)="clickToPost(model.postSectionModel.contents[1].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                            |
+                                            thformatdatetime}}</span>
+                                    </div>
+                                    <div class="post-col2">
+                                        <div class="top">
+                                            <div class="status"
+                                                *ngIf="model.postSectionModel.contents[2].post.type === 'GENERAL'">
+                                                <div class="status-g"></div>
+                                                <span>ทั่วไป</span>
+                                            </div>
+                                            <div class="status"
+                                                *ngIf="model.postSectionModel.contents[2].post.type === 'NEED'">
+                                                <div class="status-n"></div>
+                                                <span>มองหา</span>
+                                            </div>
+                                            <div class="date-time">
+                                                <svg style="margin: 0px 5px 0px 14px;" height="10px"
+                                                    viewBox="0 0 512 512" width="10px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        class="svg-color-gray" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        class="svg-color-gray" />
+                                                </svg>
+                                                <span
+                                                    (click)="clickToPost(model.postSectionModel.contents[2].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                                    |
+                                                    thformatdatetime}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="body">
+                                            <div class="image-post"
+                                                (click)="openDilogPost(model.postSectionModel.contents[2])">
+                                                <img class="image"
+                                                    *ngIf="model.postSectionModel.contents[2].coverPageUrl"
+                                                    [src]="model.postSectionModel.contents[2].signURL?model.postSectionModel.contents[2].signURL:model.postSectionModel.contents[2].coverPageSignURL?model.postSectionModel.contents[2].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[2].coverPageUrl+'/image'">
+                                                <span *ngIf="!model.postSectionModel.contents[2].coverPageUrl"
+                                                    [innerHTML]='model.postSectionModel.contents[2].post.length > 1? model.postSectionModel.contents[2].post.title: model.postSectionModel.contents[2].post.title | highlight'></span>
+                                            </div>
+                                            <div class="detail"
+                                                (click)="openDilogPost(model.postSectionModel.contents[2])">
+                                                <span *ngIf="model.postSectionModel.contents[2].coverPageUrl"
+                                                    [innerHTML]='model.postSectionModel.contents[2].post.title | highlight'></span>
+                                            </div>
+                                        </div>
+                                        <span (click)="openDilogPost(model.postSectionModel.contents[2])" class="text"
+                                            [innerHTML]='model.postSectionModel.contents[2].post.title | highlight'></span>
+                                        <span class="date"
+                                            (click)="clickToPost(model.postSectionModel.contents[2].post._id)">{{model.postSectionModel.contents[2].post.createdDate
+                                            |
+                                            thformatdatetime}}</span>
+                                    </div>
+                                </div>
+                                <div class="main-post">
+                                    <div class="top">
+                                        <div class="status">
+                                            <div class="status-g"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="date-time">
+                                            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                                width="10px" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                    class="svg-color-gray" />
+                                                <path
+                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                    class="svg-color-gray" />
+                                            </svg>
+                                            <span
+                                                (click)="clickToPost(model.postSectionModel.contents[0].post._id)">{{model.postSectionModel.contents[0].post.createdDate
+                                                |
+                                                thformatdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="body">
+                                        <div class="image-post"
+                                            (click)="openDilogPost(model.postSectionModel.contents[0])">
+                                            <img class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
+                                                [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
+                                            <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
+                                                [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
+                                        </div>
+                                        <div class="detail" (click)="openDilogPost(model.postSectionModel.contents[0])">
+                                            <span *ngIf="model.postSectionModel.contents[0].coverPageUrl"
+                                                [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col2-col2">
+                            <div class="title"
+                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1">
+                                <span class="text">{{model.objectiveEvents.contents[0].title}}</span>
+                            </div>
+                            <div class="posts">
+                                <div class="sub-post">
+                                    <div class="post-col1"
+                                        *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]:model.postSectionModel.contents[5]">
+
+                                        <div class="top">
+                                            <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'GENERAL'">
+                                                <div class="status-g"></div>
+                                                <span>ทั่วไป</span>
+                                            </div>
+                                            <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[5].post.type === 'NEED'">
+                                                <div class="status-n"></div>
+                                                <span>มองหา</span>
+                                            </div>
+                                            <div class="date-time">
+                                                <svg style="margin: 0px 5px 0px 14px;" height="10px"
+                                                    viewBox="0 0 512 512" width="10px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        class="svg-color-gray" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        class="svg-color-gray" />
+                                                </svg>
+                                                <span
+                                                    (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[5].post._id)">{{
+                                                    (model.objectiveEvents.contents.length > 0 &&
+                                                    model.objectiveEvents.contents[0].post.length
+                                                    > 1?
+                                                    model.objectiveEvents.contents[0].post[1].createdDate:
+                                                    model.postSectionModel.contents[5].post.createdDate) |
+                                                    thformatdatetime}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="body">
+                                            <div class="image-post">
+                                                <img (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                model.objectiveEvents.contents[0]:
+                                                model.postSectionModel.contents[5])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[1].coverImage:
+                                                    model.postSectionModel.contents[5].coverPageUrl"
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[1].coverImage+'/image':model.postSectionModel.contents[5].signURL?model.postSectionModel.contents[5].signURL:model.postSectionModel.contents[5].coverPageSignURL?model.postSectionModel.contents[5].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[5].coverPageUrl+'/image'">
+                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                        model.objectiveEvents.contents[0].post[1].coverImage === '':
+                                                        model.postSectionModel.contents[5].coverPageUrl === ''"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                            </div>
+                                            <div class="detail"
+                                                (click)="openDilogPost(model.postSectionModel.contents[5])">
+                                                <span *ngIf="model.postSectionModel.contents[5].coverPageUrl"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                        model.objectiveEvents.contents[0].post[1].coverImage === '':
+                                                        model.postSectionModel.contents[5].coverPageUrl === ''"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].detail: model.postSectionModel.contents[5].post.detail | highlight'></span>
+                                            </div>
+                                        </div>
+                                        <span class="text"
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]: model.postSectionModel.contents[5].post)"
+                                            [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
+                                        <span (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                            model.objectiveEvents.contents[0].post[1]._id:
+                                            model.postSectionModel.contents[5].post._id)"
+                                            class="date">{{(model.objectiveEvents.contents.length > 0 &&
+                                            model.objectiveEvents.contents[0].post.length > 1?
+                                            model.objectiveEvents.contents[0].post[1].createdDate:
+                                            model.postSectionModel.contents[5].post.createdDate) |
+                                            thformatdatetime}}</span>
+                                    </div>
+                                    <div class="post-col2"
+                                        *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
+                                        <div class="top">
+                                            <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'GENERAL'">
+                                                <div class="status-g"></div>
+                                                <span>ทั่วไป</span>
+                                            </div>
+                                            <div class="status"
+                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'NEED'">
+                                                <div class="status-n"></div>
+                                                <span>มองหา</span>
+                                            </div>
+                                            <div class="date-time">
+                                                <svg style="margin: 0px 5px 0px 14px;" height="10px"
+                                                    viewBox="0 0 512 512" width="10px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        class="svg-color-gray" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        class="svg-color-gray" />
+                                                </svg>
+                                                <span
+                                                    (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1]._id: model.postSectionModel.contents[6].post._id)">{{
+                                                    ( model.objectiveEvents.contents.length > 0 &&
+                                                    model.objectiveEvents.contents[0].post.length
+                                                    > 1?
+                                                    model.objectiveEvents.contents[0].post[1].createdDate:
+                                                    model.postSectionModel.contents[6].post.createdDate) |
+                                                    thformatdatetime}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="body">
+                                            <div class="image-post">
+                                                <img (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                model.objectiveEvents.contents[0]:
+                                                model.postSectionModel.contents[6])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[2].coverImage:
+                                                    model.postSectionModel.contents[6].coverPageUrl"
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[2].coverImage+'/image':model.postSectionModel.contents[6].signURL?model.postSectionModel.contents[6].signURL:model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[2].coverImage === '':
+                                                    model.postSectionModel.contents[6].coverPageUrl === ''"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                            </div>
+                                            <div class="detail"
+                                                (click)="openDilogPost(model.postSectionModel.contents[6])">
+                                                <span *ngIf="model.postSectionModel.contents[6].coverPageUrl"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                        model.objectiveEvents.contents[0].post[2].coverImage === '':
+                                                        model.postSectionModel.contents[6].coverPageUrl === ''"
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].detail: model.postSectionModel.contents[6].post.detail | highlight'></span>
+                                            </div>
+                                        </div>
+                                        <span class="text"
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]: model.postSectionModel.contents[6].post)"
+                                            [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
+                                        <span class="date"
+                                            (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                            model.objectiveEvents.contents[0].post[2]._id:
+                                            model.postSectionModel.contents[6].post._id)">{{(model.objectiveEvents.contents.length > 0
+                                            && model.objectiveEvents.contents[0].post.length
+                                            > 1?
+                                            model.objectiveEvents.contents[0].post[2].createdDate:
+                                            model.postSectionModel.contents[6].post.createdDate) |
+                                            thformatdatetime}}</span>
+                                    </div>
+                                </div>
+                                <div class="main-post">
+                                    <div class="top">
+                                        <div class="status">
+                                            <div class="status-g"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="date-time">
+                                            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                                width="10px" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                    class="svg-color-gray" />
+                                                <path
+                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                    class="svg-color-gray" />
+                                            </svg>
+                                            <span
+                                                (click)="clickToPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                model.objectiveEvents.contents[0].post[0]._id:
+                                                model.postSectionModel.contents[4].post._id)">{{(model.objectiveEvents.contents.length>
+                                                1?
+                                                model.objectiveEvents.contents[0].post.length> 1?
+                                                model.objectiveEvents.contents[0].post[0].createdDate:
+                                                model.postSectionModel.contents[4].post.createdDate:
+                                                model.postSectionModel.contents[4].post.createdDate) |
+                                                thformatdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="body">
+                                        <div class="image-post">
+                                            <img class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[0].coverImage:
+                                                    model.postSectionModel.contents[4].coverPageUrl"
+                                                (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)"
+                                                [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[0].coverImage+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignURL?model.postSectionModel.contents[4].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
+                                            <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                model.objectiveEvents.contents[0].post[0].coverImage === '':
+                                                model.postSectionModel.contents[4].coverPageUrl === ''"
+                                                [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                        </div>
+                                        <div class="detail"
+                                            (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)">
+                                            <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[0].coverImage:
+                                                    model.postSectionModel.contents[4].coverPageUrl"
+                                                [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].title: model.postSectionModel.contents[4].post.title | highlight'></span>
+                                            <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                    model.objectiveEvents.contents[0].post[0].coverImage === '':
+                                                    model.postSectionModel.contents[4].coverPageUrl === ''"
+                                                [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0].detail: model.postSectionModel.contents[4].post.detail | highlight'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="other_section">
+            <div class="div-wrapper">
+                <div class="container">
+                    <div class="section" *ngFor="let data of model.sectionModels;let index = index">
+                        <div class="title">
+                            <div class="text" [class.small]="data.type === 'SMALL'">
+                                <span>{{data.title}}</span>
+                                <span class="subtitle" *ngIf="data.type === 'SMALL'">{{data.subtitle}}</span>
+                            </div>
+                            <div class="line" *ngIf="data.type !== 'SMALL'"></div>
+                        </div>
+                        <div class="cards">
+                            <div *ngIf="data.type === 'SMALL'" class="card-small-type">
+                                <div class="card" *ngFor="let content of data.contents;let index=index"
+                                    (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
+                                    <img
+                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.iconUrl+'/image'">
+                                    <div class="text">
+                                        <span [innerHTML]='content.subtitle?content.subtitle:content.title'></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="data.type !== 'SMALL'" class="card-me-type">
+                                <div class="card" *ngFor="let content of data.contents| slice:0:3;let index=index">
+                                    <div class="top">
+                                        <div class="status" *ngIf="content.post.type === 'GENERAL'">
+                                            <div class="status-g"></div>
+                                            <span>ทั่วไป</span>
+                                        </div>
+                                        <div class="status" *ngIf="content.post.type === 'NEED'">
+                                            <div class="status-n"></div>
+                                            <span>มองหา</span>
+                                        </div>
+                                        <div class="date-time">
+                                            <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                                width="10px" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                    class="svg-color-gray" />
+                                                <path
+                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                    class="svg-color-gray" />
+                                            </svg>
+                                            <span (click)="clickToPost(content.post._id)">{{content.post.createdDate
+                                                |
+                                                thformatdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
+                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
+                                    <span class="content-post-img" (click)="openDilogPost(content.post)"
+                                        *ngIf="!content.post.gallery[0]"
+                                        [innerHTML]='content.post.title | highlight'></span>
+                                    <div class="text">
+                                        <div class="col-text" (click)="openDilogPost(content.post)">
+                                            <span
+                                                [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'
+                                                *ngIf="content.post.gallery[0]"></span>
+                                        </div>
+                                        <!-- <span class="more" *ngIf="content.coverPageUrl">อ่านต่อ...</span> -->
+                                        <div class="bottom">
+                                            <div class="owner-offical"
+                                                (click)="clickToPageUser(content.owner.uniqueId?content.owner.uniqueId:content.owner.id)">
+                                                <svg class="new-cards-offical" id="shield"
+                                                    xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
+                                                    viewBox="0 0 43.383 47.208" *ngIf="content.owner.isOfficial">
+                                                    <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                                                        <path id="Path_141" data-name="Path 141"
+                                                            d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                                            transform="translate(-36.867)" />
+                                                        <path id="Path_142" data-name="Path 142"
+                                                            d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                                            transform="translate(-259.715 -289.198)" />
+                                                    </g>
+                                                </svg>
+                                                <span class="owner">{{content.owner.name}}</span>
+                                            </div>
+                                            <div class="count">
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">ความเห็น</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">บอกต่อ</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">ถูกใจ</span>
+                                                <span class="drot">•</span>
+                                                <span class="count-aontrol">0</span>
+                                                <span class="title-control">แชร์</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

@@ -34,6 +34,21 @@ export class AssetFacade extends AbstractFacade {
     });
   }
 
+  public getPathFileSign(urlPath: any): Promise<Asset> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + urlPath + '/sign';
+
+      let body: any = {};
+
+      this.http.get(url, body).toPromise().then((response: any) => {
+        resolve(response as Asset);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public upload(data: any): Promise<Asset> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/file/temp';

@@ -219,6 +219,7 @@
             margin: 10px 0px;
             -webkit-user-modify: read-only;
             -moz-user-modify: read-only;
+            color: black;
             @include font-size-9($font-content-light);
             div {
               span {
@@ -485,7 +486,7 @@
     display: none;
   }
   .story > .story-body > .content > .left > .story-display .ct-background-text {
-    width: 105% !important;
+    width: 100% !important;
   }
   .story {
     .content {

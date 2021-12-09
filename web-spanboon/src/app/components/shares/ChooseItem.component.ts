@@ -796,7 +796,6 @@ export class ChooseItem extends AbstractPage implements OnInit {
             //         if (window.innerHeight <= 768 && 479 < window.innerHeight) {
             //             // x = x + land - chromeH;
             //             x = x + chromeH;
-            //             // console.log('total ', x)
             //             // x = x + 70;
             //         }
             //     }

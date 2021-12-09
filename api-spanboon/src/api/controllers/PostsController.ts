@@ -500,7 +500,7 @@ export class PostsController {
                     {
                         $lookup: {
                             from: 'HashTag',
-                            let: { hashTagId: '$postsHashTags' },
+                            let: { hashTagId: { $ifNull: ['$postsHashTags', []] } },
                             pipeline: [
                                 {
                                     $match: {

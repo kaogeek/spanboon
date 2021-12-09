@@ -43,6 +43,7 @@ export class PostData {
   public isComment: boolean
   public referencePost: any
   public reboonData: any
+  public usercurrent: any
 
   @Input()
   public isRepost: boolean
@@ -68,6 +69,8 @@ export class PostData {
   public mainPostLink: string;
   @Input()
   public itemPost: any;
+  @Input()
+  public ownerPost: any;
   @Input()
   public user: any;
   @Input()
@@ -125,11 +128,12 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
-
     this.user = this.authenManager.getCurrentUser();
-
+    this.usercurrent = this.authenManager.getCurrentUser();
     setTimeout(() => {
-      // console.log('this.itemPost >>>> ', this.itemPost);
+    }, 500);
+
+    setTimeout(async () => {
       if (this.itemPost && this.itemPost.referencePostObject && this.itemPost.referencePostObject !== null && this.itemPost.referencePostObject !== undefined && this.itemPost.referencePostObject !== '') {
         if (typeof this.itemPost.referencePostObject.gallery !== 'undefined' && this.itemPost.referencePostObject.gallery.length > 0) {
           this.itemPost.referencePostObject.gallery = this.itemPost.referencePostObject.gallery.sort((a, b) => a.ordering - b.ordering)
@@ -275,7 +279,6 @@ export class PostData {
 
   public pageAction(action: any) {
     let comments: any[] = []
-    action.imageURL = action.img64
     this.user = action
     if (this.commentpost.length !== 0) {
       for (let c of this.commentpost) {
@@ -293,36 +296,45 @@ export class PostData {
   }
 
   public clickDevelop(data, text) {
-    let url = '';
-    let type = '';
-    let eventId = '';
     if (data.index === 1) {
-      url += "emergency=#" + text.emergencyEventTag
-      type = "emergency";
-      eventId = text.emergencyEvent.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/emergencyevent/' + text.emergencyEvent._id);
+      });
     } else if (data.index === 2) {
-      url += "objective=" + text.objectiveTag;
-      type = "objective";
-      eventId = text.objective.hashTag;
+      this.router.navigate([]).then(() => {
+        window.open('/objective/' + text.objective._id);
+      });
     }
-    let click = this.engagementService.getEngagement(data.event, eventId, type);
-    this.engagement.emit(click)
+    // let url = '';
+    // let type = '';
+    // let eventId = '';
+    // if (data.index === 1) {
+    //   url += "emergency=#" + text.emergencyEventTag
+    //   type = "emergency";
+    //   eventId = text.emergencyEvent.hashTag;
+    // } else if (data.index === 2) {
+    //   url += "objective=" + text.objectiveTag;
+    //   type = "objective";
+    //   eventId = text.objective.hashTag;
+    // }
+    // let click = this.engagementService.getEngagement(data.event, eventId, type);
+    // this.engagement.emit(click)
 
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-        bottomColorText2: "black",
-        // btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.router.navigateByUrl('/search?' + url);
-      }
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+    //     bottomColorText2: "black",
+    //     // btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    //   if (res) {
+    //     this.router.navigateByUrl('/search?' + url);
+    //   }
+    // });
   }
 
   private getComment(limit?) {
@@ -407,8 +419,13 @@ export class PostData {
       });
       dialog.afterClosed().subscribe((res) => {
         if (res) {
+          this.commentpost.splice(data.index, 1);
+          let index = this.commentpost.map(function (e) { return e.user.id; }).indexOf(this.usercurrent.id);
+          this.itemPost.commentCount = this.itemPost.commentCount - 1;
+          if (index > 0) {
+            this.itemPost.isComment = false;
+          }
           this.postCommentFacade.delete(this.itemPost._id, data.commentdata).then((res: any) => {
-            this.commentpost.splice(data.index, 1);
           }).catch((err: any) => {
           })
         }

@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -16,8 +16,9 @@ import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
+import { E } from '@angular/cdk/keycodes';
 
-const PAGE_NAME: string = 'emergencyeventtimeline';
+const PAGE_NAME: string = 'emergencyevent';
 
 @Component({
     selector: 'emergency-event-timeline',
@@ -32,6 +33,9 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public observManager: ObservableManager;
     public emergencyEventFacade: EmergencyEventFacade;
     public hashTagFacade: HashTagFacade;
+    public postActionService: PostActionService;
+    public postFacade: PostFacade;
+    public assetFacade: AssetFacade;
 
     // test
 
@@ -71,11 +75,14 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
 
-    constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
+    constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
         dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
+        this.postActionService = postActionService;
+        this.postFacade = postFacade;
+        this.assetFacade = assetFacade;
         this.observManager = observManager;
         this.hashTagFacade = hashTagFacade;
         this.routeActivated = routeActivated;
@@ -117,7 +124,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId);
-        console.log('this.objectiveData', this.objectiveData);
         this.objectiveData.page;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
@@ -132,7 +138,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         let numloop: number = 0
 
         for (let item of this.objectiveData.timelines) {
-            if (item.type === "OBJECTIVE_NEEDS") {
+            if (item.type === "EMERGENCY_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
                     if (standardItem !== undefined && standardItem !== null) {
@@ -140,7 +146,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                     }
                 }
             }
-            if (item.type === "OBJECTIVE_POST_LIKED") {
+            if (item.type === "EMERGENCY_POST_LIKED") {
                 if (item.galleries.length === 0) {
                     this.objectiveData.timelines.splice(numloop, 1);
                 }
@@ -149,7 +155,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         }
     }
 
-    public setData(): void {
+    public async setData(): Promise<void> {
         this.pageObjective = this.objectiveData.emergencyEvent;
         this.pageOwner = this.objectiveData.page;
 
@@ -161,9 +167,63 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         });
     }
 
+    public clickToPage(dataId: any, type?: any) {
+        this.router.navigate([]).then(() => {
+            window.open('/search?hashtag=' + dataId, '_blank');
+        });
+    }
+
+    public async actionComment(action: any, index: number, indexa: number) {
+
+        await this.postActionService.actionPost(action, index, undefined, "PAGE").then((res: any) => {
+            if (res !== undefined && res !== null) {
+                if (res && res.type === "NOTOPIC") {
+                } else if (res.type === "TOPIC") {
+                } else if (res.type === "UNDOTOPIC") {
+                } else if (res.type === "POST") {
+                    this.router.navigateByUrl('/post/' + action.pageId);
+                } else if (action.mod === 'LIKE') {
+                    if (this.objectiveData.timelines[index].posts[indexa].isLike) {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount--
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    } else {
+                        this.objectiveData.timelines[index].posts[indexa].likeCount++
+                        this.objectiveData.timelines[index].posts[indexa].isLike = !this.objectiveData.timelines[index].posts[indexa].isLike;
+                    }
+                    this.postLike(action, index);
+                }
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    public postLike(data: any, index: number) {
+        if (!this.isLogin()) {
+        } else {
+            this.postFacade.like(data.postData._id).then((res: any) => {
+                if (res.isLike) {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                } else {
+                    if (data.postData._id === res.posts.id) {
+                    }
+                }
+            }).catch((err: any) => {
+                console.log(err)
+            });
+        }
+    }
+
+
     public followObjective() {
-        // this.objectiveFacade.followObjective(this.objectiveId);
-        this.isFollow = !this.isFollow;
+        this.emergencyEventFacade.followEmergency(this.objectiveId);
+        if (this.objectiveData.isFollow) {
+            this.objectiveData.followedCount--
+        } else {
+            this.objectiveData.followedCount++
+        }
+        this.objectiveData.isFollow = !this.objectiveData.isFollow;
     }
 
     public ngOnDestroy(): void {
@@ -171,7 +231,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public Tooltip(origin: any, data) {
-        console.log('data', data)
         if (window.innerWidth > 998) {
             this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
                 data: data,
@@ -202,4 +261,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         // throw new Error('Method not implemented.');
         return;
     }
+
+    public async passSignUrl(url?: any): Promise<any> {
+        let signData: any = await this.assetFacade.getPathFileSign(url);
+        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+    }
+
 }

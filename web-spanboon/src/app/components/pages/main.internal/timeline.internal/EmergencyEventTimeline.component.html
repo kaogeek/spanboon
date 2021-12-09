@@ -4,6 +4,7 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
+<script src="../../../../../assets/script/canvas.js"></script>
 <div id="canvas-wrap">
     <canvas id="canvas"></canvas>
     <div *ngIf="objectiveData" class="objective-timeline-body" id="body">
@@ -29,7 +30,9 @@
             <div class="top-objective-data">
                 <div class="objective">
                     <div class="data">
-                        <img class="iconURL" src="{{apiBaseURL+pageObjective.iconURL+'/image'}}" alt="">
+                        <img class="iconURL"
+                            [src]="pageObjective.signURL?pageObjective.signURL:pageObjective.coverPageSignURL?pageObjective.coverPageSignURL:apiBaseURL+pageObjective.coverPageURL+'/image'"
+                            alt="">
                         <div class="data-text">
                             <div class="text">
                                 <span class="title">{{pageObjective.hashTagName}}</span>
@@ -91,28 +94,19 @@
                 </div>
                 <div class="objective-owner">
                     <div class="owner">
-                        <span class="title">ผู้สร้าง</span>
-                        <div class="page" #showTooltip (mouseover)="Tooltip(showTooltip , pageOwner)">
-                            <img class="iconURL" src="{{apiBaseURL+pageOwner.owner.imageURL+'/image'}}" alt="">
-                            <div class="disiption">
-                                <span>{{pageOwner.owner.name}}</span>
-                            </div>
-                        </div>
                         <div class="detail">
                             <span class="title">แท็กที่เกี่ยวข้อง</span>
-                            <span class="disiption">#โควิด</span>
+                            <span class="disiption"
+                                *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                (click)="clickToPage(item.name)">#{{item.name}}</span>
                         </div>
                         <div class="follow-fullfill">
                             <div class="follow">
                                 <div class="text">
-                                    <!-- <span class="title">ติดตามทั้งหมด</span>
-                                    <span class="score"> 0 </span> -->
                                 </div>
                             </div>
                             <div class="fullfill">
                                 <div class="text">
-                                    <!-- <span class="title">ติดตามทั้งหมด</span>
-                                    <span class="score"> 0 </span> -->
                                 </div>
                             </div>
                         </div>
@@ -143,7 +137,7 @@
                     </div>
                     <div class="card">
 
-                        <div *ngIf="item.type === 'OBJECTIVE_START'" class="objective_start_card">
+                        <div *ngIf="item.type === 'EMERGENCY_START'" class="objective_start_card">
                             <div class="left" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
@@ -154,7 +148,7 @@
                                     </div>
                                     <div *ngIf="item.post.postGallery.length > 0" class="top">
                                         <img class="iconURL"
-                                            src="{{apiBaseURL+item.post.postGallery[0].imageURL+'/image'}}" alt="">
+                                            [src]="apiBaseURL+item.post.postGallery[0].imageURL+'/image'" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +158,6 @@
                                 <div class="body">
                                     <div *ngIf="item.post.postGallery.length > 0" class="top">
                                         <span class="title">{{item.subTitle}}</span>
-                                        <span class="sub_title">{{item.title}}</span>
                                     </div>
                                     <div class="post">
                                         <div class="head">
@@ -188,8 +181,8 @@
                                                 {{item.post.createdDate | dateFormat}}
                                             </span>
                                         </div>
-                                        <div class="title" [innerHTML]="item.post.title"></div>
-                                        <div class="detail" [innerHTML]="item.post.detail"></div>
+                                        <div class="title" [innerHTML]="item.post.title | highlight"></div>
+                                        <div class="detail" [innerHTML]="item.post.detail | highlight"></div>
                                         <div class="buttom">
                                             <div class="botton" (click)="clickDataSearch(item)">
                                                 <span>ไปที่โพสต์</span>
@@ -224,7 +217,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_needs_card">
+                        <div *ngIf="item.type === 'EMERGENCY_NEEDS'" class="objective_needs_card">
                             <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
@@ -359,7 +352,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
+                        <div *ngIf="item.type === 'EMERGENCY_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
                             <div class="body">
                                 <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
@@ -1106,7 +1099,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked">
+                        <div *ngIf="item.type === 'EMERGENCY_INFLUENCER'" class="objective_post_liked">
                             <div class="body">
                                 <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
@@ -1206,7 +1199,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_LASTEST'" class="objective_lastest_card">
+                        <div *ngIf="item.type === 'EMERGENCY_LASTEST'" class="objective_lastest_card">
                             <div class="body">
                                 <div class="top">
                                     <span data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
@@ -1218,8 +1211,8 @@
                                     <div class="post" data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
-                                        *ngFor="let post of item.posts; let index = index">
-                                        <post-data [itemPost]="post">
+                                        *ngFor="let post of item.posts; let indexa = index">
+                                        <post-data [itemPost]="post" (action)="actionComment($event,index,indexa)">
                                         </post-data>
                                     </div>
                                 </div>

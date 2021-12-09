@@ -27,9 +27,6 @@ export class IconUser implements OnInit {
     }
 
     ngOnInit(): void {
-        // console.log(this.pageUser.currentExp);
-        // const level = Math.max( Math.floor( 8.7 * Math.log( this.pageUser.currentExp  + 111 ) + (-40) ), 1 )
-        // console.log('length ',level); 
 
     }
 

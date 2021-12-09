@@ -17,7 +17,8 @@
                     <div class="needs">
                         <img class="img-items" *ngIf="!item.imageURL" src="../../../../assets/img/customize_item.svg"
                             alt="">
-                        <img class="img-items" *ngIf="item.imageURL" src="{{apiBaseURL+item.imageURL+'/image'}}">
+                        <img class="img-items" *ngIf="item.imageURL"
+                            [src]="item.signURL?item.signURL:item.imageSignURL?item.imageSignURL:apiBaseURL+item.imageURL+'/image'">
                     </div>
                     <div class="needs-data" [class.active]="isFulfill">
                         <div [class.active]="isFulfill">

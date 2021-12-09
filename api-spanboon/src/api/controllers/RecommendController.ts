@@ -81,6 +81,9 @@ export class RecommendController {
             const followResult: any = await this.userFollowService.search(undefined, undefined, ['subjectId', 'subjectType'], undefined, fwhereConditions, undefined, false);
             const orUserConditions = [];
             const orPageConditions = [];
+
+            orUserConditions.push(new ObjectID(userObjId));
+
             for (const followObj of followResult) {
                 if (followObj.subjectType === SUBJECT_TYPE.USER) {
                     orUserConditions.push(new ObjectID(followObj.subjectId));
@@ -150,7 +153,7 @@ export class RecommendController {
             if (!isRandomPage && !isRandomUser) {
                 const stmt = [
                     // { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
-                    { $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
+                    { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] }] } },
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {

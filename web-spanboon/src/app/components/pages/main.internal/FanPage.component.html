@@ -72,7 +72,7 @@
                                     <div class="wrapper-img" id="wrapper-img" (load)="loadImageOK($event)"
                                         (error)="loadImageError($event)" [phxPreload]="resDataPage"
                                         [preloadClass]="'wrapper-img'"
-                                        [ngStyle]="resDataPage && resDataPage.coverBase64 ? {'background-image': 'url('+resDataPage.coverBase64+')' ,'background-position-y' : position+'%' } : {}">
+                                        [ngStyle]="resDataPage && resDataPage.coverSignURL ? {'background-image': 'url('+resDataPage.coverSignURL+')' ,'background-position-y' : position+'%' } : {'background-image': 'url('+resDataPage.coverBase64+')' ,'background-position-y' : position+'%' }">
                                     </div>
                                     <ng-container
                                         *ngIf="resDataPage && resDataPage.subTitle && resDataPage.subTitle !== ''; else elseSubTitle">
@@ -178,7 +178,7 @@
                                             transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
                                     </g>
                                 </svg>
-                                <div class="official-name">
+                                <div class="official-name" (click)="clickToPage(resDataPage)">
                                     {{ resDataPage && resDataPage.name ? resDataPage.name : ''}}
                                 </div>
                             </div>
@@ -613,12 +613,13 @@
                             </ng-container>
                         </div>
                         <!-- (click)="linkDataType(link)"    [routerLink]="['/']"-->
-                        <div *ngIf="!showLoading" class="wrapper-feed-menu"> 
+                        <div *ngIf="!showLoading" class="wrapper-feed-menu">
                             <ng-container *ngIf="CheckPost === true; else elseTemplateTabs">
                                 <nav *ngIf="!isPost" mat-tab-nav-bar [attr.mat-align-tabs]="(Tab) ? 'center' : 'left'">
-                                    <a mat-tab-link *ngFor="let link of links" [disableRipple]="'true'"  
-                                        (click)="linkDataType(link);  activeLink = link.label" [active]="activeLink == link.label">{{link.label}}
-                                    </a> 
+                                    <a mat-tab-link *ngFor="let link of links" [disableRipple]="'true'"
+                                        (click)="linkDataType(link);  activeLink = link.label"
+                                        [active]="activeLink == link.label">{{link.label}}
+                                    </a>
                                 </nav>
                                 <!-- <input type="text" (change)="changeValue(true)"> -->
                                 <!-- <a [routerLink]="['/']">Second Page</a> -->
@@ -639,8 +640,7 @@
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
                                         [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
                                         [isShowTablet]="'true'" [isShowMaxWidth]="'899'"
-                                        (createPost)="createPost($event)"
-                                        style="display: block; padding: 5pt 0;">
+                                        (createPost)="createPost($event)" style="display: block; padding: 5pt 0;">
                                     </box-post>
                                     <div class="title-feed" (click)="openDialogPost(PLATFORM_STORY_TALE)">
                                         {{ resPost && resPost.posts && resPost.posts.length > 0 && !isLoadingClickTab ?
@@ -677,24 +677,14 @@
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
                                             <post-data [itemPost]="itemPost" [user]="userImage"
-                                                (action)="actionComment($event,index)" (comment)="createComment($event)"
-                                                [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
-                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
-                                            </post-data>
-                                        </ng-container>
-                                    </ng-container>
-                                </div>
-                            </ng-template>
-                            <ng-template #elseTemplateCheckPost>
-                                <div class="main-feed">
-                                    <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
-                                        <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage"
-                                                (action)="actionComment($event,index)" (comment)="createComment($event)"
-                                                [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
-                                                (delete)="deletePost($event,index)" (engagement)="engagement($event)">
+                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== undefined && resDataPage.pageUsername !== '' ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
+                                                [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
+                                                [isShowUser]="true" [isNotAccess]="isNotAccess"
+                                                (action)="actionComment($event,index)"
+                                                (comment)="createComment($event,index)" [pageUser]="pageUser"
+                                                [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
+                                                (delete)="deletePost($event,index)" (update)="editPost($event)"
+                                                (engagement)="engagement($event)">
                                             </post-data>
                                         </ng-container>
                                     </ng-container>

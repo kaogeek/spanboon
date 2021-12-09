@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="home_page_v2" [class.hide]="!isLoding">
+<div class="home_page_v2" >
     <div class="hoem_page_body">
 
         <!-- ///////////////////////// -->
@@ -48,18 +48,28 @@
 
         <!-- ///////////////////////// -->
 
-        <div class="events_top" [class.full]="!isDoing">
-            <div class="left" [class.full]="!isDoing">
-                <card-contant-home [eventCard]='true' [isData]="isDoing" [eventData]='emergencyEvents'>
+        <div class="events_top" [class.full]="true">
+            <div class="left" [class.full]="true">
+                <card-contant-home [eventCard]='true' (isLodingEvent)="lodingSucceed($event)" [isData]="isDoing"
+                    [eventData]='emergencyEvents'>
                 </card-contant-home>
             </div>
             <div class="right" [class.dis]="!isDoing">
-                <div class="tagCardRight">
+                <!-- <div class="tagCardRight">
                     <card-contant-home [tagCard]='true' [tagCardIsOpenRight]='true' [tagData]='doingEventsNo2'>
                     </card-contant-home>
-                </div>
-                <div class="tagCard">
-                    <card-contant-home [tagCard]='true' [tagData]='doingEventsNo1'></card-contant-home>
+                    <card-contant-home [tagCard]='true' [tagCardIsOpenRight]='true' [tagData]='doingEventsNo2'>
+                    </card-contant-home>
+                </div> -->
+                <div *ngIf="postSectionModel" class="tagCard">
+                    <card-contant-home [tagCard]='true' (clickEvent)="testCrad($event)" [tagData]='doingEventsNo1'></card-contant-home>
+                    <div class="post-tag-title" [class.dis]="!isDoing">
+                        <span class="title">โพสต์ใหม่ล่าสุด</span>
+                    </div>
+                    <div [class.dis]="!isDoing" class="post-tag"
+                        *ngFor="let post of postSectionModel.contents | slice:0:6;">
+                        <div class="title" (click)="testCrad(post)" [innerHTML]="post.post.title"></div>
+                    </div>
                     <card-contant-home style="margin-left: 10px;" [tagCard]='true' [tagData]='doingEventsNo3'>
                     </card-contant-home>
                 </div>
@@ -92,10 +102,10 @@
                         </Preload-card>
                     </div>
                 </div>
-                <div class="footer_mobile" *ngIf="!item.isLodingMore && item.contents.length > 3">
-                    <!-- <span *ngIf="!item.isMax">ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>
-                    <span *ngIf="item.isMax">คุณทัน {{item.title}} ทั้งหมดแล้ว</span> -->
-                </div>
+                <!-- <div class="footer_mobile" *ngIf="!item.isLodingMore && item.contents.length > 3">
+                    <span *ngIf="!item.isMax">ยังมี {{item.title}} ในตอนนี้อีกมากมาย</span>
+                    <span *ngIf="item.isMax">คุณทัน {{item.title}} ทั้งหมดแล้ว</span>
+                </div> -->
                 <!-- <div class="footer_mobile_button" *ngIf="!item.isLodingMore && item.contents.length > 3 && !item.isMax">
                     <spanboon-button *ngIf="!isLodingMore" (click)="getMore(item.contents.length,item.type,index)"
                         [text]="'ดูเพิ่มเติม'" [bgColor]="'white'" [color]="'rgba(253, 84, 84, 0.95)'" [radius]="'5px'"

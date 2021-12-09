@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager } from 'src/app/services/services';
+import { AuthenManager, AssetFacade } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from 'src/environments/environment';
 import { DialogFulfill } from '../dialog/DialogFulfill.component';
@@ -23,6 +23,8 @@ const PAGE_NAME: string = 'carditem';
 export class CardItem extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
+
+    private assetFacade: AssetFacade;
 
     @Input()
     public itemData: any;
@@ -65,16 +67,17 @@ export class CardItem extends AbstractPage implements OnInit {
     public index: number;
     public item: any;
 
-    constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
+    constructor(authenManager: AuthenManager, assetFacade: AssetFacade, dialog: MatDialog, router: Router) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.authenManager = authenManager;
         this.dialog = dialog;
-        this.router = router; 
+        this.router = router;
+        this.assetFacade = assetFacade;
     }
 
-    ngOnInit(): void {
-        this.checkResp(); 
+    async ngOnInit(): Promise<void> {
+        this.checkResp();
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -97,7 +100,7 @@ export class CardItem extends AbstractPage implements OnInit {
     public showDialogEdit() {
         this.submit.emit();
     }
-    public fulfillNeeds(item: any, index: number) { 
+    public fulfillNeeds(item: any, index: number) {
         if (!this.isLogin()) {
             this.showAlertLoginDialog(this.router.url);
         } else {
@@ -186,4 +189,11 @@ export class CardItem extends AbstractPage implements OnInit {
     public onResize($event) {
         this.checkResp();
     }
+
+    public test(data) {
+        this.router.navigate([]).then(() => {
+            window.open('/objective/' + data.id);
+        });
+    }
+
 }

@@ -24,7 +24,7 @@
         </div>
         <div class="top_small_card" [class.title]="postCardCoverPageUrl === undefined">
             <div class="image_base64" [class.is_objective]="isObjective" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img [class.is_objective]="isObjective" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img [class.is_objective]="isObjective" [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -61,7 +61,7 @@
                         postData.post.page.name ? postData.post.page.name : postData.owner.displayName }}</a>
                 </div>
                 <div class="amount_social">
-                    <span *ngIf="postData.post">{{amountSocial ? amountSocial:0}}{{amountSocial?
+                    <span *ngIf="postData.post">{{amountSocial ? amountSocial:0}} {{amountSocial?
                         'การมีส่วนร่วมกับโพสต์':'ผู้ติดตาม'}}</span>
                     <!-- <span>34</span> การมีส่วนร่วมกับโพสต์ -->
                     <!-- <div class="foot_but" *ngIf="postData.data">
@@ -92,8 +92,8 @@
         </div>
         <div class="top_medium_card" [class.title]="postCardCoverPageUrl === null || postCardCoverPageUrl === '' ">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img class="bottom_coverPage_cover" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
-                <img class="other_topic_coverPage" src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img class="bottom_coverPage_cover" [src]="postCardCoverPageUrl">
+                <img class="other_topic_coverPage" [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -169,7 +169,7 @@
         <div (click)="clickEventEmit()" class="top_large_card"
             [class.title]="postCardCoverPageUrl === undefined || postCardCoverPageUrl === null || postCardCoverPageUrl === ''">
             <div class="image_base64" *ngIf="postCardCoverPageUrl;else other_topic">
-                <img src="{{apiBaseURL+postCardCoverPageUrl+'/image'}}">
+                <img [src]="postCardCoverPageUrl">
             </div>
             <ng-template #other_topic>
                 <div class="other_topic">
@@ -228,9 +228,11 @@
 
 
     <div *ngIf="eventCard && eventData && !isLoad" [class.full]="!isData" class="event_card">
-        <div class="top" [class.full]="!isData">
-            <div (click)="clickDataSearch(eventTitle)" class="top_coverPage" [class.full]="!isData">
-                <img class="top_coverPage_cover" src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+        <div class="top" [class.max]="eventData.length === 1" [class.full]="!isData">
+            <div (click)="clickDataSearch(eventData[0].data.emergencyEventId)" class="top_coverPage"
+                [class.full]="true">
+                <img class="top_coverPage_cover"
+                    [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
                 <div class="teg_event"> <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
                         height="21" viewBox="0 0 23 21">
                         <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
@@ -261,9 +263,10 @@
                                 height="3" rx="0.5" transform="translate(692.701 427.463) rotate(-90)" fill="#747474" />
                         </g>
                     </svg> เหตุการณ์ด่วน</div>
-                <img src="{{apiBaseURL+eventCoverPageUrl+'/image'}}">
+                <img
+                    [src]="eventData[0].signURL?eventData[0].signURL:eventData[0].coverSignURL?eventData[0].coverSignURL:apiBaseURL+eventData[0].coverPageUrl+'/image'">
             </div>
-            <div (click)="clickDataSearch(eventTitle)" class="body_card">
+            <div (click)="clickDataSearch(emergencyEventId)" class="body_card">
                 <div class="title">
                     <a class="event_title">{{eventTitle}}</a>
                     <span class="date_time">{{dateTime | dateFormat}}</span>
@@ -286,16 +289,18 @@
                 </div>
             </div>
         </div>
-        <div class="bottom" [class.full]="!isData">
+        <div class="bottom" [class.full]="!isData" [class.dis]="eventData.length === 1">
             <div class="other_teg_event">
-                <div class="teg_event_list" (click)="clickDataSearch(event.title,index)"
-                    *ngFor="let event of eventData; let index = index">
+                <div class="teg_event_list" (click)="clickDataSearch(event.data.emergencyEventId,index)"
+                    *ngFor="let event of eventData | slice:1:4; let index=index">
                     <div class="img_box" [class.open]="index === selectIndex && !isData">
-                        <img class="bottom_coverPage_cover" src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
-                        <img src="{{apiBaseURL+event.coverPageUrl+'/image'}}">
+                        <img class="bottom_coverPage_cover"
+                            [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
+                        <img
+                            [src]="event.signURL?event.signURL:event.coverPageSignURL?event.coverPageSignURL:apiBaseURL+event.coverPageUrl+'/image'">
                     </div>
                     <div class="title">
-                        <a (click)="clickDataSearch(eventTitle)">{{event.title}}</a>
+                        <a>{{event.title}}</a>
                         <!-- <div class="date_time">
                             <svg style="margin: 0px 6px;" height="10px" viewBox="0 0 512 512" width="10px"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -340,7 +345,7 @@
                     <div class="description">
                         <span [class.full]="isData">{{event.description}}</span>
                     </div>
-                    <div class="social">
+                    <!-- <div class="social">
                         <div class="social_control">
                             <div class="amount_social">
                                 <span class="count-aontrol">{{event.eventRepostCount | shortNumber}}</span>
@@ -368,7 +373,7 @@
                             </svg>
                             {{event.dateTime | thformatdatetime}}
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -379,14 +384,14 @@
             <div class="page_info">
                 <div class="page_logo">
                     <img style="border-radius: 50%;" width="30px"
-                        src="{{apiBaseURL+tagData.hashtag.coverPageUrl+'/image'}}">
+                        [src]="tagData.hashtag.signURL?tagData.hashtag.signURL:tagData.hashtag.coverPageSignURL?tagData.hashtag.coverPageSignURL:apiBaseURL+tagData.hashtag.coverPageUrl+'/image'">
                 </div>
                 <div class="hashtag_user">
-                    <a class="hashtag" (click)="clickDataSearch(tagData.hashtag.title)">{{tagData.hashtag.title}}</a>
+                    <a class="hashtag" (click)="clickObjTimeline(tagData)">{{tagData.hashtag.title}}</a>
                     <div class="user">
                         <span>โดย: </span>
                         <div class="page_name">
-                            <span (click)="clickDialogDiverlop()">{{tagData.page.name}}</span>
+                            <span (click)="clickEventEmit(tagData)">{{tagData.page.name}}</span>
                         </div>
                         <span class="drot">•</span>
                         <span>ผู้ติดตาม </span>
@@ -416,7 +421,7 @@
         </div>
         <div class="body">
             <div class="left">
-                <div class="post_card_list" (click)="clickDialogDiverlop()"
+                <div class="post_card_list" (click)="clickEventEmit(item)"
                     *ngFor="let item of datahashTagArrPosts | slice:0:4; let i=index">
                     <div class="type" [class.need]="item.type === 'NEEDS'" [class.general]="item.type === 'GENERAL'"
                         [class.fulfillment]="item.type === 'FULFILLMENT'">
@@ -452,7 +457,8 @@
                     </div>
                     <div class="img">
                         <div class="image_base64" *ngIf="datahashTagPost.coverImage;else other_topics">
-                            <img src="{{apiBaseURL+datahashTagPost.coverImage+'/image'}}">
+                            <img
+                                [src]="datahashTagPost.signURL?datahashTagPost.signURL:datahashTagPost.coverImageSignURL?datahashTagPost.coverImageSignURL:apiBaseURL+datahashTagPost.coverImage+'/image'">
                         </div>
                         <ng-template #other_topics>
                             <div class="other_topic">

@@ -16,7 +16,7 @@ import * as $ from 'jquery';
 import { environment } from '../../../../environments/environment';
 
 const PAGE_NAME: string = 'editcomment';
-const SEARCH_LIMIT: number = 10;
+const SEARCH_LIMIT: number = 100;
 const SEARCH_OFFSET: number = 0;
 var currentTab = 0;
 
@@ -137,7 +137,7 @@ export class DialogCreatePage extends AbstractPage {
     filter.whereConditions = {};
     filter.count = false;
     filter.orderBy = {
-      createdDate: "DESC",
+      createdDate: -1,
     }
     this.isLoading = true;
     this.pageCategoryFacade.search(filter).then((res: any) => {
@@ -146,7 +146,7 @@ export class DialogCreatePage extends AbstractPage {
         this.resPageType = res;
         let index = 0;
         for (let dataImage of res) {
-          if(dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null){
+          if (dataImage.iconURL !== undefined && dataImage.iconURL !== '' && dataImage.iconURL !== null) {
             this.getDataIcon(dataImage.iconURL, index);
             index++;
           }
@@ -301,8 +301,8 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public onClose(): void {
-    // this.dialogRef.close();
-    this.router.navigate(["/home"]);
+    this.dialogRef.close();
+    // this.router.navigate(["/home"]);
   }
 
   private stopLoading(): void {

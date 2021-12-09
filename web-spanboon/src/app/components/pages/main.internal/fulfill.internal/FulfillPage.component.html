@@ -44,7 +44,6 @@
                                     <ng-container
                                         *ngIf="data.user && data.user.imageBase64 !== '' && data.user.imageBase64 !== undefined && data.user.imageBase64 !== null; else elseImageProfile1">
                                         <img src="{{data.user.imageBase64}}" alt="" class="profile">
-                                        <!-- <img src="{{apiBaseURL + data.user.imageURL+'/image'}}" alt="" class="profile"> -->
                                     </ng-container>
                                     <ng-template #elseImageProfile1>
                                         <div class="donator"> {{ data.user.displayName | slice: 0:1 }} </div>
@@ -139,7 +138,7 @@
         </ng-container>
         <ng-template #showChatRoom1>
             <ng-container *ngIf="canAccessCase && canAccessChatRoom ; else elseTemplateChatRoom">
-                <div class="fulfill-right" id="fulfill-right" [class.active]="isActiveClass">
+                <div class="fulfill-right" style="height: 100%;" id="fulfill-right" [class.active]="isActiveClass">
                     <div class="head-story" [class.active]="!isFirst" #fulfillHeaderTop
                         [class.activeTransition]="isTransition"
                         [ngStyle]="{'height': ( fulfillProfile.offsetHeight + contactTop.offsetHeight) - 40 + 'px' , 'margin-top' : Expand ? 0 : - fulfillHeaderTop.offsetHeight + 'px' , 'opacity' :  Expand ?  1 : 0 }">
@@ -222,7 +221,7 @@
                                     <span class="event-cos">ขอความล่าสุด: {{chatDate | dateFormat}}</span>
                                 </div>
                             </div>
-                            <div class="list-item" (click)="showFulFill()">
+                            <div class="list-item" style="color: #28a745;" (click)="showFulFill()">
                                 <span>รายการ{{PLATFORM_FULFILL_TEXT}} {{reqData.length}} รายการ</span>
                             </div>
                         </div>
@@ -257,7 +256,7 @@
                                 <ng-container *ngIf="asPage; else elseAsPage">
                                     <ng-container
                                         *ngIf="(userImageURL !== null && userImageURL !== undefined && userImageURL !==''); else elseUserImageURL">
-                                        <img class="img" src="{{apiBaseURL+userImageURL+'/image'}}">
+                                        <img class="img" [src]="apiBaseURL+userImageURL+'/image'" >
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">
@@ -270,7 +269,7 @@
                                 <ng-template #elseAsPage>
                                     <ng-container
                                         *ngIf="(pageImageURL !== null && pageImageURL !== undefined && pageImageURL !==''); else elseUserImageURL">
-                                        <img class="img" src="{{apiBaseURL+pageImageURL+'/image'}}">
+                                        <img class="img" [src]="apiBaseURL+pageImageURL+'/image'">
                                     </ng-container>
                                     <ng-template #elseUserImageURL>
                                         <div class="donator">

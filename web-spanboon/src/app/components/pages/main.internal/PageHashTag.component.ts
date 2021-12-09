@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -16,6 +16,7 @@ import { BoxPost, DialogReboonTopic } from '../../shares/shares';
 import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
+import { CommentPosts } from '../../../models/CommentPosts';
 import { POST_TYPE, SORT_BY } from '../../../TypePost';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { RePost } from '../../../models/RePost';
@@ -60,6 +61,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   private assetFacade: AssetFacade;
   private routeActivated: ActivatedRoute;
   private searchHashTagFacade: HashTagFacade;
+  private postCommentFacade: PostCommentFacade;
   private postFacede: PostFacade;
   private emergencyEventFacade: EmergencyEventFacade;
   private mainPageFacade: MainPageSlideFacade;
@@ -213,13 +215,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
+    observManager: ObservableManager, routeActivated: ActivatedRoute, postCommentFacade: PostCommentFacade, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
     pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
     this.assetFacade = assetFacade;
     this.observManager = observManager;
+    this.postCommentFacade = postCommentFacade;
     this.routeActivated = routeActivated;
     this.searchHashTagFacade = searchHashTagFacade;
     this.mainPageFacade = mainPageFacade;
@@ -248,6 +251,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.resObjective = [];
     this.resHashTag = [];
     this.resPost = [];
+    this.userImage = {};
 
     this.dateAdapter = dateAdapter;
     this.dateAdapter.setLocale('th-TH');
@@ -352,7 +356,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }
           // this.searchTrendTag();
           // const splitText = substringPath.split('=');
-          // console.log('splitText ',splitText)
           // let hashtag: string = '';
           // if (splitText.length > 1) {
           //   // [0] must be text as 'hashtag'
@@ -370,7 +373,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           //   };
           //   this.mainPageFacade.searchMainContent(keywordFilter).then((res: any) => {
           //     this.resHashTag = res.result
-          //     console.log(this.resHashTag);
           //   }).catch((error: any) => {
           //   });
           // }
@@ -419,7 +421,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     /* // this is for query param check
     this.routeActivated.queryParams.subscribe(params => {
-      console.log('---> show hashtag'+params['hashtag']);
     });*/
   }
 
@@ -490,6 +491,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.accountFacade.search(data).then((res) => {
       this.dataUser = res;
+
+      for (let data of this.dataUser) {
+        if (data.imageURL !== null && data.imageURL !== undefined) {
+          data.imageURL = this.passSignUrl(data.imageURL);
+        }
+      }
+
       this.isLoading = false;
     }).catch((err) => {
       this.isLoading = false;
@@ -777,14 +785,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public getObjective(data) {
     if (data.item.selected) {
-      this.objective = data.hashTag;
+      this.objective = data.item.hashTag;
     } else {
       this.objective = '';
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
 
   }
 
@@ -796,8 +804,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
   }
 
   public createEngagement(dataEngagement: UserEngagement) {
@@ -846,8 +854,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.searchTrendTag();
 
-    const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
-    this.createEngagement(dataEngagement);
+    // const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
+    // this.createEngagement(dataEngagement);
   }
 
   public searchTrendTag(offset?: boolean) {
@@ -953,11 +961,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoadingPost = false;
         this.isLoadingClickTab = false;
         this.resPost = [];
-        // console.log('offset ',offset)
         // if (offset) {
         //   this.resPost = [];
         // }
-      } 
+      }
     }).catch((error: any) => {
       console.log(error);
     });
@@ -1256,7 +1263,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       search.whereConditions = { ownerUser: this.userCloneDatas.id };
       if (action.mod === 'REBOON') {
         this.isLoginCh();
-        if (action.userAsPage.id !== undefined && action.userAsPage.id !== null) {
+        if (action.userAsPage !== undefined && action.userAsPage !== null) {
           userAsPage = action.userAsPage.id
         } else {
           userAsPage = null
@@ -1378,7 +1385,20 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
   }
 
-  public createComment(event: any): any { }
+  public createComment(comment: any, index?: number) {
+    let commentPosts = new CommentPosts
+    if (comment.userAsPage !== undefined && comment.userAsPage !== null) {
+      commentPosts.commentAsPage = comment.userAsPage.id
+    }
+    commentPosts.comment = comment.value
+    commentPosts.asset = undefined
+    this.postCommentFacade.create(commentPosts, comment.pageId).then((res: any) => {
+      this.resPost.posts[index].commentCount++
+      this.resPost.posts[index].isComment = true
+      this.resPost.posts[index]
+    }).catch((err: any) => {
+    })
+  }
 
   public deletePost(event: any, index: number): any { }
 
@@ -1413,6 +1433,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     setTimeout(() => {
       this.showLoading = false
     }, 3000);
+  }
+
+  public async passSignUrl(url?: any): Promise<any> {
+    let signData: any = await this.assetFacade.getPathFileSign(url);
+    return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
   }
 
   public onResize() {

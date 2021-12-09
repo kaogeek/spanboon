@@ -134,7 +134,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                     this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
                 }
             });
-        } else if (text === 'twitter' && !bind) {
+        } else if (text === 'twitter' && !bind) { 
+            
             this.isPreLoadIng = true;
             this.isLoadingTwitter = true;
             CookieUtil.setCookie('page', '/page/' + this.pageId + '/settings');
@@ -349,7 +350,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 appId: environment.facebookAppId,
                 cookie: true,
                 xfbml: true,
-                version: 'v9.0'
+                version: 'v10.0'
             });
             window['FB'].AppEvents.logPageView();
         };
@@ -380,7 +381,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.isLoading = false;
                 this.connect = false;
             }
-        }, { scope: 'public_profile,email,user_birthday,user_gender,pages_show_list,pages_read_engagement,pages_manage_posts,publish_to_groups' });
+        }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement' });
     }
 
     public listPageFacebook() {
@@ -422,7 +423,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public getImagePageProfile(pageUserId) {
         window['FB'].api("/" + pageUserId + "/picture?redirect=0&access_token=" + this.accessToken.fbtoken, (picture) => {
             if (picture && !picture.error) {
-                // console.log('picture ', picture)
                 /* handle the result */
             }
         })
