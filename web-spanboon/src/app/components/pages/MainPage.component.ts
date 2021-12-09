@@ -325,6 +325,7 @@ export * from './main.internal/HomePage.component';
 export * from './main.internal/HomePageV2.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
+export * from './main.internal/LoginPageTest.component';
 export * from './main.internal/ForgotPasswordPage.component';
 export * from './main.internal/ProfilePage.component';
 export * from './main.internal/FanPage.component';

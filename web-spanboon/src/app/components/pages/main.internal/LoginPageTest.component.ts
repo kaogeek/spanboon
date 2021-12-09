@@ -20,14 +20,14 @@ import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
 
 
-const PAGE_NAME: string = 'login';
+const PAGE_NAME: string = 'login/test';
 
 
 @Component({
   selector: 'login-page',
   templateUrl: './LoginPage.component.html',
 })
-export class LoginPage extends AbstractPage implements OnInit {
+export class LoginPageTest extends AbstractPage implements OnInit {
 
   protected TWITTER_API_KEY = environment.consumerKeyTwitter
   protected TWITER_API_SECRET_KEY = environment.consumerSecretTwitter
@@ -192,6 +192,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
       this.authorizeLink += '?' + result;
+
       this.router.navigate([]).then(() => {
         window.open(this.authorizeLink, '_blank');
       });
@@ -263,7 +264,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
-        appId: environment.facebookAppId,
+        appId: environment.facebookTestAppId,
         cookie: true,
         xfbml: true,
         version: 'v10.0'
@@ -294,7 +295,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-    }, { scope: 'public_profile, email' });
+    }, { scope: 'public_profile, email, user_gender, user_birthday' });
   }
 
   public emailLogin() {
@@ -303,7 +304,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-    this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+    this.authenManager.loginWithFacebookTest(this.accessToken.fbtoken, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
