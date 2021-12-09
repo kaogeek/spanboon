@@ -330,7 +330,7 @@ export class PagePostController {
             pageData = await this.pageService.find({ where: { pageId: null, ownerUser: userObjId } });
         } else {
             pageObjId = new ObjectID(pageId);
-            pageData = await this.pageService.find({ where: { _id: pageObjId, ownerUser: userObjId } });
+            pageData = await this.pageService.find({ where: { _id: pageObjId } });
 
             if (pageData === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
@@ -743,6 +743,12 @@ export class PagePostController {
                 }
             }
 
+            // update post hastag
+            if (createResult !== null && createResult !== undefined && postMasterHashTagList.length > 0) {
+                // beware slow becase count all post
+                await this.postsService.recalculateHashTagCount(postMasterHashTagList);
+            }
+
             if (createResult !== null && createResult !== undefined) {
                 let link = '';
 
@@ -962,11 +968,13 @@ export class PagePostController {
                     { $sort: { startDateTime: -1 } },
                     { $skip: offset },
                     { $limit: limit },
-                    {
+                    { // filter only comment that not deleted
                         $lookup: {
                             from: 'PostsComment',
-                            localField: '_id',
-                            foreignField: 'post',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$post'] }, 'deleted': false } },
+                            ],
                             as: 'comment'
                         }
                     },
@@ -1233,7 +1241,9 @@ export class PagePostController {
                             for (const postGallery of posts.gallery) {
                                 if (postGallery.s3ImageURL !== undefined && postGallery.s3ImageURL !== '') {
                                     const assetSignURL = await this.assetService.getAssetSignedUrl({ _id: postGallery.fileId });
-                                    postGallery.signURL = assetSignURL.signURL;
+                                    if (assetSignURL !== undefined) {
+                                        postGallery.signURL = assetSignURL.signURL;
+                                    }
                                 }
                             }
                         }
@@ -1292,7 +1302,7 @@ export class PagePostController {
                                 }
                             }
 
-                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postList } });
+                            const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postList }, deleted: false });
                             if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                                 for (const comment of postComments) {
                                     const postId = comment.post;
@@ -1433,7 +1443,7 @@ export class PagePostController {
             let isPageMode = false;
             if (pageId !== undefined && pageId !== '' && pageId !== 'null' && pageId !== null && pageId !== 'undefined') {
                 pageObjId = new ObjectID(pageId);
-                pageData = await this.pageService.findOne({ _id: pageObjId, ownerUser });
+                pageData = await this.pageService.findOne({ _id: pageObjId });
                 isPageMode = true;
 
                 if (pageData === undefined) {
@@ -1510,19 +1520,6 @@ export class PagePostController {
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
                     if (gallery.length > 0) {
-                        // const isContain = gallery.find(object => {  
-                        //     console.log('object.fileId ',object.fileId)
-                        //     console.log('data.fileId ',data.fileId)
-                        //     console.log('>>> ',new ObjectID(object.fileId) === new ObjectID(data.fileId) ? 'true' : 'false')
-                        //     return (object.fileId === new ObjectID(data.fileId)) && (object.ordering !== data.asset.ordering)
-                        // });
-                        // if(isContain){
-                        //     continue;
-                        // } else {
-                        //     console.log('isContain ',data)
-                        // }
-                        // console.log(isContain);
-
                         const updateImageQuery = { _id: new ObjectID(data.id) };
                         const newImageValue = {
                             $set: {
@@ -1616,6 +1613,35 @@ export class PagePostController {
                 }
             }
 
+            const allHashTagsString = [];
+            if (post.postsHashTags !== undefined) {
+                for (const tagObjId of post.postsHashTags) {
+                    allHashTagsString.push(tagObjId + '');
+                }
+            }
+
+            let postsHashTags: any[] = post.postsHashTags;
+            const postMasterHashTagList: any[] = [];
+            // if postHashTag is undefined or null postHashTags will use an old value
+            if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
+                const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
+
+                for (const hashTag of masterHashTagList) {
+                    const id = hashTag.id + '';
+                    if (allHashTagsString.indexOf(id) < 0) {
+                        allHashTagsString.push(id);
+                    }
+                    postMasterHashTagList.push(new ObjectID(id));
+                }
+
+                postsHashTags = postMasterHashTagList;
+            }
+
+            const allHashTags = [];
+            for (const hashTagString of allHashTagsString) {
+                allHashTags.push(new ObjectID(hashTagString));
+            }
+
             if (title === null || title === undefined) {
                 title = post.title;
             }
@@ -1668,7 +1694,14 @@ export class PagePostController {
                     return res.status(400).send(ResponseUtil.getErrorResponse('Objective was not found.', undefined));
                 }
 
-                objectiveTag = obj.hashTag;
+                let objHashTag = undefined;
+                try {
+                    objHashTag = await this.hashTagService.findOne({ _id: obj.hashTag });
+                } catch (error) {
+                    console.log('find objective hashTag error: ', error);
+                }
+
+                objectiveTag = objHashTag === undefined ? '' : objHashTag.name;
             }
 
             // emergencyEvent
@@ -1682,7 +1715,14 @@ export class PagePostController {
                     return res.status(400).send(ResponseUtil.getErrorResponse('Emergency Event was not found.', undefined));
                 }
 
-                emergencyEventTag = emerEvent.hashTag;
+                let emerHashTag = undefined;
+                try {
+                    emerHashTag = await this.hashTagService.findOne({ _id: emerEvent.hashTag });
+                } catch (error) {
+                    console.log('find emergency hashTag error: ', error);
+                }
+
+                emergencyEventTag = emerHashTag === undefined ? '' : emerHashTag.name;
             }
 
             // need
@@ -1837,7 +1877,7 @@ export class PagePostController {
             const newValue = {
                 $set: {
                     title, detail, type, startDateTime, story, isDraft, coverImage,
-                    objective: objectiveID, objectiveTag, userTags, postHashTag,
+                    objective: objectiveID, objectiveTag, userTags, postsHashTags,
                     emergencyEvent: emergencyEventID, emergencyEventTag, s3CoverImage
                 }
             };
@@ -1881,6 +1921,16 @@ export class PagePostController {
                 await this.userEngagementService.create(engagement);
 
                 const pageUpdated: Posts = await this.postsService.findOne({ _id: pagePostsObjId });
+                // update post hastag
+                try {
+                    // beware slow becase count all post
+                    if (allHashTags.length > 0) {
+                        await this.postsService.recalculateHashTagCount(allHashTags);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Update PagePost Successful', pageUpdated));
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
@@ -1931,6 +1981,14 @@ export class PagePostController {
         const postsQuery = { post: pagePostsObjId };
 
         if (posts !== null && posts !== undefined) {
+            // store deleted hashtag
+            const allHashTags = [];
+            if (posts.postsHashTags !== undefined) {
+                for (const tagObjId of posts.postsHashTags) {
+                    allHashTags.push(tagObjId);
+                }
+            }
+
             const referencePost = new ObjectID(posts.referencePost);
 
             const undoRepost: Posts = await this.postsService.update({ referencePost: pagePostsObjId }, { $set: { deleted: true, referencePost: undefined } });
@@ -1969,6 +2027,16 @@ export class PagePostController {
             const deletePagePost = await this.postsService.update(deleteQuery, newValue);
 
             if (deletePagePost) {
+                // update post hastag
+                if (allHashTags.length > 0) {
+                    try {
+                        // beware slow becase count all post
+                        await this.postsService.recalculateHashTagCount(allHashTags);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully delete PagePost', pagePostsObjId);
                 return res.status(200).send(successResponse);
             } else {

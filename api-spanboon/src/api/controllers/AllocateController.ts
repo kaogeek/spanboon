@@ -124,7 +124,7 @@ export class AllocateController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Calculate Allocate', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Calculate Allocate Error', error.message));
         }
     }
@@ -322,7 +322,7 @@ export class AllocateController {
             } else {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Calculate Allocate', {}));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Calculate Allocate Error', error.message));
         }
     }

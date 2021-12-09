@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete } from 'routing-controllers';
+import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { PostsComment } from '../models/PostsComment';
@@ -30,6 +30,7 @@ import { LikeRequest } from './requests/LikeRequest';
 import { PostCommentStatusRequest } from './requests/PostCommentStatusRequest';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
+import { S3Service } from '../services/S3Service';
 
 @JsonController('/post')
 export class PostsCommentController {
@@ -39,7 +40,8 @@ export class PostsCommentController {
         private assetService: AssetService,
         private userLikeService: UserLikeService,
         private userEngagementService: UserEngagementService,
-        private pageAccessLevelService: PageAccessLevelService
+        private pageAccessLevelService: PageAccessLevelService,
+        private s3Service: S3Service
     ) { }
 
     // PostsComment List API
@@ -59,10 +61,16 @@ export class PostsCommentController {
      */
     @Get('/:postId/comment')
     @Authorized('user')
-    public async findPostsComment(@Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async findPostsComment(@Param('postId') postId: string, @QueryParam('offset') offset: number, @QueryParam('limit') limit: number, @Res() res: any, @Req() req: any): Promise<any> {
         const postPageObjId = new ObjectID(postId);
+        if (limit === undefined) {
+            limit = MAX_SEARCH_ROWS;
+        }
+        if (offset === undefined || offset < 0) {
+            offset = 0;
+        }
 
-        const postsComment: PostsComment[] = await this.postsCommentService.find({ where: { $and: [{ post: postPageObjId }] } });
+        const postsComment: PostsComment[] = await this.postsCommentService.find({ where: { $and: [{ post: postPageObjId, deleted: false }] }, take: limit, offset });
 
         if (postsComment) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PostsComment', postsComment);
@@ -207,16 +215,39 @@ export class PostsCommentController {
                             preserveNullAndEmptyArrays: false
                         }
                     },
-                    { $project: { _id: 0, id: '$_id', comment: 1, mediaURL: 1, post: 1, commentAsPage: 1, likeCount: 1, createdDate: 1, 'user.id': '$user._id', 'user.imageURL': 1, 'user.displayName': 1 } }
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'commentAsPage',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    { $project: { _id: 0, id: '$_id', comment: 1, mediaURL: 1, post: 1, commentAsPage: 1, likeCount: 1, createdDate: 1, 'page._id': 1, 'page.name': 1, 'page.pageUsername': 1, 'page.imageURL': 1, 'page.s3ImageURL': 1, 'page.isOfficial': 1, 'user.id': '$user._id', 'user.imageURL': 1, 'user.displayName': 1 } }
                 ];
                 const postCommentLists: any[] = await this.postsCommentService.aggregate(postCommentStmt);
 
                 if (postCommentLists !== null && postCommentLists !== undefined && postCommentLists.length > 0) {
                     const commentIdList = [];
 
+                    const pageSignURLMap: any = {};
                     for (const comment of postCommentLists) {
                         const commentId = comment.id;
                         commentIdList.push(new ObjectID(commentId));
+
+                        if (comment.page !== undefined && comment.page.s3ImageURL !== undefined && comment.page.s3ImageURL !== '') {
+                            const pageId = comment.page._id;
+                            if (pageSignURLMap[pageId] === undefined) {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(comment.page.s3ImageURL);
+                                pageSignURLMap[pageId] = signUrl;
+                            }
+                        }
                     }
 
                     let userObjId;
@@ -257,6 +288,16 @@ export class PostsCommentController {
                             result.likeAsPage = true;
                         } else {
                             result.likeAsPage = false;
+                        }
+
+                        if (result.page !== undefined) {
+                            const pageId = result.page._id;
+                            if (pageSignURLMap[pageId]) {
+                                result.page.signURL = pageSignURLMap[pageId];
+                            }
+
+                            // remove s3ImageURL
+                            delete result.page.s3ImageURL;
                         }
                     });
 
@@ -487,7 +528,7 @@ export class PostsCommentController {
 
                 if (userEngagementAction) {
                     await this.postsCommentService.update({ _id: commentObjId }, { $set: { likeCount } });
-                    const unLikedPost = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId } });
+                    const unLikedPost = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId, deleted: false } });
                     result['comment'] = unLikedPost;
                     const successResponse = ResponseUtil.getSuccessResponse('UnLike Post Comment Success', result);
                     return res.status(200).send(successResponse);
@@ -552,7 +593,7 @@ export class PostsCommentController {
 
                 if (userEngagementAction) {
                     await this.postsCommentService.update({ _id: commentObjId }, { $set: { likeCount } });
-                    const likedPostComment = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId } });
+                    const likedPostComment = await this.postsCommentService.findOne({ where: { _id: commentObjId, post: postObjId, deleted: false } });
                     result['comment'] = likedPostComment;
                     const successResponse = ResponseUtil.getSuccessResponse('Like Post Comment Success', result);
                     return res.status(200).send(successResponse);
@@ -593,7 +634,7 @@ export class PostsCommentController {
             const username = req.user.id;
 
             const postsCommentData: PostsComment = await this.postsCommentService.findOne({
-                $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }]
+                $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, { deleted: false }]
             });
 
             if (!postsCommentData) {
@@ -606,7 +647,7 @@ export class PostsCommentController {
 
             if (postsCommentEdit) {
                 const postsCommentUpdated: PostsComment = await this.postsCommentService.findOne({
-                    $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }]
+                    $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, { deleted: false }]
                 });
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Update PostsComment Successful', postsCommentUpdated));
@@ -664,4 +705,4 @@ export class PostsCommentController {
             return res.status(400).send(errorResponse);
         }
     }
-} 
+}

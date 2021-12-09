@@ -160,7 +160,7 @@ export class PostsService {
                         }
                     };
                     if (searchAsPage) {
-                        commentStmt = { where: { commentAsPage: userObjId, post: postObjId } };
+                        commentStmt = { where: { commentAsPage: userObjId, post: postObjId, deleted: false } };
                     }
                     const postComment: any = await this.postsCommentService.findOne(commentStmt);
                     if (postComment) {
@@ -298,7 +298,7 @@ export class PostsService {
                     resolve(result);
                     return;
                 }
-                
+
                 const postIds = [];
                 for (const post of postSearchResult) {
                     postIds.push(post._id);
@@ -318,6 +318,89 @@ export class PostsService {
                 reject(error);
             }
         });
+    }
+
+    public async getPostHashTagCount(hashTagIds: ObjectID[]): Promise<any[]> {
+        if (hashTagIds === undefined || hashTagIds === null || hashTagIds.length <= 0) {
+            return [];
+        }
+
+        // ! beware worst performance
+        const postAggressStmt = [
+            { $match: { postsHashTags: { $in: hashTagIds }, deleted: false } },
+            {
+                $unwind: {
+                    path: '$postsHashTags'
+                }
+            },
+            { $match: { postsHashTags: { $in: hashTagIds } } },
+            { $group: { _id: '$postsHashTags', count: { $sum: 1 } } }
+        ];
+        const result = await this.aggregate(postAggressStmt);
+
+        return result;
+    }
+
+    // recalculate hashTag Count : addingCount {objectIdString: number} = for adding number, subtractCount {objectIdString: number} for subtract number
+    public async recalculateHashTagCount(hashTagIds: ObjectID[], addingCount?: any, subtractCount?: any): Promise<any[]> {
+        const hashTagCount = await this.getPostHashTagCount(hashTagIds);
+
+        const result = [];
+        for (const aggRow of hashTagCount) {
+            const idKey = aggRow._id + '';
+            if (addingCount !== undefined) {
+                if (addingCount[idKey] !== undefined) {
+                    aggRow.count = aggRow.count + addingCount[idKey];
+                }
+            }
+
+            if (subtractCount !== undefined) {
+                if (subtractCount[idKey] !== undefined) {
+                    aggRow.count = aggRow.count - subtractCount[idKey];
+
+                    if (aggRow.count < 0) {
+                        aggRow.count = 0;
+                    }
+                }
+            }
+
+            this.hashTagService.update({ _id: aggRow._id }, { $set: { count: aggRow.count } });
+            result.push(aggRow);
+        }
+
+        return result;
+    }
+
+    public async addHashTagCount(hashTagIds: ObjectID[]): Promise<any[]> {
+        const hashTagCount = await this.getPostHashTagCount(hashTagIds);
+
+        const result = [];
+        for (const aggRow of hashTagCount) {
+            aggRow.count = aggRow.count + 1;
+
+            this.hashTagService.update({ _id: aggRow._id }, { $set: { count: aggRow.count } });
+            result.push(aggRow);
+        }
+
+        return result;
+    }
+
+    public async subtractHashTagCount(hashTagIds: ObjectID[]): Promise<any[]> {
+        const hashTagCount = await this.getPostHashTagCount(hashTagIds);
+
+        const result = [];
+        for (const aggRow of hashTagCount) {
+            aggRow.count = aggRow.count - 1;
+
+            if (aggRow.count < 0) {
+                aggRow.count = 0;
+            }
+
+            this.hashTagService.update({ _id: aggRow._id }, { $set: { count: aggRow.count } });
+            result.push(aggRow);
+        }
+
+        return result;
     }
 
     private getPostNeedsAggregate(matchStmt: any, simpleCount: number): Promise<any[]> {

@@ -5,6 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
+import * as https from 'https';
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Asset } from '../models/Asset';
@@ -15,6 +16,8 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { S3Service } from '../services/S3Service';
 import { ConfigService } from '../services/ConfigService';
 import { aws_setup } from '../../env';
+import { ASSET_SCOPE } from '../../constants/AssetScope';
+import { ObjectID } from 'mongodb';
 
 @Service()
 export class AssetService {
@@ -154,6 +157,60 @@ export class AssetService {
         }
 
         return asset;
+    }
+
+    public createAssetFromURL(url: string, userId: ObjectID): Promise<Asset> {
+        if (url === undefined || url === null || url === '') {
+            return Promise.resolve(undefined);
+        }
+
+        return new Promise((resolve, reject) => {
+            https.get(url, (res) => {
+                res.setEncoding('base64');
+                console.log(`createAssetFromURL STATUS: ${res.statusCode}`);
+
+                let data = '';
+                res.on('data', (d) => {
+                    data += d;
+                });
+
+                res.on('end', () => {
+                    if (data !== undefined && data !== '') {
+                        const mimeType = res.headers['content-type'];
+                        const fileName = FileUtil.renameFile();
+
+                        if (mimeType === undefined) {
+                            resolve(undefined);
+                            return;
+                        }
+
+                        const buffData = Buffer.from(data, 'base64');
+                        const asset: Asset = new Asset();
+                        asset.scope = ASSET_SCOPE.PUBLIC;
+                        asset.userId = userId;
+                        asset.fileName = fileName;
+                        asset.data = data;
+                        asset.mimeType = mimeType;
+                        asset.size = buffData.length;
+                        asset.expirationDate = null;
+
+                        this.create(asset).then((savedAsset) => {
+                            resolve(savedAsset);
+                        }).catch((err) => {
+                            console.log('err: ' + err);
+                            reject(err);
+                        });
+                    } else {
+                        resolve(undefined);
+                    }
+                });
+
+            }).on('error', (err) => {
+                // Handle error
+                console.log('err: ' + err);
+                reject(err);
+            }).end();
+        });
     }
 
     private async _isUploadToS3(): Promise<boolean> {

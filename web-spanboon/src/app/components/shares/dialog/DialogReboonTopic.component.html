@@ -18,8 +18,9 @@
             </g>
         </svg>
     </span>
-    <box-post [rePote]="content.post" [selectedPage]="userAsPage" [repostPage]="pageUserAsPage" [pages]="content.page"
-        [prefix]="prefix" [isListPage]="true" [isRepost]='false' #boxPost [modeShowDoing]="'true'"
-        (createPost)="dataRepost($event)">
+    <box-post [rePote]="content.post"
+        [repostPage]="data.options.pageUserAsPage.uniqueId?data.options.pageUserAsPage.uniqueId:data.options.pageUserAsPage.displayName"
+        [pages]="content.page" [prefix]="prefix" [isListPage]="true" [isSharePost]="false" [isRepost]='false' #boxPost
+        [modeShowDoing]="'true'" (createPost)="dataRepost($event)">
     </box-post>
 </div>

@@ -13,7 +13,11 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { PostsService } from '../services/PostsService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { S3Service } from '../services/S3Service';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
+import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
@@ -23,7 +27,8 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
     constructor(
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private userLikeService: UserLikeService
     ) {
         super();
     }
@@ -48,6 +53,11 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                     if (typeof this.config.searchOfficialOnly === 'boolean') {
                         searchOfficialOnly = this.config.searchOfficialOnly;
                     }
+                }
+
+                let userId = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    userId = this.data.userId;
                 }
 
                 const matchStmt: any = {
@@ -178,6 +188,14 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                         }
                                     },
                                     {
+                                        $lookup: {
+                                            from: 'PostsGallery',
+                                            localField: '_id',
+                                            foreignField: 'post',
+                                            as: 'gallery'
+                                        }
+                                    },
+                                    {
                                         $project: {
                                             story: 0
                                         }
@@ -205,6 +223,34 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                                 }
                                 const postAggregate = await this.postsService.aggregate(postStmt);
                                 contentModel.post = postAggregate;
+
+                                // search is like
+                                if (contentModel.post !== undefined && userId !== undefined && userId !== '') {
+                                    for (const post of contentModel.post) {
+                                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: post._id, subjectType: LIKE_TYPE.POST });
+                                        if (userLikes.length > 0) {
+                                            post.isLike = true;
+                                        } else {
+                                            post.isLike = false;
+                                        }
+
+                                        if (post.gallery !== undefined) {
+                                            for (const gal of post.gallery) {
+                                                if (gal.s3ImageURL !== undefined && gal.s3ImageURL !== '') {
+                                                    try {
+                                                        const signUrl = await this.s3Service.getConfigedSignedUrl(gal.s3ImageURL);
+                                                        gal.signURL = signUrl;
+                                                    } catch (error) {
+                                                        console.log('objective post gallery: ' + error);
+                                                    }
+                                                }
+
+                                                // remove s3ImageURL attribute
+                                                delete gal.s3ImageURL;
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                         }

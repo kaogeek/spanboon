@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, HostBinding, Input, Optional, Self, ChangeDetectorRef, Output, EventEmitter, HostListener, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, MenuContextualService, ObjectiveFacade } from '../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, MenuContextualService, PostFacade, PageFacade, ObjectiveFacade } from '../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser';
@@ -8,6 +8,9 @@ import { MatChipInputEvent } from '@angular/material';
 import { TooltipProfile } from './components';
 import { AbstractPageImageLoader } from './pages/AbstractPageImageLoader';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { environment } from '../../environments/environment';
+import { SearchFilter } from 'src/app/models/SearchFilter';
+import { DialogPostCrad } from '../../../src/app/components/shares/dialog/DialogPostCrad.component';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 declare var atwho: any;
@@ -46,19 +49,141 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   separatorKeysCodes = [ENTER, COMMA];
 
   keywords = [];
-  assetFacade: AssetFacade
-  objectiveFacade: ObjectiveFacade
+  assetFacade: AssetFacade;
+  objectiveFacade: ObjectiveFacade;
+  postFacade: PostFacade;
+  pageFacade: PageFacade;
+
+  public apiBaseURL = environment.apiBaseURL;
+
+  public STORY: any;
+  public recommendedHashtag: any;
+  public recommendedStory: any;
+  public recommendedStorys: any;
+  public userCloneDatas: any;
+  public pageUser: any;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
   constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, profileFacade: ProfileFacade, dialog: MatDialog,
-    sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef) {
+    sanitizer: DomSanitizer, assetFacade: AssetFacade, pageFacade: PageFacade, observManager: ObservableManager, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.assetFacade = assetFacade
+    this.pageFacade = pageFacade
     this.objectiveFacade = objectiveFacade;
+    this.postFacade = postFacade;
+
+
+
+    let user = this.authenManager.getCurrentUser()
+    this.userCloneDatas = JSON.parse(JSON.stringify(user));
+    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
+      this.searchPageInUser(this.userCloneDatas.id);
+    } else {
+      this.searchPageInUser();
+    }
+    let search: SearchFilter = new SearchFilter();
+    search.limit = 5;
+    search.count = false;
+    search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
+    this.postFacade.searchPostStory(search).then(async (res: any) => {
+      this.STORY = res;
+      this.TimeoutRuntimeSet();
+      this.getRecommendedHashtag(this.STORY[0]._id);
+      this.getRecommendedStory(this.STORY[0]._id);
+      this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
+    }).catch((err: any) => {
+      console.log(err)
+    })
+
+
+
 
   }
   ngOnInit(): void {
   }
+
+  public TimeoutRuntimeSet() {
+    setTimeout(() => {
+      $('.comSelect').remove();
+      $('.comDelet').remove();
+    }, 400);
+  }
+
+
+  public getRecommendedHashtag(id: string) {
+    this.postFacade.recommendedHashtag(id).then((res: any) => {
+      this.recommendedHashtag = res.data
+    }).catch((err: any) => {
+    })
+  }
+
+  public getRecommendedStory(id: string) {
+    this.postFacade.recommendedStory(id).then((res: any) => {
+      this.recommendedStory = res.data
+    }).catch((err: any) => {
+    })
+  }
+
+  public getRecommendedStorys(id: string, pageId: string) {
+    this.postFacade.recommendedStorys(id, pageId).then((res: any) => {
+      this.recommendedStorys = res.data
+    }).catch((err: any) => {
+    })
+  }
+
+  public clickToPage(dataId: any, type?: any) {
+    if (type !== null && type !== undefined) {
+      this.router.navigate([]).then(() => {
+        window.open('/search?hashtag=' + dataId, '_blank');
+      });
+    } else {
+      if (typeof (dataId) === 'object') {
+        const dialogRef = this.dialog.open(DialogPostCrad, {
+          width: 'auto',
+          disableClose: false,
+          data: {
+            post: dataId,
+            isNotAccess: false,
+            user: this.userCloneDatas,
+            pageUser: this.pageUser,
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      } else {
+        this.router.navigate([]).then(() => {
+          window.open('/emergencyevent/' + dataId);
+        });
+      }
+    }
+  }
+
+  public async searchPageInUser(userId?) {
+    if (userId) {
+      let search: SearchFilter = new SearchFilter();
+      search.limit = 2;
+      search.count = false;
+      search.whereConditions = { ownerUser: userId };
+      var aw = await this.pageFacade.search(search).then((pages: any) => {
+        this.pageUser = pages
+        this.pageUser.push(this.userCloneDatas)
+        this.pageUser.reverse();
+      }).catch((err: any) => {
+      });
+      if (this.pageUser.length > 0) {
+        for (let p of this.pageUser) {
+          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+          });
+        }
+      }
+    }
+
+  }
+
+
+
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();

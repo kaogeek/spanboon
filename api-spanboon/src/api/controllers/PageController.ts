@@ -1514,6 +1514,15 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
 
+        // check dupicate uniqueId
+        if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+            const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername);
+            if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         const fileName = userObjId + FileUtil.renameFile();
         let assetCreate: Asset;
 
@@ -1836,6 +1845,13 @@ export class PageController {
         let userFollowStmt;
         let action;
 
+        // find page
+        const page = await this.pageService.findOne({ _id: pageObjId });
+        if (page === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('Page was not found', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if (pageFollow) {
             const unfollow = await this.userFollowService.delete({ userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE });
             if (unfollow) {
@@ -1950,6 +1966,15 @@ export class PageController {
 
             if (!pageUpdate) {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid Page Id', undefined));
+            }
+
+            // check dupicate uniqueId
+            if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+                const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername, undefined, pageUpdate.pageUsername);
+                if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
             }
 
             let pageName = pages.name;

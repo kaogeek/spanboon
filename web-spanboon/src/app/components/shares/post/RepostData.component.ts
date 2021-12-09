@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_URL, PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT } from '../../../../custom/variable';
 import { environment } from '../../../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'repost-data',
@@ -27,6 +28,7 @@ export class RepostData {
   private postFacade: PostFacade;
   private needsFacade: NeedsFacade;
   private profileFacade: ProfileFacade;
+  private router: Router;
   public dialog: MatDialog;
 
   public commentpost: any[] = [];
@@ -63,7 +65,7 @@ export class RepostData {
   public webBaseURL = environment.webBaseURL;
   private mainPostLink: string = window.location.origin + '/post/'
 
-  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade, needsFacade: NeedsFacade) {
+  constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, router: Router, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade, needsFacade: NeedsFacade) {
     this.dialog = dialog;
     this.assetFacade = assetFacade;
     this.pageFacade = pageFacade;
@@ -72,6 +74,8 @@ export class RepostData {
     this.profileFacade = profileFacade;
     this.isComment = false
     this.isRepost = false
+    this.router = router;
+
   }
 
   ngAfterViewInit(): void {
@@ -201,6 +205,15 @@ export class RepostData {
 
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
+  }
+
+  public storyTebtoPage(post) {
+    var dataPage = { id: post._id, pageId: post.pageId, type: post.type };
+    sessionStorage.setItem('dataPage', JSON.stringify(dataPage));
+    this.router.navigate([]).then(() => {
+      let win = window.open('/story/' + post._id, '_blank');
+      win.focus();
+    });
   }
 
   public showDialogGallery(imageGallery) {

@@ -112,7 +112,6 @@ export class MainPage extends AbstractPage implements OnInit {
   ngAfterViewInit(): void {
     var prev = 0;
     // var spanboonHome = $('#menubottom'); 
-    // console.log('spanboonHome ',spanboonHome.scrollTop())
     $(window).scroll(() => {
       this.scrollTop();
       var scrollTop = $(window).scrollTop();
@@ -128,7 +127,7 @@ export class MainPage extends AbstractPage implements OnInit {
           $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
           $('.header-top').toggleClass('hidden', scrollTop > prev);
           // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
-          // $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
+          $('.fix-hompage-bar').toggleClass('hidden', scrollTop > prev);
           // $('.spanboon-main-page').toggleClass('hidescroll', scrollTop > prev);
           $('.icon-post-bottom').toggleClass('hidden', scrollTop > prev);
         }
@@ -326,6 +325,7 @@ export * from './main.internal/HomePage.component';
 export * from './main.internal/HomePageV2.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
+export * from './main.internal/LoginPageTest.component';
 export * from './main.internal/ForgotPasswordPage.component';
 export * from './main.internal/ProfilePage.component';
 export * from './main.internal/FanPage.component';

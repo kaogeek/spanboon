@@ -7,10 +7,10 @@
 
 <div class="comment" *ngFor="let comment of commentdata; let i = index">
     <div class="comment-body">
-        <div class="comment-img">
+        <div class="comment-img" (click)="clickToUser(comment.page?comment.page:comment.user)" *ngIf="!isImgSing">
             <ng-container
                 *ngIf="comment.user !== undefined && comment.user !== null && comment.user.imageURL && comment.user.imageURL !== undefined && comment.user.imageURL !== null && comment.user.imageURL !== '' ; else elseImage">
-                <div class="menu-user" (click)="menuProfile();">
+                <div class="menu-user" (click)="menuProfile(comment.page?comment.page:comment.user);">
                     <img class="image-profile-comment" src="{{testIimageURL(comment.user.imageURL)}}" alt="">
                 </div>
             </ng-container>
@@ -23,9 +23,28 @@
                 </div>
             </ng-template>
         </div>
+        <div class="comment-img" (click)="clickToUser(comment.page?comment.page:comment.user)" *ngIf="isImgSing">
+            <div class="menu-user" *ngIf="comment.page?comment.page.imageURL:comment.user.imageURL"
+                (click)="menuProfile(comment.page?comment.page:comment.user);">
+                <img *ngIf="comment.page" class="image-profile-comment"
+                    [src]="apiBaseURL+comment.page.imageURL+'/image'" alt="">
+                <img *ngIf="!comment.page" class="image-profile-comment"
+                    [src]="apiBaseURL+comment.user.imageURL+'/image'" alt="">
+            </div>
+            <div *ngIf="comment.page?comment.page.imageURL === '':false || comment.user.imageURL === undefined"
+                class="menu-user displayName">
+                <div class="donators" *ngIf="comment.page">
+                    {{comment.page.name | slice: 0:1 }}
+                </div>
+                <div class="donators" *ngIf="!comment.page">
+                    {{comment.user.displayName | slice: 0:1 }}
+                </div>
+            </div>
+        </div>
         <div class="comment-input">
             <div class="comment-i_u">
-                <span class="username">{{comment.user.displayName}}</span>
+                <span class="username"
+                    (click)="clickToUser(comment.page?comment.page:comment.user)">{{comment.page?comment.page.name:comment.user.displayName}}</span>
                 <input *ngIf="comment.isEdit" #textcomment id="textcomment" class="comment-comment comment-edit"
                     placeholder="แสดงความคิดเห็น..." (keyup.enter)="commentActionSave('EDIT',comment,i)"
                     [(ngModel)]="commentEdit" type="text">

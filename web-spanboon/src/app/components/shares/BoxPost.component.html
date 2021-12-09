@@ -7,7 +7,7 @@
 
 <div class="box-post" (window:resize)="onResize()" [ngClass]="class">
     <form #boxPost="ngForm" class="box" *ngIf="!isShowTablet" mat-dialog-content>
-        <div *ngIf="isRepost" class="box-story" #headerTop> 
+        <div *ngIf="isRepost" class="box-story" #headerTop>
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
@@ -18,7 +18,7 @@
                         <ng-template #elseAccessPage>
                             <div class="donator">
                                 <span>{{accessPageImage && ( accessPageImage.displayName || accessPageImage.name |
-                                    slice: 0:1 ) }}</span> 
+                                    slice: 0:1 ) }}</span>
                             </div>
                         </ng-template>
                         <mat-select [ngModelOptions]="{standalone: true}"
@@ -200,8 +200,8 @@
             </div>
         </div>
         <needs-card #needsCard style="padding-left: 15pt; padding-right: 15pt; display: block;" [isClose]="true"
-            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill" [isNeedBoxPost]="false"
-            [isButtonFulfill]="isButtonFulfill"></needs-card>
+            [itemNeeds]="arrListItem" (close)="removeNeeds($event)" [isFulfill]="content && content.isFulfill"
+            [isNeedBoxPost]="false" [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
                 <div class="text-limit" [class.validate]="getTextLength() > 230"
@@ -285,7 +285,7 @@
                             </div>
                         </div>
                     </mat-menu>
-                </div>  
+                </div>
                 <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"
@@ -351,8 +351,8 @@
                                                 <!-- <span class="wrapper-hashTag">#</span> -->
                                                 <label for="add-username">#</label>
                                                 <input type="text" class="input-hashTag" id="objective-doing-name"
-                                                    name="objective-doing-name" #objectiveDoingName placeholder="แฮชแท๊ค"
-                                                    required matInput>
+                                                    name="objective-doing-name" #objectiveDoingName
+                                                    placeholder="แฮชแท๊ค" required matInput>
                                             </div>
                                         </div>
                                         <div class="wrapper-doing">
@@ -361,7 +361,8 @@
                                                 required matInput>
                                         </div>
                                         <div class="wrapper-upload">
-                                            <ng-container *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
+                                            <ng-container
+                                                *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
                                                 <div class="div-image">
                                                     <img class="image-user"
                                                         src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
@@ -370,10 +371,11 @@
                                             </ng-container>
                                             <ng-template #elseShowImage>
                                                 <div class="div-image">
-                                                    <img class="image-user" src="../../../../assets/img/image.svg" alt="">
+                                                    <img class="image-user" src="../../../../assets/img/image.svg"
+                                                        alt="">
                                                 </div>
                                             </ng-template>
-    
+
                                             <div class="wrapper-field-upload">
                                                 <div class="top">
                                                     อัพโหลดรูปโปรไฟล์
@@ -399,7 +401,7 @@
                                         </div>
                                     </div>
                                 </div>
-                              
+
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
@@ -531,7 +533,7 @@
             </div>
         </div>
 
-        <div *ngIf="!isRepost" style="padding: 20px;">
+        <div *ngIf="!isRepost" style="padding: 0px 20px;">
             <repost-data [isRepost]="true" [itemPost]="rePote"></repost-data>
         </div>
 
@@ -715,7 +717,7 @@
                                     accept="image/*" multiple />
                             </div>
                         </ng-template>
-                    </div> 
+                    </div>
                     <ng-container *ngIf="isSharePost">
                         <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
                             <svg class="icon-social"
@@ -746,9 +748,10 @@
                                             </g>
                                         </svg>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="body-list">
-                                    <div class="checklist" *ngIf="(facebookConection && !facebookConection.data) && (twitterConection && !twitterConection.data)">
+                                    <div class="checklist"
+                                        *ngIf="(facebookConection && !facebookConection.data) && (twitterConection && !twitterConection.data)">
                                         <span class="list-found">ไม่พบเพจหรือบัญชีผู้ใช้</span>
                                     </div>
                                     <div class="checklist" *ngIf="facebookConection && facebookConection.data">
@@ -798,11 +801,11 @@
                 </div>
             </div>
             <div class="box-right" [class.active]="isClickPostPreLoad">
-                <div class="div-gatdata-post" (click)="onClickGetDataPost()"></div>
+                <div class="div-gatdata-post" (click)="onClickGetDataPost(false,true)"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
                         <mat-select [(value)]="selected1">
-                            <mat-option *ngIf="isFulfill" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                            <mat-option *ngIf="isFulfill" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                 โพสต์
                             </mat-option>
                         </mat-select>
@@ -810,17 +813,17 @@
                 </ng-container>
                 <ng-template #elseIsFulfill>
                     <ng-container *ngIf="isEdit; else elseIsEdit">
-                        <div class="edit-post" (click)="onClickGetDataPost()">
+                        <div class="edit-post" (click)="onClickGetDataPost(false,false)">
                             แก้ไขโพสต์
                         </div>
                     </ng-container>
                     <ng-template #elseIsEdit>
                         <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
                             <mat-select [(value)]="selected1">
-                                <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
-                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost()">
+                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
                                 <mat-option *ngIf="isRepost" [value]="'บันทึกฉบับร่าง'"

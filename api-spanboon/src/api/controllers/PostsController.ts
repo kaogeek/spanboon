@@ -254,7 +254,7 @@ export class PostsController {
         if (postLists !== null && postLists !== undefined) {
             const postIdList = [];
             const referencePostList = [];
-            const postsMap: any = {};
+            const repostCountMap: any = {};
 
             for (const post of postLists) {
                 const referencePost = post.referencePost;
@@ -549,11 +549,34 @@ export class PostsController {
                         }
                     }
 
-                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
                     if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                         for (const comment of postComments) {
                             const postId = comment.post;
                             postsCommentMap[postId] = comment;
+                        }
+                    }
+
+                    // search repost
+                    if (postIdList.length > 0) {
+                        // search for one if has repost
+                        const repostAggress: any = [
+                            {
+                                $match: {
+                                    ownerUser: userObjId, referencePost: { $in: postIdList }, deleted: false, hidden: false,
+                                    $or: [
+                                        { postAsPage: { $exists: false } },
+                                        { postAsPage: null }
+                                    ]
+                                }
+                            },
+                            { $group: { _id: '$referencePost', count: { $sum: 1 } } },
+                        ];
+                        const postRepostsAggs: any = await this.postsService.aggregate(repostAggress);
+                        if (postRepostsAggs) {
+                            for (const aggRow of postRepostsAggs) {
+                                repostCountMap[aggRow._id + ''] = aggRow.count;
+                            }
                         }
                     }
                 }
@@ -578,9 +601,6 @@ export class PostsController {
                 result.map((data) => {
                     const postId = data._id;
                     const story = data.story;
-                    const ownerUser = data.ownerUser;
-                    const postAsPage = data.postAsPage;
-                    let dataKey;
 
                     if (isHideStory === true) {
                         if (story !== null && story !== undefined) {
@@ -591,18 +611,8 @@ export class PostsController {
                     }
 
                     if (postId !== null && postId !== undefined && postId !== '') {
-                        if (postAsPage !== null && postAsPage !== undefined && postAsPage !== '') {
-                            dataKey = postAsPage + ':' + postId + ':' + ownerUser;
-                        } else {
-                            dataKey = postId + ':' + ownerUser;
-                        }
-
-                        if (dataKey !== null && dataKey !== undefined && dataKey !== '') {
-                            if (postsMap[dataKey]) {
-                                data.isRepost = true;
-                            } else {
-                                data.isRepost = false;
-                            }
+                        if (repostCountMap[postId]) {
+                            data.isRepost = true;
                         } else {
                             data.isRepost = false;
                         }
@@ -783,7 +793,7 @@ export class PostsController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Repost', undefined));
             }
-        } catch (err) {
+        } catch (err: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Error', err.message));
         }
     }
@@ -835,7 +845,6 @@ export class PostsController {
         const contentType = ENGAGEMENT_CONTENT_TYPE.POST;
 
         let userEngagementAction: UserEngagement;
-        let userLiked: UserLike[];
         let result = {};
         let userLikeStmt;
         let action;
@@ -869,7 +878,7 @@ export class PostsController {
 
                     engagement = await this.userEngagementService.getEngagement(postObjId, userObjId, action, contentType, likeAsPageObjId);
 
-                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST, likeAsPage: likeAsPageObjId } };
+                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST } };
                 } else {
                     userEngagement.likeAsPage = null;
 
@@ -885,8 +894,16 @@ export class PostsController {
                 }
 
                 userEngagementAction = await this.userEngagementService.create(userEngagement);
-                userLiked = await this.userLikeService.find(userLikeStmt);
-                likeCount = userLiked.length;
+                const matchStmt: any = [
+                    { $match: userLikeStmt.where },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } }
+                ];
+                const countLikeAggr: any[] = await this.userLikeService.aggregate(matchStmt);
+                if (countLikeAggr && countLikeAggr.length > 0) {
+                    likeCount = countLikeAggr[0].count;
+                } else {
+                    likeCount = 0;
+                }
 
                 result['isLike'] = false;
                 result['likeCount'] = likeCount;
@@ -924,8 +941,6 @@ export class PostsController {
                     let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
 
-                    console.log('postObj >>>> ', postObj);
-
                     if (postObj.pageId !== undefined && postObj.pageId !== null) {
                         // create noti for page
                         const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
@@ -954,7 +969,7 @@ export class PostsController {
 
                     engagement = await this.userEngagementService.getEngagement(postObjId, userObjId, action, contentType, likeAsPageObjId);
 
-                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST, likeAsPage: likeAsPageObjId } };
+                    userLikeStmt = { where: { subjectId: postObjId, subjectType: LIKE_TYPE.POST } };
                 } else {
                     userEngagement.likeAsPage = null;
 
@@ -970,8 +985,17 @@ export class PostsController {
                 }
 
                 userEngagementAction = await this.userEngagementService.create(userEngagement);
-                userLiked = await this.userLikeService.find(userLikeStmt);
-                likeCount = userLiked.length;
+
+                const matchStmt: any = [
+                    { $match: userLikeStmt.where },
+                    { $group: { _id: '$subjectId', count: { $sum: 1 } } }
+                ];
+                const countLikeAggr: any[] = await this.userLikeService.aggregate(matchStmt);
+                if (countLikeAggr && countLikeAggr.length > 0) {
+                    likeCount = countLikeAggr[0].count;
+                } else {
+                    likeCount = 0;
+                }
 
                 result['isLike'] = true;
                 result['likeCount'] = likeCount;
@@ -1183,8 +1207,6 @@ export class PostsController {
             for (const item of currentNeeds) {
                 needsIdList.push(new ObjectID(item));
             }
-
-            console.log('needsIdList >>> ', needsIdList);
 
             const needsQuery = { _id: { $in: needsIdList }, pageId: pageObjId, post: postObjId };
 

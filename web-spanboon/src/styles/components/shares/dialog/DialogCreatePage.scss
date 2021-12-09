@@ -45,8 +45,7 @@
             margin-top: -12vh;
 
             > .header {
-                font-family: "Kanit-500";
-                font-size: 40px;
+                @include font-size-4($font-head-300);
                 line-height: 44px;
                 color: $white;
             }

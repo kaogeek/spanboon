@@ -464,13 +464,13 @@ export class FulfillPage extends AbstractPage implements OnInit {
                             this.emergencyEvent = data.emergencyEvent;
                             this.objective = data.objective;
                             this.userImageURL = data.userImageURL !== undefined && data.userImageURL !== '' && data.userImageURL !== null ? data.userImageURL : '';
-                            if (this.userImageURL) {
-                                this.userImageURL = await this.passSignUrl(this.userImageURL);
-                            }
-                            this.pageImageURL = data.pageImageURL !== undefined && data.pageImageURL !== '' && data.pageImageURL !== null ? data.pageImageURL : '';
-                            if (this.pageImageURL) {
-                                this.pageImageURL = await this.passSignUrl(this.pageImageURL);
-                            }
+                            // if (this.userImageURL) {
+                            //     this.userImageURL = await this.passSignUrl(this.userImageURL);
+                            // }
+                            // this.pageImageURL = data.pageImageURL !== undefined && data.pageImageURL !== '' && data.pageImageURL !== null ? data.pageImageURL : '';
+                            // if (this.pageImageURL) {
+                            //     this.pageImageURL = await this.passSignUrl(this.pageImageURL);
+                            // }
                             this.name = data.name;
                             this.postDate = data.postDate;
                         }
@@ -1134,7 +1134,6 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                                     // let chatIds: string[] = [];
                                                     // chatIds.push(this.chatRoomId); 
                                                     // this.chatFacade.markReadChatMessage(chatIds, this.asPage).then((readResult) => {
-                                                    //     console.log('readResult ',readResult)
                                                     //     if (readResult !== null && readResult !== undefined) {
                                                     //         for (let result of readResult.data) {
                                                     //             if (data.chatMessage.id === result.id) {
@@ -1470,9 +1469,9 @@ export class FulfillPage extends AbstractPage implements OnInit {
         }, 400);
     }
 
-    public async passSignUrl(url?: any): Promise<any> {
-        let signData: any = await this.assetFacade.getPathFileSign(url);
-        return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
-    }
+    // public async passSignUrl(url?: any): Promise<any> {
+    //     let signData: any = await this.assetFacade.getPathFileSign(url);
+    //     return signData.data.signURL ? signData.data.signURL : ('data:image/png;base64,' + signData.data.data);
+    // }
 
 }

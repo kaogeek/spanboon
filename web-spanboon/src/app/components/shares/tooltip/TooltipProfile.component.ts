@@ -171,8 +171,6 @@ export class TooltipProfile extends AbstractPage implements OnInit {
 
     clearTimeout(this.setTimeing);
 
-    // console.log('event.toElement', event.toElement)
-    // console.log('event.className', event.toElement.className)
     // let BUTTON_CLASS: string = "button-follow mat-ripple radius";
     // let BUTTON_CLASS_SEND: string = "but-send mat-stroked-button mat-button-base";
     // let BUTTON_CLASS_RIGHT: string = "tooltip-bottom-right";

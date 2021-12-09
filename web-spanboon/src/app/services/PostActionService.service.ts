@@ -42,11 +42,7 @@ export class PostActionService extends AbstractFacade {
         this.dialog = dialog;
     }
 
-    public async actionPost(action: any, index: number, resPost: any, repostShare?: string) {
-        console.log('action ==== > ', action);
-        console.log('resPost ==== > ', resPost);
-        console.log('repostShare ==== > ', repostShare);
-        console.log('index ==== > ', index);
+    public async actionPost(action: any, index: number, resPost: any, repostShare?: string, isDialog?: boolean): Promise<any> {
         if (action.mod === 'REBOON') {
             if (action.userAsPage.id !== undefined && action.userAsPage.id !== null && action.userAsPage.id !== this.authMgr.getCurrentUser().id) {
                 this.userAsPage = action.userAsPage.id;
@@ -62,6 +58,7 @@ export class PostActionService extends AbstractFacade {
             }
 
             if (action.type === "TOPIC") {
+
                 let search: SearchFilter = new SearchFilter();
                 search.limit = 10;
                 search.count = false;
@@ -77,6 +74,9 @@ export class PostActionService extends AbstractFacade {
                     });
                 }
                 return new Promise((resolve, reject) => {
+                    if (isDialog) {
+                        resolve({ options: { post: action.post, page: this.pageInUser, userAsPage: this.userAsPage, pageUserAsPage: action.userAsPage }, isDialog: isDialog });
+                    }
                     const dialogRef = this.dialog.open(DialogReboonTopic, {
                         width: '550pt',
                         data: { options: { post: action.post, page: this.pageInUser, userAsPage: this.userAsPage, pageUserAsPage: action.userAsPage } }
@@ -120,9 +120,9 @@ export class PostActionService extends AbstractFacade {
                             }
 
                             this.postFacade.rePost(this.dataPost, this.data).then((res: any) => {
-                                resPost.posts[index].repostCount++
-                                resPost.posts[index].isRepost = false;
-
+                                if (resPost !== undefined && resPost !== null) {
+                                    resPost.posts[index].repostCount++
+                                }
                                 let data = {
                                     res,
                                     type: "TOPIC"
@@ -133,20 +133,23 @@ export class PostActionService extends AbstractFacade {
                             })
                         }
                     })
+
                 });
             } else if (action.type === "NOTOPIC") {
                 return new Promise((resolve, reject) => {
                     this.dataPost = action.post._id;
                     this.postFacade.rePost(this.dataPost, this.data).then(async (res: any) => {
-                        resPost.posts[index].repostCount++;
-                        resPost.posts[index].isRepost = true;
-                        if (repostShare === "PAGE") {
-                            if (this.data.pageId === null && this.data.postAsPage === null) {
-                                return;
-                            }
-                        } else {
-                            if (this.data.pageId !== null && this.data.postAsPage !== null) {
-                                return;
+                        if (resPost.posts) {
+                            resPost.posts[index].repostCount++;
+                            resPost.posts[index].isRepost = true;
+                            if (repostShare === "PAGE") {
+                                if (this.data.pageId === null && this.data.postAsPage === null) {
+                                    return;
+                                }
+                            } else {
+                                if (this.data.pageId !== null && this.data.postAsPage !== null) {
+                                    return;
+                                }
                             }
                         }
 

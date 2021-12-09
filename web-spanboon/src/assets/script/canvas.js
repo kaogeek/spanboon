@@ -1,9 +1,14 @@
 setTimeout(() => {
-    Controller.prototype.timeline();
-    window.addEventListener('resize', function (event) {
+    let Url = document.URL;
+    let indexEmergencyevent = Url.indexOf('emergencyevent')
+    let indexObjectivetimeline = Url.indexOf('objective')
+    if (indexEmergencyevent > 0 || indexObjectivetimeline > 0) {
         Controller.prototype.timeline();
-    }, true);
-}, 5000);
+        window.addEventListener('resize', function (event) {
+            Controller.prototype.timeline();
+        }, true);
+    }
+}, 2000);
 
 var Controller;
 
@@ -16,9 +21,8 @@ Controller = (function () {
     Controller.prototype.timeline = function () {
         var w = window.innerWidth;
         if (canvas) {
-            window.scrollTo(0, 0);
+            // window.scrollTo(0, 0);
             var elms = document.querySelectorAll("[id='point']");
-            var canvas = document.createElement('canvas');
             var ctx = canvas.getContext("2d");
             canvas.height = document.getElementById('body').getBoundingClientRect().height
             canvas.width = document.getElementById('body').getBoundingClientRect().width

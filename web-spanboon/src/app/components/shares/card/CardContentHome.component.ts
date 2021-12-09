@@ -150,7 +150,7 @@ export class CardContentHome extends AbstractPage implements OnInit {
 
             if (this.isDerTy(this.eventData)) {
                 this.eventDataAct = this.eventData[0];
-                this.eventCoverPageUrl = this.eventData[0].signURL ? this.eventData[0].signURL : this.eventData[0].coverSignURL ? this.eventData[0].coverSignURL : this.eventData[0].coverPageUrl;
+                // this.eventCoverPageUrl = this.eventData[0].signURL ? this.eventData[0].signURL : this.eventData[0].coverSignURL ? this.eventData[0].coverSignURL : this.eventData[0].coverPageUrl;
                 this.eventTitle = this.eventData[0].title;
                 this.eventDescription = this.eventData[0].description;
                 this.dateTime = this.eventData[0].dateTime;

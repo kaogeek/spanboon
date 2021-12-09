@@ -446,7 +446,6 @@ export class PostPage extends AbstractPage implements OnInit {
           this.msgPageNotFound = true;
         }
         // else if(err.error.message === 'Unable got Asset'){
-        //   console.log("1111")
         // }
         this.stopLoading();
       }
@@ -577,7 +576,6 @@ export class PostPage extends AbstractPage implements OnInit {
   }
 
   public deletePost(post: any, index: number) {
-    // console.log('delete ',post)  
     const confirmEventEmitter = new EventEmitter<any>();
     confirmEventEmitter.subscribe(() => {
       this.submitDialog.emit();

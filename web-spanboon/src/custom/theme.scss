@@ -13,8 +13,8 @@
 // Brand color
 
 $brandcolor: rgb(243, 248, 242);
-$brandcolor2: rgb(253, 84, 84);
-$brandcolor3: rgb(198, 38, 52);
+$brandcolor2: rgb(238, 118, 35);
+$brandcolor3: rgb(12, 52, 85);
 
 //Background
 
@@ -32,26 +32,26 @@ $svg-social-icon-color: rgb(248, 247, 242);
 
 // Status color
 
-$status-post-need: $brandcolor3;
+$status-post-need: $brandcolor2;
 $status-post-general: rgb(165, 165, 166);
-$status-post-fulfill: rgb(40, 167, 69);
+$status-post-fulfill: $brandcolor3;
 
-$status-success: rgb(40, 167, 69);
+$status-success: $brandcolor2;
 
 // Button Color
 
-$button-home-card: rgb(122, 175, 103);
+$button-home-card: $brandcolor3;
 $button-timeline: rgb(122, 175, 103);
 $button-fan-page: rgb(122, 175, 103);
 
 $home-follow-users-color: $brandcolor3;
-$home-page-activate-color: rgb(40, 167, 69);
-$home-page-card-color: rgb(198, 38, 52);
+$home-page-activate-color: $brandcolor3;
+$home-page-card-color: $brandcolor2;
 $home-page-button-color: rgb(40, 167, 69);
 
 // 2.Font
 
-$font-size-based: 10pt;
+$font-size-based: 9pt;
 
 $font-size-10: 1pt;
 $font-size-9: 3pt;
@@ -70,12 +70,12 @@ $font-size-icon-large: 14pt;
 
 // 2.Font Family
 
-$font-head-600: "Kanit-600";
-$font-head-500: "Kanit-500";
-$font-head-400: "Kanit-400";
-$font-head-300: "Kanit-300";
-$font-head-200: "Kanit-200";
-$font-head-100: "Kanit-100";
+$font-head-600: "Anakotmai-Medium";
+$font-head-500: "Anakotmai-Medium";
+$font-head-400: "Anakotmai-Medium";
+$font-head-300: "Anakotmai-Medium";
+$font-head-200: "Anakotmai-Medium";
+$font-head-100: "Anakotmai-Light";
 
 $font-content-light: "Sarabun-Light";
 $font-content-medium: "Sarabun-Medium";

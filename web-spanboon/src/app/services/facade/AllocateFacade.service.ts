@@ -61,7 +61,6 @@ export class AllocateFacade extends AbstractFacade {
     }
 
     public async searchAllocate(data, filter?): Promise<any> {
-        console.log('filter', filter)
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/allocate/search";
 

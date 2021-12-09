@@ -46,7 +46,7 @@ export class HomePage extends AbstractPage implements OnInit {
   public userCloneDatas: any;
   public pageUser: any;
   public model: any = undefined;
-  public hashTag: any = undefined;
+  public hashTag: any = [];
 
   public apiBaseURL = environment.apiBaseURL;
 
@@ -72,6 +72,7 @@ export class HomePage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     super.ngOnInit();
+    // type: "FULFILLMENT"
   }
 
   private async getMainPageModel(userId?) {
@@ -85,11 +86,12 @@ export class HomePage extends AbstractPage implements OnInit {
       filter
     }
     this.hashTagFacade.searchTrend(data).then(res => {
-      this.hashTag = res;
+      if (res.length > 0) {
+        this.hashTag = res;
+      }
     }).catch(error => {
       console.log(error);
     });
-    console.log('model', this.model);
   }
 
   public async searchPageInUser(userId?) {
@@ -122,9 +124,24 @@ export class HomePage extends AbstractPage implements OnInit {
         window.open('/search?hashtag=' + dataId, '_blank');
       });
     } else {
-      this.router.navigate([]).then(() => {
-        window.open('/emergencyevent/' + dataId);
-      });
+      if (typeof (dataId) === 'object') {
+        const dialogRef = this.dialog.open(DialogPostCrad, {
+          width: 'auto',
+          disableClose: false,
+          data: {
+            post: dataId,
+            isNotAccess: false,
+            user: this.userCloneDatas,
+            pageUser: this.pageUser,
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      } else {
+        this.router.navigate([]).then(() => {
+          window.open('/emergencyevent/' + dataId);
+        });
+      }
     }
   }
 

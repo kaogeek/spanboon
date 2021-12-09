@@ -128,7 +128,6 @@ export class PostData {
     this.isLoading = true;
     this.mainPostLink = window.location.origin + '/post/';
 
-
     this.user = this.authenManager.getCurrentUser();
     this.usercurrent = this.authenManager.getCurrentUser();
     setTimeout(() => {
@@ -280,7 +279,6 @@ export class PostData {
 
   public pageAction(action: any) {
     let comments: any[] = []
-    action.imageURL = action.img64
     this.user = action
     if (this.commentpost.length !== 0) {
       for (let c of this.commentpost) {
@@ -421,8 +419,13 @@ export class PostData {
       });
       dialog.afterClosed().subscribe((res) => {
         if (res) {
+          this.commentpost.splice(data.index, 1);
+          let index = this.commentpost.map(function (e) { return e.user.id; }).indexOf(this.usercurrent.id);
+          this.itemPost.commentCount = this.itemPost.commentCount - 1;
+          if (index > 0) {
+            this.itemPost.isComment = false;
+          }
           this.postCommentFacade.delete(this.itemPost._id, data.commentdata).then((res: any) => {
-            this.commentpost.splice(data.index, 1);
           }).catch((err: any) => {
           })
         }

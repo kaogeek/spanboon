@@ -38,6 +38,7 @@ import { TwitterService } from '../services/TwitterService';
 import { ConfigService } from '../services/ConfigService';
 import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
+import { FacebookTestService } from '../services/FacebookTestService';
 
 @JsonController()
 export class GuestController {
@@ -46,6 +47,7 @@ export class GuestController {
         private userService: UserService,
         private authenticationIdService: AuthenticationIdService,
         private facebookService: FacebookService,
+        private facebookTestService: FacebookTestService,
         private googleService: GoogleService,
         private assetService: AssetService,
         private userFollowService: UserFollowService,
@@ -100,7 +102,7 @@ export class GuestController {
             const data: User = await this.userService.findOne({ where: { username: registerEmail } });
 
             if (data) {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', data);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
                 return res.status(400).send(errorResponse);
             } else {
                 if (registerPassword === null || registerPassword === undefined) {
@@ -136,6 +138,18 @@ export class GuestController {
                     user.customGender = null;
                 } else {
                     user.customGender = customGender;
+                }
+
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
 
                 let result = await this.userService.create(user);
@@ -279,6 +293,18 @@ export class GuestController {
                     user.customGender = customGender;
                 }
 
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', users);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+
                 const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
@@ -417,6 +443,18 @@ export class GuestController {
                     user.customGender = null;
                 } else {
                     user.customGender = customGender;
+                }
+
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', users);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
 
                 const resultData: User = await this.userService.create(user);
@@ -889,6 +927,114 @@ export class GuestController {
         return res.status(200).send(successResponse);
     }
 
+    // Login API
+    /**
+     * @api {post} /api/login Login
+     * @apiGroup Guest API
+     * @apiParam (Request body) {String} username User Username
+     * @apiParam (Request body) {String} password User Password
+     * @apiParamExample {json} Input
+     * {
+     *      "username" : "",
+     *      "password" : "",
+     * }
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *      "data": {
+     *         "token": ""
+     *      },
+     *      "message": "Successfully login",
+     *      "status": "1"
+     * }
+     * @apiSampleRequest /api/login
+     * @apiErrorExample {json} Error
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/login/test')
+    public async loginTest(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const mode = req.headers.mode;
+        let loginToken: any;
+        let loginUser: any;
+
+        if (mode === PROVIDER.FACEBOOK) {
+            const checkAccessToken = await this.facebookTestService.checkAccessToken(loginParam.token);
+            if (checkAccessToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
+
+            if (checkAccessToken.error !== undefined) {
+                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
+                return res.status(400).send(errorResponse);
+            }
+
+            if (checkAccessToken.data === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(200).send(errorResponse);
+            }
+
+            const expiresAt = checkAccessToken.data.expires_at;
+            const today = moment().toDate();
+            console.log('expiresAt: ', expiresAt);
+            console.log('today: ', today.getTime());
+
+            // if (expiresAt < today.getTime()) {
+            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
+            //     return res.status(400).send(errorResponse);
+            // }
+
+            let fbUser = undefined;
+            try {
+                fbUser = await this.facebookTestService.getFacebookUserFromToken(loginParam.token);
+            } catch (err) {
+                console.log(err);
+            }
+
+            if (fbUser === null || fbUser === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            } else {
+                const userExrTime = await this.getUserLoginExpireTime();
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
+                const facebookUserId = fbUser.authId.providerUserId;
+                const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
+                const updateAuth = await this.authenticationIdService.update(query, newValue);
+
+                if (updateAuth) {
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: query });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
+                    loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                }
+            }
+        }
+
+        if (loginUser === undefined) {
+            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+            return res.status(400).send(errorResponse);
+        }
+
+        if (loginUser.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+        loginUser = await this.userService.cleanUserField(loginUser);
+        loginUser.followings = userFollowings.length;
+        loginUser.followers = userFollowers.length;
+
+        const result = { token: loginToken, user: loginUser };
+        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+        return res.status(200).send(successResponse);
+    }
+
     // Forgot Password API
     /**
      * @api {post} /api/forgot Forgot Password
@@ -1052,7 +1198,7 @@ export class GuestController {
 
                 const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
                 user = fbUser.user;
-            } catch (ex) {
+            } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
@@ -1066,7 +1212,7 @@ export class GuestController {
 
                 const keyMap = ObjectUtil.parseQueryParamToMap(decryptToken.token);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
-            } catch (ex) {
+            } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }

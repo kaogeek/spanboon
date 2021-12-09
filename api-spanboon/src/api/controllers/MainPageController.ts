@@ -213,8 +213,9 @@ export class MainPageController {
         const emerSectionModel = await emerProcessor.process();
 
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
-        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service);
+        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
+            userId,
             startDateTime: monthRanges[0],
             endDateTime: monthRanges[1]
         });
@@ -271,7 +272,7 @@ export class MainPageController {
         });
         const emergencyPinModel = await emergencyPinProcessor.process();
 
-        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service);
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService);
         objectiveProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -318,12 +319,13 @@ export class MainPageController {
         followingRecommendProcessor.setConfig({
             limit: 5,
             searchOfficialOnly,
-            showPage: true
+            showPage: true,
+            showUserAction: true
         });
         processorList.push(followingRecommendProcessor);
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
         lastestObjProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -494,7 +496,7 @@ export class MainPageController {
             } else {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('User Or Page Not Found', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Search Error', error.message));
         }
     }
@@ -641,7 +643,7 @@ export class MainPageController {
                 const errorResponse = ResponseUtil.getErrorResponse('Search Failed', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } catch (error) {
+        } catch (error: any) {
             const errorResponse = ResponseUtil.getErrorResponse('Search Error', error.message);
             return res.status(400).send(errorResponse);
         }
@@ -663,7 +665,7 @@ export class MainPageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/content/search')
-    public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
+    public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @QueryParam('isHideStory') isHideStory: boolean, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
         try {
             const uId = req.headers.userid;
             let search: any = {};
@@ -1194,7 +1196,7 @@ export class MainPageController {
                         }
                     }
 
-                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList } });
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
                     if (postComments !== null && postComments !== undefined && postComments.length > 0) {
                         for (const comment of postComments) {
                             const postId = comment.post;
@@ -1209,6 +1211,18 @@ export class MainPageController {
                     }
                 }
 
+                searchResults.map((dataMap) => {
+                    const story = dataMap.post.story;
+
+                    if (isHideStory === true) {
+                        if (story !== null && story !== undefined) {
+                            dataMap.post.story = {};
+                        } else {
+                            dataMap.post.story = null;
+                        }
+                    }
+                });
+
                 search = searchResults;
 
                 if (search !== null && search !== undefined && Object.keys(search).length > 0) {
@@ -1221,7 +1235,7 @@ export class MainPageController {
             } else {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
             }
-        } catch (error) {
+        } catch (error: any) {
             const errorResponse = ResponseUtil.getErrorResponse('Search Error', error.message);
             return res.status(400).send(errorResponse);
         }

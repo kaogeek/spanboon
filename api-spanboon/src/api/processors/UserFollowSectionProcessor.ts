@@ -87,7 +87,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
 
                 let pageFollow: UserFollow = undefined;
                 let searchResult: any[] = [];
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     const followStmt = [
                         { $match: { userId: new ObjectID(userId + '') } },
                         { $sample: { size: 1 } }
@@ -212,7 +212,6 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                 let lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = 'โพสต์ที่แนะนำสำหรับคุณ';
-                result.type = 'USERFOLLOW';
                 result.iconUrl = '';
                 if (page) {
                     result.title = 'เพราะคุณติดตาม' + ' "' + page.name + '"';
@@ -286,7 +285,7 @@ export class UserFollowSectionProcessor extends AbstractSectionModelProcessor {
                     }
 
                     if (showUserAction) {
-                        const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
+                        const userAction: any = await this.postsService.getUserPostAction(row._id + '', userId, true, true, true, true);
                         contentModel.isLike = userAction.isLike;
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;

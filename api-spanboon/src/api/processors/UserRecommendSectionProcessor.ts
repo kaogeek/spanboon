@@ -92,7 +92,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     deleted: false,
                     hidden: false
                 };
-                if (userId !== undefined) {
+                if (userId !== undefined && userId !== '') {
                     // ! impl 
                 } else if (clientId !== undefined) {
                     // ! impl
@@ -296,7 +296,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     }
 
                     if (showUserAction) {
-                        const userAction: any = await this.postsService.getUserPostAction(row._id, userId, true, true, true, true);
+                        const userAction: any = await this.postsService.getUserPostAction(row._id + '', userId, true, true, true, true);
                         contentModel.isLike = userAction.isLike;
                         contentModel.isRepost = userAction.isRepost;
                         contentModel.isComment = userAction.isComment;

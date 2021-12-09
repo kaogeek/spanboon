@@ -46,7 +46,6 @@ export class StatusBarLooking implements OnInit {
   }
 
   public actions() {
-    // console.log('sadasdsadsadsa')
     this.link = this.mainSeeAll + 'lastest=true'
     // this.submit.emit();
   }
