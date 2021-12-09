@@ -394,14 +394,14 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public checkUniquePageUsername(text: any) {
         if (text === '') {
-            this.isActiveButton2 = false;
+            this.isActiveButton2 = true;
             return;
         }
         const pageUsername = this.cloneData && this.cloneData.pageUsername;
         if (text === pageUsername) {
             this.isActiveButton2 = false;
         } else {
-            if (text.length > 0) {
+            // if (text.length > 0) {
                 this.isActiveButton2 = true;
                 let pattern = text.match('^[A-Za-z0-9_.]*$');
                 if (!pattern) {
@@ -430,7 +430,7 @@ export class AboutPage extends AbstractPage implements OnInit {
                     });
 
                 }
-            }
+            // }
         }
     }
 
@@ -577,7 +577,12 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
                 this.resDataPage = res.data;
-                this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+                if(this.resDataPage.pageUsername === ""){
+                    this.router.navigateByUrl('/page/' + this.pageId + '/settings');
+                }else {
+
+                    this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+                }
                 this.closeCard(index);
             }
         }).catch((err) => {
@@ -606,11 +611,12 @@ export class AboutPage extends AbstractPage implements OnInit {
                 this.resDataPage.name = this.cloneData.name;
             }
         } else if (index === 2) {
-            if (this.cloneData && this.cloneData.pageUsername === undefined) {
-                this.resDataPage.pageUsername = '';
-            } else {
-                this.resDataPage.pageUsername = this.cloneData.pageUsername;
-            }
+            this.resDataPage.pageUsername = '';
+            // if (this.cloneData && this.cloneData.pageUsername === undefined) {
+            //     this.resDataPage.pageUsername = '';
+            // } else {
+            //     this.resDataPage.pageUsername = this.cloneData.pageUsername;
+            // }
         } else if (index === 4) {
             if (this.cloneData && this.cloneData.backgroundStory === undefined) {
                 this.resDataPage.backgroundStory = '';
