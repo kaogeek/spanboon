@@ -1514,6 +1514,15 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
 
+        // check dupicate uniqueId
+        if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+            const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername);
+            if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         const fileName = userObjId + FileUtil.renameFile();
         let assetCreate: Asset;
 
@@ -1957,6 +1966,15 @@ export class PageController {
 
             if (!pageUpdate) {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid Page Id', undefined));
+            }
+
+            // check dupicate uniqueId
+            if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+                const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername, undefined, pageUpdate.pageUsername);
+                if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
             }
 
             let pageName = pages.name;
