@@ -1269,9 +1269,9 @@ export class PagePostController {
                                 const pageId = posts.pageId;
                                 const referencePost = posts.referencePost;
                                 if (pageId !== null && pageId !== undefined && pageId !== '') {
-                                    postsMap[pageId + ':' + referencePost + ':' + uId] = posts;
+                                    postsMap[pageId + ':' + referencePost + ':' + posts.postAsPage] = posts;
                                 } else {
-                                    postsMap[referencePost + ':' + uId] = posts;
+                                    postsMap[referencePost + ':' + posts.ownerUser] = posts;
                                 }
                             }
                         }
