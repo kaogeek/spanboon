@@ -451,7 +451,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     this.search.nativeElement.value = ''
     this.filled = false;
     this.searchHistoryFacade.create(result).then((res: any) => {
-      console.log(res);
       // this.filled = false;
       this.clickHideSearch();
     }).catch((err: any) => {

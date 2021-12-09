@@ -209,7 +209,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
   }
 
   public showDialogGallery(imageGallery) {
-    console.log('imageGallery', imageGallery);
     var lightbox = Glightbox();
     let arrayImage = []
     arrayImage.push({
