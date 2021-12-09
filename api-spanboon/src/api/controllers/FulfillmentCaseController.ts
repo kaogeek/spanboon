@@ -3072,7 +3072,7 @@ export class FulfillmentController {
             postPage.deleted = false;
             postPage.ownerUser = new ObjectID(userId);
             postPage.commentCount = 0;
-            postPage.repostCount = 0;
+            postPage.repostCount = 1; // set to 1 because we auto repost for user at the end of method.
             postPage.shareCount = 0;
             postPage.likeCount = 0;
             postPage.viewCount = 0;
