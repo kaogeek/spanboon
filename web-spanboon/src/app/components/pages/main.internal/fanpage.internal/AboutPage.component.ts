@@ -610,13 +610,12 @@ export class AboutPage extends AbstractPage implements OnInit {
             } else {
                 this.resDataPage.name = this.cloneData.name;
             }
-        } else if (index === 2) {
-            this.resDataPage.pageUsername = '';
-            // if (this.cloneData && this.cloneData.pageUsername === undefined) {
-            //     this.resDataPage.pageUsername = '';
-            // } else {
-            //     this.resDataPage.pageUsername = this.cloneData.pageUsername;
-            // }
+        } else if (index === 2) { 
+            if (this.cloneData && this.cloneData.pageUsername === undefined) {
+                this.resDataPage.pageUsername = '';
+            } else {
+                this.resDataPage.pageUsername = this.cloneData.pageUsername;
+            }
         } else if (index === 4) {
             if (this.cloneData && this.cloneData.backgroundStory === undefined) {
                 this.resDataPage.backgroundStory = '';
