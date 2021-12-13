@@ -18,6 +18,7 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
+import Glightbox from 'glightbox';
 
 const PAGE_NAME: string = 'ChatMessage';
 const REFRESH_LIST_CASE = 'authen.listcase';
@@ -205,6 +206,23 @@ export class ChatMessage extends AbstractPage implements OnInit {
     }
 
     this.chatMessage.nativeElement.value = '';
+  }
+
+  public showDialogGallery(imageGallery) {
+    var lightbox = Glightbox();
+    let arrayImage = []
+    arrayImage.push({
+      href: imageGallery,
+      type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
+    })
+
+    lightbox.setElements(arrayImage);
+    lightbox.openAt(0);
+    lightbox.on('open', (target) => {
+    });
+    lightbox.on('close', (target) => {
+      lightbox.destroy();
+    });
   }
 
   public onFileSelected(event) {

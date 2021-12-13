@@ -167,23 +167,14 @@ export class DialogDoIng extends AbstractPage {
         //         let body = this.bodyList.getHeigthBody();
         //         let x;
         //         // let x = window.outerHeight + bottom ;
-        //         console.log('window.innerHeight ', window.innerHeight)
-        //         console.log('window.outerHeight ', window.outerHeight)
-        //         console.log('x ', x) 
-        //         console.log('bottom ', bottom)
-        //         console.log('body ', body)
         //         var chromeH = window.outerHeight - window.innerHeight;
-        //         console.log('window.chromeH ', chromeH) 
         //         const elementHeight = document.getElementById('control-height').clientHeight;
-        //         console.log('elementHeight ', elementHeight)
         //         if (window.innerHeight <= 1024 && 768 < window.innerHeight) {
         //             // x = x + window.outerHeight;
-        //             // console.log('1 ',x)
         //             // x = x + 31;
         //         } else {
         //             if (window.innerHeight <= 768 && 479 < window.innerHeight) {
         //                 x = chromeH;
-        //                 console.log('total ', x)
         //                 // x = x + 70;
         //             }
         //         }
