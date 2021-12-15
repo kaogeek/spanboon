@@ -103,6 +103,13 @@
             // img {
             //     width: 200px;
             // }
+            .talking-media {
+                width: 250px;
+                cursor: zoom-in;
+                > img {
+                    width: 100%;
+                }
+            }
 
             a {
                 > .donator {
@@ -188,6 +195,13 @@
                     flex-direction: row;
                     justify-content: flex-end;
                     // margin: 15px 15px 20px 20px;
+                    .talking-media {
+                        width: 250px;
+                        cursor: zoom-in;
+                        > img {
+                            width: 100%;
+                        }
+                    }
 
                     > .talking-time {
                         flex: 0 0 auto;

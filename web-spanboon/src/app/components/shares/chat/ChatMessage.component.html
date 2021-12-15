@@ -30,7 +30,8 @@
                 *ngIf="((item.senderType === 'PAGE' && (asPage !== undefined && asPage !== null && asPage !== '')) || (item.senderType === 'USER' && (asPage === undefined || asPage === null || asPage === ''))); else elseSenderType">
                 <div class="page-message">
                     <div class="talking-m">
-                        <div [class.hide]="item.chatMessage.messageType !== 'INFO' && item.chatMessage.messageType !== 'FULFILLMENT_CASE_CONFIRM'" class="talking-time">
+                        <div [class.hide]="item.chatMessage.messageType !== 'INFO' && item.chatMessage.messageType !== 'FULFILLMENT_CASE_CONFIRM'"
+                            class="talking-time">
                             <span class="material-icons" *ngIf="item.chatMessage.isRead">
                                 done
                             </span>
@@ -101,7 +102,8 @@
                     <ng-template #elseChatMessage>
                         <ng-container
                             *ngIf="((item.chatMessage.filePath !== null && item.chatMessage.filePath !== undefined) && (item.chatMessage.videoURL === null || item.chatMessage.videoURL === undefined)); else elseChatMedia">
-                            <div class="talking-media">
+                            <div class="talking-media"
+                                (click)="showDialogGallery(apiBaseURL+item.chatMessage.filePath+'/image')">
                                 <img src="{{apiBaseURL+item.chatMessage.filePath+'/image'}}">
                             </div>
                         </ng-container>

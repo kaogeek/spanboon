@@ -162,6 +162,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public setData(): void {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
+        console.log('this.pageOwner', this.pageOwner)
 
     }
 
