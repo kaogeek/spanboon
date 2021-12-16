@@ -1061,7 +1061,7 @@ export class MainPageController {
                 },
                 {
                     $project: {
-                        'emergencyEvent._id': 0,
+                        // 'emergencyEvent._id': 0,
                         'emergencyEvent.title': 0,
                         'emergencyEvent.detail': 0,
                         'emergencyEvent.coverPageURL': 0,
@@ -1086,7 +1086,7 @@ export class MainPageController {
                 },
                 {
                     $project: {
-                        'objective._id': 0,
+                        // 'objective._id': 0,
                         'objective.pageId': 0,
                         'objective.title': 0,
                         'objective.detail': 0,
@@ -1097,7 +1097,7 @@ export class MainPageController {
                 {
                     $lookup: {
                         from: 'HashTag',
-                        let: { postTags: '$postsHashTags' },
+                        let: { postTags: { $ifNull: ['$postsHashTags', []] } },
                         pipeline: [
                             {
                                 $match: {
