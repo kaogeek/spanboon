@@ -86,7 +86,6 @@ export class NeedsCard extends AbstractPage implements OnInit {
       this.getNeeds();
       setTimeout(() => {
         this.subscripUrl();
-        console.log('itemNeeds', this.itemNeeds);
       }, 300);
     }, 650);
   }

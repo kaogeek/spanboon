@@ -43,7 +43,6 @@ export class PostActionService extends AbstractFacade {
     }
 
     public async actionPost(action: any, index: number, resPost: any, repostShare?: string, isDialog?: boolean): Promise<any> {
-        console.log('resPost', resPost);
         if (action.mod === 'REBOON') {
             if (action.userAsPage.id !== undefined && action.userAsPage.id !== null && action.userAsPage.id !== this.authMgr.getCurrentUser().id) {
                 this.userAsPage = action.userAsPage.id;
