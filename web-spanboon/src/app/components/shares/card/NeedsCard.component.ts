@@ -77,7 +77,6 @@ export class NeedsCard extends AbstractPage implements OnInit {
     this.rout = rout;
     this.observManager = observManager;
     this.assetFacade = assetFacade;
-
   }
 
   ngOnChanges(changes: SimpleChanges) {

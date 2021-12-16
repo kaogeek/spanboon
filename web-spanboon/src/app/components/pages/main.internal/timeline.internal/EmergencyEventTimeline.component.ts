@@ -136,6 +136,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     private _groupData(): void {
         let numloop: number = 0
+        let numloops: number = 0
 
         for (let item of this.objectiveData.timelines) {
             if (item.type === "EMERGENCY_NEEDS") {
@@ -147,12 +148,17 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 }
             }
             if (item.type === "EMERGENCY_POST_LIKED") {
-                if (item.galleries.length === 0) {
-                    this.objectiveData.timelines.splice(numloop, 1);
-                }
+                this.objectiveData.timelines.splice(numloop, 1);
             }
             numloop++
         }
+        for (let item of this.objectiveData.timelines) {
+            if (item.type === "EMERGENCY_INFLUENCER_FOLLOWED") {
+                this.objectiveData.timelines.splice(numloops, 1);
+            }
+            numloops++
+        }
+
     }
 
     public async setData(): Promise<void> {
