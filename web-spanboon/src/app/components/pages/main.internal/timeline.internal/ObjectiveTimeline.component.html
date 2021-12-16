@@ -94,7 +94,7 @@
                 <div class="objective-owner">
                     <div class="owner">
                         <span class="title">ผู้สร้าง</span>
-                        <div class="page">
+                        <div class="page" (click)="clickToPage(pageOwner.owner)">
                             <img class="iconURL" src="{{apiBaseURL+pageOwner.owner.imageURL+'/image'}}" alt="">
                             <div class="disiption">
                                 <span>{{pageOwner.owner.name}}</span>
@@ -104,7 +104,7 @@
                             <span class="title">แท็กที่เกี่ยวข้อง</span>
                             <span class="disiption"
                                 *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
-                                (click)="clickToPage(item.name)">#{{item.name}}</span>
+                                (click)="clickToHashtag(item.name)">#{{item.name}}</span>
                         </div>
                         <div class="follow-fullfill">
                             <div class="follow">

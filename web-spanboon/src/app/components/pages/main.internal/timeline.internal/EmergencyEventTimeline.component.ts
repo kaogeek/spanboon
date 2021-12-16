@@ -136,8 +136,11 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     private _groupData(): void {
         let numloop: number = 0
+        let numloops: number = 0
 
+        console.log('this.objectiveData.timelines', this.objectiveData.timelines);
         for (let item of this.objectiveData.timelines) {
+            console.log('this.objectiveData.timelines', item.type);
             if (item.type === "EMERGENCY_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
@@ -147,13 +150,19 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 }
             }
             if (item.type === "EMERGENCY_POST_LIKED") {
-                if (item.galleries.length === 0) {
-                    this.objectiveData.timelines.splice(numloop, 1);
-                }
+                this.objectiveData.timelines.splice(numloop, 1);
             }
             numloop++
         }
+        for (let item of this.objectiveData.timelines) {
+            if (item.type === "EMERGENCY_INFLUENCER_FOLLOWED") {
+                this.objectiveData.timelines.splice(numloops, 1);
+            }
+            numloops++
+        }
+
     }
+
 
     public async setData(): Promise<void> {
         this.pageObjective = this.objectiveData.emergencyEvent;

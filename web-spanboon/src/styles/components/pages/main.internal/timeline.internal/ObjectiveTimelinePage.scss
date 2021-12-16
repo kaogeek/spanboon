@@ -154,8 +154,8 @@
                             @include font-size-10($font-head-300);
                         }
                         &:hover {
-                            // transition: 0.3s;
-                            // transform: scale(1.01);
+                            transition: 0.3s;
+                            transform: scale(1.03);
                         }
                     }
                     > .detail {
@@ -1793,6 +1793,7 @@
                                             > .icon {
                                                 border-radius: 50%;
                                                 width: 100%;
+                                                object-fit: cover;
                                             }
                                         }
                                     }
