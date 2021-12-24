@@ -113,7 +113,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
 
     const pathUrlPost = window.location.pathname.split('/')[1];
     if (pathUrlPost === "post" && this.itemNeeds.length > 0) {
-      this.fulfillNeeds(null, this.itemNeeds[0]);
+      // this.fulfillNeeds(null, this.itemNeeds[0]);
     }
     // alert('asdasdsadsad')
 
