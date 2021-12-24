@@ -45,6 +45,7 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { ConfigService } from '../services/ConfigService';
 import { AssetService } from '../services/AssetService';
 import { PostUtil } from '../../utils/PostUtil';
+import { POST_TYPE } from '../../constants/PostType';
 
 @JsonController('/post')
 export class PostsController {
@@ -702,7 +703,7 @@ export class PostsController {
             delete postsData.id;
             const newPostsData: Posts = new Posts();
             newPostsData.title = '';
-            newPostsData.type = postsData.type;
+            newPostsData.type = (postsData.type === POST_TYPE.FULFILLMENT) ? POST_TYPE.GENERAL : postsData.type;
             newPostsData.pageId = (pageId !== null && pageId !== undefined && pageId !== '') ? new ObjectID(pageId) : null;
             newPostsData.detail = (detail !== null && detail !== undefined && detail !== '') ? detail : '';
             newPostsData.postsHashTags = (originalHashTag !== null && originalHashTag !== originalHashTag && originalHashTag.length > 0) ? originalHashTag : [];
@@ -782,8 +783,15 @@ export class PostsController {
                     const originPost: Posts = await this.postsService.findOne({ _id: referencePost });
 
                     if (originPost !== null && originPost !== undefined) {
-                        const repostCount = originPost.repostCount;
-                        await this.postsService.update({ _id: referencePost }, { $set: { repostCount: repostCount - 1 } });
+                        let repostCount = originPost.repostCount;
+
+                        if (repostCount >= 0) {
+                            repostCount = repostCount - 1;
+                        } else {
+                            repostCount = 0;
+                        }
+
+                        await this.postsService.update({ _id: referencePost }, { $set: { repostCount } });
                     }
 
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Undo Repost Success', undefined));

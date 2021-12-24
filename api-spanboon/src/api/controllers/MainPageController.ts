@@ -1047,6 +1047,114 @@ export class MainPageController {
                 },
                 {
                     $lookup: {
+                        from: 'Fulfillment',
+                        localField: '_id',
+                        foreignField: 'casePost',
+                        as: 'caseFulfillment'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'FulfillmentCase',
+                        localField: '_id',
+                        foreignField: 'fulfillmentPost',
+                        as: 'case'
+                    }
+                },
+                {
+                    $addFields: {
+                        requesterId: {
+                            '$arrayElemAt': ['$case.requester', 0],
+                        },
+                        fulfillmentPage: {
+                            '$arrayElemAt': ['$case.pageId', 0]
+                        },
+                        casePostId: {
+                            '$arrayElemAt': ['$case.postId', 0]
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Needs',
+                        localField: 'casePostId',
+                        foreignField: 'post',
+                        as: 'caseNeeds'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'User',
+                        localField: 'requesterId',
+                        foreignField: '_id',
+                        as: 'requester'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$requester',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Page',
+                        localField: 'fulfillmentPage',
+                        foreignField: '_id',
+                        as: 'fulfillmentPage'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$fulfillmentPage',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'SocialPost',
+                        localField: '_id',
+                        foreignField: 'postId',
+                        as: 'socialPosts'
+                    }
+                },
+                {
+                    $project: {
+                        'case': 0,
+                        'requesterId': 0,
+                        'requester.password': 0,
+                        'requester.birthdate': 0,
+                        'requester.customGender': 0,
+                        'requester.gender': 0,
+                        'requester.createdDate': 0,
+                        'requester.coverURL': 0,
+                        'requester.address': 0,
+                        'requester.facebookURL': 0,
+                        'requester.instagramURL': 0,
+                        'requester.lineId': 0,
+                        'requester.mobileNo': 0,
+                        'requester.websiteURL': 0,
+                        'requester.twitterURL': 0,
+                        'fulfillmentPage.subTitle': 0,
+                        'fulfillmentPage.backgroundStory': 0,
+                        'fulfillmentPage.detail': 0,
+                        'fulfillmentPage.ownerUser': 0,
+                        'fulfillmentPage.color': 0,
+                        'fulfillmentPage.category': 0,
+                        'fulfillmentPage.banned': 0,
+                        'fulfillmentPage.createdDate': 0,
+                        'fulfillmentPage.updateDate': 0,
+                        'socialPosts': {
+                            '_id': 0,
+                            'pageId': 0,
+                            'postId': 0,
+                            'postBy': 0,
+                            'postByType': 0
+                        }
+                    }
+                },
+                {
+                    $lookup: {
                         from: 'EmergencyEvent',
                         localField: 'emergencyEvent',
                         foreignField: '_id',
