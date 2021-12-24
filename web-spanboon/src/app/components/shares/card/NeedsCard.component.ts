@@ -117,7 +117,7 @@ export class NeedsCard extends AbstractPage implements OnInit {
     }
     // alert('asdasdsadsad')
 
-    // this.mySubscription = this.router.events.subscribe((event) => {
+    // this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
     //   const url: string = decodeURI(this.router.url);
     //   const pathUrlPost = url.split('/')[1];
     //   const postId = url.split('/')[2];

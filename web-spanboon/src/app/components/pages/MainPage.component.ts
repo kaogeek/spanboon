@@ -15,6 +15,7 @@ import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/internal/operators/filter';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -78,7 +79,7 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
