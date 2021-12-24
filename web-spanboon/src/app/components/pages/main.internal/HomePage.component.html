@@ -160,7 +160,7 @@
                                 *ngFor="let item of (model.emergencyPin.contents.length > 1?
                                 model.emergencyPin.contents:model.emergencyEvents.length >1?
                                 model.emergencyEvents.contents:hashTag.length >1?
-                                hashTag:model.postSectionModel.contents) | slice:0:4;let index = index">
+                                hashTag:model.postSectionModel.contents) | slice:0:2;let index = index">
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
                                         <img

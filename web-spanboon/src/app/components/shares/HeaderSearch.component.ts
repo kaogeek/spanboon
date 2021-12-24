@@ -261,7 +261,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       if (this.searchRecent.length > 0) {
         let index = 0;
         for (let dataImage of res) {
-          this.getDataIcon(dataImage.imageURL, "image", index)
+          if(dataImage.imageURL !== "" && dataImage.imageURL !== undefined && dataImage.imageURL !== null){
+            this.getDataIcon(dataImage.imageURL, "image", index)
+          } else {
+            this.searchRecent[index].isLoadingImage = false;
+          }
+          
           index++;
         }
       }
@@ -389,7 +394,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.isLoading = true;
     this.mainPageFacade.getSearchAll(search).then((res: any) => {
-      this.resSearch = res.result;
+      this.resSearch = res.result; 
       event.stopPropagation();
       this.stopIsloading();
       this.checkMenu(event);
@@ -412,15 +417,30 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           return keyword.label === data
         });
         if (isData) {
-          isPass = isData.type;
+          if(isData.type === "PAGE"){
+            isPass = isData.type;
+            dataList = isData.value;
+          } else if(isData.type === "USER"){
+            isPass = isData.type;
+            data = isData;
+          } else if(isData.type === "KEYWORD"){
+            isPass = isData.type;
+            data = isData;
+            dataList = isData.value;
+          } else {
+            isPass = isData.type;
+            dataList = isData.value;
+          } 
+        } else {
+          isPass = "KEYWORD";
           dataList = data;
         }
         result = {
           resultType: '',
           resultId: '',
-          keyword: data
+          keyword: isData === undefined ? data : data.label
         }
-      }
+      } 
     } else {
       isPass = data.type;
       dataList = data.value;
@@ -429,7 +449,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
         resultId: data.value,
         keyword: data.label
       }
-    }
+    }  
     if (isPass === 'USER') {
       if (data.uniqueId !== '' && data.uniqueId !== undefined && data.uniqueId !== null) {
         this.router.navigateByUrl('/profile/' + data.uniqueId);
@@ -444,12 +464,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.router.navigateByUrl('/page/' + dataList);
     } else if (isPass === 'KEYWORD') {
       this.router.navigateByUrl('/search?keyword=' + dataList);
+    } else  if (isPass === 'HASHTAG') {
+      this.router.navigateByUrl('/search?hashtag=' + dataList); 
     } else {
       this.router.navigateByUrl('/search');
     }
     this.clickHideSearch();
     this.search.nativeElement.value = ''
     this.filled = false;
+  
     this.searchHistoryFacade.create(result).then((res: any) => {
       // this.filled = false;
       this.clickHideSearch();

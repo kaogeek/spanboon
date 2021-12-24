@@ -26,6 +26,7 @@ import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
+import { filter } from 'rxjs/internal/operators/filter';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -173,7 +174,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     // this.seoService.removeMeta();
 
-    this.mySubscription = this.router.events.subscribe((event) => {
+    this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const pathUrlPost = url.split('/')[1];
