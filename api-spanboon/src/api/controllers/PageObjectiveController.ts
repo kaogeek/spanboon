@@ -46,7 +46,6 @@ import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareP
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
-import { random } from 'faker';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -230,7 +229,7 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @Res() res: any): Promise<any> {
+    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -260,6 +259,23 @@ export class ObjectiveController {
         }
 
         let objectiveLists: PageObjective[];
+
+        let aggregateStmt: any[];
+        if (sample !== undefined && sample !== null && sample > 0) {
+            aggregateStmt = [
+                { $match: filter.whereConditions },
+                { $sample: { size: sample } }
+            ];
+            if (filter.orderBy !== undefined) {
+                aggregateStmt.push({ $sort: filter.orderBy });
+            }
+            if (filter.offset !== undefined) {
+                aggregateStmt.push({ $skip: filter.offset });
+            }
+            if (filter.limit !== undefined) {
+                aggregateStmt.push({ $limit: filter.limit });
+            }
+        }
 
         if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
@@ -295,11 +311,17 @@ export class ObjectiveController {
                 }
             }
 
-            objectiveLists = await this.pageObjectiveService.find(filter.whereConditions, { signURL: true });
-        } else if (typeof filter.whereConditions === 'string') {
-            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
+            if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
+                objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
+            } else {
+                objectiveLists = await this.pageObjectiveService.find(filter.whereConditions, { signURL: true });
+            }
         } else {
-            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
+            if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
+                objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
+            } else {
+                objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
+            }
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
