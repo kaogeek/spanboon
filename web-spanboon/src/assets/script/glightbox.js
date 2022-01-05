@@ -1,8 +1,9 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.GLightbox = factory());
-}(this, (function () { 'use strict';
+    typeof define === 'function' && define.amd ? define(factory) :
+      (global = global || self, global.GLightbox = factory());
+}(this, (function () {
+  'use strict';
 
   function _typeof(obj) {
     "@babel/helpers - typeof";
@@ -88,7 +89,7 @@
 
     if (isArrayLike(collection) && !isObject(collection)) {
       var l = collection.length,
-          i = 0;
+        i = 0;
 
       for (; i < l; i++) {
         if (callback.call(collection[i], collection[i], i, collection) === false) {
@@ -129,14 +130,14 @@
   }
   function addEvent(eventName) {
     var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        onElement = _ref.onElement,
-        withCallback = _ref.withCallback,
-        _ref$avoidDuplicate = _ref.avoidDuplicate,
-        avoidDuplicate = _ref$avoidDuplicate === void 0 ? true : _ref$avoidDuplicate,
-        _ref$once = _ref.once,
-        once = _ref$once === void 0 ? false : _ref$once,
-        _ref$useCapture = _ref.useCapture,
-        useCapture = _ref$useCapture === void 0 ? false : _ref$useCapture;
+      onElement = _ref.onElement,
+      withCallback = _ref.withCallback,
+      _ref$avoidDuplicate = _ref.avoidDuplicate,
+      avoidDuplicate = _ref$avoidDuplicate === void 0 ? true : _ref$avoidDuplicate,
+      _ref$once = _ref.once,
+      once = _ref$once === void 0 ? false : _ref$once,
+      _ref$useCapture = _ref.useCapture,
+      useCapture = _ref$useCapture === void 0 ? false : _ref$useCapture;
 
     var thisArg = arguments.length > 2 ? arguments[2] : undefined;
     var element = onElement || [];
@@ -272,7 +273,7 @@
   }
   function createHTML(htmlStr) {
     var frag = document.createDocumentFragment(),
-        temp = document.createElement('div');
+      temp = document.createElement('div');
     temp.innerHTML = htmlStr;
 
     while (temp.firstChild) {
@@ -289,7 +290,7 @@
   }
   function whichAnimationEvent() {
     var t,
-        el = document.createElement('fakeelement');
+      el = document.createElement('fakeelement');
     var animations = {
       animation: 'animationend',
       OAnimation: 'oAnimationEnd',
@@ -305,7 +306,7 @@
   }
   function whichTransitionEvent() {
     var t,
-        el = document.createElement('fakeelement');
+      el = document.createElement('fakeelement');
     var transitions = {
       transition: 'transitionend',
       OTransition: 'oTransitionEnd',
@@ -321,9 +322,9 @@
   }
   function createIframe(config) {
     var url = config.url,
-        allow = config.allow,
-        callback = config.callback,
-        appendTo = config.appendTo;
+      allow = config.allow,
+      callback = config.callback,
+      appendTo = config.appendTo;
     var iframe = document.createElement('iframe');
     iframe.className = 'vimeo-video gvideo';
     iframe.src = url;
@@ -733,7 +734,7 @@
       this.zoom = 1;
       this.isDoubleTap = false;
 
-      var noop = function noop() {};
+      var noop = function noop() { };
 
       this.rotate = wrapFunc(this.element, option.rotate || noop);
       this.touchStart = wrapFunc(this.element, option.touchStart || noop);
@@ -777,7 +778,6 @@
         var ignoreDragFor = ['a', 'button', 'input'];
 
         if (evt.target && evt.target.nodeName && ignoreDragFor.indexOf(evt.target.nodeName.toLowerCase()) >= 0) {
-          console.log('ignore drag for this touched element', evt.target.nodeName.toLowerCase());
           return;
         }
 
@@ -799,7 +799,7 @@
         this.preTapPosition.y = this.y1;
         this.last = this.now;
         var preV = this.preV,
-            len = evt.touches.length;
+          len = evt.touches.length;
 
         if (len > 1) {
           this._cancelLongTap();
@@ -830,14 +830,14 @@
         }
 
         var preV = this.preV,
-            len = evt.touches.length,
-            currentX = evt.touches[0].pageX,
-            currentY = evt.touches[0].pageY;
+          len = evt.touches.length,
+          currentX = evt.touches[0].pageX,
+          currentY = evt.touches[0].pageY;
         this.isDoubleTap = false;
 
         if (len > 1) {
           var sCurrentX = evt.touches[1].pageX,
-              sCurrentY = evt.touches[1].pageY;
+            sCurrentY = evt.touches[1].pageY;
           var v = {
             x: evt.touches[1].pageX - currentX,
             y: evt.touches[1].pageY - currentY
@@ -872,7 +872,7 @@
             evt.deltaX = currentX - this.x2;
             evt.deltaY = currentY - this.y2;
             var movedX = Math.abs(this.x1 - this.x2),
-                movedY = Math.abs(this.y1 - this.y2);
+              movedY = Math.abs(this.y1 - this.y2);
 
             if (movedX > 10 || movedY > 10) {
               this._preventTap = true;
@@ -1506,14 +1506,14 @@
       _classCallCheck(this, DragSlides);
 
       var dragEl = config.dragEl,
-          _config$toleranceX = config.toleranceX,
-          toleranceX = _config$toleranceX === void 0 ? 40 : _config$toleranceX,
-          _config$toleranceY = config.toleranceY,
-          toleranceY = _config$toleranceY === void 0 ? 65 : _config$toleranceY,
-          _config$slide = config.slide,
-          slide = _config$slide === void 0 ? null : _config$slide,
-          _config$instance = config.instance,
-          instance = _config$instance === void 0 ? null : _config$instance;
+        _config$toleranceX = config.toleranceX,
+        toleranceX = _config$toleranceX === void 0 ? 40 : _config$toleranceX,
+        _config$toleranceY = config.toleranceY,
+        toleranceY = _config$toleranceY === void 0 ? 65 : _config$toleranceY,
+        _config$slide = config.slide,
+        slide = _config$slide === void 0 ? null : _config$slide,
+        _config$instance = config.instance,
+        instance = _config$instance === void 0 ? null : _config$instance;
       this.el = dragEl;
       this.active = false;
       this.dragging = false;
@@ -3053,7 +3053,6 @@
           }
         }
 
-        console.log('stopSlideVideo is deprecated, use slidePlayerPause');
         var player = this.getSlidePlayerInstance(slide);
 
         if (player && player.playing) {
@@ -3088,7 +3087,6 @@
           }
         }
 
-        console.log('playSlideVideo is deprecated, use slidePlayerPlay');
         var player = this.getSlidePlayerInstance(slide);
 
         if (player && !player.playing) {
@@ -3630,8 +3628,8 @@
 
         each(this.apiEvents, function (event, i) {
           var evt = event.evt,
-              once = event.once,
-              callback = event.callback;
+            once = event.once,
+            callback = event.callback;
 
           if (evt == eventName) {
             callback(data);
@@ -3663,7 +3661,7 @@
     return GlightboxInit;
   }();
 
-  function glightbox () {
+  function glightbox() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var instance = new GlightboxInit(options);
     instance.init();

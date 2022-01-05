@@ -77,6 +77,13 @@ export class HomePage extends AbstractPage implements OnInit {
 
   private async getMainPageModel(userId?) {
     this.model = await this.mainPageModelFacade.getMainPageModel(userId);
+    for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+      if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+        this.model.postSectionModel.contents.splice(index, 1);
+      } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+        this.model.postSectionModel.contents.splice(index, 1);
+      }
+    }
     let filter: SearchFilter = new SearchFilter();
     filter.limit = 5;
     filter.offset = 0;

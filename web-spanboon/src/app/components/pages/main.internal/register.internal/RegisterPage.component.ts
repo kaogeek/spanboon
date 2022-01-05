@@ -213,10 +213,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
     } else {
       register.uniqueId = formData.username;
     }
-    register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
-    register.birthdate.setHours(0);
-    register.birthdate.setMinutes(0);
-    register.birthdate.setSeconds(0);
+
+    if(moment().format('YYYY-MM-DD') !== moment(formData.birthday).format('YYYY-MM-DD')){
+      register.birthdate = moment(formData.birthday).format('YYYY-MM-DD'); 
+    }  
+
     register.displayName = formData.displayName;
     register.gender = formData.gender;
     register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
@@ -247,7 +248,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.activeEmail = false;
     }
 
-    if(!this.uuid) {
+    if(this.uuid === false) {
       return;
     }
 
@@ -537,7 +538,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       // this.data.gender = userInfo.gender ? userInfo.gender === "female" ? 1 : userInfo.gender === "male" ? 0 : -1 : -1;
       // this.data.birthday = this.data.birthday ? new Date(userInfo.birthday) : undefined; 
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=large';
-      // console.log('this.images ',this.images)
       this.images = userInfo.picture.data.url;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
         this.imagesAvatar.image = result;

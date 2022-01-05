@@ -125,7 +125,7 @@ export class NeedsController {
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Get Lastest Needs', undefined));
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Get Lastest Needs Error', error.message));
         }
     }

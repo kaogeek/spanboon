@@ -32,7 +32,7 @@ export abstract class AbstractFacade {
   public getDefaultOptions(): any {
     let header = this.getDefaultHeader();
     let userId = this.authMgr.getCurrentUser();
-    header = header.append('userId', userId ? userId.id : '')
+    header = header.append('userid', userId ? userId.id : '')
 
     let httpOptions = {
       headers: header
@@ -55,13 +55,13 @@ export abstract class AbstractFacade {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.authMgr.getUserToken(),
       'Client-Id': uuid,
-    }); 
-    
+    });
+
     if (this.authMgr.isFacebookMode()) {
       headers = headers.set('mode', 'FB');
-    } else if (this.authMgr.isTwitterMode()){
+    } else if (this.authMgr.isTwitterMode()) {
       headers = headers.set('mode', 'TW');
-    } else if (this.authMgr.isGoogleMode()){
+    } else if (this.authMgr.isGoogleMode()) {
       headers = headers.set('mode', 'GG');
     }
 
