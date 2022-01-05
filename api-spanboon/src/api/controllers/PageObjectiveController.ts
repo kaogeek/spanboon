@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete } from 'routing-controllers';
+import { JsonController, Res, Get, Param, Post, Body, Req, Authorized, Put, Delete, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { PageObjective } from '../models/PageObjective';
@@ -46,6 +46,7 @@ import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareP
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { random } from 'faker';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -259,9 +260,8 @@ export class ObjectiveController {
         }
 
         let objectiveLists: PageObjective[];
-        let objectiveStmt;
 
-        if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0) {
+        if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
 
@@ -270,10 +270,34 @@ export class ObjectiveController {
             }
 
             if (pageObjId !== null && pageObjId !== undefined) {
-                objectiveStmt = { pageId: pageObjId, hashTag: { $in: hashTagIdList } };
+                filter.whereConditions.pageId = pageObjId;
             }
 
-            objectiveLists = await this.pageObjectiveService.find(objectiveStmt, { signURL: true });
+            if (hashTagIdList !== null && hashTagIdList !== undefined && hashTagIdList.length > 0) {
+                filter.whereConditions.hashTag = { $in: hashTagIdList };
+            }
+
+            if (filter.whereConditions.id !== null && filter.whereConditions.id !== undefined && filter.whereConditions.id !== '') {
+                filter.whereConditions._id = new ObjectID(filter.whereConditions.id);
+                delete filter.whereConditions.id;
+            }
+
+            if (filter.whereConditions._id !== null && filter.whereConditions._id !== undefined && filter.whereConditions._id !== '') {
+                filter.whereConditions._id = new ObjectID(filter.whereConditions._id);
+            }
+
+            if (filter.whereConditions.createdDate !== null && filter.whereConditions.createdDate !== undefined && typeof filter.whereConditions.createdDate === 'object') {
+                if (filter.whereConditions.createdDate['$gte'] !== undefined) {
+                    filter.whereConditions.createdDate['$gte'] = DateTimeUtil.parseISOStringToDate(filter.whereConditions.createdDate['$gte']);
+                }
+                if (filter.whereConditions.createdDate['$lte'] !== undefined) {
+                    filter.whereConditions.createdDate['$lte'] = DateTimeUtil.parseISOStringToDate(filter.whereConditions.createdDate['$lte']);
+                }
+            }
+
+            objectiveLists = await this.pageObjectiveService.find(filter.whereConditions, { signURL: true });
+        } else if (typeof filter.whereConditions === 'string') {
+            objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
         } else {
             objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
         }
@@ -292,8 +316,8 @@ export class ObjectiveController {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', objectiveLists);
             return res.status(200).send(successResponse);
         } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot Search PageObjective', undefined);
-            return res.status(400).send(errorResponse);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
+            return res.status(200).send(successResponse);
         }
     }
 
