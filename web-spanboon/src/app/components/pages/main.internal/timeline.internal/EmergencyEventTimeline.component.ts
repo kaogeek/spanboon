@@ -161,7 +161,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     }
 
-
     public async setData(): Promise<void> {
         this.pageObjective = this.objectiveData.emergencyEvent;
         this.pageOwner = this.objectiveData.page;

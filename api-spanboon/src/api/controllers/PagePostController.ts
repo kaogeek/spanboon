@@ -1196,7 +1196,7 @@ export class PagePostController {
                     {
                         $lookup: {
                             from: 'HashTag',
-                            let: { postTags: '$postsHashTags' },
+                            let: { postTags: { $ifNull: ['$postsHashTags', []] } },
                             pipeline: [
                                 {
                                     $match: {

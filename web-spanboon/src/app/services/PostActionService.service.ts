@@ -219,7 +219,6 @@ export class PostActionService extends AbstractFacade {
                             resPost.posts[index].repostCount--;
                             resPost.posts[index].isRepost = false;
                         } else {
-
                             resPost[index].repostCount--;
                             resPost[index].isRepost = false;
                         }

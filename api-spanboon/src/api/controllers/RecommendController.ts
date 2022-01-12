@@ -75,6 +75,7 @@ export class RecommendController {
             // search followed user
             const fwhereConditions: any = {
                 userId: userObjId,
+                banned: false,
                 isAdmin: false
             };
 
@@ -152,13 +153,10 @@ export class RecommendController {
 
             if (!isRandomPage && !isRandomUser) {
                 const stmt = [
-                    // { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
-                    { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] }] } },
+                    { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }, { isAdmin: false }, { banned: false }] }] } },
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
-                    {
-                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
-                    }
+                    { $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 } }
                 ];
                 const userFollow = await this.userService.aggregate(stmt);
                 for (const data of userFollow) {
@@ -176,6 +174,7 @@ export class RecommendController {
                 }
 
                 const stmtPage = [
+                    { $match: { banned: false } },
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
@@ -230,6 +229,7 @@ export class RecommendController {
             const randomLimitPage = limitData - randomLimitUser;
 
             const stmt = [
+                { $match: { $and: [{ isAdmin: false }, { banned: false }, { isAdmin: false }] } },
                 { $sample: { size: randomLimitUser } },
                 { $skip: offset ? offset : 0 },
                 {
@@ -245,6 +245,7 @@ export class RecommendController {
             }
 
             const stmtPage = [
+                { $match: { banned: false } },
                 { $sample: { size: randomLimitPage } },
                 { $skip: offset ? offset : 0 },
                 {
