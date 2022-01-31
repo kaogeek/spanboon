@@ -197,13 +197,11 @@
               > .col-img {
                 width: 100%;
                 height: auto;
-                min-height: 400px;
                 display: flex;
                 justify-content: center;
                 position: relative;
                 overflow: hidden;
                 @media (max-width: 1200px) {
-                  height: 400px;
                 }
                 > .teg_event {
                   background-color: black;
@@ -227,9 +225,12 @@
                 }
                 > .image {
                   width: auto;
+                  width: 50%;
                   z-index: 2;
                   position: relative;
-                  width: 100%;
+                  @media (max-width: 900px) {
+                    width: 70%;
+                  }
                 }
               }
               > .col-detail {
