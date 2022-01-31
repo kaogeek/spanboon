@@ -54,7 +54,7 @@
         <div class="secsione-emer">
             <div class="div-wrapper">
                 <div class="container">
-                    <div class="col1">
+                    <div class="col1" [class.max]="model.postSectionModel.contents.length === 0">
                         <div class="col1-col1" *ngIf="model" (click)="clickToPage(model.emergencyPin.contents.length > 0?
                             model.emergencyPin.contents[0].data.emergencyEventId:
                             model.emergencyEvents.contents.length > 0?
@@ -154,13 +154,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col1-col2">
+                        <div class="col1-col2" *ngIf="model.postSectionModel.contents.length > 0">
                             <div class="col-colum-detail"
                                 (click)="clickToPage(item.post?item.post:item.title?item.title:item.label,item.type)"
                                 *ngFor="let item of (model.emergencyPin.contents.length > 1?
                                 model.emergencyPin.contents:model.emergencyEvents.length >1?
                                 model.emergencyEvents.contents:hashTag.length >1?
-                                hashTag:model.postSectionModel.contents) | slice:0:2;let index = index">
+                                hashTag:model.postSectionModel.contents.length > 0?model.postSectionModel.contents:[]) | slice:0:2;let index = index">
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
                                         <img
@@ -191,7 +191,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col2">
+                    <div class="col2" *ngIf="model.postSectionModel.contents.length > 0">
                         <div class="col2-col1">
                             <div class="title">
                                 <span class="text">โพสต์ใหม่ล่าสุด</span>
