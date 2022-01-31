@@ -371,6 +371,12 @@
               }
             }
           }
+          > .max {
+            width: calc(100% - 30px);
+            > .col1-col1 > .col-img {
+              height: 600px;
+            }
+          }
           > .col2 {
             width: calc(50% - 30px);
             height: auto;
