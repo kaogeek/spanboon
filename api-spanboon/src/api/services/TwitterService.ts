@@ -52,7 +52,7 @@ export class TwitterService {
             let oauth_signature = '';
             try {
                 oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, twitter_setup.TWITTER_TOKEN_SECRET, options);
-            } catch (error) {
+            } catch (error: any) {
                 reject(error.message);
                 return;
             }
@@ -75,7 +75,7 @@ export class TwitterService {
                 res.on('end', () => {
                     try {
                         resolve(rawData);
-                    } catch (e) {
+                    } catch (e: any) {
                         reject(e.message);
                     }
                 });
@@ -134,7 +134,7 @@ export class TwitterService {
                 res.on('end', () => {
                     try {
                         resolve(rawData);
-                    } catch (e) {
+                    } catch (e: any) {
                         reject(e.message);
                     }
                 });
@@ -146,6 +146,112 @@ export class TwitterService {
                 reject(e);
             });
             req.end();
+        });
+    }
+
+    public getOauth2AppAccessToken(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const url: string = TwitterService.ROOT_URL + '/oauth2/token?grant_type=client_credentials';
+            const httpOptions: any = {
+                method: 'POST',
+                json: true
+            };
+
+            const req = https.request(url, httpOptions, (res) => {
+                const { statusCode, statusMessage } = res;
+
+                if (statusCode !== 200) {
+                    reject('statusCode ' + statusCode + ' ' + statusMessage);
+                    return;
+                }
+
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        resolve(parsedData);
+                    } catch (e: any) {
+                        reject(e.message);
+                    }
+                });
+            });
+
+            const base64 = Buffer.from(twitter_setup.TWITTER_API_KEY + ':' + twitter_setup.TWITER_API_SECRET_KEY).toString('base64');
+            const auth = 'Basic ' + base64;
+
+            req.setHeader('Content-Type', 'application/json');
+            req.setHeader('Accept', '*/*');
+            req.setHeader('Authorization', auth);
+            req.flushHeaders();
+            req.on('error', (e) => {
+                reject(e);
+            });
+            req.end();
+        });
+    }
+
+    public getTwitterUserTimeLine(twitterUserId: string, paramsOption?: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            // paramsOption = since_id, until_id, start_time, end_time
+
+            this.getOauth2AppAccessToken().then((twitterResult: any) => {
+                if (twitterResult === undefined || !twitterResult['access_token']) {
+                    reject('Access token was not found');
+                    return;
+                }
+
+                let url: string = TwitterService.ROOT_URL + '/2/users/'+twitterUserId+'/tweets?tweet.fields=created_at';
+                if (paramsOption !== undefined && paramsOption !== null && paramsOption !== '') {
+                    let appendString = '';
+                    for (const key of Object.keys(paramsOption)) {
+                        appendString += '&' + key + '=' + paramsOption[key];
+                    }
+
+                    if (appendString !== '') {
+                        url = url + '&' + appendString;
+                    }
+                }
+
+                const httpOptions: any = {
+                    method: 'GET',
+                    json: true
+                };
+
+                const req = https.request(url, httpOptions, (res) => {
+                    const { statusCode, statusMessage } = res;
+
+                    if (statusCode !== 200) {
+                        reject('statusCode ' + statusCode + ' ' + statusMessage);
+                        return;
+                    }
+
+                    let rawData = '';
+                    res.on('data', (chunk) => { rawData += chunk; });
+                    res.on('end', () => {
+                        try {
+                            const parsedData = JSON.parse(rawData);
+                            resolve(parsedData);
+                        } catch (e: any) {
+                            reject(e.message);
+                        }
+                    });
+                });
+
+                const accessToken = twitterResult['access_token'];
+                const auth = 'Bearer ' + accessToken;
+
+                req.setHeader('Content-Type', 'application/json');
+                req.setHeader('Accept', '*/*');
+                req.setHeader('Authorization', auth);
+                req.flushHeaders();
+                req.on('error', (e) => {
+                    reject(e);
+                });
+                req.end();
+            }).catch((error) => {
+                reject(error);
+            });
         });
     }
 
@@ -205,7 +311,7 @@ export class TwitterService {
             let oauth_signature = '';
             try {
                 oauth_signature = oauthSignature.default.generate('GET', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
-            } catch (error) {
+            } catch (error: any) {
                 reject(error.message);
                 return;
             }
@@ -229,7 +335,7 @@ export class TwitterService {
                     try {
                         const parsedData = JSON.parse(rawData);
                         resolve(parsedData);
-                    } catch (e) {
+                    } catch (e: any) {
                         reject(e.message);
                     }
                 });
@@ -329,7 +435,7 @@ export class TwitterService {
             let oauth_signature = '';
             try {
                 oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
-            } catch (error) {
+            } catch (error: any) {
                 reject(error.message);
                 return;
             }
@@ -353,7 +459,7 @@ export class TwitterService {
                     try {
                         const parsedData = JSON.parse(rawData);
                         resolve(parsedData);
-                    } catch (e) {
+                    } catch (e: any) {
                         reject(e.message);
                     }
                 });
@@ -428,7 +534,7 @@ export class TwitterService {
             let oauth_signature = '';
             try {
                 oauth_signature = oauthSignature.default.generate('POST', url, parameters, twitter_setup.TWITER_API_SECRET_KEY, tokenSecret, options);
-            } catch (error) {
+            } catch (error: any) {
                 reject(error.message);
                 return;
             }
@@ -452,7 +558,7 @@ export class TwitterService {
                     try {
                         const parsedData = JSON.parse(rawData);
                         resolve(parsedData);
-                    } catch (e) {
+                    } catch (e: any) {
                         reject(e.message);
                     }
                 });
