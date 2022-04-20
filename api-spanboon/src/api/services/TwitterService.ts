@@ -651,18 +651,18 @@ export class TwitterService {
 
     public async fetchPostByUser(twitterUserId: string): Promise<any> {
         const result = {
-            postCount: 0
+            postCount: 0,
+            enable: false
         };
 
         if (twitterUserId === undefined || twitterUserId === null || twitterUserId === '') {
             return result;
         }
 
-        // const user = await this.getTwitterUser(twitterUserId);
-        // if (user === undefined) {
-        //     return result;
-        // }
-        const user = { id: '5f4482dd6d7fc25680f90d07' };
+        const user = await this.getTwitterUser(twitterUserId);
+        if (user === undefined) {
+            return result;
+        }
 
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
@@ -673,7 +673,11 @@ export class TwitterService {
                 if (!socialPostLog.enable) {
                     return result;
                 }
+                result.enable = socialPostLog.enable;
                 params = { since_id: socialPostLog.lastSocialPostId };
+            } else {
+                // no socialPostLogs so this is enable = false mode;
+                return result;
             }
 
             const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId, params);
@@ -685,31 +689,15 @@ export class TwitterService {
                 // create post from twitter
                 if (data.length > 0) {
                     // update logs if logs found, if not exist create one.
-                    if (socialPostLog === undefined) {
-                        const newSocialPostLog = new SocialPostLogs();
-                        newSocialPostLog.user = user.id;
-                        newSocialPostLog.lastSocialPostId = newestId;
-                        newSocialPostLog.providerName = PROVIDER.TWITTER;
-                        newSocialPostLog.providerUserId = twitterUserId;
-                        newSocialPostLog.properties = meta;
-                        newSocialPostLog.enable = true;
-
-                        await this.socialPostLogsService.create(newSocialPostLog);
-                    } else {
-                        await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId } });
-                    }
-
+                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
                     result.postCount = data.length;
                 } else {
-                    if (socialPostLog !== undefined) {
-                        await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
-                    }
+                    // update last update
+                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
                 }
                 // end create post
             } else {
-                if (socialPostLog !== undefined) {
-                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
-                }
+                await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
             }
         } catch (error) {
             console.log(error);
