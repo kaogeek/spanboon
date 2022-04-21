@@ -18,7 +18,6 @@ import { PROVIDER } from '../../constants/LoginProvider';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { User } from '../models/User';
 import { OAuthUtil } from '../../utils/OAuthUtil';
-import { SocialPostLogs } from '../models/SocialPostLogs';
 
 @Service()
 export class TwitterService {
@@ -649,18 +648,13 @@ export class TwitterService {
         });
     }
 
-    public async fetchPostByUser(twitterUserId: string): Promise<any> {
+    public async fetchPostByTwitterUser(twitterUserId: string): Promise<any> {
         const result = {
             postCount: 0,
             enable: false
         };
 
         if (twitterUserId === undefined || twitterUserId === null || twitterUserId === '') {
-            return result;
-        }
-
-        const user = await this.getTwitterUser(twitterUserId);
-        if (user === undefined) {
             return result;
         }
 

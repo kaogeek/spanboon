@@ -10,6 +10,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SocialPostLogsRepository } from '../repositories/SocialPostLogsRepository';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { SocialPostLogs } from '../models/SocialPostLogs';
 
 @Service()
 export class SocialPostLogsService {
@@ -18,6 +19,10 @@ export class SocialPostLogsService {
     // create socialPostLog
     public async create(socialPostLog: any): Promise<any> {
         return await this.socialPostLogsRepository.save(socialPostLog);
+    }
+
+    public async find(findCondition: any): Promise<SocialPostLogs[]> {
+        return await this.socialPostLogsRepository.find(findCondition);
     }
 
     // find one socialPostLog

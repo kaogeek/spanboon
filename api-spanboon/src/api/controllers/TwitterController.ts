@@ -5,19 +5,14 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>
  */
 
-import { JsonController, Req, Res, Post, QueryParam, Get, Body, Authorized } from 'routing-controllers';
+import { JsonController, Res, Post, QueryParam, Get, Body } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { TwitterService } from '../services/TwitterService';
-import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { TwitterVerifyRequest } from './requests/TwitterVerifyRequest';
-import { TwitterFetchEnableRequest } from './requests/TwitterFetchEnableRequest';
-import { PROVIDER } from '../../constants/LoginProvider';
-import { AuthenticationIdService } from '../services/AuthenticationIdService';
-import { SocialPostLogs } from '../models/SocialPostLogs';
 
 @JsonController('/twitter')
 export class TwitterController {
-    constructor(private twitterService: TwitterService, private socialPostLogsService: SocialPostLogsService, private authenService: AuthenticationIdService) { }
+    constructor(private twitterService: TwitterService) { }
 
     /**
      * @api {post} /api/twitter/request_token Search Config API
@@ -102,62 +97,6 @@ export class TwitterController {
             return res.status(200).send(result);
         } catch (err) {
             const errorResponse = ResponseUtil.getSuccessResponse('Cannot get access token', err);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
-    /**
-     * @api {post} /api/twitter/enable_fetch enable_fetch API
-     * @apiGroup Twitter
-     * @apiSuccessExample {json} Success
-     * HTTP/1.1 200 OK
-     * {
-     *    "message": "Successfully get enable_fetch",
-     *    "data":{
-     *    "name" : "",
-     *    "description": "",
-     *     }
-     *    "status": "1"
-     *  }
-     * @apiSampleRequest /api/twitter/enable_fetch
-     * @apiErrorExample {json} config error
-     * HTTP/1.1 500 Internal Server Error
-     */
-    @Post('/enable_fetch')
-    @Authorized('user')
-    public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: TwitterFetchEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        try {
-            const userId = req.user.id;
-            // find authen with twitter
-            const twitterAccount = await this.authenService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
-
-            if (twitterAccount === undefined) {
-                const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
-                return res.status(400).send(errorResponse);
-            }
-
-            // find log
-            const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
-            if (socialPostLog !== undefined) {
-                // update old
-                await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
-            } else {
-                // create new
-                const newSocialPostLog = new SocialPostLogs();
-                newSocialPostLog.user = userId;
-                newSocialPostLog.lastSocialPostId = undefined;
-                newSocialPostLog.providerName = PROVIDER.TWITTER;
-                newSocialPostLog.providerUserId = twitterAccount.providerUserId;
-                newSocialPostLog.properties = undefined;
-                newSocialPostLog.enable = twitterParam.enable;
-                newSocialPostLog.lastUpdated = undefined;
-
-                await this.socialPostLogsService.create(newSocialPostLog);
-            }
-
-            return res.status(200).send(twitterParam);
-        } catch (err) {
-            const errorResponse = ResponseUtil.getSuccessResponse('Cannot request token', err);
             return res.status(400).send(errorResponse);
         }
     }

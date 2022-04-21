@@ -22,6 +22,9 @@ export class SocialPostLogs extends BaseModel {
     @Column({ name: 'user' })
     public user: ObjectID;
 
+    @Column({ name: 'pageId' })
+    public pageId: ObjectID;
+
     @Column({ name: 'providerName' })
     public providerName: string;
 

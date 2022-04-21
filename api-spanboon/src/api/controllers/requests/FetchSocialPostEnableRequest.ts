@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 
-export class TwitterFetchEnableRequest {
+export class FetchSocialPostEnableRequest {
 
     public enable: boolean;
     
