@@ -475,10 +475,19 @@
                             width: 13pt;
                             flex: 0 0 auto;
                         }
-                        > .history-name {
+                        >.description {
                             display: flex;
-                            white-space: normal;
+                            flex-direction: column;
+                            > .history-name {
+                                display: flex;
+                                white-space: normal;
+                            }
+                            >.description-color {
+                                @include font-size-10($font-head-500);
+                                color: #717886;
+                            }
                         }
+                      
                     }
 
                     > .list-right {

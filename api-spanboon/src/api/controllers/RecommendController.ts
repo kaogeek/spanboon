@@ -75,12 +75,16 @@ export class RecommendController {
             // search followed user
             const fwhereConditions: any = {
                 userId: userObjId,
+                banned: false,
                 isAdmin: false
             };
 
             const followResult: any = await this.userFollowService.search(undefined, undefined, ['subjectId', 'subjectType'], undefined, fwhereConditions, undefined, false);
             const orUserConditions = [];
             const orPageConditions = [];
+
+            orUserConditions.push(new ObjectID(userObjId));
+
             for (const followObj of followResult) {
                 if (followObj.subjectType === SUBJECT_TYPE.USER) {
                     orUserConditions.push(new ObjectID(followObj.subjectId));
@@ -149,13 +153,10 @@ export class RecommendController {
 
             if (!isRandomPage && !isRandomUser) {
                 const stmt = [
-                    // { $match: { $or: [{ _id: { $nin: orUserConditions } } ] }},
-                    { $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
+                    { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }, { isAdmin: false }, { banned: false }] }] } },
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
-                    {
-                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
-                    }
+                    { $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 } }
                 ];
                 const userFollow = await this.userService.aggregate(stmt);
                 for (const data of userFollow) {
@@ -173,6 +174,7 @@ export class RecommendController {
                 }
 
                 const stmtPage = [
+                    { $match: { banned: false } },
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
@@ -227,6 +229,7 @@ export class RecommendController {
             const randomLimitPage = limitData - randomLimitUser;
 
             const stmt = [
+                { $match: { $and: [{ isAdmin: false }, { banned: false }, { isAdmin: false }] } },
                 { $sample: { size: randomLimitUser } },
                 { $skip: offset ? offset : 0 },
                 {
@@ -242,6 +245,7 @@ export class RecommendController {
             }
 
             const stmtPage = [
+                { $match: { banned: false } },
                 { $sample: { size: randomLimitPage } },
                 { $skip: offset ? offset : 0 },
                 {

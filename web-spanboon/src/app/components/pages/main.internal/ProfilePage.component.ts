@@ -25,6 +25,7 @@ import { DialogImage } from '../../shares/dialog/DialogImage.component';
 import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
+import { filter } from 'rxjs/internal/operators/filter';
 
 const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
@@ -169,7 +170,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     });
 
-    this.mySubscription = this.router.events.subscribe((event) => {
+    this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         if (url.indexOf(URL_PATH) >= 0) {
@@ -847,7 +848,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             if (followUser.message === "Unfollow User Success") {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
-                console.log('res ', res)
                 if (res) {
                   Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
                 } else {

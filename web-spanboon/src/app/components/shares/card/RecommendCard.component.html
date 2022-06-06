@@ -58,8 +58,9 @@
                 </ng-template>
             </div>
             <div class="wrapper-btn-follow">
-                <button-follow [class.active]="recommed && recommed.follow" [bgColor]="'#FFFFFF'"
-                    [text]="recommed && recommed.follow ? 'กำลังติดตาม' :'ติดตาม'" (click)="onClick(index,recommed)">
+                <button-follow [class.active]="recommed && recommed.isFollowed" [bgColor]="'#FFFFFF'"
+                    [text]="recommed && recommed.isFollowed ? 'กำลังติดตาม' :'ติดตาม'"
+                    (click)="onClick(index,recommed)">
                 </button-follow>
             </div>
         </div>

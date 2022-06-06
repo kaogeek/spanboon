@@ -79,7 +79,6 @@ export const env = {
         password: getOsEnv('MONITOR_PASSWORD'),
     },
     imageserver: getOsEnv('IMAGE_SERVER'),
-    storeUrl: getOsEnv('STORE_URL'),
     SECRET_KEY: getOsEnv('SECRET_KEY')
 };
 
@@ -111,6 +110,7 @@ export const facebook_setup = {
     FACEBOOK_COOKIE: getOsEnv('FACEBOOK_COOKIE'),
     FACEBOOK_XFBML: getOsEnv('FACEBOOK_XFBML'),
     FACEBOOK_VERSION: getOsEnv('FACEBOOK_VERSION'),
+    FACEBOOK_VERIFY_TOKEN: getOsEnv('FACEBOOK_VERIFY_TOKEN'),
 };
 
 // Google Setup

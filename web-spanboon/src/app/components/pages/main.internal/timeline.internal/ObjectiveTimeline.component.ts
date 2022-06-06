@@ -171,9 +171,19 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         });
     }
 
-    public clickToPage(dataId: any, type?: any) {
+    public clickToHashtag(dataId: any, type?: any) {
         this.router.navigate([]).then(() => {
-            window.open('/search?hashtag=' + dataId, '_blank');
+            window.open('/search/?hashtag=' + dataId, '_blank');
+        });
+    }
+
+    public clickToPage(page: any) {
+        this.router.navigate([]).then(() => {
+            if (page.pageUsername !== null && page.pageUsername !== undefined && page.pageUsername !== "") {
+                window.open('/page/' + page.pageUsername, '_blank');
+            } else {
+                window.open('/page/' + page.id, '_blank');
+            }
         });
     }
 

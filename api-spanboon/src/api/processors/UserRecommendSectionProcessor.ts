@@ -16,6 +16,7 @@ import moment from 'moment';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectID } from 'mongodb';
 import { S3Service } from '../services/S3Service';
+import { POST_TYPE } from '../../constants/PostType';
 
 export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor {
 
@@ -90,8 +91,11 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                 const matchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false
-                };
+                    hidden: false,
+                    type: {
+                        $nin: [POST_TYPE.FULFILLMENT] // remove fulfillment post type comment this for showing all post type.
+                    }
+                }; 
                 if (userId !== undefined && userId !== '') {
                     // ! impl 
                 } else if (clientId !== undefined) {

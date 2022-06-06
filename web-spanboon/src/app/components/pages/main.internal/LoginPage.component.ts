@@ -266,7 +266,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true,
         xfbml: true,
-        version: 'v9.0'
+        version: 'v10.0'
       });
       window['FB'].AppEvents.logPageView();
     };
@@ -294,7 +294,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
         this._ngZone.run(() => this.loginFB());
       }
-    }, { scope: 'public_profile,email' });
+    }, { scope: 'public_profile, email' });
   }
 
   public emailLogin() {

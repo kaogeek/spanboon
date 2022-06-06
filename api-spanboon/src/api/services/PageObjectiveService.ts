@@ -58,6 +58,31 @@ export class PageObjectiveService {
         return this.pageObjectiveRepository.aggregate(query, options).toArray();
     }
 
+    public aggregateEntity(query: any, options?: any): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.pageObjectiveRepository.aggregateEntity(query, options).toArray();
+
+                if (result && options && options.signURL) {
+                    for (const objective of result) {
+                        if (objective.s3IconURL && objective.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageObjective Error: ', error);
+                            }
+                        }
+                    }
+                }
+
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     // create PageObjective
     public async create(objective: PageObjective): Promise<PageObjective> {
         return await this.pageObjectiveRepository.save(objective);

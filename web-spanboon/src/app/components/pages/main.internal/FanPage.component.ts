@@ -26,6 +26,7 @@ import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
+import { filter } from 'rxjs/internal/operators/filter';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -173,7 +174,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     // this.seoService.removeMeta();
 
-    this.mySubscription = this.router.events.subscribe((event) => {
+    this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const pathUrlPost = url.split('/')[1];
@@ -1017,24 +1018,45 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (!this.isLogin()) {
       this.showAlertLoginDialog("/page/" + this.resDataPage.id);
     } else {
-      this.resPost.posts[index].isLike = true;
-      this.resPost.posts[index].likeCount = 1;
-      this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
-        if (res.isLike) {
-          if (data.postData._id === res.posts.id) {
-            this.resPost.posts[index].likeCount = res.likeCount;
-            this.resPost.posts[index].isLike = res.isLike;
+      if (this.resPost.posts.length == 0) {
+        this.resDataPost[index].isLike = true;
+        this.resDataPost[index].likeCount = 1;
+        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+          if (res.isLike) {
+            if (data.postData._id === res.posts.id) {
+              this.resDataPost[index].likeCount = res.likeCount;
+              this.resDataPost[index].isLike = res.isLike;
+            }
+          } else {
+            // unLike 
+            if (data.postData._id === res.posts.id) {
+              this.resDataPost[index].likeCount = res.likeCount;
+              this.resDataPost[index].isLike = res.isLike;
+            }
           }
-        } else {
-          // unLike 
-          if (data.postData._id === res.posts.id) {
-            this.resPost.posts[index].likeCount = res.likeCount;
-            this.resPost.posts[index].isLike = res.isLike;
+        }).catch((err: any) => {
+          console.log(err)
+        });
+      } else {
+        this.resPost.posts[index].isLike = true;
+        this.resPost.posts[index].likeCount = 1;
+        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+          if (res.isLike) {
+            if (data.postData._id === res.posts.id) {
+              this.resPost.posts[index].likeCount = res.likeCount;
+              this.resPost.posts[index].isLike = res.isLike;
+            }
+          } else {
+            // unLike 
+            if (data.postData._id === res.posts.id) {
+              this.resPost.posts[index].likeCount = res.likeCount;
+              this.resPost.posts[index].isLike = res.isLike;
+            }
           }
-        }
-      }).catch((err: any) => {
-        console.log(err)
-      });
+        }).catch((err: any) => {
+          console.log(err)
+        });
+      }
     }
   }
 
@@ -1286,7 +1308,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public async actionComment(action: any, index: number) {
     this.isLoginCh();
-    await this.postActionService.actionPost(action, index, this.resPost, "PAGE").then((res: any) => {
+    let datapost: any;
+    if (this.resPost.posts.length == 0) {
+      datapost = this.resDataPost;
+    } else {
+      datapost = this.resPost.posts;
+    }
+    await this.postActionService.actionPost(action, index, datapost, "PAGE").then((res: any) => {
       if (res !== undefined && res !== null) {
         //repost
         if (res && res.type === "NOTOPIC") {
@@ -1297,7 +1325,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           for (let [i, data] of this.resPost.posts.entries()) {
             if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
               if (data.referencePostObject._id === action.post._id) {
-                this.resPost.posts.splice(i, 1);
+                this.resPost.length == 0 ? this.resDataPost.splice(i, 1) : this.resPost.splice(i, 1);
                 break;
               }
             }

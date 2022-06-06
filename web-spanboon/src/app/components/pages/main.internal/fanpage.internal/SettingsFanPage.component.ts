@@ -15,6 +15,7 @@ import { AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFa
 import { AbstractPage } from '../../AbstractPage';
 import { SettingsInfo } from './SettingsInfo.component';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/internal/operators/filter';
 
 const PAGE_NAME: string = 'settings';
 const URL_PATH: string = '/page/';
@@ -148,7 +149,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             }
         });
 
-        this.paramsSub = this.router.events.subscribe((event) => {
+        this.paramsSub = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
             if (event instanceof NavigationEnd) {
                 const url: string = decodeURI(this.router.url); 
                 if (url.indexOf(URL_PATH) >= 0) {

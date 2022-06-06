@@ -71,9 +71,12 @@
                                                     transform="translate(0)" fill="#474747" />
                                             </g>
                                         </svg>
+                                       <div class="description">
                                         <span class="history-name">
                                             {{item.label}}
                                         </span>
+                                        <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }} </span>
+                                       </div>
                                     </div>
                                     <div class="list-right">
                                         <i class="material-icons" (click)="onDeleteHistory(item,index)">
@@ -91,9 +94,12 @@
                                                     transform="translate(26.891 0)" fill="#474747" />
                                             </g>
                                         </svg>
-                                        <span class="history-name">
-                                            {{item.label}}
-                                        </span>
+                                        <div class="description">
+                                            <span class="history-name">
+                                                {{item.label}}
+                                            </span>
+                                            <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }}  </span>
+                                           </div>
                                     </div>
 
                                 </ng-template>
@@ -190,7 +196,7 @@
                         <ng-template #elseisMsgHistory>
                             <div class="list-fanpage">
                                 <div (click)="clickOpenLink(data)" class="wrapper-profile"
-                                    *ngFor="let data of searchRecent">
+                                    *ngFor="let data of searchRecent"> 
                                     <ng-container *ngIf="isLoading || data.isLoadingImage; else elseIsLoadIng">
                                         <span class="loading-image">
                                             <div class="linear-background">

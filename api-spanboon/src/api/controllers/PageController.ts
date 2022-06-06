@@ -69,6 +69,9 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import lodash from 'lodash';
 import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
+import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { SocialPostLogs } from '../models/SocialPostLogs';
 
 @JsonController('/page')
 export class PageController {
@@ -94,7 +97,8 @@ export class PageController {
         private twitterService: TwitterService,
         private pageConfigService: PageConfigService,
         private authenService: AuthenticationIdService,
-        private stdItemService: StandardItemService
+        private stdItemService: StandardItemService,
+        private socialPostLogsService: SocialPostLogsService
     ) { }
 
     // Find Page API
@@ -1514,6 +1518,15 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
 
+        // check dupicate uniqueId
+        if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+            const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername);
+            if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         const fileName = userObjId + FileUtil.renameFile();
         let assetCreate: Asset;
 
@@ -1957,6 +1970,15 @@ export class PageController {
 
             if (!pageUpdate) {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid Page Id', undefined));
+            }
+
+            // check dupicate uniqueId
+            if (pages.pageUsername !== undefined && pages.pageUsername !== null && pages.pageUsername !== '') {
+                const isContainsUniqueId = await this.userService.isContainsUniqueId(pages.pageUsername, undefined, pageUpdate.pageUsername);
+                if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageUsername already exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
             }
 
             let pageName = pages.name;
@@ -2620,6 +2642,58 @@ export class PageController {
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid subjectId', undefined));
+        }
+    }
+
+    @Post('/:id/enable_fetch_twitter')
+    @Authorized('user')
+    public async fetchTwitterEnable(@Param('id') id: string, @Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        try {
+            const pageObjId = new ObjectID(id);
+            const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+            if (!page) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+            }
+
+            const userId = req.user.id;
+            // check if user can access page
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+            }
+
+            // find authen with twitter
+            const twitterAccount = await this.pageSocialAccountService.findOne({ page: pageObjId, providerName: PROVIDER.TWITTER });
+
+            if (twitterAccount === undefined) {
+                const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            // find log
+            const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerPageId });
+            if (socialPostLog !== undefined) {
+                // update old
+                await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+            } else {
+                // create new
+                const newSocialPostLog = new SocialPostLogs();
+                newSocialPostLog.user = userId; // log by user
+                newSocialPostLog.lastSocialPostId = undefined;
+                newSocialPostLog.providerName = PROVIDER.TWITTER;
+                newSocialPostLog.providerUserId = twitterAccount.providerPageId;
+                newSocialPostLog.properties = undefined;
+                newSocialPostLog.enable = twitterParam.enable;
+                newSocialPostLog.lastUpdated = undefined;
+
+                await this.socialPostLogsService.create(newSocialPostLog);
+            }
+
+            return res.status(200).send(twitterParam);
+        } catch (err) {
+            const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+            return res.status(400).send(errorResponse);
         }
     }
 
