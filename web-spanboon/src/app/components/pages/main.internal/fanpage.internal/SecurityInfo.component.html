@@ -58,16 +58,18 @@
                     {{connectTwitter ? 'เชื่อมต่อกับ Twitter' : 'ยังไม่ได้เชื่อมต่อกับ Twitter'}}
                     <div class="link-social" *ngIf="dataBindingTwitter && dataBindingTwitter.providerPageId">
                         <span>บัญชี : </span>
-                        <a href="//www.twitter.com/{{dataBindingTwitter && dataBindingTwitter.providerPageName}}" target="_blank">{{ (
+                        <a href="//www.twitter.com/{{dataBindingTwitter && dataBindingTwitter.providerPageName}}"
+                            target="_blank">{{ (
                             dataBindingTwitter && dataBindingTwitter.providerPageName ) }} </a>
                     </div>
                 </div>
             </div>
             <div class="social-name">
-                <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="connectTwitter" >
+                <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="connectTwitter">
                     <!-- {{connectTwitter ? 'ยกเลิกการเชื่อมต่อ' : 'เชื่อมต่อ'}} -->
                     <mat-checkbox [disableRipple]="'true'" [(ngModel)]="connectTwitter"
-                    (click)="connectionSocial('twitter',connectTwitter)"  (click)="$event.stopPropagation()"></mat-checkbox>
+                        (click)="connectionSocial('twitter',connectTwitter)" (click)="$event.stopPropagation()">
+                    </mat-checkbox>
                 </div>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
@@ -110,7 +112,7 @@
             การตั้งค่าเริ่มต้นสำหรับการเผยแพร่โพสต์ไปยังแฟลตฟอร์มอื่น ๆ
         </div>
         <div class="box-social">
-            <div class="left">  
+            <div class="left">
                 <div class="icon-left" [class.facebook]="autoPostFacebook">
                     <svg class="icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
@@ -128,15 +130,15 @@
                 <div class="lost-connect">
                     {{autoPostFacebook ? 'เผยแพร่โพสต์ไปยัง Facebook' : 'ไม่เผยแพร่โพสต์ไปยัง Facebook'}}
                 </div>
-            </div>  
+            </div>
             <div class="link-connect" [class.active]="autoPostFacebook">
-                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}"
-                [checked]="autoPostFacebook" [(ngModel)]="autoPostFacebook" (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
+                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [checked]="autoPostFacebook"
+                    [(ngModel)]="autoPostFacebook" (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
         <div class="box-social">
-            <div class="left"> 
+            <div class="left">
                 <div class="icon-left" [class.twitter]="autoPostTwitter">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="37.962" height="30.845"
                         viewBox="0 0 37.962 30.845">
@@ -155,6 +157,40 @@
                     (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
+        </div>
+    </div>
+    <div class="label-info">
+        ตั้งค่าโพสต์อัตโนมัติ
+    </div>
+    <div class="body-social">
+        <div class="label-connect">
+            การตั้งค่าเริ่มต้นสำหรับการโพสต์อัติโนมัติไปยังหน้าฟีดจากแฟลตฟอร์มอื่น ๆ
+        </div>
+        <div class="box-social">
+            <div class="left">
+                <div class="icon-left" [class.twitter]="autoPostFacebook">
+                    <svg class="icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
+                        style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+                        <g>
+                            <path fill="#F8F7F2"
+                                d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+		c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+		c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+		c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+                        </g>
+                    </svg>
+
+                </div>
+                <div class="lost-connect">
+                    {{autoPostTwitter ? 'เผยแพร่โพสต์จาก Twitter' : 'ไม่เผยแพร่โพสต์จาก Twitter'}}
+                </div>
+            </div>
+            <div class="link-connect" [class.active]="autoPostTwitter">
+                <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [checked]="autoPostTwitter"
+                    [(ngModel)]="autoPostTwitter" (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
+            </div>
+            <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
     </div>
 </div>
