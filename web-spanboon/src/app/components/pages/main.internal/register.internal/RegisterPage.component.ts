@@ -213,11 +213,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
     } else {
       register.uniqueId = formData.username;
     }
-
-    if(moment().format('YYYY-MM-DD') !== moment(formData.birthday).format('YYYY-MM-DD')){
-      register.birthdate = moment(formData.birthday).format('YYYY-MM-DD'); 
-    }  
-
+    register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
+    register.birthdate.setHours(0);
+    register.birthdate.setMinutes(0);
+    register.birthdate.setSeconds(0);
     register.displayName = formData.displayName;
     register.gender = formData.gender;
     register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
@@ -248,7 +247,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.activeEmail = false;
     }
 
-    if(this.uuid === false) {
+    if(!this.uuid) {
       return;
     }
 

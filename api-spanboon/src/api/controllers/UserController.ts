@@ -39,6 +39,11 @@ import { UserConfigService } from '../services/UserConfigService';
 import moment from 'moment';
 import { UserConfig } from '../models/UserConfig';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
+import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { PROVIDER } from '../../constants/LoginProvider';
+import { SocialPostLogs } from '../models/SocialPostLogs';
+
 
 @JsonController('/user')
 export class UserController {
@@ -52,7 +57,8 @@ export class UserController {
         private userProvideItemsService: UserProvideItemsService,
         private customItemService: CustomItemService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
-        private userConfigService: UserConfigService
+        private userConfigService: UserConfigService, 
+        private socialPostLogsService: SocialPostLogsService
     ) { }
 
     // Logout API
@@ -781,6 +787,62 @@ export class UserController {
             }
         }
     }
+
+    /**
+     * @api {post} /api/user/:id/enable_fetch_twitter Follow User API
+     * @apiGroup User
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Follow User Success",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"
+     *  }
+     * @apiSampleRequest /api/user/:id/enable_fetch_twitter
+     * @apiErrorExample {json} Enable fetch Twitter's post
+     * HTTP/1.1 500 Internal Server Error
+     */
+     @Post('/enable_fetch_twitter')
+     @Authorized('user')
+     public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
+         try {
+             const userId = req.user.id;
+             // find authen with twitter
+             const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
+ 
+             if (twitterAccount === undefined) {
+                 const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
+                 return res.status(400).send(errorResponse);
+             }
+ 
+             // find log
+             const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
+             if (socialPostLog !== undefined) {
+                 // update old
+                 await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+             } else {
+                 // create new
+                 const newSocialPostLog = new SocialPostLogs();
+                 newSocialPostLog.user = userId; // log by user
+                 newSocialPostLog.lastSocialPostId = undefined;
+                 newSocialPostLog.providerName = PROVIDER.TWITTER;
+                 newSocialPostLog.providerUserId = twitterAccount.providerUserId;
+                 newSocialPostLog.properties = undefined;
+                 newSocialPostLog.enable = twitterParam.enable;
+                 newSocialPostLog.lastUpdated = undefined;
+ 
+                 await this.socialPostLogsService.create(newSocialPostLog);
+             }
+ 
+             return res.status(200).send(twitterParam);
+         } catch (err) {
+             const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+             return res.status(400).send(errorResponse);
+         }
+     }
 
     private async checkPageAccess(objectId: ObjectID, userId: ObjectID): Promise<any> {
         // const pageAccessLevelCheckQuery = { where: { page: pageId, user: userId } };
