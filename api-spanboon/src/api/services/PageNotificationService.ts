@@ -8,12 +8,17 @@ import { Page } from '../models/Page';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { ObjectID } from 'mongodb';
-
-@Service()
+import{ Injectable } from '@nestjs/common';
+import * as admin from 'firebase-admin';
+@Injectable()
 export class PageNotificationService {
 
-    constructor(private notificationService: NotificationService, private userFollowService: UserFollowService,
-        private pageService: PageService, private pageAccessLevelService: PageAccessLevelService) { }
+    constructor(
+        private notificationService: NotificationService, 
+        private userFollowService: UserFollowService,
+        private pageService: PageService, 
+        private pageAccessLevelService: PageAccessLevelService
+        ) {}
 
     public async notifyToUserFollow(pageId: string, notificationType: string, title: string, link?: string): Promise<Notification[]> {
         // check pageId
@@ -41,14 +46,13 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string): Promise<Notification[]> {
+    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
 
         if (page === undefined) {
             return [];
         }
-
         const pageAccess = await this.pageAccessLevelService.getAllPageUserAccess(toPageId, pageLevel);
 
         const result: Notification[] = [];
@@ -61,7 +65,16 @@ export class PageNotificationService {
                     continue;
                 }
 
-                const notification = await this.notificationService.createUserNotification(userId, fromUserId, fromUserType, notificationType, title, link);
+                const notification = await this.notificationService.createUserNotification(
+                    userId, 
+                    fromUserId, 
+                    fromUserType, 
+                    notificationType, 
+                    title, 
+                    link,
+                    data
+                    );
+
                 result.push(notification);
 
                 addedUesr.push(userId);

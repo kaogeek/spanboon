@@ -119,7 +119,6 @@ export class Posts extends BaseModel {
 
     @Column({ name: 'reachCount' })
     public reachCount: number;
-
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

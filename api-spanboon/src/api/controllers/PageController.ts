@@ -72,12 +72,17 @@ import { StandardItemService } from '../services/StandardItemService';
 import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
-
+import { PageNotificationService } from '../services/PageNotificationService';
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { EventPattern } from '@nestjs/microservices';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
 
     constructor(
+        private pageNotificationService: PageNotificationService,
+        private notificationService:NotificationService,
         private pageService: PageService,
         private pageCategoryService: PageCategoryService,
         private pageAccessLevelService: PageAccessLevelService,
@@ -1912,6 +1917,22 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
+                const who_follow_you = await this.userService.findOne({_id:followCreate.userId});
+                if(followCreate.subjectType === 'PAGE'){
+                    const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
+                    const link = `/user/${who_follow_you.displayName}/follow`;
+                    await this.notificationService.createNotification(
+                        followCreate.userId,
+                        USER_TYPE.USER,
+                        req.user.id+ '',
+                        USER_TYPE.PAGE,
+                        notification_follower,
+                        link,
+                        NOTIFICATION_TYPE.FOLLOW
+                    );
+                    
+                }
+
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {

@@ -17,11 +17,9 @@ import { currentUserChecker } from '../auth/currentUserChecker';
 import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
-
 export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
-
         /**
          * We create a new express server instance.
          * We could have also use useExpressServer here to attach controllers to an existing express instance.
@@ -32,7 +30,6 @@ export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSett
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
         app.listen(env.app.port);
-
         const expressApp: Application = useExpressServer(app, {
             cors: true,
             classTransformer: true,
