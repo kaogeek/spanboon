@@ -101,8 +101,13 @@ export class NotificationService {
         const token = data;
         const payload = {
             notification:{
+                toUserId,
+                toUserType,
+                fromUserId,
                 fromUserType,
-                title
+                notificationType,
+                title,
+                link
             }
         };
         Promise.all([await admin.messaging().sendToDevice(token,payload)]);
