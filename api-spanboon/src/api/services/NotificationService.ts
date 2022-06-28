@@ -5,7 +5,6 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Notification } from '../models/Notification';
 import { NotificationRepository } from '../repositories/NotificationRepository';
@@ -17,13 +16,11 @@ import{ Injectable } from '@nestjs/common';
 import * as serviceAccount from '../../../pushnotification-ac673-firebase-adminsdk-er6wo-9a5d90f8c3.json';
 import { ServiceAccount } from 'firebase-admin';
 import * as admin from 'firebase-admin';
-import {DeviceTokenService} from '../services/DeviceToken';
 @Injectable()
 export class NotificationService {
 
     constructor(
         @OrmRepository() private notificationRepository: NotificationRepository,
-        private deviceTokenService:DeviceTokenService
     ) {
         console.log('constructor called()');
         admin.initializeApp({
@@ -84,8 +81,7 @@ export class NotificationService {
         }
     }
 
-    public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any): Promise<any> {
-
+    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -97,24 +93,38 @@ export class NotificationService {
         notification.type = notificationType;
         notification.deleted = false;
         notification.data = data; 
-        
         const token = data;
         const payload = {
             notification:{
-                toUserId,
-                toUserType,
                 fromUserId,
-                fromUserType,
-                notificationType,
                 title,
-                link
+                link,
+                notificationType
             }
         };
         Promise.all([await admin.messaging().sendToDevice(token,payload)]);
         return await this.create(notification);
     }
-    public async createUserNotification(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?:any): Promise<any> {
+    public async createUserNotificationFCM(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?:any): Promise<any> {
         const token = data;
-        return await this.createNotification(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link,token);
+        return await this.createNotificationFCM(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link,token);
+    }
+    public async createUserNotification(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?:any): Promise<any> {
+        return await this.createNotification(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link);
+    }
+
+    public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any): Promise<any> {
+        const notification: Notification = new Notification();
+        notification.isRead = false;
+        notification.toUser = new ObjectID(toUserId);
+        notification.toUserType = toUserType;
+        notification.fromUser = new ObjectID(fromUserId);
+        notification.fromUserType = fromUserType;
+        notification.title = title;
+        notification.link = link;
+        notification.type = notificationType;
+        notification.deleted = false;
+        notification.data = data; 
+        return await this.create(notification);
     }
 }

@@ -43,7 +43,6 @@ import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRe
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { SocialPostLogs } from '../models/SocialPostLogs';
-import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
@@ -62,7 +61,6 @@ export class UserController {
         private userConfigService: UserConfigService, 
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
-        private pageNotificationService: PageNotificationService,
         private deviceToken:DeviceTokenService,
     ) { }
 
@@ -85,8 +83,6 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
-        const tokenFCM = await this.deviceToken.findOne({where:{userId:uid}});
-        console.log(tokenFCM);
         let logoutAll = false;
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
@@ -276,7 +272,8 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-
+                const page_name = await this.pageService.findOne({_id:followCreate.subjectId});
+                console.log(page_name);
                 const who_follow_you = await this.userService.findOne({_id:followCreate.userId});
                 if(followCreate.subjectType === 'USER'){
                     const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';

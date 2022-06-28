@@ -59,9 +59,7 @@ import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-import { UserFollowService } from '../services/UserFollowService';
 import { DeviceTokenService } from '../services/DeviceToken';
-import * as amqp from 'amqplib/callback_api';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -85,7 +83,6 @@ export class PagePostController {
         private pageAccessLevelService: PageAccessLevelService,
         private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
-        private userFollowService: UserFollowService,
         private s3Service: S3Service,
         private deviceToken:DeviceTokenService,
     ){}
@@ -586,37 +583,70 @@ export class PagePostController {
                     if(pageObjId === null ) 
                     {
                         // for user to user 
-                        const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
                         const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
-                        const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
-                        const link = '/post/'+createPostPageData.id;
-                        await this.notificationService.createNotification(
-                            createPostPageData.ownerUser,
-                            USER_TYPE.USER,
-                            req.user.id+'',
-                            USER_TYPE.USER,
-                            notificationText_POST,
-                            link,
-                            NOTIFICATION_TYPE.POST,
-                            tokenFCM_id.Tokens
-                            );
+                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
+                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                            const link = '/post/'+createPostPageData.id;
+                            await this.notificationService.createNotificationFCM(
+                                createPostPageData.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                notificationText_POST,
+                                link,
+                                NOTIFICATION_TYPE.POST,
+                                tokenFCM_id.Tokens
+                                );
+                        }
+                        else
+                        {
+                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                            const link = '/post/'+createPostPageData.id;
+                            await this.notificationService.createNotification(
+                                createPostPageData.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                notificationText_POST,
+                                link,
+                                NOTIFICATION_TYPE.POST,
+                                );
+                        }
                     }
                     else
                     {
                         // page to user 
-                        const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
-                        const link = '/post/'+createPostPageData.pageId;
                         const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
-                        await this.pageNotificationService.notifyToPageUser(
-                            createPostPageData.pageId,
-                            undefined,
-                            req.user.id+ '',
-                            USER_TYPE.USER,
-                            notificationText_post,
-                            link, 
-                            NOTIFICATION_TYPE.POST,
-                            tokenFCM_id.Tokens
-                        );
+                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
+                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
+                            const link = '/post/'+createPostPageData.pageId;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+ '',
+                                USER_TYPE.USER,
+                                notificationText_post,
+                                link, 
+                                NOTIFICATION_TYPE.POST,
+                                tokenFCM_id.Tokens
+                            );
+                        }
+                        else
+                        {
+                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
+                            const link = '/post/'+createPostPageData.pageId;
+                            await this.pageNotificationService.notifyToPageUser(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+ '',
+                                USER_TYPE.USER,
+                                notificationText_post,
+                                link, 
+                                NOTIFICATION_TYPE.POST,
+                            );
+                        }
                     }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];

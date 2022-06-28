@@ -944,73 +944,134 @@ export class PostsController {
             if (likeCreate) {
                 result = likeCreate;
                 action = ENGAGEMENT_ACTION.LIKE;
-                console.log(likeCreate);
 
                 // noti to owner post
                 {
                     let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
 
-                    if (postObj.pageId !== undefined && postObj.pageId !== null) {
+                    if (postObj.pageId !== undefined && postObj.pageId !== null) 
+                    {
                         // create noti for page
                         // page to page
-                        const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
-                        notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
-                        await this.pageNotificationService.notifyToPageUser(
-                            postObj.pageId, 
-                            undefined, 
-                            req.user.id + '', 
-                            USER_TYPE.USER, 
-                            NOTIFICATION_TYPE.LIKE, 
-                            notificationText, 
-                            link,
-                            tokenFCM_id.Tokens
-                            );
-                        // user to page
-                        if(likeCreate.likeAsPage === null){
-                            notificationText += ' กดถูกใจโพสต์ของคุณ';
-                            await this.notificationService.createNotification(
+                        const check_exist_token = await this.deviceTokenService.findOne({userId:likeCreate.userId});
+                        if(check_exist_token.Tokens !== null || check_exist_token.Tokens !== undefined){
+                            const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
+                            const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
+                            notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
+                            await this.pageNotificationService.notifyToPageUserFcm(
                                 postObj.pageId, 
-                                USER_TYPE.USER, 
+                                undefined, 
                                 req.user.id + '', 
-                                USER_TYPE.PAGE, 
+                                USER_TYPE.USER, 
                                 NOTIFICATION_TYPE.LIKE, 
                                 notificationText, 
                                 link,
                                 tokenFCM_id.Tokens
                                 );
+                            // user to page
+                            if(likeCreate.likeAsPage === null){
+                                notificationText += ' กดถูกใจโพสต์ของคุณ';
+                                await this.notificationService.createNotificationFCM(
+                                    postObj.pageId, 
+                                    USER_TYPE.USER, 
+                                    req.user.id + '', 
+                                    USER_TYPE.PAGE, 
+                                    NOTIFICATION_TYPE.LIKE, 
+                                    notificationText, 
+                                    link,
+                                    tokenFCM_id.Tokens
+                                    );
+                            }
+                            // page to page 
+                            else
+                            {
+                                notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
+                                await this.pageNotificationService.notifyToPageUserFcm(
+                                    postObj.pageId, 
+                                    undefined, 
+                                    req.user.id + '', 
+                                    USER_TYPE.PAGE, 
+                                    NOTIFICATION_TYPE.LIKE, 
+                                    notificationText, 
+                                    link,
+                                    tokenFCM_id.Tokens
+                                    );
+                            }
                         }
-                                                // page to page 
                         else
                         {
+                            const page: Page = await this.pageService.findOne({ _id: new ObjectID(postObj.pageId) });
                             notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
                             await this.pageNotificationService.notifyToPageUser(
                                 postObj.pageId, 
                                 undefined, 
                                 req.user.id + '', 
-                                USER_TYPE.PAGE, 
+                                USER_TYPE.USER, 
+                                NOTIFICATION_TYPE.LIKE, 
+                                notificationText, 
+                                link,
+                                );
+                            // user to page
+                            if(likeCreate.likeAsPage === null){
+                                notificationText += ' กดถูกใจโพสต์ของคุณ';
+                                await this.notificationService.createNotification(
+                                    postObj.pageId, 
+                                    USER_TYPE.USER, 
+                                    req.user.id + '', 
+                                    USER_TYPE.PAGE, 
+                                    NOTIFICATION_TYPE.LIKE, 
+                                    notificationText, 
+                                    link,
+                                    );
+                            }
+                            // page to page 
+                            else
+                            {
+                                notificationText += ' กดถูกใจโพสต์ของเพจ ' + page.name;
+                                await this.pageNotificationService.notifyToPageUser(
+                                    postObj.pageId, 
+                                    undefined, 
+                                    req.user.id + '', 
+                                    USER_TYPE.PAGE, 
+                                    NOTIFICATION_TYPE.LIKE, 
+                                    notificationText, 
+                                    link,
+                                    );
+                            }
+                        }
+                    } 
+                    else 
+                    {
+                        // create noti for user
+                        // user to user
+                        const check_exist_token = await this.deviceTokenService.findOne({userId:likeCreate.userId}); 
+                        if(check_exist_token.Tokens !== null || check_exist_token.Tokens !== undefined){
+                            const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
+                            notificationText += ' กดถูกใจโพสต์ของคุณ';
+                            await this.notificationService.createNotificationFCM(
+                                postObj.ownerUser + '', 
+                                USER_TYPE.USER, 
+                                req.user.id + '', 
+                                USER_TYPE.USER, 
                                 NOTIFICATION_TYPE.LIKE, 
                                 notificationText, 
                                 link,
                                 tokenFCM_id.Tokens
                                 );
                         }
-                    } else {
-                        // create noti for user
-                        // user to user 
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
-                        notificationText += ' กดถูกใจโพสต์ของคุณ';
-                        await this.notificationService.createNotification(
-                            postObj.ownerUser + '', 
-                            USER_TYPE.USER, 
-                            req.user.id + '', 
-                            USER_TYPE.USER, 
-                            NOTIFICATION_TYPE.LIKE, 
-                            notificationText, 
-                            link,
-                            tokenFCM_id.Tokens
-                            );
+                        else{
+                            notificationText += ' กดถูกใจโพสต์ของคุณ';
+                            await this.notificationService.createNotification(
+                                postObj.ownerUser + '', 
+                                USER_TYPE.USER, 
+                                req.user.id + '', 
+                                USER_TYPE.USER, 
+                                NOTIFICATION_TYPE.LIKE, 
+                                notificationText, 
+                                link,
+                                );
+                        }
                     }
                 }
 

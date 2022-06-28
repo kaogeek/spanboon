@@ -17,7 +17,7 @@ import { currentUserChecker } from '../auth/currentUserChecker';
 import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
-export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSettings | undefined) => {
+export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
         /**
@@ -67,7 +67,6 @@ export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSett
         if (!env.isTest) {
             settings.setData('express_server', app);
         }
-
         // Here we can set the data for other loaders
         settings.setData('express_app', expressApp);
     }

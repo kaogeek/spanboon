@@ -707,14 +707,12 @@ export class GuestController {
 
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
-
             if (userLogin) {
                 const userObjId = new ObjectID(userLogin.id);
                 if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
                     return res.status(400).send(errorResponse);
                 }
-                
                 if (await User.comparePassword(userLogin, loginPassword)) {
                     // create a token
                     const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);

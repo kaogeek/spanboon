@@ -1,4 +1,3 @@
-import { Service } from 'typedi';
 import { NotificationService } from './NotificationService';
 import { PageService } from './PageService';
 import { UserFollowService } from './UserFollowService';
@@ -9,7 +8,6 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { ObjectID } from 'mongodb';
 import{ Injectable } from '@nestjs/common';
-import * as admin from 'firebase-admin';
 @Injectable()
 export class PageNotificationService {
 
@@ -46,6 +44,43 @@ export class PageNotificationService {
         return result;
     }
 
+    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any): Promise<any> {
+        // check pageId
+        const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
+
+        if (page === undefined) {
+            return [];
+        }
+        const pageAccess = await this.pageAccessLevelService.getAllPageUserAccess(toPageId, pageLevel);
+
+        const result: Notification[] = [];
+        if (pageAccess) {
+            const addedUesr = [];
+            for (const userAccess of pageAccess) {
+                const userId = userAccess.user + '';
+
+                if (addedUesr.indexOf(userId) >= 0) {
+                    continue;
+                }
+
+                const notification = await this.notificationService.createUserNotificationFCM(
+                    userId, 
+                    fromUserId, 
+                    fromUserType, 
+                    notificationType, 
+                    title, 
+                    link,
+                    data
+                    );
+
+                result.push(notification);
+
+                addedUesr.push(userId);
+            }
+        }
+
+        return result;
+    }
     public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
@@ -72,7 +107,6 @@ export class PageNotificationService {
                     notificationType, 
                     title, 
                     link,
-                    data
                     );
 
                 result.push(notification);
