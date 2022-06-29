@@ -2113,7 +2113,8 @@ export class FulfillmentController {
                                 NOTIFICATION_TYPE.FULFILLMENT, 
                                 notificationText, 
                                 link,
-                                tokenDeviceId.Tokens
+                                tokenDeviceId.Tokens,
+                                pageObj.name
                             );
 
                             return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));

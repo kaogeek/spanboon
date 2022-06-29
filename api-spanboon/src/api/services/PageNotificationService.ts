@@ -44,7 +44,7 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any): Promise<any> {
+    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
 
@@ -81,7 +81,7 @@ export class PageNotificationService {
 
         return result;
     }
-    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any): Promise<any> {
+    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
 
@@ -107,6 +107,7 @@ export class PageNotificationService {
                     notificationType, 
                     title, 
                     link,
+                    displayName
                     );
 
                 result.push(notification);

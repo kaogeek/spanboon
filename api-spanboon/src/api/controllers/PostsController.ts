@@ -46,6 +46,7 @@ import { ConfigService } from '../services/ConfigService';
 import { AssetService } from '../services/AssetService';
 import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
+import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/post')
 export class PostsController {
@@ -65,7 +66,8 @@ export class PostsController {
         private s3Service: S3Service,
         private configService: ConfigService,
         private assetService: AssetService,
-        private deviceTokenService:DeviceTokenService
+        private deviceTokenService:DeviceTokenService,
+        private userService:UserService
     ) { }
 
     // New Post API
@@ -946,6 +948,9 @@ export class PostsController {
                 action = ENGAGEMENT_ACTION.LIKE;
 
                 // noti to owner post
+                const user_who_like = await this.userService.findOne({_id:likeCreate.userId});
+                console.log(user_who_like);
+
                 {
                     let notificationText = req.user.displayName;
                     const link = '/post/' + userLike.subjectId;
@@ -967,7 +972,8 @@ export class PostsController {
                                 NOTIFICATION_TYPE.LIKE, 
                                 notificationText, 
                                 link,
-                                tokenFCM_id.Tokens
+                                tokenFCM_id.Tokens,
+                                page.name
                                 );
                             // user to page
                             if(likeCreate.likeAsPage === null){
@@ -980,7 +986,8 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE, 
                                     notificationText, 
                                     link,
-                                    tokenFCM_id.Tokens
+                                    tokenFCM_id.Tokens,
+                                    user_who_like.displayName
                                     );
                             }
                             // page to page 
@@ -995,7 +1002,8 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE, 
                                     notificationText, 
                                     link,
-                                    tokenFCM_id.Tokens
+                                    tokenFCM_id.Tokens,
+                                    page.name
                                     );
                             }
                         }
@@ -1037,6 +1045,7 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE, 
                                     notificationText, 
                                     link,
+                                    page.name
                                     );
                             }
                         }
@@ -1057,7 +1066,8 @@ export class PostsController {
                                 NOTIFICATION_TYPE.LIKE, 
                                 notificationText, 
                                 link,
-                                tokenFCM_id.Tokens
+                                tokenFCM_id.Tokens,
+                                user_who_like.displayName
                                 );
                         }
                         else{

@@ -583,9 +583,11 @@ export class PagePostController {
                     if(pageObjId === null ) 
                     {
                         // for user to user 
+
                         const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
                         if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
                             const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                            console.log(user_test);
                             const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
                             const link = '/post/'+createPostPageData.id;
                             await this.notificationService.createNotificationFCM(
@@ -596,7 +598,8 @@ export class PagePostController {
                                 notificationText_POST,
                                 link,
                                 NOTIFICATION_TYPE.POST,
-                                tokenFCM_id.Tokens
+                                tokenFCM_id.Tokens,
+                                user_test.displayName
                                 );
                         }
                         else
@@ -612,6 +615,7 @@ export class PagePostController {
                                 notificationText_POST,
                                 link,
                                 NOTIFICATION_TYPE.POST,
+                                user_test.displayName,
                                 );
                         }
                     }
@@ -630,7 +634,8 @@ export class PagePostController {
                                 notificationText_post,
                                 link, 
                                 NOTIFICATION_TYPE.POST,
-                                tokenFCM_id.Tokens
+                                tokenFCM_id.Tokens,
+                                pageData[0].pageUsername
                             );
                         }
                         else
@@ -645,6 +650,7 @@ export class PagePostController {
                                 notificationText_post,
                                 link, 
                                 NOTIFICATION_TYPE.POST,
+                                pageData[0].pageUsername
                             );
                         }
                     }

@@ -17,8 +17,7 @@ import { iocLoader } from './loaders/iocLoader';
 import { publicLoader } from './loaders/publicLoader';
 import { typeormLoader } from './loaders/typeormLoader';
 import { winstonLoader } from './loaders/winstonLoader';
-import { jobSchedulerLoader } from './loaders/jobSchedulerLoader';
-import { MicroServices } from './loaders/microService';
+import { jobSchedulerLoader } from './loaders/jobSchedulerLoader'; 
 /**
  * EXPRESS TYPESCRIPT BOILERPLATE
  * ----------------------------------------
@@ -43,7 +42,6 @@ bootstrapMicroframework({
         homeLoader,
         publicLoader,
         jobSchedulerLoader,
-        MicroServices
     ],
     
 }).then(() => banner(log)).catch(error => log.error('Application is crashed: ' + error));
