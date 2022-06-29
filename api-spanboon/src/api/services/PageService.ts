@@ -57,6 +57,7 @@ export class PageService {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = await this.pageRepository.findOne(findCondition);
+
                 if (result && options && options.signURL) {
                     if (result.s3ImageURL && result.s3ImageURL !== '') {
                         try {

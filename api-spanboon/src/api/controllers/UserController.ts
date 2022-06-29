@@ -43,8 +43,9 @@ import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRe
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { SocialPostLogs } from '../models/SocialPostLogs';
-
-
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -58,7 +59,9 @@ export class UserController {
         private customItemService: CustomItemService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
         private userConfigService: UserConfigService, 
-        private socialPostLogsService: SocialPostLogsService
+        private socialPostLogsService: SocialPostLogsService,
+        private notificationService: NotificationService,
+        private deviceTokenService:DeviceTokenService,
     ) { }
 
     // Logout API
@@ -80,7 +83,6 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
-
         let logoutAll = false;
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
@@ -92,7 +94,6 @@ export class UserController {
 
         if (logoutAll) {
             const authenIds: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: uid } });
-
             if (!authenIds) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
@@ -124,7 +125,8 @@ export class UserController {
 
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
-            if (updateExpireToken) {
+            const deleteDeviceToken = await this.deviceTokenService.delete({userId:req.user.id});
+            if (updateExpireToken && deleteDeviceToken) {
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);
             } else {
@@ -259,11 +261,10 @@ export class UserController {
             userFollow.userId = userObjId;
             userFollow.subjectId = followUserObjId;
             userFollow.subjectType = SUBJECT_TYPE.USER;
-
             const followCreate: UserFollow = await this.userFollowService.create(userFollow);
+            // follow notification 
             if (followCreate) {
                 result = followCreate;
-
                 const userEngagement = new UserEngagement();
                 userEngagement.clientId = clientId;
                 userEngagement.contentId = followUserObjId;
@@ -271,7 +272,75 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-
+                const page_name = await this.pageService.findOne({_id:followCreate.subjectId});
+                const who_follow_you = await this.userService.findOne({_id:followCreate.userId});
+                const deviceToken = await this.deviceTokenService.findOne({userId:followCreate.userId});
+                if(deviceToken.Tokens !== null || deviceToken.Tokens !== undefined){
+                    // USER TO PAGE 
+                    if(page_name === null || page_name === undefined){
+                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                        const link = `/user/${who_follow_you.displayName}/follow`;
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            notification_follower,
+                            link,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            deviceToken.Tokens,
+                            who_follow_you.displayName
+                        );
+                    }
+                    else
+                    {
+                    // USER TO USER 
+                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                        const link = `/user/${who_follow_you.displayName}/follow`;
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.USER,
+                            notification_follower,
+                            link,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            deviceToken.Tokens,
+                            who_follow_you.displayName
+                        );
+                    }
+                }
+                else
+                {
+                    if(page_name === null || page_name === undefined){
+                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                        const link = `/user/${who_follow_you.displayName}/follow`;
+                        await this.notificationService.createNotification(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            notification_follower,
+                            link,
+                            NOTIFICATION_TYPE.FOLLOW,
+                        );
+                    }
+                    else
+                    {
+                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                        const link = `/user/${who_follow_you.displayName}/follow`;
+                        await this.notificationService.createNotification(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.USER,
+                            notification_follower,
+                            link,
+                            NOTIFICATION_TYPE.FOLLOW,
+                        );
+                    }
+                }
+                // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
                     userEngagement.isFirst = false;

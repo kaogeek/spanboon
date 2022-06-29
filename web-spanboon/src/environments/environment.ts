@@ -18,7 +18,7 @@ export const environment = {
   consumerSecretTwitter: '9iYBWJTUA9W048wzjBZ4n0R6wjWojogGhNlC2C9GcismIF6CNS',
   accessTokenTwitter: '1317733466222465024-8zwiXq7cLTJ544BfLBmx7hMjQvPs2M',
   accessTokenSecretTwitter: '7n685xtTXHc8gSF4Yl7ChoFcw2u07mJk9Tnm49kC5o5s0',
-  apiBaseURL: "https://api.spanboon.com/api",
+  apiBaseURL: "https://localhost:9000/api",
   webBaseURL: 'https://localhost:4200'
 };
 

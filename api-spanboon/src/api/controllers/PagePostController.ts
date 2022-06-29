@@ -48,17 +48,18 @@ import { UserLikeService } from '../services/UserLikeService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { PageObjective } from '../models/PageObjective';
 import { PageNotificationService } from '../services/PageNotificationService';
+import { NotificationService } from '../services/NotificationService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTag } from '../models/HashTag';
-import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -80,10 +81,15 @@ export class PagePostController {
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
         private pageAccessLevelService: PageAccessLevelService,
+        private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
-        private s3Service: S3Service
-    ) { }
-
+        private s3Service: S3Service,
+        private deviceToken:DeviceTokenService,
+    ){}
+    // @Get('/test/post')
+    // public async test(@Req() req:any):Promise<any>{
+    //     return {message:'ok'}
+    // }
     // PagePost List API
     /**
      * @api {get} /api/page/:pageId/post/:id PagePost List API
@@ -442,7 +448,6 @@ export class PagePostController {
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
-
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
@@ -555,19 +560,16 @@ export class PagePostController {
             }
         }
         // end check image gallery
-
+        // create post need notification!!!!
         if (pageData) {
             postPage.pageId = pageObjId;
             postPage.referencePost = null;
             postPage.rootReferencePost = null;
             postPage.visibility = null;
             postPage.ranges = null;
-
             const createPostPageData: Posts = await this.postsService.create(postPage);
-
             if (createPostPageData) {
                 createResult = createPostPageData;
-
                 const postPageId = new ObjectID(createPostPageData.id);
                 const engagement = new UserEngagement();
                 engagement.clientId = clientId;
@@ -577,12 +579,83 @@ export class PagePostController {
                 engagement.userId = userObjId;
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
-
                 await this.userEngagementService.create(engagement);
+                    if(pageObjId === null ) 
+                    {
+                        // for user to user 
 
+                        const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
+                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
+                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                            console.log(user_test);
+                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                            const link = '/post/'+createPostPageData.id;
+                            await this.notificationService.createNotificationFCM(
+                                createPostPageData.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                notificationText_POST,
+                                link,
+                                NOTIFICATION_TYPE.POST,
+                                tokenFCM_id.Tokens,
+                                user_test.displayName
+                                );
+                        }
+                        else
+                        {
+                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                            const link = '/post/'+createPostPageData.id;
+                            await this.notificationService.createNotification(
+                                createPostPageData.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                notificationText_POST,
+                                link,
+                                NOTIFICATION_TYPE.POST,
+                                user_test.displayName,
+                                );
+                        }
+                    }
+                    else
+                    {
+                        // page to user 
+                        const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
+                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
+                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
+                            const link = '/post/'+createPostPageData.pageId;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+ '',
+                                USER_TYPE.USER,
+                                notificationText_post,
+                                link, 
+                                NOTIFICATION_TYPE.POST,
+                                tokenFCM_id.Tokens,
+                                pageData[0].pageUsername
+                            );
+                        }
+                        else
+                        {
+                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
+                            const link = '/post/'+createPostPageData.pageId;
+                            await this.pageNotificationService.notifyToPageUser(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+ '',
+                                USER_TYPE.USER,
+                                notificationText_post,
+                                link, 
+                                NOTIFICATION_TYPE.POST,
+                                pageData[0].pageUsername
+                            );
+                        }
+                    }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];
-
                 if (postNeeds !== null && postNeeds !== undefined && postNeeds.length > 0) {
                     let needs: Needs;
                     let stdItems: StandardItem[];

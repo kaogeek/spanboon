@@ -31,7 +31,12 @@ import { PostCommentStatusRequest } from './requests/PostCommentStatusRequest';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { S3Service } from '../services/S3Service';
-
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { PageNotificationService } from '../services/PageNotificationService';
+import { DeviceTokenService } from '../services/DeviceToken';
+import { PageService } from '../services/PageService';
+import { UserService } from '../services/UserService';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -41,7 +46,12 @@ export class PostsCommentController {
         private userLikeService: UserLikeService,
         private userEngagementService: UserEngagementService,
         private pageAccessLevelService: PageAccessLevelService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private notificationService: NotificationService,
+        private pageNotificationService: PageNotificationService,
+        private deviceTokenService:DeviceTokenService,
+        private pageService:PageService,
+        private userService:UserService
     ) { }
 
     // PostsComment List API
@@ -69,12 +79,14 @@ export class PostsCommentController {
         if (offset === undefined || offset < 0) {
             offset = 0;
         }
-
+ 
         const postsComment: PostsComment[] = await this.postsCommentService.find({ where: { $and: [{ post: postPageObjId, deleted: false }] }, take: limit, offset });
 
         if (postsComment) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got PostsComment', postsComment);
+
             return res.status(200).send(successResponse);
+            
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got PostsComment', undefined);
             return res.status(400).send(errorResponse);
@@ -137,11 +149,131 @@ export class PostsCommentController {
             postsComment.commentAsPage = (commentAsPage !== null && commentAsPage !== undefined && commentAsPage !== '') ? new ObjectID(commentAsPage) : null;
 
             const comment: PostsComment = await this.postsCommentService.create(postsComment);
-
-            if (comment) {
+            
+            if (comment) 
+            {
                 const commentCount = posts.commentCount + 1;
                 await this.postsService.update({ _id: postObjId }, { $set: { commentCount } });
                 const successResponse = ResponseUtil.getSuccessResponse('Create PostsComment Successful', comment);
+                const post_who = await this.postsService.findOne({_id:comment.post});
+                const pageName = await this.pageService.findOne({_id:post_who.pageId});
+                // page to user 
+                if(commentAsPage !== null && commentAsPage !== undefined)
+                {
+
+                    const getPost = await this.postsService.findOne({_id:comment.post});
+                    const check_exist_TokenFcm = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
+                    if(check_exist_TokenFcm.Tokens !== null || check_exist_TokenFcm.Tokens !== undefined)
+                    {
+                        const link = '/post/' + getPost.id;
+                        const notification_comment = 'คอมเม้นต์โพสต์';
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            getPost.ownerUser,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            notification_comment,
+                            link,
+                            NOTIFICATION_TYPE.COMMENT,
+                            tokenFCM_id.Tokens,
+                            pageName.name
+                            );
+                    }
+                    else
+                    {
+                        const link = '/post/' + getPost.id;
+                        const notification_comment = 'คอมเม้นต์โพสต์';
+                        await this.pageNotificationService.notifyToPageUser(
+                            getPost.ownerUser,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            notification_comment,
+                            link,
+                            NOTIFICATION_TYPE.COMMENT,
+                            );
+                    }
+                }
+                // user to user 
+                else
+                {
+                    // WHO POST USER OR PAGE ?
+                    const getPost = await this.postsService.findOne({_id:comment.post});
+                    const userName = await this.userService.findOne({_id:getPost.ownerUser});
+                    if(post_who.pageId === null)
+                    {
+                        // USER TO USER
+                        const check_exist_TokenFcm = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
+                        if(check_exist_TokenFcm.Tokens !== null || check_exist_TokenFcm.Tokens !== undefined)
+                        {
+                            const link = '/post/' + getPost.id;
+                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
+                            await this.notificationService.createNotificationFCM(
+                                getPost.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                notification_comment,
+                                link,
+                                NOTIFICATION_TYPE.COMMENT,
+                                tokenFCM_id.Tokens,
+                                userName.displayName
+                                );
+                        }
+                        else
+                        {
+                            const link = '/post/' + getPost.id;
+                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            await this.notificationService.createNotification(
+                                getPost.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                notification_comment,
+                                link,
+                                NOTIFICATION_TYPE.COMMENT,
+                                );
+                        }
+                    }
+                    else
+                    {
+                        // USER TO PAGE
+                        const check_exist_TokenFcm = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
+                        if(check_exist_TokenFcm.Tokens !== null || check_exist_TokenFcm.Tokens !== undefined){
+                            const link = '/post/' + getPost.id;
+                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            const tokenFCM_id = await this.deviceTokenService.findOne({userId:req.user.id});
+                            await this.notificationService.createNotificationFCM(
+                                getPost.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                notification_comment,
+                                link,
+                                NOTIFICATION_TYPE.COMMENT,
+                                tokenFCM_id.Tokens,
+                                userName.displayName
+                                );
+                        }
+                        else
+                        {
+                            const link = '/post/' + getPost.id;
+                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            await this.notificationService.createNotification(
+                                getPost.ownerUser,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                notification_comment,
+                                link,
+                                NOTIFICATION_TYPE.COMMENT,
+                                );
+                        }
+                    }
+
+                }
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Error Create PostsComment', undefined);

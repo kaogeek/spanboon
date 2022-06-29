@@ -26,15 +26,24 @@ import { CHAT_ROOM_TYPE } from '../../constants/ChatRoomType';
 import { ASSET_SCOPE, ASSET_PATH } from '../../constants/AssetScope';
 import { FileUtil } from '../../utils/FileUtil';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
-import { USER_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { CHAT_MESSAGE_TYPE } from '../../constants/ChatMessageTypes';
 import { CheckChatRoomRequest } from './requests/CheckChatRoomRequest';
-
+import { PageNotificationService } from '../services/PageNotificationService';
+import { NotificationService } from '../services/NotificationService';
 @JsonController('/chatroom')
 export class ChatRoomController {
-    constructor(private chatRoomService: ChatRoomService, private chatMessageService: ChatMessageService, private userService: UserService,
-        private assetService: AssetService, private pageService: PageService, private fulfillmentCaseService: FulfillmentCaseService,
-        private pageAccessLevelService: PageAccessLevelService) { }
+    constructor(
+        private chatRoomService: ChatRoomService, 
+        private chatMessageService: ChatMessageService, 
+        private userService: UserService,
+        private assetService: AssetService, 
+        private pageService: PageService, 
+        private fulfillmentCaseService: FulfillmentCaseService,
+        private pageAccessLevelService: PageAccessLevelService,
+        private pageNotificationService: PageNotificationService,
+        private notificationService: NotificationService,
+        ) { }
 
     /**
      * @api {post} /api/chatroom/ Create Chat Room
@@ -60,7 +69,6 @@ export class ChatRoomController {
     @Authorized('user')
     public async createChatRoom(@Body({ validate: true }) chatRoomRequest: ChatRoomRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const senderObjId = new ObjectID(req.user.id);
-
         if (chatRoomRequest.typeId === undefined || chatRoomRequest.typeId === '') {
             const errorResponse = ResponseUtil.getErrorResponse('Chatroom Type Id was not found.', undefined);
             return res.status(400).send(errorResponse);
@@ -619,9 +627,46 @@ export class ChatRoomController {
         if (chatMsg.messageType === undefined || chatMsg.messageType === null || chatMsg.messageType === '') {
             chatMsg.messageType = CHAT_MESSAGE_TYPE.INFO;
         }
-
         const chatMsgResult: any = await this.chatMessageService.createChatMessage(chatMsg);
-
+        if(chatMsgResult){
+            if(room.participants[0].senderType === 'PAGE')
+            {
+                const text_notification_1 = 'ข้อความ message ล่าสุดที่ส่ง';
+                const link = null;
+                await this.pageNotificationService.notifyToPageUser(
+                    chatMsg.sender,                        
+                    undefined, 
+                    req.user.id + '',
+                    USER_TYPE.USER,
+                    text_notification_1,
+                    link,
+                    NOTIFICATION_TYPE.POST);
+            }
+            else if(room.participants[0].senderType === 'USER' && room.participants[1].senderType === 'PAGE'){
+                const text_notification_2 = 'ข้อความ message ล่าสุดที่ส่ง';
+                const link = null;
+                await this.notificationService.createNotification(
+                    chatMsg.sender,                        
+                    USER_TYPE.USER, 
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    text_notification_2,
+                    link,
+                    NOTIFICATION_TYPE.POST);
+            }
+            else{
+                const text_notification_3 = 'ข้อความ message ล่าสุดที่ส่ง';
+                const link = null;
+                await this.notificationService.createNotification(
+                    chatMsg.sender,
+                    USER_TYPE.USER,
+                    req.user.id+'',
+                    USER_TYPE.USER,
+                    text_notification_3,
+                    link,
+                    NOTIFICATION_TYPE.CHAT);
+            }
+        }
         const msgResp = new ChatMessageResponse();
         if (chatMsgResult) {
             const senderId = chatMsgResult.sender + '';
