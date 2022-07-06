@@ -38,7 +38,7 @@ import { TwitterService } from '../services/TwitterService';
 import { ConfigService } from '../services/ConfigService';
 import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
-
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController()
 export class GuestController {
     constructor(
@@ -51,7 +51,8 @@ export class GuestController {
         private userFollowService: UserFollowService,
         private forgotPasswordActivateCodeService: ForgotPasswordActivateCodeService,
         private twitterService: TwitterService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private deviceToken:DeviceTokenService
     ) { }
 
     /**
@@ -706,14 +707,12 @@ export class GuestController {
 
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
-
             if (userLogin) {
                 const userObjId = new ObjectID(userLogin.id);
                 if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
                     const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
                     return res.status(400).send(errorResponse);
                 }
-
                 if (await User.comparePassword(userLogin, loginPassword)) {
                     // create a token
                     const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
@@ -741,7 +740,12 @@ export class GuestController {
                         } else {
                             await this.authenticationIdService.create(newToken);
                         }
-
+                        if(token !== null && token !== 'undefiend'){
+                            const userId = userLogin.id;
+                            const token_fcm = req.body.token;
+                            const deviceName = req.body.deviceName;
+                            await this.deviceToken.createDeviceToken({deviceName,token:token_fcm,userId});
+                        }
                         loginToken = token;
                     }
 
