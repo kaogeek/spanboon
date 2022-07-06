@@ -74,26 +74,26 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
 
 
-    let user = this.authenManager.getCurrentUser()
-    this.userCloneDatas = JSON.parse(JSON.stringify(user));
-    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
-      this.searchPageInUser(this.userCloneDatas.id);
-    } else {
-      this.searchPageInUser();
-    }
-    let search: SearchFilter = new SearchFilter();
-    search.limit = 5;
-    search.count = false;
-    search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
-    this.postFacade.searchPostStory(search).then(async (res: any) => {
-      this.STORY = res;
-      this.TimeoutRuntimeSet();
-      this.getRecommendedHashtag(this.STORY[0]._id);
-      this.getRecommendedStory(this.STORY[0]._id);
-      this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
-    }).catch((err: any) => {
-      console.log(err)
-    })
+    // let user = this.authenManager.getCurrentUser()
+    // this.userCloneDatas = JSON.parse(JSON.stringify(user));
+    // if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
+    //   this.searchPageInUser(this.userCloneDatas.id);
+    // } else {
+    //   this.searchPageInUser();
+    // }
+    // let search: SearchFilter = new SearchFilter();
+    // search.limit = 5;
+    // search.count = false;
+    // search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
+    // this.postFacade.searchPostStory(search).then(async (res: any) => {
+    //   this.STORY = res;
+    //   this.TimeoutRuntimeSet();
+    //   this.getRecommendedHashtag(this.STORY[0]._id);
+    //   this.getRecommendedStory(this.STORY[0]._id);
+    //   this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
+    // }).catch((err: any) => {
+    //   console.log(err)
+    // })
 
 
 
