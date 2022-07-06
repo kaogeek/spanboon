@@ -1916,70 +1916,37 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
-                const who_follow_you = await this.userService.findOne({_id:followCreate.userId});
-                if(followCreate.subjectType === 'PAGE'){ 
-                    const deviceTokens = await this.deviceTokenService.findOne({userId:page.ownerUser});
-                    if(deviceTokens.Tokens !== null || deviceTokens.Tokens !== undefined){
-                        const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotificationFCM(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.PAGE,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            deviceTokens.Tokens
-                        );
-                    }
-                    else{
-                        const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotification(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.PAGE,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                        );
-                    }
-                    
+                const who_follow_you = await this.userService.findOne({_id:userFollow.userId });
+                const page_owner_noti = await this.userService.findOne({_id:page.ownerUser});
+                // user to page 
+                const deviceToken = await this.deviceTokenService.findOne({userId:page_owner_noti.id});
+                const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
+                const link = `/user/${who_follow_you.displayName}/follow`;
+                if(deviceToken !== undefined){
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.userId,
+                        USER_TYPE.USER,
+                        req.user.id+ '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        deviceToken.Tokens,
+                        who_follow_you.displayName,
+                        who_follow_you.imageURL
+                        
+                    );
                 }
                 else{
-                    const deviceTokens = await this.deviceTokenService.findOne({userId:page.ownerUser});
-                    if(deviceTokens.Tokens !== null || deviceTokens.Tokens !== undefined){
-                        const notification_follower = who_follow_you.displayName + 'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotificationFCM
-                        (
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+'',
-                            USER_TYPE.USER,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            deviceTokens.Tokens
-                        );
-                    }
-                    else
-                    {
-                        const notification_follower = who_follow_you.displayName + 'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotification
-                        (
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+'',
-                            USER_TYPE.USER,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                        );
-                    }
+                    await this.notificationService.createNotification(
+                        followCreate.userId,
+                        USER_TYPE.USER,
+                        req.user.id+ '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                    );
                 }
 
                 if (engagement) {

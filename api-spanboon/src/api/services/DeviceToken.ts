@@ -9,6 +9,7 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { DeviceTokenRepository } from '../repositories/DeviceToken';
+import { UserRepository } from '../repositories/UserRepository';
 @Service()
 export class DeviceTokenService {
 
@@ -25,6 +26,10 @@ export class DeviceTokenService {
 
     public async findOne(findCondition:any):Promise<any>{
         return await this.deviceTokenRepository.findOne(findCondition);
+    }
+
+    public async findPeople(findCondition?:any):Promise<any>{
+        return await this.deviceTokenRepository.find(findCondition);
     }
 
     public async find(findCondition?: any): Promise<any> {

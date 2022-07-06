@@ -60,6 +60,7 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { UserFollowService } from '../services/UserFollowService';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -85,6 +86,7 @@ export class PagePostController {
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
         private deviceToken:DeviceTokenService,
+        private userFollowService:UserFollowService
     ){}
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -451,7 +453,6 @@ export class PagePostController {
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
-
         if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
             const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
 
@@ -580,80 +581,86 @@ export class PagePostController {
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
-                    if(pageObjId === null ) 
-                    {
-                        // for user to user 
+                // page to user
+                if(createPostPageData.pageId !== null)
+                {
+                    const page_post = await this.pageService.findOne({_id:createPostPageData.pageId});
+                    const notificationText_POST = 'มีโพสต์ใหม่จาก'+page_post.pageUsername;
+                    const user_follow = await this.userFollowService.find({subjectType:'PAGE',userId:req.user.id});
+                    for(let i = 0; i<user_follow.length; i++){
+                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].subjectId});
+                        if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
+                            const link = '/post/' + createPostPageData.id;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.POST,
+                                notificationText_POST,
+                                link,
+                                tokenFCM_id[i].Tokens,
+                                page_post.pageUsername,
+                                page_post.imageURL
+                            );
+                        }
+                        else{
+                            const link = '/post/' + createPostPageData.id;
+                            await this.pageNotificationService.notifyToPageUser(
+                                createPostPageData.pageId,
+                                undefined,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.POST,
+                                notificationText_POST,
+                                link,
+                                page_post.pageUsername,
+                                page_post.imageURL
+                            );
+                        }
+                    }
 
-                        const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
-                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
-                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
-                            console.log(user_test);
-                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                }
+                else
+                {   
+                    const user_post = await this.userService.findOne({_id:createPostPageData.ownerUser});
+                    const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_post.displayName;
+
+                    // user to user
+                    const user_follow = await this.userFollowService.find({subjectType:'USER',userId:req.user.id});
+                    for(let i = 0; i<user_follow.length; i++){
+                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].subjectId});
+                        if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
                             const link = '/post/'+createPostPageData.id;
                             await this.notificationService.createNotificationFCM(
                                 createPostPageData.ownerUser,
                                 USER_TYPE.USER,
                                 req.user.id+'',
                                 USER_TYPE.USER,
+                                NOTIFICATION_TYPE.POST,
                                 notificationText_POST,
                                 link,
-                                NOTIFICATION_TYPE.POST,
-                                tokenFCM_id.Tokens,
-                                user_test.displayName
-                                );
+                                tokenFCM_id[i].Tokens,
+                                user_post.displayName,
+                                user_post.imageURL
+                            );
                         }
-                        else
-                        {
-                            const user_test = await this.userService.findOne({_id:createPostPageData.ownerUser});
-                            const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_test.displayName;
+                        else{
                             const link = '/post/'+createPostPageData.id;
                             await this.notificationService.createNotification(
                                 createPostPageData.ownerUser,
                                 USER_TYPE.USER,
                                 req.user.id+'',
                                 USER_TYPE.USER,
+                                NOTIFICATION_TYPE.POST,
                                 notificationText_POST,
                                 link,
-                                NOTIFICATION_TYPE.POST,
-                                user_test.displayName,
-                                );
-                        }
-                    }
-                    else
-                    {
-                        // page to user 
-                        const tokenFCM_id = await this.deviceToken.findOne({userId:req.user.id});
-                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Tokens !== undefined){
-                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
-                            const link = '/post/'+createPostPageData.pageId;
-                            await this.pageNotificationService.notifyToPageUserFcm(
-                                createPostPageData.pageId,
-                                undefined,
-                                req.user.id+ '',
-                                USER_TYPE.USER,
-                                notificationText_post,
-                                link, 
-                                NOTIFICATION_TYPE.POST,
-                                tokenFCM_id.Tokens,
-                                pageData[0].pageUsername
-                            );
-                        }
-                        else
-                        {
-                            const notificationText_post = 'มีโพสต์ใหม่จาก' + pageData[0].pageUsername;
-                            const link = '/post/'+createPostPageData.pageId;
-                            await this.pageNotificationService.notifyToPageUser(
-                                createPostPageData.pageId,
-                                undefined,
-                                req.user.id+ '',
-                                USER_TYPE.USER,
-                                notificationText_post,
-                                link, 
-                                NOTIFICATION_TYPE.POST,
-                                pageData[0].pageUsername
+                                user_post.displayName,
+                                user_post.imageURL
                             );
                         }
                     }
+                }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];
                 if (postNeeds !== null && postNeeds !== undefined && postNeeds.length > 0) {
@@ -668,11 +675,9 @@ export class PagePostController {
                             const unit = item.unit;
                             const quantity = item.quantity;
                             const itemName = item.itemName;
-
-                            if (stdItemId !== null && stdItemId !== undefined && stdItemId !== '') {
+                            if (stdItemId === null && stdItemId === undefined && stdItemId === '') {
                                 needsMap[stdItemId] = { quantity, unit };
                                 stdItemList.push(new ObjectID(stdItemId));
-
                                 if (stdItemList !== null && stdItemList !== undefined && stdItemList.length > 0) {
                                     stdItems = await this.standardItemService.find({ where: { _id: { $in: stdItemList } } });
                                 }
@@ -683,7 +688,6 @@ export class PagePostController {
                                 customItem.userId = userObjId;
                                 customItem.standardItemId = null;
                                 const customCreate = await this.customItemService.create(customItem);
-
                                 needs = new Needs();
                                 needs.standardItemId = null;
                                 needs.customItemId = new ObjectID(customCreate.id);
@@ -697,7 +701,6 @@ export class PagePostController {
                                 needs.description = null;
                                 needs.fulfillQuantity = 0;
                                 needs.pendingQuantity = 0;
-
                                 needsCreate = await this.needsService.create(needs);
                             }
                         }
@@ -707,10 +710,9 @@ export class PagePostController {
                                 const stdItemId = stdItem.id;
                                 const needsData = needsMap[stdItemId];
 
-                                if (needsData !== null && needsData !== undefined) {
+                                if (needsData === null && needsData === undefined) {
                                     const quantity = needsData.quantity;
                                     const unit = needsData.unit;
-
                                     needs = new Needs();
                                     needs.standardItemId = new ObjectID(stdItemId);
                                     needs.customItemId = null;
@@ -734,7 +736,6 @@ export class PagePostController {
                         createResult.type = POST_TYPE.NEEDS;
 
                         needsCreated.push(needsCreate);
-
                         if (needsCreated.length > 0) {
                             if (needsCreated.length === 1) {
                                 // item only one
