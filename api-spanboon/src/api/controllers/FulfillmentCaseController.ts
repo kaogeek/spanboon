@@ -99,7 +99,7 @@ export class FulfillmentController {
         private s3Service: S3Service,
         private deviceTokenService:DeviceTokenService,
         private userFollowService:UserFollowService,
-        private pageNotificationService:PageNotificationService
+        private pageNotificationService: PageNotificationService,
     ) { }
 
     /**
@@ -1840,6 +1840,42 @@ export class FulfillmentController {
                                 const page = await this.pageService.findOne({ _id: new ObjectID(asPage) });
                                 if (page !== undefined) {
                                     chatMessage = page.name + ' ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม';
+                                    const link = `/fulfillment_case/${caseId}/allocate_confirm`;
+                                    const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId});
+                                    for(let i = 0 ;i<who_follow_page.length; i++){
+                                        const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
+                                        if(tokenFCM_id[i] !== undefined)
+                                        {
+                                            await this.pageNotificationService.notifyToPageUserFcm
+                                            (
+                                                page.id,
+                                                undefined, 
+                                                req.user.id+'', 
+                                                USER_TYPE.USER, 
+                                                NOTIFICATION_TYPE.FULFILLMENT, 
+                                                chatMessage, 
+                                                link,
+                                                tokenFCM_id[i].Tokens,
+                                                page.pageUsername,
+                                                page.imageURL
+                                            );
+                                        }
+                                        else
+                                        {
+                                            await this.pageNotificationService.notifyToPageUser
+                                            (
+                                                page.id,
+                                                undefined, 
+                                                req.user.id+'', 
+                                                USER_TYPE.USER, 
+                                                NOTIFICATION_TYPE.FULFILLMENT, 
+                                                chatMessage, 
+                                                link,
+                                                page.pageUsername,
+                                                page.imageURL
+                                            );
+                                        }
+                                    }
                                 }
                             }
                             chatMsg.message = chatMessage;
@@ -2097,15 +2133,16 @@ export class FulfillmentController {
 
                     await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
                     const page = await this.pageService.findOne({_id:fulfillCase.pageId});
-                    const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId});
                     if (createPostPageData !== undefined) {
                         // notify to requester
                         // find page 
                         // page -> user
                         // notification to user who follow page
+                        const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId});
                         for(let i = 0; i<who_follow_page.length; i++){
                             const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
                             if(page.imageURL !== null && page.imageURL !== undefined){
+                                console.log('ok1');
                                 if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
                                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
                                     let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
@@ -2131,7 +2168,7 @@ export class FulfillmentController {
                                 }
                                 else
                                 {
-                                    console.log('ok');
+                                    console.log('ok2');
                                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
                                     let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
                                     if (pageObj) {
@@ -2155,6 +2192,7 @@ export class FulfillmentController {
                             }
                             else{
                                 if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
+                                    console.log('ok');
                                     const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
                                     let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
                                     if (pageObj) {
@@ -2400,9 +2438,8 @@ export class FulfillmentController {
 
                                 /* notify to requester */
                                 const page = await this.pageService.findOne({_id:fulfillCase.pageId});
-
                                 // page -> user
-                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId});
+                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
                                 for(let i = 0; i<who_follow_page.length; i++){
                                     const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
                                     console.log('ok');
@@ -2655,7 +2692,7 @@ export class FulfillmentController {
                                 const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests.needsId) });
                                 for(let i = 0; i<who_follow_page.length; i ++){
                                     const tokenDeviceId = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
-                                    if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
+                                    if(tokenDeviceId[i] !== null && tokenDeviceId[i] !== undefined){
                                         let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {
                                             notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
@@ -2966,7 +3003,7 @@ export class FulfillmentController {
                             if (fulfillRequests.length > 0) {
                                 for(let i =0; i<who_follow_page.length;i++){
                                     const tokenDeviceId = await this.deviceTokenService.findOne({userId:who_follow_page[i].userId});
-                                    if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
+                                    if(tokenDeviceId[i] !== null && tokenDeviceId[i] !== undefined){
                                         const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests[0].needsId) });
                                         let notificationText = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {

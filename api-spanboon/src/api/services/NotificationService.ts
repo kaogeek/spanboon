@@ -12,11 +12,11 @@ import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { ObjectID } from 'mongodb';
-import{ Injectable } from '@nestjs/common';
+import { Service } from 'typedi';
 import * as serviceAccount from '../../../pushnotification-ac673-firebase-adminsdk-er6wo-9a5d90f8c3.json';
 import { ServiceAccount } from 'firebase-admin';
 import * as admin from 'firebase-admin';
-@Injectable()
+@Service()
 export class NotificationService {
 
     constructor(
@@ -25,7 +25,7 @@ export class NotificationService {
         console.log('constructor called()');
         admin.initializeApp({
             credential:admin.credential.cert(serviceAccount as ServiceAccount),
-            databaseURL:'https://pushnotification-ac673-default-rtdb.asia-southeast1.firebasedatabase.app/'
+            databaseURL:process.env.databaseURL
         });
         console.log('constructor executed()');
     }

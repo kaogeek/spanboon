@@ -162,8 +162,8 @@ export class PostsCommentController {
                     const getPost = await this.postsService.findOne({_id:comment.post});
                     const link = '/post/' + getPost.id;
                     console.log('ok');
-                    const notification_comment = 'คอมเม้นต์โพสต์';
-                    // page to page
+                    const notification_comment = `เพจ ${pageName.pageUsername} ได้แสดงความคิดเห็นต่อโพสต์ของคุณ`;
+                    // page to user
                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
                     await this.pageNotificationService.notifyToPageUserFcm(
                         postsComment.commentAsPage,
@@ -191,7 +191,7 @@ export class PostsCommentController {
                         if(tokenFCM_id !== null || tokenFCM_id !== undefined)
                         {
                             const link = '/post/' + getPost.id;
-                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            const notification_comment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของคุณ`;
                             await this.notificationService.createNotificationFCM(
                                 getPost.ownerUser,
                                 USER_TYPE.USER,
@@ -224,9 +224,11 @@ export class PostsCommentController {
                     {
                         // USER TO PAGE
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:userName.id});
+                        const page_post = await this.postsService.findOne({_id:post_who.id});
+                        const page = await this.pageService.findOne({_id:page_post.pageId});
                         if(tokenFCM_id !== null || tokenFCM_id !== undefined){
                             const link = '/post/' + getPost.id;
-                            const notification_comment = 'คอมเม้นต์โพสต์';
+                            const notification_comment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของเพจ ${page.pageUsername}`;
                             await this.notificationService.createNotificationFCM(
                                 getPost.ownerUser,
                                 USER_TYPE.USER,

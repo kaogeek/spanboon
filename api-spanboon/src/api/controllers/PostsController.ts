@@ -40,7 +40,7 @@ import { StorySectionProcessor } from '../processors/StorySectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { S3Service } from '../services/S3Service';
-import { Page } from '../models/Page';
+// import { Page } from '../models/Page';
 import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { AssetService } from '../services/AssetService';
@@ -955,7 +955,7 @@ export class PostsController {
                     const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
                     const link = '/post/' +likeCreate.subjectId;
-                    const notificationText = page.pageUsername +'กดถูกใจโพสต์ของคุณ';
+                    const notificationText = 'เพจ '+page_like.pageUsername +'กดถูกใจโพสต์ของคุณ' +page.pageUsername;
                     await this.pageNotificationService.notifyToPageUserFcm(
                         page.id,
                         undefined,
@@ -979,7 +979,7 @@ export class PostsController {
                         const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
                         const link = '/post/' +likeCreate.subjectId;
-                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
+                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ' +page.pageUsername;
                         await this.notificationService.createNotificationFCM
                         (
                             postObj.ownerUser +'',
@@ -1000,9 +1000,8 @@ export class PostsController {
                         const ownerPost = await this.userService.findOne({_id:who_post.ownerUser});
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:ownerPost.id});
                         const link = '/post/' +likeCreate.subjectId;
-                        console.log(tokenFCM_id);
-                        const notificationText = req.user.displayName +'กดถูกใจโพสต์ของคุณ';
-                        if(tokenFCM_id.Tokens !== null && tokenFCM_id.Token !== undefined){
+                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
+                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Token !== undefined){
                             if(who_post.likeCount >= 0 && who_post.likeCount <= 4){
                                 await this.notificationService.createNotificationFCM
                                 (

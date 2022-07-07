@@ -582,14 +582,14 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user
-                if(createPostPageData.pageId !== null)
+                if(createPostPageData.pageId !== null && createPostPageData.pageId !== undefined)
                 {
                     const page_post = await this.pageService.findOne({_id:createPostPageData.pageId});
                     const notificationText_POST = 'มีโพสต์ใหม่จาก'+page_post.pageUsername;
-                    const user_follow = await this.userFollowService.find({subjectType:'PAGE',userId:req.user.id});
+                    const user_follow = await this.userFollowService.find({subjectType:'PAGE',subjectId:createPostPageData.pageId});
                     for(let i = 0; i<user_follow.length; i++){
-                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].subjectId});
-                        if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
+                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId});
+                        if(tokenFCM_id[i] !== undefined){
                             const link = '/post/' + createPostPageData.id;
                             await this.pageNotificationService.notifyToPageUserFcm(
                                 createPostPageData.pageId,
@@ -627,10 +627,11 @@ export class PagePostController {
                     const notificationText_POST = 'มีโพสต์ใหม่จาก'+user_post.displayName;
 
                     // user to user
-                    const user_follow = await this.userFollowService.find({subjectType:'USER',userId:req.user.id});
+                    const user_follow = await this.userFollowService.find({subjectType:'USER',subjectId:createPostPageData.ownerUser});
                     for(let i = 0; i<user_follow.length; i++){
-                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].subjectId});
-                        if(tokenFCM_id[i] !== null && tokenFCM_id[i] !== undefined){
+                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
+                        console.log(tokenFCM_id[i]);
+                        if(tokenFCM_id[i] !== undefined){
                             const link = '/post/'+createPostPageData.id;
                             await this.notificationService.createNotificationFCM(
                                 createPostPageData.ownerUser,
