@@ -9,7 +9,6 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { DeviceTokenRepository } from '../repositories/DeviceToken';
-import { UserRepository } from '../repositories/UserRepository';
 @Service()
 export class DeviceTokenService {
 

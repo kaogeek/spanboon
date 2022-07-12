@@ -60,7 +60,6 @@ export class PageNotificationService {
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
                 }
-
                 const notification = await this.notificationService.createUserNotificationFCM(
                     userId, 
                     fromUserId, 
@@ -100,7 +99,6 @@ export class PageNotificationService {
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
                 }
-
                 const notification = await this.notificationService.createUserNotification(
                     userId, 
                     fromUserId, 
