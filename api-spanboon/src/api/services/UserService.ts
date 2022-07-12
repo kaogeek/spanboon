@@ -10,7 +10,6 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { PageRepository } from '../repositories/PageRepository';
-import { DeviceTokenRepository } from '../repositories/DeviceToken';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { S3Service } from '../services/S3Service';
 @Service()
@@ -19,11 +18,10 @@ export class UserService {
     constructor(
         @OrmRepository() private userLoginRepository: UserRepository, 
         @OrmRepository() private pageRepository: PageRepository, 
-        @OrmRepository() private deviceTokenRepository:DeviceTokenRepository,
         private s3Service: S3Service) { }
 
     // find user
-    public find(findCondition?: any): Promise<User[]> {
+    public find(findCondition?: any): Promise<any>  {
         return this.userLoginRepository.find(findCondition);
     }
 

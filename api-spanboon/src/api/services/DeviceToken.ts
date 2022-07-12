@@ -27,6 +27,10 @@ export class DeviceTokenService {
         return await this.deviceTokenRepository.findOne(findCondition);
     }
 
+    public async findPeople(findCondition?:any):Promise<any>{
+        return await this.deviceTokenRepository.find(findCondition);
+    }
+
     public async find(findCondition?: any): Promise<any> {
         return await this.deviceTokenRepository.find(findCondition);
     }

@@ -44,15 +44,13 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any): Promise<any> {
+    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any,image?:any,count?:any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
-
         if (page === undefined) {
             return [];
         }
         const pageAccess = await this.pageAccessLevelService.getAllPageUserAccess(toPageId, pageLevel);
-
         const result: Notification[] = [];
         if (pageAccess) {
             const addedUesr = [];
@@ -62,7 +60,6 @@ export class PageNotificationService {
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
                 }
-
                 const notification = await this.notificationService.createUserNotificationFCM(
                     userId, 
                     fromUserId, 
@@ -70,7 +67,10 @@ export class PageNotificationService {
                     notificationType, 
                     title, 
                     link,
-                    data
+                    data,
+                    displayName,
+                    image,
+                    count
                     );
 
                 result.push(notification);
@@ -99,7 +99,6 @@ export class PageNotificationService {
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
                 }
-
                 const notification = await this.notificationService.createUserNotification(
                     userId, 
                     fromUserId, 

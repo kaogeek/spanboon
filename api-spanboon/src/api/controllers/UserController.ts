@@ -125,8 +125,9 @@ export class UserController {
 
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
-            const deleteDeviceToken = await this.deviceTokenService.delete({userId:req.user.id});
-            if (updateExpireToken && deleteDeviceToken) {
+            console.log(updateExpireToken);
+            if (updateExpireToken) {
+                await this.deviceTokenService.delete({userId:req.user.id});
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);
             } else {
@@ -272,74 +273,22 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-                const page_name = await this.pageService.findOne({_id:followCreate.subjectId});
-                const who_follow_you = await this.userService.findOne({_id:followCreate.userId});
-                const deviceToken = await this.deviceTokenService.findOne({userId:followCreate.userId});
-                if(deviceToken.Tokens !== null || deviceToken.Tokens !== undefined){
-                    // USER TO PAGE 
-                    if(page_name === null || page_name === undefined){
-                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotificationFCM(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.PAGE,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            deviceToken.Tokens,
-                            who_follow_you.displayName
-                        );
-                    }
-                    else
-                    {
-                    // USER TO USER 
-                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotificationFCM(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.USER,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            deviceToken.Tokens,
-                            who_follow_you.displayName
-                        );
-                    }
-                }
-                else
-                {
-                    if(page_name === null || page_name === undefined){
-                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotification(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.PAGE,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                        );
-                    }
-                    else
-                    {
-                        const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
-                        const link = `/user/${who_follow_you.displayName}/follow`;
-                        await this.notificationService.createNotification(
-                            followCreate.userId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.USER,
-                            notification_follower,
-                            link,
-                            NOTIFICATION_TYPE.FOLLOW,
-                        );
-                    }
-                }
+                const who_follow_you = await this.userService.findOne({_id:followCreate.subjectId});
+                const deviceToken = await this.deviceTokenService.findOne({userId:followCreate.subjectId});
+                const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                const link = `/user/${who_follow_you.displayName}/follow`;
+                await this.notificationService.createNotificationFCM(
+                    followCreate.userId,
+                    USER_TYPE.USER,
+                    req.user.id+ '',
+                    USER_TYPE.USER,
+                    NOTIFICATION_TYPE.FOLLOW,
+                    notification_follower,
+                    link,
+                    deviceToken.Tokens,
+                    who_follow_you.displayName,
+                    who_follow_you.imageURL
+                );
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
@@ -874,44 +823,44 @@ export class UserController {
      * @apiErrorExample {json} Enable fetch Twitter's post
      * HTTP/1.1 500 Internal Server Error
      */
-     @Post('/enable_fetch_twitter')
-     @Authorized('user')
-     public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
-         try {
-             const userId = req.user.id;
-             // find authen with twitter
-             const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
- 
-             if (twitterAccount === undefined) {
-                 const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
-                 return res.status(400).send(errorResponse);
-             }
- 
-             // find log
-             const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
-             if (socialPostLog !== undefined) {
-                 // update old
-                 await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
-             } else {
-                 // create new
-                 const newSocialPostLog = new SocialPostLogs();
-                 newSocialPostLog.user = userId; // log by user
-                 newSocialPostLog.lastSocialPostId = undefined;
-                 newSocialPostLog.providerName = PROVIDER.TWITTER;
-                 newSocialPostLog.providerUserId = twitterAccount.providerUserId;
-                 newSocialPostLog.properties = undefined;
-                 newSocialPostLog.enable = twitterParam.enable;
-                 newSocialPostLog.lastUpdated = undefined;
- 
-                 await this.socialPostLogsService.create(newSocialPostLog);
-             }
- 
-             return res.status(200).send(twitterParam);
-         } catch (err) {
-             const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
-             return res.status(400).send(errorResponse);
-         }
-     }
+    @Post('/enable_fetch_twitter')
+    @Authorized('user')
+    public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
+            try {
+                const userId = req.user.id;
+                // find authen with twitter
+                const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
+    
+                if (twitterAccount === undefined) {
+                    const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+    
+                // find log
+                const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
+                if (socialPostLog !== undefined) {
+                    // update old
+                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+                } else {
+                    // create new
+                    const newSocialPostLog = new SocialPostLogs();
+                    newSocialPostLog.user = userId; // log by user
+                    newSocialPostLog.lastSocialPostId = undefined;
+                    newSocialPostLog.providerName = PROVIDER.TWITTER;
+                    newSocialPostLog.providerUserId = twitterAccount.providerUserId;
+                    newSocialPostLog.properties = undefined;
+                    newSocialPostLog.enable = twitterParam.enable;
+                    newSocialPostLog.lastUpdated = undefined;
+    
+                    await this.socialPostLogsService.create(newSocialPostLog);
+                }
+    
+                return res.status(200).send(twitterParam);
+            } catch (err) {
+                const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+                return res.status(400).send(errorResponse);
+            }
+        }
 
     private async checkPageAccess(objectId: ObjectID, userId: ObjectID): Promise<any> {
         // const pageAccessLevelCheckQuery = { where: { page: pageId, user: userId } };
