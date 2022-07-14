@@ -1841,7 +1841,8 @@ export class FulfillmentController {
                                 if (page !== undefined) {
                                     chatMessage =  `${page.name} ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม `;
                                     const link = `/fulfillment_case/${caseId}/allocate_confirm`;
-                                    const who_follow_page = await this.userFollowService.find({subjectType:'USER',subjectId:fulfillCase.pageId});
+                                    const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
+                                    console.log('ok');
                                     for(let i = 0 ;i<who_follow_page.length; i++){
                                         const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
                                         if(tokenFCM_id[i] !== undefined)
@@ -1862,6 +1863,7 @@ export class FulfillmentController {
                                         }
                                         else
                                         {
+                                            console.log('ok');
                                             await this.pageNotificationService.notifyToPageUser
                                             (
                                                 page.id,
@@ -2138,7 +2140,7 @@ export class FulfillmentController {
                         // find page 
                         // page -> user
                         // notification to user who follow page
-                        const who_follow_page = await this.userFollowService.find({subjectType:'USER',subjectId:fulfillCase.pageId});
+                        const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
                         for(let i = 0; i<who_follow_page.length; i++){
                             const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
                             if(page.imageURL !== null && page.imageURL !== undefined){
@@ -2436,7 +2438,7 @@ export class FulfillmentController {
                                 /* notify to requester */
                                 const page = await this.pageService.findOne({_id:fulfillCase.pageId});
                                 // page -> user
-                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'USER'});
+                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
                                 for(let i = 0; i<who_follow_page.length; i++){
                                     const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
                                     console.log('ok');
@@ -2685,7 +2687,7 @@ export class FulfillmentController {
                                 /* notify to requester */
                                 // page -> user
                                 const page = await this.pageService.findOne({_id:fulfillCase.pageId});
-                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'USER'});
+                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
                                 const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests.needsId) });
                                 for(let i = 0; i<who_follow_page.length; i ++){
                                     const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
@@ -2996,7 +2998,7 @@ export class FulfillmentController {
                             /* notify to requester */
                             // page -> user 
                             const page = await this.pageService.findOne({_id:fulfillCase.pageId});
-                            const who_follow_page = await this.userFollowService.find({subjectType:'USER',subjectId:fulfillCase.pageId});
+                            const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
                             if (fulfillRequests.length > 0) {
                                 for(let i =0; i<who_follow_page.length;i++){
                                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_follow_page[i].userId});

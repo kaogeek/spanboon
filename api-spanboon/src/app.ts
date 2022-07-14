@@ -13,7 +13,7 @@ import { eventDispatchLoader } from './loaders/eventDispatchLoader';
 import { expressLoader } from './loaders/expressLoader';
 import { homeLoader } from './loaders/homeLoader';
 import { iocLoader } from './loaders/iocLoader';
-// import { monitorLoader } from './loaders/monitorLoader';
+import { monitorLoader } from './loaders/monitorLoader';
 import { publicLoader } from './loaders/publicLoader';
 import { typeormLoader } from './loaders/typeormLoader';
 import { winstonLoader } from './loaders/winstonLoader';
@@ -42,6 +42,7 @@ bootstrapMicroframework({
         homeLoader,
         publicLoader,
         jobSchedulerLoader,
+        monitorLoader
     ],
     
 }).then(() => banner(log)).catch(error => log.error('Application is crashed: ' + error));

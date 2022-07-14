@@ -161,8 +161,7 @@ export class PostsCommentController {
                 {
                     const getPost = await this.postsService.findOne({_id:comment.post});
                     const link = '/post/' + getPost.id;
-                    console.log('ok');
-                    const notification_comment = `เพจ ${pageName.pageUsername} ได้แสดงความคิดเห็นต่อโพสต์ของคุณ`;
+                    const notification_comment = 'เพจ' + pageName.pageUsername + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                     // page to user
                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
                     await this.pageNotificationService.notifyToPageUserFcm(

@@ -3,8 +3,8 @@
         "transpileOnly": true
     },
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
+        "target": "esnext",
+        "module": "commonjs",
         "pretty": true,
         "sourceMap": true,
         "outDir": "dist",

@@ -7,8 +7,8 @@ import { Page } from '../models/Page';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { ObjectID } from 'mongodb';
-import{ Injectable } from '@nestjs/common';
-@Injectable()
+import { Service } from 'typedi';
+@Service()
 export class PageNotificationService {
 
     constructor(

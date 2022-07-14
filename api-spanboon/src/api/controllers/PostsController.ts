@@ -955,7 +955,7 @@ export class PostsController {
                     const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
                     const link = '/post/' +likeCreate.subjectId;
-                    const notificationText = `เพจ ${page_like.pageUsername} กดถูกใจโพสต์ของคุณ ${page.pageUsername}`;
+                    const notificationText = `เพจ ${page_like.pageUsername} กดถูกใจโพสต์ของเพจ ${page.pageUsername}`;
                     await this.pageNotificationService.notifyToPageUserFcm(
                         page.id,
                         undefined,
@@ -979,7 +979,8 @@ export class PostsController {
                         const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
                         const link = '/post/' +likeCreate.subjectId;
-                        const notificationText = `${user_like.displayName} กดถูกใจโพสต์ของคุณ ${page.pageUsername}`;
+                        const notificationText = `${user_like.displayName} กดถูกใจโพสต์ของเพจ ${page.pageUsername}`;
+                        console.log('ok');
                         await this.notificationService.createNotificationFCM
                         (
                             postObj.ownerUser +'',
