@@ -46,9 +46,9 @@ export class AuthService {
                 let UserId = undefined;
                 // check in fb mode
                 if (mode === 'FB') {
-                    const fbToken = await jwt.verify(token, env.SECRET_KEY);
-                    if (fbToken.token !== undefined) {
-                        const fbUserObj = await this.facebookService.getFacebookUserFromToken(fbToken.token);
+                    await jwt.verify(token, env.SECRET_KEY);
+                    if (token !== undefined) {
+                        const fbUserObj = await this.facebookService.getFacebookUserFromToken(token);
 
                         if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
                             UserId = fbUserObj.user.id;
@@ -59,9 +59,9 @@ export class AuthService {
                         UserId += ';FB';
                     }
                 } else if (mode === 'TW') {
-                    const twToken = await jwt.verify(token, env.SECRET_KEY);
-                    if (twToken.token !== undefined) {
-                        const keyMap = ObjectUtil.parseQueryParamToMap(twToken.token);
+                    await jwt.verify(token, env.SECRET_KEY);
+                    if (token !== undefined) {
+                        const keyMap = ObjectUtil.parseQueryParamToMap(token);
 
                         if (keyMap['user_id'] !== undefined) {
                             const twUserObj: any = await this.twitterService.getTwitterUser(keyMap['user_id']);
@@ -92,7 +92,7 @@ export class AuthService {
 
     public async decryptToken(encryptString: string): Promise<number> {
         return new Promise<number>((subresolve, subreject) => {
-            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded) => {
+            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded:any) => {
                 if (err) {
                     return subresolve(undefined);
                 }

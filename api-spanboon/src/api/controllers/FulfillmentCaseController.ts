@@ -70,6 +70,8 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 import { S3Service } from '../services/S3Service';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { UserFollowService } from '../services/UserFollowService';
+import { PageNotificationService } from '../services/PageNotificationService';
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
 
@@ -95,7 +97,9 @@ export class FulfillmentController {
         private customItemService: CustomItemService,
         private fulfillStmtService: FulfillmentAllocateStatementService,
         private s3Service: S3Service,
-        private deviceTokenService:DeviceTokenService
+        private deviceTokenService:DeviceTokenService,
+        private userFollowService:UserFollowService,
+        private pageNotificationService: PageNotificationService,
     ) { }
 
     /**
@@ -1835,7 +1839,45 @@ export class FulfillmentController {
 
                                 const page = await this.pageService.findOne({ _id: new ObjectID(asPage) });
                                 if (page !== undefined) {
-                                    chatMessage = page.name + ' ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม';
+                                    chatMessage =  `${page.name} ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม `;
+                                    const link = `/fulfillment_case/${caseId}/allocate_confirm`;
+                                    const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
+                                    console.log('ok');
+                                    for(let i = 0 ;i<who_follow_page.length; i++){
+                                        const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
+                                        if(tokenFCM_id[i] !== undefined)
+                                        {
+                                            await this.pageNotificationService.notifyToPageUserFcm
+                                            (
+                                                page.id,
+                                                undefined, 
+                                                req.user.id+'', 
+                                                USER_TYPE.USER, 
+                                                NOTIFICATION_TYPE.FULFILLMENT, 
+                                                chatMessage, 
+                                                link,
+                                                tokenFCM_id[i].Tokens,
+                                                page.pageUsername,
+                                                page.imageURL
+                                            );
+                                        }
+                                        else
+                                        {
+                                            console.log('ok');
+                                            await this.pageNotificationService.notifyToPageUser
+                                            (
+                                                page.id,
+                                                undefined, 
+                                                req.user.id+'', 
+                                                USER_TYPE.USER, 
+                                                NOTIFICATION_TYPE.FULFILLMENT, 
+                                                chatMessage, 
+                                                link,
+                                                page.pageUsername,
+                                                page.imageURL
+                                            );
+                                        }
+                                    }
                                 }
                             }
                             chatMsg.message = chatMessage;
@@ -2092,53 +2134,112 @@ export class FulfillmentController {
                     setObj.fulfillmentPost = createPostPageData.id;
 
                     await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
-
+                    const page = await this.pageService.findOne({_id:fulfillCase.pageId});
                     if (createPostPageData !== undefined) {
                         // notify to requester
                         // find page 
-                        const findPage = await this.pageService.findOne({_id:pageObjId});
-                        const tokenDeviceId = await this.deviceTokenService.findOne({userId:findPage.ownerUser});
-                        if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
-                            const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                            let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                            if (pageObj) {
-                                notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                            }
-                            const link = '/post/' + createPostPageData.id;
-                            await this.notificationService.createNotificationFCM
-                            (
-                                fulfillCase.requester, 
-                                fulfillCase.pageId, 
-                                USER_TYPE.PAGE, 
-                                NOTIFICATION_TYPE.FULFILLMENT, 
-                                notificationText, 
-                                link,
-                                tokenDeviceId.Tokens,
-                                pageObj.name
-                            );
+                        // page -> user
+                        // notification to user who follow page
+                        const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
+                        for(let i = 0; i<who_follow_page.length; i++){
+                            const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
+                            if(page.imageURL !== null && page.imageURL !== undefined){
+                                if(tokenFCM_id[i] !== undefined){
+                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
+                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
+                                    if (pageObj) {
+                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
+                                    }
+                                    const link = '/post/' + createPostPageData.id;
+                                    await this.notificationService.createNotificationFCM
+                                    (
+                                        fulfillCase.requester,
+                                        undefined, 
+                                        req.user.id+'', 
+                                        USER_TYPE.USER, 
+                                        NOTIFICATION_TYPE.FULFILLMENT, 
+                                        notificationText, 
+                                        link,
+                                        tokenFCM_id[i].Tokens,
+                                        pageObj.name,
+                                        page.imageURL
+                                    );
 
-                            return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
-                        }
-                        else
-                        {
-                            const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                            let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                            if (pageObj) {
-                                notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                            }
-                            const link = '/post/' + createPostPageData.id;
-                            await this.notificationService.createNotification
-                            (
-                                fulfillCase.requester, 
-                                fulfillCase.pageId, 
-                                USER_TYPE.PAGE, 
-                                NOTIFICATION_TYPE.FULFILLMENT, 
-                                notificationText, 
-                                link,
-                            );
+                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
+                                }
+                                else
+                                {
+                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
+                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
+                                    if (pageObj) {
+                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
+                                    }
+                                    const link = '/post/' + createPostPageData.id;
+                                    await this.notificationService.createNotification
+                                    (
+                                        fulfillCase.requester,
+                                        undefined, 
+                                        fulfillCase.pageId,
+                                        req.user.id+'', 
+                                        USER_TYPE.USER, 
+                                        NOTIFICATION_TYPE.FULFILLMENT, 
+                                        notificationText, 
+                                        link,
+                                    );
 
-                            return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
+                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
+                                }
+                            }
+                            else{
+                                if(tokenFCM_id[i] !== undefined){
+                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
+                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
+                                    if (pageObj) {
+                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
+                                    }
+                                    const link = '/post/' + createPostPageData.id;
+                                    await this.notificationService.createNotificationFCM
+                                    (
+                                        fulfillCase.requester,
+                                        USER_TYPE.PAGE, 
+                                        req.user.id+'', 
+                                        USER_TYPE.USER, 
+                                        NOTIFICATION_TYPE.FULFILLMENT, 
+                                        notificationText, 
+                                        link,
+                                        tokenFCM_id[i].Tokens,
+                                        pageObj.name,
+                                        page.imageURL
+                                    );
+    
+                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
+                                }
+                                else
+                                {
+                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
+                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
+                                    if (pageObj) {
+                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
+                                    }
+                                    const link = '/post/' + createPostPageData.id;
+                                    await this.notificationService.createNotification
+                                    (
+                                        fulfillCase.requester, 
+                                        USER_TYPE.PAGE, 
+                                        fulfillCase.pageId, 
+                                        req.user.id+'', 
+                                        USER_TYPE.USER, 
+                                        NOTIFICATION_TYPE.FULFILLMENT, 
+                                        notificationText, 
+                                        link,
+                                    );
+    
+                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
+                                }
+    
+                            }
                         }
+
                     } else {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot create Fulfillment Post.', undefined));
                     }
@@ -2335,10 +2436,39 @@ export class FulfillmentController {
                                 /* end set  Update By */
 
                                 /* notify to requester */
-                                const findPage = await this.pageService.findOne({_id:caseId});
-                                const tokenDeviceId = await this.deviceTokenService.findOne({userId:findPage.ownerUser});
-                                if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
-                                    const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
+                                const page = await this.pageService.findOne({_id:fulfillCase.pageId});
+                                // page -> user
+                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
+                                for(let i = 0; i<who_follow_page.length; i++){
+                                    const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
+                                    console.log('ok');
+                                    if(tokenFCM_id[i] !== undefined){
+                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
+                                            let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
+                                            if (reqNeeds) {
+                                                notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
+                                            }
+                                            if (createFulfillResult.length > 1) {
+                                                notificationText += ' และ อื่นๆ';
+                                            }
+                                            const link = '/post/' + fulfillCase.postId;
+                                            await this.notificationService.createNotificationFCM
+                                            (
+                                                fulfillCase.requester, 
+                                                undefined, 
+                                                req.user.id+'', 
+                                                USER_TYPE.USER, 
+                                                NOTIFICATION_TYPE.FULFILLMENT, 
+                                                notificationText, 
+                                                link,
+                                                tokenFCM_id[i].Tokens,
+                                                page.pageUsername,
+                                                page.imageURL
+                                            );
+                                    }
+                                    else
+                                    {
+                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
                                         let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {
                                             notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
@@ -2347,37 +2477,16 @@ export class FulfillmentController {
                                             notificationText += ' และ อื่นๆ';
                                         }
                                         const link = '/post/' + fulfillCase.postId;
-                                        await this.notificationService.createNotificationFCM
+                                        await this.notificationService.createNotification
                                         (
                                             fulfillCase.requester, 
                                             fulfillCase.pageId, 
                                             USER_TYPE.PAGE, 
                                             NOTIFICATION_TYPE.FULFILLMENT, 
                                             notificationText, 
-                                            link,
-                                            tokenDeviceId.Tokens
+                                            link
                                         );
-                                }
-                                else
-                                {
-                                    const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
-                                    let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
-                                    if (reqNeeds) {
-                                        notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
                                     }
-                                    if (createFulfillResult.length > 1) {
-                                        notificationText += ' และ อื่นๆ';
-                                    }
-                                    const link = '/post/' + fulfillCase.postId;
-                                    await this.notificationService.createNotification
-                                    (
-                                        fulfillCase.requester, 
-                                        fulfillCase.pageId, 
-                                        USER_TYPE.PAGE, 
-                                        NOTIFICATION_TYPE.FULFILLMENT, 
-                                        notificationText, 
-                                        link
-                                    );
                                 }
                                 /* end notify to requester */
 
@@ -2576,42 +2685,49 @@ export class FulfillmentController {
                                 /* end set  Update By */
 
                                 /* notify to requester */
+                                // page -> user
+                                const page = await this.pageService.findOne({_id:fulfillCase.pageId});
+                                const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
                                 const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests.needsId) });
-                                const findPage = await this.pageService.findOne({_id:caseId});
-                                const tokenDeviceId = await this.deviceTokenService.findOne({userId:findPage.ownerUser});
-                                if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
-                                    let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
-                                    if (reqNeeds) {
-                                        notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
+                                for(let i = 0; i<who_follow_page.length; i ++){
+                                    const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
+                                    if(tokenFCM_id[i] !== undefined){
+                                        let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
+                                        if (reqNeeds) {
+                                            notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
+                                        }
+                                        const link = '/post/' + fulfillCase.postId;
+                                        await this.notificationService.createNotificationFCM
+                                        (
+                                            fulfillCase.requester, 
+                                            fulfillCase.pageId, 
+                                            USER_TYPE.PAGE, 
+                                            NOTIFICATION_TYPE.FULFILLMENT, 
+                                            notificationText, 
+                                            link,
+                                            tokenFCM_id[i].Tokens,
+                                            page.pageUsername,
+                                            page.imageURL
+
+                                        );
                                     }
-                                    const link = '/post/' + fulfillCase.postId;
-                                    await this.notificationService.createNotificationFCM
-                                    (
-                                        fulfillCase.requester, 
-                                        fulfillCase.pageId, 
-                                        USER_TYPE.PAGE, 
-                                        NOTIFICATION_TYPE.FULFILLMENT, 
-                                        notificationText, 
-                                        link,
-                                        tokenDeviceId.Tokens
-                                    );
-                                }
-                                else
-                                {
-                                    let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
-                                    if (reqNeeds) {
-                                        notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
+                                    else
+                                    {
+                                        let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
+                                        if (reqNeeds) {
+                                            notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
+                                        }
+                                        const link = '/post/' + fulfillCase.postId;
+                                        await this.notificationService.createNotificationFCM
+                                        (
+                                            fulfillCase.requester, 
+                                            fulfillCase.pageId, 
+                                            USER_TYPE.PAGE, 
+                                            NOTIFICATION_TYPE.FULFILLMENT, 
+                                            notificationText, 
+                                            link,
+                                        );
                                     }
-                                    const link = '/post/' + fulfillCase.postId;
-                                    await this.notificationService.createNotificationFCM
-                                    (
-                                        fulfillCase.requester, 
-                                        fulfillCase.pageId, 
-                                        USER_TYPE.PAGE, 
-                                        NOTIFICATION_TYPE.FULFILLMENT, 
-                                        notificationText, 
-                                        link,
-                                    );
                                 }
                                 /* end notify to requester */
 
@@ -2880,130 +2996,136 @@ export class FulfillmentController {
                             /* end set  Update By */
 
                             /* notify to requester */
-                            const findPage = await this.pageService.findOne({_id:caseId});
-                            const tokenDeviceId = await this.deviceTokenService.findOne({userId:findPage.ownerUser});
+                            // page -> user 
+                            const page = await this.pageService.findOne({_id:fulfillCase.pageId});
+                            const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
                             if (fulfillRequests.length > 0) {
-                                if(tokenDeviceId.Tokens !== null || tokenDeviceId.Tokens !== undefined){
-                                    const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests[0].needsId) });
-                                    let notificationText = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
-                                    if (reqNeeds) {
-                                        notificationText = 'ลบรายการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
-                                    }
-                                    if (fulfillRequests.length > 0) {
-                                        notificationText += ' และอื่นๆ';
-                                    }
-
-                                    const link = '/post/' + fulfillCase.postId;
-                                    await this.notificationService.createUserNotificationFCM
-                                    (
-                                        fulfillCase.requester, 
-                                        fulfillCase.pageId, 
-                                        USER_TYPE.PAGE, 
-                                        NOTIFICATION_TYPE.FULFILLMENT, 
-                                        notificationText, 
-                                        link,
-                                        tokenDeviceId.Tokens
-                                    );
-                                    const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
-                                    if (chatRoom) {
-                                        let chatMessage = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
+                                for(let i =0; i<who_follow_page.length;i++){
+                                    const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_follow_page[i].userId});
+                                    if(tokenFCM_id[i] !== undefined){
+                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests[0].needsId) });
+                                        let notificationText = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {
-                                            let otherMsg = '';
-                                            if (fulfillRequests.length > 1) {
-                                                otherMsg += ' และรายการอื่นๆ';
-                                            }
-                                            chatMessage = 'ลบรายการ ' + reqNeeds.name + otherMsg + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
+                                            notificationText = 'ลบรายการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
                                         }
-                                        const chatMsg = new ChatMessage();
-                                        chatMsg.sender = new ObjectID(userId);
-                                        chatMsg.senderType = USER_TYPE.USER;
-                                        if (asPage !== null && asPage !== undefined && asPage !== '') {
-                                            chatMsg.sender = new ObjectID(asPage);
-                                            chatMsg.senderType = USER_TYPE.PAGE;
+                                        if (fulfillRequests.length > 0) {
+                                            notificationText += ' และอื่นๆ';
                                         }
-                                        chatMsg.message = chatMessage;
-                                        chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE;
-                                        chatMsg.room = chatRoom.id;
-    
-                                        if (reqNeeds && reqNeeds.customItemId !== undefined) {
-                                            chatMsg.itemId = reqNeeds.customItemId;
-                                            chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
-                                            const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
-                                            if (customItem !== undefined) {
-                                                chatMsg.filePath = customItem.imageURL;
-                                            }
-                                        }
-                                        if (reqNeeds && reqNeeds.standardItemId !== undefined) {
-                                            chatMsg.itemId = reqNeeds.standardItemId;
-                                            chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
-                                            const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
-                                            if (stdItem !== undefined) {
-                                                chatMsg.filePath = stdItem.imageURL;
-                                            }
-                                        }
-    
-                                        await this.chatMessageService.createChatMessage(chatMsg);
-                                    }
-                                }
-                                else{
-                                    const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests[0].needsId) });
-                                    let notificationText = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
-                                    if (reqNeeds) {
-                                        notificationText = 'ลบรายการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
-                                    }
-                                    if (fulfillRequests.length > 0) {
-                                        notificationText += ' และอื่นๆ';
-                                    }
 
-                                    const link = '/post/' + fulfillCase.postId;
-                                    await this.notificationService.createUserNotification
-                                    (
-                                        fulfillCase.requester, 
-                                        fulfillCase.pageId, 
-                                        USER_TYPE.PAGE, 
-                                        NOTIFICATION_TYPE.FULFILLMENT, 
-                                        notificationText, 
-                                        link,
-                                    );
-                                    const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
-                                    if (chatRoom) {
-                                        let chatMessage = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
+                                        const link = '/post/' + fulfillCase.postId;
+                                        await this.notificationService.createUserNotificationFCM
+                                        (
+                                            fulfillCase.requester, 
+                                            fulfillCase.pageId, 
+                                            USER_TYPE.PAGE, 
+                                            NOTIFICATION_TYPE.FULFILLMENT, 
+                                            notificationText, 
+                                            link,
+                                            tokenFCM_id[i].Tokens,
+                                            page.pageUsername,
+                                            page.imageURL
+                                        );
+                                        const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
+                                        if (chatRoom) {
+                                            let chatMessage = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
+                                            if (reqNeeds) {
+                                                let otherMsg = '';
+                                                if (fulfillRequests.length > 1) {
+                                                    otherMsg += ' และรายการอื่นๆ';
+                                                }
+                                                chatMessage = 'ลบรายการ ' + reqNeeds.name + otherMsg + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
+                                            }
+                                            const chatMsg = new ChatMessage();
+                                            chatMsg.sender = new ObjectID(userId);
+                                            chatMsg.senderType = USER_TYPE.USER;
+                                            if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                                chatMsg.sender = new ObjectID(asPage);
+                                                chatMsg.senderType = USER_TYPE.PAGE;
+                                            }
+                                            chatMsg.message = chatMessage;
+                                            chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE;
+                                            chatMsg.room = chatRoom.id;
+        
+                                            if (reqNeeds && reqNeeds.customItemId !== undefined) {
+                                                chatMsg.itemId = reqNeeds.customItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                                const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
+                                                if (customItem !== undefined) {
+                                                    chatMsg.filePath = customItem.imageURL;
+                                                }
+                                            }
+                                            if (reqNeeds && reqNeeds.standardItemId !== undefined) {
+                                                chatMsg.itemId = reqNeeds.standardItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                                const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
+                                                if (stdItem !== undefined) {
+                                                    chatMsg.filePath = stdItem.imageURL;
+                                                }
+                                            }
+        
+                                            await this.chatMessageService.createChatMessage(chatMsg);
+                                        }
+                                    }
+                                    else{
+                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests[0].needsId) });
+                                        let notificationText = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {
-                                            let otherMsg = '';
-                                            if (fulfillRequests.length > 1) {
-                                                otherMsg += ' และรายการอื่นๆ';
+                                            notificationText = 'ลบรายการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
+                                        }
+                                        if (fulfillRequests.length > 0) {
+                                            notificationText += ' และอื่นๆ';
+                                        }
+
+                                        const link = '/post/' + fulfillCase.postId;
+                                        await this.notificationService.createUserNotification
+                                        (
+                                            fulfillCase.requester, 
+                                            fulfillCase.pageId, 
+                                            USER_TYPE.PAGE, 
+                                            NOTIFICATION_TYPE.FULFILLMENT, 
+                                            notificationText, 
+                                            link,
+                                        );
+                                        const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
+                                        if (chatRoom) {
+                                            let chatMessage = 'ลบรายการสำหรับเติมเต็มสำเร็จ';
+                                            if (reqNeeds) {
+                                                let otherMsg = '';
+                                                if (fulfillRequests.length > 1) {
+                                                    otherMsg += ' และรายการอื่นๆ';
+                                                }
+                                                chatMessage = 'ลบรายการ ' + reqNeeds.name + otherMsg + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
                                             }
-                                            chatMessage = 'ลบรายการ ' + reqNeeds.name + otherMsg + ' ' + fulfillRequests[0].quantity + ' ' + reqNeeds.unit;
-                                        }
-                                        const chatMsg = new ChatMessage();
-                                        chatMsg.sender = new ObjectID(userId);
-                                        chatMsg.senderType = USER_TYPE.USER;
-                                        if (asPage !== null && asPage !== undefined && asPage !== '') {
-                                            chatMsg.sender = new ObjectID(asPage);
-                                            chatMsg.senderType = USER_TYPE.PAGE;
-                                        }
-                                        chatMsg.message = chatMessage;
-                                        chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE;
-                                        chatMsg.room = chatRoom.id;
-    
-                                        if (reqNeeds && reqNeeds.customItemId !== undefined) {
-                                            chatMsg.itemId = reqNeeds.customItemId;
-                                            chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
-                                            const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
-                                            if (customItem !== undefined) {
-                                                chatMsg.filePath = customItem.imageURL;
+                                            const chatMsg = new ChatMessage();
+                                            chatMsg.sender = new ObjectID(userId);
+                                            chatMsg.senderType = USER_TYPE.USER;
+                                            if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                                chatMsg.sender = new ObjectID(asPage);
+                                                chatMsg.senderType = USER_TYPE.PAGE;
                                             }
-                                        }
-                                        if (reqNeeds && reqNeeds.standardItemId !== undefined) {
-                                            chatMsg.itemId = reqNeeds.standardItemId;
-                                            chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
-                                            const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
-                                            if (stdItem !== undefined) {
-                                                chatMsg.filePath = stdItem.imageURL;
+                                            chatMsg.message = chatMessage;
+                                            chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_DELETE;
+                                            chatMsg.room = chatRoom.id;
+        
+                                            if (reqNeeds && reqNeeds.customItemId !== undefined) {
+                                                chatMsg.itemId = reqNeeds.customItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                                const customItem = await this.customItemService.findOne({ _id: reqNeeds.customItemId });
+                                                if (customItem !== undefined) {
+                                                    chatMsg.filePath = customItem.imageURL;
+                                                }
                                             }
+                                            if (reqNeeds && reqNeeds.standardItemId !== undefined) {
+                                                chatMsg.itemId = reqNeeds.standardItemId;
+                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                                const stdItem = await this.stdItemService.findOne({ _id: reqNeeds.standardItemId });
+                                                if (stdItem !== undefined) {
+                                                    chatMsg.filePath = stdItem.imageURL;
+                                                }
+                                            }
+        
+                                            await this.chatMessageService.createChatMessage(chatMsg);
                                         }
-    
-                                        await this.chatMessageService.createChatMessage(chatMsg);
                                     }
                                 }
                                 /* Create Chat */

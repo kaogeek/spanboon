@@ -4,7 +4,7 @@
 const { series, rimraf,  } = require('nps-utils');
 
 // const npsUtils = require('nps-utils');
- 
+
 // const { rimraf,  series } = npsUtils;
 
 module.exports = {

@@ -5,6 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
+export * from './notification/notification';
 export * from './ImageCard.component';
 export * from './NewCard.component';
 export * from './PostCard.component';

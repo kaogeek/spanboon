@@ -72,7 +72,10 @@
         </div>
     </div>
     <div class="noti-sc">
-        <ng-container *ngIf="notiOrigin && notiOrigin.length > 0 && notiOrigin !== undefined; else elseTemplateLoad">
+        <!-- <div *ngIf="message" class="noticardblock">
+            <notification-card [message]="message" [slide]="slideNoti"></notification-card>
+        </div> -->
+        <!-- <ng-container *ngIf="notiOrigin && notiOrigin.length > 0 && notiOrigin !== undefined; else elseTemplateLoad">
             <div (click)="markReadNoti(item);" *ngFor="let item of notiOrigin" [class.dis]="item.sender === undefined"
                 class="wrapper-list" [class.active]="!item.notification.isRead">
                 <div (click)="redirectNotification(item)" *ngIf="item.sender">
@@ -134,9 +137,9 @@
                 <span>ยังไม่มีการแจ้งเตือนใหม่</span>
             </div>
 
-        </ng-template>
+        </ng-template> -->
     </div>
-    <div (click)="markReadNotiAll();" class="wrapper-all-footer">
+    <!-- <div (click)="markReadNotiAll();" class="wrapper-all-footer">
         ดูทั้งหมด
-    </div>
+    </div> -->
 </mat-menu>

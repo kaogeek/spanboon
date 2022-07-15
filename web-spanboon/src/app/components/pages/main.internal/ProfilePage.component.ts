@@ -826,8 +826,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public async clickFollowUser() {
-    let pageId = this.resProfile.id;
-    const follow = await this.followPage(pageId);
+    let userId = this.resProfile.id;
+    const follow = await this.followUser(userId);
     if (follow) {
       if (follow.message === "Unfollow User Success") {
         this.resProfile.isFollow = follow.data.isFollow

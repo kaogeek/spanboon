@@ -29,6 +29,8 @@ import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
 import { SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "angularx-social-login";
 import { OverlayModule } from '@angular/cdk/overlay';
+import { initializeApp } from "firebase/app";
+initializeApp(environment.firebase);
 
 // material ag
 import {
@@ -43,7 +45,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
-  PipeThDatetime, HighlightText
+  PipeThDatetime, HighlightText, ConvertTextNotification
 } from './components/shares/pipes/pipes';
 
 import {
@@ -59,7 +61,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AutocompleteLibModule } from 'angular-ng-autocomplete'; 
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 import {
   HeaderTop,
@@ -115,6 +117,7 @@ import {
   PreloadCard,
   PreloadData,
   CardContact,
+  NotificationCard,
   CardContentHome,
   CollapsibleHead,
   CardChatFulfill,
@@ -328,6 +331,7 @@ const COMPONENTS: any[] = [
   CardContact,
   CardContentHome,
   CollapsibleHead,
+  NotificationCard,
   CardChatFulfill,
   ChatMessage,
   ChatFulfill,
@@ -405,6 +409,7 @@ const PIPE_CLASSES: any[] = [
   PipeThFormatDatetime,
   PipeThDatetime,
   HighlightText,
+  ConvertTextNotification,
   SafePipe,
   RemoveBadWords
 ];
@@ -458,7 +463,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
-  UserEngagementFacade, 
+  UserEngagementFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig
