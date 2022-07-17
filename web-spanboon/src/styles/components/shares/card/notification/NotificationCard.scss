@@ -7,6 +7,7 @@
 notification-card {
     > .noticard {
         display: flex;
+        cursor: pointer;
         transform: translateX(-25vw);
         transition: 0.8s all;
         max-width: 400px;
@@ -119,9 +120,10 @@ notification-card {
 
     > .fullpage {
         -webkit-box-shadow: unset !important;
-        width: 100% !important;
+        // width: 100% !important;
         margin-top: unset !important;
         padding: 20px !important;
         border-radius: unset !important;
+        max-width: unset !important;
     }
 }

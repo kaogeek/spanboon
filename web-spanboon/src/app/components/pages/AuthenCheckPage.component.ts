@@ -6,6 +6,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
+import { getMessaging, onMessage } from 'firebase/messaging';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { ObservableManager } from '../../services/ObservableManager.service';
 
@@ -36,10 +37,17 @@ export class AuthenCheckPage implements OnInit {
   public ngOnInit(): void {
   }
 
+  public listen() {
+    const messaging = getMessaging();
+    onMessage(messaging, (payload) => {
+      this.reCheck();
+    });
+  }
+
   public reCheck(): void {
     this.isLoaded = false;
 
-    let mode = this.authenMgr.isFacebookMode() ? "FB" : this.authenMgr.isTwitterMode() ? "TW" : this.authenMgr.isGoogleMode() ? "GG" : undefined ;
+    let mode = this.authenMgr.isFacebookMode() ? "FB" : this.authenMgr.isTwitterMode() ? "TW" : this.authenMgr.isGoogleMode() ? "GG" : undefined;
 
     if (mode === undefined) {
       let storageMode = sessionStorage.getItem(AuthenManager.TOKEN_MODE_KEY);
@@ -63,8 +71,8 @@ export class AuthenCheckPage implements OnInit {
     }
 
     if (token !== undefined && token !== null) {
-      this.authenMgr.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {  
-        if (!res.user) { 
+      this.authenMgr.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {
+        if (!res.user) {
           this.authenMgr.clearStorage();
         }
         this.isLoaded = true;

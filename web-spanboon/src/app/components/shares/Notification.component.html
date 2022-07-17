@@ -63,83 +63,26 @@
     </ng-template>
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
-    <div class="wrapper-header" (click)="$event.stopPropagation();">
-        <div class="wrapper-noti">
-            การแจ้งเตือน
-        </div>
-        <div (click)="markReadNotiAll();" class="wrapper-setting">
-            ตั้งค่า
+    <div *ngIf="notiOrigin.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
+        <div class="wrapper-noti" style="border-bottom: unset !important;">
+            ใหม่
         </div>
     </div>
     <div class="noti-sc">
-        <!-- <div *ngIf="message" class="noticardblock">
-            <notification-card [message]="message" [slide]="slideNoti"></notification-card>
-        </div> -->
-        <!-- <ng-container *ngIf="notiOrigin && notiOrigin.length > 0 && notiOrigin !== undefined; else elseTemplateLoad">
-            <div (click)="markReadNoti(item);" *ngFor="let item of notiOrigin" [class.dis]="item.sender === undefined"
-                class="wrapper-list" [class.active]="!item.notification.isRead">
-                <div (click)="redirectNotification(item)" *ngIf="item.sender">
-                    <div class="wrapper-list-div">
-                        <ng-container
-                            *ngIf="item.sender.imageURL !== '' && item.sender.imageURL !== undefined && item.sender.imageURL !== null; else elseTemplateAvatar">
-                            <div class="user-noti">
-                                <img class="img"
-                                    [src]="item.sender.signURL?item.sender.signURL:item.sender.imageSignURL?item.sender.imageSignURL:apiBaseURL+item.sender.imageURL+'/image'"
-                                    alt="">
-                            </div>
-                        </ng-container>
-                        <ng-template #elseTemplateAvatar>
-                            <div class="user-noti">
-                                <div class="img none-image">{{item.sender.displayName | slice: 0: 1}}</div>
-                            </div>
-                        </ng-template>
-                        <div class="wrapper-message">
-                            <div class="top">
-                                {{item.notification.title}}
-                            </div>
-                            <div class="wrapper-time">
-                                <svg height="512pt" viewBox="0 0 512 512" width="512pt"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                        class="svg-color-gray" />
-                                    <path
-                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                        class="svg-color-gray" />
-                                </svg>
-                                <span>{{item && item.notification.createdDate | dateFormat}}</span>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="wrapper-setting">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="5" height="21" viewBox="0 0 5 21">
-                            <g id="Group_1211" data-name="Group 1211" transform="translate(-453 -178)">
-                                <circle id="Ellipse_224" data-name="Ellipse 224" cx="2.5" cy="2.5" r="2.5"
-                                    transform="translate(453 178)" class="svg-color-gray" />
-                                <circle id="Ellipse_225" data-name="Ellipse 225" cx="2.5" cy="2.5" r="2.5"
-                                    transform="translate(453 186)" class="svg-color-gray" />
-                                <circle id="Ellipse_226" data-name="Ellipse 226" cx="2.5" cy="2.5" r="2.5"
-                                    transform="translate(453 194)" class="svg-color-gray" />
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-        <ng-template #elseTemplateLoad>
-            <div *ngIf="preload">
-                <preload-data *ngFor="let item of [0 , 1 , 2 , 3]" [isShowCard1]="true" [isShowCard2]="false"
-                    class="wrapper-list preload"></preload-data>
-            </div>
-            <div class="eorror">
-                <span>ยังไม่มีการแจ้งเตือนใหม่</span>
-            </div>
-
-        </ng-template> -->
+        <notification-card *ngFor="let i of notiOrigin" [message]="i" (click)="redirectNotification(i);markReadNoti(i)"
+            [fullPage]="true" [slide]="true">
+        </notification-card>
     </div>
-    <!-- <div (click)="markReadNotiAll();" class="wrapper-all-footer">
-        ดูทั้งหมด
+    <!-- <div class="wrapper-header" (click)="$event.stopPropagation();">
+        <div class="wrapper-noti" style="border-bottom: unset !important;">
+            ก่อนหน้านี้
+        </div>
+        <div class="wrapper-setting">
+            ดูทั้งหมด
+        </div>
+    </div>
+    <div class="noti-sc">
+        <notification-card *ngFor="let i of notiOrigin" [message]="i" [fullPage]="true" [slide]="true">
+        </notification-card>
     </div> -->
 </mat-menu>
