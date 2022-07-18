@@ -99,7 +99,6 @@ export class AppComponent {
       { vapidKey: environment.firebase.vapidKey }).then(
         (currentToken) => {
           if (currentToken) {
-            console.log('currentToken', currentToken);
             localStorage.setItem('currentToken', currentToken);
           } else {
           }
@@ -110,6 +109,7 @@ export class AppComponent {
   public listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
+      console.log('messaging', payload.notification);
       this.setData({ notification: { title: 'การแจ้งเตือนใหม่', body: payload.notification.title, image: (this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image'), status: payload.data["gcm.notification.notificationType"], isRred: true, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } });
     });
   }

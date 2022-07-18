@@ -32,11 +32,9 @@ export class NotificationCard extends AbstractPage implements OnInit {
 
     constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
-        this.authenManager = authenManager;
     }
 
     public ngOnInit(): void {
-        console.log('message', this.message);
     }
 
     public ngOnDestroy(): void {
