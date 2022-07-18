@@ -99,7 +99,6 @@ export class NotificationService {
         const image_url = String(image);
         const count_data = String(count);
         if(count !== null){
-            console.log('ok1');
             const payload = 
             {
                 notification:{

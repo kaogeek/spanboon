@@ -582,41 +582,43 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user
-                if(createPostPageData.pageId !== null && createPostPageData.pageId !== undefined)
+                if(createPostPageData.pageId !== null)
                 {
                     const page_post = await this.pageService.findOne({_id:createPostPageData.pageId});
-                    const notificationText_POST = `มีโพสต์ใหม่จาก ${page_post.pageUsername}`;
+                    const notificationText_POST = `มีโพสต์ใหม่จากเพจ ${page_post.pageUsername}`;
                     const user_follow = await this.userFollowService.find({subjectType:'PAGE',subjectId:createPostPageData.pageId});
                     for(let i = 0; i<user_follow.length; i++){
-                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId});
-                        if(tokenFCM_id[i] !== undefined){
-                            const link = '/post/' + createPostPageData.id;
-                            await this.pageNotificationService.notifyToPageUserFcm(
-                                createPostPageData.pageId,
-                                undefined,
-                                req.user.id+'',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.POST,
-                                notificationText_POST,
-                                link,
-                                tokenFCM_id[i].Tokens,
-                                page_post.pageUsername,
-                                page_post.imageURL
-                            );
-                        }
-                        else{
-                            const link = '/post/' + createPostPageData.id;
-                            await this.pageNotificationService.notifyToPageUser(
-                                createPostPageData.pageId,
-                                undefined,
-                                req.user.id+'',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.POST,
-                                notificationText_POST,
-                                link,
-                                page_post.pageUsername,
-                                page_post.imageURL
-                            );
+                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
+                        for(let j = 0; j<tokenFCM_id.length; j++){
+                            if(tokenFCM_id[j] !== undefined){
+                                const link = '/post/' + createPostPageData.id;
+                                await this.pageNotificationService.notifyToPageUserFcm(
+                                    createPostPageData.pageId,
+                                    undefined,
+                                    req.user.id+'',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationText_POST,
+                                    link,
+                                    tokenFCM_id[j].Tokens,
+                                    page_post.pageUsername,
+                                    page_post.imageURL
+                                );
+                            }
+                            else{
+                                const link = '/post/' + createPostPageData.id;
+                                await this.pageNotificationService.notifyToPageUser(
+                                    createPostPageData.pageId,
+                                    undefined,
+                                    req.user.id+'',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationText_POST,
+                                    link,
+                                    page_post.pageUsername,
+                                    page_post.imageURL
+                                );
+                            }
                         }
                     }
 
@@ -628,38 +630,42 @@ export class PagePostController {
 
                     // user to user
                     const user_follow = await this.userFollowService.find({subjectType:'USER',subjectId:createPostPageData.ownerUser});
+                    console.log('user_follow',user_follow);
                     for(let i = 0; i<user_follow.length; i++){
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
-                        console.log(tokenFCM_id[i]);
-                        if(tokenFCM_id[i] !== undefined){
-                            const link = '/post/'+createPostPageData.id;
-                            await this.notificationService.createNotificationFCM(
-                                createPostPageData.ownerUser,
-                                USER_TYPE.USER,
-                                req.user.id+'',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.POST,
-                                notificationText_POST,
-                                link,
-                                tokenFCM_id[i].Tokens,
-                                user_post.displayName,
-                                user_post.imageURL
-                            );
+                        for(let j = 0; j<tokenFCM_id.length;j ++){
+                            console.log(tokenFCM_id[j].Tokens);
+                            if(tokenFCM_id[j] !== undefined){
+                                const link = '/post/'+createPostPageData.id;
+                                await this.notificationService.createNotificationFCM(
+                                    createPostPageData.ownerUser,
+                                    USER_TYPE.USER,
+                                    req.user.id+'',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationText_POST,
+                                    link,
+                                    tokenFCM_id[j].Tokens,
+                                    user_post.displayName,
+                                    user_post.imageURL
+                                );
+                            }
+                            else{
+                                const link = '/post/'+createPostPageData.id;
+                                await this.notificationService.createNotification(
+                                    createPostPageData.ownerUser,
+                                    USER_TYPE.USER,
+                                    req.user.id+'',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationText_POST,
+                                    link,
+                                    user_post.displayName,
+                                    user_post.imageURL
+                                );
+                            }
                         }
-                        else{
-                            const link = '/post/'+createPostPageData.id;
-                            await this.notificationService.createNotification(
-                                createPostPageData.ownerUser,
-                                USER_TYPE.USER,
-                                req.user.id+'',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.POST,
-                                notificationText_POST,
-                                link,
-                                user_post.displayName,
-                                user_post.imageURL
-                            );
-                        }
+
                     }
                 }
                 let needsCreate: Needs;
@@ -1489,6 +1495,7 @@ export class PagePostController {
     @Authorized('user')
     public async updatePostPage(@Body({ validate: true }) postPages: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
         try {
+            console.log('ok');
             const pagePostsObjId = new ObjectID(postId);
             const ownerUser = new ObjectID(req.user.id);
             const clientId = req.headers['client-id'];
