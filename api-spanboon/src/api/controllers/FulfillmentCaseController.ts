@@ -1166,7 +1166,7 @@ export class FulfillmentController {
                     chatMsg.message = chatmsg;
                     chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_CASE_CREATE;
                     chatMsg.room = chatRoomObjId;
-
+                    console.log('charMsg',chatMsg);
                     await this.chatMessageService.createChatMessage(chatMsg);
                 }
                 /* end Create Chat*/
@@ -2603,7 +2603,6 @@ export class FulfillmentController {
     @Authorized('user')
     public async editFulfillmentRequest(@QueryParam('asPage') asPage: string, @Params() params: EditFulfillmentReqFromCaseParam, @Body({ validate: true }) data: EditFulfillmentReqFromCaseRequest, @Res() res: any, @Req() req: any): Promise<any> {
         try {
-            console.log('okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
             const caseId = params.caseId;
             const requestId = params.requestId;
 
@@ -2689,24 +2688,20 @@ export class FulfillmentController {
                                 // page -> user
                                 const page = await this.pageService.findOne({_id:fulfillCase.pageId});
                                 const who_follow_page = await this.userFollowService.find({subjectId:fulfillCase.pageId,subjectType:'PAGE'});
-                                console.log('who_follow_pageeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',who_follow_page);
                                 const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(fulfillRequests.needsId) });
                                 for(let i = 0; i<who_follow_page.length; i ++){
                                     const tokenFCM_id = await this.deviceTokenService.find({userId:who_follow_page[i].userId});
-                                    console.log('tokenFCM_idddddddddddddddddddddddddddddd',tokenFCM_id);
                                     if(tokenFCM_id[i] !== undefined){
                                         let notificationText = 'แก้ไขรายการสำหรับเติมเต็มสำเร็จ';
                                         if (reqNeeds) {
                                             notificationText = 'แก้ไขจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + fulfillRequests.quantity + ' ' + reqNeeds.unit;
                                         }
-                                        console.log('okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
                                         const link = '/post/' + fulfillCase.postId;
-                                        await this.pageNotificationService.notifyToPageUserFcm
+                                        await this.notificationService.createNotificationFCM
                                         (
+                                            fulfillCase.requester, 
                                             fulfillCase.pageId, 
-                                            undefined,
-                                            req.user.id+'',
-                                            USER_TYPE.USER,
+                                            USER_TYPE.PAGE, 
                                             NOTIFICATION_TYPE.FULFILLMENT, 
                                             notificationText, 
                                             link,
@@ -2725,10 +2720,9 @@ export class FulfillmentController {
                                         const link = '/post/' + fulfillCase.postId;
                                         await this.notificationService.createNotificationFCM
                                         (
+                                            fulfillCase.requester, 
                                             fulfillCase.pageId, 
-                                            undefined,
-                                            req.user.id+'',
-                                            USER_TYPE.USER,
+                                            USER_TYPE.PAGE, 
                                             NOTIFICATION_TYPE.FULFILLMENT, 
                                             notificationText, 
                                             link,
@@ -3005,7 +2999,6 @@ export class FulfillmentController {
                             // page -> user 
                             const page = await this.pageService.findOne({_id:fulfillCase.pageId});
                             const who_follow_page = await this.userFollowService.find({subjectType:'PAGE',subjectId:fulfillCase.pageId});
-
                             if (fulfillRequests.length > 0) {
                                 for(let i =0; i<who_follow_page.length;i++){
                                     const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_follow_page[i].userId});
@@ -3020,12 +3013,10 @@ export class FulfillmentController {
                                         }
 
                                         const link = '/post/' + fulfillCase.postId;
-                                        console.log('okkkkkkkkkkkkkkk');
-                                        await this.pageNotificationService.notifyToPageUserFcm
+                                        await this.notificationService.createUserNotificationFCM
                                         (
+                                            fulfillCase.requester, 
                                             fulfillCase.pageId, 
-                                            undefined, 
-                                            req.user.id + '',
                                             USER_TYPE.PAGE, 
                                             NOTIFICATION_TYPE.FULFILLMENT, 
                                             notificationText, 

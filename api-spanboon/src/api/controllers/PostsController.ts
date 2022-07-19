@@ -942,9 +942,7 @@ export class PostsController {
             }
 
             const likeCreate: UserLike = await this.userLikeService.create(userLike);
-            console.log(likeCreate);
             const who_post = await this.postsService.findOne({_id:likeCreate.subjectId});
-            console.log('who_postssssssssss',who_post);
             if (likeCreate) {
                 result = likeCreate;
                 action = ENGAGEMENT_ACTION.LIKE;
@@ -979,10 +977,10 @@ export class PostsController {
                 // page to user
                     else{
                         const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
-                        const user_ownerPage = await this.userService.findOne({_id:who_post.ownerUser});
+                        // const user_ownerPage = await this.userService.findOne({_id:who_post.ownerUser});
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_post.ownerUser});
                         const link = '/post/' +likeCreate.subjectId;
-                        const notificationText = `เพจ ${page_like.pageUsername} กดถูกใจโพสต์ของคุณ ${user_ownerPage.displayName}`;
+                        const notificationText = `เพจ ${page_like.name} กดถูกใจโพสต์ของคุณ `;
                         await this.pageNotificationService.notifyToPageUserFcm(
                             page_like.id,
                             undefined,

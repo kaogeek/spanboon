@@ -297,7 +297,7 @@ export class ChatRoomController {
         ];*/
 
         const chatMsgResult: any = await this.chatMessageService.aggregate(aggregateStmt);
-
+        console.log('chatMsgResult',chatMsgResult);
         if (chatMsgResult) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Check Chat Room unread Message', chatMsgResult);
             return res.status(200).send(successResponse);

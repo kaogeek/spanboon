@@ -131,7 +131,8 @@ export class ChatController {
         }
 
         const reader = this.getReader(sender, senderType);
-
+        console.log('ok22222222222222222222',req.user.id);
+        console.log('ok11111111111111111111',reader);
         // add reader in array
         await this.chatMessageService.updateMany({ _id: { $in: msgObjIds }, deleted: false },
             {
