@@ -585,7 +585,7 @@ export class PagePostController {
                 if(createPostPageData.pageId !== null)
                 {
                     const page_post = await this.pageService.findOne({_id:createPostPageData.pageId});
-                    const notificationText_POST = `มีโพสต์ใหม่จากเพจ ${page_post.pageUsername}`;
+                    const notificationText_POST = `มีโพสต์ใหม่จากเพจ ${page_post.name}`;
                     const user_follow = await this.userFollowService.find({subjectType:'PAGE',subjectId:createPostPageData.pageId});
                     for(let i = 0; i<user_follow.length; i++){
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
