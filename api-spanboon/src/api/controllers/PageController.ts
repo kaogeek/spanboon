@@ -1922,33 +1922,45 @@ export class PageController {
                 const deviceToken = await this.deviceTokenService.findOne({userId:page_owner_noti.id});
                 const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
                 const link = `/user/${who_follow_you.displayName}/follow`;
-                if(deviceToken !== undefined){
-                    await this.notificationService.createNotificationFCM(
-                        followCreate.userId,
-                        USER_TYPE.USER,
-                        req.user.id+ '',
-                        USER_TYPE.PAGE,
+                if(String(userFollow.userId) === String(page.ownerUser)){
+                    await this.notificationService.createNotification(
+                        undefined,
+                        undefined,
+                        undefined+ '',
+                        undefined,
                         NOTIFICATION_TYPE.FOLLOW,
-                        notification_follower,
+                        undefined,
                         link,
-                        deviceToken.Tokens,
-                        who_follow_you.displayName,
-                        who_follow_you.imageURL
-                        
                     );
                 }
                 else{
-                    await this.notificationService.createNotification(
-                        followCreate.userId,
-                        USER_TYPE.USER,
-                        req.user.id+ '',
-                        USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.FOLLOW,
-                        notification_follower,
-                        link,
-                    );
+                    if(deviceToken !== undefined){
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            deviceToken.Tokens,
+                            who_follow_you.displayName,
+                            who_follow_you.imageURL
+                            
+                        );
+                    }
+                    else{
+                        await this.notificationService.createNotification(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                        );
+                    }
                 }
-
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {
