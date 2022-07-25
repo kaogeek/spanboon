@@ -24,15 +24,7 @@ export const environment = {
   apiBaseURL: "http://localhost:9100/api",
   // apiBaseURL: "http://10.1.1.161:9000/api",
   firebase: {
-    apiKey: "AIzaSyBqqB9LekJghk72k1qgmW6jHro_wFUa19o",
-    authDomain: "pushnotification-ac673.firebaseapp.com",
-    databaseURL: "https://pushnotification-ac673-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "pushnotification-ac673",
-    storageBucket: "pushnotification-ac673.appspot.com",
-    messagingSenderId: "80949496490",
-    appId: "1:80949496490:web:e21282b08d75a260051ed3",
-    measurementId: "G-HEEXD2LN9N",
-    vapidKey: "BJstt8A9ctpUP9yDFlqISNGQnI7bhWvmeJ-Q9ogdI3wPQEOQvuFi5jhOz0crLA-UsN0QPKKxH_A20QIiDV9qTAs"
+  
   },
 };
 
