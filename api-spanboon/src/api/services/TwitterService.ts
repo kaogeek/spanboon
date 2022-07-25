@@ -675,7 +675,7 @@ export class TwitterService {
             }
 
             const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId, params);
-            if (twitterResults !== undefined) {
+            if (twitterResults !== undefined && twitterResults.errors === undefined) {
                 const data = (twitterResults.data === undefined) ? [] : twitterResults.data;
                 const meta = (twitterResults.meta === undefined) ? {} : twitterResults.meta;
                 const newestId = meta.newest_id;
