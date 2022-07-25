@@ -84,6 +84,7 @@ export class UserController {
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
         let logoutAll = false;
+
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
