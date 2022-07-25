@@ -11,6 +11,9 @@ import { filter } from 'rxjs/internal/operators/filter';
 import { SeoService } from './services/SeoService.service';
 import { environment } from "../environments/environment";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { ObservableManager } from './services/ObservableManager.service';
+
+const NOTI_CHECK_SUBJECT: string = 'noti.check';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +30,9 @@ export class AppComponent {
   public timeoutMessageTimeOut: any;
   public slideNotiTimeout: any;
   public apiBaseURL = environment.apiBaseURL;
+  private observManager: ObservableManager;
+
+  public static readonly NOTI_CHECK_SUBJECT: string = NOTI_CHECK_SUBJECT;
 
   public mockmessage4: object[] = [
     { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'comment', isRred: true, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } },
@@ -49,12 +55,13 @@ export class AppComponent {
     { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: false, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } },
   ]
 
-
-  constructor(router: Router, private seoSerive: SeoService,) {
+  constructor(router: Router, observManager: ObservableManager) {
     this.router = router;
+    this.observManager = observManager;
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       window.scroll(0, 0);
     });
+    this.observManager.createSubject(NOTI_CHECK_SUBJECT);
   }
 
   ngOnInit(): void {
@@ -111,6 +118,9 @@ export class AppComponent {
     onMessage(messaging, (payload) => {
       console.log('messaging', payload.notification);
       this.setData({ notification: { title: 'การแจ้งเตือนใหม่', body: payload.notification.title, image: (this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image'), status: payload.data["gcm.notification.notificationType"], isRred: true, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } });
+      this.observManager.publish(NOTI_CHECK_SUBJECT, {
+        data: payload.notification
+      });
     });
   }
 

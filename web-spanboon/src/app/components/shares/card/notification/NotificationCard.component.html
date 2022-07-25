@@ -105,7 +105,7 @@
         </div>
         <div class="message" [style.opacity]="message.notification.isRred ? '0.5' : '1'">
             <span
-                [innerHTML]="message?(message.notification.body | textnoti:(date|dateFormat)) :'มีการแจ้งเตือนใหม่'"></span>
+                [innerHTML]="message?(message.notification.body | textnoti:(message.notification.createdDate?(message.notification.createdDate|dateFormat):(date|dateFormat))) :'มีการแจ้งเตือนใหม่'"></span>
         </div>
         <div *ngIf="!message.notification.isRred" class="new"></div>
     </div>

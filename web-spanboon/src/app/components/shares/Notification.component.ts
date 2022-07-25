@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { CHAT_MESSAGE_TYPE } from '../../../app/ChatMessageTypes';
 import { AuthenManager, NotificationFacade, AssetFacade } from '../../services/services';
+import { ObservableManager } from '../../services/ObservableManager.service';
 import { AbstractPage } from '../pages/AbstractPage';
+import { AuthenCheckPage } from '../../components/pages/AuthenCheckPage.component';
 
 @Component({
   selector: 'btn-notification',
@@ -37,17 +39,23 @@ export class Notification extends AbstractPage implements OnInit {
   @Input()
   public noti: any;
 
-  public notiisRead: any[] = []
-  public linkPost: string;
-  public preload: boolean;
-  public notiOrigin: any[] = [];
-  public apiBaseURL = environment.apiBaseURL;
-
+  public notiisAll: any[] = [];
+  public notiisRead: any[] = [];
+  public notiisTable: any[] = [];
   public messagelist: any[] = [];
   public messagelist2: any[] = [];
+
+  public notiOffset: number = 0;
+  public linkPost: string;
+  public preload: boolean;
+  public apiBaseURL = environment.apiBaseURL;
+
   public timeOut: boolean;
   public message: any = null;
   public slideNoti: boolean;
+  public isNotiAll: boolean = true;
+  public isScrollNoti: boolean = false;
+  public isObs: boolean;
 
   public mockmessage4: object[] = [
     { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: true } },
@@ -71,27 +79,41 @@ export class Notification extends AbstractPage implements OnInit {
   ]
 
   private mainPostLink: string = window.location.origin
+  private observManager: ObservableManager;
 
   public router: Router;
   public authenManager: AuthenManager;
   public assetFacade: AssetFacade;
   public notificationFacade: NotificationFacade;
 
-  constructor(router: Router, authenManager: AuthenManager, dialog: MatDialog, assetFacade: AssetFacade, notificationFacade: NotificationFacade) {
-    super(null, authenManager, dialog, router);
 
+  constructor(router: Router, authenManager: AuthenManager, dialog: MatDialog, observManager: ObservableManager, assetFacade: AssetFacade, notificationFacade: NotificationFacade) {
+    super(null, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
+    this.observManager = observManager;
     this.assetFacade = assetFacade;
     this.notificationFacade = notificationFacade;
 
+    this.observManager.createSubject(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT);
+
     this.preload = true;
 
-    var myVar;
-    clearInterval(myVar);
-    myVar = setInterval(() => {
-      this.checkNotification();
-    }, 31000);
+    this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_SUBJECT, (result: any) => {
+      setTimeout(() => {
+        this.isObs = true;
+        this.notiOffset + this.noti.length;
+        this.checkNotification();
+      }, 300);
+    });
+
+    this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, (result: any) => {
+      setTimeout(() => {
+        this.notiOffset + this.noti.length;
+        this.checkNotification();
+      }, 300);
+    });
+
   }
 
   public ngAfterViewInit(): void {
@@ -107,6 +129,22 @@ export class Notification extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     for (let index = 0; index < 3; index++) {
       this.setData();
+    }
+  }
+
+  public scroll(event: any) {
+    if (!this.isScrollNoti) {
+      if (event.target.offsetHeight + event.target.scrollTop >= (event.target.scrollHeight - 200)) {
+        this.isScrollNoti = true;
+        setTimeout(() => {
+          this.observManager.publish(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, {
+            data: this.notiOffset
+          });
+          setTimeout(() => {
+            this.isScrollNoti = false;
+          }, 500);
+        }, 1500);
+      }
     }
   }
 
@@ -133,19 +171,31 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   private checkNotification() {
-    if (this.notiOrigin && this.notiOrigin.length !== this.noti && this.noti !== undefined && this.noti !== null && this.noti.length) {
-      this.notiisRead = []
+    if (this.notiisAll && this.notiisAll.length !== this.noti && this.noti !== undefined && this.noti !== null && this.noti.length) {
       for (let noti of this.noti) {
         if (!noti.notification.isRead) {
-          this.notiisRead.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id } })
-          noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
+          this.isObs ? this.notiisRead.splice(0, 0, { notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } }) : this.notiisRead.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
         }
+        this.notiOffset++;
+        noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
+        this.isObs ? this.notiisAll.splice(0, 0, { notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } }) : this.notiisAll.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
       }
-      this.notiOrigin = [];
-      for (let noti of this.noti) {
-        this.notiOrigin.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id } })
-      }
+      this.setNotification();
     }
+  }
+
+  public switeNotiType() {
+    this.isNotiAll = !this.isNotiAll;
+    this.setNotification();
+  }
+
+  public setNotification() {
+    if (this.isNotiAll) {
+      this.notiisTable = this.notiisAll;
+    } else {
+      this.notiisTable = this.notiisRead;
+    }
+    this.isObs = false;
   }
 
   public markReadNoti(data) {
@@ -162,17 +212,17 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public markReadNotiAll() {
-    // this.notificationFacade.clearAll()
+    this.notificationFacade.clearAll()
     this.showAlertDevelopDialog();
   }
 
   public isOpened() {
-    if (this.notiOrigin && this.notiOrigin.length > 0) {
-      for (let msg of this.notiOrigin) {
-        this.notificationFacade.markRead(msg.notification.id);
-        this.notiisRead = [];
-      }
-    }
+    // if (this.notiisAll && this.notiisAll.length > 0) {
+    //   for (let msg of this.notiisAll) {
+    //     this.notificationFacade.markRead(msg.notification.id);
+    //     this.notiisRead = [];
+    //   }
+    // }
   }
 
   public setData() {

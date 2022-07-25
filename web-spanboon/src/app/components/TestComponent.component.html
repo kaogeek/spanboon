@@ -3,7 +3,7 @@ display: flex;
 background-color: #eeeeee;
 align-items: stretch;
 justify-content: center;">
-    <div class="wrapper-notification">
+    <div class="wrapper-notification width-500">
         <div class="test">
             การแจ้งเตือนทั้งหมด
         </div>
@@ -20,9 +20,9 @@ justify-content: center;">
             <div class="wrapper-noti" style="border-bottom: unset !important;">
                 ก่อนหน้านี้
             </div>
-            <div class="wrapper-setting">
+            <!-- <div class="wrapper-setting">
                 ดูทั้งหมด
-            </div>
+            </div> -->
         </div>
         <div class="noti-sc">
             <notification-card *ngFor="let i of messagelist2" [message]="i" [fullPage]="true" [slide]="true">

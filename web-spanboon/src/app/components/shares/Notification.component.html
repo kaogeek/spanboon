@@ -63,26 +63,29 @@
     </ng-template>
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
-    <div *ngIf="notiOrigin.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
-        <div class="wrapper-noti" style="border-bottom: unset !important;">
-            ใหม่
+    <div class="mat-menu-title" (click)="$event.stopPropagation();">
+        <div class="text">การแจ้งเตือน</div>
+        <div class="select-noti-list">
+            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': isNotiAll }">ทั้งหมด
+                ({{notiisAll.length}})</span>
+            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
+                ({{notiisRead.length}})</span>
         </div>
     </div>
-    <div class="noti-sc">
-        <notification-card *ngFor="let i of notiOrigin" [message]="i" (click)="redirectNotification(i);markReadNoti(i)"
-            [fullPage]="true" [slide]="true">
-        </notification-card>
-    </div>
-    <!-- <div class="wrapper-header" (click)="$event.stopPropagation();">
+    <div *ngIf="notiisAll.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
         <div class="wrapper-noti" style="border-bottom: unset !important;">
-            ก่อนหน้านี้
+            ใหม่
         </div>
         <div class="wrapper-setting">
             ดูทั้งหมด
         </div>
     </div>
-    <div class="noti-sc">
-        <notification-card *ngFor="let i of notiOrigin" [message]="i" [fullPage]="true" [slide]="true">
+    <div class="noti-sc" (click)="$event.stopPropagation();" (scroll)="scroll($event)">
+        <notification-card *ngFor="let i of notiisTable" [message]="i" (click)="redirectNotification(i);markReadNoti(i)"
+            [fullPage]="true" [slide]="true">
         </notification-card>
-    </div> -->
+        <div style="height: 60px;" *ngIf="isScrollNoti">
+            <spinners></spinners>
+        </div>
+    </div>
 </mat-menu>

@@ -12,6 +12,8 @@ import { ObservableManager } from '../../services/ObservableManager.service';
 
 const PAGE_NAME: string = 'authen_check';
 const AUTHEN_CHECK_SUBJECT: string = 'authen.check';
+const NOTI_CHECK_SUBJECT: string = 'noti.check';
+const NOTI_CHECK_LOAD_SUBJECT: string = 'noti.load.check';
 
 @Component({
   selector: 'authen-check-page',
@@ -21,6 +23,8 @@ export class AuthenCheckPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public static readonly AUTHEN_CHECK_SUBJECT: string = AUTHEN_CHECK_SUBJECT;
+  public static readonly NOTI_CHECK_SUBJECT: string = NOTI_CHECK_SUBJECT;
+  public static readonly NOTI_CHECK_LOAD_SUBJECT: string = NOTI_CHECK_LOAD_SUBJECT;
 
   private authenMgr: AuthenManager;
   private observManager: ObservableManager;

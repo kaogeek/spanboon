@@ -1,0 +1,46 @@
+<div style="width:100vw;
+height: 93.7vh;
+display: flex;
+background-color: #eeeeee;
+align-items: center;
+justify-content: center;">
+    <div (scroll)="scroll($event)" style="max-height: 95vh;overflow: auto;"
+        class="wrapper-notification-copy width-500">
+        <div class="test">
+            การแจ้งเตือนทั้งหมด
+        </div>
+        <div style="padding: 10pt 10pt !important;" class="select-noti-list">
+            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': isNotiAll }">ทั้งหมด
+                ({{notiisAll.length}})</span>
+            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
+                ({{notiisRead.length}})</span>
+        </div>
+        <div *ngIf="isNotiAll" class="wrapper-header" (click)="$event.stopPropagation();">
+            <div class="wrapper-noti" style="border-bottom: unset !important;">
+                ใหม่
+            </div>
+        </div>
+        <div *ngIf="isNotiAll" class="noti-sc">
+            <notification-card *ngFor="let i of notiisTable" [message]="i" [fullPage]="true" [slide]="true">
+            </notification-card>
+            <div class="not-foun-noti" *ngIf="notiisTable.length === 0">
+                ไม่มีการแจ้งเตือนใหม่
+            </div>
+        </div>
+        <div class="wrapper-header" (click)="$event.stopPropagation();">
+            <div class="wrapper-noti" style="border-bottom: unset !important;">
+                ก่อนหน้านี้
+            </div>
+        </div>
+        <div class="noti-sc">
+            <notification-card *ngFor="let i of notiisTablePast" [message]="i" [fullPage]="true" [slide]="true">
+            </notification-card>
+            <div class="not-foun-noti" *ngIf="notiisTablePast.length === 0">
+                ไม่มีการแจ้งเตือน
+            </div>
+            <div style="height: 60px;" *ngIf="isScrollNoti">
+                <spinners></spinners>
+            </div>
+        </div>
+    </div>
+</div>
