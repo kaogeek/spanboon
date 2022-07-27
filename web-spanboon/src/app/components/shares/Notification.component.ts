@@ -203,7 +203,6 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public redirectNotification(data) {
-    console.log('data', data);
     if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) {
       this.router.navigateByUrl(data.notification.link)
     } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT) {

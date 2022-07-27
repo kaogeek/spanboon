@@ -103,7 +103,6 @@ export class MainPage extends AbstractPage implements OnInit {
     this.isLogin();
     this.searchAccessPage();
 
-    console.log('Called Constructor');
     this.route.queryParams.subscribe(params => {
       var hidebars = params['hidebar'];
       if (hidebars !== undefined && hidebars !== null) {

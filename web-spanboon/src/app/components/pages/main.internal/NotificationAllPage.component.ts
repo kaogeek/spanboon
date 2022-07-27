@@ -47,8 +47,8 @@ export class NotificationAllPage extends AbstractPage implements OnInit {
 
     }
 
-    private getNotificationList() {
-        this.notificationMgr.loadCurrentUserNotification((10)).then((res) => {
+    private getNotificationList(limit: number, offSet: number) {
+        this.notificationMgr.loadCurrentUserNotification(limit, offSet === 0 ? 0 : offSet--).then((res) => {
             this.checkNotification(res)
         }).catch(() => {
         });
@@ -84,12 +84,11 @@ export class NotificationAllPage extends AbstractPage implements OnInit {
     }
 
     public scroll(event: any) {
-        console.log('event', event);
         if (!this.isScrollNoti) {
             if (event.target.offsetHeight + event.target.scrollTop >= (event.target.scrollHeight - 400)) {
                 this.isScrollNoti = true;
                 setTimeout(() => {
-                    this.getNotificationList();
+                    this.getNotificationList(10, (this.notiisAll.length + this.notiisAllPast.length));
                     setTimeout(() => {
                         this.isScrollNoti = false;
                     }, 500);
@@ -105,7 +104,7 @@ export class NotificationAllPage extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         setTimeout(() => {
-            this.getNotificationList();
+            this.getNotificationList(10, (this.notiisAll.length + this.notiisAllPast.length));
         }, 500);
     }
 

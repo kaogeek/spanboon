@@ -206,7 +206,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public Notification(noti) {
     this.noti = [];
     this.noti = noti;
-    console.log('this.noti', this.noti);
   }
 
 }
