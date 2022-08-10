@@ -14,7 +14,7 @@ import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3t
 import { useExpressServer } from 'routing-controllers';
 import { authorizationChecker } from '../auth/authorizationChecker';
 import { currentUserChecker } from '../auth/currentUserChecker';
-import { env } from '../env';
+import {env}  from '../env';
 import cors from 'cors';
 import compression from 'compression';
 export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {

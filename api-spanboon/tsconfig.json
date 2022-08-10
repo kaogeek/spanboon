@@ -1,12 +1,10 @@
 {
     "ts-node": {
-        "esm": true,
-        "experimentalSpecifierResolution": true,
         "transpileOnly": true
     },
     "compilerOptions": {
-        "target": "esnext",
-        "module": "commonjs",
+        "target": "ESNext",
+        "module": "CommonJS",
         "pretty": true,
         "sourceMap": true,
         "outDir": "dist",
@@ -27,6 +25,7 @@
         "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "skipLibCheck": true,
         "lib": [
             "ES5",
             "ES6",

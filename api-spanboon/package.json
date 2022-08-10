@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Spanboon RESTFUL API",
   "main": "src/app.ts",
-  "type": "commonjs",
   "scripts": {
     "start": "nps",
     "test": "npm start test",
     "build": "npm start build",
+    "prod": "npm start build production",
     "presetup": "npm install",
     "generatedoc": "apidoc -i src -o src/public/apidoc",
     "setup": "npm start config && npm start setup.script",
