@@ -10,11 +10,11 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { AuthenticationIdRepository } from '../repositories/AuthenticationIdRepository';
 import { AuthenticationId } from '../models/AuthenticationId';
-
 @Service()
 export class AuthenticationIdService {
 
-    constructor(@OrmRepository() private authenticationIdRepository: AuthenticationIdRepository,
+    constructor(
+        @OrmRepository() private authenticationIdRepository: AuthenticationIdRepository,
         @Logger(__filename) private log: LoggerInterface) {
     }
 

@@ -1676,61 +1676,6 @@
     "name": "PostApiAllocateSearch"
   },
   {
-    "type": "delete",
-    "url": "/api/temp",
-    "title": "Delete temp API",
-    "group": "Asset",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Authorization",
-            "description": ""
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "examples": [
-        {
-          "title": "Input",
-          "content": "{\n     \"id\" : \"\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete temp.\",\n\"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/temp"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Delete temp Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/AssetsController.ts",
-    "groupTitle": "Asset",
-    "name": "DeleteApiTemp"
-  },
-  {
     "type": "get",
     "url": "/api/file/:id",
     "title": "Find Asset API",
@@ -1762,6 +1707,62 @@
     "filename": "src/api/controllers/AssetsController.ts",
     "groupTitle": "Asset",
     "name": "GetApiFileId"
+  },
+  {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "src/api/apidoc/main.js",
+    "group": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\api\\apidoc\\main.js",
+    "groupTitle": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\api\\apidoc\\main.js",
+    "name": ""
+  },
+  {
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "optional": false,
+            "field": "varname1",
+            "description": "<p>No type.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "varname2",
+            "description": "<p>With type.</p>"
+          }
+        ]
+      }
+    },
+    "type": "",
+    "url": "",
+    "version": "0.0.0",
+    "filename": "src/public/apidoc/main.js",
+    "group": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\public\\apidoc\\main.js",
+    "groupTitle": "C:\\Absolute\\spanboon-github\\api-spanboon\\src\\public\\apidoc\\main.js",
+    "name": ""
   },
   {
     "type": "post",
@@ -2765,95 +2766,6 @@
     "name": "PutApiAdminEmergencyId"
   },
   {
-    "type": "post",
-    "url": "/api/emergency/:id/follow",
-    "title": "Follow Emergency Event API",
-    "group": "Emergency_Event",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Follow Emergency Event Success\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"OBJEV\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/emergency/:id/follow"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Follow Emergency Event Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/EmergencyEventController.ts",
-    "groupTitle": "Emergency_Event",
-    "name": "PostApiEmergencyIdFollow"
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "src/api/apidoc/main.js",
-    "group": "F:\\kaogeek\\spanboon\\api-spanboon\\src\\api\\apidoc\\main.js",
-    "groupTitle": "F:\\kaogeek\\spanboon\\api-spanboon\\src\\api\\apidoc\\main.js",
-    "name": ""
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "src/public/apidoc/main.js",
-    "group": "F:\\kaogeek\\spanboon\\api-spanboon\\src\\public\\apidoc\\main.js",
-    "groupTitle": "F:\\kaogeek\\spanboon\\api-spanboon\\src\\public\\apidoc\\main.js",
-    "name": ""
-  },
-  {
     "type": "delete",
     "url": "/api/fulfillment_case/:id",
     "title": "Delete FulfillmentCase",
@@ -2918,6 +2830,61 @@
     "filename": "src/api/controllers/FulfillmentCaseController.ts",
     "groupTitle": "FulfillmentCase",
     "name": "DeleteApiFulfillment_caseId"
+  },
+  {
+    "type": "delete",
+    "url": "/api/fulfillment/:id",
+    "title": "Delete Fulfillment API",
+    "group": "Fulfillment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "examples": [
+        {
+          "title": "Input",
+          "content": "{\n     \"id\" : \"\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success",
+          "content": "HTTP/1.1 200 OK\n{\n\"message\": \"Successfully Delete Fulfillment.\",\n\"status\": \"1\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "/api/fulfillment/:id"
+      }
+    ],
+    "error": {
+      "examples": [
+        {
+          "title": "Delete Fulfillment Error",
+          "content": "HTTP/1.1 500 Internal Server Error",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/controllers/AssetsController.ts",
+    "groupTitle": "Fulfillment",
+    "name": "DeleteApiFulfillmentId"
   },
   {
     "type": "delete",
@@ -5675,39 +5642,6 @@
   },
   {
     "type": "get",
-    "url": "/api/emergency/:id/timeline",
-    "title": "Get EmergencyEvent timeline API",
-    "group": "PageObjective",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully get EmergencyEvent\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/emergency/:id/timeline"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "EmergencyEvent error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/EmergencyEventController.ts",
-    "groupTitle": "PageObjective",
-    "name": "GetApiEmergencyIdTimeline"
-  },
-  {
-    "type": "get",
     "url": "/api/objective/:id",
     "title": "Find PageObjective API",
     "group": "PageObjective",
@@ -5738,39 +5672,6 @@
     "filename": "src/api/controllers/PageObjectiveController.ts",
     "groupTitle": "PageObjective",
     "name": "GetApiObjectiveId"
-  },
-  {
-    "type": "get",
-    "url": "/api/objective/:id/timeline",
-    "title": "Get PageObjective timeline API",
-    "group": "PageObjective",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully get PageObjective\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/objective/:id/timeline"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "PageObjective error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageObjectiveController.ts",
-    "groupTitle": "PageObjective",
-    "name": "GetApiObjectiveIdTimeline"
   },
   {
     "type": "post",
@@ -5824,39 +5725,6 @@
     "filename": "src/api/controllers/PageObjectiveController.ts",
     "groupTitle": "PageObjective",
     "name": "PostApiObjective"
-  },
-  {
-    "type": "post",
-    "url": "/api/objective/:id/follow",
-    "title": "Follow PageObjective API",
-    "group": "PageObjective",
-    "success": {
-      "examples": [
-        {
-          "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n   \"message\": \"Follow PageObjective Success\",\n   \"data\":{\n   \"name\" : \"\",\n   \"description\": \"\",\n    }\n   \"status\": \"1\"OBJEV\n }",
-          "type": "json"
-        }
-      ]
-    },
-    "sampleRequest": [
-      {
-        "url": "/api/objective/:id/follow"
-      }
-    ],
-    "error": {
-      "examples": [
-        {
-          "title": "Follow PageObjective Error",
-          "content": "HTTP/1.1 500 Internal Server Error",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/controllers/PageObjectiveController.ts",
-    "groupTitle": "PageObjective",
-    "name": "PostApiObjectiveIdFollow"
   },
   {
     "type": "post",
@@ -6323,13 +6191,13 @@
   {
     "type": "post",
     "url": "/api/page/:id/access",
-    "title": "Delete Page API",
+    "title": "Add Page Access API",
     "group": "Page",
     "success": {
       "examples": [
         {
           "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully remove User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully adding User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
           "type": "json"
         }
       ]
@@ -6356,13 +6224,13 @@
   {
     "type": "post",
     "url": "/api/page/:id/access",
-    "title": "Add Page Access API",
+    "title": "Delete Page API",
     "group": "Page",
     "success": {
       "examples": [
         {
           "title": "Success",
-          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully adding User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n     \"message\": \"Successfully remove User Page Access\"\n     \"data\":\"{}\"\n     \"status\": \"1\"\n}",
           "type": "json"
         }
       ]

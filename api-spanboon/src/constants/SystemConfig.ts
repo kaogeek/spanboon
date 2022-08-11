@@ -5,8 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export const PLATFORM_NAME_TH = 'สะพานบุญ';
-export const PLATFORM_NAME_ENG = 'Spanboon';
+export const PLATFORM_NAME_TH = 'ท้องถิ่นก้าวหน้า';
+export const PLATFORM_NAME_ENG = 'Progressive Movement Today';
 
 export const ASSET_CONFIG_NAME = {
     EXPIRE_MINUTE: 'asset.expiration.minute',

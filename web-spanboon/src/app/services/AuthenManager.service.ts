@@ -46,9 +46,12 @@ export class AuthenManager {
   public login(username: string, password: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
       let body: any = {
         "username": username,
         "password": password,
+        "token": currentToken,
+        "deviceName": "Chrome",
       };
 
       let headers = new HttpHeaders({
@@ -281,7 +284,7 @@ export class AuthenManager {
           };
 
           this.token = result.token;
-          this.user = result.user; 
+          this.user = result.user;
 
           let social: string;
           if (mode === 'FACEBOOK') {
@@ -323,7 +326,7 @@ export class AuthenManager {
 
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
-      } 
+      }
 
       let httpOptions = {
         headers: headers
@@ -352,9 +355,9 @@ export class AuthenManager {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.getUserToken()
     });
- 
+
     if (this.isFacebookMode()) {
-      headers = headers.set('mode', 'FB'); 
+      headers = headers.set('mode', 'FB');
     } else if (this.isTwitterMode()) {
       headers = headers.set('mode', 'TW');
     } else if (this.isGoogleMode()) {
@@ -437,8 +440,8 @@ export class AuthenManager {
       }
 
       let httpOptions = {
-        headers: headers, 
-      }; 
+        headers: headers,
+      };
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
 
         if (mode === "TW") {
@@ -450,7 +453,7 @@ export class AuthenManager {
           user: response.data.user
         };
 
-        if (response.data.mode === 'FB') { 
+        if (response.data.mode === 'FB') {
           fbMode = true;
           this.facebookMode = true;
         }
@@ -459,12 +462,12 @@ export class AuthenManager {
           this.token = result.token;
           this.user = result.user;
           this.facebookMode = fbMode;
-          this.twitterMode = twMode; 
+          this.twitterMode = twMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);
           sessionStorage.setItem(TOKEN_KEY, result.token);
-          if (fbMode) { 
+          if (fbMode) {
             localStorage.setItem(TOKEN_MODE_KEY, 'FB');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
           } else if (twMode) {

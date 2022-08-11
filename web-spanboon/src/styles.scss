@@ -331,3 +331,216 @@ input:focus {
         display: none !important;
     }
 }
+
+.noticardblock {
+    z-index: 99;
+    position: fixed;
+    left: 1%;
+    bottom: 2%;
+}
+
+.wrapper-notification-copy {
+    box-shadow: 0px 6px 15px #0000001a;
+    background-color: white;
+    .mat-menu-title {
+        display: flex;
+        flex-direction: column;
+        padding: 0 15pt;
+        > .text {
+            @include font-size-8($font-head-500);
+        }
+        > .select-noti-list {
+            @include font-size-10($font-head-400);
+            padding: 10pt 0pt;
+            > .list {
+                cursor: pointer;
+                color: black;
+                background: #eeeeee 0% 0% no-repeat padding-box;
+                border-radius: 25px;
+                padding: 7px 15px;
+                margin-right: 10px;
+            }
+            > .select {
+                color: #ee7623 !important;
+                background: #ee762329 0% 0% no-repeat padding-box !important;
+            }
+        }
+    }
+    > .test {
+        padding: 20px;
+        @include font-size-6($font-head-500);
+    }
+    > .select-noti-list {
+        @include font-size-10($font-head-400);
+        padding: 10pt 0pt;
+        > .list {
+            cursor: pointer;
+            color: black;
+            background: #eeeeee 0% 0% no-repeat padding-box;
+            border-radius: 25px;
+            padding: 7px 15px;
+            margin-right: 10px;
+        }
+        > .select {
+            color: #ee7623 !important;
+            background: #ee762329 0% 0% no-repeat padding-box !important;
+        }
+    }
+
+    button.mat-menu-item {
+        width: unset !important;
+    }
+
+    .mat-menu-item {
+        overflow: unset !important;
+        line-height: 0px !important;
+    }
+
+    .mat-menu-content {
+        padding: unset !important;
+    }
+    .wrapper-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40pt;
+        padding: 0 15pt;
+        border-bottom: $width-border solid $border-separator;
+        @include font-size-10($font-head-500);
+
+        > .wrapper-noti {
+        }
+        > .wrapper-setting {
+            cursor: pointer;
+        }
+    }
+
+    .noti-sc {
+        overflow-y: auto;
+        // max-height: calc(100vh - 40pt - 40pt - 55pt);
+
+        .not-foun-noti {
+            @include font-size-9($font-head-500);
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wrapper-list {
+            display: flex;
+            transition: 0.5s;
+            justify-content: space-between;
+            padding: 10pt;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: $width-border solid $border-separator;
+
+            &:hover {
+                transition: 0.5s;
+                background-color: $background-hover;
+            }
+
+            &.active {
+                // background-color: rgb(243, 243, 243);
+                background: rgb(255, 255, 255);
+            }
+            &.dis {
+                display: none;
+            }
+
+            > div {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+
+                > .wrapper-list-div {
+                    display: flex;
+                    align-items: center;
+
+                    > .user-noti {
+                        padding: 5pt 10pt;
+
+                        > .img {
+                            width: 34pt;
+                            height: 34pt;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+                        > .none-image {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: $brandcolor2;
+                            color: $white;
+                            @include font-size-10($font-head-500);
+                        }
+                    }
+
+                    > .wrapper-message {
+                        @include font-size-10($font-head-500);
+
+                        > .top {
+                            color: $black;
+
+                            > .name {
+                                display: contents;
+                                font-weight: bold;
+                            }
+                        }
+
+                        > .wrapper-time {
+                            display: flex;
+                            align-items: center;
+                            color: $color-gray;
+                            @include font-size-11($font-head-100);
+
+                            &:hover {
+                                color: rgba($brandcolor2, 0.95);
+                            }
+
+                            svg {
+                                width: $width-time;
+                                height: $height-time;
+                                padding-right: 5pt;
+                            }
+                        }
+                    }
+                }
+
+                > .wrapper-setting {
+                }
+            }
+        }
+        .preload {
+            padding: unset;
+        }
+        .eorror {
+            width: 100%;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            @include font-size-8($font-head-500);
+        }
+    }
+
+    .wrapper-all-footer {
+        border-top: $width-border solid $border-separator;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40pt;
+        background-color: $bg-grey;
+        @include pointer();
+        @include font-size-10($font-head-500);
+        user-select: none;
+    }
+}
+
+.width-500 {
+    width: 500pt !important;
+    max-width: 500pt !important;
+}

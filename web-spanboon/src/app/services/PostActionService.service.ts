@@ -151,6 +151,18 @@ export class PostActionService extends AbstractFacade {
                                     return;
                                 }
                             }
+                        } else {
+                            resPost[index].repostCount++;
+                            resPost[index].isRepost = true;
+                            if (repostShare === "PAGE") {
+                                if (this.data.pageId === null && this.data.postAsPage === null) {
+                                    return;
+                                }
+                            } else {
+                                if (this.data.pageId !== null && this.data.postAsPage !== null) {
+                                    return;
+                                }
+                            }
                         }
 
                         let searchWherePost: SearchFilter = new SearchFilter();
@@ -203,8 +215,14 @@ export class PostActionService extends AbstractFacade {
             } else if (action.type === "UNDOTOPIC") {
                 return new Promise((resolve, reject) => {
                     this.postFacade.undoPost(action.post._id).then((res: any) => {
-                        resPost.posts[index].repostCount--;
-                        resPost.posts[index].isRepost = false;
+                        if (resPost.posts) {
+                            resPost.posts[index].repostCount--;
+                            resPost.posts[index].isRepost = false;
+                        } else {
+                            resPost[index].repostCount--;
+                            resPost[index].isRepost = false;
+                        }
+
                         let data = {
                             res,
                             type: "UNDOTOPIC"

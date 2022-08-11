@@ -54,7 +54,7 @@ export class SearchHistoryFacade extends AbstractFacade {
     public getDefaultOptions(): any {
         let header = this.getDefaultHeader();
         let userId = this.authMgr.getCurrentUser(); 
-        header = header.append('userId', userId ? userId.id : '')
+        header = header.append('userid', userId ? userId.id : '')
 
         let httpOptions = {
             headers: header

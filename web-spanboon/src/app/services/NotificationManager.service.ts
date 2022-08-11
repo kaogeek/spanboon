@@ -115,9 +115,9 @@ export class NotificationManager extends AbstractFacade {
         return this.notificationMap[userId];
     }
 
-    public loadCurrentUserNotification(): Promise<any> {
-        const currentUser = this.authMgr.getCurrentUser(); 
-        
+    public loadCurrentUserNotification(limit, offset?): Promise<any> {
+        const currentUser = this.authMgr.getCurrentUser();
+
         if (currentUser === undefined) {
             throw 'Current User was not found';
         }
@@ -126,7 +126,7 @@ export class NotificationManager extends AbstractFacade {
         this.notificationMap[userId] = [];
 
         return new Promise((resolve: any, reject: any) => {
-            this.notificationFacade.listNotification().then((result: any) => {
+            this.notificationFacade.listNotification(limit, offset).then((result: any) => {
                 // if (result.data !== undefined) {
                 //     this.notificationMap[userId] = result.data;
                 // }

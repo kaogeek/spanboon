@@ -63,6 +63,35 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
   public userCloneDatas: any;
   public pageUser: any;
 
+
+
+  public messagelist: any[] = [];
+  public messagelist2: any[] = [];
+  public timeOut: boolean;
+  public message: any = null;
+  public slideNoti: boolean;
+
+  public mockmessage4: object[] = [
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: false } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: true } },
+    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: false } },
+  ]
+
   public static readonly PAGE_NAME: string = PAGE_NAME;
   constructor(router: Router, authenManager: AuthenManager, objectiveFacade: ObjectiveFacade, profileFacade: ProfileFacade, dialog: MatDialog,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, pageFacade: PageFacade, observManager: ObservableManager, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef) {
@@ -74,32 +103,35 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
 
 
-    let user = this.authenManager.getCurrentUser()
-    this.userCloneDatas = JSON.parse(JSON.stringify(user));
-    if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
-      this.searchPageInUser(this.userCloneDatas.id);
-    } else {
-      this.searchPageInUser();
-    }
-    let search: SearchFilter = new SearchFilter();
-    search.limit = 5;
-    search.count = false;
-    search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
-    this.postFacade.searchPostStory(search).then(async (res: any) => {
-      this.STORY = res;
-      this.TimeoutRuntimeSet();
-      this.getRecommendedHashtag(this.STORY[0]._id);
-      this.getRecommendedStory(this.STORY[0]._id);
-      this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
-    }).catch((err: any) => {
-      console.log(err)
-    })
+    // let user = this.authenManager.getCurrentUser()
+    // this.userCloneDatas = JSON.parse(JSON.stringify(user));
+    // if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
+    //   this.searchPageInUser(this.userCloneDatas.id);
+    // } else {
+    //   this.searchPageInUser();
+    // }
+    // let search: SearchFilter = new SearchFilter();
+    // search.limit = 5;
+    // search.count = false;
+    // search.whereConditions = { _id: '6128b4d7949e111314c2a648' };
+    // this.postFacade.searchPostStory(search).then(async (res: any) => {
+    //   this.STORY = res;
+    //   this.TimeoutRuntimeSet();
+    //   this.getRecommendedHashtag(this.STORY[0]._id);
+    //   this.getRecommendedStory(this.STORY[0]._id);
+    //   this.getRecommendedStorys(this.STORY[0]._id, this.STORY[0].pageId);
+    // }).catch((err: any) => {
+    //   console.log(err)
+    // })
 
 
 
 
   }
   ngOnInit(): void {
+    for (let index = 0; index < 4; index++) {
+      this.setData();
+    }
   }
 
   public TimeoutRuntimeSet() {
@@ -256,6 +288,12 @@ export class TestComponent extends AbstractPageImageLoader implements OnInit {
 
   public getImageSelector(): string[] {
     return [".checkload"];
+  }
+
+
+  public setData() {
+    this.messagelist.push(this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]);
+    this.messagelist2.push(this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]);
   }
 
   public onSelectorImageElementLoaded(imageElement: any[]): void {

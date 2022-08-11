@@ -69,12 +69,18 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import lodash from 'lodash';
 import { StandardItem } from '../models/StandardItem';
 import { StandardItemService } from '../services/StandardItemService';
-
+import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { SocialPostLogs } from '../models/SocialPostLogs';
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
 
     constructor(
+        private notificationService:NotificationService,
         private pageService: PageService,
         private pageCategoryService: PageCategoryService,
         private pageAccessLevelService: PageAccessLevelService,
@@ -94,7 +100,9 @@ export class PageController {
         private twitterService: TwitterService,
         private pageConfigService: PageConfigService,
         private authenService: AuthenticationIdService,
-        private stdItemService: StandardItemService
+        private stdItemService: StandardItemService,
+        private socialPostLogsService: SocialPostLogsService,
+        private deviceTokenService:DeviceTokenService,
     ) { }
 
     // Find Page API
@@ -1908,6 +1916,51 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
+                const who_follow_you = await this.userService.findOne({_id:userFollow.userId });
+                const page_owner_noti = await this.userService.findOne({_id:page.ownerUser});
+                // user to page 
+                const deviceToken = await this.deviceTokenService.findOne({userId:page_owner_noti.id});
+                const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
+                const link = `/user/${who_follow_you.displayName}/follow`;
+                if(String(userFollow.userId) === String(page.ownerUser)){
+                    await this.notificationService.createNotification(
+                        undefined,
+                        undefined,
+                        undefined+ '',
+                        undefined,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        undefined,
+                        link,
+                    );
+                }
+                else{
+                    if(deviceToken !== undefined){
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            deviceToken.Tokens,
+                            who_follow_you.displayName,
+                            who_follow_you.imageURL
+                            
+                        );
+                    }
+                    else{
+                        await this.notificationService.createNotification(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                        );
+                    }
+                }
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {
@@ -2638,6 +2691,58 @@ export class PageController {
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid subjectId', undefined));
+        }
+    }
+
+    @Post('/:id/enable_fetch_twitter')
+    @Authorized('user')
+    public async fetchTwitterEnable(@Param('id') id: string, @Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        try {
+            const pageObjId = new ObjectID(id);
+            const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+            if (!page) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+            }
+
+            const userId = req.user.id;
+            // check if user can access page
+            const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            if (!isUserCanAccess) {
+                return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+            }
+
+            // find authen with twitter
+            const twitterAccount = await this.pageSocialAccountService.findOne({ page: pageObjId, providerName: PROVIDER.TWITTER });
+
+            if (twitterAccount === undefined) {
+                const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            // find log
+            const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerPageId });
+            if (socialPostLog !== undefined) {
+                // update old
+                await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+            } else {
+                // create new
+                const newSocialPostLog = new SocialPostLogs();
+                newSocialPostLog.user = userId; // log by user
+                newSocialPostLog.lastSocialPostId = undefined;
+                newSocialPostLog.providerName = PROVIDER.TWITTER;
+                newSocialPostLog.providerUserId = twitterAccount.providerPageId;
+                newSocialPostLog.properties = undefined;
+                newSocialPostLog.enable = twitterParam.enable;
+                newSocialPostLog.lastUpdated = undefined;
+
+                await this.socialPostLogsService.create(newSocialPostLog);
+            }
+
+            return res.status(200).send(twitterParam);
+        } catch (err) {
+            const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+            return res.status(400).send(errorResponse);
         }
     }
 

@@ -39,7 +39,13 @@ import { UserConfigService } from '../services/UserConfigService';
 import moment from 'moment';
 import { UserConfig } from '../models/UserConfig';
 import { ConfigValueRequest } from './requests/ConfigValueRequest';
-
+import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { PROVIDER } from '../../constants/LoginProvider';
+import { SocialPostLogs } from '../models/SocialPostLogs';
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -52,7 +58,10 @@ export class UserController {
         private userProvideItemsService: UserProvideItemsService,
         private customItemService: CustomItemService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
-        private userConfigService: UserConfigService
+        private userConfigService: UserConfigService, 
+        private socialPostLogsService: SocialPostLogsService,
+        private notificationService: NotificationService,
+        private deviceTokenService:DeviceTokenService,
     ) { }
 
     // Logout API
@@ -74,8 +83,8 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
-
         let logoutAll = false;
+
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
@@ -86,7 +95,6 @@ export class UserController {
 
         if (logoutAll) {
             const authenIds: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: uid } });
-
             if (!authenIds) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
@@ -118,7 +126,9 @@ export class UserController {
 
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
+            console.log(updateExpireToken);
             if (updateExpireToken) {
+                await this.deviceTokenService.delete({userId:req.user.id});
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);
             } else {
@@ -253,11 +263,11 @@ export class UserController {
             userFollow.userId = userObjId;
             userFollow.subjectId = followUserObjId;
             userFollow.subjectType = SUBJECT_TYPE.USER;
-
             const followCreate: UserFollow = await this.userFollowService.create(userFollow);
+            console.log('followwwwwwwwwwwwwwwwwwwwwww',followCreate);
+            // follow notification 
             if (followCreate) {
                 result = followCreate;
-
                 const userEngagement = new UserEngagement();
                 userEngagement.clientId = clientId;
                 userEngagement.contentId = followUserObjId;
@@ -265,7 +275,23 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-
+                const who_follow_you = await this.userService.findOne({_id:userFollow.userId});
+                const deviceToken = await this.deviceTokenService.findOne({userId:userFollow.subjectId});
+                const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
+                const link = `/user/${who_follow_you.displayName}/follow`;
+                await this.notificationService.createNotificationFCM(
+                    followCreate.userId,
+                    USER_TYPE.USER,
+                    req.user.id+ '',
+                    USER_TYPE.USER,
+                    NOTIFICATION_TYPE.FOLLOW,
+                    notification_follower,
+                    link,
+                    deviceToken.Tokens,
+                    who_follow_you.displayName,
+                    who_follow_you.imageURL
+                );
+                // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
                     userEngagement.isFirst = false;
@@ -781,6 +807,62 @@ export class UserController {
             }
         }
     }
+
+    /**
+     * @api {post} /api/user/:id/enable_fetch_twitter Follow User API
+     * @apiGroup User
+     * @apiSuccessExample {json} Success
+     * HTTP/1.1 200 OK
+     * {
+     *    "message": "Follow User Success",
+     *    "data":{
+     *    "name" : "",
+     *    "description": "",
+     *     }
+     *    "status": "1"
+     *  }
+     * @apiSampleRequest /api/user/:id/enable_fetch_twitter
+     * @apiErrorExample {json} Enable fetch Twitter's post
+     * HTTP/1.1 500 Internal Server Error
+     */
+    @Post('/enable_fetch_twitter')
+    @Authorized('user')
+    public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
+            try {
+                const userId = req.user.id;
+                // find authen with twitter
+                const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
+    
+                if (twitterAccount === undefined) {
+                    const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+    
+                // find log
+                const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
+                if (socialPostLog !== undefined) {
+                    // update old
+                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+                } else {
+                    // create new
+                    const newSocialPostLog = new SocialPostLogs();
+                    newSocialPostLog.user = userId; // log by user
+                    newSocialPostLog.lastSocialPostId = undefined;
+                    newSocialPostLog.providerName = PROVIDER.TWITTER;
+                    newSocialPostLog.providerUserId = twitterAccount.providerUserId;
+                    newSocialPostLog.properties = undefined;
+                    newSocialPostLog.enable = twitterParam.enable;
+                    newSocialPostLog.lastUpdated = undefined;
+    
+                    await this.socialPostLogsService.create(newSocialPostLog);
+                }
+    
+                return res.status(200).send(twitterParam);
+            } catch (err) {
+                const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+                return res.status(400).send(errorResponse);
+            }
+        }
 
     private async checkPageAccess(objectId: ObjectID, userId: ObjectID): Promise<any> {
         // const pageAccessLevelCheckQuery = { where: { page: pageId, user: userId } };

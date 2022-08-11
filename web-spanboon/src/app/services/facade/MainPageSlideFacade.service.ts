@@ -94,11 +94,12 @@ export class MainPageSlideFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/content/search';
       let body: any = {};
+      let option = this.getDefaultOptions();
       if (search !== null && search !== undefined) {
         body = Object.assign(search)
       }
 
-      this.http.post(url, body).toPromise().then((response: any) => {
+      this.http.post(url, body, option).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

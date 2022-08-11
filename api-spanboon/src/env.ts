@@ -79,7 +79,6 @@ export const env = {
         password: getOsEnv('MONITOR_PASSWORD'),
     },
     imageserver: getOsEnv('IMAGE_SERVER'),
-    storeUrl: getOsEnv('STORE_URL'),
     SECRET_KEY: getOsEnv('SECRET_KEY')
 };
 
@@ -108,8 +107,6 @@ export const aws_setup = {
 export const facebook_setup = {
     FACEBOOK_APP_ID: getOsEnv('FACEBOOK_APP_ID'),
     FACEBOOK_APP_SECRET: getOsEnv('FACEBOOK_APP_SECRET'),
-    FACEBOOK_TEST_APP_ID: getOsEnv('FACEBOOK_TEST_APP_ID'),
-    FACEBOOK_TEST_APP_SECRET: getOsEnv('FACEBOOK_TEST_APP_SECRET'),
     FACEBOOK_COOKIE: getOsEnv('FACEBOOK_COOKIE'),
     FACEBOOK_XFBML: getOsEnv('FACEBOOK_XFBML'),
     FACEBOOK_VERSION: getOsEnv('FACEBOOK_VERSION'),

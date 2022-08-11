@@ -45,8 +45,8 @@ export class PostsService {
     }
 
     // update post
-    public update(query: any, newValue: any): Promise<any> {
-        return this.postsRepository.updateOne(query, newValue);
+    public update(query: any, newValue: any, options?: any): Promise<any> {
+        return this.postsRepository.updateOne(query, newValue, options);
     }
 
     // delete post
