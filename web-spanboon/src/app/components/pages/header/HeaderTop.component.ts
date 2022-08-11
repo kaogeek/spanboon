@@ -143,7 +143,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   public closeMenu() {
     this.trigger.closeMenu();
-  } 
+  }
 
   private stopIsloading(): void {
     setTimeout(() => {
@@ -204,7 +204,8 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   public Notification(noti) {
-    this.noti = noti
+    this.noti = [];
+    this.noti = noti;
   }
 
 }

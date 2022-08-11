@@ -74,6 +74,7 @@ import {
   LoginPage,
   LoginPageTest,
   ProfilePage,
+  NotificationAllPage,
   forgotPasswordPage,
   // FanPage,
   MainPage,
@@ -276,6 +277,7 @@ const COMPONENTS: any[] = [
   // Pages
   HomePage,
   HomePageV2,
+  NotificationAllPage,
   LoginPage,
   LoginPageTest,
   RegisterPage,

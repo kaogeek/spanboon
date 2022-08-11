@@ -1,4 +1,5 @@
-<div [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'" class="noticard"
+<div (click)="navigatetopage(message.notification.link)"
+    [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'" class="noticard"
     [ngClass]="{'fullpage': fullPage }">
     <div *ngIf="!fullPage" class="title">
         {{message?message.notification.title:'การแจ้งเตือนใหม่'}}
@@ -17,12 +18,11 @@
             <ng-template #image>
                 <div class="image-err"></div>
             </ng-template>
-            <div [ngClass]="{'status-one': message.notification.status === 'FOLLOW' || 'repost' || 'share' || 'COMMENT' || 'like', 'status-two' : message.notification.status === 'fullfill', 'status-tree' : message.notification.status === 'officerPage' }"
+            <div [ngClass]="{'status-one': message.notification.status === 'POST' || 'repost' || 'share' || 'COMMENT' || 'LIKE', 'status-two' : message.notification.status === 'fullfill', 'status-tree' : message.notification.status === 'officerPage' }"
                 class="status">
-                <svg *ngIf="message.notification.status === 'FOLLOW'" width="24px" height="24px"
-                    viewBox="0 0 76.01 76.01" xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
-                    enable-background="new 0 0 76.01 76.01" xml:space="preserve">
+                <svg *ngIf="message.notification.status === 'POST'" width="24px" height="24px" viewBox="0 0 76.01 76.01"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                    baseProfile="full" enable-background="new 0 0 76.01 76.01" xml:space="preserve">
                     <path fill="white" fill-opacity="1" stroke-width="1" stroke-linejoin="round"
                         d="M 31.6711,19.0027L 33.2546,19.0027C 34.1292,19.0027 34.8382,19.7116 34.8382,20.5862L 34.8382,55.4244C 34.8382,56.299 34.1292,57.008 33.2546,57.008L 31.6711,57.008C 30.7965,57.008 30.0875,56.299 30.0875,55.4244L 30.0875,20.5862C 30.0875,19.7116 30.7965,19.0027 31.6711,19.0027 Z M 38.0399,22.1698L 52.2573,31.1275C 52.8757,31.7459 52.8757,32.7486 52.2573,33.367L 38.0399,41.172C 37.1653,41.172 36.4564,40.463 36.4564,39.5884L 36.4564,23.7533C 36.4564,22.8787 37.1653,22.1698 38.0399,22.1698 Z " />
                 </svg>
@@ -81,7 +81,7 @@
                         d="M723.992,714.311a2.533,2.533,0,0,0-1.8-.745,2.59,2.59,0,0,0-1.555.522l-.052.039-4.7-2.459.017-.075a2.55,2.55,0,0,0,.042-.825l-.006-.065,4.7-2.793.054.038a2.531,2.531,0,0,0,1.5.49,2.566,2.566,0,1,0-2.568-2.565,2.529,2.529,0,0,0,.063.549l.015.072-4.52,2.691-.056-.05a2.574,2.574,0,0,0-2.635-.5l-.061.026a2.566,2.566,0,0,0,1.963,4.741,2.5,2.5,0,0,0,.5-.282l.051-.036,4.741,2.478-.014.074a2.566,2.566,0,1,0,4.334-1.326Zm-.526,1.849a1.314,1.314,0,1,1-1.314-1.314A1.315,1.315,0,0,1,723.466,716.16Zm-1.314-11.688a1.314,1.314,0,1,1-1.313,1.313A1.315,1.315,0,0,1,722.152,704.472Zm-7.5,6.527a1.314,1.314,0,1,1-1.314-1.314A1.316,1.316,0,0,1,714.656,711Z"
                         data-name="Path 3803" fill="#fff" id="Path_3803" transform="translate(-710.83 -703.306)"></path>
                 </svg>
-                <svg *ngIf="message.notification.status === 'like'" height="11px" width="11px"
+                <svg *ngIf="message.notification.status === 'LIKE'" height="11px" width="11px"
                     viewBox="0 0 15.474 13.059" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
@@ -103,10 +103,10 @@
                 </svg>
             </div>
         </div>
-        <div class="message">
+        <div class="message" [style.opacity]="message.notification.isRred ? '0.5' : '1'">
             <span
-                [innerHTML]="message?(message.notification.body | textnoti:(date|dateFormat)) :'มีการแจ้งเตือนใหม่'"></span>
+                [innerHTML]="message?(message.notification.body | textnoti:(message.notification.createdDate?(message.notification.createdDate|dateFormat):(date|dateFormat))) :'มีการแจ้งเตือนใหม่'"></span>
         </div>
-        <div *ngIf="message.notification.isRred" class="new"></div>
+        <div *ngIf="!message.notification.isRred" class="new"></div>
     </div>
 </div>

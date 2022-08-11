@@ -38,7 +38,7 @@ export class UserNotificationController {
      */
     @Get()
     @Authorized('user')
-    public async findAllUserNotifications(@QueryParam('limit') limit: number, @QueryParam('offset') offset: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async findAllUserNotifications(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
 
         const filter: any = { where: { toUser: userObjId, toUserType: USER_TYPE.USER, deleted: false } };

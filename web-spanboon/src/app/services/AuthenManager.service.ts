@@ -46,7 +46,6 @@ export class AuthenManager {
   public login(username: string, password: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      console.log('localStorage.getItem', localStorage.getItem('currentToken'))
       const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
       let body: any = {
         "username": username,

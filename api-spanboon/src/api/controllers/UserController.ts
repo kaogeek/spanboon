@@ -84,6 +84,7 @@ export class UserController {
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
         let logoutAll = false;
+
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
@@ -263,6 +264,7 @@ export class UserController {
             userFollow.subjectId = followUserObjId;
             userFollow.subjectType = SUBJECT_TYPE.USER;
             const followCreate: UserFollow = await this.userFollowService.create(userFollow);
+            console.log('followwwwwwwwwwwwwwwwwwwwwww',followCreate);
             // follow notification 
             if (followCreate) {
                 result = followCreate;
@@ -273,8 +275,8 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-                const who_follow_you = await this.userService.findOne({_id:followCreate.subjectId});
-                const deviceToken = await this.deviceTokenService.findOne({userId:followCreate.subjectId});
+                const who_follow_you = await this.userService.findOne({_id:userFollow.userId});
+                const deviceToken = await this.deviceTokenService.findOne({userId:userFollow.subjectId});
                 const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
                 const link = `/user/${who_follow_you.displayName}/follow`;
                 await this.notificationService.createNotificationFCM(

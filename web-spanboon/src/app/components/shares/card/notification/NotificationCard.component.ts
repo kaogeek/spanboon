@@ -28,11 +28,10 @@ export class NotificationCard extends AbstractPage implements OnInit {
     @Input()
     public slide: boolean;
     @Input()
-    public date: Date = new Date(22 - 10 - 1888);
+    public date: Date = new Date();
 
     constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
         super(PAGE_NAME, authenManager, dialog, router);
-        this.authenManager = authenManager;
     }
 
     public ngOnInit(): void {
@@ -44,6 +43,12 @@ export class NotificationCard extends AbstractPage implements OnInit {
 
     public close() {
         this.slide = false;
+    }
+
+    public navigatetopage(link) {
+        this.router.navigate([]).then(() => {
+            window.open(link);
+        });
     }
 
     public isPageDirty(): boolean {

@@ -1,1 +1,34 @@
-<div style="width: 100vw;height:93.8vh ;background-color: rgb(70, 70, 70);"></div>
+<div style="    width: 100vw;
+display: flex;
+background-color: #eeeeee;
+align-items: stretch;
+justify-content: center;">
+    <div class="wrapper-notification width-500">
+        <div class="test">
+            การแจ้งเตือนทั้งหมด
+        </div>
+        <div class="wrapper-header" (click)="$event.stopPropagation();">
+            <div class="wrapper-noti" style="border-bottom: unset !important;">
+                ใหม่
+            </div>
+        </div>
+        <div class="noti-sc">
+            <notification-card *ngFor="let i of messagelist" [message]="i" [fullPage]="true" [slide]="true">
+            </notification-card>
+        </div>
+        <div class="wrapper-header" (click)="$event.stopPropagation();">
+            <div class="wrapper-noti" style="border-bottom: unset !important;">
+                ก่อนหน้านี้
+            </div>
+            <!-- <div class="wrapper-setting">
+                ดูทั้งหมด
+            </div> -->
+        </div>
+        <div class="noti-sc">
+            <notification-card *ngFor="let i of messagelist2" [message]="i" [fullPage]="true" [slide]="true">
+            </notification-card>
+            <notification-card *ngFor="let i of messagelist" [message]="i" [fullPage]="true" [slide]="true">
+            </notification-card>
+        </div>
+    </div>
+</div>

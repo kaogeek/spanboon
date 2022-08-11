@@ -13,11 +13,12 @@ import { eventDispatchLoader } from './loaders/eventDispatchLoader';
 import { expressLoader } from './loaders/expressLoader';
 import { homeLoader } from './loaders/homeLoader';
 import { iocLoader } from './loaders/iocLoader';
-import { monitorLoader } from './loaders/monitorLoader';
+// import { monitorLoader } from './loaders/monitorLoader';
 import { publicLoader } from './loaders/publicLoader';
 import { typeormLoader } from './loaders/typeormLoader';
 import { winstonLoader } from './loaders/winstonLoader';
-import { jobSchedulerLoader } from './loaders/jobSchedulerLoader'; 
+import { jobSchedulerLoader } from './loaders/jobSchedulerLoader';
+
 /**
  * EXPRESS TYPESCRIPT BOILERPLATE
  * ----------------------------------------
@@ -41,8 +42,6 @@ bootstrapMicroframework({
         expressLoader,
         homeLoader,
         publicLoader,
-        jobSchedulerLoader,
-        monitorLoader
-    ],
-    
+        jobSchedulerLoader
+    ]
 }).then(() => banner(log)).catch(error => log.error('Application is crashed: ' + error));

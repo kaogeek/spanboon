@@ -13,7 +13,7 @@ import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { USER_TYPE } from '../../constants/NotificationType';
 import { ObjectID } from 'mongodb';
 import { Service } from 'typedi';
-import * as serviceAccount from '../../../pushnotification-ac673-firebase-adminsdk-er6wo-9a5d90f8c3.json';
+import * as serviceAccount from '../../../firebase.json';
 import { ServiceAccount } from 'firebase-admin';
 import * as admin from 'firebase-admin';
 @Service()
@@ -99,7 +99,6 @@ export class NotificationService {
         const image_url = String(image);
         const count_data = String(count);
         if(count !== null){
-            console.log('ok1');
             const payload = 
             {
                 notification:{

@@ -948,26 +948,52 @@ export class PostsController {
                 action = ENGAGEMENT_ACTION.LIKE;
                 // page to page 
                 // post by page ?
-                if(likeCreate.likeAsPage !== null && who_post.pageId !== null)
-                {   
-                    const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
-                    const page = await this.pageService.findOne({_id:who_post.pageId});
-                    const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                    const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
-                    const link = '/post/' +likeCreate.subjectId;
-                    const notificationText = `เพจ ${page_like.pageUsername} กดถูกใจโพสต์ของเพจ ${page.pageUsername}`;
-                    await this.pageNotificationService.notifyToPageUserFcm(
-                        page.id,
-                        undefined,
-                        req.user.id+'',
-                        USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
-                        notificationText,
-                        link,
-                        tokenFCM_id.Tokens,
-                        page_like.pageUsername,
-                        page_like.imageURL,
-                    );
+                // who_post.pageId !== null
+                // เพิ่มฟิลด์
+                // displayName
+                if(likeCreate.likeAsPage !== null)
+                {
+                // page to page
+                    if(who_post.pageId !== null){
+                        const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
+                        const page = await this.pageService.findOne({_id:who_post.pageId});
+                        const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
+                        const link = '/post/' +likeCreate.subjectId;
+                        const notificationText = `เพจ ${page_like.name} กดถูกใจโพสต์ของเพจ ${page.name}`;
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            page.id,
+                            undefined,
+                            req.user.id+'',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.LIKE,
+                            notificationText,
+                            link,
+                            tokenFCM_id.Tokens,
+                            page_like.name,
+                            page_like.imageURL,
+                        );
+                    }
+                // page to user
+                    else{
+                        const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
+                        // const user_ownerPage = await this.userService.findOne({_id:who_post.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_post.ownerUser});
+                        const link = '/post/' +likeCreate.subjectId;
+                        const notificationText = `เพจ ${page_like.name} กดถูกใจโพสต์ของคุณ `;
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            page_like.id,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.COMMENT,
+                            notificationText,
+                            link,
+                            tokenFCM_id.Tokens,
+                            page_like.name,
+                            page_like.imageURL
+                        );
+                    }
                 }
                 else
                 {
@@ -976,11 +1002,10 @@ export class PostsController {
                     {
                         const user_like = await this.userService.findOne({_id:likeCreate.userId});
                         const page = await this.pageService.findOne({_id:who_post.pageId});
-                        const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
+                        // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_post.ownerUser});
                         const link = '/post/' +likeCreate.subjectId;
-                        const notificationText = `${user_like.displayName} กดถูกใจโพสต์ของเพจ ${page.pageUsername}`;
-                        console.log('ok');
+                        const notificationText = `${user_like.displayName} กดถูกใจโพสต์ของเพจ ${page.name}`;
                         await this.notificationService.createNotificationFCM
                         (
                             postObj.ownerUser +'',
@@ -1006,7 +1031,7 @@ export class PostsController {
                         const tokenFCM_id = await this.deviceTokenService.findOne({userId:ownerPost.id});
                         const link = '/post/' +likeCreate.subjectId;
                         const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
-                        if(tokenFCM_id.Tokens !== null || tokenFCM_id.Token !== undefined){
+                        if(tokenFCM_id !== undefined){
                             if(who_post.likeCount >= 0 && who_post.likeCount <= 4){
                                 await this.notificationService.createNotificationFCM
                                 (
