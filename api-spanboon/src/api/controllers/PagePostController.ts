@@ -630,11 +630,9 @@ export class PagePostController {
 
                     // user to user
                     const user_follow = await this.userFollowService.find({subjectType:'USER',subjectId:createPostPageData.ownerUser});
-                    console.log('user_follow',user_follow);
                     for(let i = 0; i<user_follow.length; i++){
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
-                        for(let j = 0; j<tokenFCM_id.length;j ++){
-                            console.log(tokenFCM_id[j].Tokens);
+                        for(let j = 0; j<tokenFCM_id.length; j++){
                             if(tokenFCM_id[j] !== undefined){
                                 const link = '/post/'+createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(

@@ -27,21 +27,3 @@ When you file a feature request or when you are submitting a bug report to the [
 This project is currently licensed under the [MIT License](https://github.com/kaogeek/spanboon/blob/main/LICENSE).
 
 
-
-
-https://api.spanboon.com/api/login
-
-https://api.spanboon.com/api/notification
-
-https://api.spanboon.com/api/page/62a83609a88f4a8c4c198430/post
-
-https://api.spanboon.com/api/chatroom/check_unread
-
-https://api.spanboon.com/api/page/
-
-https://api.spanboon.com/api/post/62a84a7971c9008c4bfc4485/like
-
-
-https://api.spanboon.com/api/page/62a83609a88f4a8c4c198430/post
-
-https://api.spanboon.com/api/fulfillment_case
