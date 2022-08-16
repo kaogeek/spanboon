@@ -84,7 +84,6 @@ export class UserController {
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
         let logoutAll = false;
-
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
@@ -126,9 +125,8 @@ export class UserController {
 
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
-            console.log(updateExpireToken);
             if (updateExpireToken) {
-                await this.deviceTokenService.delete({userId:req.user.id});
+                await this.deviceTokenService.delete({userId:req.user.id,token:req.body.token});
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);
             } else {

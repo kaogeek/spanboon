@@ -70,7 +70,6 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { CreateAllocateRequest } from './requests/allocate/CreateAllocateRequest';
 import { S3Service } from '../services/S3Service';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { UserFollowService } from '../services/UserFollowService';
 import { PageNotificationService } from '../services/PageNotificationService';
 @JsonController('/fulfillment_case')
 export class FulfillmentController {
@@ -99,7 +98,6 @@ export class FulfillmentController {
         private s3Service: S3Service,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private userFollowService: UserFollowService,
     ) { }
 
     /**
@@ -1159,6 +1157,7 @@ export class FulfillmentController {
                     const chatMsg = new ChatMessage();
                     chatMsg.sender = requesterObj.id;
                     chatMsg.senderType = USER_TYPE.USER;
+
                     // user mode
                     if (requesterObj !== undefined) {
                         chatmsg = requesterObj.displayName + ' เสนอรายการเติมเต็มเข้าโพสต์';
@@ -1167,26 +1166,27 @@ export class FulfillmentController {
                     chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_CASE_CREATE;
                     chatMsg.room = chatRoomObjId;
                     await this.chatMessageService.createChatMessage(chatMsg);
+                    const notification_fullfillment = 'เพิ่ม' + items[0].name + 'จำนวน' + items[0].quantity + 'สำเร็จ';
+                    const link = '/api/fulfillment_case';
+                    const page = await this.pageService.findOne({ _id: fulfillCaseCreate.pageId });
+                    const user_page = await this.userService.findOne({_id:page.ownerUser});
+                    const tokenFCM_id = await this.deviceTokenService.findOne({ userId: user_page.id});
+                    const user_request = await this.userService.findOne({_id:requesterObj.id});
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        page.id,
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FULFILLMENT,
+                        notification_fullfillment,
+                        link,
+                        tokenFCM_id.Tokens,
+                        user_request.displayName,
+                        user_request.imageURL
+                    );
                 }
                 /* end Create Chat*/
-                const notification_fullfillment = 'เพิ่ม' + items[0].name + 'จำนวน' + items[0].quantity + 'สำเร็จ';
-                const link = '/api/fulfillment_case';
-                const tokenFCM_id = await this.deviceTokenService.findOne({ userId: fulfillCaseCreate.requester });
-                const page = await this.pageService.findOne({ _id: fulfillCaseCreate.pageId });
-                await this.pageNotificationService.notifyToPageUserFcm(
-                    page.id,
-                    undefined,
-                    req.user.id + '',
-                    USER_TYPE.USER,
-                    NOTIFICATION_TYPE.FULFILLMENT,
-                    notification_fullfillment,
-                    link,
-                    tokenFCM_id.Tokens,
-                    page.name,
-                    page.imageURL
-                );
                 let fulfillRequest: FulfillmentRequest = undefined;
-
                 if (postsObjId !== null && postsObjId !== undefined) {
                     if (needs !== null && needs !== undefined && needs.length > 0) {
                         for (const need of needs) {
@@ -1335,7 +1335,6 @@ export class FulfillmentController {
                         }
                     }
                 }
-
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create FulfillmentCase Success', fulfillCaseCreate));
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentCase Failed', undefined));
@@ -1416,6 +1415,8 @@ export class FulfillmentController {
                             if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
                                 /* Create Chat */
                                 // search chatroom
+                                console.log(fulfillCaseStatus);
+                                console.log(fulfillCase);
                                 const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
                                 if (chatRoom) {
                                     let chatmsg = 'ได้ทำการยกเลิกเติมเต็ม';
@@ -1500,16 +1501,16 @@ export class FulfillmentController {
      * @apiErrorExample {json} Confirm FulfillmentCase Failed
      * HTTP/1.1 500 Internal Server Error
      */
+
+    // firebase notification
     @Post('/:caseId/confirm')
     @Authorized('user')
     public async confirmFulfillmentCase(@QueryParam('asPage') asPage: string, @Param('caseId') caseId: string, @Res() res: any, @Req() req: any): Promise<any> {
         try {
             const userId = req.user.id;
-
             if (caseId !== null && caseId !== undefined && caseId !== '') {
                 const caseObjId = new ObjectID(caseId);
                 const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, deleted: false });
-
                 if (fulfillCase !== null && fulfillCase !== undefined) {
                     const fulfillCaseStatus = fulfillCase.status;
                     let canChangeStatus = false;
@@ -1595,12 +1596,12 @@ export class FulfillmentController {
                             if (asPage !== null && asPage !== undefined && asPage !== '') {
                                 chatMsg.sender = new ObjectID(asPage);
                                 chatMsg.senderType = USER_TYPE.PAGE;
-
                                 const page = await this.pageService.findOne({ _id: new ObjectID(asPage) });
                                 if (page !== undefined) {
                                     chatMessage = page.name + ' ได้ยืนยันการเติมเต็มของคุณแล้ว รอทางเพจสร้างโพสต์การเติมเต็ม';
                                 }
                             }
+
                             chatMsg.message = chatMessage;
                             chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_CASE_CONFIRM;
                             chatMsg.room = chatRoom.id;
@@ -1610,7 +1611,22 @@ export class FulfillmentController {
                         /* end create Chat */
 
                         const fulfilmentCancelled: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId });
-
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:fulfillCase.requester});
+                        const notificationText_POST = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
+                        const page_noti = await this.pageService.findOne({_id:fulfillCase.pageId});
+                        const link = ``;
+                        await this.notificationService.createNotificationFCM(
+                            tokenFCM_id.userId,
+                            USER_TYPE.PAGE,
+                            req.user.id+'',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.POST,
+                            notificationText_POST,
+                            link,
+                            tokenFCM_id.Tokens,
+                            page_noti.name,
+                            page_noti.imageURL
+                        );
                         return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Confirmed', fulfilmentCancelled));
                     } else {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Failed', undefined));
@@ -1711,7 +1727,6 @@ export class FulfillmentController {
 
                         // check needIds
                         const needs = await this.needsService.findOne({ _id: new ObjectID(allocate.needsId) });
-                        console.log('needs',needs);
                         if (needs === undefined) {
                             return res.status(400).send(ResponseUtil.getErrorResponse('Needs ' + allocate.needsId + ' was not found.', undefined));
                         } else {
@@ -1870,9 +1885,9 @@ export class FulfillmentController {
                             const tokenFCM_id = await this.deviceTokenService.findOne({userId:fulfillCase.requester});
                             const link = `/api/fulfillment_case/${caseId}/confirm`;
                             const notification_fullfillment = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
-                            await this.pageNotificationService.notifyToPageUserFcm(
-                                page_id.id,
-                                undefined,
+                            await this.notificationService.createNotificationFCM(
+                                tokenFCM_id.userId,
+                                USER_TYPE.PAGE,
                                 req.user.id + '',
                                 USER_TYPE.USER,
                                 NOTIFICATION_TYPE.FULFILLMENT,
@@ -2142,109 +2157,17 @@ export class FulfillmentController {
                     const setObj: any = { status: FULFILLMENT_STATUS.CONFIRM };
                     setObj.updatedByPageDate = moment().toDate();
                     setObj.fulfillmentPost = createPostPageData.id;
-
+                    
                     await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
-                    const page = await this.pageService.findOne({ _id: fulfillCase.pageId });
                     if (createPostPageData !== undefined) {
                         // notify to requester
                         // find page 
                         // page -> user
                         // notification to user who follow page
-                        const who_follow_page = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: fulfillCase.pageId });
-                        for (let i = 0; i < who_follow_page.length; i++) {
-                            const tokenFCM_id = await this.deviceTokenService.find({ userId: who_follow_page[i].userId });
-                            if (page.imageURL !== null && page.imageURL !== undefined) {
-                                if (tokenFCM_id[i] !== undefined) {
-                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                                    if (pageObj) {
-                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                                    }
-                                    const link = '/post/' + createPostPageData.id;
-                                    await this.notificationService.createNotificationFCM
-                                        (
-                                            fulfillCase.requester,
-                                            undefined,
-                                            req.user.id + '',
-                                            USER_TYPE.USER,
-                                            NOTIFICATION_TYPE.FULFILLMENT,
-                                            notificationText,
-                                            link,
-                                            tokenFCM_id[i].Tokens,
-                                            pageObj.name,
-                                            page.imageURL
-                                        );
-                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
-                                }
-                                else {
-                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                                    if (pageObj) {
-                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                                    }
-                                    const link = '/post/' + createPostPageData.id;
-                                    await this.notificationService.createNotification
-                                        (
-                                            fulfillCase.requester,
-                                            undefined,
-                                            fulfillCase.pageId,
-                                            req.user.id + '',
-                                            USER_TYPE.USER,
-                                            NOTIFICATION_TYPE.FULFILLMENT,
-                                            notificationText,
-                                            link,
-                                        );
-                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
-                                }
-                            }
-                            else {
-                                if (tokenFCM_id[i] !== undefined) {
-                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                                    if (pageObj) {
-                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                                    }
-                                    const link = '/post/' + createPostPageData.id;
-                                    await this.notificationService.createNotificationFCM
-                                        (
-                                            fulfillCase.requester,
-                                            USER_TYPE.PAGE,
-                                            req.user.id + '',
-                                            USER_TYPE.USER,
-                                            NOTIFICATION_TYPE.FULFILLMENT,
-                                            notificationText,
-                                            link,
-                                            tokenFCM_id[i].Tokens,
-                                            pageObj.name,
-                                            page.imageURL
-                                        );
-                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
-                                }
-                                else {
-                                    const pageObj = (pageData !== undefined && pageData.length > 0) ? pageData[0] : undefined;
-                                    let notificationText = 'ขอบคุณสำหรับการเติมเต็ม';
-                                    if (pageObj) {
-                                        notificationText = '"' + pageObj.name + '" ขอขอบคุณสำหรับการเติมเต็ม';
-                                    }
-                                    const link = '/post/' + createPostPageData.id;
-                                    await this.notificationService.createNotification
-                                        (
-                                            fulfillCase.requester,
-                                            USER_TYPE.PAGE,
-                                            fulfillCase.pageId,
-                                            req.user.id + '',
-                                            USER_TYPE.USER,
-                                            NOTIFICATION_TYPE.FULFILLMENT,
-                                            notificationText,
-                                            link,
-                                        );
-
-                                    return res.status(200).send(ResponseUtil.getSuccessResponse('Create Post of FulfillmentCase Complete', createPostPageData));
-                                }
-
-                            }
-                        }
-                    } else {
+                        
+                    }
+                    
+                    else {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot create Fulfillment Post.', undefined));
                     }
                 } else {
@@ -2272,307 +2195,282 @@ export class FulfillmentController {
      * @apiErrorExample {json} Create FulfillmentCase Failed
      * HTTP/1.1 500 Internal Server Error
      */
-    @Post('/:caseId/request')
-    @Authorized('user')
-    public async createFulfillmentRequest(@Param('caseId') caseId: string, @Body({ validate: true }) data: CreateFulfillmentFromCaseRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        try {
-            if (caseId !== null && caseId !== undefined && caseId !== '') {
-                const caseObjId = new ObjectID(caseId);
-                const userId = req.user.id;
-                const username = req.user.username;
-                const userObjId = new ObjectID(userId);
-                const asPage = data.asPage;
-                const needs = data.needs;
-                const mergeItem = data.mergeItem;
-                const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, requester: userObjId });
-                // let requestQuery;
-                if (fulfillCase !== null && fulfillCase !== undefined) {
-                    const fulfillCaseObjId = new ObjectID(fulfillCase.id);
-                    const fulfillCaseStatus = fulfillCase.status;
-                    if (asPage !== null && asPage !== undefined && asPage !== '') {
-                        const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(userId, asPage);
-
-                        let canAccessPage = false;
-                        if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
-                            for (const access of pageAccess) {
-                                if (access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.OWNER) {
-                                    if (JSON.stringify(access.page) === JSON.stringify(asPage)) {
-                                        // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
-                                        canAccessPage = true;
-                                    }
-                                }
-                            }
-                        }
-                        if (!canAccessPage) {
-                            return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
-                        }
-                    } else {
-                        const requester = fulfillCase.requester;
-
-                        if (JSON.stringify(requester) === JSON.stringify(userId)) {
-                            // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
-                        } else {
-                            return res.status(400).send(ResponseUtil.getErrorResponse('You Not A Requester', undefined));
-                        }
-                    }
-                    if (needs !== null && needs !== undefined && needs.length > 0) {
-                        const nids = [];
-                        for (const nId of needs) {
-                            nids.push(new ObjectID(nId.id));
-                        }
-
-                        // check isPostNeedsFulfilled in post mode
-                        if (fulfillCase.postId !== undefined) {
-                            const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
-                            if (insertedCheck !== undefined) {
-                                for (const needCheck of insertedCheck) {
-                                    if (needCheck.fullfilled !== undefined) {
-                                        if (needCheck.fullfilled) {
-                                            return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
-                                        }
-                                    } else {
-                                        const ffQuantity = (needCheck.fulfillQuantity !== undefined && needCheck.fulfillQuantity !== null) ? needCheck.fulfillQuantity : 0;
-                                        const quantity = (needCheck.quantity !== undefined && needCheck.quantity !== null) ? needCheck.quantity : 0;
-
-                                        if (ffQuantity >= quantity) {
-                                            return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (fulfillCaseStatus === FULFILLMENT_STATUS.INPROGRESS) {
-                        if (needs !== null && needs !== undefined && needs.length > 0) {
-                            const createFulfillResult: any[] = [];
-                            const currentNeedsMap = {}; // needsId as a key and value is array
-                            if (mergeItem) {
-                                const caseRequest: any[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(fulfillCase.id);
-                                for (const caseReq of caseRequest) {
-                                    const needsIdKey = caseReq.needsId + '';
-                                    if (currentNeedsMap[needsIdKey] === undefined) {
-                                        currentNeedsMap[needsIdKey] = [];
-                                    }
-                                    currentNeedsMap[needsIdKey].push(caseReq);
-                                }
-                            }
-
-                            const editItemQuantity = {}; // needsId as a key and value is number
-                            for (const need of needs) {
-                                const today = moment().toDate();
-                                const needsIdKey = need.id + '';
-                                let isCreate = true;
-
-                                if (mergeItem) {
-                                    if (currentNeedsMap[needsIdKey] !== undefined && currentNeedsMap[needsIdKey].length > 0) {
-                                        isCreate = false;
-                                    }
-                                }
-                                if (isCreate) {
-                                    const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(need.id) });
-                                    if (!reqNeeds) {
-                                        continue;
-                                    }
-                                    const fulfillRequest: FulfillmentRequest = new FulfillmentRequest();
-                                    fulfillRequest.needsId = new ObjectID(need.id);
-                                    fulfillRequest.quantity = need.quantity;
-                                    fulfillRequest.fulfillmentCase = fulfillCaseObjId;
-                                    fulfillRequest.createdBy = userObjId;
-                                    fulfillRequest.createdByUsername = username;
-                                    fulfillRequest.updateByUsername = username;
-                                    fulfillRequest.updateDate = today;
-                                    fulfillRequest.deleted = false;
-                                    if (reqNeeds.standardItemId !== undefined) {
-                                        fulfillRequest.standardItemId = reqNeeds.standardItemId;
-                                    }
-                                    if (reqNeeds.customItemId !== undefined) {
-                                        fulfillRequest.customItemId = reqNeeds.customItemId;
-                                    }
-                                    const createFulfillRequest: FulfillmentRequest = await this.fulfillmentRequestService.create(fulfillRequest);
-
-                                    if (createFulfillRequest !== null && createFulfillRequest !== undefined) {
-                                        const ffulfill = await this.fetchFulfillmentRequest(new ObjectID(createFulfillRequest.id));
-                                        const ffReqRes = this.createFulfillmentRequestResponse(ffulfill);
-                                        createFulfillResult.push(ffReqRes);
-                                    }
-                                } else {
-                                    // edit mode
-                                    const curReq = currentNeedsMap[needsIdKey][0];
-                                    const newQuantity = (curReq.quantity !== undefined ? curReq.quantity : 0) + need.quantity;
-                                    const updateStmt = { $set: { quantity: newQuantity, updateByUsername: username, updateDate: moment().toDate() } };
-                                    await this.fulfillmentRequestService.update({ _id: new ObjectID(curReq.id) }, updateStmt);
-
-                                    const ffulfill = await this.fetchFulfillmentRequest(new ObjectID(curReq.id));
-                                    const ffReqRes = this.createFulfillmentRequestResponse(ffulfill);
-                                    createFulfillResult.push(ffReqRes);
-                                    if (editItemQuantity[needsIdKey] === undefined) {
-                                        editItemQuantity[needsIdKey] = need.quantity;
-                                    } else {
-                                        editItemQuantity[needsIdKey] += need.quantity;
-                                    }
-                                }
-                            }
-
-                            if (createFulfillResult !== null && createFulfillResult !== undefined && createFulfillResult.length > 0) {
-                                /* Update By in case */
-                                const setObj: any = {};
-                                if (asPage !== null && asPage !== undefined && asPage !== '') {
-                                    setObj.updatedByPageDate = moment().toDate();
-                                } else {
-                                    setObj.updatedByUserDate = moment().toDate();
-                                }
-                                await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
-                                /* end set  Update By */
-
-                                /* notify to requester */
-                                const page = await this.pageService.findOne({ _id: fulfillCase.pageId });
-                                // page -> user
-                                const who_follow_page = await this.userFollowService.find({ subjectId: fulfillCase.pageId, subjectType: 'PAGE' });
-                                for (let i = 0; i < who_follow_page.length; i++) {
-                                    const tokenFCM_id = await this.deviceTokenService.find({ userId: who_follow_page[i].userId });
-
-                                    if (tokenFCM_id[i] !== undefined) {
-                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
-                                        let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
-                                        if (reqNeeds) {
-                                            notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
-                                        }
-                                        if (createFulfillResult.length > 1) {
-                                            notificationText += ' และ อื่นๆ';
-                                        }
-                                        const link = '/post/' + fulfillCase.postId;
-                                        await this.notificationService.createNotificationFCM
-                                            (
-                                                fulfillCase.requester,
-                                                undefined,
-                                                req.user.id + '',
-                                                USER_TYPE.USER,
-                                                NOTIFICATION_TYPE.FULFILLMENT,
-                                                notificationText,
-                                                link,
-                                                tokenFCM_id[i].Tokens,
-                                                page.pageUsername,
-                                                page.imageURL
-                                            );
-                                    }
-                                    else {
-                                        const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
-                                        let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
-                                        if (reqNeeds) {
-                                            notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
-                                        }
-                                        if (createFulfillResult.length > 1) {
-                                            notificationText += ' และ อื่นๆ';
-                                        }
-                                        const link = '/post/' + fulfillCase.postId;
-                                        await this.notificationService.createNotification
-                                            (
-                                                fulfillCase.requester,
-                                                fulfillCase.pageId,
-                                                USER_TYPE.PAGE,
-                                                NOTIFICATION_TYPE.FULFILLMENT,
-                                                notificationText,
-                                                link
-                                            );
-                                    }
-                                }
-                                /* end notify to requester */
-                                /* Create Chat */
-                                // search chatroom
-                                const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
-                                if (chatRoom) {
-                                    // search all need
-                                    const needIdsList = [];
-                                    const needNewQuantityMap = {};
-                                    for (const createFullfill of createFulfillResult) {
-                                        const key = createFullfill.needsId + '';
-                                        needNewQuantityMap[key] = createFullfill.quantity;
-                                        needIdsList.push(createFullfill.needsId);
-                                    }
-                                    const needObjList = await this.needsService.find({ _id: { $in: needIdsList } });
-                                    if (needObjList !== undefined && (await needObjList).length > 0) {
-                                        for (const needObj of needObjList) {
-                                            const key = needObj.id + '';
-                                            let quantity = needNewQuantityMap[key] === undefined ? 0 : needNewQuantityMap[key];
-
-                                            if (editItemQuantity[key] !== undefined) {
-                                                // show only edit quantity.
-                                                quantity = editItemQuantity[key];
-                                            }
-
-                                            const chatMessage = 'เพิ่มรายการ ' + needObj.name + ' ' + InputFormatterUtils.formatCurrencyNumber(quantity, 0, 2) + ' ' + needObj.unit;
-                                            const chatMsg = new ChatMessage();
-                                            chatMsg.sender = new ObjectID(userId);
-                                            chatMsg.senderType = USER_TYPE.USER;
-                                            if (asPage !== null && asPage !== undefined && asPage !== '') {
-                                                chatMsg.sender = new ObjectID(asPage);
-                                                chatMsg.senderType = USER_TYPE.PAGE;
-                                            }
-                                            chatMsg.message = chatMessage;
-                                            chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
-                                            chatMsg.room = chatRoom.id;
-
-                                            if (needObj.customItemId !== undefined) {
-                                                chatMsg.itemId = needObj.customItemId;
-                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
-                                                const customItem = await this.customItemService.findOne({ _id: needObj.customItemId });
-                                                if (customItem !== undefined) {
-                                                    chatMsg.filePath = customItem.imageURL;
-                                                }
-                                            }
-                                            if (needObj.standardItemId !== undefined) {
-                                                chatMsg.itemId = needObj.standardItemId;
-                                                chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
-                                                const stdItem = await this.stdItemService.findOne({ _id: needObj.standardItemId });
-                                                if (stdItem !== undefined) {
-                                                    chatMsg.filePath = stdItem.imageURL;
-                                                }
-                                            }
-
-                                            await this.chatMessageService.createChatMessage(chatMsg);
-                                        }
-                                    }
-                                    /* // this is for one message
-                                let chatMessage = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
-                                if (reqNeeds) {
-                                    chatMessage = 'เพิ่ม ' + reqNeeds.name + ' ' + InputFormatterUtils.formatCurrencyNumber(createFulfillResult[0].quantity, 0, 2) + ' ' + reqNeeds.unit;
-                                }
-                                const chatMsg = new ChatMessage();
-                                chatMsg.sender = new ObjectID(userId);
-                                chatMsg.senderType = USER_TYPE.USER;
-                                if (asPage !== null && asPage !== undefined && asPage !== '') {
-                                    chatMsg.sender = new ObjectID(asPage);
-                                    chatMsg.senderType = USER_TYPE.PAGE;
-                                }
-                                chatMsg.message = chatMessage;
-                                chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
-                                chatMsg.room = chatRoom.id;
-
-                                await this.chatMessageService.createChatMessage(chatMsg);
-                                    */
-                                }
-                                /* end create Chat */
-                                return res.status(200).send(ResponseUtil.getSuccessResponse('Create FulfillmentRequest Success', createFulfillResult));
-                            } else {
-                                return res.status(200).send(ResponseUtil.getSuccessResponse('Create FulfillmentRequest Failed', undefined));
-                            }
-                        } else {
-                            return res.status(400).send(ResponseUtil.getErrorResponse('No Needs for the request post.', undefined));
-                        }
-                    } else {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Create FulfillmentRequest', undefined));
-                    }
-                } else {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Create This FulfillmentRequest', undefined));
-                }
-            } else {
-                return res.status(400).send(ResponseUtil.getErrorResponse('Fulfillment CaseId Invalid', undefined));
-            }
-        } catch (error: any) {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentRequest Error', error.message));
-        }
-    }
+     @Post('/:caseId/request')
+     @Authorized('user')
+     public async createFulfillmentRequest(@Param('caseId') caseId: string, @Body({ validate: true }) data: CreateFulfillmentFromCaseRequest, @Res() res: any, @Req() req: any): Promise<any> {
+         try {
+             if (caseId !== null && caseId !== undefined && caseId !== '') {
+                 const caseObjId = new ObjectID(caseId);
+                 const userId = req.user.id;
+                 const username = req.user.username;
+                 const userObjId = new ObjectID(userId);
+                 const asPage = data.asPage;
+                 const needs = data.needs;
+                 const mergeItem = data.mergeItem;
+ 
+                 const fulfillCase: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId, requester: userObjId });
+                 // let requestQuery;
+ 
+                 if (fulfillCase !== null && fulfillCase !== undefined) {
+                     const fulfillCaseObjId = new ObjectID(fulfillCase.id);
+                     const fulfillCaseStatus = fulfillCase.status;
+ 
+                     if (asPage !== null && asPage !== undefined && asPage !== '') {
+                         const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(userId, asPage);
+ 
+                         let canAccessPage = false;
+ 
+                         if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
+                             for (const access of pageAccess) {
+                                 if (access.level === PAGE_ACCESS_LEVEL.ADMIN || access.level === PAGE_ACCESS_LEVEL.OWNER) {
+                                     if (JSON.stringify(access.page) === JSON.stringify(asPage)) {
+                                         // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
+                                         canAccessPage = true;
+                                     }
+                                 }
+                             }
+                         }
+ 
+                         if (!canAccessPage) {
+                             return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Access As Page', undefined));
+                         }
+                     } else {
+                         const requester = fulfillCase.requester;
+ 
+                         if (JSON.stringify(requester) === JSON.stringify(userId)) {
+                             // requestQuery = { fulfillmentCase: caseObjId, deleted: false };
+                         } else {
+                             return res.status(400).send(ResponseUtil.getErrorResponse('You Not A Requester', undefined));
+                         }
+                     }
+ 
+                     if (needs !== null && needs !== undefined && needs.length > 0) {
+                         const nids = [];
+                         for (const nId of needs) {
+                             nids.push(new ObjectID(nId.id));
+                         }
+ 
+                         // check isPostNeedsFulfilled in post mode
+                         if (fulfillCase.postId !== undefined) {
+                             const insertedCheck = await this.needsService.find({ _id: { $in: nids }, active: true });
+                             if (insertedCheck !== undefined) {
+                                 for (const needCheck of insertedCheck) {
+                                     if (needCheck.fullfilled !== undefined) {
+                                         if (needCheck.fullfilled) {
+                                             return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                         }
+                                     } else {
+                                         const ffQuantity = (needCheck.fulfillQuantity !== undefined && needCheck.fulfillQuantity !== null) ? needCheck.fulfillQuantity : 0;
+                                         const quantity = (needCheck.quantity !== undefined && needCheck.quantity !== null) ? needCheck.quantity : 0;
+ 
+                                         if (ffQuantity >= quantity) {
+                                             return res.status(400).send(ResponseUtil.getErrorResponse(needCheck.name + ' was fulfilled.', undefined));
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+ 
+                     if (fulfillCaseStatus === FULFILLMENT_STATUS.INPROGRESS) {
+                         if (needs !== null && needs !== undefined && needs.length > 0) {
+                             const createFulfillResult: any[] = [];
+ 
+                             const currentNeedsMap = {}; // needsId as a key and value is array
+                             if (mergeItem) {
+                                 const caseRequest: any[] = await this.fulfillmentRequestService.findFulfillmentCaseRequests(fulfillCase.id);
+                                 for (const caseReq of caseRequest) {
+                                     const needsIdKey = caseReq.needsId + '';
+                                     if (currentNeedsMap[needsIdKey] === undefined) {
+                                         currentNeedsMap[needsIdKey] = [];
+                                     }
+ 
+                                     currentNeedsMap[needsIdKey].push(caseReq);
+                                 }
+                             }
+ 
+                             const editItemQuantity = {}; // needsId as a key and value is number
+                             for (const need of needs) {
+                                 const today = moment().toDate();
+                                 const needsIdKey = need.id + '';
+                                 let isCreate = true;
+ 
+                                 if (mergeItem) {
+                                     if (currentNeedsMap[needsIdKey] !== undefined && currentNeedsMap[needsIdKey].length > 0) {
+                                         isCreate = false;
+                                     }
+                                 }
+ 
+                                 if (isCreate) {
+                                     const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(need.id) });
+                                     if (!reqNeeds) {
+                                         continue;
+                                     }
+ 
+                                     const fulfillRequest: FulfillmentRequest = new FulfillmentRequest();
+                                     fulfillRequest.needsId = new ObjectID(need.id);
+                                     fulfillRequest.quantity = need.quantity;
+                                     fulfillRequest.fulfillmentCase = fulfillCaseObjId;
+                                     fulfillRequest.createdBy = userObjId;
+                                     fulfillRequest.createdByUsername = username;
+                                     fulfillRequest.updateByUsername = username;
+                                     fulfillRequest.updateDate = today;
+                                     fulfillRequest.deleted = false;
+                                     if (reqNeeds.standardItemId !== undefined) {
+                                         fulfillRequest.standardItemId = reqNeeds.standardItemId;
+                                     }
+                                     if (reqNeeds.customItemId !== undefined) {
+                                         fulfillRequest.customItemId = reqNeeds.customItemId;
+                                     }
+ 
+                                     const createFulfillRequest: FulfillmentRequest = await this.fulfillmentRequestService.create(fulfillRequest);
+ 
+                                     if (createFulfillRequest !== null && createFulfillRequest !== undefined) {
+                                         const ffulfill = await this.fetchFulfillmentRequest(new ObjectID(createFulfillRequest.id));
+                                         const ffReqRes = this.createFulfillmentRequestResponse(ffulfill);
+ 
+                                         createFulfillResult.push(ffReqRes);
+                                     }
+                                 } else {
+                                     // edit mode
+                                     const curReq = currentNeedsMap[needsIdKey][0];
+                                     const newQuantity = (curReq.quantity !== undefined ? curReq.quantity : 0) + need.quantity;
+                                     const updateStmt = { $set: { quantity: newQuantity, updateByUsername: username, updateDate: moment().toDate() } };
+                                     await this.fulfillmentRequestService.update({ _id: new ObjectID(curReq.id) }, updateStmt);
+ 
+                                     const ffulfill = await this.fetchFulfillmentRequest(new ObjectID(curReq.id));
+                                     const ffReqRes = this.createFulfillmentRequestResponse(ffulfill);
+ 
+                                     createFulfillResult.push(ffReqRes);
+ 
+                                     if (editItemQuantity[needsIdKey] === undefined) {
+                                         editItemQuantity[needsIdKey] = need.quantity;
+                                     } else {
+                                         editItemQuantity[needsIdKey] += need.quantity;
+                                     }
+                                 }
+                             }
+ 
+                             if (createFulfillResult !== null && createFulfillResult !== undefined && createFulfillResult.length > 0) {
+                                 /* Update By in case */
+                                 const setObj: any = {};
+                                 if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                     setObj.updatedByPageDate = moment().toDate();
+                                 } else {
+                                     setObj.updatedByUserDate = moment().toDate();
+                                 }
+                                 await this.fulfillmentCaseService.update({ _id: caseObjId }, { $set: setObj });
+                                 /* end set  Update By */
+ 
+                                 /* notify to requester */
+                                 const reqNeeds = await this.needsService.findOne({ _id: new ObjectID(createFulfillResult[0].needsId) });
+                                 let notificationText = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
+                                 if (reqNeeds) {
+                                     notificationText = 'เพิ่มจำนวนการเติมเต็ม ' + reqNeeds.name + ' ' + createFulfillResult[0].quantity + ' ' + reqNeeds.unit;
+                                 }
+                                 if (createFulfillResult.length > 1) {
+                                     notificationText += ' และ อื่นๆ';
+                                 }
+                                 const link = '/post/' + fulfillCase.postId;
+                                 await this.notificationService.createUserNotification(fulfillCase.requester, fulfillCase.pageId, USER_TYPE.PAGE, NOTIFICATION_TYPE.FULFILLMENT, notificationText, link);
+                                 /* end notify to requester */
+ 
+                                 /* Create Chat */
+                                 // search chatroom
+                                 const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
+                                 if (chatRoom) {
+                                     // search all need
+                                     const needIdsList = [];
+                                     const needNewQuantityMap = {};
+                                     for (const createFullfill of createFulfillResult) {
+                                         const key = createFullfill.needsId + '';
+                                         needNewQuantityMap[key] = createFullfill.quantity;
+                                         needIdsList.push(createFullfill.needsId);
+                                     }
+                                     const needObjList = await this.needsService.find({ _id: { $in: needIdsList } });
+                                     if (needObjList !== undefined && (await needObjList).length > 0) {
+                                         for (const needObj of needObjList) {
+                                             const key = needObj.id + '';
+                                             let quantity = needNewQuantityMap[key] === undefined ? 0 : needNewQuantityMap[key];
+ 
+                                             if (editItemQuantity[key] !== undefined) {
+                                                 // show only edit quantity.
+                                                 quantity = editItemQuantity[key];
+                                             }
+ 
+                                             const chatMessage = 'เพิ่มรายการ ' + needObj.name + ' ' + InputFormatterUtils.formatCurrencyNumber(quantity, 0, 2) + ' ' + needObj.unit;
+                                             const chatMsg = new ChatMessage();
+                                             chatMsg.sender = new ObjectID(userId);
+                                             chatMsg.senderType = USER_TYPE.USER;
+                                             if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                                 chatMsg.sender = new ObjectID(asPage);
+                                                 chatMsg.senderType = USER_TYPE.PAGE;
+                                             }
+                                             chatMsg.message = chatMessage;
+                                             chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
+                                             chatMsg.room = chatRoom.id;
+ 
+                                             if (needObj.customItemId !== undefined) {
+                                                 chatMsg.itemId = needObj.customItemId;
+                                                 chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.CUSTOM_ITEM;
+                                                 const customItem = await this.customItemService.findOne({ _id: needObj.customItemId });
+                                                 if (customItem !== undefined) {
+                                                     chatMsg.filePath = customItem.imageURL;
+                                                 }
+                                             }
+                                             if (needObj.standardItemId !== undefined) {
+                                                 chatMsg.itemId = needObj.standardItemId;
+                                                 chatMsg.itemType = CHAT_MESSAGE_ITEM_TYPE.STANDARD_ITEM;
+                                                 const stdItem = await this.stdItemService.findOne({ _id: needObj.standardItemId });
+                                                 if (stdItem !== undefined) {
+                                                     chatMsg.filePath = stdItem.imageURL;
+                                                 }
+                                             }
+ 
+                                             await this.chatMessageService.createChatMessage(chatMsg);
+                                         }
+                                     }
+                                     /* // this is for one message
+                                     let chatMessage = 'เพิ่มรายการสำหรับเติมเต็มสำเร็จ';
+                                     if (reqNeeds) {
+                                         chatMessage = 'เพิ่ม ' + reqNeeds.name + ' ' + InputFormatterUtils.formatCurrencyNumber(createFulfillResult[0].quantity, 0, 2) + ' ' + reqNeeds.unit;
+                                     }
+                                     const chatMsg = new ChatMessage();
+                                     chatMsg.sender = new ObjectID(userId);
+                                     chatMsg.senderType = USER_TYPE.USER;
+                                     if (asPage !== null && asPage !== undefined && asPage !== '') {
+                                         chatMsg.sender = new ObjectID(asPage);
+                                         chatMsg.senderType = USER_TYPE.PAGE;
+                                     }
+                                     chatMsg.message = chatMessage;
+                                     chatMsg.messageType = CHAT_MESSAGE_TYPE.FULFILLMENT_REQUEST_CREATE;
+                                     chatMsg.room = chatRoom.id;
+ 
+                                     await this.chatMessageService.createChatMessage(chatMsg);
+                                     */
+                                 }
+                                 /* end create Chat */
+ 
+                                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create FulfillmentRequest Success', createFulfillResult));
+                             } else {
+                                 return res.status(200).send(ResponseUtil.getSuccessResponse('Create FulfillmentRequest Failed', undefined));
+                             }
+                         } else {
+                             return res.status(400).send(ResponseUtil.getErrorResponse('No Needs for the request post.', undefined));
+                         }
+                     } else {
+                         return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Create FulfillmentRequest', undefined));
+                     }
+                 } else {
+                     return res.status(400).send(ResponseUtil.getErrorResponse('You Cannot Create This FulfillmentRequest', undefined));
+                 }
+             } else {
+                 return res.status(400).send(ResponseUtil.getErrorResponse('Fulfillment CaseId Invalid', undefined));
+             }
+         } catch (error: any) {
+             return res.status(400).send(ResponseUtil.getErrorResponse('Create FulfillmentRequest Error', error.message));
+         }
+     }
 
     /**
      * @api {delete} /api/fulfillment_case/:caseId/request/:requestId Edit FulfillmentRequest
@@ -2685,8 +2583,9 @@ export class FulfillmentController {
                                         chatMessage = 'แก้ไขจำนวน ' + reqNeeds.name + ' จาก ' + InputFormatterUtils.formatCurrencyNumber(oldQuantity, 0, 2) + ' ' + reqNeeds.unit + ' เป็น ' + InputFormatterUtils.formatCurrencyNumber(newQuantity, 0, 2) + ' ' + reqNeeds.unit;
                                     }
                                     const page = await this.pageService.findOne({ _id: fulfillCase.pageId });
-                                    const tokenFCM_id = await this.deviceTokenService.findOne({ userId: fulfillCase.requester });
+                                    const tokenFCM_id = await this.deviceTokenService.findOne({ userId: page.ownerUser });
                                     const customItem_name = await this.customItemService.findOne({ _id: fulfillRequests.customItemId });
+                                    const user = await this.userService.findOne({_id:fulfillCase.requester});
                                     const notification_fullfillment = customItem_name.name + 'มีการเปลี่ยนแปลงจำนวนจาก' + fulfillRequests.quantity + 'เป็นจำนวน' + data.quantity;
                                     const link = `/api/fulfillment_case/${caseId}/request/${requestId}`;
                                     await this.pageNotificationService.notifyToPageUserFcm(
@@ -2698,8 +2597,8 @@ export class FulfillmentController {
                                         notification_fullfillment,
                                         link,
                                         tokenFCM_id.Tokens,
-                                        page.name,
-                                        page.imageURL
+                                        user.displayName,
+                                        user.imageURL
                                     );
                                     const chatMsg = new ChatMessage();
                                     chatMsg.sender = new ObjectID(userId);

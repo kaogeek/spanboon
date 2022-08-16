@@ -371,8 +371,10 @@ export class AuthenManager {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + "/user/logout";
-
-      let body = {};
+      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
+      let body = {
+        "token": currentToken
+      };
       // if(user !== null && user !== undefined){
       //   body = Object.assign(user);
       // }
@@ -381,6 +383,7 @@ export class AuthenManager {
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
+
         // reset token
         this.token = undefined;
         this.user = undefined;
