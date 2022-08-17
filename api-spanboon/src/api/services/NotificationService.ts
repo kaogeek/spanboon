@@ -25,7 +25,7 @@ export class NotificationService {
         console.log('constructor called()');
         admin.initializeApp({
             credential:admin.credential.cert(serviceAccount as ServiceAccount),
-            databaseURL:process.env.databaseURL
+            databaseURL: process.env.databaseURL_Firebase
         });
         console.log('constructor executed()');
     }

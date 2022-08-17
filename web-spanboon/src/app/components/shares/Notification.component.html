@@ -63,7 +63,7 @@
     </ng-template>
 </div>
 <mat-menu class="wrapper-notification" #beforeMenu="matMenu" yPosition="below" backdropClass="noti-sub-menu">
-    <!-- <div class="mat-menu-title" (click)="$event.stopPropagation();">
+    <div class="mat-menu-title" (click)="$event.stopPropagation();">
         <div class="text">การแจ้งเตือน</div>
         <div class="select-noti-list">
             <span class="list" (click)="switeNotiType();" [ngClass]="{'select': isNotiAll }">ทั้งหมด
@@ -71,7 +71,7 @@
             <span class="list" (click)="switeNotiType();" [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
                 ({{notiisRead.length}})</span>
         </div>
-    </div> -->
+    </div> 
     <div *ngIf="notiisAll.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
         <div class="wrapper-noti" style="border-bottom: unset !important;">
             ใหม่
