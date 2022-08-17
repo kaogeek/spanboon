@@ -34,7 +34,7 @@
         "@types/gapi": "0.0.39",
         "@types/gapi.auth2": "0.0.52",
         "angular-mentions": "^1.2.0",
-        "angular-ng-autocomplete": "^2.0.7",
+        "angular-ng-autocomplete": "^2.0.12",
         "angularx-social-login": "^3.2.2",
         "aos": "^3.0.0-beta.6",
         "firebase": "^9.8.3",

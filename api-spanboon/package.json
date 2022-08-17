@@ -75,6 +75,7 @@
     "fs": "0.0.1-security",
     "glob": "^7.1.6",
     "gm": "^1.23.1",
+    "google-auth-library": "^8.1.1",
     "googleapis": "^105.0.0",
     "graphql": "15.0.0",
     "helmet": "^3.22.0",
