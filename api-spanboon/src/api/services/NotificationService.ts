@@ -25,7 +25,7 @@ export class NotificationService {
         console.log('constructor called()');
         admin.initializeApp({
             credential:admin.credential.cert(serviceAccount as ServiceAccount),
-            databaseURL: process.env.DATABASEURL_FIREBASE
+            databaseURL: '',
         });
         console.log('constructor executed()');
     }
@@ -98,39 +98,53 @@ export class NotificationService {
         const displayNameFCM = String(displayName);
         const image_url = String(image);
         const count_data = String(count);
-        if(count !== null){
-            const payload = 
-            {
-                notification:{
-                    toUser,
-                    fromUserId,
-                    title,
-                    link,
-                    notificationType,
-                    displayNameFCM,
-                    image_url,
-                    count_data
-                }
-            };
-            Promise.all([await admin.messaging().sendToDevice(token,payload)]);
-            return await this.create(notification);
+        console.log('test111111',notification.toUser);
+        console.log('test222222',notification.fromUser);
+        if(String(notification.toUser) !== String(notification.fromUser)){
+            console.log('with notification');
+            if(count !== null){
+                const payload = 
+                {
+                    notification:{
+                        toUser,
+                        fromUserId,
+                        title,
+                        link,
+                        notificationType,
+                        displayNameFCM,
+                        image_url,
+                        count_data
+                    }
+                };
+                Promise.all([await admin.messaging().sendToDevice(token,payload)]);
+                return await this.create(notification);
+            }
+            else{
+                const payload = 
+                {
+                    notification:{
+                        toUser,
+                        fromUserId,
+                        title,
+                        link,
+                        notificationType,
+                        displayNameFCM,
+                        image_url,
+
+                    }
+                };
+                Promise.all([await admin.messaging().sendToDevice(token,payload)]);
+                return await this.create(notification);
+            }
         }
         else{
-            const payload = 
-            {
-                notification:{
-                    toUser,
-                    fromUserId,
-                    title,
-                    link,
-                    notificationType,
-                    displayNameFCM,
-                    image_url,
-
-                }
-            };
-            Promise.all([await admin.messaging().sendToDevice(token,payload)]);
-            return await this.create(notification);
+            console.log('no notification');
+            if(count !== null){
+                return await this.create(notification);
+            }
+            else{
+                return await this.create(notification);
+            }
         }
     }
     public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any,displayName?:any,image?:any): Promise<any> {

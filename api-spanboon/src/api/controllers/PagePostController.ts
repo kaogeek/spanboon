@@ -592,9 +592,9 @@ export class PagePostController {
                         for(let j = 0; j<tokenFCM_id.length; j++){
                             if(tokenFCM_id[j] !== undefined){
                                 const link = '/post/' + createPostPageData.id;
-                                await this.pageNotificationService.notifyToPageUserFcm(
-                                    createPostPageData.pageId,
-                                    undefined,
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM_id[j].userId,
+                                    USER_TYPE.PAGE,
                                     req.user.id+'',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
@@ -607,9 +607,9 @@ export class PagePostController {
                             }
                             else{
                                 const link = '/post/' + createPostPageData.id;
-                                await this.pageNotificationService.notifyToPageUser(
+                                await this.notificationService.createNotificationFCM(
                                     createPostPageData.pageId,
-                                    undefined,
+                                    USER_TYPE.PAGE,
                                     req.user.id+'',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
@@ -636,7 +636,7 @@ export class PagePostController {
                             if(tokenFCM_id[j] !== undefined){
                                 const link = '/post/'+createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
-                                    createPostPageData.ownerUser,
+                                    tokenFCM_id[j].userId,
                                     USER_TYPE.USER,
                                     req.user.id+'',
                                     USER_TYPE.USER,
@@ -651,7 +651,7 @@ export class PagePostController {
                             else{
                                 const link = '/post/'+createPostPageData.id;
                                 await this.notificationService.createNotification(
-                                    createPostPageData.ownerUser,
+                                    tokenFCM_id[j].userId,
                                     USER_TYPE.USER,
                                     req.user.id+'',
                                     USER_TYPE.USER,

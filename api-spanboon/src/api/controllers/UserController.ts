@@ -262,7 +262,6 @@ export class UserController {
             userFollow.subjectId = followUserObjId;
             userFollow.subjectType = SUBJECT_TYPE.USER;
             const followCreate: UserFollow = await this.userFollowService.create(userFollow);
-            console.log('followwwwwwwwwwwwwwwwwwwwwww',followCreate);
             // follow notification 
             if (followCreate) {
                 result = followCreate;

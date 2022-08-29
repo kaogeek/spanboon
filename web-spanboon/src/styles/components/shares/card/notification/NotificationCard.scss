@@ -5,6 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 notification-card {
+    
     > .noticard {
         display: flex;
         cursor: pointer;
@@ -19,6 +20,7 @@ notification-card {
         border-radius: 15px;
         -webkit-box-shadow: 2px 2px 5px 0 rgb(75 58 64 / 22%);
         padding: 20px 22px;
+        z-index: 9999;
         flex-direction: column;
         > .title {
             margin-bottom: 10px;

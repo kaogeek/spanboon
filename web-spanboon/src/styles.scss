@@ -418,7 +418,7 @@ input:focus {
     .noti-sc {
         overflow-y: auto;
         // max-height: calc(100vh - 40pt - 40pt - 55pt);
-
+        z-index: 9999;
         .not-foun-noti {
             @include font-size-9($font-head-500);
             height: 200px;
