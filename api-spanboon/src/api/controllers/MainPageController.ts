@@ -212,7 +212,8 @@ export class MainPageController {
         });
         const emerSectionModel = await emerProcessor.process();
 
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
+        // setup search date range for lastest post
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
             userId,
