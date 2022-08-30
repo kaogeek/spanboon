@@ -30,6 +30,8 @@ import { Ng5SliderModule } from 'ng5-slider';
 import { SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "angularx-social-login";
 import { OverlayModule } from '@angular/cdk/overlay';
 import { initializeApp } from "firebase/app";
+import { CommonModule } from '@angular/common';
+import { ToastrModule } from 'ngx-toastr';
 initializeApp(environment.firebase);
 
 // material ag
@@ -534,7 +536,12 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     MatStepperModule, MatTabsModule, MatExpansionModule, MatButtonToggleModule,
     MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatProgressBarModule, MatDialogModule,
     MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule,
-    MatRippleModule, MatBadgeModule, OverlayModule
+    MatRippleModule, MatBadgeModule, OverlayModule,
+    CommonModule,
+    ToastrModule.forRoot({
+      maxOpened: 10,
+      newestOnTop: true
+    }), // ToastrModule added
   ],
   providers: SERVICE_CLASSES,
   bootstrap: BOOSTRAP_CLASSES,

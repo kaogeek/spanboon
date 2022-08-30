@@ -1415,8 +1415,6 @@ export class FulfillmentController {
                             if (changeFulfillCaseStatus !== null && changeFulfillCaseStatus !== undefined) {
                                 /* Create Chat */
                                 // search chatroom
-                                console.log(fulfillCaseStatus);
-                                console.log(fulfillCase);
                                 const chatRoom = await this.chatRoomService.findOne({ typeId: caseObjId, type: CHAT_ROOM_TYPE.FULFILLMENT });
                                 if (chatRoom) {
                                     let chatmsg = 'ได้ทำการยกเลิกเติมเต็ม';

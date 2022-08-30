@@ -273,21 +273,23 @@ export class UserController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const who_follow_you = await this.userService.findOne({_id:userFollow.userId});
-                const deviceToken = await this.deviceTokenService.findOne({userId:userFollow.subjectId});
+                const deviceToken = await this.deviceTokenService.find({userId:userFollow.subjectId});
                 const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
                 const link = `/user/${who_follow_you.displayName}/follow`;
-                await this.notificationService.createNotificationFCM(
-                    followCreate.userId,
-                    USER_TYPE.USER,
-                    req.user.id+ '',
-                    USER_TYPE.USER,
-                    NOTIFICATION_TYPE.FOLLOW,
-                    notification_follower,
-                    link,
-                    deviceToken.Tokens,
-                    who_follow_you.displayName,
-                    who_follow_you.imageURL
-                );
+                for(let r = 0; r<deviceToken.length; r++){
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id+ '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        deviceToken[r].Tokens,
+                        who_follow_you.displayName,
+                        who_follow_you.imageURL
+                    );
+                }
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {

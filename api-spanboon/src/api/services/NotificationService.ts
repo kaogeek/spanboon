@@ -25,7 +25,7 @@ export class NotificationService {
         console.log('constructor called()');
         admin.initializeApp({
             credential:admin.credential.cert(serviceAccount as ServiceAccount),
-            databaseURL: '',
+            databaseURL: ''
         });
         console.log('constructor executed()');
     }
@@ -98,10 +98,8 @@ export class NotificationService {
         const displayNameFCM = String(displayName);
         const image_url = String(image);
         const count_data = String(count);
-        console.log('test111111',notification.toUser);
-        console.log('test222222',notification.fromUser);
+
         if(String(notification.toUser) !== String(notification.fromUser)){
-            console.log('with notification');
             if(count !== null){
                 const payload = 
                 {
@@ -138,7 +136,6 @@ export class NotificationService {
             }
         }
         else{
-            console.log('no notification');
             if(count !== null){
                 return await this.create(notification);
             }
