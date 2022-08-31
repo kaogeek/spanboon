@@ -165,32 +165,52 @@ export class PostsCommentController {
                         const notification_comment = 'เพจ' + pageName.name + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         // page to user
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
-                        for(let r=0; r<tokenFCM_id.length;r++){
-                            await this.notificationService.createNotificationFCM(
-                                postsComment.user,
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.COMMENT,
-                                notification_comment,
-                                link,
-                                tokenFCM_id[r].Tokens,
-                                pageName.name,
-                                pageName.imageURL
-                                );
+                        console.log('tokenFCM_id',tokenFCM_id);
+                        if(tokenFCM_id.length !== null){
+                            for(let r =0;r<tokenFCM_id.length; r++){
+                                await this.notificationService.createNotificationFCM(
+                                    getPost.ownerUser,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    pageName.name,
+                                    pageName.imageURL
+                                    );
+                                }
                             }
                         }
 
                         // page to page
                     else{
+                        console.log('test2222222222222');
                         const getPost = await this.postsService.findOne({_id:postsComment.post});
                         const page = await this.pageService.findOne({_id:getPost.pageId});
                         const link = '/post/' + getPost.id;
                         const notification_comment = 'เพจ' + pageName.name + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + page.name;
                         // page to user
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
-                        for(let r =0;r<tokenFCM_id.length; r++){
-                            await this.pageNotificationService.notifyToPageUserFcm(
+                        if(tokenFCM_id.length !== null){
+                            for(let r =0;r<tokenFCM_id.length; r++){
+                                await this.pageNotificationService.notifyToPageUserFcm(
+                                    getPost.pageId,
+                                    undefined,
+                                    postsComment.commentAsPage + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    pageName.name,
+                                    pageName.imageURL
+                                    );
+                            }
+                        }
+                        else{
+                            await this.pageNotificationService.notifyToPageUser(
                                 getPost.pageId,
                                 undefined,
                                 postsComment.commentAsPage + '',
@@ -198,9 +218,6 @@ export class PostsCommentController {
                                 NOTIFICATION_TYPE.COMMENT,
                                 notification_comment,
                                 link,
-                                tokenFCM_id[r].Tokens,
-                                pageName.name,
-                                pageName.imageURL
                                 );
                         }
                     }
@@ -214,8 +231,8 @@ export class PostsCommentController {
                     if(post_who.pageId === null)
                     {
                         // USER TO USER
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
-                        if(tokenFCM_id !== null || tokenFCM_id !== undefined)
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
+                        if(tokenFCM_id.length !== null )
                         {
                             const link = '/post/' + getPost.id;
                             const notification_comment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของคุณ`;
@@ -252,10 +269,10 @@ export class PostsCommentController {
                     else
                     {
                         // USER TO PAGE
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:getPost.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
                         const page_post = await this.postsService.findOne({_id:post_who.id});
                         const page = await this.pageService.findOne({_id:page_post.pageId});
-                        if(tokenFCM_id !== null || tokenFCM_id !== undefined){
+                        if(tokenFCM_id.length !== null ){
                             const link = '/post/' + getPost.id;
                             const notification_comment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของเพจ ${page.name}`;
                             for(let r = 0;r<tokenFCM_id.length; r++){

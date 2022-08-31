@@ -1170,20 +1170,36 @@ export class FulfillmentController {
                     const link = '/api/fulfillment_case';
                     const page = await this.pageService.findOne({ _id: fulfillCaseCreate.pageId });
                     const user_page = await this.userService.findOne({_id:page.ownerUser});
-                    const tokenFCM_id = await this.deviceTokenService.findOne({ userId: user_page.id});
+                    const tokenFCM_id = await this.deviceTokenService.find({ userId: user_page.id});
                     const user_request = await this.userService.findOne({_id:requesterObj.id});
-                    await this.pageNotificationService.notifyToPageUserFcm(
-                        page.id,
-                        undefined,
-                        req.user.id + '',
-                        USER_TYPE.USER,
-                        NOTIFICATION_TYPE.FULFILLMENT,
-                        notification_fullfillment,
-                        link,
-                        tokenFCM_id.Tokens,
-                        user_request.displayName,
-                        user_request.imageURL
-                    );
+                    if(tokenFCM_id.length !== null){
+                        for(let r = 0; r<tokenFCM_id.length; r++){
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FULFILLMENT,
+                                notification_fullfillment,
+                                link,
+                                tokenFCM_id[r].Tokens,
+                                user_request.displayName,
+                                user_request.imageURL
+                            );
+                        }
+                    }
+                    else{
+                        await this.pageNotificationService.notifyToPageUser(
+                            page.id,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FULFILLMENT,
+                            notification_fullfillment,
+                            link,
+
+                        );
+                    }
                 }
                 /* end Create Chat*/
                 let fulfillRequest: FulfillmentRequest = undefined;
@@ -1422,23 +1438,37 @@ export class FulfillmentController {
                                     chatMsg.sender = new ObjectID(userId);
                                     chatMsg.senderType = USER_TYPE.USER;
                                     const page_id = await this.pageService.findOne({ _id: fulfillCase.pageId });
-                                    const tokenFCM_id = await this.deviceTokenService.findOne({ userId: fulfillCase.requester });
+                                    const tokenFCM_id = await this.deviceTokenService.find({ userId: page_id.ownerUser });
                                     const FulfillmentRequest_find = await this.fulfillmentRequestService.findOne({ fulfillmentCase: caseObjId });
                                     const customItem_name = await this.customItemService.findOne({ _id: FulfillmentRequest_find.customItemId });
                                     const link = `/api/fulfillment_case/${caseId}/cancel`;
                                     const notification_fullfillment = `${customItem_name.name} ได้ทำการยกเลิกเติมเต็ม`;
-                                    await this.pageNotificationService.notifyToPageUserFcm(
-                                        page_id.id,
-                                        undefined,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.FULFILLMENT,
-                                        notification_fullfillment,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        page_id.name,
-                                        page_id.imageURL
-                                    );
+                                    if(tokenFCM_id.length !== null){
+                                        for(let r= 0; r<tokenFCM_id.length ; r++){
+                                            await this.pageNotificationService.notifyToPageUserFcm(
+                                                page_id.id,
+                                                undefined,
+                                                req.user.id + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.FULFILLMENT,
+                                                notification_fullfillment,
+                                                link,
+                                                tokenFCM_id[r].Tokens,
+                                                page_id.name,
+                                                page_id.imageURL
+                                            );
+                                        }
+                                    }else{
+                                        await this.pageNotificationService.notifyToPageUser(
+                                            page_id.id,
+                                            undefined,
+                                            req.user.id + '',
+                                            USER_TYPE.USER,
+                                            NOTIFICATION_TYPE.FULFILLMENT,
+                                            notification_fullfillment,
+                                            link,
+                                        );
+                                    }
                                     if (asPage !== null && asPage !== undefined && asPage !== '') {
                                         chatMsg.sender = new ObjectID(asPage);
                                         chatMsg.senderType = USER_TYPE.PAGE;
@@ -1609,22 +1639,37 @@ export class FulfillmentController {
                         /* end create Chat */
 
                         const fulfilmentCancelled: FulfillmentCase = await this.fulfillmentCaseService.findOne({ _id: caseObjId });
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:fulfillCase.requester});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:fulfillCase.requester});
                         const notificationText_POST = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
                         const page_noti = await this.pageService.findOne({_id:fulfillCase.pageId});
                         const link = ``;
-                        await this.notificationService.createNotificationFCM(
-                            tokenFCM_id.userId,
-                            USER_TYPE.PAGE,
-                            req.user.id+'',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.POST,
-                            notificationText_POST,
-                            link,
-                            tokenFCM_id.Tokens,
-                            page_noti.name,
-                            page_noti.imageURL
-                        );
+                        if(tokenFCM_id.length !== null){
+                            for(let r = 0; r<tokenFCM_id.length; r++){
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM_id.userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id+'',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationText_POST,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    page_noti.name,
+                                    page_noti.imageURL
+                                );
+                            }
+                        }
+                        else{
+                            await this.notificationService.createNotification(
+                                tokenFCM_id.userId,
+                                USER_TYPE.PAGE,
+                                req.user.id+'',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.POST,
+                                notificationText_POST,
+                                link,
+                            );
+                        }
                         return res.status(200).send(ResponseUtil.getSuccessResponse('FulfillmentCase Confirmed', fulfilmentCancelled));
                     } else {
                         return res.status(400).send(ResponseUtil.getErrorResponse('Confirm FulfillmentCase Failed', undefined));
@@ -1880,21 +1925,35 @@ export class FulfillmentController {
                             chatMsg.sender = new ObjectID(userId);
                             chatMsg.senderType = USER_TYPE.USER;
                             const page_id = await this.pageService.findOne({_id:fulfillCase.pageId});
-                            const tokenFCM_id = await this.deviceTokenService.findOne({userId:fulfillCase.requester});
+                            const tokenFCM_id = await this.deviceTokenService.find({userId:fulfillCase.requester});
                             const link = `/api/fulfillment_case/${caseId}/confirm`;
                             const notification_fullfillment = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
-                            await this.notificationService.createNotificationFCM(
-                                tokenFCM_id.userId,
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.FULFILLMENT,
-                                notification_fullfillment,
-                                link,
-                                tokenFCM_id.Tokens,
-                                page_id.name,
-                                page_id.imageURL
-                            );
+                            if(tokenFCM_id.length !== null){
+                                for(let r = 0; r<tokenFCM_id.length; r++){
+                                    await this.notificationService.createNotificationFCM(
+                                        tokenFCM_id.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.FULFILLMENT,
+                                        notification_fullfillment,
+                                        link,
+                                        tokenFCM_id[r].Tokens,
+                                        page_id.name,
+                                        page_id.imageURL
+                                    );
+                                }
+                            }
+                            else{
+                                await this.notificationService.createNotification(
+                                    tokenFCM_id.userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.FULFILLMENT,
+                                    notification_fullfillment,
+                                );
+                            }
                             if (asPage !== null && asPage !== undefined && asPage !== '') {
                                 chatMsg.sender = new ObjectID(asPage);
                                 chatMsg.senderType = USER_TYPE.PAGE;
