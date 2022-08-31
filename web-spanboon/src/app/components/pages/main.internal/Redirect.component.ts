@@ -11,6 +11,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { MainPageSlideFacade, ObservableManager, TwitterService } from '../../../services/services';
 import { CookieUtil } from '../../../utils/CookieUtil';
+import { filter } from 'rxjs/internal/operators/filter';
 
 declare var $: any;
 const PAGE_NAME: string = '';
@@ -39,7 +40,7 @@ export class Redirect implements OnInit {
         this.twitterService = twitterService;
         this.observManager = observManager; 
 
-        this.router.events.subscribe((event) => {
+        this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
             if (event instanceof NavigationEnd) {
                 const url: string = decodeURI(this.router.url);
                 this.page = CookieUtil.getCookie('page'); 

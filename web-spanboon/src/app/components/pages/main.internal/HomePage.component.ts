@@ -80,6 +80,8 @@ export class HomePage extends AbstractPage implements OnInit {
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
         this.model.postSectionModel.contents.splice(index, 1);
+      } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+        this.model.postSectionModel.contents.splice(index, 1);
       }
     }
     let filter: SearchFilter = new SearchFilter();

@@ -11,13 +11,15 @@
 
 export const environment = {
   production: false,
-  googleClientId: "GOOGLE_API",
-  facebookAppId: "FACEBOOJ_APP_ID",  
-  consumerKeyTwitter: 'TWITTER_API_KEY',
-  consumerSecretTwitter: 'TWITTER_API_SECRET_KEY',
-  accessTokenTwitter: 'TWITTER_ACCESS_TOKEN',
-  accessTokenSecretTwitter: 'TWITTER_TOKEN_SECRET',
-  apiBaseURL: "https://localhost/api" 
+  googleClientId: "1062438301611-qa2oqcfbusrcvji31ljj88fork4ln8t4.apps.googleusercontent.com",
+  facebookAppId: 1439136826405744, // default is 768184130301933
+  facebookTestAppId: 554520535534087, // default is 768184130301933
+  consumerKeyTwitter: '81eBPMrAFW20CN0PRnughGs4T',
+  consumerSecretTwitter: '9iYBWJTUA9W048wzjBZ4n0R6wjWojogGhNlC2C9GcismIF6CNS',
+  accessTokenTwitter: '1317733466222465024-8zwiXq7cLTJ544BfLBmx7hMjQvPs2M',
+  accessTokenSecretTwitter: '7n685xtTXHc8gSF4Yl7ChoFcw2u07mJk9Tnm49kC5o5s0',
+  apiBaseURL: "https://api.spanboon.com/api",
+  webBaseURL: 'https://localhost:4200'
 };
 
 /*

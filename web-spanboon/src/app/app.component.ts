@@ -6,7 +6,8 @@
  */
 
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/internal/operators/filter';
 import { SeoService } from './services/SeoService.service';
 
 @Component({
@@ -22,7 +23,7 @@ export class AppComponent {
 
   constructor(router: Router , private seoSerive : SeoService) {
     this.router = router;
-    this.router.events.subscribe((event) => { 
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => { 
       window.scroll(0,0); 
     });
   } 

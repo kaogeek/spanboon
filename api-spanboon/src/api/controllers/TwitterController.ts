@@ -91,11 +91,11 @@ export class TwitterController {
      */
     @Post('/account_verify')
     public async accountVerify(@Body({ validate: true }) twitterParam: TwitterVerifyRequest, @Res() res: any): Promise<any> {
-        try { 
+        try {
             const result = await this.twitterService.verifyCredentials(twitterParam.twitterOauthToken, twitterParam.twitterOauthTokenSecret);
 
             return res.status(200).send(result);
-        } catch (err) { 
+        } catch (err) {
             const errorResponse = ResponseUtil.getSuccessResponse('Cannot get access token', err);
             return res.status(400).send(errorResponse);
         }
