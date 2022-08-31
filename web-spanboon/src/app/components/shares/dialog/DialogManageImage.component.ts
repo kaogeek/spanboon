@@ -22,7 +22,7 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
   templateUrl: './DialogManageImage.component.html'
 
 })
-export class DialogManageImage extends AbstractPage{ 
+export class DialogManageImage extends AbstractPage {
 
   @Input() name: string;
   @ViewChild('cropper', undefined)
@@ -44,8 +44,8 @@ export class DialogManageImage extends AbstractPage{
   private fileImageOriginal: any[] = [];
 
   constructor(public dialogRef: MatDialogRef<DialogManageImage>, @Inject(MAT_DIALOG_DATA) public fileImage: any[], private viewportRuler: ViewportRuler,
-    postFacade: PostFacade, private _platform: Platform,authenManager: AuthenManager) {
-      super(null, authenManager, null, null);
+    postFacade: PostFacade, private _platform: Platform, authenManager: AuthenManager) {
+    super(null, authenManager, null, null);
     this.postFacade = postFacade;
     this._platform = _platform
   }
@@ -83,15 +83,15 @@ export class DialogManageImage extends AbstractPage{
     if (files) {
       for (let file of files) {
         let reader = new FileReader();
-        reader.onload = (event: any) => { 
+        reader.onload = (event: any) => {
           let data = {
             fileName: file.name,
             size: file.size,
             image: event.target.result
           }
-          if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+          if (ValidateFileSizeImageUtils.sizeImage(file.size)) {
             this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
-          } else { 
+          } else {
             this.genImages(data);
           }
         }
@@ -218,11 +218,11 @@ export class DialogManageImage extends AbstractPage{
   getPointerPositionOnPage(event: MouseEvent | TouchEvent) {
     // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
     const point = __isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
-    const scrollPosition = this.viewportRuler.getViewportScrollPosition(); 
+    const scrollPosition = this.viewportRuler.getViewportScrollPosition();
     if (!this._platform.isBrowser) {
       return {
         x: point.pageX - scrollPosition.left,
-        y: point.pageY - scrollPosition.top 
+        y: point.pageY - scrollPosition.top
       };
     } else {
       return {

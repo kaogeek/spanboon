@@ -1,0 +1,129 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+notification-card {
+    > .noticard {
+        display: flex;
+        cursor: pointer;
+        transform: translateX(-25vw);
+        transition: 0.8s all;
+        max-width: 400px;
+        min-width: 300px;
+        margin-top: 15px;
+        background-color: white;
+        color: black;
+        font-family: sans-serif;
+        border-radius: 15px;
+        -webkit-box-shadow: 2px 2px 5px 0 rgb(75 58 64 / 22%);
+        padding: 20px 22px;
+        flex-direction: column;
+        > .title {
+            margin-bottom: 10px;
+            color: $brandcolor2;
+            @include font-size-9($font-head-500);
+            display: flex;
+            justify-content: space-between;
+            > .close {
+                background-color: whitesmoke;
+                border-radius: 50%;
+                width: 25px;
+                cursor: pointer;
+                height: 25px;
+                display: flex;
+                align-content: center;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        > .body {
+            display: flex;
+            position: relative;
+            flex-direction: row;
+            align-content: center;
+            justify-content: flex-start;
+            align-items: center;
+            @include font-size-10($font-head-200);
+            > .image {
+                position: relative;
+                > img {
+                    width: 48px;
+                    height: 48px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                }
+                > .image-err {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background-color: rgb(160, 160, 160);
+                }
+                > .status {
+                    position: absolute;
+                    bottom: 0px;
+                    right: 0px;
+                    width: 23px;
+                    height: 23px;
+                    background: #7ce657 0% 0% no-repeat padding-box;
+                    border-radius: 50%;
+                    border: 1px solid #ebebeb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                > .status-one {
+                    background: #e02438 !important;
+                    border: 1px solid #ebebeb;
+                }
+                > .status-two {
+                    background: #84b572 !important;
+                    border: 1px solid #ebebeb;
+                }
+                > .status-tree {
+                    background: #ee7623 !important;
+                    border: 1px solid #ebebeb;
+                }
+            }
+            > .message {
+                display: flex;
+                flex-direction: column;
+                font-weight: bold;
+                margin-left: 20px;
+                > span {
+                    > .textthin {
+                        font-weight: 300;
+                        margin-left: 5px;
+                        opacity: 0.8;
+                    }
+                    > .textdate {
+                        font-weight: 100;
+                        opacity: 0.8;
+                    }
+                }
+            }
+            > .new {
+                position: absolute;
+                width: 11px;
+                height: 11px;
+                background-color: #ee7623;
+                bottom: 10%;
+                right: 2%;
+                border-radius: 50%;
+            }
+        }
+        // > .noticardfooter {
+        // }
+    }
+
+    > .fullpage {
+        -webkit-box-shadow: unset !important;
+        // width: 100% !important;
+        margin-top: unset !important;
+        padding: 20px !important;
+        border-radius: unset !important;
+        max-width: unset !important;
+    }
+}

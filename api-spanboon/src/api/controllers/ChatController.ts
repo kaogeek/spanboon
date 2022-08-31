@@ -83,7 +83,6 @@ export class ChatController {
             const successResponse = ResponseUtil.getSuccessResponse('No message to mark read.', undefined);
             return res.status(200).send(successResponse);
         }
-
         let pageObjId = undefined;
         if (asPage !== undefined && asPage !== '') {
             pageObjId = new ObjectID(asPage);
@@ -104,13 +103,11 @@ export class ChatController {
         for (const chatMsgId of chatIds) {
             msgObjIds.push(new ObjectID(chatMsgId));
         }
-
         let sender = new ObjectID(req.user.id);
         let senderType = CHAT_ROOM_TYPE.USER;
 
         if (page !== undefined) {
             const pageAccess: PageAccessLevel[] = await this.pageAccessLevelService.getUserAccessByPage(req.user.id, asPage);
-
             let canAccessPage = false;
 
             if (pageAccess !== null && pageAccess !== undefined && pageAccess.length > 0) {
@@ -131,9 +128,8 @@ export class ChatController {
         }
 
         const reader = this.getReader(sender, senderType);
-
         // add reader in array
-        await this.chatMessageService.updateMany({ _id: { $in: msgObjIds }, deleted: false },
+        await this.chatMessageService.updateMany({ room: { $in: msgObjIds }, deleted: false },
             {
                 $set: {
                     isRead: true
@@ -143,7 +139,7 @@ export class ChatController {
                 }
             }
         );
-        const updateResult = await this.chatMessageService.find({ _id: { $in: msgObjIds }, deleted: false });
+        const updateResult = await this.chatMessageService.find({ room:msgObjIds, deleted: false });
 
         if (updateResult) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully mark read chat message', updateResult);

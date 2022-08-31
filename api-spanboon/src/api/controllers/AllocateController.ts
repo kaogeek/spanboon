@@ -823,7 +823,6 @@ export class AllocateController {
         posts.objectiveTag = needs.posts.objectiveTag;
         posts.emergencyEvent = needs.posts.emergencyEvent;
         posts.objective = needs.posts.objective;
-
         const needQty = needs.quantity;
         const needFulfillQty = (needs.fulfillQuantity !== undefined && needs.fulfillQuantity !== null && !isNaN(needs.fulfillQuantity)) ? needs.fulfillQuantity : 0;
         const leftQty = needQty - needFulfillQty;

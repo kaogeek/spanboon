@@ -79,7 +79,6 @@ export const env = {
         password: getOsEnv('MONITOR_PASSWORD'),
     },
     imageserver: getOsEnv('IMAGE_SERVER'),
-    storeUrl: getOsEnv('STORE_URL'),
     SECRET_KEY: getOsEnv('SECRET_KEY')
 };
 

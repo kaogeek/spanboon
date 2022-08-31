@@ -38,21 +38,24 @@ export class NotificationCheckPage implements OnInit {
 
         this.observManager.subscribe(AuthenCheckPage.AUTHEN_CHECK_SUBJECT, (result: any) => {
             this.isLoaded = true;
-            var that = this;
-            this.inTervalNoti(result);
-            var myVar = setInterval(function () {
-                that.inTervalNoti(result);
-            }, 30000);
+            this.inTervalNoti(result, false);
+        });
 
+        this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_SUBJECT, (result: any) => {
+            this.inTervalNoti(result, true);
+        });
+
+        this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, (result: any) => {
+            this.inTervalNoti(result, false, (result.data--));
         });
     }
 
-    public inTervalNoti(result) {
+    public inTervalNoti(result, isObserv: boolean, offSet?) {
         if (result && result.valid !== null) {
             try {
                 // valid
-                this.notificationMgr.loadCurrentUserNotification().then((res) => {
-                    this.noti.emit({ noti: res });
+                this.notificationMgr.loadCurrentUserNotification((isObserv ? 1 : 10), offSet).then((res) => {
+                    isObserv ? this.noti.emit({ noti: [res[0]] }) : this.noti.emit({ noti: res });
                     this.isLoaded = false;
                 }).catch(() => {
                     this.isLoaded = false;

@@ -25,6 +25,7 @@
         "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "skipLibCheck": true,
         "lib": [
             "ES5",
             "ES6",

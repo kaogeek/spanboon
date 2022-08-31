@@ -195,7 +195,7 @@ export class AdminCustomItemController {
                     return res.status(200).send(successResponse);
                 }
             }
-        } catch (eror) {
+        } catch (eror:any) {
             const errorResponse = ResponseUtil.getErrorResponse(eror.message, undefined);
             return res.status(400).send(errorResponse);
         }

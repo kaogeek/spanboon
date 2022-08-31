@@ -123,7 +123,6 @@ export abstract class AbstractPageImageLoader extends AbstractPage implements On
         return true;
       }
     }
-
     return false;
   }
 

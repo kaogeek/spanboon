@@ -72,12 +72,15 @@ import { StandardItemService } from '../services/StandardItemService';
 import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
-
+import { NotificationService } from '../services/NotificationService';
+import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
 
     constructor(
+        private notificationService:NotificationService,
         private pageService: PageService,
         private pageCategoryService: PageCategoryService,
         private pageAccessLevelService: PageAccessLevelService,
@@ -98,7 +101,8 @@ export class PageController {
         private pageConfigService: PageConfigService,
         private authenService: AuthenticationIdService,
         private stdItemService: StandardItemService,
-        private socialPostLogsService: SocialPostLogsService
+        private socialPostLogsService: SocialPostLogsService,
+        private deviceTokenService:DeviceTokenService,
     ) { }
 
     // Find Page API
@@ -1912,6 +1916,51 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
+                const who_follow_you = await this.userService.findOne({_id:userFollow.userId });
+                const page_owner_noti = await this.userService.findOne({_id:page.ownerUser});
+                // user to page 
+                const deviceToken = await this.deviceTokenService.findOne({userId:page_owner_noti.id});
+                const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
+                const link = `/user/${who_follow_you.displayName}/follow`;
+                if(String(userFollow.userId) === String(page.ownerUser)){
+                    await this.notificationService.createNotification(
+                        undefined,
+                        undefined,
+                        undefined+ '',
+                        undefined,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        undefined,
+                        link,
+                    );
+                }
+                else{
+                    if(deviceToken !== undefined){
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            deviceToken.Tokens,
+                            who_follow_you.displayName,
+                            who_follow_you.imageURL
+                            
+                        );
+                    }
+                    else{
+                        await this.notificationService.createNotification(
+                            followCreate.userId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                        );
+                    }
+                }
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {

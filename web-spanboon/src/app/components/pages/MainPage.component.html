@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="spanboon-main-page" id="menubottom" #mainpage (window:resize)="scrollTop($event)" >
+<div class="spanboon-main-page" id="menubottom" #mainpage (window:resize)="scrollTop($event)">
     <!-- (window:resize)="removeSize($event)" -->
     <!-- check authen -->
     <authen-check-page></authen-check-page>
@@ -17,8 +17,8 @@
         <button mat-flat-button (click)="clickCloseDev()">ตกลง</button>
     </section> -->
 
-    <header-top  class="nav-header-top" [menutopprofile]="isprofile"></header-top> 
-    <div class="icon-post-bottom" *ngIf="isPost" matRipple [matRippleCentered]="'centered'"
+    <header-top *ngIf="hidebar" class="nav-header-top" [menutopprofile]="isprofile"></header-top>
+    <div class="icon-post-bottom" *ngIf="isPost && hidebar" matRipple [matRippleCentered]="'centered'"
         [matRippleColor]="'#c6263420'" (click)="dialogPost()">
         <svg class="button-post" xmlns="http://www.w3.org/2000/svg" width="39.429" height="31.264"
             viewBox="0 0 39.429 31.264">
@@ -47,7 +47,7 @@
         <router-outlet></router-outlet>
     </div>
     <!-- footer -->
-    <spanboon-footer></spanboon-footer>
-    
+    <spanboon-footer *ngIf="hidebar"></spanboon-footer>
+
     <!-- <spanboon-footer *ngIf="isShowFooter()"></spanboon-footer> -->
 </div>

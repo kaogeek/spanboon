@@ -13,7 +13,7 @@ export class User extends BaseModel {
     public firstName: string;
     public lastName: string;
     public citizenId: string;
-    public birthdate: any;
+    public birthdate: Date;
     public gender: number;
     public isAdmin: boolean;
     public password: string;

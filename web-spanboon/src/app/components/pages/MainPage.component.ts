@@ -42,6 +42,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public data: any;
   public isDev: boolean = true;
   public isDirty: boolean = false;
+  public hidebar: boolean = false;
 
   public redirection: string;
 
@@ -52,7 +53,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
+  constructor(observManager: ObservableManager, router: Router, private route: ActivatedRoute, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
@@ -102,6 +103,16 @@ export class MainPage extends AbstractPage implements OnInit {
     this.isLogin();
     this.searchAccessPage();
 
+    this.route.queryParams.subscribe(params => {
+      var hidebars = params['hidebar'];
+      if (hidebars !== undefined && hidebars !== null) {
+        this.hidebar = false;
+      } else {
+        this.hidebar = true;
+      }
+    });
+
+
     const dev = sessionStorage.getItem('isDev');
     if (dev) {
       this.isDev = false;
@@ -120,11 +131,11 @@ export class MainPage extends AbstractPage implements OnInit {
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
         $('.header-top').addClass('hidden');
-        $('.footer-mobile').addClass('hidden'); 
-      } else {  
-        if(window.scrollY === 0){
+        $('.footer-mobile').addClass('hidden');
+      } else {
+        if (window.scrollY === 0) {
           $('.icon-post-bottom').removeClass('hidden');
-        } else { 
+        } else {
           $('.footer-mobile').toggleClass('hidden', scrollTop > prev);
           $('.header-top').toggleClass('hidden', scrollTop > prev);
           // $('.hompage-title').toggleClass('hidden', scrollTop > prev);
@@ -341,3 +352,4 @@ export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
+export * from './main.internal/NotificationAllPage.component';
