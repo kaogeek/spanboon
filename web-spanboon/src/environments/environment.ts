@@ -21,18 +21,10 @@ export const environment = {
   accessTokenSecretTwitter: '7n685xtTXHc8gSF4Yl7ChoFcw2u07mJk9Tnm49kC5o5s0',
   webBaseURL: 'https://localhost:4200',
   // apiBaseURL: "https://today-api.moveforwardparty.org/api",
-  apiBaseURL: "http://localhost:9000/api",
-  // apiBaseURL: "http://10.1.1.161:9000/api",
+  apiBaseURL: "https://localhost:9001/api",
+  //apiBaseURL: "http://10.1.1.161:9000/api",
   firebase: {
-    apiKey: "",
-    authDomain: "",
-    databaseURL: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: "",
-    measurementId: "",
-    vapidKey: ""
+
   },
 };
 

@@ -10,6 +10,8 @@
 @import "variable";
 @import "../custom/theme.scss";
 @import "components/components";
+// regular style toast
+@import "~ngx-toastr/toastr";
 
 .phx-preload {
   // background-color: #a1a1a1 !important;

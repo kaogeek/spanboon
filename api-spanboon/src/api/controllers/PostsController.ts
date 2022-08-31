@@ -958,41 +958,45 @@ export class PostsController {
                         const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
                         const page = await this.pageService.findOne({_id:who_post.pageId});
                         const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:user_ownerPage.id});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:user_ownerPage.id});
                         const link = '/post/' +likeCreate.subjectId;
                         const notificationText = `เพจ ${page_like.name} กดถูกใจโพสต์ของเพจ ${page.name}`;
-                        await this.pageNotificationService.notifyToPageUserFcm(
-                            page.id,
-                            undefined,
-                            req.user.id+'',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.LIKE,
-                            notificationText,
-                            link,
-                            tokenFCM_id.Tokens,
-                            page_like.name,
-                            page_like.imageURL,
-                        );
+                        for(let r = 0; r<tokenFCM_id.length; r++){
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id+'',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                tokenFCM_id[r].Tokens,
+                                page_like.name,
+                                page_like.imageURL,
+                            );
+                        }
                     }
                 // page to user
                     else{
                         const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
                         // const user_ownerPage = await this.userService.findOne({_id:who_post.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_post.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:who_post.ownerUser});
                         const link = '/post/' +likeCreate.subjectId;
                         const notificationText = `เพจ ${page_like.name} กดถูกใจโพสต์ของคุณ `;
-                        await this.pageNotificationService.notifyToPageUserFcm(
-                            page_like.id,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.COMMENT,
-                            notificationText,
-                            link,
-                            tokenFCM_id.Tokens,
-                            page_like.name,
-                            page_like.imageURL
-                        );
+                        for(let r=0; r<tokenFCM_id.length; r++){
+                            await this.notificationService.createNotificationFCM(
+                                who_post.ownerUser,
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.COMMENT,
+                                notificationText,
+                                link,
+                                tokenFCM_id[r].Tokens,
+                                page_like.name,
+                                page_like.imageURL
+                            );
+                        }    
                     }
                 }
                 else
@@ -1003,179 +1007,190 @@ export class PostsController {
                         const user_like = await this.userService.findOne({_id:likeCreate.userId});
                         const page = await this.pageService.findOne({_id:who_post.pageId});
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:who_post.ownerUser});
+                        const tokenFCM_id_multi = await this.deviceTokenService.find({userId:who_post.ownerUser});
                         const link = '/post/' +likeCreate.subjectId;
                         const notificationText = `${user_like.displayName} กดถูกใจโพสต์ของเพจ ${page.name}`;
-                        await this.notificationService.createNotificationFCM
-                        (
-                            postObj.ownerUser +'',
-                            USER_TYPE.USER,
-                            req.user.id +'',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.LIKE,
-                            notificationText,
-                            link,
-                            tokenFCM_id.Tokens,
-                            user_like.displayName,
-                            user_like.imageURL
-                        );
-                    }
-                    // user to user 
-                    else{
-                        const user_like = await this.userService.findOne({_id:likeCreate.userId});
-                        // owner post 
-                        const owner_Post = await this.postsService.findOne({_id:likeCreate.subjectId});
-                        // find owner
-                        const ownerPost = await this.userService.findOne({_id:owner_Post.ownerUser});
-                        // FCM device token owner post
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:ownerPost.id});
-                        const link = '/post/' +likeCreate.subjectId;
-                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
-                        if(tokenFCM_id !== undefined){
-                            if(who_post.likeCount >= 0 && who_post.likeCount <= 4){
-                                await this.notificationService.createNotificationFCM
-                                (
-                                    postObj.ownerUser +'',
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                    tokenFCM_id.Tokens,
-                                    user_like.displayName,
-                                    user_like.imageURL
-                                );
-                            }
-                            // 3 min
-                            else if(who_post.likeCount >4 && who_post.likeCount <= 10){
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },3000*60);
-                            }
-                            // 3 min
-                            else if(who_post.likeCount >10 && who_post.likeCount <= 20){
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },3000*60);
-                            }
-                            // 5 min
-                            else if(who_post.likeCount > 20 && who_post.likeCount <= 50){
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },5000*60);
-                            }
-                            // 10 min
-                            else if(who_post.likeCount >50 && who_post.likeCount <= 200){
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },10000*60);
-                            }
-                            // 30 min
-                            else if(who_post.likeCount >200 && who_post.likeCount <= 2000){
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },30000*60);
-                            }
-                            // 1 hr
-                            else{
-                                setTimeout(()=>{
-                                    this.notificationService.createNotificationFCM
-                                    (
-                                        postObj.ownerUser +'',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.USER,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM_id.Tokens,
-                                        user_like.displayName,
-                                        user_like.imageURL,
-                                        who_post.likeCount
-                                    );
-                                },100000*60);
-                            }
-                        }else{
-                            await this.notificationService.createNotification
+                        for(let r = 0; r<tokenFCM_id_multi.length; r++){
+                            await this.pageNotificationService.notifyToPageUserFcm
                             (
-                                postObj.ownerUser +'',
-                                USER_TYPE.USER,
-                                req.user.id + '',
-                                USER_TYPE.USER,
+                                who_post.pageId +'',
+                                undefined,
+                                req.user.id +'',
+                                USER_TYPE.PAGE,
                                 NOTIFICATION_TYPE.LIKE,
                                 notificationText,
                                 link,
+                                tokenFCM_id_multi[r].Tokens,
                                 user_like.displayName,
                                 user_like.imageURL
                             );
                         }
                     }
+                    // user to user 
+                    else{
+                        const user_like = await this.userService.findOne({_id:likeCreate.userId});
+                        console.log('who_like',likeCreate);
+                        // owner post 
+                        const owner_Post = await this.postsService.findOne({_id:likeCreate.subjectId});
+                        // find owner
+                        const ownerPost = await this.userService.findOne({_id:owner_Post.ownerUser});
+                        // FCM device token owner post
+                        const tokenFCM_id_multi = await this.deviceTokenService.find({userId:ownerPost.id});
+                        const link = '/post/' +likeCreate.subjectId;
+                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
+                        for(let r = 0; r<tokenFCM_id_multi.length; r++){
+                            switch(tokenFCM_id_multi[r].Tokens !== undefined){
+                                case who_post.likeCount >= 0 && who_post.likeCount <= 4:
+                                        await this.notificationService.createNotificationFCM
+                                        (
+                                            owner_Post.ownerUser +'',
+                                            USER_TYPE.USER,
+                                            likeCreate.userId + '',
+                                            USER_TYPE.USER,
+                                            NOTIFICATION_TYPE.LIKE,
+                                            notificationText,
+                                            link,
+                                            tokenFCM_id_multi[r].Tokens,
+                                            user_like.displayName,
+                                            user_like.imageURL
+                                        );
+                                        break;
+                                    // 3 min
+                                case who_post.likeCount >4 && who_post.likeCount <= 10 :
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                owner_Post.ownerUser +'',
+                                                USER_TYPE.USER,
+                                                likeCreate.userId + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },3000*60);
+                                        break;
+                                    // 3 min
+                                    case who_post.likeCount >10 && who_post.likeCount <= 20:
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                owner_Post.ownerUser +'',
+                                                USER_TYPE.USER,
+                                                likeCreate.userId + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },3000*60);
+                                        break;
+                                    // 5 min
+                                    case who_post.likeCount > 20 && who_post.likeCount <= 50:
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                owner_Post.ownerUser +'',
+                                                USER_TYPE.USER,
+                                                likeCreate.userId + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },5000*60);
+                                        break;
+                                    // 10 min
+                                    case who_post.likeCount >50 && who_post.likeCount <= 200:
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                likeCreate.subjectId +'',
+                                                USER_TYPE.USER,
+                                                req.user.id + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },10000*60);
+                                        break;
+                                    // 30 min
+                                    case who_post.likeCount >200 && who_post.likeCount <= 2000 :
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                owner_Post.ownerUser +'',
+                                                USER_TYPE.USER,
+                                                likeCreate.userId + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },30000*60);
+                                        break;
+                                    // 1 hr
+                                    default:
+                                        setTimeout(()=>{
+                                            this.notificationService.createNotificationFCM
+                                            (
+                                                owner_Post.ownerUser +'',
+                                                USER_TYPE.USER,
+                                                likeCreate.userId + '',
+                                                USER_TYPE.USER,
+                                                NOTIFICATION_TYPE.LIKE,
+                                                notificationText,
+                                                link,
+                                                tokenFCM_id_multi[r].Tokens,
+                                                user_like.displayName,
+                                                user_like.imageURL,
+                                                who_post.likeCount
+                                            );
+                                        },100000*60);
+                                    break;
+                                }
+                                
+                            switch(tokenFCM_id_multi[r].Tokens === undefined){
+                                default:
+                                    await this.notificationService.createNotification
+                                    (
+                                        owner_Post.ownerUser +'',
+                                        USER_TYPE.USER,
+                                        likeCreate.userId + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCM_id_multi[r].Tokens,
+                                        user_like.displayName,
+                                        user_like.imageURL,
+                                    );
+                                break;
+                            }
+                        }
+                    }
+
                 }
 
                 const userEngagement = new UserEngagement();

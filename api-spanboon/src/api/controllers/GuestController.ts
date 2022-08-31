@@ -704,7 +704,7 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
-
+        
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
             if (userLogin) {
@@ -716,7 +716,6 @@ export class GuestController {
                 if (await User.comparePassword(userLogin, loginPassword)) {
                     // create a token
                     const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
-
                     if (userLogin.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
@@ -741,6 +740,7 @@ export class GuestController {
                             await this.authenticationIdService.create(newToken);
                         }
                         if(token !== null && token !== 'undefiend'){
+                            
                             const userId = userLogin.id;
                             const token_fcm = req.body.token;
                             const deviceName = req.body.deviceName;

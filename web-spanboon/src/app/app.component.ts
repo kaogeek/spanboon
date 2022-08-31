@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/internal/operators/filter';
 import { SeoService } from './services/SeoService.service';
@@ -67,7 +67,6 @@ export class AppComponent {
   ngOnInit(): void {
     this.requestPermission();
     this.listen();
-    // this.setData('');
   }
 
   public playAudio() {
@@ -115,8 +114,8 @@ export class AppComponent {
   }
   public listen() {
     const messaging = getMessaging();
+    console.log('messaging',messaging);
     onMessage(messaging, (payload) => {
-      console.log('messaging', payload.notification);
       this.setData({ notification: { title: 'การแจ้งเตือนใหม่', body: payload.notification.title, image: (this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image'), status: payload.data["gcm.notification.notificationType"], isRred: true, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } });
       this.observManager.publish(NOTI_CHECK_SUBJECT, {
         data: payload.notification
