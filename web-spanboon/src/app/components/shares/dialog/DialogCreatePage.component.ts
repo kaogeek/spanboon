@@ -402,7 +402,6 @@ export class DialogCreatePage extends AbstractPage {
     var x, y, i, valid = true;
     x = document.getElementsByClassName("box-create");
     y = x[currentTab].getElementsByTagName("input");
-
     if (currentTab === 2 || currentTab === 3) {
       return true;
     }

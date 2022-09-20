@@ -44,7 +44,6 @@ export class UserAccessController {
     public async getPageAccess(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
         const result: PageAccessLevelResponse[] = [];
         const userObjId = req.user.id;
-
         const accSearchFilter = new SearchFilter();
         accSearchFilter.whereConditions = { user: new ObjectID(userObjId) };
         accSearchFilter.limit = limit;

@@ -590,7 +590,7 @@ export class PagePostController {
                     for(let i = 0; i<user_follow.length; i++){
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
                         for(let j = 0; j<tokenFCM_id.length; j++){
-                            if(tokenFCM_id[j] !== undefined){
+                            if(tokenFCM_id[j].Tokens !== undefined){
                                 const link = '/post/' + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM_id[j].userId,
@@ -633,7 +633,7 @@ export class PagePostController {
                     for(let i = 0; i<user_follow.length; i++){
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
                         for(let j = 0; j<tokenFCM_id.length; j++){
-                            if(tokenFCM_id[j] !== undefined){
+                            if(tokenFCM_id[j].Tokens !== undefined){
                                 const link = '/post/'+createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM_id[j].userId,

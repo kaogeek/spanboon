@@ -83,6 +83,7 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
+        const tokenFCM = String(req.body.tokenFCM);
         let logoutAll = false;
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
@@ -117,16 +118,19 @@ export class UserController {
             }
         } else {
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
-
             if (!authenId) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
             }
-
+            else if(tokenFCM !== null){
+                await this.deviceTokenService.delete({userId:uid,token:tokenFCM});
+            }
+            else if(tokenFCM === null){
+                await this.deviceTokenService.delete({userId:uid});
+            }
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
             if (updateExpireToken) {
-                await this.deviceTokenService.delete({userId:req.user.id,token:req.body.token});
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);
             } else {
@@ -277,18 +281,50 @@ export class UserController {
                 const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
                 const link = `/user/${who_follow_you.displayName}/follow`;
                 for(let r = 0; r<deviceToken.length; r++){
-                    await this.notificationService.createNotificationFCM(
-                        followCreate.subjectId,
-                        USER_TYPE.USER,
-                        req.user.id+ '',
-                        USER_TYPE.USER,
-                        NOTIFICATION_TYPE.FOLLOW,
-                        notification_follower,
-                        link,
-                        deviceToken[r].Tokens,
-                        who_follow_you.displayName,
-                        who_follow_you.imageURL
-                    );
+                    if(deviceToken[r].Tokens !== null){
+                        await this.notificationService.createNotificationFCM(
+                            followCreate.subjectId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            deviceToken[r].Tokens,
+                            who_follow_you.displayName,
+                            who_follow_you.imageURL
+                        );
+                    }
+                    else {
+                        await this.notificationService.createNotification(
+                            followCreate.subjectId,
+                            USER_TYPE.USER,
+                            req.user.id+ '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link
+                        );
+                    }
+                    // else{
+                        // const userUpdate = {userId:followCreate.subjectId};
+                        // const TokenFCM = {$set:{token:req.body.token}};
+                        // const updateToken = await this.deviceTokenService.updateToken(userUpdate,TokenFCM);
+                        // if(updateToken){
+                            // await this.notificationService.createNotificationFCM(
+                                // followCreate.subjectId,
+                                // USER_TYPE.USER,
+                                // req.user.id+ '',
+                                // USER_TYPE.USER,
+                                // NOTIFICATION_TYPE.FOLLOW,
+                                // notification_follower,
+                                // link,
+                                // deviceToken[r].Tokens,
+                                // who_follow_you.displayName,
+                                // who_follow_you.imageURL
+                            // );
+                        // }
+                    // }
                 }
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });

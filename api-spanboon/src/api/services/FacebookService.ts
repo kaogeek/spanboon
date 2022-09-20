@@ -36,16 +36,11 @@ export class FacebookService {
     // get App Access token
     public getAppAccessToken(): Promise<any> {
         return new Promise((resolve, reject) => {
-            FB.api('oauth/access_token', {
-                client_id: facebook_setup.FACEBOOK_APP_ID,
-                client_secret: facebook_setup.FACEBOOK_APP_SECRET,
-                grant_type: 'client_credentials'
-            }, (res: any) => {
+            FB.api(`oauth/access_token?client_id=${facebook_setup.FACEBOOK_APP_ID}&client_secret=${facebook_setup.FACEBOOK_APP_SECRET}&grant_type=client_credentials`, (res: any) => {
                 if (!res || res.error) {
                     reject({ error: res.error });
                     return;
                 }
-
                 const accessToken = res.access_token;
                 resolve({ token: accessToken });
             });
@@ -55,12 +50,7 @@ export class FacebookService {
     // extends live time of token
     public extendsAccessToken(fbExchangeToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            FB.api('oauth/access_token', {
-                client_id: facebook_setup.FACEBOOK_APP_ID,
-                client_secret: facebook_setup.FACEBOOK_APP_SECRET,
-                grant_type: 'fb_exchange_token',
-                fb_exchange_token: fbExchangeToken
-            }, (res: any) => {
+            FB.api(`v14.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${facebook_setup.FACEBOOK_APP_ID}&client_secret=${facebook_setup.FACEBOOK_APP_SECRET}&fb_exchange_token=${fbExchangeToken}`, (res: any) => {
                 if (!res || res.error) {
                     reject({
                         error: res.error
@@ -97,13 +87,12 @@ export class FacebookService {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
-            facebook.api('me/?fields=id&access_token=\'+accessToken+\'', 'post', (response: any) => {
+            facebook.api(`me/?fields=id&access_token=\'+accessToken+\'`, 'post', (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }
-
                 resolve(response);
             });
         });
@@ -143,7 +132,6 @@ export class FacebookService {
             if (fields !== undefined && fields !== null) {
                 userFields = fields;
             }
-
             facebook.api(userId, { fields: userFields }, (response: any) => {
                 resolve(response);
             });
@@ -155,14 +143,12 @@ export class FacebookService {
             this.getAppAccessToken().then((result: any) => {
                 const facebook = this.createFB();
                 facebook.setAccessToken(result.token);
-
                 facebook.api('debug_token?input_token=' + inputToken, 'get', (response: any) => {
                     if (!response || response.error) {
                         console.log(!response ? 'error occurred' : response.error);
                         reject(response.error);
                         return;
                     }
-
                     resolve(response);
                 });
             }).catch((error: any) => {

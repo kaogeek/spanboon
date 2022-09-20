@@ -1518,7 +1518,6 @@ export class PageController {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
-
         if (data) {
             const errorResponse = ResponseUtil.getErrorResponse('Page is Exists', data);
             return res.status(400).send(errorResponse);
@@ -1579,7 +1578,6 @@ export class PageController {
             pageAcceessLevel.page = result.id;
             pageAcceessLevel.user = userObjId;
             pageAcceessLevel.level = PAGE_ACCESS_LEVEL.OWNER;
-
             const pageAccessLevelCreated: PageAccessLevel = await this.pageAccessLevelService.create(pageAcceessLevel);
 
             if (pageAccessLevelCreated) {

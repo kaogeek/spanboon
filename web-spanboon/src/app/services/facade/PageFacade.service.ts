@@ -143,9 +143,11 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/follow';
-      let body: any = {};
+      const tokenFCM = localStorage.getItem('currenToken');
+      let body: any = {
+        "tokenFCM": tokenFCM
+      };
       let options = this.getDefaultOptions();
-
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
