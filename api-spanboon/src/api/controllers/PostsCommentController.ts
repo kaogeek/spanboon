@@ -719,7 +719,6 @@ export class PostsCommentController {
             if (likeCreate) {
                 result = likeCreate;
                 action = ENGAGEMENT_ACTION.LIKE;
-
                 const userEngagement = new UserEngagement();
                 userEngagement.clientId = clientId;
                 userEngagement.contentId = commentObjId;
@@ -727,27 +726,24 @@ export class PostsCommentController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = action;
-
                 let engagement: UserEngagement;
-                            // Page to page
                 const comment = await this.postsCommentService.findOne({_id:commentObjId});
                 if(likeCreate.likeAsPage !== null){
                     // page to page
                     if(comment.commentAsPage !== null){ 
-                        const pageLike = await this.pageService.findOne({_id:ObjectID(likeAsPageObjId)});
-                        const postPage = await this.postsService.findOne({_id:postObjId});
-                        const page = await this.pageService.findOne({_id:postPage.pageId});
-                        const userPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:userPage.id});
+                        const pageLike = await this.pageService.findOne({_id:likeCreate.likeAsPage});
+                        const notifi_user = await this.postsCommentService.findOne({_id:likeCreate.subjectId});
+                        const page = await this.pageService.findOne({ownerUser:notifi_user.user});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:notifi_user.user});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
                         const notification_comment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของเพจ' + page.name;
                         if(tokenFCM_id !== undefined){
                             await this.pageNotificationService.notifyToPageUserFcm(
-                                postPage.pageId,
+                                page.id +'',
                                 undefined,
-                                req.user.id + '',
+                                req.user.id +'',
                                 USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.COMMENT,
+                                NOTIFICATION_TYPE.LIKE,
                                 notification_comment,
                                 link,
                                 tokenFCM_id.Tokens,
@@ -756,11 +752,11 @@ export class PostsCommentController {
                                 );
                         }else{
                             await this.pageNotificationService.notifyToPageUser(
-                                postPage.pageId,
+                                page.ownerUser,
                                 undefined,
                                 req.user.id + '',
                                 USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.COMMENT,
+                                NOTIFICATION_TYPE.LIKE,
                                 notification_comment,
                                 link,
                                 );
@@ -778,7 +774,7 @@ export class PostsCommentController {
                                 USER_TYPE.PAGE,
                                 req.user.id + '',
                                 USER_TYPE.USER,
-                                NOTIFICATION_TYPE.COMMENT,
+                                NOTIFICATION_TYPE.LIKE,
                                 notification_comment,
                                 link,
                                 tokenFCM_id.Tokens,
@@ -791,7 +787,7 @@ export class PostsCommentController {
                                 USER_TYPE.PAGE,
                                 req.user.id + '',
                                 USER_TYPE.USER,
-                                NOTIFICATION_TYPE.COMMENT,
+                                NOTIFICATION_TYPE.LIKE,
                                 notification_comment,
                                 link,
                                 );
@@ -806,15 +802,14 @@ export class PostsCommentController {
                     {
                         const user = await this.userService.findOne({_id:likeCreate.userId});
                         const page = await this.pageService.findOne({_id:comment.commentAsPage});
-                        const pageUser = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:pageUser.id});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:page.ownerUser});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
                         const notification_comment = user.displayName + 'กดถูกใจคอมเม้นของเพจ' + page.name;
                         if(tokenFCM_id !== undefined){
-                            await this.notificationService.createNotificationFCM
+                            await this.pageNotificationService.notifyToPageUserFcm
                             (
-                                likeCreate.userId +'',
-                                USER_TYPE.USER,
+                                page.id +'',
+                                undefined,
                                 req.user.id +'',
                                 USER_TYPE.PAGE,
                                 NOTIFICATION_TYPE.LIKE,
@@ -843,15 +838,14 @@ export class PostsCommentController {
                     else
                     {
                         const user = await this.userService.findOne({_id:likeCreate.userId});
-                        const comment_user = await this.postsCommentService.findOne({_id:commentObjId});
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:comment_user.user});
+                        const notifi_user = await this.postsCommentService.findOne({_id:likeCreate.subjectId});
+                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:notifi_user.user});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
                         const notification_comment = user.displayName +'กดถูกใจคอมเม้นของคุณ';
-                        console.log('ok');
-                        if(tokenFCM_id !== undefined){
+                        if(tokenFCM_id.Tokens !== null){
                             await this.notificationService.createNotificationFCM
                             (
-                                user.id +'',
+                                notifi_user.user +'',
                                 USER_TYPE.USER,
                                 req.user.id + '',
                                 USER_TYPE.USER,
@@ -867,7 +861,7 @@ export class PostsCommentController {
                         {
                             await this.notificationService.createNotification
                             (
-                                user.id +'',
+                                notifi_user.user +'',
                                 USER_TYPE.USER,
                                 req.user.id + '',
                                 USER_TYPE.USER,

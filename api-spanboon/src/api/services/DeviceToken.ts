@@ -40,7 +40,7 @@ export class DeviceTokenService {
         return await this.deviceTokenRepository.deleteOne(query, options);
     }
 
-    public async update(query: any, newValue: any): Promise<any> {
+    public async updateToken(query: any, newValue: any): Promise<any> {
         this.log.info('Update a token');
 
         return await this.deviceTokenRepository.updateOne(query, newValue);

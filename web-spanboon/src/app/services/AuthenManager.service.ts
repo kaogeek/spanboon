@@ -50,7 +50,7 @@ export class AuthenManager {
       let body: any = {
         "username": username,
         "password": password,
-        "token": currentToken,
+        "tokenFCM": currentToken,
         "deviceName": "Chrome",
       };
 
@@ -161,28 +161,27 @@ export class AuthenManager {
   public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
       let body: any = {
-        "token": token
+        "tokenFCM": currentToken,
+        "token": token,
+        "deviceName": "Chrome",
       };
 
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
-
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
-
       let httpOptions = {
         headers: headers
       };
-
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
           user: response.data.user
         };
-
         this.token = result.token;
         this.user = result.user;
         this.facebookMode = true;
@@ -373,7 +372,7 @@ export class AuthenManager {
       let url: string = this.baseURL + "/user/logout";
       const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
       let body = {
-        "token": currentToken
+        "tokenFCM": currentToken
       };
       // if(user !== null && user !== undefined){
       //   body = Object.assign(user);

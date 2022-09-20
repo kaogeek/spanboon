@@ -96,10 +96,8 @@ export class GuestController {
         let registerPassword = users.password;
         let authIdCreate: AuthenticationId;
         let userData: User;
-
         if (mode === PROVIDER.EMAIL) {
             const data: User = await this.userService.findOne({ where: { username: registerEmail } });
-
             if (data) {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
                 return res.status(400).send(errorResponse);
@@ -109,7 +107,6 @@ export class GuestController {
                 } else {
                     registerPassword = await User.hashPassword(registerPassword);
                 }
-
                 const user: User = new User();
                 user.username = registerEmail;
                 user.password = registerPassword;
@@ -197,8 +194,8 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             }
-        } else if (mode === PROVIDER.FACEBOOK) {
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+        } else if (mode === PROVIDER.FACEBOOK){
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email }});
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
@@ -232,9 +229,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('Facebook was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-
                 const userExrTime = await this.getUserLoginExpireTime();
-
                 userData = this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
                 authenId.user = resultUser.id;
@@ -244,7 +239,6 @@ export class GuestController {
                 authenId.storedCredentials = fbToken;
                 authenId.properties = properties;
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-
                 authIdCreate = await this.authenticationIdService.create(authenId);
                 const fbTokenSign = jwt.sign({ token: fbToken }, env.SECRET_KEY);
                 if (authIdCreate) {
@@ -252,7 +246,8 @@ export class GuestController {
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Facebook Success', result);
                     return res.status(200).send(successResponse);
                 }
-            } else {
+            } 
+            else {
                 const newUser = this.createBasePageUser(users);
                 let providerList: any[];
 
@@ -263,7 +258,6 @@ export class GuestController {
                     providerList = [PROVIDER.EMAIL, PROVIDER.FACEBOOK];
                     registerPassword = await User.hashPassword(registerPassword);
                 }
-
                 const user: User = new User();
                 user.username = registerEmail;
                 user.password = registerPassword;
@@ -348,7 +342,6 @@ export class GuestController {
                             authenId.storedCredentials = users.fbToken;
                             authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
-
                         authIdCreate = await this.authenticationIdService.create(authenId);
                         authenIdCreated.push(authIdCreate);
                     }
@@ -443,7 +436,6 @@ export class GuestController {
                 } else {
                     user.customGender = customGender;
                 }
-
                 // check uniqueId
                 if (user.uniqueId === '') {
                     user.uniqueId = null;
@@ -455,7 +447,6 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
                 }
-
                 const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
@@ -704,7 +695,8 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
-        
+        const token_fcm = req.body.tokenFCM;
+        const deviceName = req.body.deviceName;
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
             if (userLogin) {
@@ -731,7 +723,7 @@ export class GuestController {
                         newToken.providerName = PROVIDER.EMAIL;
                         newToken.storedCredentials = token;
                         newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
-
+                        const checkExistTokenFcm = await this.deviceToken.findOne({userId:userObjId,token:req.body.token});
                         if (checkAuthen !== null && checkAuthen !== undefined) {
                             const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
                             const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
@@ -739,16 +731,11 @@ export class GuestController {
                         } else {
                             await this.authenticationIdService.create(newToken);
                         }
-                        if(token !== null && token !== 'undefiend'){
-                            
-                            const userId = userLogin.id;
-                            const token_fcm = req.body.token;
-                            const deviceName = req.body.deviceName;
-                            await this.deviceToken.createDeviceToken({deviceName,token:token_fcm,userId});
+                        if(checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null){
+                            await this.deviceToken.createDeviceToken({deviceName,token:token_fcm,userId:userObjId});
                         }
                         loginToken = token;
                     }
-
                     loginUser = userLogin;
                 } else {
                     const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
@@ -815,25 +802,19 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const idToken = loginParam.idToken;
             const authToken = loginParam.authToken;
-
             const checkIdToken = await this.googleService.verifyIdToken(idToken);
-
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-
             const expiresAt = checkIdToken.expire;
-            const today = moment().toDate();
-
+            const today = moment().toDate();        
             if (expiresAt < today.getTime()) {
                 const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
                 return res.status(400).send(errorResponse);
             }
-
             const userId = checkIdToken.userId;
             const googleUser = await this.googleService.getGoogleUser(userId, authToken);
-
             if (googleUser === null || googleUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -846,7 +827,6 @@ export class GuestController {
                 const query = { providerUserId: googleUserId, providerName: PROVIDER.GOOGLE };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
-
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
@@ -854,6 +834,7 @@ export class GuestController {
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
+                 
         } else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
@@ -1079,9 +1060,7 @@ export class GuestController {
     @Get('/check_status')
     public async checkAccountStatus(@QueryParam('token') tokenParam: string, @Req() request: any, @Res() response: any): Promise<any> {
         const isMode = request.header('mode');
-
         let user;
-
         if (isMode !== undefined && isMode === 'FB') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
@@ -1089,7 +1068,6 @@ export class GuestController {
                     const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
                     return response.status(400).send(errorUserNameResponse);
                 }
-
                 const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
                 user = fbUser.user;
             } catch (ex: any) {

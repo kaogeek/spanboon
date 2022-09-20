@@ -31,7 +31,6 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
      */
     public error(error: any, _req: express.Request, res: express.Response, _next: express.NextFunction): void {
         const responseObject = {} as any;
-
         // if its an array of ValidationError
         // console.log(error);
         // console.log(Array.isArray(error));

@@ -98,7 +98,6 @@ export class MainPageController {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.getMainPageSearchConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
                 const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
