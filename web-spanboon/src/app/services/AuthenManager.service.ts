@@ -46,11 +46,11 @@ export class AuthenManager {
   public login(username: string, password: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "username": username,
         "password": password,
-        "tokenFCM": currentToken,
+        "tokenFCM": tokenFCM,
         "deviceName": "Chrome",
       };
 
@@ -161,9 +161,9 @@ export class AuthenManager {
   public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "tokenFCM": currentToken,
+        "tokenFCM": tokenFCM,
         "token": token,
         "deviceName": "Chrome",
       };
@@ -370,9 +370,9 @@ export class AuthenManager {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + "/user/logout";
-      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body = {
-        "tokenFCM": currentToken
+        "tokenFCM": tokenFCM
       };
       // if(user !== null && user !== undefined){
       //   body = Object.assign(user);

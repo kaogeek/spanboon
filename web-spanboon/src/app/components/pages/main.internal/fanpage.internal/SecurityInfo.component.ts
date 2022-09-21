@@ -431,7 +431,6 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         (window as any).fbAsyncInit = function () {
             window['FB'].init({
                 appId: environment.facebookAppId,
-                status: true, 
                 cookie: true, 
                 xfbml: true,
                 version: 'v10.0'

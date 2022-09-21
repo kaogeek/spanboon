@@ -71,7 +71,6 @@ export class FacebookWebhookController {
                 return res.sendStatus(403);
             }
         }
-
         let createLog = true;
         if (body !== undefined) {
             if (body.object === 'page') {

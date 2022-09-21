@@ -265,7 +265,6 @@ export class LoginPageTest extends AbstractPage implements OnInit {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
         appId: environment.facebookTestAppId,
-        status: true, 
         cookie: true, 
         xfbml: true,
         version: 'v10.0'
