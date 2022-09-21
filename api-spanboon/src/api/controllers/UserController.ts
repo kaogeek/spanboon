@@ -118,15 +118,21 @@ export class UserController {
             }
         } else {
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
+            const deleteFCM = await this.deviceTokenService.find({userId:uid,token:tokenFCM});
             if (!authenId) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
             }
             else if(tokenFCM !== null){
-                await this.deviceTokenService.delete({userId:uid,token:tokenFCM});
+                for(let i = 0 ; i<deleteFCM.length; i++){
+                    await this.deviceTokenService.delete({userId:uid,token:deleteFCM[i].Tokens});
+                }
             }
             else if(tokenFCM === null){
-                await this.deviceTokenService.delete({userId:uid});
+                const deleteNull = await this.deviceTokenService.find({userId:uid});
+                for(let i = 0; i<deleteNull.length; i++){
+                    await this.deviceTokenService.delete({userId:deleteNull[i].id});
+                }
             }
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });

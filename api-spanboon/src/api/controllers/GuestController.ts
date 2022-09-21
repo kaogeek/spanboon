@@ -695,7 +695,7 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
-        const token_fcm = req.body.tokenFCM;
+        const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
@@ -732,7 +732,7 @@ export class GuestController {
                             await this.authenticationIdService.create(newToken);
                         }
                         if(checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null){
-                            await this.deviceToken.createDeviceToken({deviceName,token:token_fcm,userId:userObjId});
+                            await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:userObjId});
                         }
                         loginToken = token;
                     }
