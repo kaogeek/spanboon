@@ -163,8 +163,8 @@ export class PostsCommentController {
                         const link = '/post/' + getPost.id;
                         // page to user
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
-                        if(tokenFCM_id.length !== null){
-                            for(let r =0;r<tokenFCM_id.length; r++){
+                        for(let r = 0;r <tokenFCM_id.length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
                                 await this.notificationService.createNotificationFCM(
                                     getPost.ownerUser,
                                     USER_TYPE.PAGE,
@@ -178,8 +178,21 @@ export class PostsCommentController {
                                     pageName.imageURL
                                     );
                                 }
+                            else{
+                                await this.notificationService.createNotification(
+                                    getPost.ownerUser,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
+                                    pageName.name,
+                                    pageName.imageURL
+                                );
                             }
                         }
+                    }
                         // page to page
                     else{
                         const getPost = await this.postsService.findOne({_id:postsComment.post});
@@ -188,8 +201,8 @@ export class PostsCommentController {
                         const link = '/post/' + getPost.id;
                         // page to user
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
-                        if(tokenFCM_id.length !== null){
-                            for(let r =0;r<tokenFCM_id.length; r++){
+                        for(let r =0 ; r<tokenFCM_id.lenght; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     getPost.pageId,
                                     undefined,
@@ -203,17 +216,17 @@ export class PostsCommentController {
                                     pageName.imageURL
                                     );
                             }
-                        }
-                        else{
-                            await this.pageNotificationService.notifyToPageUser(
-                                getPost.pageId,
-                                undefined,
-                                postsComment.commentAsPage + '',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.COMMENT,
-                                notification_comment,
-                                link,
-                                );
+                            else{
+                                await this.pageNotificationService.notifyToPageUser(
+                                    getPost.pageId,
+                                    undefined,
+                                    postsComment.commentAsPage + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
+                                    );
+                            }
                         }
                     }
                 }
@@ -221,17 +234,15 @@ export class PostsCommentController {
                 else{
                     // WHO POST USER OR PAGE ?
                     const post_who = await this.postsService.findOne({_id:comment.post});
-                    const getPost = await this.postsService.findOne({_id:comment.post});
-                    const userName = await this.userService.findOne({_id:postsComment.user});
-                    if(post_who.pageId === null)
-                    {
+                    if(post_who.pageId === null){
                         // USER TO USER
+                        const getPost = await this.postsService.findOne({_id:comment.post});
+                        const userName = await this.userService.findOne({_id:postsComment.user});
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
                         const notification_comment = userName.displayName + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
-                        if(tokenFCM_id.length !== null )
-                        {
-                            const link = '/post/' + getPost.id;
-                            for(let r = 0; r<tokenFCM_id.length; r++){
+                        const link = '/post/' + getPost.id;
+                        for(let r = 0 ;r<tokenFCM_id[r].length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
                                 await this.notificationService.createNotificationFCM(
                                     getPost.ownerUser,
                                     USER_TYPE.USER,
@@ -245,31 +256,31 @@ export class PostsCommentController {
                                     userName.imageURL
                                     );
                                 }
-                        }
-                        else
-                        {
-                            const link = '/post/' + getPost.id;
-                            await this.notificationService.createNotification(
-                                getPost.ownerUser,
-                                USER_TYPE.USER,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.COMMENT,
-                                notification_comment,
-                                link,
+                            else{
+                                await this.notificationService.createNotification(
+                                    getPost.ownerUser,
+                                    USER_TYPE.USER,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
                                 );
+                            }
                         }
+
                     }
-                    else
-                    {
+                    else{
                         // USER TO PAGE
+                        const getPost = await this.postsService.findOne({_id:comment.post});
+                        const userName = await this.userService.findOne({_id:postsComment.user});
                         const tokenFCM_id = await this.deviceTokenService.find({userId:getPost.ownerUser});
                         const page_post = await this.postsService.findOne({_id:post_who.id});
                         const page = await this.pageService.findOne({_id:page_post.pageId});
                         const notification_comment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของเพจ ${page.name}`;
-                        if(tokenFCM_id.length !== null ){
-                            const link = '/post/' + getPost.id;
-                            for(let r = 0;r<tokenFCM_id.length; r++){
+                        const link = '/post/' + getPost.id;
+                        for(let r = 0 ; r<tokenFCM_id.length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     page_post.pageId,
                                     undefined,
@@ -283,19 +294,17 @@ export class PostsCommentController {
                                     userName.imageURL
                                     );
                                 }
-                        }
-                        else
-                        {
-                            const link = '/post/' + getPost.id;
-                            await this.notificationService.createNotification(
-                                page_post.pageId,
-                                undefined,
-                                req.user.id + '',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.COMMENT,
-                                notification_comment,
-                                link,
+                            else{
+                                await this.notificationService.createNotification(
+                                    page_post.pageId,
+                                    undefined,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notification_comment,
+                                    link,
                                 );
+                            }
                         }
                     }
 
@@ -728,62 +737,69 @@ export class PostsCommentController {
                         const notifi_user = await this.postsCommentService.findOne({_id:likeCreate.subjectId});
                         const page = await this.pageService.findOne({ownerUser:notifi_user.user});
                         const notification_comment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของเพจ' + page.name;
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:notifi_user.user});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:page.ownerUser});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
-                        if(tokenFCM_id !== undefined){
-                            await this.pageNotificationService.notifyToPageUserFcm(
-                                page.id +'',
-                                undefined,
-                                req.user.id +'',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                tokenFCM_id.Tokens,
-                                pageLike.name,
-                                pageLike.imageURL
-                                );
-                        }else{
-                            await this.pageNotificationService.notifyToPageUser(
-                                page.ownerUser,
-                                undefined,
-                                req.user.id + '',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                );
+                        for(let r = 0; r<tokenFCM_id.length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
+                                await this.pageNotificationService.notifyToPageUserFcm(
+                                    page.id +'',
+                                    undefined,
+                                    req.user.id +'',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    pageLike.name,
+                                    pageLike.imageURL
+                                    );
+                            }
+                            else{
+                                await this.pageNotificationService.notifyToPageUser(
+                                    page.id,
+                                    undefined,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    pageLike.name,
+                                    pageLike.imageURL
+                                    );
+                            }
                         }
                     }
                     // page to user
                     else{
                         const pageLike = await this.pageService.findOne({_id:ObjectID(likeAsPageObjId)});
                         const notification_comment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของคุณ';
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:comment.user});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:comment.user});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
-                        if(tokenFCM_id !== undefined){
-                            await this.notificationService.createNotificationFCM(
-                                tokenFCM_id.userId,
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                tokenFCM_id.Tokens,
-                                pageLike.name,
-                                pageLike.imageURL
-                                );
-                        }else{
-                            await this.notificationService.createNotificationFCM(
-                                tokenFCM_id.userId,
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                );
+                        for(let r = 0 ; r<tokenFCM_id.length ; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM_id.userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    pageLike.name,
+                                    pageLike.imageURL
+                                    );
+                            }else{
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM_id.userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    );
+                            }
                         }
                     }
                 }
@@ -796,35 +812,36 @@ export class PostsCommentController {
                         const user = await this.userService.findOne({_id:likeCreate.userId});
                         const page = await this.pageService.findOne({_id:comment.commentAsPage});
                         const notification_comment = user.displayName + 'กดถูกใจคอมเม้นของเพจ' + page.name;
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:page.ownerUser});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:page.ownerUser});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
-                        if(tokenFCM_id !== undefined){
-                            await this.pageNotificationService.notifyToPageUserFcm
-                            (
-                                page.id +'',
-                                undefined,
-                                req.user.id +'',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                tokenFCM_id.Tokens,
-                                user.displayName,
-                                user.imageURL
-                            );
-                        }
-                        else
-                        {
-                            await this.notificationService.createNotification
-                            (
-                                page.ownerUser +'',
-                                USER_TYPE.USER,
-                                req.user.id +'',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                            );
+                        for(let r =0 ; tokenFCM_id.length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
+                                await this.pageNotificationService.notifyToPageUserFcm
+                                (
+                                    page.id +'',
+                                    undefined,
+                                    req.user.id +'',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    user.displayName,
+                                    user.imageURL
+                                );
+                            }
+                            else{
+                                await this.notificationService.createNotification
+                                (
+                                    page.id +'',
+                                    USER_TYPE.USER,
+                                    req.user.id +'',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                );
+                            }
                         }
                     }
                     // User to User
@@ -833,35 +850,37 @@ export class PostsCommentController {
                         const user = await this.userService.findOne({_id:likeCreate.userId});
                         const notifi_user = await this.postsCommentService.findOne({_id:likeCreate.subjectId});
                         const notification_comment = user.displayName +'กดถูกใจคอมเม้นของคุณ';
-                        const tokenFCM_id = await this.deviceTokenService.findOne({userId:notifi_user.user});
+                        const tokenFCM_id = await this.deviceTokenService.find({userId:notifi_user.user});
                         const link = `/api/post/${postObjId}/comment/${commentObjId}/like`;
-                        if(tokenFCM_id.Tokens !== null){
-                            await this.notificationService.createNotificationFCM
-                            (
-                                notifi_user.user +'',
-                                USER_TYPE.USER,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                                tokenFCM_id.Tokens,
-                                user.displayName,
-                                user.imageURL
-                            );
-                        }
-                        else
-                        {
-                            await this.notificationService.createNotification
-                            (
-                                notifi_user.user +'',
-                                USER_TYPE.USER,
-                                req.user.id + '',
-                                USER_TYPE.USER,
-                                NOTIFICATION_TYPE.LIKE,
-                                notification_comment,
-                                link,
-                            );
+                        for(let r= 0; r<tokenFCM_id.length; r++){
+                            if(tokenFCM_id[r].Tokens !== null){
+                                await this.notificationService.createNotificationFCM
+                                (
+                                    notifi_user.user +'',
+                                    USER_TYPE.USER,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                    tokenFCM_id[r].Tokens,
+                                    user.displayName,
+                                    user.imageURL
+                                );
+                            }
+                            else
+                            {
+                                await this.notificationService.createNotification
+                                (
+                                    notifi_user.user +'',
+                                    USER_TYPE.USER,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notification_comment,
+                                    link,
+                                );
+                            }
                         }
                     }
                 }
