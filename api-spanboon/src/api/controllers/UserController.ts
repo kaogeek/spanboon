@@ -123,12 +123,12 @@ export class UserController {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
             }
-            else if(tokenFCM !== null){
+            else if(deleteFCM !== null){
                 for(let i = 0 ; i<deleteFCM.length; i++){
                     await this.deviceTokenService.delete({userId:uid,token:deleteFCM[i].Tokens});
                 }
             }
-            else if(tokenFCM === null){
+            else if(deleteFCM === null){
                 const deleteNull = await this.deviceTokenService.find({userId:uid});
                 for(let i = 0; i<deleteNull.length; i++){
                     await this.deviceTokenService.delete({userId:deleteNull[i].id});
@@ -309,7 +309,9 @@ export class UserController {
                             USER_TYPE.USER,
                             NOTIFICATION_TYPE.FOLLOW,
                             notification_follower,
-                            link
+                            link,
+                            who_follow_you.displayName,
+                            who_follow_you.imageURL
                         );
                     }
                     // else{

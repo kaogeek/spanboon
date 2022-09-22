@@ -148,10 +148,7 @@ export class ProfileFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/user/' + userId + '/follow';
-      const currentToken = localStorage.getItem('currentToken') ? localStorage.getItem('currentToken') : '';
-      let body: any = {
-        'tokenFCM':currentToken
-      };
+      let body: any = {};
       let options = this.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
