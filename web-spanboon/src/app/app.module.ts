@@ -31,7 +31,9 @@ import { SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "angul
 import { OverlayModule } from '@angular/cdk/overlay';
 import { initializeApp } from "firebase/app";
 import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+
 initializeApp(environment.firebase);
 
 // material ag
@@ -60,7 +62,6 @@ import {
 } from './components/shares/directive/directives';
 
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
@@ -522,6 +523,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     RouterModule.forRoot(APP_ROUTES),
     SocialLoginModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     // AutocompleteLibModule,
     // MentionModule,
     NgxTributeModule,

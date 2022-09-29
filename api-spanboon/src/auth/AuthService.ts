@@ -106,8 +106,6 @@ export class AuthService {
 
         const user = await this.userRepository.findOne({ where: { _id: uid } });
 
-        console.log(user);
-
         let providerName = PROVIDER.EMAIL;
         if (type !== undefined && type !== null) {
             if ('FB' === type) {

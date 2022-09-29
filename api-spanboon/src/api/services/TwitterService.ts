@@ -160,7 +160,6 @@ export class TwitterService {
                     reject('Access token was not found');
                     return;
                 }
-
                 let url: string = TwitterService.ROOT_URL + '/2/users/' + twitterUserId + '/tweets?tweet.fields=created_at';
                 if (paramsOption !== undefined && paramsOption !== null && paramsOption !== '') {
                     let appendString = '';
@@ -180,7 +179,6 @@ export class TwitterService {
 
                 const req = https.request(url, httpOptions, (res) => {
                     const { statusCode, statusMessage } = res;
-
                     if (statusCode !== 200) {
                         reject('statusCode ' + statusCode + ' ' + statusMessage);
                         return;
@@ -651,7 +649,9 @@ export class TwitterService {
     public async fetchPostByTwitterUser(twitterUserId: string): Promise<any> {
         const result = {
             postCount: 0,
-            enable: false
+            enable: false,
+            NewPostId:{},
+            dataFeedTwi:{}
         };
 
         if (twitterUserId === undefined || twitterUserId === null || twitterUserId === '') {
@@ -660,7 +660,6 @@ export class TwitterService {
 
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
-
         try {
             let params = undefined;
             if (socialPostLog !== undefined && socialPostLog !== null) {
@@ -674,7 +673,8 @@ export class TwitterService {
                 return result;
             }
 
-            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId, params);
+            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId);
+            result.dataFeedTwi = twitterResults;
             if (twitterResults !== undefined && twitterResults.errors === undefined) {
                 const data = (twitterResults.data === undefined) ? [] : twitterResults.data;
                 const meta = (twitterResults.meta === undefined) ? {} : twitterResults.meta;
@@ -684,6 +684,7 @@ export class TwitterService {
                 if (data.length > 0) {
                     // update logs if logs found, if not exist create one.
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
+                    result.NewPostId = { _id: socialPostLog.id , properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
                     result.postCount = data.length;
                 } else {
                     // update last update

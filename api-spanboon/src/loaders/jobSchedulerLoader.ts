@@ -49,4 +49,18 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
             console.log('err: ' + err);
         }).end();
     });
+    
+    schedule.scheduleJob('*/1 * * * *', () =>{
+        const options: any ={
+            host: env.app.host,
+            port: env.app.port,
+            path: env.app.routePrefix + '/twitter/feed_tw',
+            method: 'GET'
+        };
+        http.request(options, (res) =>{
+            console.log('Feed twitter successfully;');
+        }).on('error', (err) =>{
+            console.log('err' +err);
+        }).end();
+    });
 };

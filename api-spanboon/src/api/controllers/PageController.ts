@@ -76,6 +76,7 @@ import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
+
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -479,7 +480,7 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
-
+        // gonna do 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
@@ -526,8 +527,30 @@ export class PageController {
             pageSocialAccount.storedCredentials = storedCredentials;
             pageSocialAccount.providerPageName = socialBinding.twitterPageName;
 
-            await this.pageSocialAccountService.create(pageSocialAccount);
-
+            const createTwitter = await this.pageSocialAccountService.create(pageSocialAccount);
+            const currentDateTime = moment().toDate();
+            const authTime = currentDateTime;
+            if(createTwitter){
+                // providerName: PROVIDER.TWITTER, enable:false, pageId: pageId,lastUpdated:current_time
+                // user
+                // pageId
+                // providerName
+                // providerUserId
+                // lastSocialPostId
+                // properties
+                // enable
+                // lastUpdated
+                const socialPostLogs = new SocialPostLogs();
+                socialPostLogs.user = userId;
+                socialPostLogs.pageId = pageObjId;
+                socialPostLogs.providerName = PROVIDER.TWITTER;
+                socialPostLogs.providerUserId = socialBinding.twitterUserId;
+                socialPostLogs.lastSocialPostId = null;
+                socialPostLogs.properties = properties;
+                socialPostLogs.enable = true;
+                socialPostLogs.lastUpdated = authTime;
+                await this.socialPostLogsService.create(socialPostLogs);
+            }
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
@@ -605,7 +628,9 @@ export class PageController {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
             }
-
+            const query = {pagerId: pageObjId};
+            const newValue = {$set:{enable:false}};
+            await this.socialPostLogsService.update(query,newValue);
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
