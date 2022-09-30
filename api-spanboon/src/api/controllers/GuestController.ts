@@ -39,6 +39,7 @@ import { ConfigService } from '../services/ConfigService';
 import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
+
 @JsonController()
 export class GuestController {
     constructor(
@@ -52,7 +53,7 @@ export class GuestController {
         private forgotPasswordActivateCodeService: ForgotPasswordActivateCodeService,
         private twitterService: TwitterService,
         private configService: ConfigService,
-        private deviceToken:DeviceTokenService
+        private deviceToken:DeviceTokenService,
     ) { }
 
     /**
@@ -695,10 +696,10 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
-        const tokenFCM = req.body.tokenFCM;
-        const deviceName = req.body.deviceName;
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
+            const tokenFCM = req.body.tokenFCM;
+            const deviceName = req.body.deviceName;
             if (userLogin) {
                 const userObjId = new ObjectID(userLogin.id);
                 if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
@@ -793,7 +794,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -838,7 +839,6 @@ export class GuestController {
         } else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
-
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                 return res.status(400).send(errorResponse);
@@ -879,7 +879,7 @@ export class GuestController {
 
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
-                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);

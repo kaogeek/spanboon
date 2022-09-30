@@ -5,14 +5,32 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>
  */
 
-import { JsonController, Res, Post, QueryParam, Get, Body } from 'routing-controllers';
+import { JsonController, Res, Post, QueryParam, Get, Body,Req,Authorized } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { TwitterService } from '../services/TwitterService';
 import { TwitterVerifyRequest } from './requests/TwitterVerifyRequest';
+// socialPostLogsService
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+// pageService 
+import { PageService } from '../services/PageService';
+// socialPostService
+import { SocialPostService } from '../services/SocialPostService';
+import { Posts } from '../models/Posts';
+import { SocialPost } from '../models/SocialPost';
+import { PostsService } from '../services/PostsService';
+import { POST_TYPE } from '../../constants/PostType';
+import { PROVIDER } from '../../constants/LoginProvider';
+import moment from 'moment';
 
 @JsonController('/twitter')
 export class TwitterController {
-    constructor(private twitterService: TwitterService) { }
+    constructor(
+        private twitterService: TwitterService,
+        private socialPostLogsService:SocialPostLogsService,
+        private pageService:PageService,
+        private socialPostService:SocialPostService,
+        private postsService:PostsService
+        ) { }
 
     /**
      * @api {post} /api/twitter/request_token Search Config API
@@ -99,5 +117,88 @@ export class TwitterController {
             const errorResponse = ResponseUtil.getSuccessResponse('Cannot get access token', err);
             return res.status(400).send(errorResponse);
         }
+    }
+    @Get('/feed_tw')
+    public async FeedTwitter(@Req() request: any, @Res() response: any): Promise<any> {
+        // const result = await this.twitterService.getTwitterUserTimeLine('2244994945', {since_id: '1514727372779520020'});
+        // console.log('result',result);
+        // return response.status(200).send(result);
+
+        // const result = await this.twitterService.fetchPostByTwitterUser('3051797173');
+        // return response.status(200).send(result);
+
+        // search from logs that not update in 10 min
+        const lastUpdated = moment().toDate(); // current date
+        // search only page mode
+        const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
+        const newPostResult = [];
+        for (const socialLog of socialPostLogList) {
+            console.log('socialLog: ', socialLog);
+            console.log('pageId: ', socialLog.pageId);
+            console.log('user: ', socialLog.user);
+
+            // search page
+            const page = await this.pageService.findOne({ _id: socialLog.pageId });
+            if (page === undefined) {
+                continue;
+            }
+
+            // if has in socialPost so continue
+            const socialPost = await this.socialPostService.findOne({ socialType: PROVIDER.TWITTER, socialId: socialLog.providerUserId });
+            if (socialPost !== undefined) {
+                continue;
+            }
+
+            // for page
+            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialLog.providerUserId);
+            if (twitterPostList !== null ) {
+                const checkPostSocial = await this.socialPostService.findOne({socialId:twitterPostList.dataFeedTwi.data[0].id});
+                if(checkPostSocial === undefined){
+                    const twPostId = twitterPostList.dataFeedTwi.data[0].id;
+                    const text = twitterPostList.dataFeedTwi.data[0].text;
+                    const today = moment().toDate();
+
+                    // create post
+                    const postPage: Posts = new Posts();
+                    postPage.title = 'โพสต์จากทวิตเตอร์';
+                    postPage.detail = text;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = page.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = today;
+                    postPage.startDateTime = today;
+                    postPage.story = null;
+                    postPage.pageId = socialLog.pageId;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = socialLog.pageId;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = socialLog.pageId;
+                    newSocialPost.postByType = 'PAGE';
+                    newSocialPost.socialId = twPostId;
+                    newSocialPost.socialType = PROVIDER.TWITTER;
+                    await this.socialPostService.create(newSocialPost);
+                }else{
+                    continue;
+                }
+            }
+        }
+
+        return response.status(200).send(newPostResult);
     }
 }

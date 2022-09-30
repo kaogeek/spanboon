@@ -12,6 +12,7 @@ import { SeoService } from './services/SeoService.service';
 import { environment } from "../environments/environment";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { ObservableManager } from './services/ObservableManager.service';
+import { ToastrService } from 'ngx-toastr';
 
 const NOTI_CHECK_SUBJECT: string = 'noti.check';
 
@@ -31,7 +32,7 @@ export class AppComponent {
   public slideNotiTimeout: any;
   public apiBaseURL = environment.apiBaseURL;
   private observManager: ObservableManager;
-
+  private toastr: ToastrService;
   public static readonly NOTI_CHECK_SUBJECT: string = NOTI_CHECK_SUBJECT;
 
   public mockmessage4: object[] = [
@@ -55,7 +56,7 @@ export class AppComponent {
     { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: false, link: "/page/tesssss/post/62cf933f61ea6e01944d7bf6" } },
   ]
 
-  constructor(router: Router, observManager: ObservableManager) {
+  constructor(router: Router, observManager: ObservableManager,toastr: ToastrService) {
     this.router = router;
     this.observManager = observManager;
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
