@@ -46,7 +46,13 @@ export class AuthenManager {
   public login(username: string, password: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = {};
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body: any = {
+        "username": username,
+        "password": password,
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
+      };
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });

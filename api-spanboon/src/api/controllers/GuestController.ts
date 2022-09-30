@@ -696,10 +696,10 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
+        const tokenFCM = req.body.tokenFCM;
+        const deviceName = req.body.deviceName;
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
-            const tokenFCM = req.body.tokenFCM;
-            const deviceName = req.body.deviceName;
             if (userLogin) {
                 const userObjId = new ObjectID(userLogin.id);
                 if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
