@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>
  */
 
-import { JsonController, Res, Post, QueryParam, Get, Body,Req,Authorized } from 'routing-controllers';
+import { JsonController, Res, Post, QueryParam, Get, Body,Req } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { TwitterService } from '../services/TwitterService';
 import { TwitterVerifyRequest } from './requests/TwitterVerifyRequest';

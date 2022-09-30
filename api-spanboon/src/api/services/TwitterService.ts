@@ -661,13 +661,13 @@ export class TwitterService {
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
         try {
-            let params = undefined;
+            // let params = undefined;
             if (socialPostLog !== undefined && socialPostLog !== null) {
                 if (!socialPostLog.enable) {
                     return result;
                 }
                 result.enable = socialPostLog.enable;
-                params = { since_id: socialPostLog.lastSocialPostId };
+                // params = { since_id: socialPostLog.lastSocialPostId };
             } else {
                 // no socialPostLogs so this is enable = false mode;
                 return result;
