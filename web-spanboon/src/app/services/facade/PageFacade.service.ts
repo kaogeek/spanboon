@@ -511,7 +511,6 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
       let option = this.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
-
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

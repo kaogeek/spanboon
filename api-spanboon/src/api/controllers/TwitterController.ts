@@ -148,13 +148,12 @@ export class TwitterController {
             }
 
             // for page
-            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[0].providerUserId);
+            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
             if(twitterPostList !== null){
-                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[0].id});
-                console.log('checkPostSocial',checkPostSocial[r]);
+                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[r].id});
                 if(checkPostSocial[r] === undefined){
-                    const twPostId = twitterPostList.dataFeedTwi.data[0].id;
-                    const text = twitterPostList.dataFeedTwi.data[0].text;
+                    const twPostId = twitterPostList.dataFeedTwi.data[r].id;
+                    const text = twitterPostList.dataFeedTwi.data[r].text;
                     const today = moment().toDate();
 
                     // create post

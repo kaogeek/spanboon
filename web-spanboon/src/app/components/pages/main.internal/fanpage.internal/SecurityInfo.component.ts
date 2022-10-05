@@ -264,7 +264,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             this.showDialogError(err && err.error.name, undefined);
         });
         this.pageFacade.getFetchFeedTwitter(this.pageId).then((res: any) => {
-            this.autoFetchPostTwitter = res.enable;
+            this.autoFetchPostTwitter = res;
         }).catch((err: any) => {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);

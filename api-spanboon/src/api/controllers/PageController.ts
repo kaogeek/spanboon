@@ -2470,9 +2470,9 @@ export class PageController {
 
         const config = await this.socialPostLogsService.findOne({pageId: pageObjId });
         if (config) {
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Unable to Get Page Config', undefined));
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Unable to Get Page Config', false));
         }
     }
     /**
