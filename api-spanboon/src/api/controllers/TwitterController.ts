@@ -152,8 +152,8 @@ export class TwitterController {
             if(twitterPostList !== null){
                 const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[r].id});
                 if(checkPostSocial[r] === undefined){
-                    const twPostId = twitterPostList.dataFeedTwi.data[r].id;
-                    const text = twitterPostList.dataFeedTwi.data[r].text;
+                    const twPostId = twitterPostList.dataFeedTwi.data[0].id;
+                    const text = twitterPostList.dataFeedTwi.data[0].text;
                     const today = moment().toDate();
 
                     // create post
