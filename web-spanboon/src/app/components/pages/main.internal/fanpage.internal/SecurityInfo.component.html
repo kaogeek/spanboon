@@ -154,7 +154,7 @@
 
             <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="autoPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoPostTwitter"
-                    (change)="onChangeSlide($event , 'twitter')"></mat-slide-toggle>
+                    (change)="onChangeSlideTW_POST($event , 'twitter')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -210,7 +210,7 @@
 
             <div class="link-connect" *ngIf="!isLoadingTwitter" [class.active]="autoFetchPostTwitter">
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="autoFetchPostTwitter"
-                    (change)="onChangeSlideFetchPost($event , 'twitter')"></mat-slide-toggle>
+                    (change)="onChangeSlideTW_FETCH($event , 'twitter')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoadingTwitter" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>

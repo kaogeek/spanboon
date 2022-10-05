@@ -50,6 +50,7 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
         }).end();
     });
     
+    // fetch feed twitter
     schedule.scheduleJob('*/1 * * * *', () =>{
         const options: any ={
             host: env.app.host,

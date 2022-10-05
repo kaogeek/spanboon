@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Get, Body } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Get, Body, Post } from 'routing-controllers';
 import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
@@ -49,10 +49,9 @@ export class FacebookWebhookController {
      * @apiErrorExample {json} WebHook for page feed
      * HTTP/1.1 500 Internal Server Error
      */
-    @Get('/page_feeds')
+    @Post('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
-
         // Parse the query params
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
