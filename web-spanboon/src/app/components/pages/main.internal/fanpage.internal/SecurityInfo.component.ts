@@ -263,8 +263,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
         });
-        this.pageFacade.getConfigByPage(this.pageId, TWITTER_AUTO_FETCHPOST).then((res: any) => {
-            this.autoFetchPostTwitter = res.value;
+        this.pageFacade.getFetchFeedTwitter(this.pageId).then((res: any) => {
+            this.autoFetchPostTwitter = res;
         }).catch((err: any) => {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
@@ -294,6 +294,86 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             console.log('err ', err)
         })
     }
+
+
+    public onChangeSlideTW_POST(event:any, social:string){
+        var isAutoPost = false;
+        if (social === 'twitter') {
+            // twitter
+            if (!this.connectTwitter) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostTwitter = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        if(isAutoPost){
+            let autopost: string = '';
+            if (social === 'twitter') {
+                autopost = TWITTER_AUTO_POST;
+            }
+            let config = {
+                value: event.checked,
+                type: "boolean"
+            }
+            this.pageFacade.getEditConfig(this.pageId, config,autopost).then((res: any) => {
+                if (res.name === TWITTER_AUTO_POST) {
+                    this.autoPostTwitter = res.value;
+                }
+            }).catch((err: any) => {
+                console.log('err ', err)
+            });
+        }
+    }
+
+    public onChangeSlideTW_FETCH(event:any, social:string){
+        var isAutoPost = false;
+        if (social === 'twitter') {
+            // twitter
+            if (!this.connectTwitter) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostTwitter = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        let config = {
+            value: event.checked,
+            type: "boolean"
+        }
+        this.pageFacade.fetchFeedTwitter(this.pageId, config).then((res: any) => {
+            if (res.name === TWITTER_AUTO_POST) {
+                this.autoPostTwitter = res.value;
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
 
     public onChangeSlide(event: any, social: string) {
         var isAutoPost = false;

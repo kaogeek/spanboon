@@ -527,30 +527,8 @@ export class PageController {
             pageSocialAccount.storedCredentials = storedCredentials;
             pageSocialAccount.providerPageName = socialBinding.twitterPageName;
 
-            const createTwitter = await this.pageSocialAccountService.create(pageSocialAccount);
-            const currentDateTime = moment().toDate();
-            const authTime = currentDateTime;
-            if(createTwitter){
-                // providerName: PROVIDER.TWITTER, enable:false, pageId: pageId,lastUpdated:current_time
-                // user
-                // pageId
-                // providerName
-                // providerUserId
-                // lastSocialPostId
-                // properties
-                // enable
-                // lastUpdated
-                const socialPostLogs = new SocialPostLogs();
-                socialPostLogs.user = userId;
-                socialPostLogs.pageId = pageObjId;
-                socialPostLogs.providerName = PROVIDER.TWITTER;
-                socialPostLogs.providerUserId = socialBinding.twitterUserId;
-                socialPostLogs.lastSocialPostId = null;
-                socialPostLogs.properties = properties;
-                socialPostLogs.enable = true;
-                socialPostLogs.lastUpdated = authTime;
-                await this.socialPostLogsService.create(socialPostLogs);
-            }
+            await this.pageSocialAccountService.create(pageSocialAccount);
+
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', undefined));
@@ -628,9 +606,8 @@ export class PageController {
                 const errorResponse: any = { status: 0, message: 'Can not unbind social account.' };
                 return res.status(200).send(errorResponse);
             }
-            const query = {pagerId: pageObjId};
-            const newValue = {$set:{enable:false}};
-            await this.socialPostLogsService.update(query,newValue);
+
+            await this.socialPostLogsService.delete({pagerId: pageObjId});
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
@@ -2423,6 +2400,81 @@ export class PageController {
         }
     }
 
+    @Post('/:id/twitter_fetch_enable')
+    @Authorized('user')
+    public async twitterFetch(@Param('id') id: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const currentDateTime = moment().toDate();
+        const authTime = currentDateTime;
+        const page = await this.pageSocialAccountService.findOne({ where: { page: pageObjId } });
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        if(page){
+            // providerName: PROVIDER.TWITTER, enable:false, pageId: pageId,lastUpdated:current_time
+            // user
+            // pageId
+            // providerName
+            // providerUserId
+            // lastSocialPostId
+            // properties
+            // enable
+            // lastUpdated
+            const socialPostLogsService = await this.socialPostLogsService.findOne({pageId:pageObjId});
+            if(socialPostLogsService){
+                const query = {pageId:pageObjId};
+                const newValue = {$set:{enable:configValue.value}};
+                await this.socialPostLogsService.update(query,newValue);
+            }else{
+                const socialPostLogs = new SocialPostLogs();
+                socialPostLogs.user = userId;
+                socialPostLogs.pageId = pageObjId;
+                socialPostLogs.providerName = PROVIDER.TWITTER;
+                socialPostLogs.providerUserId = page.providerPageId;
+                socialPostLogs.lastSocialPostId = null;
+                socialPostLogs.properties = page.properties;
+                socialPostLogs.enable = configValue.value;
+                socialPostLogs.lastUpdated = authTime;
+                await this.socialPostLogsService.create(socialPostLogs);
+            }
+        }
+        else{
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
+        }
+        return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully binding Page Twitter Social auto post.', true));
+    }
+
+    @Get('/:id/twitter_fetch_enable')
+    @Authorized('user')
+    public async getTwitterFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const config = await this.socialPostLogsService.findOne({pageId: pageObjId });
+        if (config) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
+        } else {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Unable to Get Page Config', false));
+        }
+    }
     /**
      * @api {put} /api/page/:id/config/:name Edit Page Config API
      * @apiGroup Page
