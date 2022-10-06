@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Get, Body, Post } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Body, Post } from 'routing-controllers';
 import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';

@@ -133,7 +133,6 @@ export class TwitterController {
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
         const newPostResult = [];
         for (let r = 0 ; r<socialPostLogList.length; r++) {
-
             // search page
             const page = await this.pageService.find({ ownerUser: socialPostLogList[r].user });
             // checked enable post social log enable === true
@@ -149,13 +148,15 @@ export class TwitterController {
 
             // for page
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
-            if(twitterPostList !== null){
-                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[r].id});
-                if(checkPostSocial[r] === undefined){
-                    const twPostId = twitterPostList.dataFeedTwi.data[0].id;
-                    const text = twitterPostList.dataFeedTwi.data[0].text;
+            for(let i = 0 ; i < twitterPostList.dataFeedTwi.data.length; i ++){
+                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[i].id});
+                console.log('checkPostSocial',checkPostSocial[i] === undefined);
+                if(checkPostSocial[i] === undefined){
+                    console.log('test5555');
+                    const twPostId = twitterPostList.dataFeedTwi.data[i].id;
+                    const text = twitterPostList.dataFeedTwi.data[i].text;
                     const today = moment().toDate();
-
+    
                     // create post
                     const postPage: Posts = new Posts();
                     postPage.title = 'โพสต์จากทวิตเตอร์';
@@ -182,7 +183,7 @@ export class TwitterController {
                     postPage.visibility = null;
                     postPage.ranges = null;
                     const createPostPageData: Posts = await this.postsService.create(postPage);
-
+    
                     const newSocialPost = new SocialPost();
                     newSocialPost.pageId = socialPostLogList[r].pageId;
                     newSocialPost.postId = createPostPageData.id;
@@ -190,9 +191,10 @@ export class TwitterController {
                     newSocialPost.postByType = 'PAGE';
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
-                    await this.socialPostService.create(newSocialPost);
+                    await this.socialPostService.create(newSocialPost);  
                 }
                 else{
+                    console.log('test6666');
                     continue;
                 }
             }
