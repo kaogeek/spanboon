@@ -149,10 +149,9 @@ export class TwitterController {
             // for page
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
             for(let i = 0 ; i < twitterPostList.dataFeedTwi.data.length; i ++){
-                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[i].id});
-                console.log('checkPostSocial',checkPostSocial[i] === undefined);
+                const checkPostSocial = await this.socialPostService.find({socialType:'TWITTER',socialId:twitterPostList.dataFeedTwi.data[i].id});
+
                 if(checkPostSocial[i] === undefined){
-                    console.log('test5555');
                     const twPostId = twitterPostList.dataFeedTwi.data[i].id;
                     const text = twitterPostList.dataFeedTwi.data[i].text;
                     const today = moment().toDate();
@@ -194,7 +193,6 @@ export class TwitterController {
                     await this.socialPostService.create(newSocialPost);  
                 }
                 else{
-                    console.log('test6666');
                     continue;
                 }
             }
