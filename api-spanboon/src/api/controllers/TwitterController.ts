@@ -134,8 +134,13 @@ export class TwitterController {
         const newPostResult = [];
         for (let r = 0 ; r<socialPostLogList.length; r++) {
             // search page
+            const page = await this.pageService.findOne({where:{_id:socialPostLogList[r].pageId}});
+            // checked enable post social log enable === true
+            if (page === undefined) {
+                continue;
+            }
+
             // for page
-            const page = await this.pageService.findAll({id:socialPostLogList[r].pageId});
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
             for(let i = 0 ; i < twitterPostList.dataFeedTwi.data.length; i ++){
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPostLogList[r].pageId,socialType:PROVIDER.TWITTER,socialId:twitterPostList.dataFeedTwi.data[i].id});
@@ -180,6 +185,7 @@ export class TwitterController {
                     await this.socialPostService.create(newSocialPost); 
                 }
                 else{
+                    console.log('test6666');
                     continue;
                 }
             }
