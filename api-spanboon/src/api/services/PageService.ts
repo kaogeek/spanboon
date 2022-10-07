@@ -82,6 +82,9 @@ export class PageService {
             }
         });
     }
+    public async findAll(findCondition?: any): Promise<any> {
+        return await this.pageRepository.find(findCondition);
+    }
 
     // find page
     public aggregate(query: any, options?: any): Promise<Page[]> {
@@ -113,4 +116,5 @@ export class PageService {
             return this.find(condition, options);
         }
     }
+
 }
