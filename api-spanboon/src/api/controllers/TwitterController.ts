@@ -134,29 +134,15 @@ export class TwitterController {
         const newPostResult = [];
         for (let r = 0 ; r<socialPostLogList.length; r++) {
             // search page
-            const page = await this.pageService.find({ ownerUser: socialPostLogList[r].user });
-            // checked enable post social log enable === true
-            if (page === undefined) {
-                continue;
-            }
-
-            // if has in socialPost so continue
-            const socialPost = await this.socialPostService.findOne({ socialType: PROVIDER.TWITTER, socialId: socialPostLogList[0].providerUserId });
-            if (socialPost !== undefined) {
-                continue;
-            }
-
             // for page
+            const page = await this.pageService.findAll({id:socialPostLogList[r].pageId});
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
             for(let i = 0 ; i < twitterPostList.dataFeedTwi.data.length; i ++){
-                const checkPostSocial = await this.socialPostService.find({socialId:twitterPostList.dataFeedTwi.data[i].id});
-                console.log('checkPostSocial',checkPostSocial[i] === undefined);
-                if(checkPostSocial[i] === undefined){
-                    console.log('test5555');
+                const checkPostSocial = await this.socialPostService.find({pageId:socialPostLogList[r].pageId,socialType:PROVIDER.TWITTER,socialId:twitterPostList.dataFeedTwi.data[i].id});
+                if(checkPostSocial[i] === undefined && checkPostSocial.length > 0){
                     const twPostId = twitterPostList.dataFeedTwi.data[i].id;
                     const text = twitterPostList.dataFeedTwi.data[i].text;
                     const today = moment().toDate();
-    
                     // create post
                     const postPage: Posts = new Posts();
                     postPage.title = 'โพสต์จากทวิตเตอร์';
@@ -191,10 +177,9 @@ export class TwitterController {
                     newSocialPost.postByType = 'PAGE';
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
-                    await this.socialPostService.create(newSocialPost);  
+                    await this.socialPostService.create(newSocialPost); 
                 }
                 else{
-                    console.log('test6666');
                     continue;
                 }
             }

@@ -48,7 +48,6 @@ export class PageObjectiveService {
             }
         });
     }
-
     // find PageObjective
     public findOne(findCondition: any): Promise<any> {
         return this.pageObjectiveRepository.findOne(findCondition);
