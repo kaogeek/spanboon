@@ -91,7 +91,6 @@ export class AuthenManager {
       let url: string = this.baseURL + '/login';
       let body: any = { idToken, authToken };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
@@ -160,13 +159,7 @@ export class AuthenManager {
   public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-      let body: any = {
-        "tokenFCM": tokenFCM,
-        "token": token,
-        "deviceName": "Chrome",
-      };
-
+      let body: any = {};
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
@@ -239,6 +232,7 @@ export class AuthenManager {
   }
 
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
+    console.log('registSocial',registSocial);
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
     }

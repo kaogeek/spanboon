@@ -808,12 +808,8 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            const expiresAt = checkIdToken.expire;
-            const today = moment().toDate();        
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
+            // const expiresAt = checkIdToken.expire;
+            // const today = moment().toDate();
             const userId = checkIdToken.userId;
             const googleUser = await this.googleService.getGoogleUser(userId, authToken);
             if (googleUser === null || googleUser === undefined) {
@@ -829,10 +825,10 @@ export class GuestController {
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where:{providerName: PROVIDER.GOOGLE} });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
-                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: loginToken, userId:checkIdToken.userId }, env.SECRET_KEY);
                 }
             }
                  
