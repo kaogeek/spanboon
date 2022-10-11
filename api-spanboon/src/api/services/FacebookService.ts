@@ -113,14 +113,16 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             this.getFBUserId(accessToken).then((result: any) => {
                 if (result.error) { reject(result.error); return; }
-
+                console.log('facebookService_1',result);
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
                     }
-
-                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }, { signURL: true }).then((authUser) => {
+                    console.log('options',facebook_setup.FACEBOOK_APP_ID);
+                    console.log('facebookService_3',auth);
+                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
+                        console.log('facebookService_4',authUser);
                         if (authUser) {
                             authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });

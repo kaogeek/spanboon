@@ -16,6 +16,7 @@ import { AuthenticationId } from '../api/models/AuthenticationId';
 import { UserRepository } from '../api/repositories/UserRepository';
 import { FacebookService } from '../api/services/FacebookService';
 import { TwitterService } from '../api/services/TwitterService';
+import { GoogleService } from '../api/services/GoogleService';
 import { AuthenticationIdService } from '../api/services/AuthenticationIdService';
 import { ObjectUtil } from '../utils/Utils';
 import moment from 'moment';
@@ -24,8 +25,13 @@ import { PROVIDER } from '../constants/LoginProvider';
 @Service()
 export class AuthService {
 
-    constructor(@OrmRepository() private userRepository: UserRepository, private facebookService: FacebookService,
-        private twitterService: TwitterService, private authenticationIdService: AuthenticationIdService) { }
+    constructor(@OrmRepository() 
+    private userRepository: UserRepository,
+    private facebookService: FacebookService,
+    private twitterService: TwitterService, 
+    private authenticationIdService: AuthenticationIdService,
+    private googleService: GoogleService,
+    ) { }
 
     public async parseBasicAuthFromRequest(req: express.Request): Promise<any> {
         const authorization = req.header('authorization');
@@ -75,7 +81,19 @@ export class AuthService {
                     if (UserId !== undefined) {
                         UserId += ';TW';
                     }
-                } else {
+                } else if (mode === 'GG'){
+                    const ggToken:any = await jwt.verify(token,env.SECRET_KEY);
+                    if(ggToken.token !== undefined){
+                        const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
+                        if(ggUserObj !== undefined ){
+                            UserId = ggUserObj.authId.user;
+                        }
+                    }
+                    if(UserId !== undefined){
+                        UserId += ';GG';
+                    }
+                }
+                else {
                     UserId = await this.decryptToken(token);
 
                     if (UserId !== undefined) {

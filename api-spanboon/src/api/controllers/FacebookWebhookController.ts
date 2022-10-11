@@ -56,7 +56,6 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-
         // Checks if a token and mode is in the query string of the request
         if (mode && token) {
             // Checks the mode and token sent is correct

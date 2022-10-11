@@ -185,7 +185,6 @@ export class TwitterController {
                     await this.socialPostService.create(newSocialPost); 
                 }
                 else{
-                    console.log('test6666');
                     continue;
                 }
             }

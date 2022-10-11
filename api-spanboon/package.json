@@ -43,6 +43,8 @@
     "@types/passport": "^1.0.3",
     "@types/paypal-rest-sdk": "^1.7.5",
     "apidoc": "^0.22.1",
+    "apple-signin": "^1.0.9",
+    "apple-signin-auth": "^1.7.4",
     "array-to-tree": "^3.3.2",
     "aws-sdk": "^2.673.0",
     "bcrypt": "4.0.1",

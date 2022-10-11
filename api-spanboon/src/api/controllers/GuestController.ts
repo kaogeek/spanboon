@@ -357,7 +357,10 @@ export class GuestController {
                     }
                 }
             }
-        } else if (mode === PROVIDER.GOOGLE) {
+        } else if(mode === PROVIDER.APPLE){
+            // register apple
+        } 
+        else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const googleUserId = users.googleUserId;
             const authToken = users.authToken;
@@ -746,9 +749,15 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid username' };
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.FACEBOOK) {
+        } else if (mode === PROVIDER.APPLE){
+            // validate apple sign in
+        } 
+        
+        else if (mode === PROVIDER.FACEBOOK) {
             const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
-            if (checkAccessToken === undefined) {
+            console.log('loginParam',loginParam.token);
+            console.log('checkAccessToken',checkAccessToken);
+           if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
@@ -776,6 +785,7 @@ export class GuestController {
             let fbUser = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
+                console.log('fbUser',fbUser);
             } catch (err) {
                 console.log(err);
             }
@@ -808,12 +818,8 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            const expiresAt = checkIdToken.expire;
-            const today = moment().toDate();        
-            if (expiresAt < today.getTime()) {
-                const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-                return res.status(400).send(errorResponse);
-            }
+            // const expiresAt = checkIdToken.expire;
+            // const today = moment().toDate();
             const userId = checkIdToken.userId;
             const googleUser = await this.googleService.getGoogleUser(userId, authToken);
             if (googleUser === null || googleUser === undefined) {
@@ -829,10 +835,10 @@ export class GuestController {
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { _id: query } });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where:{providerName: PROVIDER.GOOGLE} });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
-                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: loginToken, userId:checkIdToken.userId }, env.SECRET_KEY);
                 }
             }
                  
