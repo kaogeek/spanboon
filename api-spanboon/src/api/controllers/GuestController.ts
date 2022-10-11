@@ -357,7 +357,10 @@ export class GuestController {
                     }
                 }
             }
-        } else if (mode === PROVIDER.GOOGLE) {
+        } else if(mode === PROVIDER.APPLE){
+            // register apple
+        } 
+        else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const googleUserId = users.googleUserId;
             const authToken = users.authToken;
@@ -746,9 +749,15 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid username' };
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.FACEBOOK) {
+        } else if (mode === PROVIDER.APPLE){
+            // validate apple sign in
+        } 
+        
+        else if (mode === PROVIDER.FACEBOOK) {
             const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
-            if (checkAccessToken === undefined) {
+            console.log('loginParam',loginParam.token);
+            console.log('checkAccessToken',checkAccessToken);
+           if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
@@ -776,6 +785,7 @@ export class GuestController {
             let fbUser = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
+                console.log('fbUser',fbUser);
             } catch (err) {
                 console.log(err);
             }

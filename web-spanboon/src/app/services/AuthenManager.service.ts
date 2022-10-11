@@ -159,7 +159,9 @@ export class AuthenManager {
   public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = {};
+      let body: any = {
+        "token":token
+      };
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
@@ -169,6 +171,7 @@ export class AuthenManager {
       let httpOptions = {
         headers: headers
       };
+      console.log('what_is_id_test_?',environment.facebookAppId);
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,

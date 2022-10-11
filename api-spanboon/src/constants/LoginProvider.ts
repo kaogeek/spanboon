@@ -9,5 +9,6 @@ export const PROVIDER = {
     EMAIL: 'EMAIL',
     FACEBOOK: 'FACEBOOK',
     TWITTER: 'TWITTER',
-    GOOGLE: 'GOOGLE'
+    GOOGLE: 'GOOGLE',
+    APPLE: 'APPLE',
 };

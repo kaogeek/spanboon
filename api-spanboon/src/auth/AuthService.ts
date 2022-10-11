@@ -83,10 +83,8 @@ export class AuthService {
                     }
                 } else if (mode === 'GG'){
                     const ggToken:any = await jwt.verify(token,env.SECRET_KEY);
-                    console.log('ggToken',ggToken);
                     if(ggToken.token !== undefined){
                         const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
-                        console.log('ggUserObj',ggUserObj.authId.user);
                         if(ggUserObj !== undefined ){
                             UserId = ggUserObj.authId.user;
                         }
