@@ -842,7 +842,11 @@ export class GuestController {
                 }
             }
                  
-        } else if (mode === PROVIDER.TWITTER) {
+        } 
+        else if(mode === PROVIDER.APPLE){
+            console.log('pass');
+        } 
+        else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {

@@ -2,6 +2,7 @@
  * @license Spanboon Platform v0.1
  * (c) 2020-2021 KaoGeek. http://kaogeek.dev
  * License: MIT. https://opensource.org/licenses/MIT
+ * 
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
@@ -10,6 +11,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ObservableManager } from './ObservableManager.service';
 import { SearchFilter, User, Asset } from '../models/models';
+import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
+import { resolve } from 'url';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -85,6 +88,7 @@ export class AuthenManager {
       });
     });
   }
+
 
   public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -162,21 +166,19 @@ export class AuthenManager {
       let body: any = {
         "token":token
       };
-      let headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-      });
+      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
-      let httpOptions = {
-        headers: headers
-      };
+      let httpOptions = { headers };
       console.log('what_is_id_test_?',environment.facebookAppId);
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
           user: response.data.user
         };
+        console.log('token',result.token);
+        console.log('user',result.user.id)
         this.token = result.token;
         this.user = result.user;
         this.facebookMode = true;
@@ -188,6 +190,7 @@ export class AuthenManager {
 
         resolve(result);
       }).catch((error: any) => {
+        console.log('error',error);
         reject(error);
       });
     });

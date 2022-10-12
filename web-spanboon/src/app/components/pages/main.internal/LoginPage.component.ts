@@ -203,7 +203,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public clickLoginGoogle(): void {
+  clickLoginGoogle(): void {
     // continue google ;
     
     // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
@@ -268,7 +268,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true, 
         xfbml: true,
-        version: 'v10.0'
+        version: 'v15.0'
       });
       window['FB'].AppEvents.logPageView();
     };
