@@ -28,4 +28,5 @@ export class CreateUserRequest extends BasePageUserRegisterRequest {
     public gender: number;
     public customGender: string;
     public asset: any;
+    public appleUserId: any;
 }

@@ -21,6 +21,7 @@ export class ChatRoomFacade extends AbstractFacade {
     super(http, authMgr);
   }
 
+  // get message from API
   public getChatMessages(roomId: string, asPage?: string): Observable<any> {
     let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
 
@@ -35,6 +36,7 @@ export class ChatRoomFacade extends AbstractFacade {
     );
   }
 
+  // get message from API
   public getChatMessage(roomId: string, asPage?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
@@ -53,6 +55,7 @@ export class ChatRoomFacade extends AbstractFacade {
     });
   }
 
+  // send message to API
   public sendChatMessage(roomId: string, data: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/chatroom/' + roomId + "/message";

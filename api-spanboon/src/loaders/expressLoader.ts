@@ -17,6 +17,8 @@ import { currentUserChecker } from '../auth/currentUserChecker';
 import {env}  from '../env';
 import cors from 'cors';
 import compression from 'compression';
+import { Server } from 'socket.io';
+
 export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
@@ -29,7 +31,32 @@ export const expressLoader: MicroframeworkLoader = async(settings: Microframewor
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
-        app.listen(env.app.port);
+        const server = app.listen(env.app.port);
+        const io = new Server(server, {
+            cors:{
+                origin: process.env.weblocalhost,
+                credentials:true,
+            }
+        });
+        // store all of our online users inside this map 
+        io.on('connection', (socket) => {
+            console.log('a user connected' +socket.id);
+            global.chatSocket = socket; // store the chat socket inside the global chat
+            socket.on('disconnect',()=>{
+                console.log('user disconnected' +socket.id);
+            });
+            socket.on('add-user',(userId) =>{
+                global.onlineUsers.set(userId,socket.id);
+            });
+            socket.on('send-msg',(data)=>{
+                console.log(data);
+                const sendUserSocket = global.onlineUsers.get(data.to);
+                if(sendUserSocket){
+                    socket.to(sendUserSocket).emit('msg-receive',data.message);
+                }
+            });
+          });
+
         const expressApp: Application = useExpressServer(app, {
             cors: true,
             classTransformer: true,

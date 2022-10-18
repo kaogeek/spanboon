@@ -150,6 +150,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
     this.scrollChat();
   }
 
+  // user get room 
+  // get online client on chat room socket io
   public getChatObserv() {
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       this.observManager.subscribe('chat_message', (roomId: any) => {
@@ -190,6 +192,8 @@ export class ChatMessage extends AbstractPage implements OnInit {
     }
   }
 
+  // send message 
+  // already to send message with socket io
   public onChatSend(chatMessage: any) {
     if (chatMessage !== null && chatMessage !== undefined && chatMessage !== '') {
       let data = {};
