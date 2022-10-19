@@ -203,24 +203,22 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  clickLoginGoogle(): void {
+  public clickLoginGoogle(): void {
     // continue google ;
-    
     // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+      if (result !== null && result !== undefined) {
+        let googleToken = {
+        googleUserId: result.id,
+        authToken: result.authToken,
+        idToken: result.idToken
+      };
 
-    if (result !== null && result !== undefined) {
-      let googleToken = {
-      googleUserId: result.id,
-      authToken: result.authToken,
-      idToken: result.idToken
-    };
+      this.googleToken = googleToken;
 
-    this.googleToken = googleToken;
-
-    this._ngZone.run(() => this.loginGoogle());
+      this._ngZone.run(() => this.loginGoogle());
         }
-      }).catch((error) => {
+    }).catch((error) => {
       console.log('error >>> ', error);
     });
 

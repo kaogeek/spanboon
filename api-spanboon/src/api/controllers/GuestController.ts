@@ -833,6 +833,8 @@ export class GuestController {
     @Post('/login')
     public async login(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;
+        const modHeaders = req.headers.mod_headers;
+        console.log('modHeaders',modHeaders);
         const loginUsername = loginParam.username;
         const loginPassword = loginParam.password;
         let loginToken: any;
@@ -965,7 +967,7 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const idToken = loginParam.idToken;
             const authToken = loginParam.authToken;
-            const checkIdToken = await this.googleService.verifyIdToken(idToken);
+            const checkIdToken = await this.googleService.verifyIdToken(idToken,modHeaders);
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);

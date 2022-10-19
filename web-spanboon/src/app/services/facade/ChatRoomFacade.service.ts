@@ -9,19 +9,22 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject,BehaviorSubject } from "rxjs";
 import { tap } from "rxjs/operators";
+
 
 @Injectable()
 export class ChatRoomFacade extends AbstractFacade {
 
   public chatMessages: Subject<any> = new Subject();
+  public message$: BehaviorSubject<string> = new BehaviorSubject('');
 
   constructor(http: HttpClient, authMgr: AuthenManager) {
     super(http, authMgr);
   }
 
   // get message from API
+
   public getChatMessages(roomId: string, asPage?: string): Observable<any> {
     let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
 
@@ -37,6 +40,7 @@ export class ChatRoomFacade extends AbstractFacade {
   }
 
   // get message from API
+  
   public getChatMessage(roomId: string, asPage?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + "/chatroom/" + roomId + "/message";

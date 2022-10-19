@@ -9,7 +9,7 @@ import { Output, ViewContainerRef } from '@angular/core';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { interval, Observable, Subject, Subscription, timer } from 'rxjs';
+import { interval, Observable, Subject, Subscription, timer,BehaviorSubject } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { FULFILLMENT_STATUS } from '../../../FulfillmentStatus';
 import { Asset } from '../../../models/models';
@@ -19,6 +19,7 @@ import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import Glightbox from 'glightbox';
+import { io } from "socket.io-client";
 
 const PAGE_NAME: string = 'ChatMessage';
 const REFRESH_LIST_CASE = 'authen.listcase';
@@ -100,6 +101,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
   public cloneMessage: any;
   public ganY: any;
   public ganX: any;
+  public message$: BehaviorSubject<string> = new BehaviorSubject('');
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager,
     chatRoomFacade: ChatRoomFacade, assetFacade: AssetFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, ref: ChangeDetectorRef, chatFacade: ChatFacade) {
@@ -116,6 +118,7 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
     this.observManager.createSubject(REFRESH_LIST_CASE);
   }
+  socket = io('http://localhost:9000/api');
 
   public ngOnInit(): void {
     for (let message of this.data) {
@@ -151,48 +154,52 @@ export class ChatMessage extends AbstractPage implements OnInit {
   }
 
   // user get room 
+
   // get online client on chat room socket io
   public getChatObserv() {
     if (!this.isCaseConfirmed && !this.isCaseHasPost) {
       this.observManager.subscribe('chat_message', (roomId: any) => {
         // this will be your http get request 
         this.chatRoomFacade.getChatMessages(roomId, this.asPage).subscribe(async (res) => {
-          if (res.data !== null && res.data !== undefined) {
-            for (let newMessage of res.data) {
-              var isMessage = false;
-              for (let message of this.cloneMessage) {
-                if (newMessage.chatMessage.id === message.chatMessage.id) {
-                  isMessage = true;
-                  break;
+          
+            if (res.data !== null && res.data !== undefined) {
+              for (let newMessage of res.data) {
+                var isMessage = false;
+                for (let message of this.cloneMessage) {
+                  if (newMessage.chatMessage.id === message.chatMessage.id) {
+                    isMessage = true;
+                    break;
+                  }
                 }
-              }
-              if (!isMessage) {
-                this.markRead(newMessage.chatMessage.id, this.asPage);
-                if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
-                  this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
-                    if (image.status === 1) {
-                      if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                        newMessage.senderImage = '';
+                if (!isMessage) {
+                  this.markRead(newMessage.chatMessage.id, this.asPage);
+                  if (newMessage.senderImage !== null && newMessage.senderImage !== undefined && newMessage.senderImage !== '') {
+                    this.assetFacade.getPathFile(newMessage.senderImage).then((image: any) => {
+                      if (image.status === 1) {
+                        if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
+                          newMessage.senderImage = '';
+                        } else {
+                          newMessage.senderImage = image.data;
+                        }
                       } else {
-                        newMessage.senderImage = image.data;
+                        newMessage.senderImage = '';
                       }
-                    } else {
-                      newMessage.senderImage = '';
-                    }
-                  });
+                    });
+                  }
+                  this.data.push(newMessage);
+                  this.cloneMessage = JSON.parse(JSON.stringify(this.data));
                 }
-                this.data.push(newMessage);
-                this.cloneMessage = JSON.parse(JSON.stringify(this.data));
               }
+              this.scrollChat();
             }
-            this.scrollChat();
-          }
+            
         });
       });
     }
   }
 
   // send message 
+
   // already to send message with socket io
   public onChatSend(chatMessage: any) {
     if (chatMessage !== null && chatMessage !== undefined && chatMessage !== '') {
@@ -204,7 +211,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
         data = { message: chatMessage };
       }
 
-      this.sendChatMessage(this.chatRoomId, data);
     } else {
       return;
     }
