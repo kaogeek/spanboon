@@ -14,6 +14,7 @@ import { SearchFilter, User, Asset } from '../models/models';
 import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
 
+
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
 const TOKEN_MODE_KEY: string = 'mode';
@@ -22,7 +23,7 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 // only page user can login
 @Injectable()
 export class AuthenManager {
-
+  
   public static readonly TOKEN_KEY: string = TOKEN_KEY;
   public static readonly TOKEN_MODE_KEY: string = TOKEN_MODE_KEY;
 
@@ -34,7 +35,11 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
-
+  
+  deviceInfo = null;
+  isDesktopDevice: boolean;
+  isTablet: boolean;
+  isMobile: boolean;
   constructor(http: HttpClient, observManager: ObservableManager) {
     this.http = http;
     this.observManager = observManager;
@@ -44,6 +49,7 @@ export class AuthenManager {
     this.googleMode = false;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
+
   }
 
   public login(username: string, password: string, mode?: string): Promise<any> {
@@ -93,7 +99,11 @@ export class AuthenManager {
   public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = { idToken, authToken };
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body: any = { idToken, authToken,
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
+       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
@@ -126,7 +136,11 @@ export class AuthenManager {
   public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = {};
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body: any = {
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
+      };
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -171,14 +185,13 @@ export class AuthenManager {
         headers = headers.set('mode', mode);
       }
       let httpOptions = { headers };
-      console.log('what_is_id_test_?',environment.facebookAppId);
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        console.log('response',response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
         };
-        console.log('token',result.token);
-        console.log('user',result.user.id)
+
         this.token = result.token;
         this.user = result.user;
         this.facebookMode = true;

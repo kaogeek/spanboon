@@ -31,32 +31,7 @@ export const expressLoader: MicroframeworkLoader = async(settings: Microframewor
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
-        const server = app.listen(env.app.port);
-        const io = new Server(server, {
-            cors:{
-                origin: process.env.weblocalhost,
-                credentials:true,
-            }
-        });
-        // store all of our online users inside this map 
-        io.on('connection', (socket) => {
-            console.log('a user connected' +socket.id);
-            global.chatSocket = socket; // store the chat socket inside the global chat
-            socket.on('disconnect',()=>{
-                console.log('user disconnected' +socket.id);
-            });
-            socket.on('add-user',(userId) =>{
-                global.onlineUsers.set(userId,socket.id);
-            });
-            socket.on('send-msg',(data)=>{
-                console.log(data);
-                const sendUserSocket = global.onlineUsers.get(data.to);
-                if(sendUserSocket){
-                    socket.to(sendUserSocket).emit('msg-receive',data.message);
-                }
-            });
-          });
-
+        app.listen(env.app.port);
         const expressApp: Application = useExpressServer(app, {
             cors: true,
             classTransformer: true,

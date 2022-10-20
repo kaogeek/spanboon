@@ -27,6 +27,7 @@ import { MentionModule } from 'angular-mentions';
 import { NgxTributeModule } from 'ngx-tribute';
 import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
+
 import { 
   SocialLoginModule, 
   GoogleLoginProvider, 

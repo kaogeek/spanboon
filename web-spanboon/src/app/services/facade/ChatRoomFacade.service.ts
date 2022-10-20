@@ -27,7 +27,6 @@ export class ChatRoomFacade extends AbstractFacade {
 
   public getChatMessages(roomId: string, asPage?: string): Observable<any> {
     let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
-
     if (asPage !== null && asPage !== undefined && asPage !== "") {
       url += "?asPage=" + asPage;
     }
@@ -44,7 +43,6 @@ export class ChatRoomFacade extends AbstractFacade {
   public getChatMessage(roomId: string, asPage?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
-
       if (asPage !== null && asPage !== undefined && asPage !== "") {
         url += "?asPage=" + asPage;
       }
@@ -62,6 +60,7 @@ export class ChatRoomFacade extends AbstractFacade {
   // send message to API
   public sendChatMessage(roomId: string, data: any): Promise<any> {
     return new Promise((resolve, reject) => {
+
       let url: string = this.baseURL + '/chatroom/' + roomId + "/message";
       let body: any = {};
 

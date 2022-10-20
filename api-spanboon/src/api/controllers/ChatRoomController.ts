@@ -411,11 +411,9 @@ export class ChatRoomController {
     @Authorized('user')
     public async getRoomChatMessage(@Param('id') roomId: string, @QueryParam('asPage') asPage: string, @QueryParam('offset') offset: number, @QueryParam('limit') limit: number, @Res() res: any, @Req() req: any): Promise<ChatMessageResponse> {
         const senderObjId = new ObjectID(req.user.id);
-
         // search room if exist
         const roomObjId = new ObjectID(roomId);
         const room: ChatRoom = await this.chatRoomService.findOne({ _id: roomObjId, deleted: false });
-
         // check accessibility
         if (!room) {
             const errorResponse = ResponseUtil.getErrorResponse('ChatRoom was not found.', undefined);
@@ -472,7 +470,6 @@ export class ChatRoomController {
                 return res.status(400).send(errorResponse);
             }
         }
-
         const searchFilter = new SearchFilter();
         searchFilter.limit = limit;
         searchFilter.offset = offset;
@@ -563,7 +560,6 @@ export class ChatRoomController {
         // find room
         const roomObjId = new ObjectID(roomId);
         const room: ChatRoom = await this.chatRoomService.findOne({ _id: roomObjId, deleted: false });
-
         if (room === undefined || room === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Chatroom was not Found.', undefined);
             return res.status(400).send(errorResponse);
@@ -618,7 +614,7 @@ export class ChatRoomController {
         chatMsg.filePath = filePath;
         chatMsg.videoURL = videoURL;
         chatMsg.deleted = false;
-        chatMsg.isRead = false;
+        chatMsg.isRead = true;
         chatMsg.createdByUsername = req.user.username;
         chatMsg.createdBy = senderObjId;
         chatMsg.message = message.message;
@@ -627,6 +623,7 @@ export class ChatRoomController {
             chatMsg.messageType = CHAT_MESSAGE_TYPE.INFO;
         }
         const chatMsgResult: any = await this.chatMessageService.createChatMessage(chatMsg);
+        console.log('chatMsgResult',chatMsgResult);
         if(chatMsgResult){
             if(room.participants[0].senderType === 'PAGE')
             {

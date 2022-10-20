@@ -202,7 +202,6 @@ export class GuestController {
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
             const fbSignedRequest = users.fbSignedRequest;
             const properties = { fbAccessExpTime: fbAccessExpirationTime, fbSigned: fbSignedRequest };
-
             if (fbUserId === null || fbUserId === undefined || fbUserId === '') {
                 const errorResponse = ResponseUtil.getErrorResponse('Facebook UserId is required', undefined);
                 return res.status(400).send(errorResponse);
@@ -230,6 +229,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('Facebook was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
+
                 const userExrTime = await this.getUserLoginExpireTime();
                 userData = this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
@@ -942,7 +942,6 @@ export class GuestController {
             } catch (err) {
                 console.log(err);
             }
-
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -957,7 +956,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -989,6 +988,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where:{providerName: PROVIDER.GOOGLE} });
+                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken, userId:checkIdToken.userId }, env.SECRET_KEY);
@@ -1037,10 +1037,11 @@ export class GuestController {
                 const query = { _id: twAuthenId.id };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
-
+                
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
                     // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);

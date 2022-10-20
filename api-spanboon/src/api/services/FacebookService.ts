@@ -103,7 +103,6 @@ export class FacebookService {
                     reject(response.error);
                     return;
                 }
-
                 resolve(response);
             });
         });

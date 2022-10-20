@@ -19,7 +19,6 @@ import { environment } from '../../../../environments/environment';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { TooltipProfile } from '../tooltip/TooltipProfile.component';
 import Glightbox from 'glightbox';
-import { io } from "socket.io-client";
 
 const PAGE_NAME: string = 'ChatMessage';
 const REFRESH_LIST_CASE = 'authen.listcase';
@@ -118,7 +117,6 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
     this.observManager.createSubject(REFRESH_LIST_CASE);
   }
-  socket = io('http://localhost:9000/api');
 
   public ngOnInit(): void {
     for (let message of this.data) {
@@ -207,8 +205,10 @@ export class ChatMessage extends AbstractPage implements OnInit {
 
       if (this.asPage !== null && this.asPage !== undefined && this.asPage !== '') {
         data = { message: chatMessage, asPageId: this.asPage };
+        this.chatRoomFacade.sendChatMessage(this.chatRoomId,data);
       } else {
         data = { message: chatMessage };
+        this.chatRoomFacade.sendChatMessage(this.chatRoomId,data);
       }
 
     } else {
