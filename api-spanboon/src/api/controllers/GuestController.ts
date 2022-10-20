@@ -834,7 +834,6 @@ export class GuestController {
     public async login(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;
         const modHeaders = req.headers.mod_headers;
-        console.log('modHeaders',modHeaders);
         const loginUsername = loginParam.username;
         const loginPassword = loginParam.password;
         let loginToken: any;
@@ -892,20 +891,20 @@ export class GuestController {
         } 
         
         else if(mode === PROVIDER.APPLE){
-            const Apple_Id:any = req.body.apple.result.user;
-            const Apple_Properties:any = req.body.apple.result.stsTokenManager;
-            const Apple_Client = await this.authenticationIdService.findOne({ where:{id: Apple_Id.uid} });
-            if (Apple_Client === null || Apple_Client === undefined) {
+            const appleId:any = req.body.apple.result.user;
+            const appleProperties:any = req.body.apple.result.stsTokenManager;
+            const appleClient = await this.authenticationIdService.findOne({ where:{id: appleId.uid} });
+            if (appleClient === null || appleClient === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             }else{
                 const currentDateTime = moment().toDate();
-                const updateQuery = {id:Apple_Id.uid,providerName: PROVIDER.APPLE };
-                const newValue = {$set:{lastAuthenTime: currentDateTime, storedCredentials: Apple_Properties.stsTokenManager.accessToken, expirationDate:  Apple_Properties.stsTokenManager.expirationTime}};
+                const updateQuery = {id:appleId.uid,providerName: PROVIDER.APPLE };
+                const newValue = {$set:{lastAuthenTime: currentDateTime, storedCredentials: appleProperties.stsTokenManager.accessToken, expirationDate:  appleProperties.stsTokenManager.expirationTime}};
                 const update_Apple =  await this.authenticationIdService.update(updateQuery,newValue);
                 if(update_Apple){
-                    loginToken = jwt.sign({ token: Apple_Id.stsTokenManager.accessToken, userId:Apple_Id.uid}, env.SECRET_KEY);
-                    loginUser = Apple_Id.uid;
+                    loginToken = jwt.sign({ token: appleId.stsTokenManager.accessToken, userId:appleId.uid}, env.SECRET_KEY);
+                    loginUser = appleId.uid;
                 }
             }
         }
