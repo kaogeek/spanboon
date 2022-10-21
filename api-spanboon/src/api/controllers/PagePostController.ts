@@ -591,7 +591,7 @@ export class PagePostController {
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
                         for(let j = 0; j<tokenFCM_id.length; j++){
                             if(tokenFCM_id[j].Tokens !== undefined){
-                                const link = '/post/' + createPostPageData.id;
+                                const link = `/page/${page_post.name}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM_id[j].userId,
                                     USER_TYPE.PAGE,
@@ -606,7 +606,7 @@ export class PagePostController {
                                 );
                             }
                             else{
-                                const link = '/post/' + createPostPageData.id;
+                                const link = `/page/${page_post.name}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     createPostPageData.pageId,
                                     USER_TYPE.PAGE,
@@ -634,7 +634,7 @@ export class PagePostController {
                         const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
                         for(let j = 0; j<tokenFCM_id.length; j++){
                             if(tokenFCM_id[j].Tokens !== undefined){
-                                const link = '/post/'+createPostPageData.id;
+                                const link = `/profile/${user_post.displayName}/post/`+createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM_id[j].userId,
                                     USER_TYPE.USER,
@@ -649,7 +649,7 @@ export class PagePostController {
                                 );
                             }
                             else{
-                                const link = '/post/'+createPostPageData.id;
+                                const link = `/profile/${user_post.displayName}/post/`+createPostPageData.id;
                                 await this.notificationService.createNotification(
                                     tokenFCM_id[j].userId,
                                     USER_TYPE.USER,

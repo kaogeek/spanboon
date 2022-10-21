@@ -81,7 +81,7 @@ export class NotificationService {
         }
     }
 
-    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any,displayName?:any,image?:any,count?:any): Promise<any> {
+    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any,displayName?:any,image?:any,count?:any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -90,15 +90,14 @@ export class NotificationService {
         notification.fromUserType = fromUserType;
         notification.title = title;
         notification.link = link;
-        notification.type = notificationType;
         notification.deleted = false;
         notification.data = data; 
         const token = String(data);
         const toUser = String(toUserId);
         const displayNameFCM = String(displayName);
+        const link_noti = String(link);
         const image_url = String(image);
         const count_data = String(count);
-
         if(String(notification.toUser) !== String(notification.fromUser)){
             if(count !== null){
                 const payload = 
@@ -107,11 +106,10 @@ export class NotificationService {
                         toUser,
                         fromUserId,
                         title,
-                        link,
+                        link_noti,
                         notificationType,
                         displayNameFCM,
                         image_url,
-                        count_data
                     }
                 };
                 Promise.all([await admin.messaging().sendToDevice(token,payload)]);
@@ -124,10 +122,11 @@ export class NotificationService {
                         toUser,
                         fromUserId,
                         title,
-                        link,
+                        link_noti,
                         notificationType,
                         displayNameFCM,
                         image_url,
+                        count_data
 
                     }
                 };
