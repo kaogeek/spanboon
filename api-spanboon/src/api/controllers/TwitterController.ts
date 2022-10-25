@@ -149,11 +149,11 @@ export class TwitterController {
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             const queue = leftSide;
             let count = 0;
-            if(count > 100) {
-                break;
-            }
             while (queue.length > 0) {
                 count += 1;
+                if(count > 100){
+                    break;
+                }
                 const dataFeedTwi = queue.shift();
                 const checkPostSocial = await this.socialPostService.find({ pageId: socialPostLogList[r].pageId, socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 if (checkPostSocial[count] === undefined) {
