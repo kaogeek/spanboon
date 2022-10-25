@@ -148,15 +148,12 @@ export class TwitterController {
             const middle = Math.floor(twitterPostList.dataFeedTwi.data.length / 3);
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             const queue = leftSide;
-            let count = 0;
-            while (queue.length > 0) {
-                count += 1;
-                if(count > 100){
-                    break;
-                }
+            for (let j = 0 ; j< queue.length; j++ ) {
                 const dataFeedTwi = queue.shift();
-                const checkPostSocial = await this.socialPostService.find({ pageId: socialPostLogList[r].pageId, socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
-                if (checkPostSocial[count] === undefined) {
+                const checkPostSocial = await this.socialPostService.find({pageId:socialPostLogList[r].pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
+                const checkFeed = checkPostSocial.shift();
+                if (checkFeed === undefined ) {
+                    console.log('pass1');
                     const twPostId = dataFeedTwi.id;
                     const text = dataFeedTwi.text;
                     const today = moment().toDate();
@@ -193,10 +190,11 @@ export class TwitterController {
                     newSocialPost.postByType = 'PAGE';
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
-                    await this.socialPostService.create(newSocialPost);
+                    await this.socialPostService.create(newSocialPost); 
 
                 }
                 else {
+                    console.log('pass2');
                     continue;
                 }
             }
