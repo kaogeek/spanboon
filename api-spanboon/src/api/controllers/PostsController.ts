@@ -66,8 +66,8 @@ export class PostsController {
         private s3Service: S3Service,
         private configService: ConfigService,
         private assetService: AssetService,
-        private deviceTokenService:DeviceTokenService,
-        private userService:UserService
+        private deviceTokenService: DeviceTokenService,
+        private userService: UserService
     ) { }
 
     // New Post API
@@ -950,156 +950,154 @@ export class PostsController {
                 // who_post.pageId !== null
                 // เพิ่มฟิลด์
                 // displayName
-                if(likeCreate.likeAsPage !== null){
-                // page to page
-                    const who_post = await this.postsService.findOne({_id:likeCreate.subjectId});
-                    if(who_post.pageId !== null){
-                        const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
-                        const page = await this.pageService.findOne({_id:who_post.pageId});
-                        const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.find({userId:user_ownerPage.id});
-                        const notificationText = page_like.name+'กดถูกใจโพสต์ของเพจ'+page.name;
-                        const link = `/page/${page.name}/post/` + who_post.id;
-                        for(let r = 0; r<tokenFCM_id.length; r++){
-                            if(tokenFCM_id[r].Tokens !== null){
+                if (likeCreate.likeAsPage !== null) {
+                    // page to page
+                    const whoPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
+                    if (whoPost.pageId !== null) {
+                        const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
+                        const page = await this.pageService.findOne({ _id: whoPost.pageId });
+                        const userOwnerPage = await this.userService.findOne({ _id: page.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: userOwnerPage.id });
+                        const notificationText = pageLike.name + 'กดถูกใจโพสต์ของเพจ' + page.name;
+                        const link = `/page/${page.name}/post/` + whoPost.id;
+                        for (let r = 0; r < tokenFCMId.length; r++) {
+                            if (tokenFCMId[r].Tokens !== null) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     page.id,
                                     undefined,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.PAGE,
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-                                    tokenFCM_id[r].Tokens,
-                                    page_like.name,
-                                    page_like.imageURL,
+                                    tokenFCMId[r].Tokens,
+                                    pageLike.name,
+                                    pageLike.imageURL,
                                 );
                             }
-                            else{
+                            else {
                                 await this.pageNotificationService.notifyToPageUser(
                                     page.id,
                                     undefined,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.PAGE,
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-                                    page_like.name,
-                                    page_like.imageURL,
+                                    pageLike.name,
+                                    pageLike.imageURL,
                                 );
                             }
                         }
                     }
-                // page to user
-                    else{
-                        const page_like = await this.pageService.findOne({_id:likeCreate.likeAsPage});
-                        const user_ownerPage = await this.userService.findOne({_id:who_post.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.find({userId:who_post.ownerUser});
-                        const notificationText = page_like.name+'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${user_ownerPage.displayName}/post/` + who_post.id;
-                        for(let r=0; r<tokenFCM_id.length; r++){
-                            if(tokenFCM_id[r].Tokens !== null){
+                    // page to user
+                    else {
+                        const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
+                        const userOwnerPage = await this.userService.findOne({ _id: whoPost.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
+                        const notificationText = pageLike.name + 'กดถูกใจโพสต์ของคุณ';
+                        const link = `/profile/${userOwnerPage.displayName}/post/` + whoPost.id;
+                        for (let r = 0; r < tokenFCMId.length; r++) {
+                            if (tokenFCMId[r].Tokens !== null) {
                                 await this.notificationService.createNotificationFCM(
-                                    who_post.ownerUser,
+                                    whoPost.ownerUser,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationText,
                                     link,
-                                    tokenFCM_id[r].Tokens,
-                                    page_like.name,
-                                    page_like.imageURL
+                                    tokenFCMId[r].Tokens,
+                                    pageLike.name,
+                                    pageLike.imageURL
                                 );
                             }
-                            else{
+                            else {
                                 await this.notificationService.createNotification(
-                                    who_post.ownerUser,
+                                    whoPost.ownerUser,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationText,
                                     link,
-                                    page_like.name,
-                                    page_like.imageURL
+                                    pageLike.name,
+                                    pageLike.imageURL
                                 );
                             }
-                        }    
+                        }
                     }
                 }
-                else{
+                else {
                     // user to page
-                    const who_post = await this.postsService.findOne({_id:likeCreate.subjectId});
-                    if(who_post.pageId !== null)
-                    {
-                        const user_like = await this.userService.findOne({_id:likeCreate.userId});
-                        const page = await this.pageService.findOne({_id:who_post.pageId});
+                    const whoPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
+                    const userLikeId = await this.userService.findOne({ _id: likeCreate.userId });
+                    if (whoPost.pageId !== null) {
+                        const page = await this.pageService.findOne({ _id: whoPost.pageId });
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCM_id = await this.deviceTokenService.find({userId:who_post.ownerUser});
-                        const notificationText = user_like.displayName+'กดถูกใจโพสต์ของเพจ'+page.name;
-                        const link = `/page/${page.name}/post/` + who_post.id;
-                        for(let r = 0; r<tokenFCM_id.length; r++){
-                            if(tokenFCM_id[r].Tokens !== null){
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
+                        const notificationText = userLikeId.displayName + 'กดถูกใจโพสต์ของเพจ' + page.name;
+                        const link = `/page/${page.name}/post/` + whoPost.id;
+                        for (let r = 0; r < tokenFCMId.length; r++) {
+                            if (tokenFCMId[r].Tokens !== null) {
                                 await this.pageNotificationService.notifyToPageUserFcm
-                                (
-                                    who_post.pageId +'',
-                                    undefined,
-                                    req.user.id +'',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                    tokenFCM_id[r].Tokens,
-                                    user_like.displayName,
-                                    user_like.imageURL
-                                );
+                                    (
+                                        whoPost.pageId + '',
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCMId[r].Tokens,
+                                        userLikeId.displayName,
+                                        userLikeId.imageURL
+                                    );
                             }
-                            else{
+                            else {
                                 await this.pageNotificationService.notifyToPageUser(
-                                    who_post.pageId +'',
+                                    whoPost.pageId + '',
                                     undefined,
-                                    req.user.id +'',
+                                    req.user.id + '',
                                     USER_TYPE.PAGE,
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-                                    user_like.displayName,
-                                    user_like.imageURL
+                                    userLikeId.displayName,
+                                    userLikeId.imageURL
                                 );
                             }
                         }
                     }
                     // user to user 
-                    else{
-                        const user_like = await this.userService.findOne({_id:likeCreate.userId});
+                    else {
                         // owner post 
-                        const owner_Post = await this.postsService.findOne({_id:likeCreate.subjectId});
+                        const ownerPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
                         // find owner
-                        const ownerPost = await this.userService.findOne({_id:owner_Post.ownerUser});
+                        const ownerPostFile = await this.userService.findOne({ _id: ownerPost.ownerUser });
                         // FCM device token owner post
-                        const tokenFCM_id = await this.deviceTokenService.find({userId:ownerPost.id});
-                        const notificationText = user_like.displayName +'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${ownerPost.displayName}/post/` + who_post.id;
-                        for(let r = 0; r<tokenFCM_id.length; r++){
-                            if(tokenFCM_id[r].Tokens !== null){
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.id });
+                        const notificationText = userLikeId.displayName + 'กดถูกใจโพสต์ของคุณ';
+                        const link = `/profile/${ownerPostFile.displayName}/post/` + whoPost.id;
+                        for (let r = 0; r < tokenFCMId.length; r++) {
+                            if (tokenFCMId[r].Tokens !== null) {
                                 await this.notificationService.createNotificationFCM
-                                (
-                                    owner_Post.ownerUser +'',
-                                    USER_TYPE.USER,
-                                    likeCreate.userId + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                    tokenFCM_id[r].Tokens,
-                                    user_like.displayName,
-                                    user_like.imageURL
-                                );
+                                    (
+                                        ownerPost.ownerUser + '',
+                                        USER_TYPE.USER,
+                                        likeCreate.userId + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCMId[r].Tokens,
+                                        userLikeId.displayName,
+                                        userLikeId.imageURL
+                                    );
                                 break;
-                            }else{
+                            } else {
                                 await this.notificationService.createNotificationFCM(
-                                    owner_Post.ownerUser +'',
+                                    ownerPost.ownerUser + '',
                                     USER_TYPE.USER,
                                     likeCreate.userId + '',
                                     USER_TYPE.USER,
