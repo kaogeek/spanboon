@@ -135,7 +135,6 @@ export class TwitterController {
         for (let r = 0; r < socialPostLogList.length; r++) {
             // search page
             const page = await this.pageService.find({ where: { _id: socialPostLogList[r].pageId } });
-
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
@@ -150,6 +149,9 @@ export class TwitterController {
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             const queue = leftSide;
             let count = 0;
+            if(count > 100) {
+                break;
+            }
             while (queue.length > 0) {
                 count += 1;
                 const dataFeedTwi = queue.shift();
