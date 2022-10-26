@@ -96,13 +96,13 @@ export class AuthenManager {
   }
 
 
-  public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-      let body: any = { idToken, authToken,
-        "tokenFCM": tokenFCM,
-        "deviceName": "Chrome",
+      let body: any = { 
+        idToken, 
+        authToken,
+        tokenFCM_GG
        };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -141,6 +141,7 @@ export class AuthenManager {
         "tokenFCM": tokenFCM,
         "deviceName": "Chrome",
       };
+      console.log('body',body);
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -174,11 +175,12 @@ export class AuthenManager {
   }
 
 
-  public loginWithFacebook(token: string, mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {
-        "token":token
+        "token":token,
+        tokenFCM_FB
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {

@@ -911,6 +911,9 @@ export class GuestController {
         
         else if (mode === PROVIDER.FACEBOOK) {
             const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
+            const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
+            const deviceFB = req.body.tokenFCM_FB.deviceName;
+
            if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
@@ -956,7 +959,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user });
+                    await this.deviceToken.createDeviceToken({deviceName:deviceFB,token:tokenFcmFB,userId:updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -966,6 +969,9 @@ export class GuestController {
             const idToken = loginParam.idToken;
             const authToken = loginParam.authToken;
             const checkIdToken = await this.googleService.verifyIdToken(idToken,modHeaders);
+            const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
+            const deviceGG = req.body.tokenFCM_GG.deviceName;
+
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
@@ -988,7 +994,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where:{providerName: PROVIDER.GOOGLE} });
-                    await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user });
+                    await this.deviceToken.createDeviceToken({deviceName:deviceGG,token:tokenFcmGG,userId:updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken, userId:checkIdToken.userId }, env.SECRET_KEY);
@@ -1000,6 +1006,7 @@ export class GuestController {
         else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
+            console.log('tokenFCM',req.body);
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                 return res.status(400).send(errorResponse);
