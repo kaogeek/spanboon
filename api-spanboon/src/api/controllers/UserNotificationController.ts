@@ -55,8 +55,7 @@ export class UserNotificationController {
             filter.take = limit;
         } else {
             filter.take = 5;
-        }
-
+        } 
         const userNotifications: Notification[] = await this.notificationService.find(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotifications);
 

@@ -282,12 +282,12 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-                const who_follow_you = await this.userService.findOne({_id:userFollow.userId});
-                const deviceToken = await this.deviceTokenService.find({userId:userFollow.subjectId});
-                const notification_follower = who_follow_you.displayName+'กดติดตามคุณ';
-                const link = `/profile/${who_follow_you.displayName}`;
-                for(let r = 0; r<deviceToken.length; r++){
-                    if(deviceToken[r].Tokens !== null){
+                const whoFollowYou = await this.userService.findOne({_id:userFollow.userId});
+                const tokenFCMId = await this.deviceTokenService.find({userId:userFollow.subjectId});
+                const notification_follower = whoFollowYou.displayName+'กดติดตามคุณ';
+                const link = `/profile/${whoFollowYou.displayName}`;
+                for(const tokenFCM of tokenFCMId){
+                    if(tokenFCM.Tokens !== null){
                         await this.notificationService.createNotificationFCM(
                             followCreate.subjectId,
                             USER_TYPE.USER,
@@ -296,9 +296,9 @@ export class UserController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notification_follower,
                             link,
-                            deviceToken[r].Tokens,
-                            who_follow_you.displayName,
-                            who_follow_you.imageURL
+                            tokenFCM.Tokens,
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
                         );
                     }
                     else {
@@ -310,8 +310,8 @@ export class UserController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notification_follower,
                             link,
-                            who_follow_you.displayName,
-                            who_follow_you.imageURL
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
                         );
                     }
                     // else{

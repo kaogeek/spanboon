@@ -132,25 +132,22 @@ export class TwitterController {
         // search only page mode
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
         const newPostResult = [];
-        for (let r = 0; r < socialPostLogList.length; r++) {
+        for (const socialPost of socialPostLogList) {
             // search page
-            const page = await this.pageService.find({ where: { _id: socialPostLogList[r].pageId } });
+            const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
 
             // for page
-            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPostLogList[r].providerUserId);
-            if (twitterPostList.dataFeedTwi.data.length < 3) {
-                return twitterPostList.dataFeedTwi.data.length;
-            }
+            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPost.providerUserId);
+            // console.log('twitterPostList',twitterPostList);
             const middle = Math.floor(twitterPostList.dataFeedTwi.data.length / 3);
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             const queue = leftSide;
-            for (let j = 0 ; j< queue.length; j++ ) {
-                const dataFeedTwi = queue.shift();
-                const checkPostSocial = await this.socialPostService.find({pageId:socialPostLogList[r].pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
+            for (const dataFeedTwi of queue) {
+                const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 const checkFeed = checkPostSocial.shift();
                 if (checkFeed === undefined ) {
                     console.log('pass1');
@@ -176,7 +173,7 @@ export class TwitterController {
                     postPage.createdDate = today;
                     postPage.startDateTime = today;
                     postPage.story = null;
-                    postPage.pageId = socialPostLogList[r].pageId;
+                    postPage.pageId = socialPost.pageId;
                     postPage.referencePost = null;
                     postPage.rootReferencePost = null;
                     postPage.visibility = null;
@@ -184,9 +181,9 @@ export class TwitterController {
                     const createPostPageData: Posts = await this.postsService.create(postPage);
 
                     const newSocialPost = new SocialPost();
-                    newSocialPost.pageId = socialPostLogList[r].pageId;
+                    newSocialPost.pageId = socialPost.pageId;
                     newSocialPost.postId = createPostPageData.id;
-                    newSocialPost.postBy = socialPostLogList[r].pageId;
+                    newSocialPost.postBy = socialPost.pageId;
                     newSocialPost.postByType = 'PAGE';
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
@@ -196,7 +193,7 @@ export class TwitterController {
                 else {
                     console.log('pass2');
                     continue;
-                }
+                } 
             }
         }
         return response.status(200).send(newPostResult);

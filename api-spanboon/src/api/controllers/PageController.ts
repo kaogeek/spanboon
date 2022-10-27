@@ -1921,11 +1921,11 @@ export class PageController {
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
-                const deviceToken = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
+                const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
                 const notificationFollower = whoFollowYou.displayName + 'กดติดตามเพจ' + page.pageUsername;
                 const link = `/profile/${whoFollowYou.displayName}`;
-                if (deviceToken !== undefined) {
-                    for (let r = 0; r < deviceToken.length; r++) {
+                if (tokenFCMId !== undefined) {
+                    for (const tokenFCM of tokenFCMId) {
                         await this.pageNotificationService.notifyToPageUserFcm(
                             followCreate.subjectId,
                             undefined,
@@ -1934,7 +1934,7 @@ export class PageController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notificationFollower,
                             link,
-                            deviceToken[0].Tokens,
+                            tokenFCM.Tokens,
                             whoFollowYou.displayName,
                             whoFollowYou.imageURL
                         );

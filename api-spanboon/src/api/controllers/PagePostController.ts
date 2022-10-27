@@ -588,18 +588,18 @@ export class PagePostController {
                     const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        for (let j = 0; j < tokenFCMId.length; j++) {
-                            if (tokenFCMId[j].Tokens !== undefined) {
+                        for (const tokenFCM of tokenFCMId) {
+                            if (tokenFCM.Tokens !== undefined) {
                                 const link = `/page/${pagePostId.name}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
-                                    tokenFCMId[j].userId,
+                                    tokenFCM.userId,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
                                     link,
-                                    tokenFCMId[j].Tokens,
+                                    tokenFCM.Tokens,
                                     pagePostId.pageUsername,
                                     pagePostId.imageURL
                                 );
@@ -630,18 +630,18 @@ export class PagePostController {
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        for (let j = 0; j < tokenFCMId.length; j++) {
-                            if (tokenFCMId[j].Tokens !== undefined) {
+                        for (const tokenFCM of tokenFCMId) {
+                            if (tokenFCM.Tokens !== undefined) {
                                 const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
-                                    tokenFCMId[j].userId,
+                                    tokenFCM.userId,
                                     USER_TYPE.USER,
                                     req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
                                     link,
-                                    tokenFCMId[j].Tokens,
+                                    tokenFCM.Tokens,
                                     userPost.displayName,
                                     userPost.imageURL
                                 );
@@ -649,7 +649,7 @@ export class PagePostController {
                             else {
                                 const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotification(
-                                    tokenFCMId[j].userId,
+                                    tokenFCM.userId,
                                     USER_TYPE.USER,
                                     req.user.id + '',
                                     USER_TYPE.USER,
