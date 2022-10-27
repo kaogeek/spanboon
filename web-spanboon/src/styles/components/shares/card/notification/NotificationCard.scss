@@ -59,8 +59,13 @@ notification-card {
                 > .image-err {
                     width: 48px;
                     height: 48px;
+                    object-fit: cover;
                     border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     background-color: rgb(160, 160, 160);
+                    font-size: 24px;
                 }
                 > .status {
                     position: absolute;

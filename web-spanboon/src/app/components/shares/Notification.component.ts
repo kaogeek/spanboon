@@ -5,23 +5,26 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { SimpleChanges } from '@angular/core';
-import { Component, Input, OnInit, EventEmitter } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
-import { CHAT_MESSAGE_TYPE } from '../../../app/ChatMessageTypes';
-import { AuthenManager, NotificationFacade, AssetFacade } from '../../services/services';
-import { ObservableManager } from '../../services/ObservableManager.service';
-import { AbstractPage } from '../pages/AbstractPage';
-import { AuthenCheckPage } from '../../components/pages/AuthenCheckPage.component';
+import { SimpleChanges } from "@angular/core";
+import { Component, Input, OnInit, EventEmitter } from "@angular/core";
+import { MatDialog } from "@angular/material";
+import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
+import { CHAT_MESSAGE_TYPE } from "../../../app/ChatMessageTypes";
+import {
+  AuthenManager,
+  NotificationFacade,
+  AssetFacade,
+} from "../../services/services";
+import { ObservableManager } from "../../services/ObservableManager.service";
+import { AbstractPage } from "../pages/AbstractPage";
+import { AuthenCheckPage } from "../../components/pages/AuthenCheckPage.component";
 
 @Component({
-  selector: 'btn-notification',
-  templateUrl: './Notification.component.html'
+  selector: "btn-notification",
+  templateUrl: "./Notification.component.html",
 })
 export class Notification extends AbstractPage implements OnInit {
-
   @Input()
   protected text: string = "ข้อความ";
   @Input()
@@ -58,27 +61,189 @@ export class Notification extends AbstractPage implements OnInit {
   public isObs: boolean;
 
   public mockmessage4: object[] = [
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg', status: 'COMMENT', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg', status: 'LIKE', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg', status: 'repost', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg', status: 'share', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ', image: 'https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD', status: 'POST', isRred: false } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: true } },
-    { notification: { title: 'การแจ้งเตือนใหม่', body: 'เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง', image: 'https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg', status: 'fullfill', isRred: false } },
-  ]
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
+        image:
+          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
+        status: "COMMENT",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
+        image:
+          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
+        status: "COMMENT",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
+        image:
+          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
+        status: "COMMENT",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
+        image:
+          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
+        status: "LIKE",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
+        image:
+          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
+        status: "LIKE",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
+        image:
+          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
+        status: "LIKE",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
+        image:
+          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
+        status: "repost",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
+        image:
+          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
+        status: "repost",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
+        image:
+          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
+        status: "repost",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
+        image:
+          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
+        status: "share",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
+        image:
+          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
+        status: "share",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
+        image:
+          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
+        status: "share",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
+        image:
+          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
+        status: "POST",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
+        image:
+          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
+        status: "POST",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
+        image:
+          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
+        status: "POST",
+        isRred: false,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
+        image:
+          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
+        status: "fullfill",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
+        image:
+          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
+        status: "fullfill",
+        isRred: true,
+      },
+    },
+    {
+      notification: {
+        title: "การแจ้งเตือนใหม่",
+        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
+        image:
+          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
+        status: "fullfill",
+        isRred: false,
+      },
+    },
+  ];
 
-  private mainPostLink: string = window.location.origin
+  private mainPostLink: string = window.location.origin;
   private observManager: ObservableManager;
 
   public router: Router;
@@ -86,8 +251,14 @@ export class Notification extends AbstractPage implements OnInit {
   public assetFacade: AssetFacade;
   public notificationFacade: NotificationFacade;
 
-
-  constructor(router: Router, authenManager: AuthenManager, dialog: MatDialog, observManager: ObservableManager, assetFacade: AssetFacade, notificationFacade: NotificationFacade) {
+  constructor(
+    router: Router,
+    authenManager: AuthenManager,
+    dialog: MatDialog,
+    observManager: ObservableManager,
+    assetFacade: AssetFacade,
+    notificationFacade: NotificationFacade
+  ) {
     super(null, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
@@ -99,32 +270,36 @@ export class Notification extends AbstractPage implements OnInit {
 
     this.preload = true;
 
-    this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_SUBJECT, (result: any) => {
-      setTimeout(() => {
-        this.isObs = true;
-        this.notiOffset + this.noti.length;
-        this.checkNotification();
-      }, 300);
-    });
+    this.observManager.subscribe(
+      AuthenCheckPage.NOTI_CHECK_SUBJECT,
+      (result: any) => {
+        setTimeout(() => {
+          this.isObs = true;
+          this.notiOffset + this.noti.length;
+          this.checkNotification();
+        }, 300);
+      }
+    );
 
-    this.observManager.subscribe(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, (result: any) => {
-      setTimeout(() => {
-        this.notiOffset + this.noti.length;
-        this.checkNotification();
-      }, 300);
-    });
-
+    this.observManager.subscribe(
+      AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT,
+      (result: any) => {
+        setTimeout(() => {
+          this.notiOffset + this.noti.length;
+          this.checkNotification();
+        }, 300);
+      }
+    );
   }
 
   public ngAfterViewInit(): void {
     setTimeout(() => {
       this.checkNotification();
       setTimeout(() => {
-        this.preload = false
+        this.preload = false;
       }, 1000);
     }, 1000);
   }
-
 
   public ngOnInit(): void {
     for (let index = 0; index < 3; index++) {
@@ -134,11 +309,14 @@ export class Notification extends AbstractPage implements OnInit {
 
   public scroll(event: any) {
     if (!this.isScrollNoti) {
-      if (event.target.offsetHeight + event.target.scrollTop >= (event.target.scrollHeight - 200)) {
+      if (
+        event.target.offsetHeight + event.target.scrollTop >=
+        event.target.scrollHeight - 200
+      ) {
         this.isScrollNoti = true;
         setTimeout(() => {
           this.observManager.publish(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, {
-            data: this.notiOffset
+            data: this.notiOffset,
           });
           setTimeout(() => {
             this.isScrollNoti = false;
@@ -171,14 +349,68 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   private checkNotification() {
-    if (this.notiisAll && this.notiisAll.length !== this.noti && this.noti !== undefined && this.noti !== null && this.noti.length) {
+    if (
+      this.notiisAll &&
+      this.notiisAll.length !== this.noti &&
+      this.noti !== undefined &&
+      this.noti !== null &&
+      this.noti.length
+    ) {
       for (let noti of this.noti) {
         if (!noti.notification.isRead) {
-          this.isObs ? this.notiisRead.splice(0, 0, { notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } }) : this.notiisRead.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
+          this.isObs
+            ? this.notiisRead.splice(0, 0, {
+                notification: {
+                  title: "การแจ้งเตือนใหม่",
+                  body: noti.notification.title,
+                  image: this.apiBaseURL + noti.sender.imageURL + '/image',
+                  status: noti.notification.type,
+                  isRred: noti.notification.isRead,
+                  id: noti.notification.id,
+                  link: noti.notification.link,
+                  createdDate: noti.notification.createdDate,
+                },
+              })
+            : this.notiisRead.push({
+                notification: {
+                  title: "การแจ้งเตือนใหม่",
+                  body: noti.notification.title,
+                  image: this.apiBaseURL + noti.sender.imageURL + '/image',
+                  status: noti.notification.type,
+                  isRred: noti.notification.isRead,
+                  id: noti.notification.id,
+                  link: noti.notification.link,
+                  createdDate: noti.notification.createdDate,
+                },
+              });
         }
         this.notiOffset++;
-        noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
-        this.isObs ? this.notiisAll.splice(0, 0, { notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } }) : this.notiisAll.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
+        noti.notification.linkPath = this.mainPostLink + noti.notification.link;
+        this.isObs
+          ? this.notiisAll.splice(0, 0, {
+              notification: {
+                title: "การแจ้งเตือนใหม่",
+                body: noti.notification.title,
+                image: this.apiBaseURL + noti.sender.imageURL+ '/image',
+                status: noti.notification.type,
+                isRred: noti.notification.isRead,
+                id: noti.notification.id,
+                link: noti.notification.link,
+                createdDate: noti.notification.createdDate,
+              },
+            })
+          : this.notiisAll.push({
+              notification: {
+                title: "การแจ้งเตือนใหม่",
+                body: noti.notification.title,
+                image: this.apiBaseURL + noti.sender.imageURL + '/image',
+                status: noti.notification.type,
+                isRred: noti.notification.isRead,
+                id: noti.notification.id,
+                link: noti.notification.link,
+                createdDate: noti.notification.createdDate,
+              },
+            });
       }
       this.setNotification();
     }
@@ -199,19 +431,21 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public markReadNoti(data) {
-    this.notificationFacade.markRead(data.notification.id)
+    this.notificationFacade.markRead(data.notification.id);
   }
 
   public redirectNotification(data) {
     if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) {
-      this.router.navigateByUrl(data.notification.link)
+      this.router.navigateByUrl(data.notification.link);
     } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT) {
-      this.router.navigateByUrl('/fulfill', { state: { room: data.notification.data } })
+      this.router.navigateByUrl("/fulfill", {
+        state: { room: data.notification.data },
+      });
     }
   }
 
   public markReadNotiAll() {
-    this.notificationFacade.clearAll()
+    this.notificationFacade.clearAll();
     this.showAlertDevelopDialog();
   }
 
@@ -225,8 +459,12 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public setData() {
-    this.messagelist.push(this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]);
-    this.messagelist2.push(this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]);
+    this.messagelist.push(
+      this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]
+    );
+    this.messagelist2.push(
+      this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]
+    );
     // this.messagelist.push(data);
     // setInterval(() => {
     //   this.mockMessage();
@@ -242,6 +480,4 @@ export class Notification extends AbstractPage implements OnInit {
   //     this.slideNoti = true;
   //   };
   // }
-
-
 }
