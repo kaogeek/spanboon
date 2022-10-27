@@ -150,10 +150,13 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public loginTwitter(token: string, token_secret: string, userId: string) {
     let mode = 'TWITTER';
+    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
     let twitter = {
       twitterOauthToken: token,
       twitterOauthTokenSecret: token_secret,
-      twitterUserId: userId
+      twitterUserId: userId,
+      "tokenFCM": tokenFCM,
+      "deviceName": "TWITTER",
     }
     this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
@@ -205,22 +208,21 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public clickLoginGoogle(): void {
     // continue google ;
-    
     // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
+      console.log('result',result);
+      if (result !== null && result !== undefined) {
+        let googleToken = {
+        googleUserId: result.id,
+        authToken: result.authToken,
+        idToken: result.idToken
+      };
 
-    if (result !== null && result !== undefined) {
-      let googleToken = {
-      googleUserId: result.id,
-      authToken: result.authToken,
-      idToken: result.idToken
-    };
+      this.googleToken = googleToken;
 
-    this.googleToken = googleToken;
-
-    this._ngZone.run(() => this.loginGoogle());
+      this._ngZone.run(() => this.loginGoogle());
         }
-      }).catch((error) => {
+    }).catch((error) => {
       console.log('error >>> ', error);
     });
 
@@ -228,8 +230,12 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginGoogle() {
     let mode = 'GOOGLE';
-
-    this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
+    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+    let tokenFCM_GG = {
+      "tokenFCM": tokenFCM,
+      "deviceName": "GOOGLE",
+    }
+    this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM_GG,mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -268,7 +274,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true, 
         xfbml: true,
-        version: 'v10.0'
+        version: 'v15.0'
       });
       window['FB'].AppEvents.logPageView();
     };
@@ -305,7 +311,12 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-    this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+    let tokenFCM_FB = {
+      "tokenFCM": tokenFCM,
+      "deviceName": "FACEBOOK",
+    }
+    this.authenManager.loginWithFacebook(this.accessToken.fbtoken, tokenFCM_FB,mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {

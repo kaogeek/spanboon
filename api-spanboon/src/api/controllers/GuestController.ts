@@ -53,7 +53,7 @@ export class GuestController {
         private forgotPasswordActivateCodeService: ForgotPasswordActivateCodeService,
         private twitterService: TwitterService,
         private configService: ConfigService,
-        private deviceToken:DeviceTokenService,
+        private deviceToken: DeviceTokenService,
     ) { }
 
     /**
@@ -195,14 +195,13 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             }
-        } else if (mode === PROVIDER.FACEBOOK){
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email }});
+        } else if (mode === PROVIDER.FACEBOOK) {
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
             const fbSignedRequest = users.fbSignedRequest;
             const properties = { fbAccessExpTime: fbAccessExpirationTime, fbSigned: fbSignedRequest };
-
             if (fbUserId === null || fbUserId === undefined || fbUserId === '') {
                 const errorResponse = ResponseUtil.getErrorResponse('Facebook UserId is required', undefined);
                 return res.status(400).send(errorResponse);
@@ -230,6 +229,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('Facebook was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
+
                 const userExrTime = await this.getUserLoginExpireTime();
                 userData = this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
@@ -247,7 +247,7 @@ export class GuestController {
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Facebook Success', result);
                     return res.status(200).send(successResponse);
                 }
-            } 
+            }
             else {
                 const newUser = this.createBasePageUser(users);
                 let providerList: any[];
@@ -357,9 +357,146 @@ export class GuestController {
                     }
                 }
             }
-        } else if(mode === PROVIDER.APPLE){
+        } else if (mode === PROVIDER.APPLE) {
             // register apple
-        } 
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            const appleUserId = users.appleUserId;
+            const authToken = users.authToken;
+            if (appleUserId === null || appleUserId === undefined || appleUserId === '') {
+                const errorResponse = ResponseUtil.getErrorResponse('Apple UserId is required', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            if (authToken === null || authToken === undefined || authToken === '') {
+                const errorResponse = ResponseUtil.getErrorResponse('Apple Token is required', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            const userExrTime = await this.getUserLoginExpireTime();
+            if (resultUser) {
+                const currentAuthenId = await this.authenticationIdService.find({ user: resultUser.id, providerName: PROVIDER.APPLE });
+                if (currentAuthenId !== undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('Apple was registered.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                userData = this.userService.cleanUserField(resultUser);
+                const authenId = new AuthenticationId();
+                authenId.user = resultUser.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = appleUserId;
+                authenId.providerName = PROVIDER.APPLE;
+                authenId.storedCredentials = authToken;
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                authIdCreate = await this.authenticationIdService.create(authenId);
+                if (authIdCreate) {
+                    const result: any = { token: authToken, user: userData };
+                    const successResponse = ResponseUtil.getSuccessResponse('Register With Google Success', result);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const newUser = this.createBasePageUser(users);
+                let providerList: any[];
+                if (registerPassword === null || registerPassword === undefined || registerPassword === '') {
+                    providerList = [PROVIDER.GOOGLE];
+                    registerPassword = null;
+                } else {
+                    providerList = [PROVIDER.EMAIL, PROVIDER.APPLE];
+                    registerPassword = await User.hashPassword(registerPassword);
+                }
+                const user: User = new User();
+                user.username = registerEmail;
+                user.password = registerPassword;
+                user.email = registerEmail;
+                user.uniqueId = uniqueId ? uniqueId : null;
+                user.firstName = newUser.firstName;
+                user.lastName = newUser.lastName;
+                user.imageURL = '';
+                user.coverURL = '';
+                user.coverPosition = 0;
+                user.displayName = newUser.displayName;
+                user.birthdate = new Date(newUser.birthdate);
+                user.isAdmin = false;
+                user.isSubAdmin = false;
+                user.banned = false;
+
+                if (gender !== null || gender !== undefined) {
+                    user.gender = gender;
+                } else {
+                    user.gender = null;
+                }
+
+                if (customGender === null || customGender === undefined || customGender === '') {
+                    user.customGender = null;
+                } else {
+                    user.customGender = customGender;
+                }
+                // check uniqueId
+                if (user.uniqueId === '') {
+                    user.uniqueId = null;
+                }
+                if (user.uniqueId !== undefined && user.uniqueId !== null) {
+                    const isContainsUniqueId = await this.userService.isContainsUniqueId(user.uniqueId);
+                    if (isContainsUniqueId !== undefined && isContainsUniqueId) {
+                        const errorResponse = ResponseUtil.getErrorResponse('UniqueId already exists', users);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+                const resultData: User = await this.userService.create(user);
+                if (resultData) {
+                    const userId = resultData.id;
+
+                    userData = this.userService.cleanUserField(resultData);
+
+                    if (Object.keys(assets).length > 0 && assets !== null && assets !== undefined) {
+                        const asset = new Asset();
+                        const fileName = userId + FileUtil.renameFile();
+                        asset.userId = userId;
+                        asset.scope = ASSET_SCOPE.PUBLIC;
+                        asset.data = assets.data;
+                        asset.mimeType = assets.mimeType;
+                        asset.size = assets.size;
+                        asset.fileName = fileName;
+
+                        const assetCreate: Asset = await this.assetService.create(asset);
+                        const imagePath = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                        if (assetCreate) {
+                            await this.userService.update({ _id: userId }, { $set: { imageURL: imagePath } });
+                        }
+                    }
+
+                    const authenIdCreated: AuthenticationId[] = [];
+
+                    for (const provider of providerList) {
+                        const authenId = new AuthenticationId();
+                        authenId.user = userData.id;
+                        authenId.providerName = provider;
+
+                        if (provider === PROVIDER.EMAIL) {
+                            authenId.providerUserId = userId;
+
+                            let message = '<p> Hello ' + resultData.firstName + '</p>';
+                            message += '<p> Username : ' + resultData.email + '</p>';
+
+                            MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
+                        } else if (provider === PROVIDER.APPLE) {
+                            authenId.providerUserId = appleUserId;
+                            authenId.storedCredentials = users.authToken;
+                            authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                        }
+
+                        authIdCreate = await this.authenticationIdService.create(authenId);
+                        authenIdCreated.push(authIdCreate);
+                    }
+
+                    if (authenIdCreated.length > 0) {
+                        const result: any = { token: authToken, user: userData };
+                        const successResponse = ResponseUtil.getSuccessResponse('Register With APPLE Success', result);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getSuccessResponse('Register APPLE Failed', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+            }
+        }
         else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const googleUserId = users.googleUserId;
@@ -490,7 +627,7 @@ export class GuestController {
                             MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
                         } else if (provider === PROVIDER.GOOGLE) {
                             authenId.providerUserId = googleUserId;
-                            authenId.storedCredentials = users.fbToken;
+                            authenId.storedCredentials = users.authToken;
                             authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
 
@@ -692,9 +829,11 @@ export class GuestController {
      * @apiErrorExample {json} Error
      * HTTP/1.1 500 Internal Server Error
      */
+
     @Post('/login')
     public async login(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;
+        const modHeaders = req.headers.mod_headers;
         const loginUsername = loginParam.username;
         const loginPassword = loginParam.password;
         let loginToken: any;
@@ -727,7 +866,7 @@ export class GuestController {
                         newToken.providerName = PROVIDER.EMAIL;
                         newToken.storedCredentials = token;
                         newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
-                        const checkExistTokenFcm = await this.deviceToken.findOne({userId:userObjId,token:req.body.token});
+                        const checkExistTokenFcm = await this.deviceToken.findOne({ userId: userObjId, token: req.body.token });
                         if (checkAuthen !== null && checkAuthen !== undefined) {
                             const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
                             const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
@@ -735,8 +874,8 @@ export class GuestController {
                         } else {
                             await this.authenticationIdService.create(newToken);
                         }
-                        if(checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null){
-                            await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:userObjId});
+                        if (checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null) {
+                            await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: userObjId });
                         }
                         loginToken = token;
                     }
@@ -749,15 +888,33 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid username' };
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.APPLE){
-            // validate apple sign in
-        } 
-        
+        }
+
+        else if (mode === PROVIDER.APPLE) {
+            const appleId: any = req.body.apple.result.user;
+            const appleProperties: any = req.body.apple.result.stsTokenManager;
+            const appleClient = await this.authenticationIdService.findOne({ where: { id: appleId.uid } });
+            if (appleClient === null || appleClient === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            } else {
+                const currentDateTime = moment().toDate();
+                const updateQuery = { id: appleId.uid, providerName: PROVIDER.APPLE };
+                const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleProperties.stsTokenManager.accessToken, expirationDate: appleProperties.stsTokenManager.expirationTime } };
+                const update_Apple = await this.authenticationIdService.update(updateQuery, newValue);
+                if (update_Apple) {
+                    loginToken = jwt.sign({ token: appleId.stsTokenManager.accessToken, userId: appleId.uid }, env.SECRET_KEY);
+                    loginUser = appleId.uid;
+                }
+            }
+        }
+
         else if (mode === PROVIDER.FACEBOOK) {
             const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
-            console.log('loginParam',loginParam.token);
-            console.log('checkAccessToken',checkAccessToken);
-           if (checkAccessToken === undefined) {
+            const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
+            const deviceFB = req.body.tokenFCM_FB.deviceName;
+
+            if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
@@ -785,11 +942,9 @@ export class GuestController {
             let fbUser = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
-                console.log('fbUser',fbUser);
             } catch (err) {
                 console.log(err);
             }
-
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -804,7 +959,7 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -813,7 +968,10 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const idToken = loginParam.idToken;
             const authToken = loginParam.authToken;
-            const checkIdToken = await this.googleService.verifyIdToken(idToken);
+            const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
+            const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
+            const deviceGG = req.body.tokenFCM_GG.deviceName;
+
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
@@ -835,14 +993,17 @@ export class GuestController {
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where:{providerName: PROVIDER.GOOGLE} });
+                    const updatedAuth = await this.authenticationIdService.findOne({ where: { providerName: PROVIDER.GOOGLE } });
+                    await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
-                    loginToken = jwt.sign({ token: loginToken, userId:checkIdToken.userId }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: loginToken, userId: checkIdToken.userId }, env.SECRET_KEY);
                 }
             }
-                 
-        } else if (mode === PROVIDER.TWITTER) {
+
+        }
+
+        else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
@@ -886,6 +1047,7 @@ export class GuestController {
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
                     // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);

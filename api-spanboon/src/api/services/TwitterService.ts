@@ -685,7 +685,6 @@ export class TwitterService {
                     // update logs if logs found, if not exist create one.
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
                     result.NewPostId = { _id: socialPostLog.id , properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
-                    result.postCount = data.length;
                 } else {
                     // update last update
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });

@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, EventEmitter, NgZone } from '@angular/core';
 import { MatAutocompleteTrigger, MatInput, MatDialog, MatSlideToggleChange } from '@angular/material';
 import { NavigationExtras, Router } from '@angular/router';
 import { AuthenManager, ObservableManager, AssetFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../../../services/services';

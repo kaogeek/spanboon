@@ -27,7 +27,13 @@ import { MentionModule } from 'angular-mentions';
 import { NgxTributeModule } from 'ngx-tribute';
 import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
-import { SocialLoginModule, GoogleLoginProvider, SocialAuthService,SocialAuthServiceConfig } from "angularx-social-login";
+
+import { 
+  SocialLoginModule, 
+  GoogleLoginProvider, 
+  SocialAuthService,
+  SocialAuthServiceConfig } from "angularx-social-login";
+
 import { OverlayModule } from '@angular/cdk/overlay';
 import { initializeApp } from "firebase/app";
 import { CommonModule } from '@angular/common';
@@ -254,13 +260,19 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 };
 
 const cliendId = environment.googleClientId;
+const googleLoginOptions = {
+  scope: 'profile email',
+  plugin_name:'login' //you can use any name here
+}; 
 
 let socialConfig = new SocialAuthService({
   autoLogin: true,
   providers: [
     {
       id: GoogleLoginProvider.PROVIDER_ID,
-      provider: new GoogleLoginProvider(cliendId)
+      provider: new GoogleLoginProvider(environment.googleClientId,
+        googleLoginOptions
+        ), 
     }
   ]
 });

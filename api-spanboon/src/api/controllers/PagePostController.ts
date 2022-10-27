@@ -53,7 +53,7 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTag } from '../models/HashTag';
-import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -85,9 +85,9 @@ export class PagePostController {
         private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
-        private deviceToken:DeviceTokenService,
-        private userFollowService:UserFollowService
-    ){}
+        private deviceToken: DeviceTokenService,
+        private userFollowService: UserFollowService
+    ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
     //     return {message:'ok'}
@@ -582,84 +582,82 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user
-                if(createPostPageData.pageId !== null)
-                {
-                    const page_post = await this.pageService.findOne({_id:createPostPageData.pageId});
-                    const notificationText_POST = 'มีโพสต์ใหม่จากเพจ' +page_post.name;
-                    const user_follow = await this.userFollowService.find({subjectType:'PAGE',subjectId:createPostPageData.pageId});
-                    for(let i = 0; i<user_follow.length; i++){
-                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
-                        for(let j = 0; j<tokenFCM_id.length; j++){
-                            if(tokenFCM_id[j].Tokens !== undefined){
-                                const link = '/post/' + createPostPageData.id;
+                const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
+                if (createPostPageData.pageId !== null) {
+                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + pagePostId.name;
+                    const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    for (let i = 0; i < userFollow.length; i++) {
+                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        for (let j = 0; j < tokenFCMId.length; j++) {
+                            if (tokenFCMId[j].Tokens !== undefined) {
+                                const link = `/page/${pagePostId.name}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
-                                    tokenFCM_id[j].userId,
+                                    tokenFCMId[j].userId,
                                     USER_TYPE.PAGE,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
-                                    notificationText_POST,
+                                    notificationTextPOST,
                                     link,
-                                    tokenFCM_id[j].Tokens,
-                                    page_post.pageUsername,
-                                    page_post.imageURL
+                                    tokenFCMId[j].Tokens,
+                                    pagePostId.pageUsername,
+                                    pagePostId.imageURL
                                 );
                             }
-                            else{
-                                const link = '/post/' + createPostPageData.id;
+                            else {
+                                const link = `/page/${pagePostId.name}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     createPostPageData.pageId,
                                     USER_TYPE.PAGE,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
-                                    notificationText_POST,
+                                    notificationTextPOST,
                                     link,
-                                    page_post.pageUsername,
-                                    page_post.imageURL
+                                    pagePostId.pageUsername,
+                                    pagePostId.imageURL
                                 );
                             }
                         }
                     }
 
                 }
-                else
-                {   
-                    const user_post = await this.userService.findOne({_id:createPostPageData.ownerUser});
-                    const notificationText_POST = 'มีโพสต์ใหม่จาก' +user_post.displayName;
+                else {
+                    const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
+                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + userPost.displayName;
 
                     // user to user
-                    const user_follow = await this.userFollowService.find({subjectType:'USER',subjectId:createPostPageData.ownerUser});
-                    for(let i = 0; i<user_follow.length; i++){
-                        const tokenFCM_id = await this.deviceToken.find({userId:user_follow[i].userId,token:{$ne:null}});
-                        for(let j = 0; j<tokenFCM_id.length; j++){
-                            if(tokenFCM_id[j].Tokens !== undefined){
-                                const link = '/post/'+createPostPageData.id;
+                    const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
+                    for (let i = 0; i < userFollow.length; i++) {
+                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        for (let j = 0; j < tokenFCMId.length; j++) {
+                            if (tokenFCMId[j].Tokens !== undefined) {
+                                const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
-                                    tokenFCM_id[j].userId,
+                                    tokenFCMId[j].userId,
                                     USER_TYPE.USER,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
-                                    notificationText_POST,
+                                    notificationTextPOST,
                                     link,
-                                    tokenFCM_id[j].Tokens,
-                                    user_post.displayName,
-                                    user_post.imageURL
+                                    tokenFCMId[j].Tokens,
+                                    userPost.displayName,
+                                    userPost.imageURL
                                 );
                             }
-                            else{
-                                const link = '/post/'+createPostPageData.id;
+                            else {
+                                const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotification(
-                                    tokenFCM_id[j].userId,
+                                    tokenFCMId[j].userId,
                                     USER_TYPE.USER,
-                                    req.user.id+'',
+                                    req.user.id + '',
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
-                                    notificationText_POST,
+                                    notificationTextPOST,
                                     link,
-                                    user_post.displayName,
-                                    user_post.imageURL
+                                    userPost.displayName,
+                                    userPost.imageURL
                                 );
                             }
                         }

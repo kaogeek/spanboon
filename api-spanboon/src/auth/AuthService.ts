@@ -93,6 +93,13 @@ export class AuthService {
                         UserId += ';GG';
                     }
                 }
+                else if (mode === 'AP'){
+                    const appleToken:any = await jwt.verify(token,env.SECRET_KEY);
+                    if(appleToken.token !== undefined){
+                        UserId = await this.decryptToken(token);
+                        UserId += ';AP';
+                    }
+                }
                 else {
                     UserId = await this.decryptToken(token);
 

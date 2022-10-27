@@ -73,7 +73,7 @@ import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRe
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
-import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 
@@ -82,7 +82,7 @@ export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
 
     constructor(
-        private notificationService:NotificationService,
+        private notificationService: NotificationService,
         private pageService: PageService,
         private pageCategoryService: PageCategoryService,
         private pageAccessLevelService: PageAccessLevelService,
@@ -104,7 +104,7 @@ export class PageController {
         private authenService: AuthenticationIdService,
         private stdItemService: StandardItemService,
         private socialPostLogsService: SocialPostLogsService,
-        private deviceTokenService:DeviceTokenService,
+        private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
     ) { }
 
@@ -607,7 +607,7 @@ export class PageController {
                 return res.status(200).send(errorResponse);
             }
 
-            await this.socialPostLogsService.delete({pagerId: pageObjId});
+            await this.socialPostLogsService.delete({ pagerId: pageObjId });
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
@@ -1918,36 +1918,36 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
-                const who_follow_you = await this.userService.findOne({_id:userFollow.userId });
-                const page_owner_noti = await this.userService.findOne({_id:page.ownerUser});
+                const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
+                const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
-                const deviceToken = await this.deviceTokenService.find({userId:page_owner_noti.id});
-                const notification_follower = who_follow_you.displayName+'กดติดตามเพจ' + page.pageUsername;
-                const link = `/user/${who_follow_you.displayName}/follow`;
-                if(deviceToken !== undefined){
-                    for(let r = 0; r<deviceToken.length; r++){
+                const deviceToken = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
+                const notificationFollower = whoFollowYou.displayName + 'กดติดตามเพจ' + page.pageUsername;
+                const link = `/profile/${whoFollowYou.displayName}`;
+                if (deviceToken !== undefined) {
+                    for (let r = 0; r < deviceToken.length; r++) {
                         await this.pageNotificationService.notifyToPageUserFcm(
                             followCreate.subjectId,
                             undefined,
-                            req.user.id+ '',
+                            req.user.id + '',
                             USER_TYPE.PAGE,
                             NOTIFICATION_TYPE.FOLLOW,
-                            notification_follower,
+                            notificationFollower,
                             link,
                             deviceToken[0].Tokens,
-                            who_follow_you.displayName,
-                            who_follow_you.imageURL  
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
                         );
                     }
                 }
-                else{
+                else {
                     await this.notificationService.createNotification(
                         followCreate.userId,
                         USER_TYPE.USER,
-                        req.user.id+ '',
+                        req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.FOLLOW,
-                        notification_follower,
+                        notificationFollower,
                         link,
                     );
                 }
@@ -2417,7 +2417,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        if(page){
+        if (page) {
             // providerName: PROVIDER.TWITTER, enable:false, pageId: pageId,lastUpdated:current_time
             // user
             // pageId
@@ -2427,12 +2427,12 @@ export class PageController {
             // properties
             // enable
             // lastUpdated
-            const socialPostLogsService = await this.socialPostLogsService.findOne({pageId:pageObjId});
-            if(socialPostLogsService){
-                const query = {pageId:pageObjId};
-                const newValue = {$set:{enable:configValue.value}};
-                await this.socialPostLogsService.update(query,newValue);
-            }else{
+            const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+            if (socialPostLogsService) {
+                const query = { pageId: pageObjId };
+                const newValue = { $set: { enable: configValue.value } };
+                await this.socialPostLogsService.update(query, newValue);
+            } else {
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;
@@ -2445,7 +2445,7 @@ export class PageController {
                 await this.socialPostLogsService.create(socialPostLogs);
             }
         }
-        else{
+        else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
         }
         return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully binding Page Twitter Social auto post.', true));
@@ -2468,7 +2468,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({pageId: pageObjId });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {

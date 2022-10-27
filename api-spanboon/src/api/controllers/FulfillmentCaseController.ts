@@ -1034,7 +1034,7 @@ export class FulfillmentController {
             let postsObjId: ObjectID = null;
             let pageObjId: ObjectID = null;
             let requesterObjId: ObjectID = null;
-
+            let link: any;
             if (requester !== null && requester !== undefined && requester !== '') {
                 requesterObjId = new ObjectID(requester);
 
@@ -1167,11 +1167,16 @@ export class FulfillmentController {
                     chatMsg.room = chatRoomObjId;
                     await this.chatMessageService.createChatMessage(chatMsg);
                     const notification_fullfillment = 'เพิ่ม' + items[0].name + 'จำนวน' + items[0].quantity + 'สำเร็จ';
-                    const link = '/api/fulfillment_case';
                     const page = await this.pageService.findOne({ _id: fulfillCaseCreate.pageId });
                     const user_page = await this.userService.findOne({_id:page.ownerUser});
                     const tokenFCM_id = await this.deviceTokenService.find({ userId: user_page.id});
                     const user_request = await this.userService.findOne({_id:requesterObj.id});
+
+                    if(postId === null){
+                        link = `/fulfill`;
+                    }else if(postId !== null){
+                        link = `/page/${page.name}/post/` + postId;
+                    }
                     if(tokenFCM_id.length !== null){
                         for(let r = 0; r<tokenFCM_id.length; r++){
                             await this.pageNotificationService.notifyToPageUserFcm(
@@ -1441,7 +1446,7 @@ export class FulfillmentController {
                                     const tokenFCM_id = await this.deviceTokenService.find({ userId: page_id.ownerUser });
                                     const FulfillmentRequest_find = await this.fulfillmentRequestService.findOne({ fulfillmentCase: caseObjId });
                                     const customItem_name = await this.customItemService.findOne({ _id: FulfillmentRequest_find.customItemId });
-                                    const link = `/api/fulfillment_case/${caseId}/cancel`;
+                                    const link = `/fulfill`;
                                     const notification_fullfillment = `${customItem_name.name} ได้ทำการยกเลิกเติมเต็ม`;
                                     if(tokenFCM_id.length !== null){
                                         for(let r= 0; r<tokenFCM_id.length ; r++){
@@ -1642,7 +1647,7 @@ export class FulfillmentController {
                         const tokenFCM_id = await this.deviceTokenService.find({userId:fulfillCase.requester});
                         const notificationText_POST = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
                         const page_noti = await this.pageService.findOne({_id:fulfillCase.pageId});
-                        const link = ``;
+                        const link = `/fulfill`;
                         if(tokenFCM_id.length !== null){
                             for(let r = 0; r<tokenFCM_id.length; r++){
                                 await this.notificationService.createNotificationFCM(
@@ -1926,7 +1931,7 @@ export class FulfillmentController {
                             chatMsg.senderType = USER_TYPE.USER;
                             const page_id = await this.pageService.findOne({_id:fulfillCase.pageId});
                             const tokenFCM_id = await this.deviceTokenService.find({userId:fulfillCase.requester});
-                            const link = `/api/fulfillment_case/${caseId}/confirm`;
+                            const link = `/fulfill`;
                             const notification_fullfillment = 'คำขอเติมเต็มของท่านได้รับการยืนยันแล้ว';
                             if(tokenFCM_id.length !== null){
                                 for(let r = 0; r<tokenFCM_id.length; r++){
@@ -2644,7 +2649,7 @@ export class FulfillmentController {
                                     const customItem_name = await this.customItemService.findOne({ _id: fulfillRequests.customItemId });
                                     const user = await this.userService.findOne({_id:fulfillCase.requester});
                                     const notification_fullfillment = customItem_name.name + 'มีการเปลี่ยนแปลงจำนวนจาก' + fulfillRequests.quantity + 'เป็นจำนวน' + data.quantity;
-                                    const link = `/api/fulfillment_case/${caseId}/request/${requestId}`;
+                                    const link = `/fulfill`;
                                     await this.pageNotificationService.notifyToPageUserFcm(
                                         page.id,
                                         undefined,
