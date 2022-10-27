@@ -17,7 +17,6 @@ import { currentUserChecker } from '../auth/currentUserChecker';
 import {env}  from '../env';
 import cors from 'cors';
 import compression from 'compression';
-import { Server } from 'socket.io';
 
 export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {
     if (settings) {

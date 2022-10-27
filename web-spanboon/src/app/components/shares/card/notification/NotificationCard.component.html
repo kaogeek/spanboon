@@ -13,10 +13,12 @@
     <div class="body">
         <div class="image">
             <ng-container *ngIf="message.notification.image; else image">
-                <img src="{{message?message.notification.image:''}}">
+                <img src="{{message? message.notification.image:''}}">
             </ng-container>
             <ng-template #image>
-                <div class="image-err"></div>
+                <div class="image-err">
+                    <span>{{message.notification.body | slice: 0:1 }}</span>
+                </div>
             </ng-template>
             <div [ngClass]="{'status-one': message.notification.status === 'POST' || 'repost' || 'share' || 'COMMENT' || 'LIKE', 'status-two' : message.notification.status === 'fullfill', 'status-tree' : message.notification.status === 'officerPage' }"
                 class="status">
