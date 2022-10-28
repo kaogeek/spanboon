@@ -90,6 +90,7 @@ export class NotificationService {
         notification.fromUserType = fromUserType;
         notification.title = title;
         notification.link = link;
+        notification.type = notificationType;
         notification.deleted = false;
         notification.data = data; 
         const token = String(data);
@@ -98,6 +99,7 @@ export class NotificationService {
         const link_noti = String(link);
         const image_url = String(image);
         const count_data = String(count);
+        console.log('notification',notification);
         if(String(notification.toUser) !== String(notification.fromUser)){
             if(count !== null){
                 const payload = 

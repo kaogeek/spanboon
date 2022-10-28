@@ -97,7 +97,7 @@ export class FacebookService {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
-            facebook.api('me/?fields=id&access_token=\'+accessToken+\'', 'post', (response: any) => {
+            facebook.api('me/?fields=id&access_token='+accessToken+'', 'post', (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
