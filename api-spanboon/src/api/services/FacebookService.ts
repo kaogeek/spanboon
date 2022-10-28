@@ -103,6 +103,7 @@ export class FacebookService {
                     reject(response.error);
                     return;
                 }
+                console.log('response_1_facebook',response);
                 resolve(response);
             });
         });
@@ -111,6 +112,7 @@ export class FacebookService {
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.getFBUserId(accessToken).then((result: any) => {
+                console.log('getFBUserId_2_facebook',result);
                 if (result.error) { reject(result.error); return; }
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
                     if (auth === null || auth === undefined) {

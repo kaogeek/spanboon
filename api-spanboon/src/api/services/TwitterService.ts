@@ -660,6 +660,7 @@ export class TwitterService {
 
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
+        console.log('twitterService_1',socialPostLog);
         try {
             // let params = undefined;
             if (socialPostLog !== undefined && socialPostLog !== null) {
@@ -674,29 +675,36 @@ export class TwitterService {
             }
 
             const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId);
+            console.log('twitterService_2',twitterResults);
             result.dataFeedTwi = twitterResults;
             if (twitterResults !== undefined && twitterResults.errors === undefined) {
                 const data = (twitterResults.data === undefined) ? [] : twitterResults.data;
                 const meta = (twitterResults.meta === undefined) ? {} : twitterResults.meta;
                 const newestId = meta.newest_id;
+                console.log('twitterService_3',data);
 
                 // create post from twitter
                 if (data.length > 0) {
                     // update logs if logs found, if not exist create one.
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
                     result.NewPostId = { _id: socialPostLog.id , properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
+                    console.log('twitterService_4_pass',result.NewPostId);
+
                 } else {
                     // update last update
+                    console.log('twitterService_5_pass');
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
                 }
                 // end create post
             } else {
+                console.log('twitterService_6_pass');
                 await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
             }
         } catch (error) {
+            console.log('twitter_service_7');
             console.log(error);
         }
-
+        console.log('twitter_service_8');
         return result;
     }
 
