@@ -952,6 +952,7 @@ export class GuestController {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
                 console.log('fbUser', fbUser);
             } catch (err) {
+                console.log('error_facebook_test',err);
                 console.log(err);
             }
             if (fbUser === null || fbUser === undefined) {
