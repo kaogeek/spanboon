@@ -131,22 +131,18 @@ export class TwitterController {
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
-        console.log('pass1_twitter',socialPostLogList);
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
-            console.log('pass2_twitter',socialPost);
             const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
-            console.log('pass3_twitter',page);
             // for page
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPost.providerUserId);
-            console.log('pass4_twitter',twitterPostList);
             // console.log('twitterPostList',twitterPostList);
-            const middle = Math.floor(twitterPostList.dataFeedTwi.data.length / 3);
+            const middle = Math.floor(twitterPostList.dataFeedTwi.meta.result_count / 3);
             console.log('pass5_twitter',middle);
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             console.log('pass6_twitter',leftSide);
