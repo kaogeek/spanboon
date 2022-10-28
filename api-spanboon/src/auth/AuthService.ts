@@ -53,11 +53,13 @@ export class AuthService {
                 // check in fb mode
                 if (mode === 'FB') {
                     const fbToken:any = await jwt.verify(token, env.SECRET_KEY);
+                    console.log('authService_1',fbToken);
                     if (fbToken.token !== undefined) {
                         const fbUserObj = await this.facebookService.getFacebookUserFromToken(fbToken.token);
-
+                        console.log('authService_2',fbUserObj);
                         if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
                             UserId = fbUserObj.user.id;
+                            console.log('authService_3',UserId);
                         }
                     }
                     

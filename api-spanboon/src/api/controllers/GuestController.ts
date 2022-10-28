@@ -840,6 +840,8 @@ export class GuestController {
         let loginUser: any;
         const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
+        console.log('pass1_loginUsername',loginUsername);
+        console.log('pass2_mode',mode);
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
             if (userLogin) {
@@ -910,22 +912,28 @@ export class GuestController {
         }
 
         else if (mode === PROVIDER.FACEBOOK) {
+            console.log('pass3_FACEBOOK',PROVIDER.FACEBOOK);
+            console.log('pass4_MODE_FACEBOOK',mode);
             const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
+            console.log('checkAccessToken',checkAccessToken);
             const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
             const deviceFB = req.body.tokenFCM_FB.deviceName;
 
             if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                console.log('errorResponse_1',errorResponse);
                 return res.status(400).send(errorResponse);
             }
 
             if (checkAccessToken.error !== undefined) {
                 const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
+                console.log('errorResponse_2',errorResponse);
                 return res.status(400).send(errorResponse);
             }
 
             if (checkAccessToken.data === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                console.log('errorResponse_3',errorResponse);
                 return res.status(200).send(errorResponse);
             }
 
@@ -942,11 +950,13 @@ export class GuestController {
             let fbUser = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
+                console.log('fbUser',fbUser);
             } catch (err) {
                 console.log(err);
             }
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                console.log('errorResponse_4',errorUserNameResponse);
                 return res.status(400).send(errorUserNameResponse);
             } else {
                 const userExrTime = await this.getUserLoginExpireTime();
@@ -957,12 +967,15 @@ export class GuestController {
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
+                console.log('pass5');
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
                     await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    console.log('pass6',loginUser);
+                    console.log('pass7',loginToken);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
@@ -1071,8 +1084,8 @@ export class GuestController {
         loginUser = await this.userService.cleanUserField(loginUser);
         loginUser.followings = userFollowings.length;
         loginUser.followers = userFollowers.length;
-
         const result = { token: loginToken, user: loginUser };
+
         const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
         return res.status(200).send(successResponse);
     }
