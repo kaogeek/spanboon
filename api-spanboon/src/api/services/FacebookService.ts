@@ -96,14 +96,12 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-
-            facebook.api('/me/?fields=id&access_token='+accessToken+'', 'post', (response: any) => {
+            facebook.api('me?access_token='+accessToken+'', (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }
-                console.log('response_1_facebook',response);
                 resolve(response);
             });
         });
@@ -111,6 +109,7 @@ export class FacebookService {
 
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            console.log('getFBUserId_1_facebook',accessToken);
             this.getFBUserId(accessToken).then((result: any) => {
                 console.log('getFBUserId_2_facebook',result);
                 if (result.error) { reject(result.error); return; }

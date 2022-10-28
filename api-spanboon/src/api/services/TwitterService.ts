@@ -660,7 +660,8 @@ export class TwitterService {
 
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
-        console.log('twitterService_1',socialPostLog);
+        
+        console.log('twitterService_1',socialPostLog.properties.result_count);
         try {
             // let params = undefined;
             if (socialPostLog !== undefined && socialPostLog !== null) {

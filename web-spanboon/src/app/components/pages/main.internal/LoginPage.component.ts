@@ -274,7 +274,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         appId: environment.facebookAppId,
         cookie: true, 
         xfbml: true,
-        version: 'v15.0'
+        version: 'v10.0'
       });
       window['FB'].AppEvents.logPageView();
     };
