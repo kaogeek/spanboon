@@ -147,27 +147,6 @@ export class FacebookService {
         });
     }
 
-    public checkAccessToken(inputToken: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.getAppAccessToken().then((result: any) => {
-                const facebook = this.createFB();
-                facebook.setAccessToken(result.token);
-
-                facebook.api('debug_token?input_token=' + inputToken, 'get', (response: any) => {
-                    if (!response || response.error) {
-                        console.log(!response ? 'error occurred' : response.error);
-                        reject(response.error);
-                        return;
-                    }
-
-                    resolve(response);
-                });
-            }).catch((error: any) => {
-                reject(error);
-            });
-        });
-    }
-
     public async getFacebookUserAuthenId(facebookUserId: string): Promise<AuthenticationId> {
         return await this.authenIdService.findOne({ providerName: PROVIDER.FACEBOOK, providerUserId: facebookUserId });
     }
