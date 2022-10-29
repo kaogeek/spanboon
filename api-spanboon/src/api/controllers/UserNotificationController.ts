@@ -196,6 +196,7 @@ export class UserNotificationController {
         }
 
         const userNotificationsList: any = await this.notificationService.search(filter);
+        console.log('userNotificationsList',userNotificationsList);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
 
         if (userNotificationsList) {

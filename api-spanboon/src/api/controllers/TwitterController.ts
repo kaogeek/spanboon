@@ -141,8 +141,8 @@ export class TwitterController {
             }
             // for page
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPost.providerUserId);
-            // console.log('twitterPostList',twitterPostList);
-            const middle = Math.floor(twitterPostList.dataFeedTwi.meta.result_count / 3);
+            console.log('twitterPostList',twitterPostList);
+            const middle = Math.floor(parseFloat(twitterPostList.dataFeedTwi.meta.result_count) / 3);
             console.log('pass5_twitter',middle);
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
             console.log('pass6_twitter',leftSide);
