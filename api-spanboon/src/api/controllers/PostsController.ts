@@ -958,7 +958,7 @@ export class PostsController {
                 if (likeCreate.likeAsPage !== null) {
                     // page to page
                     if (whoPost.pageId !== null && page && pageLike) {
-                        console.log('page to page')
+                        console.log('page to page');
                         const userOwnerPage = await this.userService.findOne({ _id: page.ownerUser });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: userOwnerPage.id });
                         const notificationText = pageLike.name + 'กดถูกใจโพสต์ของเพจ' + page.name;
