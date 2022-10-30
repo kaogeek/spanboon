@@ -162,6 +162,7 @@ export class PostsCommentController {
                         const notificationComment = 'เพจ' + pageName.name + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userDisplayName.displayName}/post/` + postWho.id;
                         // page to user
+                        console.log('page to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         for (let r = 0; r < tokenFCMId.length; r++) {
                             if (tokenFCMId[r].Tokens !== null) {
@@ -195,6 +196,7 @@ export class PostsCommentController {
                     }
                     // page to page
                     else {
+                        console.log('page to page');
                         const page = await this.pageService.findOne({ _id: getPost.pageId });
                         const notificationComment = 'เพจ' + pageName.name + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + page.name;
                         const link = `/page/${pageName.name}/post/` + postWho.id;
@@ -232,9 +234,10 @@ export class PostsCommentController {
                 // user to user 
                 else {
                     // WHO POST USER OR PAGE ?
+                    const userName = await this.userService.findOne({ _id: postsComment.user });
                     if (postWho.pageId === null) {
                         // USER TO USER
-                        const userName = await this.userService.findOne({ _id: postsComment.user });
+                        console.log('user to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
                         const notificationComment = userName.displayName + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userName.displayName}/post/` + postWho.id;
@@ -269,7 +272,7 @@ export class PostsCommentController {
                     }
                     else {
                         // USER TO PAGE
-                        const userName = await this.userService.findOne({ _id: postsComment.user });
+                        console.log('user to page');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         const page = await this.pageService.findOne({ _id: postWho.pageId });
                         const notificationComment = `${userName.displayName} ได้แสดงความคิดเห็นต่อโพสต์ของเพจ ${page.name}`;
@@ -734,6 +737,7 @@ export class PostsCommentController {
                     // page to page
 
                     if (comment.commentAsPage !== null) {
+                        console.log('page to page');
                         const notificationComment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของเพจ' + page.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
                         const link = `/page/${page.name}/post/` + post_who.id;
@@ -769,6 +773,7 @@ export class PostsCommentController {
                     }
                     // page to user
                     else {
+                        console.log('page to user');
                         const notificationComment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: comment.user });
                         const link = `/profile/${userDisplayName.displayName}/post/` + post_who.id;
@@ -803,7 +808,8 @@ export class PostsCommentController {
                 // User to page and User to user
                 else {
                     // User to page
-                    if (comment.commentAsPage !== null) {
+                    if (comment.commentAsPage !== null && userDisplayName && page) {
+                        console.log('user to page');
                         const pageUser = await this.pageService.findOne({ _id: comment.commentAsPage });
                         const notificationComment = user.displayName + 'กดถูกใจคอมเม้นของเพจ' + pageUser.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
@@ -840,6 +846,7 @@ export class PostsCommentController {
                     }
                     // User to User
                     else {
+                        console.log('user to user');
                         const notificationComment = user.displayName + 'กดถูกใจคอมเม้นของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });
                         const link = `/profile/${user.displayName}/post/` + post_who.id;
