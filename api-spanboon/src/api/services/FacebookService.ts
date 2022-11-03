@@ -16,10 +16,10 @@ import { AuthenticationId } from '../models/AuthenticationId';
 import { User } from '../models/User';
 import { Asset } from '../models/Asset';
 import moment from 'moment';
+import axios from 'axios';
 
 @Service()
 export class FacebookService {
-
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
 
     public createFB(): Facebook {
@@ -108,11 +108,23 @@ export class FacebookService {
             });
         });
     }
+    public async fetchFacebook(accessToken:string): Promise<any>{
+        const {data} = await axios({
+            url: 'https://graph.facebook.com/me',
+            method: 'get',
+            params:{
+                fields: ['id', 'email'].join(','),
+                access_token: accessToken,
+            },
+        });
+        return data;
+
+    }
 
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log('getFBUserId_1_facebook',accessToken);
-            this.getFBUserId(accessToken).then((result: any) => {
+            this.fetchFacebook(accessToken).then((result: any) => {
                 console.log('getFBUserId_2_facebook',result);
                 if (result.error) { reject(result.error); return; }
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {

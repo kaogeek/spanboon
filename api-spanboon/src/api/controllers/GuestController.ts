@@ -912,13 +912,10 @@ export class GuestController {
         }
 
         else if (mode === PROVIDER.FACEBOOK) {
-            console.log('pass3_FACEBOOK', PROVIDER.FACEBOOK);
-            console.log('pass4_MODE_FACEBOOK', mode);
             // const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
             // console.log('checkAccessToken',checkAccessToken);
             const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
             const deviceFB = req.body.tokenFCM_FB.deviceName;
-
             /* if (checkAccessToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 console.log('errorResponse_1',errorResponse);
