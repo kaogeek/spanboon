@@ -96,7 +96,9 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-            facebook.api('me?access_token='+accessToken+'', (response: any) => {
+            console.log('access_token',facebook);
+            facebook.api('me',{fields:['id'], accessToken:'accessToken'}, (response: any) => {
+                console.log('response_facebook',response);
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
