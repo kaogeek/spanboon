@@ -72,7 +72,6 @@ import { StandardItemService } from '../services/StandardItemService';
 import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
-import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
@@ -82,7 +81,6 @@ export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
 
     constructor(
-        private notificationService: NotificationService,
         private pageService: PageService,
         private pageCategoryService: PageCategoryService,
         private pageAccessLevelService: PageAccessLevelService,
