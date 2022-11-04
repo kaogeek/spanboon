@@ -152,23 +152,29 @@ export class TwitterService {
         });
     }
 
-    public getTwitterUserTimeLine(twitterUserId: string, paramsOption?: any): Promise<any> {
+    public async getTwitterUserTimeLine(twitterUserId: string, paramsOption?: any): Promise<any> {
         return new Promise((resolve, reject) => {
             // paramsOption = since_id, until_id, start_time, end_time
-
+            console.log('twitterUserId_getTwitterUserTimeLine',twitterUserId);
             this.getOauth2AppAccessToken().then((twitterResult: any) => {
+                console.log('twitterResult',twitterResult);
                 if (twitterResult === undefined || !twitterResult['access_token']) {
+                    console.log('twitterResult = undefined');
                     reject('Access token was not found');
                     return;
                 }
                 let url: string = TwitterService.ROOT_URL + '/2/users/' + twitterUserId + '/tweets?tweet.fields=created_at';
+                console.log('url',url);
                 if (paramsOption !== undefined && paramsOption !== null && paramsOption !== '') {
+                    console.log('paramsOption_1');
                     let appendString = '';
                     for (const key of Object.keys(paramsOption)) {
+                        console.log('paramsOption_2');
                         appendString += '&' + key + '=' + paramsOption[key];
                     }
 
                     if (appendString !== '') {
+                        console.log('paramsOption_3');
                         url = url + '&' + appendString;
                     }
                 }
@@ -177,8 +183,9 @@ export class TwitterService {
                     method: 'GET',
                     json: true
                 };
-
+                console.log('httpOptions',httpOptions);
                 const req = https.request(url, httpOptions, (res) => {
+                    console.log('res = req',res);
                     const { statusCode, statusMessage } = res;
                     if (statusCode !== 200) {
                         reject('statusCode ' + statusCode + ' ' + statusMessage);
@@ -186,20 +193,23 @@ export class TwitterService {
                     }
 
                     let rawData = '';
+                    console.log('rawData',rawData);
                     res.on('data', (chunk) => { rawData += chunk; });
                     res.on('end', () => {
                         try {
                             const parsedData = JSON.parse(rawData);
+                            console.log('parsedData',parsedData);
                             resolve(parsedData);
                         } catch (e: any) {
+                            console.log('error_e = e',e);
                             reject(e.message);
                         }
                     });
                 });
 
                 const accessToken = twitterResult['access_token'];
+                console.log('accessToken = getTimeline',accessToken);
                 const auth = 'Bearer ' + accessToken;
-
                 req.setHeader('Content-Type', 'application/json');
                 req.setHeader('Accept', '*/*');
                 req.setHeader('Authorization', auth);
@@ -209,6 +219,7 @@ export class TwitterService {
                 });
                 req.end();
             }).catch((error) => {
+                console.log('error',error);
                 reject(error);
             });
         });
@@ -704,6 +715,7 @@ export class TwitterService {
 
     private getOauth2AppAccessToken(): Promise<any> {
         return new Promise((resolve, reject) => {
+            console.log('getOauth2AppAccessToken');
             const url: string = TwitterService.ROOT_URL + '/oauth2/token?grant_type=client_credentials';
             const httpOptions: any = {
                 method: 'POST',
@@ -712,32 +724,39 @@ export class TwitterService {
 
             const req = https.request(url, httpOptions, (res) => {
                 const { statusCode, statusMessage } = res;
-
+                console.log('getOauth2AppAccessToken = res',res);
                 if (statusCode !== 200) {
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;
                 }
 
                 let rawData = '';
+                console.log('getOauth2AppAccessToken = rawData');
                 res.on('data', (chunk) => { rawData += chunk; });
                 res.on('end', () => {
                     try {
                         const parsedData = JSON.parse(rawData);
+                        console.log('getOauth2AppAccessToken = parsedData',parsedData);
                         resolve(parsedData);
                     } catch (e: any) {
+                        console.log('error = e getOauth2AppAccessToken', e);
+                        console.log('error = e2 getOauth2AppAccessToken',e.message);
                         reject(e.message);
                     }
                 });
             });
 
             const base64 = Buffer.from(twitter_setup.TWITTER_API_KEY + ':' + twitter_setup.TWITER_API_SECRET_KEY).toString('base64');
+            console.log('getOauth2AppAccessToken = base64',base64);
             const auth = 'Basic ' + base64;
+            console.log('getOauth2AppAccessToken = auth', auth);
 
             req.setHeader('Content-Type', 'application/json');
             req.setHeader('Accept', '*/*');
             req.setHeader('Authorization', auth);
             req.flushHeaders();
             req.on('error', (e) => {
+                console.log('error = getOauth2AppAccessToken = e', e);
                 reject(e);
             });
             req.end();
