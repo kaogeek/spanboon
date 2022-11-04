@@ -135,19 +135,19 @@ export class TwitterController {
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
+            console.log('socialPost',socialPost.providerUserId);
             const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
+            console.log('page',page);
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
-            // for page
-            const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPost.providerUserId);
-            const middle = Math.floor(parseFloat(twitterPostList.dataFeedTwi.meta.result_count) / 3);
-            const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
-            const queue = leftSide;
-            for (const dataFeedTwi of queue) {
+            const twitterPostList = await this.twitterService.getTwitterUserTimeLine(socialPost.providerUserId);
+            console.log('twitterPostList',twitterPostList);
+            for(const dataFeedTwi of twitterPostList.data){
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 const checkFeed = checkPostSocial.shift();
+                console.log('checkFeed',checkFeed);
                 if (checkFeed === undefined ) {
                     console.log('pass1');
                     const twPostId = dataFeedTwi.id;
@@ -194,7 +194,7 @@ export class TwitterController {
                     continue;
                 } 
             }
-        }
+        } 
         return response.status(200).send(newPostResult);
     }
 }
