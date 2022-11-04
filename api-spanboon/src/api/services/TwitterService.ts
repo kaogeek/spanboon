@@ -646,7 +646,6 @@ export class TwitterService {
             }
         });
     }
-
     public async fetchPostByTwitterUser(twitterUserId: string): Promise<any> {
         const result = {
             postCount: 0,
@@ -662,43 +661,38 @@ export class TwitterService {
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
         
-        console.log('twitterService_1',socialPostLog.enable);
+        let params = undefined;
         if(socialPostLog.enable === true){
             if (socialPostLog !== undefined && socialPostLog !== null) {
                 if (!socialPostLog.enable) {
                     return result;
                 }
                 result.enable = socialPostLog.enable;
-                // params = { since_id: socialPostLog.lastSocialPostId };
+                params = { since_id: socialPostLog.lastSocialPostId };
             } else {
                 // no socialPostLogs so this is enable = false mode;
                 return result;
             }
 
-            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId);
-            console.log('twitterService_3',twitterResults);
+            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId,params);
             result.dataFeedTwi = twitterResults;
             if (twitterResults !== undefined && twitterResults.errors === undefined) {
                 const data = (twitterResults.data === undefined) ? [] : twitterResults.data;
                 const meta = (twitterResults.meta === undefined) ? {} : twitterResults.meta;
                 const newestId = meta.newest_id;
-                console.log('twitterService_4',data);
 
                 // create post from twitter
                 if (data.length > 0) {
                     // update logs if logs found, if not exist create one.
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
                     result.NewPostId = { _id: socialPostLog.id , properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
-                    console.log('twitterService_5_pass',result.NewPostId);
 
                 } else {
                     // update last update
-                    console.log('twitterService_6_pass');
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
                 }
                 // end create post
             } else {
-                console.log('twitterService_7_pass');
                 await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
             }
         }else{

@@ -1016,7 +1016,7 @@ export class PostsController {
                                 );
                             }
                             else {
-                                continue
+                                continue;
                             }
                         }
                     }
@@ -1025,7 +1025,7 @@ export class PostsController {
                     // user to page
 
                     const ownerPostFile = await this.userService.findOne({ _id: ownerPost.ownerUser });
-                    if (whoPost.pageId !== null && page && userLikeId) {
+                    if (whoPost.pageId !== null && page ) {
                         console.log('user to page');
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
