@@ -96,9 +96,7 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-            console.log('access_token',facebook);
             facebook.api('me',{fields:['id'], accessToken:'accessToken'}, (response: any) => {
-                console.log('response_facebook',response);
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
@@ -123,9 +121,7 @@ export class FacebookService {
 
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            console.log('getFBUserId_1_facebook',accessToken);
             this.fetchFacebook(accessToken).then((result: any) => {
-                console.log('getFBUserId_2_facebook',result);
                 if (result.error) { reject(result.error); return; }
                 this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
                     if (auth === null || auth === undefined) {

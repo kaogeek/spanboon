@@ -605,18 +605,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                const link = `/page/${pagePostId.name}/post/` + createPostPageData.id;
-                                await this.notificationService.createNotificationFCM(
-                                    createPostPageData.pageId,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    pagePostId.pageUsername,
-                                    pagePostId.imageURL
-                                );
+                                continue;
                             }
                         }
                     }
@@ -631,7 +620,8 @@ export class PagePostController {
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined) {
+                            console.log('tokenFCM',tokenFCM);
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
                                 const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM.userId,
@@ -647,18 +637,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
-                                await this.notificationService.createNotification(
-                                    tokenFCM.userId,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    userPost.displayName,
-                                    userPost.imageURL
-                                );
+                                continue;
                             }
                         }
 

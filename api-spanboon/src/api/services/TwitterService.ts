@@ -659,12 +659,11 @@ export class TwitterService {
             return result;
         }
 
-        console.log('twitterUserId',twitterUserId);
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
         
-        console.log('twitterService_1',socialPostLog);
-        if(socialPostLog){
+        console.log('twitterService_1',socialPostLog.enable);
+        if(socialPostLog.enable === true){
             if (socialPostLog !== undefined && socialPostLog !== null) {
                 if (!socialPostLog.enable) {
                     return result;

@@ -725,7 +725,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-
+                console.log('user',user);
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -943,18 +943,14 @@ export class GuestController {
             //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
             //     return res.status(400).send(errorResponse);
             // }
-            console.log('pass5_loginParam.token', loginParam.token);
             let fbUser = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
-                console.log('fbUser', fbUser);
             } catch (err) {
-                console.log('error_facebook_test',err);
                 console.log(err);
             }
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                console.log('errorResponse_4', errorUserNameResponse);
                 return res.status(400).send(errorUserNameResponse);
             } else {
                 const userExrTime = await this.getUserLoginExpireTime();
@@ -965,15 +961,12 @@ export class GuestController {
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
-                console.log('pass5');
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
                     await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                    console.log('pass6', loginUser);
-                    console.log('pass7', loginToken);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
@@ -1028,8 +1021,10 @@ export class GuestController {
             }
 
             let twitterUserId = undefined;
+            console.log('twitterUserId',twitterUserId);
             try {
                 const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                console.log('verifyObject',verifyObject);
                 twitterUserId = verifyObject.id_str;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex };
@@ -1042,7 +1037,7 @@ export class GuestController {
             }
 
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-
+            console.log('twAuthenId',twAuthenId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                 return res.status(400).send(errorUserNameResponse);

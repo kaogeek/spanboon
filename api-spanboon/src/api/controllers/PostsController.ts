@@ -1016,17 +1016,7 @@ export class PostsController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    whoPost.ownerUser,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationText,
-                                    link,
-                                    pageLike.name,
-                                    pageLike.imageURL
-                                );
+                                continue
                             }
                         }
                     }
@@ -1171,6 +1161,7 @@ export class PostsController {
         }
     }
 
+    // like user to user
     /**
      * @api {post} /api/post/:postId/needs Add PagePost Needs API
      * @apiGroup PagePost

@@ -235,7 +235,7 @@ export class PostsCommentController {
                 else {
                     // WHO POST USER OR PAGE ?
                     const userName = await this.userService.findOne({ _id: postsComment.user });
-                    if (postWho.pageId === null) {
+                    if (postWho.pageId === null && userName) {
                         // USER TO USER
                         console.log('user to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
@@ -257,20 +257,12 @@ export class PostsCommentController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    postWho.ownerUser,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                );
+                                continue;
                             }
                         }
 
                     }
-                    else {
+                    else if(postWho.pageId !== null && getPost){
                         // USER TO PAGE
                         console.log('user to page');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
@@ -293,15 +285,7 @@ export class PostsCommentController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    page.id,
-                                    undefined,
-                                    req.user.id + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationComment,
-                                    link,
-                                );
+                                continue
                             }
                         }
                     }
@@ -831,21 +815,12 @@ export class PostsCommentController {
                                     );
                             }
                             else {
-                                await this.notificationService.createNotification
-                                    (
-                                        page.id + '',
-                                        USER_TYPE.USER,
-                                        req.user.id + '',
-                                        USER_TYPE.PAGE,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationComment,
-                                        link,
-                                    );
+                                continue;
                             }
                         }
                     }
                     // User to User
-                    else {
+                    else if(post_who && user && comment.commentAsPage === null){
                         console.log('user to user');
                         const notificationComment = user.displayName + 'กดถูกใจคอมเม้นของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });

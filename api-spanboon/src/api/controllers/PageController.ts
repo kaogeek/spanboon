@@ -480,15 +480,18 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+        console.log('pageObjId',pageObjId);
         // gonna do 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+            console.log('data???????');
             if (!isUserCanAccess) {
                 return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
 
             // check if page was registed.
-            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
+            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageObjId);
+            console.log('pageTwitter',pageTwitter);
             if (pageTwitter !== null && pageTwitter !== undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'This page was binding with Twitter Account.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -1924,8 +1927,8 @@ export class PageController {
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
                 const notificationFollower = whoFollowYou.displayName + 'กดติดตามเพจ' + page.pageUsername;
                 const link = `/profile/${whoFollowYou.displayName}`;
-                if (tokenFCMId !== undefined) {
-                    for (const tokenFCM of tokenFCMId) {
+                for (const tokenFCM of tokenFCMId) {
+                    if(tokenFCM !== undefined){
                         await this.pageNotificationService.notifyToPageUserFcm(
                             followCreate.subjectId,
                             undefined,
@@ -1938,18 +1941,9 @@ export class PageController {
                             whoFollowYou.displayName,
                             whoFollowYou.imageURL
                         );
+                    }else{
+                        continue;
                     }
-                }
-                else {
-                    await this.notificationService.createNotification(
-                        followCreate.userId,
-                        USER_TYPE.USER,
-                        req.user.id + '',
-                        USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.FOLLOW,
-                        notificationFollower,
-                        link,
-                    );
                 }
                 if (engagement) {
                     userEngagement.isFirst = false;
@@ -2428,11 +2422,14 @@ export class PageController {
             // enable
             // lastUpdated
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+            console.log('socialPostLogsService_pageController',socialPostLogsService);
             if (socialPostLogsService) {
+                console.log('pageController_Update_Twitter');
                 const query = { pageId: pageObjId };
                 const newValue = { $set: { enable: configValue.value } };
                 await this.socialPostLogsService.update(query, newValue);
             } else {
+                console.log('pageController_Create_Twitter');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;

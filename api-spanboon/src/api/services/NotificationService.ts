@@ -99,7 +99,6 @@ export class NotificationService {
         const link_noti = String(link);
         const image_url = String(image);
         const count_data = String(count);
-        console.log('notification',notification);
         if(String(notification.toUser) !== String(notification.fromUser)){
             if(count !== null){
                 const payload = 
@@ -138,10 +137,10 @@ export class NotificationService {
         }
         else{
             if(count !== null){
-                return await this.create(notification);
+                return undefined;
             }
             else{
-                return await this.create(notification);
+                return undefined;
             }
         }
     }
