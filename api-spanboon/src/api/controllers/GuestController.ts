@@ -725,7 +725,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-
+                console.log('user',user);
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -1021,8 +1021,10 @@ export class GuestController {
             }
 
             let twitterUserId = undefined;
+            console.log('twitterUserId',twitterUserId);
             try {
                 const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                console.log('verifyObject',verifyObject);
                 twitterUserId = verifyObject.id_str;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex };
@@ -1035,7 +1037,7 @@ export class GuestController {
             }
 
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-
+            console.log('twAuthenId',twAuthenId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                 return res.status(400).send(errorUserNameResponse);

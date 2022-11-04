@@ -131,6 +131,7 @@ export class TwitterController {
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
+        console.log('socialPostLogList',socialPostLogList);
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
@@ -141,19 +142,12 @@ export class TwitterController {
             }
             // for page
             const twitterPostList = await this.twitterService.fetchPostByTwitterUser(socialPost.providerUserId);
-            console.log('twitterPostList',twitterPostList);
             const middle = Math.floor(parseFloat(twitterPostList.dataFeedTwi.meta.result_count) / 3);
-            console.log('pass5_twitter',middle);
             const leftSide = twitterPostList.dataFeedTwi.data.slice(0, middle);
-            console.log('pass6_twitter',leftSide);
             const queue = leftSide;
-            console.log('pass7_twitter',queue);
             for (const dataFeedTwi of queue) {
-                console.log('pass8_twitter',dataFeedTwi);
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
-                console.log('pass9_twitter',checkPostSocial);
                 const checkFeed = checkPostSocial.shift();
-                console.log('pass10_twitter',checkFeed);
                 if (checkFeed === undefined ) {
                     console.log('pass1');
                     const twPostId = dataFeedTwi.id;
