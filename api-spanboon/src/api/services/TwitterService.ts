@@ -715,7 +715,6 @@ export class TwitterService {
 
     private getOauth2AppAccessToken(): Promise<any> {
         return new Promise((resolve, reject) => {
-            console.log('getOauth2AppAccessToken');
             const url: string = TwitterService.ROOT_URL + '/oauth2/token?grant_type=client_credentials';
             const httpOptions: any = {
                 method: 'POST',
@@ -724,32 +723,25 @@ export class TwitterService {
 
             const req = https.request(url, httpOptions, (res) => {
                 const { statusCode, statusMessage } = res;
-                console.log('getOauth2AppAccessToken = res',res);
                 if (statusCode !== 200) {
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;
                 }
 
                 let rawData = '';
-                console.log('getOauth2AppAccessToken = rawData');
                 res.on('data', (chunk) => { rawData += chunk; });
                 res.on('end', () => {
                     try {
                         const parsedData = JSON.parse(rawData);
-                        console.log('getOauth2AppAccessToken = parsedData',parsedData);
                         resolve(parsedData);
                     } catch (e: any) {
-                        console.log('error = e getOauth2AppAccessToken', e);
-                        console.log('error = e2 getOauth2AppAccessToken',e.message);
                         reject(e.message);
                     }
                 });
             });
 
             const base64 = Buffer.from(twitter_setup.TWITTER_API_KEY + ':' + twitter_setup.TWITER_API_SECRET_KEY).toString('base64');
-            console.log('getOauth2AppAccessToken = base64',base64);
             const auth = 'Basic ' + base64;
-            console.log('getOauth2AppAccessToken = auth', auth);
 
             req.setHeader('Content-Type', 'application/json');
             req.setHeader('Accept', '*/*');

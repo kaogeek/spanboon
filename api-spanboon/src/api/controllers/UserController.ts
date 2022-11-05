@@ -135,7 +135,7 @@ export class UserController {
                 }
             }
             const currentDateTime = moment().toDate();
-            const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { expirationDate: currentDateTime } });
+            const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { lastAuthenTime: currentDateTime } });
             if (updateExpireToken) {
                 const successResponse: any = { status: 1, message: 'Successfully Logout' };
                 return res.status(200).send(successResponse);

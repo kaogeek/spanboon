@@ -131,25 +131,19 @@ export class TwitterController {
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
-        console.log('socialPostLogList',socialPostLogList);
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
-            console.log('socialPost',socialPost.providerUserId);
             const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
-            console.log('page',page);
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
             const twitterPostList = await this.twitterService.getTwitterUserTimeLine(socialPost.providerUserId);
-            console.log('twitterPostList',twitterPostList);
             for(const dataFeedTwi of twitterPostList.data){
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 const checkFeed = checkPostSocial.shift();
-                console.log('checkFeed',checkFeed);
                 if (checkFeed === undefined ) {
-                    console.log('pass1');
                     const twPostId = dataFeedTwi.id;
                     const text = dataFeedTwi.text;
                     const today = moment().toDate();
@@ -190,7 +184,6 @@ export class TwitterController {
 
                 }
                 else {
-                    console.log('pass2');
                     continue;
                 } 
             }
