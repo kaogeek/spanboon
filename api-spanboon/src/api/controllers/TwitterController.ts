@@ -144,6 +144,7 @@ export class TwitterController {
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 const checkFeed = checkPostSocial.shift();
                 if (checkFeed === undefined ) {
+                    console.log('pass1');
                     const twPostId = dataFeedTwi.id;
                     const text = dataFeedTwi.text;
                     const today = moment().toDate();
@@ -181,9 +182,9 @@ export class TwitterController {
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
                     await this.socialPostService.create(newSocialPost); 
-
                 }
                 else {
+                    console.log('pass2');
                     continue;
                 } 
             }
