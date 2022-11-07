@@ -192,7 +192,6 @@ export class TwitterService {
                     res.on('end', () => {
                         try {
                             const parsedData = JSON.parse(rawData);
-                            console.log('parsedData',parsedData);
                             resolve(parsedData);
                         } catch (e: any) {
                             console.log('error_e = e',e);
@@ -719,10 +718,22 @@ export class TwitterService {
                 }
             }
         );
-        console.log('data',data);
         return data;
     }
     
+    public async getTimeLineUser(twitterUserId: string,access_token:any): Promise<any>{
+        const { data } = await axios.get(
+            'https://api.twitter.com/2/users/'+ twitterUserId +'/tweets?tweet.fields=created_at&max_results=5',
+            {
+                headers:{
+                    Authorization:`Bearer ${access_token.access_token}`
+                }                
+            }
+        );
+        console.log('data',data.data[0]);
+        return data;
+    }
+
     // private getOauth2AppAccessToken(): Promise<any> {
         
         // return new Promise((resolve, reject) => {
