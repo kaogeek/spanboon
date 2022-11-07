@@ -130,17 +130,19 @@ export class TwitterController {
         // search from logs that not update in 10 min
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
+        const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
+        console.log('oAuth2Twitter',oAuth2Twitter);
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
+            const getUserTimeline = await this.twitterService.getTimeLineUser(socialPost.providerUserId,oAuth2Twitter);
             const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
-            const twitterPostList = await this.twitterService.getTwitterUserTimeLine(socialPost.providerUserId);
-            for(const dataFeedTwi of twitterPostList.data){
+            for(const dataFeedTwi of getUserTimeline.data){
                 const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                 const checkFeed = checkPostSocial.shift();
                 if (checkFeed === undefined ) {
