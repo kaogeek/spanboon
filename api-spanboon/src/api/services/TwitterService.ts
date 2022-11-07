@@ -730,7 +730,6 @@ export class TwitterService {
                 }                
             }
         );
-        console.log('data',data.data[0]);
         return data;
     }
 

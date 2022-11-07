@@ -6,9 +6,7 @@
  */
 
 import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3tec';
-import { env } from '../env';
 import * as schedule from 'node-schedule';
-import * as http from 'http';
 import axios from 'axios';
 
 /* 
@@ -18,43 +16,27 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     // Run Every Hour
     // Clear Temp File
     schedule.scheduleJob('*/5 * * * *', () => {
-        const clearTempOptions: any = {
-            host: env.app.host,
-            port: env.app.port,
-            path: env.app.routePrefix + '/file/temp',
-            method: 'DELETE'
-        };
-
-        http.request(clearTempOptions, (res) => {
-            console.log(`CLEAR TEMP FILE STATUS: ${res.statusCode}`);
-        }).on('error', (err) => {
-            // Handle error
+        axios.delete('http://localhost:9000/api/jobs/extended_token').then((res) =>{
+            console.log(`Fetch Twitter : ${res.status}`);
+        }).catch((err) =>{
             console.log('err: ' + err);
-        }).end();
+        });
     });
 
     // Run Every 3 Hour
     // update page token
     schedule.scheduleJob('0 */3 * * *', () => {
-        const options: any = {
-            host: env.app.host,
-            port: env.app.port,
-            path: env.app.routePrefix + '/jobs/extended_token',
-            method: 'POST'
-        };
-
-        http.request(options, (res) => {
-            console.log(`Extended Page Token STATUS: ${res.statusCode}`);
-        }).on('error', (err) => {
-            // Handle error
+        axios.post('http://localhost:9000/api/jobs/extended_token').then((res) =>{
+            console.log(`Fetch Twitter : ${res.status}`);
+        }).catch((err) =>{
             console.log('err: ' + err);
-        }).end();
+        });
     });
     
     // fetch feed twitter
     schedule.scheduleJob('*/1 * * * *', () =>{
         axios.get('http://localhost:9000/api/twitter/feed_tw').then((res)=>{
-            console.log(`Fetch Twitter : ${res}`);
+            console.log(`Fetch Twitter : ${res.status}`);
         }).catch((err)=>{
             console.log('err: ' + err);
         });
