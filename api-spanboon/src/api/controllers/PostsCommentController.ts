@@ -156,7 +156,7 @@ export class PostsCommentController {
                 const postWho = await this.postsService.findOne({ _id: comment.post });
                 const getPost = await this.postsService.findOne({ _id: comment.post });
                 const userDisplayName = await this.userService.findOne({ _id: getPost.ownerUser });
-                if (comment.commentAsPage !== null) {
+                if (commentAsPage !== null) {
                     const pageName = await this.pageService.findOne({ _id: ObjectID(commentAsPage) });
                     // page to page
                     console.log('postWho.pageId',postWho.pageId);
@@ -735,7 +735,7 @@ export class PostsCommentController {
                 const userDisplayName = await this.userService.findOne({ _id: comment.user });
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const user = await this.userService.findOne({ _id: likeCreate.userId });
-                if (likeCreate.likeAsPage !== null ) {
+                if (likeAsPage !== null ) {
                     // page to page
                     console.log('comment.commentAsPage',comment.commentAsPage);
                     if (comment.commentAsPage !== null) {
