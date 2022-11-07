@@ -957,7 +957,7 @@ export class PostsController {
                 const page = await this.pageService.findOne({ _id: whoPost.pageId });
                 if (likeCreate.likeAsPage !== null) {
                     // page to page
-                    if (whoPost.pageId !== null && page && pageLike) {
+                    if (whoPost.pageId !== null) {
                         console.log('page to page');
                         const userOwnerPage = await this.userService.findOne({ _id: page.ownerUser });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: userOwnerPage.id });
@@ -994,7 +994,7 @@ export class PostsController {
                         }
                     }
                     // page to user
-                    else if(pageLike !== undefined) {
+                    else {
                         console.log('page to user');
                         const userOwnerPage = await this.userService.findOne({ _id: whoPost.ownerUser });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
@@ -1016,16 +1016,23 @@ export class PostsController {
                                 );
                             }
                             else {
-                                continue;
+                                await this.notificationService.createNotification(
+                                    whoPost.ownerUser,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.COMMENT,
+                                    notificationText,
+                                );
                             }
                         }
                     }
                 }
                 else {
                     // user to page
-
-                    const ownerPostFile = await this.userService.findOne({ _id: ownerPost.ownerUser });
-                    if (whoPost.pageId !== null && page ) {
+                    console.log('whoPost.pageId',whoPost.pageId);
+                    console.log('page_???',page);
+                    if (whoPost.pageId !== null && page !== undefined ) {
                         console.log('user to page');
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
@@ -1063,10 +1070,11 @@ export class PostsController {
                         }
                     }
                     // user to user 
-                    else if(whoPost.pageId === null && ownerPostFile){
+                    else{
                         // owner post 
                         // FCM device token owner post
                         console.log('user to user');
+                        const ownerPostFile = await this.userService.findOne({ _id: ownerPost.ownerUser });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPostFile.id });
                         const notificationText = userLikeId.displayName + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${ownerPostFile.displayName}/post/` + whoPost.id;

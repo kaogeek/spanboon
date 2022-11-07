@@ -1940,7 +1940,14 @@ export class PageController {
                             whoFollowYou.imageURL
                         );
                     }else{
-                        continue;
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            followCreate.subjectId,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notificationFollower,
+                        );
                     }
                 }
                 if (engagement) {
