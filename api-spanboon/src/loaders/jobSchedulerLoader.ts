@@ -9,6 +9,7 @@ import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3t
 import { env } from '../env';
 import * as schedule from 'node-schedule';
 import * as http from 'http';
+import axios from 'axios';
 
 /* 
 * This will set job schedule for Clear Temp File
@@ -52,16 +53,10 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     
     // fetch feed twitter
     schedule.scheduleJob('*/1 * * * *', () =>{
-        const options: any ={
-            host: env.app.host,
-            port: env.app.port,
-            path: env.app.routePrefix + '/twitter/feed_tw',
-            method: 'GET'
-        };
-        http.request(options, (res) =>{
-            console.log(`Feed twitter successfully: ${res.statusCode}`);
-        }).on('error', (err) =>{
-            console.log('err' +err);
-        }).end();
+        axios.get('http://localhost:9000/api/twitter/feed_tw').then((res)=>{
+            console.log(`Fetch Twitter : ${res}`);
+        }).catch((err)=>{
+            console.log('err: ' + err);
+        });
     });
 };

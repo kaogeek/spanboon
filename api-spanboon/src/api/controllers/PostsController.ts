@@ -950,19 +950,19 @@ export class PostsController {
                 // who_post.pageId !== null
                 // เพิ่มฟิลด์
                 // displayName
-                const whoPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
-                const userLikeId = await this.userService.findOne({ _id: likeCreate.userId });
+                const post_who = await this.postsService.findOne({ _id: likeCreate.subjectId });
                 const ownerPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
+                const userLikeId = await this.userService.findOne({ _id: likeCreate.userId });
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
-                const page = await this.pageService.findOne({ _id: whoPost.pageId });
-                if (likeCreate.likeAsPage !== null) {
+                const page = await this.pageService.findOne({ _id: likeCreate.subjectId });
+                const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
+                if (likeAsPage !== null) {
                     // page to page
-                    if (whoPost.pageId !== null) {
+                    if (post_who.pageId !== null) {
                         console.log('page to page');
-                        const userOwnerPage = await this.userService.findOne({ _id: page.ownerUser });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: userOwnerPage.id });
                         const notificationText = pageLike.name + 'กดถูกใจโพสต์ของเพจ' + page.name;
-                        const link = `/page/${page.name}/post/` + whoPost.id;
+                        const link = `/page/${page.name}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
@@ -996,14 +996,13 @@ export class PostsController {
                     // page to user
                     else {
                         console.log('page to user');
-                        const userOwnerPage = await this.userService.findOne({ _id: whoPost.ownerUser });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + 'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${userOwnerPage.displayName}/post/` + whoPost.id;
+                        const link = `/profile/${userOwnerPage.displayName}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
                                 await this.notificationService.createNotificationFCM(
-                                    whoPost.ownerUser,
+                                    post_who.ownerUser,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
                                     USER_TYPE.USER,
@@ -1017,7 +1016,7 @@ export class PostsController {
                             }
                             else {
                                 await this.notificationService.createNotification(
-                                    whoPost.ownerUser,
+                                    post_who.ownerUser,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
                                     USER_TYPE.USER,
@@ -1030,19 +1029,19 @@ export class PostsController {
                 }
                 else {
                     // user to page
-                    console.log('whoPost.pageId',whoPost.pageId);
+                    console.log('whoPost.pageId',post_who.pageId);
                     console.log('page_???',page);
-                    if (whoPost.pageId !== null && page !== undefined ) {
+                    if (post_who.pageId !== null && page !== undefined ) {
                         console.log('user to page');
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: whoPost.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = userLikeId.displayName + 'กดถูกใจโพสต์ของเพจ' + page.name;
-                        const link = `/page/${page.name}/post/` + whoPost.id;
+                        const link = `/page/${page.name}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
                                 await this.pageNotificationService.notifyToPageUserFcm
                                     (
-                                        whoPost.pageId + '',
+                                        post_who.pageId + '',
                                         undefined,
                                         req.user.id + '',
                                         USER_TYPE.PAGE,
@@ -1056,7 +1055,7 @@ export class PostsController {
                             }
                             else {
                                 await this.pageNotificationService.notifyToPageUser(
-                                    whoPost.pageId + '',
+                                    post_who.pageId + '',
                                     undefined,
                                     req.user.id + '',
                                     USER_TYPE.PAGE,
@@ -1074,10 +1073,9 @@ export class PostsController {
                         // owner post 
                         // FCM device token owner post
                         console.log('user to user');
-                        const ownerPostFile = await this.userService.findOne({ _id: ownerPost.ownerUser });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPostFile.id });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
                         const notificationText = userLikeId.displayName + 'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${ownerPostFile.displayName}/post/` + whoPost.id;
+                        const link = `/profile/${userLikeId.displayName}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
                                 await this.notificationService.createNotificationFCM
