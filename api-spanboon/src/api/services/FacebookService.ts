@@ -197,7 +197,6 @@ export class FacebookService {
 
     public publishPostByUser(userId: string, message: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-
             const spanboonUser = await this.userService.findOne({ _id: new ObjectID(userId), banned: false });
             if (!spanboonUser) {
                 reject('User was not found or was baned.');
@@ -212,7 +211,6 @@ export class FacebookService {
 
             const fbUserId = userAuthen.providerUserId;
             const accessToken = userAuthen.storedCredentials;
-
             try {
                 const result = await this.publishMessage(fbUserId, accessToken, message);
                 resolve(result);
@@ -307,18 +305,22 @@ export class FacebookService {
                     };
                 }
             }
-
-            facebook.api(fbUserId + '/feed', 'post', formData, (response: any) => {
-                if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
-                    reject(response.error);
-                    return;
-                }
-                resolve(response);
+            // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
+            this.publishPageId(fbUserId,accessToken).then((res)=>{
+                axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
+                    resolve(resFacebook.data);
+                });
             });
         });
     }
-
+    public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
+            return data;
+        }catch(err){
+            console.log('Error publishPageId :'+ err);
+        }
+    }
     public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
