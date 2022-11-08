@@ -956,7 +956,7 @@ export class PostsController {
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const page = await this.pageService.findOne({ _id: likeCreate.subjectId });
                 const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
-                if (likeAsPage !== null) {
+                if (likeCreate.likeAsPage !== null) {
                     // page to page
                     if (post_who.pageId !== null) {
                         console.log('page to page');

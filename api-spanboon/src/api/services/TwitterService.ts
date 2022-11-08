@@ -705,32 +705,40 @@ export class TwitterService {
         return result;
     }
     public async getOauth2AppAccessTokenTest(): Promise<any>{
-        const {data} = await axios.post(
-            'https://api.twitter.com/oauth2/token',
-            '',
-            {
-                params:{
-                    'grant_type':'client_credentials'
-                },
-                auth:{
-                    username: process.env.TWITTER_API_KEY,
-                    password: process.env.TWITER_API_SECRET_KEY
+        try{
+            const {data} = await axios.post(
+                'https://api.twitter.com/oauth2/token',
+                '',
+                {
+                    params:{
+                        'grant_type':'client_credentials'
+                    },
+                    auth:{
+                        username: process.env.TWITTER_API_KEY,
+                        password: process.env.TWITER_API_SECRET_KEY
+                    }
                 }
-            }
-        );
-        return data;
+            );
+            return data;
+        }catch(err){
+            console.log('error_getOauth2',err);
+        }
     }
     
     public async getTimeLineUser(twitterUserId: string,access_token:any): Promise<any>{
-        const { data } = await axios.get(
-            'https://api.twitter.com/2/users/'+ twitterUserId +'/tweets?tweet.fields=created_at&max_results=5',
-            {
-                headers:{
-                    Authorization:`Bearer ${access_token.access_token}`
-                }                
-            }
-        );
-        return data;
+        try{
+            const { data } = await axios.get(
+                'https://api.twitter.com/2/users/'+ twitterUserId +'/tweets?tweet.fields=created_at&max_results=5',
+                {
+                    headers:{
+                        Authorization:`Bearer ${access_token.access_token}`
+                    }                
+                }
+            );
+            return data;
+        }catch(err){
+            console.log('error_getTimeLineUser',err);
+        }
     }
 
     // private getOauth2AppAccessToken(): Promise<any> {

@@ -131,7 +131,6 @@ export class TwitterController {
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
-        console.log('oAuth2Twitter',oAuth2Twitter);
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
@@ -142,53 +141,58 @@ export class TwitterController {
             if (page === undefined) {
                 continue;
             }
-            for(const dataFeedTwi of getUserTimeline.data){
-                const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
-                const checkFeed = checkPostSocial.shift();
-                if (checkFeed === undefined ) {
-                    console.log('pass1');
-                    const twPostId = dataFeedTwi.id;
-                    const text = dataFeedTwi.text;
-                    const today = moment().toDate();
-                    const postPage: Posts = new Posts();
-                    postPage.title = 'โพสต์จากทวิตเตอร์';
-                    postPage.detail = text;
-                    postPage.isDraft = false;
-                    postPage.hidden = false;
-                    postPage.type = POST_TYPE.GENERAL;
-                    postPage.userTags = [];
-                    postPage.coverImage = '';
-                    postPage.pinned = false;
-                    postPage.deleted = false;
-                    postPage.ownerUser = page[0].ownerUser;
-                    postPage.commentCount = 0;
-                    postPage.repostCount = 0;
-                    postPage.shareCount = 0;
-                    postPage.likeCount = 0;
-                    postPage.viewCount = 0;
-                    postPage.createdDate = today;
-                    postPage.startDateTime = today;
-                    postPage.story = null;
-                    postPage.pageId = socialPost.pageId;
-                    postPage.referencePost = null;
-                    postPage.rootReferencePost = null;
-                    postPage.visibility = null;
-                    postPage.ranges = null;
-                    const createPostPageData: Posts = await this.postsService.create(postPage);
+            if(getUserTimeline.data !== undefined){
+                for(const dataFeedTwi of getUserTimeline.data){
+                    const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
+                    const checkFeed = checkPostSocial.shift();
+                    if (checkFeed === undefined ) {
+                        console.log('pass1');
+                        const twPostId = dataFeedTwi.id;
+                        const text = dataFeedTwi.text;
+                        const today = moment().toDate();
+                        const postPage: Posts = new Posts();
+                        postPage.title = 'โพสต์จากทวิตเตอร์';
+                        postPage.detail = text;
+                        postPage.isDraft = false;
+                        postPage.hidden = false;
+                        postPage.type = POST_TYPE.GENERAL;
+                        postPage.userTags = [];
+                        postPage.coverImage = '';
+                        postPage.pinned = false;
+                        postPage.deleted = false;
+                        postPage.ownerUser = page[0].ownerUser;
+                        postPage.commentCount = 0;
+                        postPage.repostCount = 0;
+                        postPage.shareCount = 0;
+                        postPage.likeCount = 0;
+                        postPage.viewCount = 0;
+                        postPage.createdDate = today;
+                        postPage.startDateTime = today;
+                        postPage.story = null;
+                        postPage.pageId = socialPost.pageId;
+                        postPage.referencePost = null;
+                        postPage.rootReferencePost = null;
+                        postPage.visibility = null;
+                        postPage.ranges = null;
+                        const createPostPageData: Posts = await this.postsService.create(postPage);
 
-                    const newSocialPost = new SocialPost();
-                    newSocialPost.pageId = socialPost.pageId;
-                    newSocialPost.postId = createPostPageData.id;
-                    newSocialPost.postBy = socialPost.pageId;
-                    newSocialPost.postByType = 'PAGE';
-                    newSocialPost.socialId = twPostId;
-                    newSocialPost.socialType = PROVIDER.TWITTER;
-                    await this.socialPostService.create(newSocialPost); 
+                        const newSocialPost = new SocialPost();
+                        newSocialPost.pageId = socialPost.pageId;
+                        newSocialPost.postId = createPostPageData.id;
+                        newSocialPost.postBy = socialPost.pageId;
+                        newSocialPost.postByType = 'PAGE';
+                        newSocialPost.socialId = twPostId;
+                        newSocialPost.socialType = PROVIDER.TWITTER;
+                        await this.socialPostService.create(newSocialPost); 
+                    }
+                    else {
+                        console.log('pass2');
+                        continue;
+                    } 
                 }
-                else {
-                    console.log('pass2');
-                    continue;
-                } 
+            }
+            else{
+                console.log('This user does not had any twitter');
             }
         } 
         return response.status(200).send(newPostResult);
