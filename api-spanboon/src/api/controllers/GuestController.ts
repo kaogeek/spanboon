@@ -840,8 +840,6 @@ export class GuestController {
         let loginUser: any;
         const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
-        console.log('pass1_loginUsername', loginUsername);
-        console.log('pass2_mode', mode);
         if (mode === PROVIDER.EMAIL) {
             const userLogin: any = await this.userService.findOne({ where: { username: loginUsername } });
             if (userLogin) {
@@ -982,8 +980,12 @@ export class GuestController {
             }
             // const expiresAt = checkIdToken.expire;
             // const today = moment().toDate();
-            const userId = checkIdToken.userId;
-            const googleUser = await this.googleService.getGoogleUser(userId, authToken);
+            let googleUser = undefined;
+            try{    
+                googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
+            }catch(err){
+                console.log(err);
+            }
             if (googleUser === null || googleUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);

@@ -954,13 +954,13 @@ export class PostsController {
                 const ownerPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
                 const userLikeId = await this.userService.findOne({ _id: likeCreate.userId });
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
-                const page = await this.pageService.findOne({ _id: likeCreate.subjectId });
+                const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
                 const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
-                if (likeCreate.likeAsPage !== null) {
+                if (likeCreate.likeAsPage !== null && likeAsPage !== undefined) {
                     // page to page
                     if (post_who.pageId !== null) {
                         console.log('page to page');
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: userOwnerPage.id });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + 'กดถูกใจโพสต์ของเพจ' + page.name;
                         const link = `/page/${page.name}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {

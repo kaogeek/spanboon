@@ -478,11 +478,9 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
-        console.log('pageObjId',pageObjId);
         // gonna do 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
-            console.log('data???????');
             if (!isUserCanAccess) {
                 return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
