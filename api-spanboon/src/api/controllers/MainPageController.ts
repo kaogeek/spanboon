@@ -1229,15 +1229,19 @@ export class MainPageController {
                         }
                     }
                 },
-                { $project: { postsHashTags: 0 } }
+                { 
+                    $project: 
+                        { 
+                            postsHashTags: 0,
+                        } 
+                }
             ];
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
 
             const pageMap = {};
             const userMap = {};
-            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
-
+            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};

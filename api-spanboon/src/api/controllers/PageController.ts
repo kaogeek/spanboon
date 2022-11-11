@@ -1938,7 +1938,7 @@ export class PageController {
                             whoFollowYou.imageURL
                         );
                     }else{
-                        await this.pageNotificationService.notifyToPageUserFcm(
+                        await this.pageNotificationService.notifyToPageUser(
                             followCreate.subjectId,
                             undefined,
                             req.user.id + '',
