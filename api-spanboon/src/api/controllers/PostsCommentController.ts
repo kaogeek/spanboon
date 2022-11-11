@@ -156,11 +156,12 @@ export class PostsCommentController {
                 const postWho = await this.postsService.findOne({ _id: comment.post });
                 const getPost = await this.postsService.findOne({ _id: comment.post });
                 const userDisplayName = await this.userService.findOne({ _id: getPost.ownerUser });
+                console.log('comment.commentAsPage',comment.commentAsPage);
                 if (comment.commentAsPage !== null) {
                     const pageName = await this.pageService.findOne({ _id: ObjectID(commentAsPage) });
                     // page to page
                     console.log('postWho.pageId',postWho.pageId);
-                    if (postWho.pageId !== null ) {
+                    if (postWho.pageId !== undefined && postWho.pageId !== null ) {
                         console.log('page to page');
                         const page = await this.pageService.findOne({ _id: getPost.pageId });
                         const notificationComment = 'เพจ' + pageName.name + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + page.name;
@@ -239,7 +240,7 @@ export class PostsCommentController {
                     const page = await this.pageService.findOne({ _id: postWho.pageId });
                     console.log('postWho.page',postWho.pageId);
                     console.log('page???',page);
-                    if (postWho.pageId !== null && page !== undefined ) {
+                    if (postWho.pageId !== undefined && postWho.pageId !== null) {
                         console.log('user to page');
                         const userName = await this.userService.findOne({ _id: postsComment.user });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
@@ -733,12 +734,14 @@ export class PostsCommentController {
                 const notifiUser = await this.postsCommentService.findOne({ _id: likeCreate.subjectId });
                 const page = await this.pageService.findOne({ ownerUser: notifiUser.user });
                 const userDisplayName = await this.userService.findOne({ _id: comment.user });
+                console.log('userDisplayName',userDisplayName);
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const user = await this.userService.findOne({ _id: likeCreate.userId });
+                console.log('likeCreate.likeAsPage',likeCreate.likeAsPage);
                 if (likeCreate.likeAsPage !== null ) {
                     // page to page
                     console.log('comment.commentAsPage',comment.commentAsPage);
-                    if (comment.commentAsPage !== null) {
+                    if (comment.commentAsPage !== undefined && comment.commentAsPage !== null) {
                         console.log('page to page');
                         const notificationComment = 'เพจ' + pageLike.name + 'กดถูกใจคอมเม้นของเพจ' + page.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
@@ -794,7 +797,7 @@ export class PostsCommentController {
                                     pageLike.imageURL
                                 );
                             } else {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.createNotification(
                                     tokenFCMId.userId,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
@@ -813,7 +816,7 @@ export class PostsCommentController {
                     const pageUser = await this.pageService.findOne({ _id: comment.commentAsPage });
                     console.log('comment.commentAsPage',comment.commentAsPage);
                     console.log('page???',pageUser);
-                    if (comment.commentAsPage !== null && pageUser !== undefined) {
+                    if (comment.commentAsPage !== null && comment.commentAsPage !== undefined) {
                         console.log('user to page');
                         const notificationComment = user.displayName + 'กดถูกใจคอมเม้นของเพจ' + pageUser.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
@@ -835,7 +838,15 @@ export class PostsCommentController {
                                     );
                             }
                             else {
-                                continue;
+                                await this.pageNotificationService.notifyToPageUser
+                                (
+                                    page.id + '',
+                                    undefined,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.LIKE,
+                                    notificationComment
+                                );
                             }
                         }
                     }

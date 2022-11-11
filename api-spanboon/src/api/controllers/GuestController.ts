@@ -983,6 +983,7 @@ export class GuestController {
             let googleUser = undefined;
             try{    
                 googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
+                console.log('googleUser',googleUser.authId.providerUserId);
             }catch(err){
                 console.log(err);
             }
@@ -994,15 +995,14 @@ export class GuestController {
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
-                const googleUserId = googleUser.userId;
-                const query = { providerUserId: googleUserId, providerName: PROVIDER.GOOGLE };
+                const query = { providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE };
                 const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
-                    const updatedAuth = await this.authenticationIdService.findOne({ where: { providerName: PROVIDER.GOOGLE } });
-                    await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG, userId: updatedAuth.user });
-                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
-                    loginToken = updatedAuth.storedCredentials;
+                    const updatedAuthGG = await this.authenticationIdService.findOne({providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE});
+                    await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG, userId: updatedAuthGG.user });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuthGG.user } });
+                    loginToken = updatedAuthGG.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken, userId: checkIdToken.userId }, env.SECRET_KEY);
                 }
             }

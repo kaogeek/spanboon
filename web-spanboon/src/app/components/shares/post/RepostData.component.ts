@@ -63,7 +63,7 @@ export class RepostData {
 
   public apiBaseURL = environment.apiBaseURL;
   public webBaseURL = environment.webBaseURL;
-  private mainPostLink: string = window.location.origin + '/post/'
+  private mainPostLink: string = window.location.origin;
 
   constructor(postCommentFacade: PostCommentFacade, pageFacade: PageFacade, router: Router, assetFacade: AssetFacade, postFacade: PostFacade, dialog: MatDialog, profileFacade: ProfileFacade, needsFacade: NeedsFacade) {
     this.dialog = dialog;
@@ -81,7 +81,11 @@ export class RepostData {
   ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
-        this.itemPost.likeMainPost = this.mainPostLink + this.itemPost.referencePost
+        if(this.itemPost.pageId !== null){
+          this.itemPost.likeMainPost = this.mainPostLink + '/page/'+ this.itemPost.ownerUser._id + '/post/' + this.itemPost.referencePost
+        }else{
+          this.itemPost.likeMainPost = this.mainPostLink + '/profile/'+ this.itemPost.ownerUser._id + '/post/' + this.itemPost.referencePost
+        }
       }
       if (this.itemPost && this.itemPost.referencePost && this.itemPost.referencePost != null && this.itemPost.referencePost != undefined && this.itemPost.referencePost != '') {
         if (typeof this.itemPost.referencePost.gallery !== 'undefined' && this.itemPost.referencePost.gallery.length > 0) {
