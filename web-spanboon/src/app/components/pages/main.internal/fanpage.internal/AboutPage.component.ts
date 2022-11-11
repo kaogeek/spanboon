@@ -519,6 +519,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public checkPatternEmail(mail: any) {
+        console.log('mail;',mail)
         if (mail === '') {
             this.isActiveButtonEmail = false;
             document.getElementById('email').style.border = 'unset';
@@ -526,7 +527,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         }
         if (mail.length > 0) {
             this.isActiveButtonEmail = true;
-            let pattern = mail.match('[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}');
+            let pattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
             if (!pattern) {
                 return document.getElementById('email').style.border = '2px solid red';
             } else {
@@ -636,9 +637,21 @@ export class AboutPage extends AbstractPage implements OnInit {
             }
         } else if (index === 7) {
             if (this.cloneData.email === undefined) {
-                this.resDataPage.email = '';
+                let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
+                if (!this.resDataPage.email.match(emailPattern)) {
+                    document.getElementById('email').style.border = "1px solid red";
+                    return document.getElementById("email").focus();
+                  } else {
+                    document.getElementById('email').style.border = "unset";
+                  }
             } else {
-                this.resDataPage.email = this.resDataPage.email;
+                let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
+                if (!this.resDataPage.email.match(emailPattern)) {
+                    document.getElementById('email').style.border = "1px solid red";
+                    return document.getElementById("email").focus();
+                  } else {
+                    document.getElementById('email').style.border = "unset";
+                  }
             }
         } else if (index === 8) {
             if (this.cloneData.lineId === undefined) {

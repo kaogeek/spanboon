@@ -107,16 +107,14 @@ export class FacebookService {
         });
     }
     public async fetchFacebook(accessToken:string): Promise<any>{
-        const {data} = await axios({
-            url: 'https://graph.facebook.com/me',
-            method: 'get',
-            params:{
-                fields: ['id', 'email'].join(','),
-                access_token: accessToken,
-            },
-        });
-        return data;
-
+        try{
+            const {data} = await axios({
+                url: 'https://graph.facebook.com/me?access_token=' + accessToken});
+            console.log('data',data);
+            return data;
+        }catch(err){
+            console.log('Error :', err);
+        }
     }
 
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
