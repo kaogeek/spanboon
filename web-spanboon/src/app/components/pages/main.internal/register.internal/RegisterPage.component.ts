@@ -236,7 +236,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       document.getElementById('email').style.border = "unset";
       this.activeEmail = false;
     }
-
+    // mark
     let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
     if (!formData.email.match(emailPattern)) {
       this.activeEmail = true;
