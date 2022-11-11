@@ -519,7 +519,6 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public checkPatternEmail(mail: any) {
-        console.log('mail;',mail)
         if (mail === '') {
             this.isActiveButtonEmail = false;
             document.getElementById('email').style.border = 'unset';

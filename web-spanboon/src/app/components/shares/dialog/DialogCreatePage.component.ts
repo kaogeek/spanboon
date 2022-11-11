@@ -258,7 +258,6 @@ export class DialogCreatePage extends AbstractPage {
         let body = {
           pageUsername: text
         }
-        console.log('body',body);
         this.uuid = true;
         this.pageFacade.checkPageUsername(body).then((res) => {
           if (res && res.data) {
