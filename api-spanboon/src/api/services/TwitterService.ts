@@ -285,7 +285,6 @@ export class TwitterService {
 
             const req = https.request(url, httpOptions, (res) => {
                 const { statusCode, statusMessage } = res;
-
                 if (statusCode !== 200) {
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;

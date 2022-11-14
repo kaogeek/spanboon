@@ -109,8 +109,7 @@ export class FacebookService {
     public async fetchFacebook(accessToken:string): Promise<any>{
         try{
             const {data} = await axios({
-                url: 'https://graph.facebook.com/me?access_token=' + accessToken});
-            console.log('data',data);
+                url: 'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken});
             return data;
         }catch(err){
             console.log('Error :', err);
