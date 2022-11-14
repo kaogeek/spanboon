@@ -87,7 +87,7 @@ export class GuestController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/register')
-    public async register(@Body({ validate: true }) users: CreateUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async register(@Body({ validate: true })users: CreateUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;
         const registerEmail = users.email.toLowerCase();
         const gender = users.gender;
@@ -499,6 +499,8 @@ export class GuestController {
         }
         else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            const idToken = req.body.idToken;
+            const checkIdToken = await this.googleService.verifyIdToken(idToken, req.headers.mod_modMobile);
             const googleUserId = users.googleUserId;
             const authToken = users.authToken;
 
@@ -521,18 +523,29 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('Google was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
+                if(checkIdToken === null && checkIdToken === undefined){
+                    userData = this.userService.cleanUserField(resultUser);
+                    const authenId = new AuthenticationId();
+                    authenId.user = resultUser.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = googleUserId;
+                    authenId.providerName = PROVIDER.GOOGLE;
+                    authenId.storedCredentials = authToken;
+                    authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
-                userData = this.userService.cleanUserField(resultUser);
-                const authenId = new AuthenticationId();
-                authenId.user = resultUser.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = googleUserId;
-                authenId.providerName = PROVIDER.GOOGLE;
-                authenId.storedCredentials = authToken;
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                }else{
+                    userData = this.userService.cleanUserField(resultUser);
+                    const authenId = new AuthenticationId();
+                    authenId.user = resultUser.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = checkIdToken.userId;
+                    authenId.providerName = PROVIDER.GOOGLE;
+                    authenId.storedCredentials = authToken;
+                    authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
 
-                authIdCreate = await this.authenticationIdService.create(authenId);
-
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                }
                 if (authIdCreate) {
                     const result: any = { token: authToken, user: userData };
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Google Success', result);
@@ -910,44 +923,20 @@ export class GuestController {
         }
 
         else if (mode === PROVIDER.FACEBOOK) {
-            // const checkAccessToken = await this.facebookService.checkAccessToken(loginParam.token);
-            // console.log('checkAccessToken',checkAccessToken);
             const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
             const deviceFB = req.body.tokenFCM_FB.deviceName;
-            /* if (checkAccessToken === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                console.log('errorResponse_1',errorResponse);
-                return res.status(400).send(errorResponse);
-            }
 
-            if (checkAccessToken.error !== undefined) {
-                const errorResponse: any = { status: 0, message: 'checkAccessToken Error ' + checkAccessToken.error.message };
-                console.log('errorResponse_2',errorResponse);
-                return res.status(400).send(errorResponse);
-            }
-
-            if (checkAccessToken.data === undefined) {
-                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                console.log('errorResponse_3',errorResponse);
-                return res.status(200).send(errorResponse);
-            }
-
-            const expiresAt = checkAccessToken.data.expires_at; */
-            // const today = moment().toDate();
-            // console.log('expiresAt: ', expiresAt);
-            // console.log('today: ', today.getTime());
-
-            // if (expiresAt < today.getTime()) {
-            //     const errorResponse: any = { status: 0, code: 'E3000002', message: 'User token expired.' };
-            //     return res.status(400).send(errorResponse);
-            // }
+            // find email then -> authentication -> mode FB
             let fbUser = undefined;
+            let emailFB = undefined;
+            let authenticaTionFB = undefined;
             try {
                 fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
+                emailFB = await this.userService.findOne({email:fbUser.user.email});
+                authenticaTionFB = await this.authenticationIdService.findOne({user:emailFB.id,providerName:PROVIDER.FACEBOOK});
             } catch (err) {
                 console.log(err);
-            }
-            if (fbUser === null || fbUser === undefined) {
+            } if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
@@ -955,9 +944,9 @@ export class GuestController {
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
-                const facebookUserId = fbUser.authId.providerUserId;
+                const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.authId.providerUserId,lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
@@ -1012,6 +1001,8 @@ export class GuestController {
         else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
+            console.log('twitterOauthToken',twitterOauthToken);
+            console.log('twitterOauthTokenSecret',twitterOauthTokenSecret);
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                 return res.status(400).send(errorResponse);
@@ -1025,6 +1016,7 @@ export class GuestController {
             let twitterUserId = undefined;
             console.log('twitterUserId',twitterUserId);
             try {
+                console.log('twitter_try');
                 const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
                 console.log('verifyObject',verifyObject);
                 twitterUserId = verifyObject.id_str;
