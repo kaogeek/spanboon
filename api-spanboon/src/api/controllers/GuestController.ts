@@ -928,12 +928,14 @@ export class GuestController {
 
             // find email then -> authentication -> mode FB
             let fbUser = undefined;
-            let emailFB = undefined;
+            let userFb = undefined;
             let authenticaTionFB = undefined;
             try {
-                fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
-                emailFB = await this.userService.findOne({email:fbUser.user.email});
-                authenticaTionFB = await this.authenticationIdService.findOne({user:emailFB.id,providerName:PROVIDER.FACEBOOK});
+                fbUser = await this.facebookService.fetchFacebook(loginParam.token);
+                userFb = await this.userService.find({email:fbUser.email});
+                for(let userFind of userFb){
+                    authenticaTionFB = await this.authenticationIdService.findOne({user:userFind.id,providerName:PROVIDER.FACEBOOK});
+                }
             } catch (err) {
                 console.log(err);
             } if (fbUser === null || fbUser === undefined) {
@@ -946,14 +948,13 @@ export class GuestController {
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.authId.providerUserId,lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: fbUser.token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.id,lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
                     await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
-                    loginToken = updatedAuth.storedCredentials;
-                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: loginParam.token }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
