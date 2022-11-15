@@ -210,7 +210,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     // continue google ;
     // this.showAlertDevelopDialog("รองรับการเข้าใช้ผ่าน Facebook หรือผ่านการสมัคร สมาชิกโดยตรง");
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
-      console.log('result',result);
       if (result !== null && result !== undefined) {
         let googleToken = {
         googleUserId: result.id,

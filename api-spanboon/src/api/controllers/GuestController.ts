@@ -963,7 +963,6 @@ export class GuestController {
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
             const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
             const deviceGG = req.body.tokenFCM_GG.deviceName;
-
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
@@ -973,7 +972,6 @@ export class GuestController {
             let googleUser = undefined;
             try{    
                 googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
-                console.log('googleUser',googleUser.authId.providerUserId);
             }catch(err){
                 console.log(err);
             }
@@ -986,7 +984,7 @@ export class GuestController {
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const query = { providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE };
-                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, expirationDate } };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken,properties:{userId:googleUser.authId.providerUserId,token:googleUser.authId.storedCredentials,expiraToken:checkIdToken.expire}, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuthGG = await this.authenticationIdService.findOne({providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE});
@@ -1015,11 +1013,8 @@ export class GuestController {
             }
 
             let twitterUserId = undefined;
-            console.log('twitterUserId',twitterUserId);
             try {
-                console.log('twitter_try');
                 const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
-                console.log('verifyObject',verifyObject);
                 twitterUserId = verifyObject.id_str;
             } catch (ex) {
                 const errorResponse: any = { status: 0, message: ex };
@@ -1032,7 +1027,6 @@ export class GuestController {
             }
 
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-            console.log('twAuthenId',twAuthenId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -1242,7 +1236,22 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        } if (isMode !== undefined && isMode === 'TW') {
+        } 
+        if (isMode !== undefined && isMode === 'GG'){
+            try {
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if (decryptToken.token === undefined) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+                const ggUser = await this.googleService.getGoogleUser(decryptToken.userId,decryptToken.token);
+                user = ggUser.user;
+            } catch (ex: any) {
+                const errorResponse: any = { status: 0, message: ex.message };
+                return response.status(400).send(errorResponse);
+            }
+        }
+        if (isMode !== undefined && isMode === 'TW') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
                 if (decryptToken.token === undefined) {
@@ -1283,6 +1292,7 @@ export class GuestController {
         } else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id } });
+            console.log('authenId',authenId);
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
                 return response.status(400).send(errorUserNameResponse);

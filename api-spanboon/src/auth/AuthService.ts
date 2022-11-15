@@ -84,7 +84,8 @@ export class AuthService {
                     const ggToken:any = await jwt.verify(token,env.SECRET_KEY);
                     if(ggToken.token !== undefined){
                         const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
-                        if(ggUserObj !== undefined ){
+                        if(ggUserObj !== undefined && ggUserObj.authId.user !== undefined){
+                            console.log('pass ????');
                             UserId = ggUserObj.authId.user;
                         }
                     }

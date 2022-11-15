@@ -120,7 +120,7 @@ export class AuthenManager {
         this.token = result.token;
         this.user = result.user;
         this.googleMode = true;
-
+        console.log('TokenGoogle In localStorage ???',localStorage.getItem('token'));
         localStorage.setItem(TOKEN_KEY, result.token);
         localStorage.setItem(TOKEN_MODE_KEY, 'GG');
         sessionStorage.setItem(TOKEN_KEY, result.token);
@@ -188,7 +188,6 @@ export class AuthenManager {
       }
       let httpOptions = { headers };
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        console.log('response',response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
