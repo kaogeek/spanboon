@@ -1242,6 +1242,7 @@ export class MainPageController {
             const pageMap = {};
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
+            console.log('postResult_api_main_content',postResult);
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};
