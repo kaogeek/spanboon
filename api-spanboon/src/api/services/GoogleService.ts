@@ -33,7 +33,7 @@ export class GoogleService {
   public async verifyIdToken(idToken: string,modHeaders:string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       let ticket;
-      if (modHeaders === undefined) {
+      if (modHeaders !== undefined && modHeaders !== null) {
         ticket = await this.CLIENT.verifyIdToken({ idToken, audience: this.CLIENT_ID });
       } else {
         ticket = await this.CLIENT.verifyIdToken({ idToken });

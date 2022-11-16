@@ -818,7 +818,6 @@ export class MainPageController {
                     }
                 }
             }
-
             if (onlyFollowed === undefined) {
                 onlyFollowed = false;
             }
@@ -854,6 +853,7 @@ export class MainPageController {
                 } else {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
+                // console.log('orPageConditions',orPageConditions);
             }
 
             if (type !== null && type !== undefined && type !== '') {
@@ -997,7 +997,7 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-
+            let pageoffi = undefined;
             if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
                 if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
                     postStmt.push({ $sort: { startDateTime: -1 } });
@@ -1016,7 +1016,11 @@ export class MainPageController {
 
             if (filter.limit !== null && filter.limit !== undefined && filter.limit !== 0) {
                 postStmt.push({ $limit: filter.limit });
-            } else {
+            } 
+            if (filter.isOfficial !== null && filter.isOfficial !== undefined){
+                pageoffi = filter.isOfficial;
+            }
+            else {
                 postStmt.push({ $limit: MAX_SEARCH_ROWS });
             }
 
@@ -1236,13 +1240,10 @@ export class MainPageController {
                         } 
                 }
             ];
-
             searchPostStmt = postStmt.concat(postsLookupStmt);
-
             const pageMap = {};
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
-            console.log('postResult_api_main_content',postResult);
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};
@@ -1266,9 +1267,15 @@ export class MainPageController {
                     // end inject sign URL
 
                     let postPage;
-                    if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '') {
+                    if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '' && pageoffi !== undefined && pageoffi !== null) {
                         if (pageMap[post.pageId] === undefined) {
-                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId) });
+                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId),isOfficial:pageoffi });
+                            pageMap[post.pageId] = page;
+                        }
+                    }
+                    else{
+                        if (pageMap[post.pageId] === undefined) {
+                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId)});
                             pageMap[post.pageId] = page;
                         }
                     }
@@ -1337,7 +1344,7 @@ export class MainPageController {
                 });
 
                 search = searchResults;
-
+                console.log('searchResults',searchResults);
                 if (search !== null && search !== undefined && Object.keys(search).length > 0) {
                     const successResponse = ResponseUtil.getSuccessResponse('Search Success', search);
                     return res.status(200).send(successResponse);
