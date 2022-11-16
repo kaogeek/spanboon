@@ -933,12 +933,12 @@ export class GuestController {
             try {
                 fbUser = await this.facebookService.fetchFacebook(loginParam.token);
                 userFb = await this.userService.find({email:fbUser.email});
-                for(let userFind of userFb){
-                    authenticaTionFB = await this.authenticationIdService.findOne({user:userFind.id,providerName:PROVIDER.FACEBOOK});
+                for(const userFind of userFb){
+                    authenticaTionFB = await this.authenticationIdService.findOne({where:{user:ObjectID(userFind.id),providerName:PROVIDER.FACEBOOK}});
                 }
             } catch (err) {
                 console.log(err);
-            } if (fbUser === null || fbUser === undefined) {
+            } if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
@@ -953,8 +953,9 @@ export class GuestController {
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
                     await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
-                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
-                    loginToken = jwt.sign({ token: loginParam.token }, env.SECRET_KEY);
+                    loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user)}});
+                    loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
             }
         } else if (mode === PROVIDER.GOOGLE) {
