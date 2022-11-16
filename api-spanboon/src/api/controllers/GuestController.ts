@@ -1001,8 +1001,6 @@ export class GuestController {
         else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = loginParam.twitterOauthToken;
             const twitterOauthTokenSecret = loginParam.twitterOauthTokenSecret;
-            console.log('twitterOauthToken',twitterOauthToken);
-            console.log('twitterOauthTokenSecret',twitterOauthTokenSecret);
             if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                 const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                 return res.status(400).send(errorResponse);
@@ -1095,7 +1093,8 @@ export class GuestController {
     @Post('/forgot')
     public async forgotPassword(@Body({ validate: true }) forgotPassword: ForgotPasswordRequest, @Res() res: any): Promise<any> {
         const username = forgotPassword.username;
-        const user: User = await this.userService.findOne({ username });
+        const emailRes:string = username.toLowerCase();
+        const user: User = await this.userService.findOne({ username:emailRes });
 
         if (user === null || user === undefined) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid Username', []));
