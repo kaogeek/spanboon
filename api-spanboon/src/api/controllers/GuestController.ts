@@ -1245,7 +1245,8 @@ export class GuestController {
                     return response.status(400).send(errorUserNameResponse);
                 }
                 const ggUser = await this.googleService.getGoogleUser(decryptToken.userId,decryptToken.token);
-                user = ggUser.user;
+                const findUser = await this.userService.findOne({_id:ObjectID(ggUser.authId.user)});
+                user = findUser;
             } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);

@@ -1854,7 +1854,7 @@ export class PageController {
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const pageFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE } });
-
+        const space = ' ';
         const contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
         let userEngagementAction: UserEngagement;
         let userFollowed: UserFollow[];
@@ -1929,7 +1929,7 @@ export class PageController {
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + 'กดติดตามเพจ' + page.pageUsername;
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
                 const link = `/profile/${whoFollowYou.displayName}`;
                 for (const tokenFCM of tokenFCMId) {
                     if(tokenFCM !== undefined){
@@ -1953,6 +1953,9 @@ export class PageController {
                             USER_TYPE.PAGE,
                             NOTIFICATION_TYPE.FOLLOW,
                             notificationFollower,
+                            link,
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
                         );
                     }
                 }

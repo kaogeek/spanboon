@@ -224,7 +224,7 @@ export class UserController {
         let userFollower: UserFollow[];
         let result = {};
         let userFollowerStmt;
-
+        const space = ' ';
         // find page
         const user = await this.userService.findOne({ _id: userObjId });
         if (user === undefined) {
@@ -284,7 +284,7 @@ export class UserController {
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const whoFollowYou = await this.userService.findOne({_id:userFollow.userId});
                 const tokenFCMId = await this.deviceTokenService.find({userId:userFollow.subjectId});
-                const notification_follower = whoFollowYou.displayName+'กดติดตามคุณ';
+                const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                 const link = `/profile/${whoFollowYou.displayName}`;
                 for(const tokenFCM of tokenFCMId){
                     if(tokenFCM.Tokens !== null){
@@ -314,25 +314,6 @@ export class UserController {
                             whoFollowYou.imageURL
                         );
                     }
-                    // else{
-                        // const userUpdate = {userId:followCreate.subjectId};
-                        // const TokenFCM = {$set:{token:req.body.token}};
-                        // const updateToken = await this.deviceTokenService.updateToken(userUpdate,TokenFCM);
-                        // if(updateToken){
-                            // await this.notificationService.createNotificationFCM(
-                                // followCreate.subjectId,
-                                // USER_TYPE.USER,
-                                // req.user.id+ '',
-                                // USER_TYPE.USER,
-                                // NOTIFICATION_TYPE.FOLLOW,
-                                // notification_follower,
-                                // link,
-                                // deviceToken[r].Tokens,
-                                // who_follow_you.displayName,
-                                // who_follow_you.imageURL
-                            // );
-                        // }
-                    // }
                 }
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });

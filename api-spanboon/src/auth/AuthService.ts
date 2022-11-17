@@ -36,9 +36,6 @@ export class AuthService {
     public async parseBasicAuthFromRequest(req: express.Request): Promise<any> {
         const authorization = req.header('authorization');
         const mode = req.header('mode');
-
-        console.log('authorization >>>> ', authorization);
-
         if (authorization !== null && authorization !== undefined) {
             const prefix = authorization.split(' ')[0];
 
