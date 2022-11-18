@@ -997,7 +997,7 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-            let pageoffi = undefined;
+            postStmt.push({$match:{'pageId':{$ne:null}}});
             if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
                 if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
                     postStmt.push({ $sort: { startDateTime: -1 } });
@@ -1017,14 +1017,28 @@ export class MainPageController {
             if (filter.limit !== null && filter.limit !== undefined && filter.limit !== 0) {
                 postStmt.push({ $limit: filter.limit });
             } 
-            if (filter.isOfficial !== null && filter.isOfficial !== undefined){
-                pageoffi = filter.isOfficial;
-            }
             else {
                 postStmt.push({ $limit: MAX_SEARCH_ROWS });
             }
-
+            // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
+                {
+                    $lookup:{
+                        from:'Page',
+                        as:'page',
+                        let:{
+                            pageId:'$pageId'
+                        },
+                        pipeline:[{
+                            $match:{$expr:{$and:[{$eq:['$$pageId','$_id']}]}}
+                        }],
+                    },
+                },
+                {
+                    $match:{
+                        'page.isOfficial': filter.isOfficial
+                    }
+                },
                 {
                     $lookup: {
                         from: 'PostsGallery',
@@ -1237,11 +1251,10 @@ export class MainPageController {
                     $project: 
                         { 
                             postsHashTags: 0,
-                        } 
+                        },
                 }
             ];
             searchPostStmt = postStmt.concat(postsLookupStmt);
-            const pageMap = {};
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
@@ -1265,30 +1278,11 @@ export class MainPageController {
                         }
                     }
                     // end inject sign URL
-
-                    let postPage;
-                    if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '' && pageoffi !== undefined && pageoffi !== null) {
-                        if (pageMap[post.pageId] === undefined) {
-                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId),isOfficial:pageoffi });
-                            pageMap[post.pageId] = page;
-                        }
-                    }
-                    else{
-                        if (pageMap[post.pageId] === undefined) {
-                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId)});
-                            pageMap[post.pageId] = page;
-                        }
-                    }
-                    postPage = pageMap[post.pageId];
-
                     if (userMap[post.ownerUser] === undefined) {
                         const user = await this.userService.findOne({ _id: new ObjectID(post.ownerUser) });
                         userMap[post.ownerUser] = this.parseUserField(user);
                     }
-
                     result.user = userMap[post.ownerUser];
-                    result.page = postPage;
-
                     searchResults.push(result);
                 }
 
@@ -1344,7 +1338,6 @@ export class MainPageController {
                 });
 
                 search = searchResults;
-                console.log('searchResults',searchResults);
                 if (search !== null && search !== undefined && Object.keys(search).length > 0) {
                     const successResponse = ResponseUtil.getSuccessResponse('Search Success', search);
                     return res.status(200).send(successResponse);

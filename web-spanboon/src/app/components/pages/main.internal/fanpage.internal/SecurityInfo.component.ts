@@ -166,7 +166,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                                 let check = {
                                     checked: true
                                 }
-                                this.onChangeSlide(check, 'twitter');
+                                this.onChangeSlideTW_POST(check, 'twitter');
                                 this.onChangeSlideFetchPost(check, 'twitter');
                             }
 
@@ -248,8 +248,9 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
         })
-        this.pageFacade.getConfigByPage(this.pageId, FACEBOOK_AUTO_FETCHPOST).then((res: any) => {
-            this.autoFetchPostFacebook = res.value;
+        // .  
+        this.pageFacade.getFetchFeedFacebook(this.pageId).then((res: any) => {
+            this.autoFetchPostFacebook = res;
         }).catch((err: any) => {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
@@ -295,7 +296,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         })
     }
 
-
+    // twitter Today to Twitter
     public onChangeSlideTW_POST(event:any, social:string){
         var isAutoPost = false;
         if (social === 'twitter') {
@@ -338,6 +339,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         }
     }
 
+
+    // Twitter Twitter To Today
     public onChangeSlideTW_FETCH(event:any, social:string){
         var isAutoPost = false;
         if (social === 'twitter') {
@@ -374,30 +377,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         });
     }
 
-
-    public onChangeSlide(event: any, social: string) {
+    // Today To Facebook
+    public onChangeSlideFB_POST(event: any, social: string) {
         var isAutoPost = false;
-        if (social === 'twitter') {
-            // twitter
-            if (!this.connectTwitter) {
-                let dialogRef = this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
-                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                        bottomColorText2: "black",
-                        btDisplay1: "none"
-                    }
-                })
-                dialogRef.afterClosed().subscribe(response => {
-                    if (response) {
-                        this.autoPostTwitter = false;
-                    }
-                });
-            } else {
-                isAutoPost = true;
-            }
-        } else if (social === 'facebook') {
+         if (social === 'facebook') {
             // facebook  
             if (!this.connect) {
                 let dialogRef = this.dialog.open(DialogAlert, {
@@ -418,27 +401,59 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 isAutoPost = true;
             }
         }
-        if (isAutoPost && (this.autoPostFacebook || this.autoPostTwitter)) {
+        if (isAutoPost) {
             let autopost: string = '';
             if (social === 'facebook') {
                 autopost = FACEBOOK_AUTO_POST;
-            } else if (social === 'twitter') {
-                autopost = TWITTER_AUTO_POST;
             }
             let config = {
                 value: event.checked,
                 type: "boolean"
             }
-            this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
+            this.pageFacade.getEditConfig(this.pageId, config,autopost).then((res: any) => {
                 if (res.name === FACEBOOK_AUTO_POST) {
                     this.autoPostFacebook = res.value;
-                } else if (res.name === TWITTER_AUTO_POST) {
-                    this.autoPostTwitter = res.value;
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
             });
         }
+    }
+    // Facebook To Today
+    public onChangeSlideFB_FETCH(event: any, social: string) {
+        var isAutoPost = false;
+        if (social === 'facebook') {
+            // facebook  
+            if (!this.connect) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostFacebook = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        let config = {
+            value: event.checked,
+            type: "boolean"
+        }
+        this.pageFacade.fetchFeedFacebook(this.pageId, config).then((res: any) => {
+            if (res.name === FACEBOOK_AUTO_POST) {
+                this.autoPostFacebook = res.value;
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
     }
 
     public onChangeSlideFetchPost(event: any, social: string) {
@@ -576,7 +591,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 let check = {
                     checked: true
                 }
-                this.onChangeSlide(check, 'facebook');
+                this.onChangeSlideFB_FETCH(check, 'facebook');
                 this.onChangeSlideFetchPost(check, 'facebook');
             } else {
                 this.connect = false;

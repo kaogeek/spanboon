@@ -517,4 +517,37 @@ export class PageFacade extends AbstractFacade {
       });
     });
   }
+
+
+  // Facebook
+
+  public fetchFeedFacebook(pageId: string, config: any): Promise<Config> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
+      let body = {};
+      let option = this.getDefaultOptions();
+      if (config !== undefined && config !== null) {
+        body = Object.assign(config);
+      }
+      this.http.post(url, body, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getFetchFeedFacebook(pageId: string): Promise<Config> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
+      let option = this.getDefaultOptions();
+      this.http.get(url, option).toPromise().then((response: any) => {
+        console.log('response_from_facebook',response);
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 }
