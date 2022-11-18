@@ -39,7 +39,6 @@ export class ProfileFacade extends AbstractFacade {
     let header = this.getDefaultHeader();
     let userId = this.authMgr.getCurrentUser();
     header = header.append('userid', userId ? userId.id : '')
-
     let httpOptions = {
       headers: header
     };

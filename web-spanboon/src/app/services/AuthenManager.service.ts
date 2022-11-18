@@ -104,7 +104,9 @@ export class AuthenManager {
         authToken,
         tokenFCM_GG
        };
-      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      let headers = new HttpHeaders({ 
+        'Content-Type': 'application/json' 
+      });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
@@ -120,8 +122,9 @@ export class AuthenManager {
         this.token = result.token;
         this.user = result.user;
         this.googleMode = true;
-        console.log('TokenGoogle In localStorage ???',localStorage.getItem('token'));
-        localStorage.setItem(TOKEN_KEY, result.token);
+
+
+        localStorage.setItem(TOKEN_KEY, this.token);
         localStorage.setItem(TOKEN_MODE_KEY, 'GG');
         sessionStorage.setItem(TOKEN_KEY, result.token);
         sessionStorage.setItem(TOKEN_MODE_KEY, 'GG');
@@ -367,7 +370,6 @@ export class AuthenManager {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.getUserToken()
     });
-
     if (this.isFacebookMode()) {
       headers = headers.set('mode', 'FB');
     } else if (this.isTwitterMode()) {
@@ -458,7 +460,6 @@ export class AuthenManager {
         headers: headers,
       };
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
-
         if (mode === "TW") {
           token = token.replace(/;/gi, '&');
         }
@@ -473,11 +474,13 @@ export class AuthenManager {
           this.facebookMode = true;
         }
 
+
         if (isUpdateUser) {
           this.token = result.token;
           this.user = result.user;
           this.facebookMode = fbMode;
           this.twitterMode = twMode;
+          this.googleMode = ggMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);

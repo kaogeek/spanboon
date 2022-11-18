@@ -133,7 +133,7 @@
             </div>
             <div class="link-connect" [class.active]="autoPostFacebook">
                 <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [checked]="autoPostFacebook"
-                    [(ngModel)]="autoPostFacebook" (change)="onChangeSlide($event , 'facebook')"></mat-slide-toggle>
+                    [(ngModel)]="autoPostFacebook" (change)="onChangeSlideFB_POST($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -189,7 +189,7 @@
             <div class="link-connect" [class.active]="autoFetchPostFacebook">
                 <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}"
                     [checked]="autoFetchPostFacebook" [(ngModel)]="autoFetchPostFacebook"
-                    (change)="onChangeSlideFetchPost($event , 'facebook')"></mat-slide-toggle>
+                    (change)="onChangeSlideFB_FETCH($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>

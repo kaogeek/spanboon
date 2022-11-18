@@ -1854,7 +1854,7 @@ export class PageController {
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const pageFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE } });
-
+        const space = ' ';
         const contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
         let userEngagementAction: UserEngagement;
         let userFollowed: UserFollow[];
@@ -1929,8 +1929,8 @@ export class PageController {
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + 'กดติดตามเพจ' + page.pageUsername;
-                const link = `/profile/${whoFollowYou.displayName}`;
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
+                const link = `/profile/${whoFollowYou.uniqueId}`;
                 for (const tokenFCM of tokenFCMId) {
                     if(tokenFCM !== undefined){
                         await this.pageNotificationService.notifyToPageUserFcm(
@@ -1953,6 +1953,9 @@ export class PageController {
                             USER_TYPE.PAGE,
                             NOTIFICATION_TYPE.FOLLOW,
                             notificationFollower,
+                            link,
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
                         );
                     }
                 }
@@ -2433,14 +2436,11 @@ export class PageController {
             // enable
             // lastUpdated
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
-            console.log('socialPostLogsService_pageController',socialPostLogsService);
             if (socialPostLogsService) {
-                console.log('pageController_Update_Twitter');
                 const query = { pageId: pageObjId };
                 const newValue = { $set: { enable: configValue.value } };
                 await this.socialPostLogsService.update(query, newValue);
             } else {
-                console.log('pageController_Create_Twitter');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;
@@ -2476,7 +2476,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'TWITTER' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2504,7 +2504,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'FACEBOOK' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2512,7 +2512,9 @@ export class PageController {
         }
     }
     // post 
-    public async twitterFacebook(@Param('id') id: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    @Post('/:id/facebook_fetch_enable')
+    @Authorized('user')
+    public async postFacebookFetch(@Param('id') id: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(id);
         const currentDateTime = moment().toDate();
@@ -2529,14 +2531,11 @@ export class PageController {
 
         if (page) {
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
-            console.log('socialPostLogsService_pageController',socialPostLogsService);
             if (socialPostLogsService) {
-                console.log('pageController_Update_Twitter');
                 const query = { pageId: pageObjId };
                 const newValue = { $set: { enable: configValue.value } };
                 await this.socialPostLogsService.update(query, newValue);
             } else {
-                console.log('pageController_Create_Twitter');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;

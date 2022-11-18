@@ -320,7 +320,7 @@ export class PagePostController {
         let needNotiTxt = '';
         let isPostTwitter = false;
         let isPostFacebook = false;
-
+        const space = ' ';
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
                 if ('TRUE' === options.twitterPost.toUpperCase()) {
@@ -582,17 +582,16 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user
-                console.log('createPostPageData',createPostPageData);
 
                 const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
-                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + pagePostId.name;
+                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
                     const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined) {
-                                const link = `/page/${pagePostId.name}/post/` + createPostPageData.id;
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.PAGE,
@@ -614,6 +613,9 @@ export class PagePostController {
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
+                                    link,
+                                    pagePostId.pageUsername,
+                                    pagePostId.imageURL
                                 );
                             }
                         }
@@ -622,16 +624,15 @@ export class PagePostController {
                 }
                 else {
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
-                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + userPost.displayName;
+                    const notificationTextPOST = 'มีโพสต์ใหม่จาก'+ space + userPost.displayName;
 
                     // user to user
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            console.log('tokenFCM',tokenFCM);
+                            const link = `/profile/${userPost.uniqueId}/post/` + createPostPageData.id;
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                const link = `/profile/${userPost.displayName}/post/` + createPostPageData.id;
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.USER,
@@ -653,6 +654,9 @@ export class PagePostController {
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
+                                    link,
+                                    userPost.displayName,
+                                    userPost.imageURL
                                 );
                             }
                         }
