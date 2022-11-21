@@ -57,24 +57,29 @@ export class FacebookWebhookController {
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
         // Checks if a token and mode is in the query string of the request
+        console.log('Facebook Webhooks');
         if (mode && token) {
+            console.log('pass1');
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-
+                console.log('pass2');
                 // Responds with the challenge token from the request
                 console.log('FACEBOOK_WEBHOOK_VERIFIED');
                 return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
+                console.log('Error_webhook');
                 return res.sendStatus(403);
             }
         }
+        console.log('Facebook_Webhook_body',body);
         let createLog = true;
         if (body !== undefined) {
             if (body.object === 'page') {
                 if (body.entry !== undefined) {
                     for (let index = 0; index < body.entry.length; index++) {
                         const element = body.entry[index];
+                        console.log('element',element);
                         if (element.changes !== undefined) {
                             for (const item of element.changes) {
                                 const pageId = item.value.from.id;
@@ -84,7 +89,7 @@ export class FacebookWebhookController {
                                 const photos = item.value.photos; // array of photo, can be undefined
                                 // const createdTime = item.value.created_time;
                                 // const verb = item.value.verb;
-
+                                console.log('in for loop ?????');
                                 // check if contains pageSocialAccount
                                 const pageSocialAccount = await this.pageSocialAccountService.findOne({ providerPageId: pageId, providerName: PROVIDER.FACEBOOK });
                                 if (pageSocialAccount === undefined) {

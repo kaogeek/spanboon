@@ -1932,7 +1932,7 @@ export class PageController {
                 const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
                 const link = `/profile/${whoFollowYou.uniqueId}`;
                 for (const tokenFCM of tokenFCMId) {
-                    if(tokenFCM !== undefined){
+                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
                         await this.pageNotificationService.notifyToPageUserFcm(
                             followCreate.subjectId,
                             undefined,
@@ -1954,8 +1954,6 @@ export class PageController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notificationFollower,
                             link,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL
                         );
                     }
                 }
