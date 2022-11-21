@@ -963,7 +963,7 @@ export class PostsController {
                         const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของเพจ'+ space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     page.id,
                                     undefined,
@@ -996,7 +996,7 @@ export class PostsController {
                         const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userOwnerPage.uniqueId}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.notificationService.createNotificationFCM(
                                     post_who.ownerUser,
                                     USER_TYPE.PAGE,

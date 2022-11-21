@@ -287,7 +287,7 @@ export class UserController {
                 const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                 const link = `/profile/${whoFollowYou.displayName}`;
                 for(const tokenFCM of tokenFCMId){
-                    if(tokenFCM.Tokens !== null){
+                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
                         await this.notificationService.createNotificationFCM(
                             followCreate.subjectId,
                             USER_TYPE.USER,

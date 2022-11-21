@@ -165,7 +165,7 @@ export class PostsCommentController {
                         const link = `/page/${pageName.id}/post/` + postWho.id;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     getPost.pageId,
                                     undefined,
@@ -198,8 +198,8 @@ export class PostsCommentController {
                         const link = `/profile/${userDisplayName.uniqueId}/post/` + postWho.id;
                         // page to user
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
-                        for (let r = 0; r < tokenFCMId.length; r++) {
-                            if (tokenFCMId[r].Tokens !== null) {
+                        for (const tokenFCM of tokenFCMId) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.notificationService.createNotificationFCM(
                                     getPost.ownerUser,
                                     USER_TYPE.PAGE,
@@ -208,7 +208,7 @@ export class PostsCommentController {
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationComment,
                                     link,
-                                    tokenFCMId[r].Tokens,
+                                    tokenFCM.Tokens,
                                     pageName.name,
                                     pageName.imageURL
                                 );
@@ -238,7 +238,7 @@ export class PostsCommentController {
                         const notificationComment = `${userName.uniqueId}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
                         const link = `/page/${page.id}/post/` + postWho.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     page.id,
                                     undefined,
@@ -272,7 +272,7 @@ export class PostsCommentController {
                         const notificationComment = userName.displayName +space+ 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userName.uniqueId}/post/` + postWho.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.notificationService.createNotificationFCM(
                                     postWho.ownerUser,
                                     USER_TYPE.USER,
@@ -735,7 +735,7 @@ export class PostsCommentController {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
                         const link = `/page/${page.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.pageNotificationService.notifyToPageUserFcm(
                                     page.id + '',
                                     undefined,
@@ -768,7 +768,7 @@ export class PostsCommentController {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: comment.user });
                         const link = `/profile/${userDisplayName.uniqueId}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCMId.userId,
                                     USER_TYPE.PAGE,
@@ -804,7 +804,7 @@ export class PostsCommentController {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
                         const link = `/page/${page.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.pageNotificationService.notifyToPageUserFcm
                                     (
                                         page.id + '',
@@ -839,7 +839,7 @@ export class PostsCommentController {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });
                         const link = `/profile/${user.uniqueId}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                                 await this.notificationService.createNotificationFCM
                                     (
                                         notifiUser.user + '',
