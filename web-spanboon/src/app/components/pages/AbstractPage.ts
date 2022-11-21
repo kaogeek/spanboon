@@ -107,7 +107,7 @@ export abstract class AbstractPage implements OnInit {
 
   public showAlertLoginDialog(redirection: string): void {
     let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
+      disableClose: false,
       data: {
         text: MESSAGE.TEXT_TITLE_LOGIN,
         bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,

@@ -197,7 +197,6 @@ export class PostsCommentController {
                         const notificationComment = 'เพจ'+ space + pageName.name + space+'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userDisplayName.uniqueId}/post/` + postWho.id;
                         // page to user
-                        console.log('page to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         for (let r = 0; r < tokenFCMId.length; r++) {
                             if (tokenFCMId[r].Tokens !== null) {
@@ -223,8 +222,6 @@ export class PostsCommentController {
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationComment,
                                     link,
-                                    pageName.name,
-                                    pageName.imageURL
                                 );
                             }
                         }
@@ -263,13 +260,13 @@ export class PostsCommentController {
                                     USER_TYPE.PAGE,
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationComment,
+                                    link,
                                 );
                             }
                         }
                     }
                     else{
                         // USER TO USER
-                        console.log('user to user');
                         const userName = await this.userService.findOne({ _id: postsComment.user });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
                         const notificationComment = userName.displayName +space+ 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
@@ -297,6 +294,7 @@ export class PostsCommentController {
                                     USER_TYPE.USER,
                                     NOTIFICATION_TYPE.COMMENT,
                                     notificationComment,
+                                    link,
                                 );
                             }
                         }
@@ -733,7 +731,6 @@ export class PostsCommentController {
                 if (likeCreate.likeAsPage !== null ) {
                     // page to page
                     if (comment.commentAsPage !== undefined && comment.commentAsPage !== null) {
-                        console.log('page to page');
                         const notificationComment = 'เพจ' +space +pageLike.name +space+ 'กดถูกใจคอมเมนต์ของเพจ'+space + page.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: page.ownerUser });
                         const link = `/page/${page.id}/post/` + post_who.id;
@@ -761,15 +758,12 @@ export class PostsCommentController {
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationComment,
                                     link,
-                                    pageLike.name,
-                                    pageLike.imageURL
                                 );
                             }
                         }
                     }
                     // page to user
                     else {
-                        console.log('page to user');
                         const notificationComment = 'เพจ'+space + pageLike.name + space+'กดถูกใจคอมเมนต์ของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: comment.user });
                         const link = `/profile/${userDisplayName.uniqueId}/post/` + post_who.id;
@@ -806,7 +800,6 @@ export class PostsCommentController {
                     // User to page
                     const pageUser = await this.pageService.findOne({ _id: comment.commentAsPage });
                     if (comment.commentAsPage !== null && comment.commentAsPage !== undefined) {
-                        console.log('user to page');
                         const notificationComment = user.displayName + space+'กดถูกใจคอมเมนต์ของเพจ'+space + pageUser.name;
                         const tokenFCMId = await this.deviceTokenService.find({ userId: pageUser.ownerUser });
                         const link = `/page/${page.id}/post/` + post_who.id;
@@ -834,14 +827,14 @@ export class PostsCommentController {
                                     req.user.id + '',
                                     USER_TYPE.PAGE,
                                     NOTIFICATION_TYPE.LIKE,
-                                    notificationComment
+                                    notificationComment,
+                                    link,
                                 );
                             }
                         }
                     }
                     // User to User
                     else {
-                        console.log('user to user');
                         const notificationComment = user.displayName + space+'กดถูกใจคอมเมนต์ของคุณ';
                         const tokenFCMId = await this.deviceTokenService.find({ userId: notifiUser.user });
                         const link = `/profile/${user.uniqueId}/post/` + post_who.id;

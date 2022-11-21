@@ -1954,8 +1954,6 @@ export class PageController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notificationFollower,
                             link,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL
                         );
                     }
                 }

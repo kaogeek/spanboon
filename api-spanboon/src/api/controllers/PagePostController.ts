@@ -582,7 +582,6 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user
-
                 const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
                     const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
@@ -614,8 +613,6 @@ export class PagePostController {
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
                                     link,
-                                    pagePostId.pageUsername,
-                                    pagePostId.imageURL
                                 );
                             }
                         }
@@ -623,10 +620,9 @@ export class PagePostController {
 
                 }
                 else {
+                    // user to user
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
                     const notificationTextPOST = 'มีโพสต์ใหม่จาก'+ space + userPost.displayName;
-
-                    // user to user
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
@@ -655,8 +651,6 @@ export class PagePostController {
                                     NOTIFICATION_TYPE.POST,
                                     notificationTextPOST,
                                     link,
-                                    userPost.displayName,
-                                    userPost.imageURL
                                 );
                             }
                         }

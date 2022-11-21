@@ -310,8 +310,6 @@ export class UserController {
                             NOTIFICATION_TYPE.FOLLOW,
                             notification_follower,
                             link,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL
                         );
                     }
                 }

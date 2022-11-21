@@ -959,7 +959,6 @@ export class PostsController {
                 if (likeCreate.likeAsPage !== null ) {
                     // page to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined ) {
-                        console.log('page to page');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของเพจ'+ space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
@@ -987,15 +986,12 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-                                    pageLike.name,
-                                    pageLike.imageURL,
                                 );
                             }
                         }
                     }
                     // page to user
                     else {
-                        console.log('page to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userOwnerPage.uniqueId}/post/` + post_who.id;
@@ -1030,7 +1026,6 @@ export class PostsController {
                 else {
                     // user to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined ) {
-                        console.log('user to page');
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ'+ space + page.name;
@@ -1060,8 +1055,6 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-                                    userLikeId.displayName,
-                                    userLikeId.imageURL
                                 );
                             }
                         }
@@ -1070,7 +1063,6 @@ export class PostsController {
                     else{
                         // owner post 
                         // FCM device token owner post
-                        console.log('user to user');
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userLikeId.uniqueId}/post/` + post_who.id;
@@ -1089,7 +1081,6 @@ export class PostsController {
                                         userLikeId.displayName,
                                         userLikeId.imageURL
                                     );
-                                break;
                             } else {
                                 await this.notificationService.createNotificationFCM(
                                     ownerPost.ownerUser + '',
@@ -1099,7 +1090,6 @@ export class PostsController {
                                     NOTIFICATION_TYPE.LIKE,
                                     notificationText,
                                     link,
-
                                 );
                             }
                         }
