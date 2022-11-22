@@ -115,7 +115,24 @@ export class FacebookService {
             console.log('Error :', err);
         }
     }
-
+    // check subscribe 
+    public async checkSubscribe(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
+            console.log('data',data);
+            return data;
+        }catch(err){
+            console.log('fail to subscribe webhook',err);
+        }
+    }
+    public async getPageId(userId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+userId+'/accounts?access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get pageId from graph api',err);
+        }
+    }
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.fetchFacebook(accessToken).then((result: any) => {
@@ -310,9 +327,11 @@ export class FacebookService {
             });
         });
     }
+
     public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
         try{
             const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
+            console.log('data',data);
             return data;
         }catch(err){
             console.log('Error publishPageId :'+ err);
