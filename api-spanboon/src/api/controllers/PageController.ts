@@ -75,6 +75,7 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
+import axios from 'axios';
 
 @JsonController('/page')
 export class PageController {
@@ -399,7 +400,15 @@ export class PageController {
             const pageIdFb = await this.facebookService.getPageId(autheFbUser.providerUserId,autheFbUser.storedCredentials);
             const query = { providerUserId: autheFbUser.providerUserId, providerName: PROVIDER.FACEBOOK };
             const setValue = {$set:{properties:{name:pageIdFb.data[0].name,pageId:pageIdFb.data[0].id}}};
-            await this.authenService.update(query, setValue);
+            const update = await this.authenService.update(query, setValue);
+            if(update){
+                try{
+                    const {data} = await axios.post('https://graph.facebook.com/'+pageIdFb.data[0].id+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageIdFb.data[0].access_token);
+                    console.log('data',data);
+                }catch(err){
+                    console.log('cannot subscribe webhooks',err);
+                }
+            }
             // check if page was registed.
             const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
             if (pageFacebook !== null && pageFacebook !== undefined) {
