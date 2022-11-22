@@ -941,14 +941,13 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
-                const pageId = await this.facebookService.getPageId(authenticaTionFB.providerUserId,loginParam.token);
                 const userExrTime = await this.getUserLoginExpireTime();
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id,lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate,properties:{name:pageId.data[0].name,pageId:pageId.data[0].id} } };
+                const newValue = { $set: { providerUserId: fbUser.id,lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate} };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });

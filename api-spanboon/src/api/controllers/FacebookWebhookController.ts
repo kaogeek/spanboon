@@ -66,15 +66,17 @@ export class FacebookWebhookController {
             }
         }
         console.log('body',body.entry[0].changes);
-        const query = {providerName:'FACEBOOK'};
+        const query = {providerName:PROVIDER.FACEBOOK};
         const subScribePage = await this.authenticationIdService.find(query);
         let userFB = undefined;
         for(const subPage of subScribePage){
             if(subPage.properties.pageId !== null && subPage.properties.pageId !== undefined){
                 const pageId = await this.facebookService.getPageId(subPage.providerUserId,subPage.storedCredentials);
+                console.log('pageId',pageId);
                 userFB = await this.authenticationIdService.findOne({user:subPage.user});
                 // subscribe App 
-                await axios.post('https://graph.facebook.com/'+subPage.properties.pageId+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageId.data[0].access_token);
+                const {data } = await axios.post('https://graph.facebook.com/'+subPage.properties.pageId+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageId.data[0].access_token);
+                console.log('data',data);
             }else{
                 continue;
             }
