@@ -8,7 +8,6 @@
 import 'reflect-metadata';
 import moment from 'moment';
 import { JsonController, Res, QueryParams, Body, Post } from 'routing-controllers';
-import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
@@ -21,16 +20,14 @@ import { SocialPost } from '../models/SocialPost';
 import { POST_TYPE } from '../../constants/PostType';
 import { ASSET_PATH } from '../../constants/AssetScope';
 import { facebook_setup } from '../../env';
-import axios from 'axios';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
-import { FacebookService } from '../services/FacebookService';
 // import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
         private assetService: AssetService, private postsGalleryService: PostsGalleryService,
-        private authenticationIdService: AuthenticationIdService, private facebookService: FacebookService
+        private authenticationIdService: AuthenticationIdService
         ) { }
 
     /**
@@ -66,27 +63,21 @@ export class FacebookWebhookController {
             }
         }
         console.log('body',body.entry[0].changes);
-        const query = {providerName:PROVIDER.FACEBOOK};
-        const subScribePage = await this.authenticationIdService.find(query);
-        let userFB = undefined;
-        for(const subPage of subScribePage){
-            if(subPage.properties.pageId !== null && subPage.properties.pageId !== undefined){
-                const pageId = await this.facebookService.getPageId(subPage.providerUserId,subPage.storedCredentials);
-                console.log('pageId',pageId);
-                userFB = await this.authenticationIdService.findOne({user:subPage.user});
-                // subscribe App 
-                const {data } = await axios.post('https://graph.facebook.com/'+subPage.properties.pageId+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageId.data[0].access_token);
-                console.log('data',data);
-            }else{
-                continue;
-            }
-        }
-        const pageIdFB = await this.pageService.findOne({ownerUser:ObjectID(userFB.user)});
+        console.log('body_dot',body.entry[0].changes[0].values.from);
+        console.log('name',body.entry[0].changes[0].value.from[0].name);
+        console.log('pageId',body.entry[0].changes[0].value.from[0].pageId);
+        const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from[0].name,pageId:body.entry[0].changes[0].value.from[0].pageId}};
+        const subScribePage = await this.authenticationIdService.findOne(query);
+        const pageIdFB = await this.pageService.findOne({ownerUser:subScribePage.user});
+        console.log('pageIdFB',pageIdFB);
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null) {
             // verb type -> 3 types -> add,edit,remove
+            console.log('pass1?');
             if(body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined){
                 const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
+                console.log('pass2',checkPost);
                 if(checkPost === undefined){
+                    console.log('pass_with_no_photos');
                     const postPage: Posts = new Posts();
                     postPage.title = 'Webhooks Feed';
                     postPage.detail = body.entry[0].changes[0].value.message;
@@ -123,6 +114,7 @@ export class FacebookWebhookController {
                     return res.status(200).send('SuccessFul Webhooks');
                 }
             }else if(body.entry[0].changes[0].value.verb === 'add'&& body.entry[0].changes[0].value.link !== undefined || body.entry[0].changes[0].value.photos !== undefined){
+                console.log('pass_with_photos');
                 const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
                 if(checkPost === undefined){
                     const postPage: Posts = new Posts();
