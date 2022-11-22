@@ -119,7 +119,6 @@ export class FacebookService {
     public async checkSubscribe(pageId:string,access_token:string):Promise<any>{
         try{
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
-            console.log('data',data);
             return data;
         }catch(err){
             console.log('fail to subscribe webhook',err);

@@ -388,13 +388,18 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+        // subscribe webhooks 
 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
                 return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
-
+            const autheFbUser = await this.authenService.findOne({user:userId,providerName:PROVIDER.FACEBOOK});
+            const pageIdFb = await this.facebookService.getPageId(autheFbUser.providerUserId,autheFbUser.storedCredentials);
+            const query = { providerUserId: autheFbUser.providerUserId, providerName: PROVIDER.FACEBOOK };
+            const setValue = {$set:{properties:{name:pageIdFb.data[0].name,pageId:pageIdFb.data[0].id}}};
+            await this.authenService.update(query, setValue);
             // check if page was registed.
             const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
             if (pageFacebook !== null && pageFacebook !== undefined) {
@@ -434,7 +439,7 @@ export class PageController {
                 const errorResponse: any = { status: 0, message: 'You cannot access the facebook page.' };
                 return res.status(400).send(errorResponse);
             }
-
+            await this.authenService.update(query, setValue);
             const properties = {
                 token: pageAccessToken.token,
                 type: pageAccessToken.type,
