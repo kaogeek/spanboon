@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Body, Get } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Body, Get,Post } from 'routing-controllers';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
@@ -52,6 +52,26 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
+        console.log('pass1');
+        if (mode && token) {
+            // Checks the mode and token sent is correct
+            if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+                // Responds with the challenge token from the request
+                return res.status(200).send(challenge);
+            } else {
+                // Responds with '403 Forbidden' if verify tokens do not match
+                return res.sendStatus(403);
+            }
+        }
+    }
+    @Post('/page_feeds')
+    public async PostPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
+        const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
+        // Parse the query params
+        const mode = params['hub.mode'];
+        const token = params['hub.verify_token'];
+        const challenge = params['hub.challenge'];
+        console.log('pass2');
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
