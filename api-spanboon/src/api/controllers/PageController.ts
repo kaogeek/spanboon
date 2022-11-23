@@ -399,14 +399,17 @@ export class PageController {
             const autheFbUser = await this.authenService.findOne({user:userId,providerName:PROVIDER.FACEBOOK});
             const pageIdFb = await this.facebookService.getPageId(autheFbUser.providerUserId,autheFbUser.storedCredentials);
             const query = { providerUserId: autheFbUser.providerUserId, providerName: PROVIDER.FACEBOOK };
-            const setValue = {$set:{properties:{name:pageIdFb.data[0].name,pageId:pageIdFb.data[0].id}}};
-            const update = await this.authenService.update(query, setValue);
-            if(update){
-                try{
-                    const {data} = await axios.post('https://graph.facebook.com/'+pageIdFb.data[0].id+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageIdFb.data[0].access_token);
-                    console.log('data',data);
-                }catch(err){
-                    console.log('cannot subscribe webhooks',err);
+            for(const pageIdFbQuery of pageIdFb.data){
+                console.log('pageIdFbQuery',pageIdFbQuery);
+                const setValue = {$set:{properties:{name:pageIdFbQuery.name,pageId:pageIdFbQuery.id}}};
+                const update = await this.authenService.update(query, setValue);
+                if(update){
+                    try{
+                        const {data} = await axios.post('https://graph.facebook.com/'+pageIdFbQuery.id+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageIdFbQuery.access_token);
+                        console.log('data',data);
+                    }catch(err){
+                        console.log('cannot subscribe webhooks',err);
+                    }
                 }
             }
             // check if page was registed.
@@ -448,7 +451,6 @@ export class PageController {
                 const errorResponse: any = { status: 0, message: 'You cannot access the facebook page.' };
                 return res.status(400).send(errorResponse);
             }
-            await this.authenService.update(query, setValue);
             const properties = {
                 token: pageAccessToken.token,
                 type: pageAccessToken.type,
