@@ -906,6 +906,8 @@ export class GuestController {
         else if (mode === PROVIDER.APPLE) {
             const appleId: any = req.body.apple.result.user;
             const appleProperties: any = req.body.apple.result.stsTokenManager;
+            const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
+            const deviceAP = req.body.tokenFCM_AP.deviceName;
             const appleClient = await this.authenticationIdService.findOne({ where: { id: appleId.uid } });
             if (appleClient === null || appleClient === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
@@ -916,6 +918,7 @@ export class GuestController {
                 const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleProperties.stsTokenManager.accessToken, expirationDate: appleProperties.stsTokenManager.expirationTime } };
                 const update_Apple = await this.authenticationIdService.update(updateQuery, newValue);
                 if (update_Apple) {
+                    await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
                     loginToken = jwt.sign({ token: appleId.stsTokenManager.accessToken, userId: appleId.uid }, env.SECRET_KEY);
                     loginUser = appleId.uid;
                 }
