@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Body, Post } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Body, Get } from 'routing-controllers';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
@@ -45,7 +45,7 @@ export class FacebookWebhookController {
      * @apiErrorExample {json} WebHook for page feed
      * HTTP/1.1 500 Internal Server Error
      */
-    @Post('/page_feeds')
+    @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
         // Parse the query params
@@ -63,10 +63,10 @@ export class FacebookWebhookController {
             }
         }
         console.log('body',body.entry[0].changes);
-        console.log('body_dot',body.entry[0].changes[0].values.from);
-        console.log('name',body.entry[0].changes[0].value.from[0].name);
-        console.log('pageId',body.entry[0].changes[0].value.from[0].pageId);
-        const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from[0].name,pageId:body.entry[0].changes[0].value.from[0].pageId}};
+        console.log('body_dot',body.entry[0].changes[0].value.from);
+        console.log('name',body.entry[0].changes[0].value.from.name);
+        console.log('pageId',body.entry[0].changes[0].value.from.id);
+        const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from.name,pageId:body.entry[0].changes[0].value.from.id}};
         const subScribePage = await this.authenticationIdService.findOne(query);
         const pageIdFB = await this.pageService.findOne({ownerUser:subScribePage.user});
         console.log('pageIdFB',pageIdFB);
