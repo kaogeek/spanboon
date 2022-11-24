@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Body, Get,Post } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Body, Get,Post,Req } from 'routing-controllers';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
@@ -21,13 +21,16 @@ import { POST_TYPE } from '../../constants/PostType';
 import { ASSET_PATH } from '../../constants/AssetScope';
 import { facebook_setup } from '../../env';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
-// import { FacebookService } from '../services/FacebookService';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
         private assetService: AssetService, private postsGalleryService: PostsGalleryService,
-        private authenticationIdService: AuthenticationIdService
+        private authenticationIdService: AuthenticationIdService,
+        private socialPostLogsService: SocialPostLogsService,
+        private facebookService:FacebookService
         ) { }
 
     /**
@@ -45,6 +48,72 @@ export class FacebookWebhookController {
      * @apiErrorExample {json} WebHook for page feed
      * HTTP/1.1 500 Internal Server Error
      */
+     @Get('/feed_fb')
+     public async Facebook(@Req() request: any, @Res() response: any): Promise<any> {
+         // const result = await this.twitterService.getTwitterUserTimeLine('2244994945', {since_id: '1514727372779520020'});
+        const socialFacebook = await this.socialPostLogsService.find({providerName: PROVIDER.FACEBOOK,enable: true});
+        let post = undefined;
+        // const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook.properties.pageId,socialFacebook.properties.token);
+        for(let social = 0; social<socialFacebook.length; social++ ){
+            if(socialFacebook[social].properties.pageId !== null && socialFacebook[social].properties.token !== null && socialFacebook[social].properties.pageId !== undefined && socialFacebook[social].properties.token !== undefined){
+                const page = await this.pageService.find({ where: { _id: socialFacebook[social].pageId}});
+                const pageOwner = page.shift();
+                const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook[social].properties.pageId,socialFacebook[social].properties.token);
+                const middle = Math.floor(postFeed.data.length/3);
+                const sliceArray = postFeed.data.slice(0,middle);
+                for(post of sliceArray){
+                    const checkPostSocial = await this.socialPostService.find({pageId:socialFacebook[social].pageId,socialType: PROVIDER.FACEBOOK, socialId: post.id });
+                    const checkFeed = checkPostSocial.shift();
+                    if (checkFeed === undefined) {
+                        const fbPostId = post.id;
+                        const text = post.message;
+                        const today = moment().toDate();
+                        const postPage: Posts = new Posts();
+                        postPage.title = 'โพสต์จากเฟสบุ๊ค ';
+                        postPage.detail = text;
+                        postPage.isDraft = false;
+                        postPage.hidden = false;
+                        postPage.type = POST_TYPE.GENERAL;
+                        postPage.userTags = [];
+                        postPage.coverImage = '';
+                        postPage.pinned = false;
+                        postPage.deleted = false;
+                        postPage.ownerUser = pageOwner.ownerUser;
+                        postPage.commentCount = 0;
+                        postPage.repostCount = 0;
+                        postPage.shareCount = 0;
+                        postPage.likeCount = 0;
+                        postPage.viewCount = 0;
+                        postPage.createdDate = today;
+                        postPage.startDateTime = today;
+                        postPage.story = null;
+                        postPage.pageId = pageOwner.id;
+                        postPage.referencePost = null;
+                        postPage.rootReferencePost = null;
+                        postPage.visibility = null;
+                        postPage.ranges = null;
+                        const createPostPageData: Posts = await this.postsService.create(postPage);
+
+                        const newSocialPost = new SocialPost();
+                        newSocialPost.pageId = pageOwner.id;
+                        newSocialPost.postId = createPostPageData.id;
+                        newSocialPost.postBy = pageOwner.id;
+                        newSocialPost.postByType = 'PAGE';
+                        newSocialPost.socialId = fbPostId;
+                        newSocialPost.socialType = PROVIDER.FACEBOOK;
+                        await this.socialPostService.create(newSocialPost); 
+                    }
+                    else {
+                        continue;
+                    } 
+                }
+            }else{
+                continue;
+            } 
+        }
+        const newPostResult = [];
+        return response.status(200).send(newPostResult);
+     }
     @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;

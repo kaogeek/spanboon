@@ -41,4 +41,13 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
             console.log('err: ' + err);
         });
     });
+    
+    // fetch feed facebook
+    schedule.scheduleJob('*/1 * * * *', () =>{
+        axios.get(process.env.APP_FACEBOOK).then((res) =>{
+            console.log(`Fetch Facebook : ${res.status}`);
+        }).catch((err) =>{
+            console.log('err: '+err);
+        });
+    });
 };

@@ -75,7 +75,6 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
-import axios from 'axios';
 
 @JsonController('/page')
 export class PageController {
@@ -396,22 +395,7 @@ export class PageController {
             if (!isUserCanAccess) {
                 return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
             }
-            const autheFbUser = await this.authenService.findOne({user:userId,providerName:PROVIDER.FACEBOOK});
-            const pageIdFb = await this.facebookService.getPageId(autheFbUser.providerUserId,autheFbUser.storedCredentials);
-            const query = { providerUserId: autheFbUser.providerUserId, providerName: PROVIDER.FACEBOOK };
-            for(const pageIdFbQuery of pageIdFb.data){
-                console.log('pageIdFbQuery',pageIdFbQuery);
-                const setValue = {$set:{properties:{name:pageIdFbQuery.name,pageId:pageIdFbQuery.id}}};
-                const update = await this.authenService.update(query, setValue);
-                if(update){
-                    try{
-                        const {data} = await axios.post('https://graph.facebook.com/'+pageIdFbQuery.id+'/subscribed_apps?subscribed_fields=feed&access_token=' +pageIdFbQuery.access_token);
-                        console.log('data',data);
-                    }catch(err){
-                        console.log('cannot subscribe webhooks',err);
-                    }
-                }
-            }
+
             // check if page was registed.
             const pageFacebook = await this.pageSocialAccountService.getFacebookPageAccount(pageId);
             if (pageFacebook !== null && pageFacebook !== undefined) {
@@ -432,7 +416,6 @@ export class PageController {
                     registPageAccessToken = userFBAccount.storedCredentials;
                 }
             }
-
             try {
                 if (registPageAccessToken !== undefined) {
                     /*
@@ -465,7 +448,6 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
             pageSocialAccount.providerPageName = socialBinding.facebookPageName;
-
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
@@ -503,7 +485,6 @@ export class PageController {
 
             // check if page was registed.
             const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageObjId);
-            console.log('pageTwitter',pageTwitter);
             if (pageTwitter !== null && pageTwitter !== undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'This page was binding with Twitter Account.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -2542,7 +2523,6 @@ export class PageController {
         if (!isUserCanAccess) {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
-
         if (page) {
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {

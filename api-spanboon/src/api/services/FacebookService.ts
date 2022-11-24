@@ -17,7 +17,6 @@ import { User } from '../models/User';
 import { Asset } from '../models/Asset';
 import moment from 'moment';
 import axios from 'axios';
-
 @Service()
 export class FacebookService {
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
@@ -130,6 +129,25 @@ export class FacebookService {
             return data;
         }catch(err){
             console.log('cannot get pageId from graph api',err);
+        }
+    }
+    // Get post from page on facebook
+    public async pullIngPostFromFacebook(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/feed?access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get feed from facebook',err);
+        }
+    }
+
+    // Get Photo from page on facebook
+    public async pullingPhotoFromFacebook(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/photos?url=link&access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get photo from facebook',err);
         }
     }
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
