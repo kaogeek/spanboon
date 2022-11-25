@@ -52,6 +52,7 @@ export class FacebookWebhookController {
      public async Facebook(@Req() request: any, @Res() response: any): Promise<any> {
          // const result = await this.twitterService.getTwitterUserTimeLine('2244994945', {since_id: '1514727372779520020'});
         const socialFacebook = await this.socialPostLogsService.find({providerName: PROVIDER.FACEBOOK,enable: true});
+        console.log('socialFacebook',socialFacebook)
         let post = undefined;
         // const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook.properties.pageId,socialFacebook.properties.token);
         for(const social of socialFacebook){
