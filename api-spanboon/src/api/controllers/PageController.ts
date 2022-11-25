@@ -438,9 +438,10 @@ export class PageController {
                 token: pageAccessToken.token,
                 type: pageAccessToken.type,
                 expires_in: pageAccessToken.expires_in,
-                expires: pageAccessToken.expires
+                expires: pageAccessToken.expires,
+                pageId: socialBinding.facebookPageId
             };
-
+            console.log('properties',properties);
             const pageSocialAccount = new PageSocialAccount();
             pageSocialAccount.page = pageObjId;
             pageSocialAccount.properties = properties;
@@ -2523,6 +2524,7 @@ export class PageController {
         if (!isUserCanAccess) {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
+        console.log('configValue',configValue);
         if (page) {
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
