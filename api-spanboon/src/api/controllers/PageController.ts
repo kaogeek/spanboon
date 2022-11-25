@@ -2526,10 +2526,13 @@ export class PageController {
         if (page) {
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
+                console.log('binding1');
                 const query = { pageId: pageObjId };
-                const newValue = { $set: { enable: configValue.value } };
+                const newValue = { $set: { enable: configValue.value,properties:page.properties } };
+                console.log('newValue',newValue);
                 await this.socialPostLogsService.update(query, newValue);
             } else {
+                console.log('binding2');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;
