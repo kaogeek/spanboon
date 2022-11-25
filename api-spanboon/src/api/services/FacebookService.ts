@@ -154,7 +154,8 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             this.fetchFacebook(accessToken).then((result: any) => {
                 if (result.error) { reject(result.error); return; }
-                this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
+                this.authenIdService.findOne({ where: { providerUserId: result.id,providerName:'FACEBOOK' } }).then((auth) => {
+                    console.log('auth >>>',auth);
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
