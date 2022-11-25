@@ -59,7 +59,7 @@ export class GoogleService {
   public async getGoogleUser(userId: string, accessToken: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.authenIdService.findOne({ where: { providerUserId: userId } }).then((auth) => {
+      this.authenIdService.findOne({ where: { providerUserId: userId,providerName:'GOOGLE' } }).then((auth) => {
         console.log('auth >>> ', auth);
         if (auth === null || auth === undefined) {
           resolve(undefined);
