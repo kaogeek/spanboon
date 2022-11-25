@@ -59,8 +59,7 @@ export class FacebookWebhookController {
                 const page = await this.pageService.find({ where: { _id: socialFacebook[social].pageId}});
                 const pageOwner = page.shift();
                 const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook[social].properties.pageId,socialFacebook[social].properties.token);
-                const middle = Math.floor(postFeed.data.length/3);
-                const sliceArray = postFeed.data.slice(0,middle);
+                const sliceArray = postFeed.data.slice(0,5);
                 for(post of sliceArray){
                     const checkPostSocial = await this.socialPostService.find({pageId:socialFacebook[social].pageId,socialType: PROVIDER.FACEBOOK, socialId: post.id });
                     const checkFeed = checkPostSocial.shift();
