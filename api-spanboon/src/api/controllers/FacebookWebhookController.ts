@@ -54,61 +54,58 @@ export class FacebookWebhookController {
         const socialFacebook = await this.socialPostLogsService.find({providerName: PROVIDER.FACEBOOK,enable: true});
         let post = undefined;
         // const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook.properties.pageId,socialFacebook.properties.token);
-        for(let social = 0; social<socialFacebook.length; social++ ){
-            if(socialFacebook[social].properties.pageId !== null && socialFacebook[social].properties.token !== null && socialFacebook[social].properties.pageId !== undefined && socialFacebook[social].properties.token !== undefined){
-                const page = await this.pageService.find({ where: { _id: socialFacebook[social].pageId}});
-                const pageOwner = page.shift();
-                const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook[social].properties.pageId,socialFacebook[social].properties.token);
-                const sliceArray = postFeed.data.slice(0,5);
-                for(post of sliceArray){
-                    const checkPostSocial = await this.socialPostService.find({pageId:socialFacebook[social].pageId,socialType: PROVIDER.FACEBOOK, socialId: post.id });
-                    const checkFeed = checkPostSocial.shift();
-                    if (checkFeed === undefined) {
-                        const fbPostId = post.id;
-                        const text = post.message;
-                        const today = moment().toDate();
-                        const postPage: Posts = new Posts();
-                        postPage.title = 'โพสต์จากเฟสบุ๊ค ';
-                        postPage.detail = text;
-                        postPage.isDraft = false;
-                        postPage.hidden = false;
-                        postPage.type = POST_TYPE.GENERAL;
-                        postPage.userTags = [];
-                        postPage.coverImage = '';
-                        postPage.pinned = false;
-                        postPage.deleted = false;
-                        postPage.ownerUser = pageOwner.ownerUser;
-                        postPage.commentCount = 0;
-                        postPage.repostCount = 0;
-                        postPage.shareCount = 0;
-                        postPage.likeCount = 0;
-                        postPage.viewCount = 0;
-                        postPage.createdDate = today;
-                        postPage.startDateTime = today;
-                        postPage.story = null;
-                        postPage.pageId = pageOwner.id;
-                        postPage.referencePost = null;
-                        postPage.rootReferencePost = null;
-                        postPage.visibility = null;
-                        postPage.ranges = null;
-                        const createPostPageData: Posts = await this.postsService.create(postPage);
+        for(const social of socialFacebook){
+            const page = await this.pageService.find({ where: { _id: social.pageId}});
+            const pageOwner = page.shift();
+            const postFeed = await this.facebookService.pullIngPostFromFacebook(social.properties.pageId,social.properties.token);
+            const sliceArray = postFeed.data.slice(0,5);
+            console.log('sliceArray',sliceArray);
+            for(post of sliceArray){
+                const checkPostSocial = await this.socialPostService.find({pageId:social.pageId,socialType: PROVIDER.FACEBOOK, socialId: post.id });
+                const checkFeed = checkPostSocial.shift();
+                if (checkFeed === undefined) {
+                    const fbPostId = post.id;
+                    const text = post.message;
+                    const today = moment().toDate();
+                    const postPage: Posts = new Posts();
+                    postPage.title = 'โพสต์จากเฟสบุ๊ค ';
+                    postPage.detail = text;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageOwner.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = today;
+                    postPage.startDateTime = today;
+                    postPage.story = null;
+                    postPage.pageId = pageOwner.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
 
-                        const newSocialPost = new SocialPost();
-                        newSocialPost.pageId = pageOwner.id;
-                        newSocialPost.postId = createPostPageData.id;
-                        newSocialPost.postBy = pageOwner.id;
-                        newSocialPost.postByType = 'PAGE';
-                        newSocialPost.socialId = fbPostId;
-                        newSocialPost.socialType = PROVIDER.FACEBOOK;
-                        await this.socialPostService.create(newSocialPost); 
-                    }
-                    else {
-                        continue;
-                    } 
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageOwner.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = pageOwner.id;
+                    newSocialPost.postByType = 'PAGE';
+                    newSocialPost.socialId = fbPostId;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost); 
                 }
-            }else{
-                continue;
-            } 
+                else {
+                    continue;
+                } 
+            }
         }
         const newPostResult = [];
         return response.status(200).send(newPostResult);
