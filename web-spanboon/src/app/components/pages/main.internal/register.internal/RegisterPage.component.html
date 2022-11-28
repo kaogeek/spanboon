@@ -95,15 +95,15 @@
                 <mat-datepicker #dp3 disabled="false"></mat-datepicker>
             </mat-form-field>
 
-            <div for="male female custom" class="title-label">เพศ</div>
+            <!-- <div for="male female custom" class="title-label">เพศ</div>
             <mat-radio-group class="custom-control-input" name="gender" [(ngModel)]="data.gender ">
                 <mat-radio-button [value]="0" style="width: 70pt;">ชาย</mat-radio-button>
                 <mat-radio-button [value]="1" style="width: 70pt;">หญิง</mat-radio-button>
                 <mat-radio-button [value]="-1">กำหนดเอง</mat-radio-button>
-            </mat-radio-group>
+            </mat-radio-group> -->
 
-            <input type="text" id="genderTxt" name="genderTxt" placeholder="เพศ" class="input-text"
-                [(ngModel)]="genderTxt" required *ngIf="gender === -1 || data.gender === -1 " style="margin-top: 10pt;">
+            <!-- <input type="text" id="genderTxt" name="genderTxt" placeholder="เพศ" class="input-text"
+                [(ngModel)]="genderTxt" required *ngIf="gender === -1 || data.gender === -1 " style="margin-top: 10pt;"> -->
 
             <ng-container *ngIf="mode === 'normal'; else btnComfirm">
                 <div class="wrapper-policy"></div>

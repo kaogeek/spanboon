@@ -143,9 +143,11 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/follow';
-      let body: any = {};
+      const tokenFCM = localStorage.getItem('currenToken');
+      let body: any = {
+        "tokenFCM": tokenFCM
+      };
       let options = this.getDefaultOptions();
-
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -486,5 +488,66 @@ export class PageFacade extends AbstractFacade {
       });
     });
   }
+  public fetchFeedTwitter(pageId: string, config: any): Promise<Config> {
+    return new Promise((resolve, reject) => {
 
+      let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
+      let body = {};
+      let option = this.getDefaultOptions();
+      console.log('config',config);
+      if (config !== undefined && config !== null) {
+        body = Object.assign(config);
+      }
+      this.http.post(url, body, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+  public getFetchFeedTwitter(pageId: string): Promise<Config> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
+      let option = this.getDefaultOptions();
+      this.http.get(url, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+
+  // Facebook
+
+  public fetchFeedFacebook(pageId: string, config: any): Promise<Config> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
+      let body = {};
+      let option = this.getDefaultOptions();
+      if (config !== undefined && config !== null) {
+        body = Object.assign(config);
+      }
+      this.http.post(url, body, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getFetchFeedFacebook(pageId: string): Promise<Config> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
+      let option = this.getDefaultOptions();
+      this.http.get(url, option).toPromise().then((response: any) => {
+        console.log('response_from_facebook',response);
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 }

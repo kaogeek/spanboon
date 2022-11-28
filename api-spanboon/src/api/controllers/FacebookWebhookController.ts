@@ -7,32 +7,31 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Get, Body } from 'routing-controllers';
-import { ObjectID } from 'mongodb';
+import { JsonController, Res, QueryParams, Body, Get,Post,Req } from 'routing-controllers';
 import { PROVIDER } from '../../constants/LoginProvider';
-import { PageSocialAccountService } from '../services/PageSocialAccountService';
-import { FacebookWebhookLogsService } from '../services/FacebookWebhookLogsService';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
 import { SocialPostService } from '../services/SocialPostService';
 import { AssetService } from '../services/AssetService';
 import { PostsGalleryService } from '../services/PostsGalleryService';
-import { PageConfigService } from '../services/PageConfigService';
-import { FacebookWebhookLogs } from '../models/FacebookWebhookLogs';
 import { Posts } from '../models/Posts';
 import { PostsGallery } from '../models/PostsGallery';
 import { SocialPost } from '../models/SocialPost';
-import { PageConfig } from '../models/PageConfig';
 import { POST_TYPE } from '../../constants/PostType';
 import { ASSET_PATH } from '../../constants/AssetScope';
-import { PAGE_CONFIGS } from '../../constants/PageConfigs';
 import { facebook_setup } from '../../env';
-
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { SocialPostLogsService } from '../services/SocialPostLogsService';
+import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
-    constructor(private pageSocialAccountService: PageSocialAccountService, private facebookWebhookLogsService: FacebookWebhookLogsService,
+    constructor(
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
-        private assetService: AssetService, private postsGalleryService: PostsGalleryService, private pageConfigService: PageConfigService) { }
+        private assetService: AssetService, private postsGalleryService: PostsGalleryService,
+        private authenticationIdService: AuthenticationIdService,
+        private socialPostLogsService: SocialPostLogsService,
+        private facebookService:FacebookService
+        ) { }
 
     /**
      * @api {get} /api/fb_webhook/page_feeds WebHook for page feed
@@ -49,141 +48,259 @@ export class FacebookWebhookController {
      * @apiErrorExample {json} WebHook for page feed
      * HTTP/1.1 500 Internal Server Error
      */
+     @Get('/feed_fb')
+     public async Facebook(@Req() request: any, @Res() response: any): Promise<any> {
+         // const result = await this.twitterService.getTwitterUserTimeLine('2244994945', {since_id: '1514727372779520020'});
+        const socialFacebook = await this.socialPostLogsService.find({providerName: PROVIDER.FACEBOOK,enable: true});
+        let post = undefined;
+        // const postFeed = await this.facebookService.pullIngPostFromFacebook(socialFacebook.properties.pageId,socialFacebook.properties.token);
+        for(const social of socialFacebook){
+            if(social.properties.pageId !== null && social.properties.pageId !== undefined){
+                const page = await this.pageService.find({ where: { _id: social.pageId}});
+                const pageOwner = page.shift();
+                const postFeed = await this.facebookService.pullIngPostFromFacebook(social.properties.pageId,social.properties.token);
+                const sliceArray = postFeed.data.slice(0,5);
+                for(post of sliceArray){
+                    const checkPostSocial = await this.socialPostService.find({pageId:social.pageId,socialType: PROVIDER.FACEBOOK, socialId: post.id });
+                    const checkFeed = checkPostSocial.shift();
+                    if (checkFeed === undefined) {
+                        const fbPostId = post.id;
+                        const text = post.message;
+                        const today = moment().toDate();
+                        const postPage: Posts = new Posts();
+                        postPage.title = 'โพสต์จากเฟสบุ๊ค ';
+                        postPage.detail = text;
+                        postPage.isDraft = false;
+                        postPage.hidden = false;
+                        postPage.type = POST_TYPE.GENERAL;
+                        postPage.userTags = [];
+                        postPage.coverImage = '';
+                        postPage.pinned = false;
+                        postPage.deleted = false;
+                        postPage.ownerUser = pageOwner.ownerUser;
+                        postPage.commentCount = 0;
+                        postPage.repostCount = 0;
+                        postPage.shareCount = 0;
+                        postPage.likeCount = 0;
+                        postPage.viewCount = 0;
+                        postPage.createdDate = today;
+                        postPage.startDateTime = today;
+                        postPage.story = null;
+                        postPage.pageId = pageOwner.id;
+                        postPage.referencePost = null;
+                        postPage.rootReferencePost = null;
+                        postPage.visibility = null;
+                        postPage.ranges = null;
+                        const createPostPageData: Posts = await this.postsService.create(postPage);
+
+                        const newSocialPost = new SocialPost();
+                        newSocialPost.pageId = pageOwner.id;
+                        newSocialPost.postId = createPostPageData.id;
+                        newSocialPost.postBy = pageOwner.id;
+                        newSocialPost.postByType = 'PAGE';
+                        newSocialPost.socialId = fbPostId;
+                        newSocialPost.socialType = PROVIDER.FACEBOOK;
+                        await this.socialPostService.create(newSocialPost); 
+                    }
+                    else {
+                        continue;
+                    } 
+                }
+            }else{
+                continue;
+            }
+        }
+        const newPostResult = [];
+        return response.status(200).send(newPostResult);
+     }
     @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
-
         // Parse the query params
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-
-        // Checks if a token and mode is in the query string of the request
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-
                 // Responds with the challenge token from the request
-                console.log('FACEBOOK_WEBHOOK_VERIFIED');
                 return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
                 return res.sendStatus(403);
             }
         }
-
-        let createLog = true;
-        if (body !== undefined) {
-            if (body.object === 'page') {
-                if (body.entry !== undefined) {
-                    for (let index = 0; index < body.entry.length; index++) {
-                        const element = body.entry[index];
-                        if (element.changes !== undefined) {
-                            for (const item of element.changes) {
-                                const pageId = item.value.from.id;
-                                const fbPostId = item.value.post_id;
-                                const message = item.value.message;
-                                const link = item.value.link; // photo link, can be undefined
-                                const photos = item.value.photos; // array of photo, can be undefined
-                                // const createdTime = item.value.created_time;
-                                // const verb = item.value.verb;
-
-                                // check if contains pageSocialAccount
-                                const pageSocialAccount = await this.pageSocialAccountService.findOne({ providerPageId: pageId, providerName: PROVIDER.FACEBOOK });
-                                if (pageSocialAccount === undefined) {
-                                    createLog = false;
-                                    continue;
-                                }
-
-                                const spanboonPage = await this.pageService.findOne({ _id: pageSocialAccount.page, banned: false });
-                                if (spanboonPage === undefined) {
-                                    createLog = false;
-                                    continue;
-                                }
-
-                                const isFetchPage = await this.isFetchPage(pageSocialAccount.page);
-                                if (!isFetchPage) {
-                                    createLog = false;
-                                    continue;
-                                }
-
-                                // check if fbPostId was post by page
-                                const hasSocialPosted = await this.socialPostService.findOne({ pageId: pageSocialAccount.page, socialId: fbPostId, socialType: PROVIDER.FACEBOOK });
-                                if (hasSocialPosted !== undefined) {
-                                    createLog = false;
-                                    continue;
-                                }
-
-                                // create post
-                                let post = this.createPagePostModel(pageSocialAccount.page, spanboonPage.ownerUser, undefined, (message ? message : ''), undefined);
-                                post = await this.postsService.create(post);
-
-                                const photoGallery = [];
-                                if (link !== undefined && link !== '') {
-                                    // this is one photo mode
-                                    try {
-                                        const asset = await this.assetService.createAssetFromURL(link, spanboonPage.ownerUser);
-                                        if (asset !== undefined) {
-                                            photoGallery.push(asset);
-                                        }
-                                    } catch (error) {
-                                        console.log('error create asset from url', error);
-                                    }
-                                } else if (photos !== undefined && photos.length > 0) {
-                                    // this is many photo mode
-                                    for (const plink of photos) {
-                                        try {
-                                            const asset = await this.assetService.createAssetFromURL(plink, spanboonPage.ownerUser);
-                                            if (asset !== undefined) {
-                                                photoGallery.push(asset);
-                                            }
-                                        } catch (error) {
-                                            console.log('error create asset from url', error);
-                                        }
-                                    }
-                                }
-
-                                if (post !== undefined) {
-                                    if (photoGallery.length > 0) {
-                                        // create post gallery
-                                        for (const asset of photoGallery) {
-                                            const gallery = new PostsGallery();
-                                            gallery.fileId = asset.id;
-                                            gallery.post = post.id;
-                                            gallery.imageURL = asset ? ASSET_PATH + asset.id : '';
-                                            gallery.s3ImageURL = asset.s3FilePath;
-                                            gallery.ordering = 1;
-                                            await this.postsGalleryService.create(gallery);
-                                        }
-                                    }
-
-                                    const socialPost = new SocialPost();
-                                    socialPost.pageId = pageSocialAccount.page;
-                                    socialPost.postId = post.id;
-                                    socialPost.postBy = pageSocialAccount.page;
-                                    socialPost.postByType = 'PAGE';
-                                    socialPost.socialId = fbPostId;
-                                    socialPost.socialType = PROVIDER.FACEBOOK;
-
-                                    await this.socialPostService.create(socialPost);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (createLog) {
-                const logs = new FacebookWebhookLogs();
-                logs.data = body;
-                this.facebookWebhookLogsService.create(logs);
+    }
+    @Post('/page_feeds')
+    public async PostPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
+        const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
+        // Parse the query params
+        const mode = params['hub.mode'];
+        const token = params['hub.verify_token'];
+        const challenge = params['hub.challenge'];
+        if (mode && token) {
+            // Checks the mode and token sent is correct
+            if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+                // Responds with the challenge token from the request
+                return res.status(200).send(challenge);
+            } else {
+                // Responds with '403 Forbidden' if verify tokens do not match
+                return res.sendStatus(403);
             }
         }
-
-        return res.status(200).send(challenge);
+        console.log('body',body.entry[0].changes);
+        console.log('body_dot',body.entry[0].changes[0].value.from);
+        console.log('name',body.entry[0].changes[0].value.from.name);
+        console.log('pageId',body.entry[0].changes[0].value.from.id);
+        const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from.name,pageId:body.entry[0].changes[0].value.from.id}};
+        const subScribePage = await this.authenticationIdService.findOne(query);
+        const pageIdFB = await this.pageService.findOne({ownerUser:subScribePage.user});
+        console.log('pageIdFB',pageIdFB);
+        if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null) {
+            // verb type -> 3 types -> add,edit,remove
+            console.log('pass1?');
+            if(body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined){
+                const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
+                console.log('pass2',checkPost);
+                if(checkPost === undefined){
+                    console.log('pass_with_no_photos');
+                    const postPage: Posts = new Posts();
+                    postPage.title = 'Webhooks Feed';
+                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageIdFB.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
+                    postPage.startDateTime = moment().toDate();
+                    postPage.story = null;
+                    postPage.pageId = pageIdFB.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageIdFB.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
+                    newSocialPost.postByType = body.entry[0].changes[0].value.verb;
+                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost); 
+                    return res.status(200).send('SuccessFul Webhooks');
+                }
+            }else if(body.entry[0].changes[0].value.verb === 'add'&& body.entry[0].changes[0].value.link !== undefined || body.entry[0].changes[0].value.photos !== undefined){
+                console.log('pass_with_photos');
+                const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
+                if(checkPost === undefined){
+                    const postPage: Posts = new Posts();
+                    postPage.title = 'Webhooks Feed';
+                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageIdFB.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
+                    postPage.startDateTime = moment().toDate();
+                    postPage.story = null;
+                    postPage.pageId = pageIdFB.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageIdFB.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
+                    newSocialPost.postByType = body.entry[0].changes[0].value.verb;
+                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost); 
+                    if(createPostPageData){
+                        // Asset 
+                        const photoGallery = [];
+                        if(body.entry[0].changes[0].value.photos === undefined){
+                            console.log('pass1?');
+                            try {
+                                const asset = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
+                                if (asset !== undefined) {
+                                    photoGallery.push(asset);
+                                }
+                            } catch (error) {
+                                console.log('error create asset from url', error);
+                            }
+                            for (const asset of photoGallery) {
+                                const gallery = new PostsGallery();
+                                gallery.fileId = asset.id;
+                                gallery.post = createPostPageData.id;
+                                gallery.imageURL = asset ? ASSET_PATH + asset.id : '';
+                                gallery.s3ImageURL = asset.s3FilePath;
+                                gallery.ordering = body.entry[0].changes[0].value.published;
+                                await this.postsGalleryService.create(gallery);
+                                return res.status(200).send('SuccessFul Webhooks');
+                            }
+                        }else{
+                            for(const photosFB of body.entry[0].changes[0].value.photos){
+                                const stackPhotos = [];
+                                try{
+                                    const asset = await this.assetService.createAssetFromURL(photosFB, pageIdFB.ownerUser);
+                                    if (asset !== undefined) {
+                                        stackPhotos.push(asset);
+                                    }
+                                }catch(error){
+                                    console.log('error crteate asset from url',error);
+                                }
+                                for (const asset of stackPhotos) {
+                                    const gallery = new PostsGallery();
+                                    gallery.fileId = asset.id;
+                                    gallery.post = createPostPageData.id;
+                                    gallery.imageURL = asset ? ASSET_PATH + asset.id : '';
+                                    gallery.s3ImageURL = asset.s3FilePath;
+                                    gallery.ordering = body.entry[0].changes[0].value.published;
+                                    await this.postsGalleryService.create(gallery);
+                                    return res.status(200).send('SuccessFul Webhooks');
+                                }
+                            }
+                        }  
+                    }
+                }
+            }else if(body.entry[0].changes[0].value.verb === 'edit'){
+                const socialPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id});
+                if(socialPost){
+                    const queryFB = {_id:socialPost.postId};
+                    const setValue = {detail:body.entry[0].changes[0].value.message};
+                    await this.postsService.update(queryFB,setValue);
+                    return res.status(200).send('Success updated Webhooks');
+                }else{
+                    console.log('cannot update values');
+                }
+            }else{
+                return res.status(400).send('this values is removes from webhooks');
+            }
+        }
     }
 
-    private createPagePostModel(pageObjId: ObjectID, userObjId: ObjectID, title: string, detail: string, photoLinks: string[]): Posts {
+    /* private createPagePostModel(pageObjId: ObjectID, userObjId: ObjectID, title: string, detail: string, photoLinks: string[]): Posts {
         const today = moment().toDate();
 
         const post = new Posts();
@@ -215,7 +332,7 @@ export class FacebookWebhookController {
         return post;
     }
 
-    private async isFetchPage(pageId: ObjectID): Promise<boolean> {
+    /* private async isFetchPage(pageId: ObjectID): Promise<boolean> {
         if (pageId === undefined) {
             return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
         }
@@ -243,5 +360,5 @@ export class FacebookWebhookController {
         }
 
         return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
-    }
+    } */
 }

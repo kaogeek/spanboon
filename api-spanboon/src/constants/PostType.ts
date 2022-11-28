@@ -8,5 +8,6 @@
 export enum POST_TYPE {
     GENERAL = 'GENERAL',
     FULFILLMENT = 'FULFILLMENT',
-    NEEDS = 'NEEDS'
+    NEEDS = 'NEEDS',
+    POST='POSTS'
 }

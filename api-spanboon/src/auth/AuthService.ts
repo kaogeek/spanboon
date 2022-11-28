@@ -16,6 +16,7 @@ import { AuthenticationId } from '../api/models/AuthenticationId';
 import { UserRepository } from '../api/repositories/UserRepository';
 import { FacebookService } from '../api/services/FacebookService';
 import { TwitterService } from '../api/services/TwitterService';
+import { GoogleService } from '../api/services/GoogleService';
 import { AuthenticationIdService } from '../api/services/AuthenticationIdService';
 import { ObjectUtil } from '../utils/Utils';
 import moment from 'moment';
@@ -24,15 +25,17 @@ import { PROVIDER } from '../constants/LoginProvider';
 @Service()
 export class AuthService {
 
-    constructor(@OrmRepository() private userRepository: UserRepository, private facebookService: FacebookService,
-        private twitterService: TwitterService, private authenticationIdService: AuthenticationIdService) { }
+    constructor(@OrmRepository() 
+    private userRepository: UserRepository,
+    private facebookService: FacebookService,
+    private twitterService: TwitterService, 
+    private authenticationIdService: AuthenticationIdService,
+    private googleService: GoogleService,
+    ) { }
 
     public async parseBasicAuthFromRequest(req: express.Request): Promise<any> {
         const authorization = req.header('authorization');
         const mode = req.header('mode');
-
-        console.log('authorization >>>> ', authorization);
-
         if (authorization !== null && authorization !== undefined) {
             const prefix = authorization.split(' ')[0];
 
@@ -46,10 +49,9 @@ export class AuthService {
                 let UserId = undefined;
                 // check in fb mode
                 if (mode === 'FB') {
-                    const fbToken = await jwt.verify(token, env.SECRET_KEY);
+                    const fbToken:any = await jwt.verify(token, env.SECRET_KEY);
                     if (fbToken.token !== undefined) {
                         const fbUserObj = await this.facebookService.getFacebookUserFromToken(fbToken.token);
-
                         if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
                             UserId = fbUserObj.user.id;
                         }
@@ -59,7 +61,7 @@ export class AuthService {
                         UserId += ';FB';
                     }
                 } else if (mode === 'TW') {
-                    const twToken = await jwt.verify(token, env.SECRET_KEY);
+                    const twToken:any = await jwt.verify(token, env.SECRET_KEY);
                     if (twToken.token !== undefined) {
                         const keyMap = ObjectUtil.parseQueryParamToMap(twToken.token);
 
@@ -75,7 +77,27 @@ export class AuthService {
                     if (UserId !== undefined) {
                         UserId += ';TW';
                     }
-                } else {
+                } else if (mode === 'GG'){
+                    const ggToken:any = await jwt.verify(token,env.SECRET_KEY);
+                    if(ggToken.token !== undefined){
+                        const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
+                        if(ggUserObj !== undefined && ggUserObj.authId.user !== undefined){
+                            console.log('pass ????');
+                            UserId = ggUserObj.authId.user;
+                        }
+                    }
+                    if(UserId !== undefined){
+                        UserId += ';GG';
+                    }
+                }
+                else if (mode === 'AP'){
+                    const appleToken:any = await jwt.verify(token,env.SECRET_KEY);
+                    if(appleToken.token !== undefined){
+                        UserId = await this.decryptToken(token);
+                        UserId += ';AP';
+                    }
+                }
+                else {
                     UserId = await this.decryptToken(token);
 
                     if (UserId !== undefined) {
@@ -92,7 +114,7 @@ export class AuthService {
 
     public async decryptToken(encryptString: string): Promise<number> {
         return new Promise<number>((subresolve, subreject) => {
-            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded) => {
+            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded:any) => {
                 if (err) {
                     return subresolve(undefined);
                 }
@@ -105,8 +127,6 @@ export class AuthService {
         const uid = new ObjectID(userId);
 
         const user = await this.userRepository.findOne({ where: { _id: uid } });
-
-        console.log(user);
 
         let providerName = PROVIDER.EMAIL;
         if (type !== undefined && type !== null) {

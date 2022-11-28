@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, EventEmitter, NgZone } from '@angular/core';
 import { MatAutocompleteTrigger, MatInput, MatDialog, MatSlideToggleChange } from '@angular/material';
 import { NavigationExtras, Router } from '@angular/router';
 import { AuthenManager, ObservableManager, AssetFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../../../services/services';
@@ -13,7 +13,7 @@ import { AbstractPage } from '../../AbstractPage';
 import { MESSAGE, PageSocialTW, PageSoialFB } from '../../../../models/models';
 import { CookieUtil } from '../../../../utils/CookieUtil';
 import { environment } from '../../../../../environments/environment';
-import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../,,/../../../Config';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST, FACEBOOK_AUTO_FETCHPOST, TWITTER_AUTO_FETCHPOST } from '../../,,/../../../Config';
 import { DialogAlert, DialogListFacebook } from 'src/app/components/shares/shares';
 
 const PAGE_NAME: string = 'connect';
@@ -36,6 +36,10 @@ export class SecurityInfo extends AbstractPage implements OnInit {
     public autoPostTwitter: boolean = false;
     @Input()
     public autoPostFacebook: boolean = false;
+    @Input()
+    public autoFetchPostTwitter: boolean = false;
+    @Input()
+    public autoFetchPostFacebook: boolean = false;
     @Input()
     public pageId: any;
 
@@ -127,15 +131,15 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 }
             }).catch((err: any) => {
                 // console.log('err ', err)
-                if(err.error && err.error.name){
+                if (err.error && err.error.name) {
 
                     this.showDialogError(err.error.name, this.router.url);
                 } else {
                     this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
                 }
             });
-        } else if (text === 'twitter' && !bind) { 
-            
+        } else if (text === 'twitter' && !bind) {
+
             this.isPreLoadIng = true;
             this.isLoadingTwitter = true;
             CookieUtil.setCookie('page', '/page/' + this.pageId + '/settings');
@@ -162,7 +166,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                                 let check = {
                                     checked: true
                                 }
-                                this.onChangeSlide(check, 'twitter');
+                                this.onChangeSlideTW_POST(check, 'twitter');
+                                this.onChangeSlideFetchPost(check, 'twitter');
                             }
 
                         }).catch((err: any) => {
@@ -243,11 +248,24 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
         })
+        // .  
+        this.pageFacade.getFetchFeedFacebook(this.pageId).then((res: any) => {
+            this.autoFetchPostFacebook = res;
+        }).catch((err: any) => {
+            console.log('err ', err)
+            this.showDialogError(err && err.error.name, undefined);
+        })
     }
 
     public getConfigTwitter() {
         this.pageFacade.getConfigByPage(this.pageId, TWITTER_AUTO_POST).then((res: any) => {
             this.autoPostTwitter = res.value;
+        }).catch((err: any) => {
+            console.log('err ', err)
+            this.showDialogError(err && err.error.name, undefined);
+        });
+        this.pageFacade.getFetchFeedTwitter(this.pageId).then((res: any) => {
+            this.autoFetchPostTwitter = res;
         }).catch((err: any) => {
             console.log('err ', err)
             this.showDialogError(err && err.error.name, undefined);
@@ -278,7 +296,8 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         })
     }
 
-    public onChangeSlide(event: any, social: string) { 
+    // twitter Today to Twitter
+    public onChangeSlideTW_POST(event:any, social:string){
         var isAutoPost = false;
         if (social === 'twitter') {
             // twitter
@@ -294,15 +313,76 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 })
                 dialogRef.afterClosed().subscribe(response => {
                     if (response) {
-                        this.autoPostTwitter = false; 
+                        this.autoPostTwitter = false;
                     }
-                }); 
+                });
             } else {
                 isAutoPost = true;
             }
-        } else if (social === 'facebook') {
+        }
+        if(isAutoPost){
+            let autopost: string = '';
+            if (social === 'twitter') {
+                autopost = TWITTER_AUTO_POST;
+            }
+            let config = {
+                value: event.checked,
+                type: "boolean"
+            }
+            this.pageFacade.getEditConfig(this.pageId, config,autopost).then((res: any) => {
+                if (res.name === TWITTER_AUTO_POST) {
+                    this.autoPostTwitter = res.value;
+                }
+            }).catch((err: any) => {
+                console.log('err ', err)
+            });
+        }
+    }
+
+
+    // Twitter Twitter To Today
+    public onChangeSlideTW_FETCH(event:any, social:string){
+        var isAutoPost = false;
+        if (social === 'twitter') {
+            // twitter
+            if (!this.connectTwitter) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostTwitter = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        let config = {
+            value: event.checked,
+            type: "boolean"
+        }
+        this.pageFacade.fetchFeedTwitter(this.pageId, config).then((res: any) => {
+            if (res.name === TWITTER_AUTO_POST) {
+                this.autoPostTwitter = res.value;
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    // Today To Facebook
+    public onChangeSlideFB_POST(event: any, social: string) {
+        var isAutoPost = false;
+         if (social === 'facebook') {
             // facebook  
-            if (!this.connect) { 
+            if (!this.connect) {
                 let dialogRef = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
@@ -314,29 +394,127 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 })
                 dialogRef.afterClosed().subscribe(response => {
                     if (response) {
-                        this.autoPostFacebook = false; 
+                        this.autoPostFacebook = false;
                     }
                 });
             } else {
                 isAutoPost = true;
             }
-        } 
-        if (isAutoPost && (this.autoPostFacebook || this.autoPostTwitter)) { 
+        }
+        if (isAutoPost) {
             let autopost: string = '';
             if (social === 'facebook') {
                 autopost = FACEBOOK_AUTO_POST;
+            }
+            let config = {
+                value: event.checked,
+                type: "boolean"
+            }
+            this.pageFacade.getEditConfig(this.pageId, config,autopost).then((res: any) => {
+                if (res.name === FACEBOOK_AUTO_POST) {
+                    this.autoPostFacebook = res.value;
+                }
+            }).catch((err: any) => {
+                console.log('err ', err)
+            });
+        }
+    }
+    // Facebook To Today
+    public onChangeSlideFB_FETCH(event: any, social: string) {
+        var isAutoPost = false;
+        if (social === 'facebook') {
+            // facebook  
+            if (!this.connect) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoPostFacebook = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        let config = {
+            value: event.checked,
+            type: "boolean"
+        }
+        this.pageFacade.fetchFeedFacebook(this.pageId, config).then((res: any) => {
+            if (res.name === FACEBOOK_AUTO_POST) {
+                this.autoPostFacebook = res.value;
+            }
+        }).catch((err: any) => {
+            console.log('err ', err)
+        });
+    }
+
+    public onChangeSlideFetchPost(event: any, social: string) {
+        var isAutoPost = false;
+        if (social === 'twitter') {
+            // twitter
+            if (!this.connectTwitter) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: social === 'twitter' ? 'คุณต้องเชื่อมต่อกับ Twitter' : 'คุณต้องเชื่อมต่อกับ Facebook',
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoFetchPostTwitter = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        } else if (social === 'facebook') {
+            // facebook  
+            if (!this.connect) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: 'คุณต้องเชื่อมต่อกับ' + social,
+                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                        bottomColorText2: "black",
+                        btDisplay1: "none"
+                    }
+                })
+                dialogRef.afterClosed().subscribe(response => {
+                    if (response) {
+                        this.autoFetchPostFacebook = false;
+                    }
+                });
+            } else {
+                isAutoPost = true;
+            }
+        }
+        if (isAutoPost && (this.autoFetchPostFacebook || this.autoFetchPostTwitter)) {
+            let autopost: string = '';
+            if (social === 'facebook') {
+                autopost = FACEBOOK_AUTO_FETCHPOST;
             } else if (social === 'twitter') {
-                autopost = TWITTER_AUTO_POST;
+                autopost = TWITTER_AUTO_FETCHPOST;
             }
             let config = {
                 value: event.checked,
                 type: "boolean"
             }
             this.pageFacade.getEditConfig(this.pageId, config, autopost).then((res: any) => {
-                if (res.name === FACEBOOK_AUTO_POST) {
-                    this.autoPostFacebook = res.value; 
-                } else if (res.name === TWITTER_AUTO_POST) {
-                    this.autoPostTwitter = res.value;
+                if (res.name === FACEBOOK_AUTO_FETCHPOST) {
+                    this.autoFetchPostFacebook = res.value;
+                } else if (res.name === TWITTER_AUTO_FETCHPOST) {
+                    this.autoFetchPostTwitter = res.value;
                 }
             }).catch((err: any) => {
                 console.log('err ', err)
@@ -348,7 +526,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         (window as any).fbAsyncInit = function () {
             window['FB'].init({
                 appId: environment.facebookAppId,
-                cookie: true,
+                cookie: true, 
                 xfbml: true,
                 version: 'v10.0'
             });
@@ -407,13 +585,14 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             panelClass: 'customize-dialog',
             data: data
         });
-        dialog.afterClosed().subscribe((res) => { 
+        dialog.afterClosed().subscribe((res) => {
             if (res) {
                 this.checkBoxBindingPageFacebook(res);
                 let check = {
                     checked: true
                 }
-                this.onChangeSlide(check, 'facebook');
+                this.onChangeSlideFB_FETCH(check, 'facebook');
+                this.onChangeSlideFetchPost(check, 'facebook');
             } else {
                 this.connect = false;
             }

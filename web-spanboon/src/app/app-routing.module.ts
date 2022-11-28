@@ -20,6 +20,7 @@ import {
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
   EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
+  NotificationAllPage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -224,6 +225,10 @@ export const APP_ROUTES: Routes = [
       {
         path: Policy.PAGE_NAME,
         component: Policy,
+      },
+      {
+        path: NotificationAllPage.PAGE_NAME,
+        component: NotificationAllPage,
       },
       {
         path: FulfillPage.PAGE_NAME,

@@ -13,6 +13,8 @@ export class SearchFilter {
 
     public offset: number;
 
+    public isOfficial: boolean;
+
     public select: any[];
 
     public relation: any;

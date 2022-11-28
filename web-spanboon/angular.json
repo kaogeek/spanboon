@@ -25,10 +25,13 @@
                         "aot": false,
                         "assets": [
                             "src/assets/img/favicon.png",
-                            "src/assets"
+                            "src/assets",
+                            "src/firebase-messaging-sw.js",
+                            "src/manifest.json"
                         ],
                         "styles": [
-                            "src/styles.scss"
+                            "src/styles.scss",
+                            "node_modules/ngx-toastr/toastr.css"
                         ],
                         "scripts": []
                     },
@@ -72,7 +75,8 @@
                         "aot": true,
                         "ssl": true,
                         "sslKey": "local.key",
-                        "sslCert": "local.crt"
+                        "sslCert": "local.crt",
+                        "disableHostCheck": true
                     },
                     "configurations": {
                         "production": {
@@ -95,7 +99,9 @@
                         "karmaConfig": "karma.conf.js",
                         "assets": [
                             "src/assets/img/favicon.png",
-                            "src/assets"
+                            "src/assets",
+                            "src/firebase-messaging-sw.js",
+                            "src/manifest.json"
                         ],
                         "styles": [
                             "src/styles.scss"

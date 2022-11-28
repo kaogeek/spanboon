@@ -31,7 +31,6 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
      */
     public error(error: any, _req: express.Request, res: express.Response, _next: express.NextFunction): void {
         const responseObject = {} as any;
-
         // if its an array of ValidationError
         // console.log(error);
         // console.log(Array.isArray(error));
@@ -43,16 +42,21 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
             responseObject.status = 0;
             responseObject.data = {};
             responseObject.data.message = [];
+            console.log('ErrorHandleMiddleware_1',responseObject);
             error.errors.forEach((element: ValidationError) => {
+                console.log('ErrorHandleMiddleware_2',element);
                 Object.keys(element.constraints).forEach((type) => {
+                    console.log('ErrorHandleMiddleware_3',type);
                     responseObject.data.message.push(`property ${element.constraints[type]}`);
                 });
             });
         } else {
             // set http status
             if (error instanceof HttpError && error.httpCode) {
+                console.log('Error.httpCode_1',error.httpCode);
                 res.status(error.httpCode);
             } else {
+                console.log('Error.httpCode_2');
                 res.status(500);
             }
 
@@ -65,6 +69,7 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
                 }
                 switch (error.name) {
                     case 'AuthorizationRequiredError':
+                        
                         responseObject.message = 'Unauthorized';
                         break;
                     default:

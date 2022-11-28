@@ -48,17 +48,19 @@ import { UserLikeService } from '../services/UserLikeService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { PageObjective } from '../models/PageObjective';
 import { PageNotificationService } from '../services/PageNotificationService';
+import { NotificationService } from '../services/NotificationService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTag } from '../models/HashTag';
-import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-
+import { DeviceTokenService } from '../services/DeviceToken';
+import { UserFollowService } from '../services/UserFollowService';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -80,10 +82,16 @@ export class PagePostController {
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
         private pageAccessLevelService: PageAccessLevelService,
+        private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private deviceToken: DeviceTokenService,
+        private userFollowService: UserFollowService
     ) { }
-
+    // @Get('/test/post')
+    // public async test(@Req() req:any):Promise<any>{
+    //     return {message:'ok'}
+    // }
     // PagePost List API
     /**
      * @api {get} /api/page/:pageId/post/:id PagePost List API
@@ -312,7 +320,7 @@ export class PagePostController {
         let needNotiTxt = '';
         let isPostTwitter = false;
         let isPostFacebook = false;
-
+        const space = ' ';
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
                 if ('TRUE' === options.twitterPost.toUpperCase()) {
@@ -442,11 +450,9 @@ export class PagePostController {
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
-
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
-
         if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
             const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
 
@@ -555,19 +561,16 @@ export class PagePostController {
             }
         }
         // end check image gallery
-
+        // create post need notification!!!!
         if (pageData) {
             postPage.pageId = pageObjId;
             postPage.referencePost = null;
             postPage.rootReferencePost = null;
             postPage.visibility = null;
             postPage.ranges = null;
-
             const createPostPageData: Posts = await this.postsService.create(postPage);
-
             if (createPostPageData) {
                 createResult = createPostPageData;
-
                 const postPageId = new ObjectID(createPostPageData.id);
                 const engagement = new UserEngagement();
                 engagement.clientId = clientId;
@@ -577,12 +580,85 @@ export class PagePostController {
                 engagement.userId = userObjId;
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
-
                 await this.userEngagementService.create(engagement);
+                // page to user
+                const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
+                if (createPostPageData.pageId !== null) {
+                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
+                    const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    for (let i = 0; i < userFollow.length; i++) {
+                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
+                        for (const tokenFCM of tokenFCMId) {
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM.userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationTextPOST,
+                                    link,
+                                    tokenFCM.Tokens,
+                                    pagePostId.pageUsername,
+                                    pagePostId.imageURL
+                                );
+                            }
+                            else {
+                                await this.notificationService.createNotification(
+                                    userFollow[i].userId,
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationTextPOST,
+                                    link,
+                                );
+                            }
+                        }
+                    }
 
+                }
+                else {
+                    // user to user
+                    const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
+                    const notificationTextPOST = 'มีโพสต์ใหม่จาก'+ space + userPost.displayName;
+                    const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
+                    for (let i = 0; i < userFollow.length; i++) {
+                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        for (const tokenFCM of tokenFCMId) {
+                            const link = `/profile/${userPost.uniqueId}/post/` + createPostPageData.id;
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
+                                await this.notificationService.createNotificationFCM(
+                                    tokenFCM.userId,
+                                    USER_TYPE.USER,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationTextPOST,
+                                    link,
+                                    tokenFCM.Tokens,
+                                    userPost.displayName,
+                                    userPost.imageURL
+                                );
+                            }
+                            else {
+                                await this.notificationService.createNotification(
+                                    userFollow[i].userId,
+                                    USER_TYPE.USER,
+                                    req.user.id + '',
+                                    USER_TYPE.USER,
+                                    NOTIFICATION_TYPE.POST,
+                                    notificationTextPOST,
+                                    link,
+                                );
+                            }
+                        }
+
+                    }
+                }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];
-
                 if (postNeeds !== null && postNeeds !== undefined && postNeeds.length > 0) {
                     let needs: Needs;
                     let stdItems: StandardItem[];
@@ -595,11 +671,9 @@ export class PagePostController {
                             const unit = item.unit;
                             const quantity = item.quantity;
                             const itemName = item.itemName;
-
-                            if (stdItemId !== null && stdItemId !== undefined && stdItemId !== '') {
+                            if (stdItemId === null && stdItemId === undefined && stdItemId === '') {
                                 needsMap[stdItemId] = { quantity, unit };
                                 stdItemList.push(new ObjectID(stdItemId));
-
                                 if (stdItemList !== null && stdItemList !== undefined && stdItemList.length > 0) {
                                     stdItems = await this.standardItemService.find({ where: { _id: { $in: stdItemList } } });
                                 }
@@ -610,7 +684,6 @@ export class PagePostController {
                                 customItem.userId = userObjId;
                                 customItem.standardItemId = null;
                                 const customCreate = await this.customItemService.create(customItem);
-
                                 needs = new Needs();
                                 needs.standardItemId = null;
                                 needs.customItemId = new ObjectID(customCreate.id);
@@ -624,7 +697,6 @@ export class PagePostController {
                                 needs.description = null;
                                 needs.fulfillQuantity = 0;
                                 needs.pendingQuantity = 0;
-
                                 needsCreate = await this.needsService.create(needs);
                             }
                         }
@@ -634,10 +706,9 @@ export class PagePostController {
                                 const stdItemId = stdItem.id;
                                 const needsData = needsMap[stdItemId];
 
-                                if (needsData !== null && needsData !== undefined) {
+                                if (needsData === null && needsData === undefined) {
                                     const quantity = needsData.quantity;
                                     const unit = needsData.unit;
-
                                     needs = new Needs();
                                     needs.standardItemId = new ObjectID(stdItemId);
                                     needs.customItemId = null;
@@ -661,7 +732,6 @@ export class PagePostController {
                         createResult.type = POST_TYPE.NEEDS;
 
                         needsCreated.push(needsCreate);
-
                         if (needsCreated.length > 0) {
                             if (needsCreated.length === 1) {
                                 // item only one
@@ -1414,6 +1484,7 @@ export class PagePostController {
     @Authorized('user')
     public async updatePostPage(@Body({ validate: true }) postPages: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
         try {
+            console.log('ok');
             const pagePostsObjId = new ObjectID(postId);
             const ownerUser = new ObjectID(req.user.id);
             const clientId = req.headers['client-id'];

@@ -98,7 +98,6 @@ export class MainPageController {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.getMainPageSearchConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
                 const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
@@ -212,7 +211,8 @@ export class MainPageController {
         });
         const emerSectionModel = await emerProcessor.process();
 
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
+        // setup search date range for lastest post
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
             userId,
@@ -818,7 +818,6 @@ export class MainPageController {
                     }
                 }
             }
-
             if (onlyFollowed === undefined) {
                 onlyFollowed = false;
             }
@@ -854,6 +853,7 @@ export class MainPageController {
                 } else {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
+                // console.log('orPageConditions',orPageConditions);
             }
 
             if (type !== null && type !== undefined && type !== '') {
@@ -997,7 +997,7 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-
+            postStmt.push({$match:{'pageId':{$ne:null}}});
             if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
                 if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
                     postStmt.push({ $sort: { startDateTime: -1 } });
@@ -1009,18 +1009,26 @@ export class MainPageController {
             } else {
                 postStmt.push({ $sort: { startDateTime: -1 } });
             }
-
-            if (filter.offset !== null && filter.offset !== undefined) {
-                postStmt.push({ $skip: filter.offset });
-            }
-
-            if (filter.limit !== null && filter.limit !== undefined && filter.limit !== 0) {
-                postStmt.push({ $limit: filter.limit });
-            } else {
-                postStmt.push({ $limit: MAX_SEARCH_ROWS });
-            }
-
+            postStmt.push({ $limit: MAX_SEARCH_ROWS });
+            // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
+                {
+                    $lookup:{
+                        from:'Page',
+                        as:'page',
+                        let:{
+                            pageId:'$pageId'
+                        },
+                        pipeline:[{
+                            $match:{$expr:{$and:[{$eq:['$$pageId','$_id']}]}}
+                        }],
+                    },
+                },
+                {
+                    $match:{
+                        'page.isOfficial': filter.isOfficial
+                    }
+                },
                 {
                     $lookup: {
                         from: 'PostsGallery',
@@ -1229,15 +1237,21 @@ export class MainPageController {
                         }
                     }
                 },
-                { $project: { postsHashTags: 0 } }
+                { 
+                    $project: 
+                        { 
+                            postsHashTags: 0,
+                        },
+                },
+                {
+                    $facet:{
+                        data:[{$skip:filter.offset},{$limit:filter.limit}]
+                    }
+                }
             ];
-
             searchPostStmt = postStmt.concat(postsLookupStmt);
-
-            const pageMap = {};
             const userMap = {};
-            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
-
+            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};
@@ -1259,24 +1273,11 @@ export class MainPageController {
                         }
                     }
                     // end inject sign URL
-
-                    let postPage;
-                    if (post.pageId !== undefined && post.pageId !== null && post.pageId !== '') {
-                        if (pageMap[post.pageId] === undefined) {
-                            const page = await this.pageService.findOne({ _id: new ObjectID(post.pageId) });
-                            pageMap[post.pageId] = page;
-                        }
-                    }
-                    postPage = pageMap[post.pageId];
-
                     if (userMap[post.ownerUser] === undefined) {
                         const user = await this.userService.findOne({ _id: new ObjectID(post.ownerUser) });
                         userMap[post.ownerUser] = this.parseUserField(user);
                     }
-
                     result.user = userMap[post.ownerUser];
-                    result.page = postPage;
-
                     searchResults.push(result);
                 }
 
@@ -1332,7 +1333,6 @@ export class MainPageController {
                 });
 
                 search = searchResults;
-
                 if (search !== null && search !== undefined && Object.keys(search).length > 0) {
                     const successResponse = ResponseUtil.getSuccessResponse('Search Success', search);
                     return res.status(200).send(successResponse);

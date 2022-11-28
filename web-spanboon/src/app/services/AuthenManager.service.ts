@@ -2,6 +2,7 @@
  * @license Spanboon Platform v0.1
  * (c) 2020-2021 KaoGeek. http://kaogeek.dev
  * License: MIT. https://opensource.org/licenses/MIT
+ * 
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
@@ -10,6 +11,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ObservableManager } from './ObservableManager.service';
 import { SearchFilter, User, Asset } from '../models/models';
+import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
+import { resolve } from 'url';
+
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -19,7 +23,7 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 // only page user can login
 @Injectable()
 export class AuthenManager {
-
+  
   public static readonly TOKEN_KEY: string = TOKEN_KEY;
   public static readonly TOKEN_MODE_KEY: string = TOKEN_MODE_KEY;
 
@@ -31,7 +35,11 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
-
+  
+  deviceInfo = null;
+  isDesktopDevice: boolean;
+  isTablet: boolean;
+  isMobile: boolean;
   constructor(http: HttpClient, observManager: ObservableManager) {
     this.http = http;
     this.observManager = observManager;
@@ -41,16 +49,19 @@ export class AuthenManager {
     this.googleMode = false;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
+
   }
 
   public login(username: string, password: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "username": username,
         "password": password,
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
       };
-
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
@@ -84,12 +95,18 @@ export class AuthenManager {
     });
   }
 
-  public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
+
+  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = { idToken, authToken };
-      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
+      let body: any = { 
+        idToken, 
+        authToken,
+        tokenFCM_GG
+       };
+      let headers = new HttpHeaders({ 
+        'Content-Type': 'application/json' 
+      });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
@@ -106,7 +123,8 @@ export class AuthenManager {
         this.user = result.user;
         this.googleMode = true;
 
-        localStorage.setItem(TOKEN_KEY, result.token);
+
+        localStorage.setItem(TOKEN_KEY, this.token);
         localStorage.setItem(TOKEN_MODE_KEY, 'GG');
         sessionStorage.setItem(TOKEN_KEY, result.token);
         sessionStorage.setItem(TOKEN_MODE_KEY, 'GG');
@@ -121,7 +139,12 @@ export class AuthenManager {
   public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = {};
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body: any = {
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
+      };
+      console.log('body',body);
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -155,25 +178,18 @@ export class AuthenManager {
   }
 
 
-  public loginWithFacebook(token: string, mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {
-        "token": token
+        "token":token,
+        tokenFCM_FB
       };
-
-      let headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-      });
-
+      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
-
-      let httpOptions = {
-        headers: headers
-      };
-
+      let httpOptions = { headers };
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
@@ -191,6 +207,7 @@ export class AuthenManager {
 
         resolve(result);
       }).catch((error: any) => {
+        console.log('error',error);
         reject(error);
       });
     });
@@ -238,6 +255,7 @@ export class AuthenManager {
   }
 
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
+    console.log('registSocial',registSocial);
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
     }
@@ -281,7 +299,7 @@ export class AuthenManager {
           };
 
           this.token = result.token;
-          this.user = result.user; 
+          this.user = result.user;
 
           let social: string;
           if (mode === 'FACEBOOK') {
@@ -323,7 +341,7 @@ export class AuthenManager {
 
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
-      } 
+      }
 
       let httpOptions = {
         headers: headers
@@ -352,9 +370,8 @@ export class AuthenManager {
       'Content-Type': 'application/json',
       'Authorization': "Bearer " + this.getUserToken()
     });
- 
     if (this.isFacebookMode()) {
-      headers = headers.set('mode', 'FB'); 
+      headers = headers.set('mode', 'FB');
     } else if (this.isTwitterMode()) {
       headers = headers.set('mode', 'TW');
     } else if (this.isGoogleMode()) {
@@ -368,8 +385,10 @@ export class AuthenManager {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + "/user/logout";
-
-      let body = {};
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body = {
+        "tokenFCM": tokenFCM
+      };
       // if(user !== null && user !== undefined){
       //   body = Object.assign(user);
       // }
@@ -378,6 +397,7 @@ export class AuthenManager {
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
+
         // reset token
         this.token = undefined;
         this.user = undefined;
@@ -437,10 +457,9 @@ export class AuthenManager {
       }
 
       let httpOptions = {
-        headers: headers, 
-      }; 
+        headers: headers,
+      };
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
-
         if (mode === "TW") {
           token = token.replace(/;/gi, '&');
         }
@@ -450,21 +469,23 @@ export class AuthenManager {
           user: response.data.user
         };
 
-        if (response.data.mode === 'FB') { 
+        if (response.data.mode === 'FB') {
           fbMode = true;
           this.facebookMode = true;
         }
+
 
         if (isUpdateUser) {
           this.token = result.token;
           this.user = result.user;
           this.facebookMode = fbMode;
-          this.twitterMode = twMode; 
+          this.twitterMode = twMode;
+          this.googleMode = ggMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           localStorage.setItem(TOKEN_KEY, result.token);
           sessionStorage.setItem(TOKEN_KEY, result.token);
-          if (fbMode) { 
+          if (fbMode) {
             localStorage.setItem(TOKEN_MODE_KEY, 'FB');
             sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
           } else if (twMode) {

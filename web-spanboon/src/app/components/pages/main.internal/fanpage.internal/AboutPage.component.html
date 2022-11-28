@@ -195,10 +195,10 @@
         <div class="card-right">
             <div class="card-detail">
                 <input #email type="text" id="email" class="input-data" placeholder="อีเมล"
-                    [(ngModel)]="resDataPage && resDataPage.email" (keyup)="checkPatternEmail(email.value)">
+                    [(ngModel)]="resDataPage && resDataPage.email" (keyup)="checkPatternEmail(email.value)" required>
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
-                    <span>เพจของฉันไม่มีอีเมล</span>
+                    <span>เพจของฉันไม่มีอีเมล MARK</span>
                 </div> -->
                 <div class="card-bottom" [class.active]="isCard7">
                     <div class="card-title">

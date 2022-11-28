@@ -72,6 +72,9 @@ import { StandardItemService } from '../services/StandardItemService';
 import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRequest';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
+import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { DeviceTokenService } from '../services/DeviceToken';
+import { PageNotificationService } from '../services/PageNotificationService';
 
 @JsonController('/page')
 export class PageController {
@@ -98,7 +101,9 @@ export class PageController {
         private pageConfigService: PageConfigService,
         private authenService: AuthenticationIdService,
         private stdItemService: StandardItemService,
-        private socialPostLogsService: SocialPostLogsService
+        private socialPostLogsService: SocialPostLogsService,
+        private deviceTokenService: DeviceTokenService,
+        private pageNotificationService: PageNotificationService,
     ) { }
 
     // Find Page API
@@ -383,6 +388,7 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+        // subscribe webhooks 
 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
@@ -410,7 +416,6 @@ export class PageController {
                     registPageAccessToken = userFBAccount.storedCredentials;
                 }
             }
-
             try {
                 if (registPageAccessToken !== undefined) {
                     /*
@@ -429,14 +434,14 @@ export class PageController {
                 const errorResponse: any = { status: 0, message: 'You cannot access the facebook page.' };
                 return res.status(400).send(errorResponse);
             }
-
             const properties = {
                 token: pageAccessToken.token,
                 type: pageAccessToken.type,
                 expires_in: pageAccessToken.expires_in,
-                expires: pageAccessToken.expires
+                expires: pageAccessToken.expires,
+                pageId: socialBinding.facebookPageId
             };
-
+            console.log('properties',properties);
             const pageSocialAccount = new PageSocialAccount();
             pageSocialAccount.page = pageObjId;
             pageSocialAccount.properties = properties;
@@ -444,7 +449,6 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
             pageSocialAccount.providerPageName = socialBinding.facebookPageName;
-
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
@@ -473,7 +477,7 @@ export class PageController {
         const pageObjId = new ObjectID(pageId);
         const userId = new ObjectID(req.user.id);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
-
+        // gonna do 
         if (pageData) {
             const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
             if (!isUserCanAccess) {
@@ -481,7 +485,7 @@ export class PageController {
             }
 
             // check if page was registed.
-            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageId);
+            const pageTwitter = await this.pageSocialAccountService.getTwitterPageAccount(pageObjId);
             if (pageTwitter !== null && pageTwitter !== undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'This page was binding with Twitter Account.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -600,6 +604,7 @@ export class PageController {
                 return res.status(200).send(errorResponse);
             }
 
+            await this.socialPostLogsService.delete({ pagerId: pageObjId });
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Unbinding Page Social.', true));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
@@ -1055,31 +1060,39 @@ export class PageController {
                 const successUpdateResponse = ResponseUtil.getSuccessResponse('Successfully editing User Page Access', result);
                 return res.status(200).send(successUpdateResponse);
             }*/
+            // check if data already existed in database don't create new.
 
             const pgLV = new PageAccessLevel();
             pgLV.page = pageObjId;
             pgLV.user = user.id;
             pgLV.level = access.level;
 
-            const pageAccessLV = await this.pageAccessLevelService.create(pgLV);
-
-            const userAccLV: PageAccessLevelResponse = new PageAccessLevelResponse();
-            result = userAccLV;
-            result.page = {
-                id: page.id,
-                name: page.name,
-                uniqueId: page.uniqueId,
-                imageURL: page.imageURL
-            };
-            result.user = {
-                id: user.id,
-                displayName: user.displayName
-            };
-            result.level = pageAccessLV.level;
-            result.id = pageAccessLV.id;
-
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully adding User Page Access', result);
-            return res.status(200).send(successResponse);
+            const query = {page:pgLV.page,user:pgLV.user,level:pgLV.level};
+            const findPageAccessLv = await this.pageAccessLevelService.findOne(query);
+            if(findPageAccessLv !== undefined && findPageAccessLv !== null){
+                const successResponse = ResponseUtil.getSuccessResponse('User Already had roles', result);
+                return res.status(200).send(successResponse);
+            }
+            else{
+                const pageAccessLV = await this.pageAccessLevelService.create(pgLV);
+                const userAccLV: PageAccessLevelResponse = new PageAccessLevelResponse();
+                result = userAccLV;
+                result.page = {
+                    id: page.id,
+                    name: page.name,
+                    uniqueId: page.uniqueId,
+                    imageURL: page.imageURL
+                };
+                result.user = {
+                    id: user.id,
+                    displayName: user.displayName
+                };
+                result.level = pageAccessLV.level;
+                result.id = pageAccessLV.id;
+    
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully adding User Page Access', result);
+                return res.status(200).send(successResponse); 
+            }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to get Page', undefined);
             return res.status(400).send(errorResponse);
@@ -1512,7 +1525,6 @@ export class PageController {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
-
         if (data) {
             const errorResponse = ResponseUtil.getErrorResponse('Page is Exists', data);
             return res.status(400).send(errorResponse);
@@ -1573,7 +1585,6 @@ export class PageController {
             pageAcceessLevel.page = result.id;
             pageAcceessLevel.user = userObjId;
             pageAcceessLevel.level = PAGE_ACCESS_LEVEL.OWNER;
-
             const pageAccessLevelCreated: PageAccessLevel = await this.pageAccessLevelService.create(pageAcceessLevel);
 
             if (pageAccessLevelCreated) {
@@ -1841,7 +1852,7 @@ export class PageController {
         const clientId = req.headers['client-id'];
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const pageFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE } });
-
+        const space = ' ';
         const contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
         let userEngagementAction: UserEngagement;
         let userFollowed: UserFollow[];
@@ -1912,6 +1923,38 @@ export class PageController {
                 userEngagement.action = action;
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
+                const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
+                const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
+                // user to page 
+                const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
+                const link = `/profile/${whoFollowYou.uniqueId}`;
+                for (const tokenFCM of tokenFCMId) {
+                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            followCreate.subjectId,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notificationFollower,
+                            link,
+                            tokenFCM.Tokens,
+                            whoFollowYou.displayName,
+                            whoFollowYou.imageURL
+                        );
+                    }else{
+                        await this.pageNotificationService.notifyToPageUser(
+                            followCreate.subjectId,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notificationFollower,
+                            link,
+                        );
+                    }
+                }
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {
@@ -2361,6 +2404,154 @@ export class PageController {
         }
     }
 
+    @Post('/:id/twitter_fetch_enable')
+    @Authorized('user')
+    public async twitterFetch(@Param('id') id: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const currentDateTime = moment().toDate();
+        const authTime = currentDateTime;
+        const page = await this.pageSocialAccountService.findOne({ where: { page: pageObjId } });
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        if (page) {
+            // providerName: PROVIDER.TWITTER, enable:false, pageId: pageId,lastUpdated:current_time
+            // user
+            // pageId
+            // providerName
+            // providerUserId
+            // lastSocialPostId
+            // properties
+            // enable
+            // lastUpdated
+            const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+            if (socialPostLogsService) {
+                const query = { pageId: pageObjId };
+                const newValue = { $set: { enable: configValue.value } };
+                await this.socialPostLogsService.update(query, newValue);
+            } else {
+                const socialPostLogs = new SocialPostLogs();
+                socialPostLogs.user = userId;
+                socialPostLogs.pageId = pageObjId;
+                socialPostLogs.providerName = PROVIDER.TWITTER;
+                socialPostLogs.providerUserId = page.providerPageId;
+                socialPostLogs.lastSocialPostId = null;
+                socialPostLogs.properties = page.properties;
+                socialPostLogs.enable = configValue.value;
+                socialPostLogs.lastUpdated = authTime;
+                await this.socialPostLogsService.create(socialPostLogs);
+            }
+        }
+        else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
+        }
+        return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully binding Page Twitter Social auto post.', true));
+    }
+
+    @Get('/:id/twitter_fetch_enable')
+    @Authorized('user')
+    public async getTwitterFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'TWITTER' });
+        if (config) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
+        } else {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Unable to Get Page Config', false));
+        }
+    }
+
+    // binding config facebook option 
+
+    // get 
+    @Get('/:id/facebook_fetch_enable')
+    @Authorized('user')
+    public async getFacebookFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
+
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'FACEBOOK' });
+        if (config) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
+        } else {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Unable to Get Page Config', false));
+        }
+    }
+    // post 
+    @Post('/:id/facebook_fetch_enable')
+    @Authorized('user')
+    public async postFacebookFetch(@Param('id') id: string, @Body({ validate: true }) configValue: ConfigValueRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(id);
+        const currentDateTime = moment().toDate();
+        const authTime = currentDateTime;
+        const page = await this.pageSocialAccountService.findOne({ where: { page: pageObjId } });
+        if (!page) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
+        }
+        // check access
+        const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
+        if (!isUserCanAccess) {
+            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
+        }
+        console.log('configValue',configValue);
+        if (page) {
+            const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
+            if (socialPostLogsService) {
+                console.log('binding1');
+                const query = { pageId: pageObjId };
+                const newValue = { $set: { enable: configValue.value,properties:page.properties } };
+                console.log('newValue',newValue);
+                await this.socialPostLogsService.update(query, newValue);
+            } else {
+                console.log('binding2');
+                const socialPostLogs = new SocialPostLogs();
+                socialPostLogs.user = userId;
+                socialPostLogs.pageId = pageObjId;
+                socialPostLogs.providerName = PROVIDER.FACEBOOK;
+                socialPostLogs.providerUserId = page.providerPageId;
+                socialPostLogs.lastSocialPostId = null;
+                socialPostLogs.properties = page.properties;
+                socialPostLogs.enable = configValue.value;
+                socialPostLogs.lastUpdated = authTime;
+                await this.socialPostLogsService.create(socialPostLogs);
+            }
+        }
+        else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Page Not Found', false));
+        }
+        return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully binding Page Facebook Social auto post.', true));
+    }
     /**
      * @api {put} /api/page/:id/config/:name Edit Page Config API
      * @apiGroup Page

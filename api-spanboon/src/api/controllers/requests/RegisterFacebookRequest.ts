@@ -13,14 +13,14 @@ export class RegisterFaceBookRequest extends BasePageUserRegisterRequest {
 
     // facebook authen field
     @IsNotEmpty({ message: 'Facebook UserId is required' })
-    public fbUserId: string;
+    public fbUserId_facebook: string;
 
     @IsNotEmpty({ message: 'Facebook Token is required' })
-    public fbToken: string;
+    public fbToken_facebook: string;
 
     @IsNotEmpty({ message: 'Facebook ExpirationTime is required' })
-    public fbAccessExpirationTime: number;
+    public fbAccessExpirationTime_facebook: number;
 
     @IsNotEmpty({ message: 'Facebook SignedRequest is required' })
-    public fbSignedRequest: string;
+    public fbSignedRequest_facebook: string;
 }

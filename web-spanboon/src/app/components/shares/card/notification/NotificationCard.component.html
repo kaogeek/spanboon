@@ -1,0 +1,114 @@
+<div (click)="navigatetopage(message.notification.link)"
+    [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'" class="noticard"
+    [ngClass]="{'fullpage': fullPage }">
+    <div *ngIf="!fullPage" class="title">
+        {{message?message.notification.title:'การแจ้งเตือนใหม่'}}
+        <div class="close" (click)="close()">
+            <svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14px" height="14px">
+                <path
+                    d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z" />
+            </svg>
+        </div>
+    </div>
+    <div class="body">
+        <div class="image">
+            <ng-container *ngIf="message.notification.image; else image">
+                <img src="{{message? message.notification.image:''}}">
+            </ng-container>
+            <ng-template #image>
+                <div class="image-err">
+                    <span>{{message.notification.body | slice: 0:1 }}</span>
+                </div>
+            </ng-template>
+            <div [ngClass]="{'status-one': message.notification.status === 'POST' || 'repost' || 'share' || 'COMMENT' || 'LIKE', 'status-two' : message.notification.status === 'fullfill', 'status-tree' : message.notification.status === 'officerPage' }"
+                class="status">
+                <svg *ngIf="message.notification.status === 'POST'" width="24px" height="24px" viewBox="0 0 76.01 76.01"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                    baseProfile="full" enable-background="new 0 0 76.01 76.01" xml:space="preserve">
+                    <path fill="white" fill-opacity="1" stroke-width="1" stroke-linejoin="round"
+                        d="M 31.6711,19.0027L 33.2546,19.0027C 34.1292,19.0027 34.8382,19.7116 34.8382,20.5862L 34.8382,55.4244C 34.8382,56.299 34.1292,57.008 33.2546,57.008L 31.6711,57.008C 30.7965,57.008 30.0875,56.299 30.0875,55.4244L 30.0875,20.5862C 30.0875,19.7116 30.7965,19.0027 31.6711,19.0027 Z M 38.0399,22.1698L 52.2573,31.1275C 52.8757,31.7459 52.8757,32.7486 52.2573,33.367L 38.0399,41.172C 37.1653,41.172 36.4564,40.463 36.4564,39.5884L 36.4564,23.7533C 36.4564,22.8787 37.1653,22.1698 38.0399,22.1698 Z " />
+                </svg>
+                <svg *ngIf="message.notification.status === 'fullfill'" width="10px" height="10px"
+                    viewBox="0 0 80.662 70.194" xmlns="http://www.w3.org/2000/svg">
+                    <g data-name="Group 2388" id="Group_2388" transform="translate(1705.345 -3207.5)">
+                        <path
+                            d="M266.951,37.465a13.432,13.432,0,0,1,13.366,13.366c0,13.5-24.57,26.863-24.57,26.863s-24.57-13.562-24.57-26.863a13.387,13.387,0,0,1,24.57-7.338,13.365,13.365,0,0,1,11.2-6.028"
+                            data-name="Path 3531" fill="white" id="Path_3531" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M230.789,62.659H211.01a4.582,4.582,0,0,1-4.577-4.577V18.855a4.582,4.582,0,0,1,4.577-4.577h39.226a4.581,4.581,0,0,1,4.577,4.577V36.693c.1.142.2.279.295.424a17.371,17.371,0,0,1,6.484-5.858v-12.4A11.369,11.369,0,0,0,250.236,7.5H211.01a11.368,11.368,0,0,0-11.355,11.355V58.082A11.368,11.368,0,0,0,211.01,69.437h26.736a70.126,70.126,0,0,1-6.957-6.778"
+                            data-name="Path 3532" fill="white" id="Path_3532" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M213.178,27.585H212.9a1.537,1.537,0,0,1-1.537-1.537V23.163a1.537,1.537,0,0,1,1.537-1.537h.283a1.536,1.536,0,0,1,1.537,1.537v2.885a1.536,1.536,0,0,1-1.537,1.537"
+                            data-name="Path 3533" fill="white" id="Path_3533" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M218.861,27.585h-.283a1.537,1.537,0,0,1-1.537-1.537V21.089a1.537,1.537,0,0,1,1.537-1.537h.283a1.536,1.536,0,0,1,1.537,1.537v4.959a1.536,1.536,0,0,1-1.537,1.537"
+                            data-name="Path 3534" fill="white" id="Path_3534" transform="translate(-1905 3200)">
+                        </path>
+                        <path
+                            d="M224.574,27.585h-.284a1.537,1.537,0,0,1-1.537-1.537V23.163a1.537,1.537,0,0,1,1.537-1.537h.284a1.536,1.536,0,0,1,1.536,1.537v2.885a1.536,1.536,0,0,1-1.536,1.537"
+                            data-name="Path 3535" fill="white" id="Path_3535" transform="translate(-1905 3200)">
+                        </path>
+                    </g>
+                </svg>
+                <svg *ngIf="message.notification.status === 'repost'" aria-haspopup="true" height="11px" width="11px"
+                    viewBox="0 0 14.591 12.385" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M684.311,713.443h-1.469l2.146-2.169a3.777,3.777,0,0,0-.023-5.329l-.131-.132a3.77,3.77,0,0,0-5.2.153l-.875.884-.882-.875a3.77,3.77,0,0,0-5.3,5.357l5.76,5.7a.675.675,0,0,0,.953,0l.455-.459-6.222-6.2a2.421,2.421,0,0,1,.074-3.425,2.485,2.485,0,0,1,3.334-.017l1.842,1.823,1.822-1.842a2.422,2.422,0,0,1,3.441,3.407l-2.1,2.121v-.005l-.011.01.011-1.387a.709.709,0,0,0-.733-.678h0a.7.7,0,0,0-.678.678v3.088a.678.678,0,0,0,.1.356.782.782,0,0,0,.1.131l.139.113a.708.708,0,0,0,.367.1h3.087a.707.707,0,0,0,0-1.413Z"
+                        data-name="Path 3805" fill="white" id="Path_3805" transform="translate(-671.485 -704.848)">
+                    </path>
+                </svg>
+                <svg *ngIf="message.notification.status === 'aaa'" xmlns="http://www.w3.org/2000/svg" width="13.547"
+                    height="9.57" viewBox="0 0 13.547 9.57">
+                    <g id="Group_2365" data-name="Group 2365" transform="translate(-1533.751 -2071.08)">
+                        <circle id="Ellipse_248" data-name="Ellipse 248" cx="1.16" cy="1.16" r="1.16"
+                            transform="translate(1539.454 2071.08)" fill="#fff" />
+                        <circle id="Ellipse_249" data-name="Ellipse 249" cx="1.16" cy="1.16" r="1.16"
+                            transform="translate(1533.751 2072.4)" fill="#fff" />
+                        <circle id="Ellipse_250" data-name="Ellipse 250" cx="1.16" cy="1.16" r="1.16"
+                            transform="translate(1544.978 2072.31)" fill="#fff" />
+                        <path id="Rectangle_406" data-name="Rectangle 406"
+                            d="M0,0H9.057a0,0,0,0,1,0,0V0A1.483,1.483,0,0,1,7.574,1.483H1.483A1.483,1.483,0,0,1,0,0V0A0,0,0,0,1,0,0Z"
+                            transform="translate(1536.078 2079.167)" fill="#fff" />
+                        <path id="Path_544" data-name="Path 544"
+                            d="M1603.949,2163.009l-.906.533a.73.73,0,0,1-.9-.126l-.794-.835a1.85,1.85,0,0,0-1.312-.575h-.024a1.851,1.851,0,0,0-1.312.575l-.794.835a.73.73,0,0,1-.9.126l-.906-.533a.73.73,0,0,0-1.088.767l.542,2.821h1.22v-.383a1.084,1.084,0,1,1,2.168,0v.383h2.162v-.383a1.084,1.084,0,1,1,2.168,0v.383h1.22l.542-2.821A.73.73,0,0,0,1603.949,2163.009Z"
+                            transform="translate(-59.411 -88.196)" fill="#fff" />
+                    </g>
+                </svg>
+                <svg *ngIf="message.notification.status === 'share'" height="11px" width="11px"
+                    viewBox="0 0 13.913 15.385" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M723.992,714.311a2.533,2.533,0,0,0-1.8-.745,2.59,2.59,0,0,0-1.555.522l-.052.039-4.7-2.459.017-.075a2.55,2.55,0,0,0,.042-.825l-.006-.065,4.7-2.793.054.038a2.531,2.531,0,0,0,1.5.49,2.566,2.566,0,1,0-2.568-2.565,2.529,2.529,0,0,0,.063.549l.015.072-4.52,2.691-.056-.05a2.574,2.574,0,0,0-2.635-.5l-.061.026a2.566,2.566,0,0,0,1.963,4.741,2.5,2.5,0,0,0,.5-.282l.051-.036,4.741,2.478-.014.074a2.566,2.566,0,1,0,4.334-1.326Zm-.526,1.849a1.314,1.314,0,1,1-1.314-1.314A1.315,1.315,0,0,1,723.466,716.16Zm-1.314-11.688a1.314,1.314,0,1,1-1.313,1.313A1.315,1.315,0,0,1,722.152,704.472Zm-7.5,6.527a1.314,1.314,0,1,1-1.314-1.314A1.316,1.316,0,0,1,714.656,711Z"
+                        data-name="Path 3803" fill="#fff" id="Path_3803" transform="translate(-710.83 -703.306)"></path>
+                </svg>
+                <svg *ngIf="message.notification.status === 'LIKE'" height="11px" width="11px"
+                    viewBox="0 0 15.474 13.059" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
+                        data-name="Path 3804" fill="#fff" id="Path_3804" transform="translate(-690.495 -704.698)">
+                    </path>
+                </svg>
+                <svg *ngIf="message.notification.status === 'COMMENT'" height="11px" width="11px"
+                    viewBox="0 0 16.439 15.437" xmlns="http://www.w3.org/2000/svg">
+                    <g data-name="Group 3339" id="Group_3339" transform="translate(-647.471 -703.739)">
+                        <path
+                            d="M661.713,703.739H649.658a2.2,2.2,0,0,0-2.187,2.19v8.294a2.205,2.205,0,0,0,2.2,2.187h1.317v1.823a.938.938,0,0,0,.6.879.934.934,0,0,0,1.034-.245l2.234-2.458h6.869a2.205,2.205,0,0,0,2.187-2.2v-8.288A2.231,2.231,0,0,0,661.713,703.739Zm-10.04,11.291h-2a.826.826,0,0,1-.824-.815v-8.274a.827.827,0,0,1,.815-.823H661.7a.84.84,0,0,1,.828.817v8.272a.828.828,0,0,1-.816.822h-7.47l-1.881,2.071v-2.07Z"
+                            data-name="Path 3806" fill="#fff" id="Path_3806"></path>
+                        <path d="M651.292,708.667h5.083a.764.764,0,0,0,0-1.528h-5.083a.764.764,0,0,0,0,1.528Z"
+                            data-name="Path 3807" fill="#fff" id="Path_3807"></path>
+                        <path
+                            d="M660.279,711.375a.744.744,0,0,0-.723-.764h-8.305a.765.765,0,0,0,0,1.528h8.305A.744.744,0,0,0,660.279,711.375Z"
+                            data-name="Path 3808" fill="#fff" id="Path_3808"></path>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        <div class="message" [style.opacity]="message.notification.isRred ? '0.5' : '1'">
+            <span
+                [innerHTML]="message?(message.notification.body | textnoti:(message.notification.createdDate?(message.notification.createdDate|dateFormat):(date|dateFormat))) :'มีการแจ้งเตือนใหม่'"></span>
+        </div>
+        <div *ngIf="!message.notification.isRred" class="new"></div>
+    </div>
+</div>

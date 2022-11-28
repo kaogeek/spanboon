@@ -38,7 +38,7 @@ export class UserNotificationController {
      */
     @Get()
     @Authorized('user')
-    public async findAllUserNotifications(@QueryParam('limit') limit: number, @QueryParam('offset') offset: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async findAllUserNotifications(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
 
         const filter: any = { where: { toUser: userObjId, toUserType: USER_TYPE.USER, deleted: false } };
@@ -55,8 +55,7 @@ export class UserNotificationController {
             filter.take = limit;
         } else {
             filter.take = 5;
-        }
-
+        } 
         const userNotifications: Notification[] = await this.notificationService.find(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotifications);
 
@@ -197,6 +196,7 @@ export class UserNotificationController {
         }
 
         const userNotificationsList: any = await this.notificationService.search(filter);
+        console.log('userNotificationsList',userNotificationsList);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
 
         if (userNotificationsList) {

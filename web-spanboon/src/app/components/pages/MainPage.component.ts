@@ -103,7 +103,6 @@ export class MainPage extends AbstractPage implements OnInit {
     this.isLogin();
     this.searchAccessPage();
 
-    console.log('Called Constructor');
     this.route.queryParams.subscribe(params => {
       var hidebars = params['hidebar'];
       if (hidebars !== undefined && hidebars !== null) {
@@ -353,3 +352,4 @@ export * from './main.internal/profile.internal/profile';
 export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
+export * from './main.internal/NotificationAllPage.component';

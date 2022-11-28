@@ -16,7 +16,7 @@ export class UserAccessFacade extends AbstractFacade {
     constructor(http: HttpClient, authMgr: AuthenManager) {
         super(http, authMgr);
     }
-
+    // getPageAccess 
     public getPageAccess(): Promise<any[]> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/useraccess/page/';

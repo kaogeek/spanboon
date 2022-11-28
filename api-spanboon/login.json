@@ -1,0 +1,60 @@
+{
+    "type": "post",
+    "url": "/api/auth/login",
+    "title": "Login",
+    "group": "Authentication",
+    "parameter": {
+        "fields": {
+            "Request body": [
+            {
+                "group": "Request body",
+                "type": "String",
+                "optional": false,
+                "field": "username",
+                "description": "<p>User Username</p>"
+            },
+            {
+                "group": "Request body",
+                "type": "String",
+                "optional": false,
+                "field": "password",
+                "description": "<p>User Password</p>"
+            },
+
+            {
+                "group": "Request body",
+                "type": "String",
+                "optional": false,
+                "field": "token",
+                "description": "<p>Token FCM</p>"
+            },
+
+            {
+                "group": "Request body",
+                "type": "String",
+                "optional": false,
+                "field": "deviceName",
+                "description": "<p>DeviceName</p>"
+            }
+            ]
+        },
+        "examples": [
+            {
+            "title": "Input",
+            "content": "{\n     \"username\" : \"\",\n     \"password\" : \"\",\n}",
+            "type": "json"
+            }
+        ]
+        },
+        "success": {
+        "examples": [
+            {
+            "title": "Success",
+            "content": "HTTP/1.1 200 OK\n{\n     \"data\": \"{\n        \"token\":''\n     }\",\n     \"message\": \"Successfully login\",\n     \"status\": \"1\"\n}",
+            "type": "json"
+            }
+            ]
+        }
+}
+
+    

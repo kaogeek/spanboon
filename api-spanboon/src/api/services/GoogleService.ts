@@ -30,31 +30,36 @@ export class GoogleService {
     return new google.auth.OAuth2(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URL);
   }
 
-  public async verifyIdToken(idToken: string): Promise<any> {
+  public async verifyIdToken(idToken: string,modHeaders:string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const ticket = await this.CLIENT.verifyIdToken({ idToken, audience: this.CLIENT_ID });
-      const payload = ticket.getPayload();
-
-      if (payload !== null && payload !== undefined) {
-        const userId = payload.sub;
-        const email = payload.email;
-        const firstName = payload.given_name;
-        const lastName = payload.family_name;
-        const imageURL = payload.picture;
-        const expire = payload.exp;
-        const result = { userId, email, firstName, lastName, imageURL, expire };
-
-        resolve(result);
+      let ticket;
+      if (modHeaders !== undefined && modHeaders !== null) {
+        ticket = await this.CLIENT.verifyIdToken({ idToken, audience: this.CLIENT_ID });
       } else {
-        reject(undefined);
+        ticket = await this.CLIENT.verifyIdToken({ idToken });
       }
+        const payload = ticket.getPayload();
+
+        if (payload !== null && payload !== undefined) {
+          const userId = payload.sub;
+          const email = payload.email;
+          const firstName = payload.given_name;
+          const lastName = payload.family_name;
+          const imageURL = payload.picture;
+          const expire = payload.exp;
+          const result = { userId, email, firstName, lastName, imageURL, expire };
+
+          resolve(result);
+        } else {
+          reject(undefined);
+        }
     });
   }
 
   public async getGoogleUser(userId: string, accessToken: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.authenIdService.findOne({ where: { providerUserId: userId } }).then((auth) => {
+      this.authenIdService.findOne({ where: { providerUserId: userId,providerName:'GOOGLE' } }).then((auth) => {
         console.log('auth >>> ', auth);
         if (auth === null || auth === undefined) {
           resolve(undefined);

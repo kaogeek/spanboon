@@ -66,6 +66,7 @@
     width: 300pt !important;
     max-width: 350pt !important;
     margin: 5pt 0 0 0;
+    z-index: 9999;
 
     button.mat-menu-item {
         width: unset !important;
@@ -78,6 +79,31 @@
 
     .mat-menu-content {
         padding: unset !important;
+        padding-top: 10px;
+        .mat-menu-title {
+            display: flex;
+            flex-direction: column;
+            padding: 0 15pt;
+            > .text {
+                @include font-size-8($font-head-500);
+            }
+            > .select-noti-list {
+                @include font-size-10($font-head-400);
+                padding: 10pt 0pt;
+                > .list {
+                    cursor: pointer;
+                    color: black;
+                    background: #eeeeee 0% 0% no-repeat padding-box;
+                    border-radius: 25px;
+                    padding: 7px 15px;
+                    margin-right: 10px;
+                }
+                > .select {
+                    color: #ee7623 !important;
+                    background: #ee762329 0% 0% no-repeat padding-box !important;
+                }
+            }
+        }
     }
 }
 

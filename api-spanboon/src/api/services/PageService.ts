@@ -57,6 +57,7 @@ export class PageService {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = await this.pageRepository.findOne(findCondition);
+
                 if (result && options && options.signURL) {
                     if (result.s3ImageURL && result.s3ImageURL !== '') {
                         try {
@@ -80,6 +81,9 @@ export class PageService {
                 reject(error);
             }
         });
+    }
+    public async findAll(findCondition?: any): Promise<any> {
+        return await this.pageRepository.find(findCondition);
     }
 
     // find page
@@ -112,4 +116,5 @@ export class PageService {
             return this.find(condition, options);
         }
     }
+
 }

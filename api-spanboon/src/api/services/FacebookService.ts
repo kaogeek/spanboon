@@ -16,10 +16,9 @@ import { AuthenticationId } from '../models/AuthenticationId';
 import { User } from '../models/User';
 import { Asset } from '../models/Asset';
 import moment from 'moment';
-
+import axios from 'axios';
 @Service()
 export class FacebookService {
-
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
 
     public createFB(): Facebook {
@@ -96,31 +95,72 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-
-            facebook.api('me/?fields=id&access_token=\'+accessToken+\'', 'post', (response: any) => {
+            facebook.api('me',{fields:['id'], accessToken:'accessToken'}, (response: any) => {
                 if (!response || response.error) {
                     console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }
-
                 resolve(response);
             });
         });
     }
+    public async fetchFacebook(accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios({
+                url: 'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken});
+            return data;
+        }catch(err){
+            console.log('Error :', err);
+        }
+    }
+    // check subscribe 
+    public async checkSubscribe(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('fail to subscribe webhook',err);
+        }
+    }
+    public async getPageId(userId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+userId+'/accounts?access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get pageId from graph api',err);
+        }
+    }
+    // Get post from page on facebook
+    public async pullIngPostFromFacebook(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/feed?access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get feed from facebook',err);
+        }
+    }
 
+    // Get Photo from page on facebook
+    public async pullingPhotoFromFacebook(pageId:string,access_token:string):Promise<any>{
+        try{
+            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/photos?url=link&access_token='+access_token);
+            return data;
+        }catch(err){
+            console.log('cannot get photo from facebook',err);
+        }
+    }
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getFBUserId(accessToken).then((result: any) => {
+            this.fetchFacebook(accessToken).then((result: any) => {
                 if (result.error) { reject(result.error); return; }
-
-                this.authenIdService.findOne({ where: { providerUserId: result.id } }).then((auth) => {
+                this.authenIdService.findOne({ where: { providerUserId: result.id,providerName:'FACEBOOK' } }).then((auth) => {
+                    console.log('auth >>>',auth);
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
                     }
-
-                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }, { signURL: true }).then((authUser) => {
+                    this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
                         if (authUser) {
                             authUser = this.cleanFBUserField(authUser);
                             resolve({ token: accessToken, authId: auth, user: authUser });
@@ -189,7 +229,6 @@ export class FacebookService {
 
     public publishPostByUser(userId: string, message: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-
             const spanboonUser = await this.userService.findOne({ _id: new ObjectID(userId), banned: false });
             if (!spanboonUser) {
                 reject('User was not found or was baned.');
@@ -204,7 +243,6 @@ export class FacebookService {
 
             const fbUserId = userAuthen.providerUserId;
             const accessToken = userAuthen.storedCredentials;
-
             try {
                 const result = await this.publishMessage(fbUserId, accessToken, message);
                 resolve(result);
@@ -299,18 +337,24 @@ export class FacebookService {
                     };
                 }
             }
-
-            facebook.api(fbUserId + '/feed', 'post', formData, (response: any) => {
-                if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
-                    reject(response.error);
-                    return;
-                }
-                resolve(response);
+            // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
+            this.publishPageId(fbUserId,accessToken).then((res)=>{
+                axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
+                    resolve(resFacebook.data);
+                });
             });
         });
     }
 
+    public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
+            console.log('data',data);
+            return data;
+        }catch(err){
+            console.log('Error publishPageId :'+ err);
+        }
+    }
     public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {

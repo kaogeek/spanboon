@@ -73,7 +73,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="list-items-organization" matRipple [matRippleCentered]="'centered'"
+                        <!--  <div class="list-items-organization" matRipple [matRippleCentered]="'centered'"
                             [matRippleColor]="'#00000008'" [class.active]="isActive" (click)="selectedListType(1)">
                             <div class="box-center-left">
                                 <img class="img-type" src="../../../../assets/img/profile.svg">
@@ -90,7 +90,7 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </ng-container>
                     <ng-template #elseTemplatePage>
                         <Preload-card *ngFor="let item of [0 , 1 , 2 , 3 , 4]; let index = index" [isShowCard3]="true">
@@ -154,7 +154,7 @@
                                 <input #urlPage id="urlPage" maxlength="15" type="text" class="input-page add-to-page"
                                     [class.correct]='uuid' placeholder="เพจ" (keyup)="checkUUID(urlPage.value)">
                             </div>
-                            <!-- <div class="label-show-error">กรุณากรอก URL ของเพจ</div> -->
+                            <!-- <div class="label-show-error" *ngIf="isNull">กรุณากรอก URL ของเพจ</div> -->
                         </div>
                     </div>
                 </div>

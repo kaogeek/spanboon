@@ -61,7 +61,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.activatedRoute = activatedRoute;
         this.router = router;
         this.dialog = dialog;
-        this._ngZone = _ngZone
+        this._ngZone = _ngZone;
         this.observManager = observManager;
         this.twitterService = twitterService;
 
@@ -245,9 +245,9 @@ export class MenuRegister extends AbstractPage implements OnInit {
         (window as any).fbAsyncInit = function () {
             window['FB'].init({
                 appId: environment.facebookAppId,
-                cookie: true,
+                cookie: true, 
                 xfbml: true,
-                version: 'v10.0'
+                version: 'v15.0'
             });
             window['FB'].AppEvents.logPageView();
         };
@@ -275,7 +275,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-        }, { scope: 'public_profile, email' });
+        });
     }
 
     private loginFB() {
