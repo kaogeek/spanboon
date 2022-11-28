@@ -519,7 +519,7 @@ export class GuestController {
             if (resultUser) {
                 // check if has authenid
                 const currentAuthenId = await this.authenticationIdService.findOne({ user: resultUser.id, providerName: PROVIDER.GOOGLE });
-                if (currentAuthenId !== undefined) {
+                if (currentAuthenId !== undefined ) {
                     const errorResponse = ResponseUtil.getErrorResponse('Google was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -532,7 +532,6 @@ export class GuestController {
                     authenId.providerName = PROVIDER.GOOGLE;
                     authenId.storedCredentials = authToken;
                     authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-
                     authIdCreate = await this.authenticationIdService.create(authenId);
                 }else{
                     userData = this.userService.cleanUserField(resultUser);
@@ -578,7 +577,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-
+                const resultData: User = await this.userService.create(user);
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -601,7 +600,6 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
                 }
-                const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
 
@@ -1287,15 +1285,31 @@ export class GuestController {
 
         // check expire token
         const today = moment().toDate();
+        const todayGG = new Date(user.expirationDate);
         if (isMode !== undefined && isMode === 'FB') {
             if (user.fbAccessExpirationTime < today.getDate()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                await this.deviceToken.delete({userId:user});
                 return response.status(400).send(errorUserNameResponse);
             }
-        } else {
+        } 
+        else if(isMode !== undefined && isMode === 'GG'){
+            if(user.properties.expiraToken < today.getDate()){
+                const errorUserNameResponse: any = {status: 0, message: 'User token expired.'};
+                await this.deviceToken.delete({userId:user});
+                return response.status(400).send(errorUserNameResponse);
+            }
+        }
+        else if(isMode !== undefined && isMode === 'TW'){
+            if(todayGG.getTime() < today.getDate()){
+                const errorUserNameResponse: any = {status: 0, message: 'User token expired.'};
+                await this.deviceToken.delete({userId:user});
+                return response.status(400).send(errorUserNameResponse);
+            }
+        } 
+        else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id } });
-            console.log('authenId',authenId);
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
                 return response.status(400).send(errorUserNameResponse);
