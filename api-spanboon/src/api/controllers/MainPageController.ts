@@ -1009,17 +1009,7 @@ export class MainPageController {
             } else {
                 postStmt.push({ $sort: { startDateTime: -1 } });
             }
-
-            if (filter.offset !== null && filter.offset !== undefined) {
-                postStmt.push({ $skip: filter.offset });
-            }
-
-            if (filter.limit !== null && filter.limit !== undefined && filter.limit !== 0) {
-                postStmt.push({ $limit: filter.limit });
-            } 
-            else {
-                postStmt.push({ $limit: MAX_SEARCH_ROWS });
-            }
+            postStmt.push({ $limit: MAX_SEARCH_ROWS });
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
                 {
@@ -1252,6 +1242,11 @@ export class MainPageController {
                         { 
                             postsHashTags: 0,
                         },
+                },
+                {
+                    $facet:{
+                        data:[{$skip:filter.offset},{$limit:filter.limit}]
+                    }
                 }
             ];
             searchPostStmt = postStmt.concat(postsLookupStmt);
