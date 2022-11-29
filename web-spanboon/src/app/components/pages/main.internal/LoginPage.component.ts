@@ -55,6 +55,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public isPreloadTwitter: boolean;
   public googleUser = {};
   public auth2: any;
+  public modeSwitch: boolean = false;
 
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';

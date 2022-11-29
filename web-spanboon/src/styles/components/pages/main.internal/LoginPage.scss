@@ -134,6 +134,103 @@
   }
 }
 
+.wrapper-mergeuser-page {
+  min-height: calc(100vh - 55pt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  >.box-detail {
+    max-width: 80vw;
+    width: 600px;
+    margin: 40px 0px;
+
+    >.merge-user {
+      text-align: center;
+      @include font-size-5($font-head-500);
+      color: $brandcolor2;
+    }
+
+      >.wrapper-user-to-user {
+        display: flex;
+        justify-content: center;
+        column-gap: 70px;
+        margin-top: 50px;
+
+      >.profile-card {
+
+        >.profile-box{
+          position: relative;
+          margin-bottom: 15px;
+
+        >.wrapper-img {
+          overflow: hidden;
+          width: 150px;
+          height: 150px;
+          border-radius: 100%;
+          border: 4px solid $brandcolor2;
+
+          >img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+          >.icon-social {
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            border-radius: 100%;
+            position: absolute;
+            right: 6px;
+            bottom: 6px;
+          }
+        }
+        
+        >.label {
+          text-align: center;
+          @include font-size-10($font-head-500);
+          color: $brandcolor2;
+
+          >.label-tag{
+            text-align: center;
+            margin-top: 2px;
+            @include font-size-10($font-head-500);
+            color: gray;
+          }
+        }
+      }
+
+      >.arrow {
+        height: calc(150px + 8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        >mat-icon{
+          height: 40px;
+          width: 40px;
+          font-size: 40px;
+        }
+      }
+  
+    }
+    
+    >.description {
+      text-align: center;
+      @include font-size-9($font-head-500);
+      margin-top: 50px;
+    }
+
+    >.next-merge {
+      width: 72%;
+      display: block;
+      margin: 20px auto 0px auto;
+    }
+  }
+}
+
 @media (max-width: $xxlarge) {
   .wrapper-login-page {
     > .background {
