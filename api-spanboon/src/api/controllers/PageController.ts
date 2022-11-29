@@ -1928,7 +1928,7 @@ export class PageController {
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
                 const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
-                const link = `/profile/${whoFollowYou.uniqueId}`;
+                const link = `/profile/${whoFollowYou.id}`;
                 for (const tokenFCM of tokenFCMId) {
                     if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
                         await this.pageNotificationService.notifyToPageUserFcm(

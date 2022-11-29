@@ -427,7 +427,6 @@ export class AuthenManager {
     if (token === undefined || token === null || token === '') {
       throw 'Token is required.';
     }
-
     return new Promise((resolve, reject) => {
       let isUpdateUser = false;
       if (options !== undefined && options !== null) {
@@ -463,7 +462,6 @@ export class AuthenManager {
         if (mode === "TW") {
           token = token.replace(/;/gi, '&');
         }
-
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -473,7 +471,10 @@ export class AuthenManager {
           fbMode = true;
           this.facebookMode = true;
         }
-
+        if(response.data.mode === 'GG'){
+          ggMode = true;
+          this.googleMode = true;
+        }
 
         if (isUpdateUser) {
           this.token = result.token;

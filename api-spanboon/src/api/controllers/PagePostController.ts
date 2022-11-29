@@ -627,7 +627,7 @@ export class PagePostController {
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            const link = `/profile/${userPost.uniqueId}/post/` + createPostPageData.id;
+                            const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM.userId,
