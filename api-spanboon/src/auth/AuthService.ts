@@ -92,7 +92,10 @@ export class AuthService {
                 else if (mode === 'AP'){
                     const appleToken:any = await jwt.verify(token,env.SECRET_KEY);
                     if(appleToken.token !== undefined){
-                        UserId = await this.decryptToken(appleToken.token);
+                        const authenAp = await this.authenticationIdService.findOne({where: {user:ObjectID(appleToken.userId)}});
+                        if(authenAp.user !== undefined){
+                            UserId = authenAp.user;
+                        }
                     }
                     if(UserId !== undefined){
                         UserId += ';AP';
@@ -137,7 +140,10 @@ export class AuthService {
                 providerName = PROVIDER.TWITTER;
             } else if ('GG' === type) {
                 providerName = PROVIDER.GOOGLE;
+            } else if ('AP' === type){
+                providerName = PROVIDER.APPLE;
             }
+
         }
 
         // check token expired

@@ -83,21 +83,17 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
-        console.log('uid',uid)
         const tokenFCM = String(req.body.tokenFCM);
         let logoutAll = false;
         if (mode !== undefined) {
-            console.log('pass3?');
             mode = mode.toLocaleLowerCase();
         }
 
         if (mode === 'all') {
-            console.log('pass4?');
             logoutAll = true;
         }
 
         if (logoutAll) {
-            console.log('pass2?');
             const authenIds: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: uid } });
             if (!authenIds) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
@@ -121,9 +117,7 @@ export class UserController {
                 return res.status(400).send(deleteErrorResponse);
             }
         } else {
-            console.log('pass1?');
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
-            console.log('authenId',authenId);
             const deleteFCM = await this.deviceTokenService.find({userId:uid,token:tokenFCM});
             if (!authenId) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
