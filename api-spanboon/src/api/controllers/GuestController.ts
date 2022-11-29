@@ -360,13 +360,12 @@ export class GuestController {
         } else if (mode === PROVIDER.APPLE) {
             // register apple
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const appleUserId = users.appleUserId;
-            const authToken = users.authToken;
-            if (appleUserId === null || appleUserId === undefined || appleUserId === '') {
+            const appleUserId = users;
+            if (appleUserId === null || appleUserId === undefined ) {
                 const errorResponse = ResponseUtil.getErrorResponse('Apple UserId is required', undefined);
                 return res.status(400).send(errorResponse);
             }
-            if (authToken === null || authToken === undefined || authToken === '') {
+            if (appleUserId.authToken === null || appleUserId.authToken === undefined || appleUserId.authToken === '') {
                 const errorResponse = ResponseUtil.getErrorResponse('Apple Token is required', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -375,44 +374,45 @@ export class GuestController {
                 const currentAuthenId = await this.authenticationIdService.find({ user: resultUser.id, providerName: PROVIDER.APPLE });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Apple was registered.', undefined);
+                    console.log('pass3');
                     return res.status(400).send(errorResponse);
                 }
                 userData = this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
                 authenId.user = resultUser.id;
                 authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = appleUserId;
+                authenId.providerUserId = appleUserId.userId;
                 authenId.providerName = PROVIDER.APPLE;
-                authenId.storedCredentials = authToken;
+                authenId.storedCredentials = appleUserId.idToken;
+                authenId.properties = {hideEmail:appleUserId.emailHide,authen:appleUserId.authToken};
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
-                    const result: any = { token: authToken, user: userData };
-                    const successResponse = ResponseUtil.getSuccessResponse('Register With Google Success', result);
+                    const result: any = { token: appleUserId.authToken, user: userData };
+                    const successResponse = ResponseUtil.getSuccessResponse('Register With Apple Success', result);
                     return res.status(200).send(successResponse);
                 }
             } else {
-                const newUser = this.createBasePageUser(users);
                 let providerList: any[];
                 if (registerPassword === null || registerPassword === undefined || registerPassword === '') {
-                    providerList = [PROVIDER.GOOGLE];
+                    providerList = [PROVIDER.APPLE];
                     registerPassword = null;
                 } else {
                     providerList = [PROVIDER.EMAIL, PROVIDER.APPLE];
                     registerPassword = await User.hashPassword(registerPassword);
                 }
                 const user: User = new User();
-                user.username = registerEmail;
+                user.username = appleUserId.username;
                 user.password = registerPassword;
-                user.email = registerEmail;
+                user.email = appleUserId.emailHide;
                 user.uniqueId = uniqueId ? uniqueId : null;
-                user.firstName = newUser.firstName;
-                user.lastName = newUser.lastName;
+                user.firstName = appleUserId.firstName;
+                user.lastName = appleUserId.lastName;
                 user.imageURL = '';
                 user.coverURL = '';
                 user.coverPosition = 0;
-                user.displayName = newUser.displayName;
-                user.birthdate = new Date(newUser.birthdate);
+                user.displayName = appleUserId.displayName;
+                user.birthdate = new Date(appleUserId.birthdate);
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
@@ -477,7 +477,7 @@ export class GuestController {
 
                             MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
                         } else if (provider === PROVIDER.APPLE) {
-                            authenId.providerUserId = appleUserId;
+                            authenId.providerUserId = users.userId;
                             authenId.storedCredentials = users.authToken;
                             authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
@@ -487,7 +487,7 @@ export class GuestController {
                     }
 
                     if (authenIdCreated.length > 0) {
-                        const result: any = { token: authToken, user: userData };
+                        const result: any = { token: appleUserId.idToken, user: userData };
                         const successResponse = ResponseUtil.getSuccessResponse('Register With APPLE Success', result);
                         return res.status(200).send(successResponse);
                     } else {
@@ -902,22 +902,22 @@ export class GuestController {
         }
 
         else if (mode === PROVIDER.APPLE) {
+
             const appleId: any = req.body.apple.result.user;
-            const appleProperties: any = req.body.apple.result.stsTokenManager;
             const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
             const deviceAP = req.body.tokenFCM_AP.deviceName;
-            const appleClient = await this.authenticationIdService.findOne({ where: { id: appleId.uid } });
+            const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
             if (appleClient === null || appleClient === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
                 const currentDateTime = moment().toDate();
-                const updateQuery = { id: appleId.uid, providerName: PROVIDER.APPLE };
-                const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleProperties.stsTokenManager.accessToken, expirationDate: appleProperties.stsTokenManager.expirationTime } };
+                const updateQuery = { id: appleId.userId, providerName: PROVIDER.APPLE };
+                const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleId.idToken, expirationDate: appleId.metadata.creationTime,properties:{tokenSign:appleId.accessToken,signIn:appleId.metadata.lastSignInTime} } };
                 const update_Apple = await this.authenticationIdService.update(updateQuery, newValue);
                 if (update_Apple) {
                     await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
-                    loginToken = jwt.sign({ token: appleId.stsTokenManager.accessToken, userId: appleId.uid }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: appleId.idToken, userId: appleId.userId }, env.SECRET_KEY);
                     loginUser = appleId.uid;
                 }
             }
@@ -1285,7 +1285,6 @@ export class GuestController {
 
         // check expire token
         const today = moment().toDate();
-        const todayGG = new Date(user.expirationDate);
         if (isMode !== undefined && isMode === 'FB') {
             if (user.fbAccessExpirationTime < today.getDate()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
@@ -1293,20 +1292,15 @@ export class GuestController {
                 return response.status(400).send(errorUserNameResponse);
             }
         } 
-        else if(isMode !== undefined && isMode === 'GG'){
-            if(user.properties.expiraToken < today.getDate()){
-                const errorUserNameResponse: any = {status: 0, message: 'User token expired.'};
+        // check expire token GG
+        if(isMode !== undefined && isMode === 'GG'){
+            const authenExpira = await this.authenticationIdService.findOne({user:user.id});
+            if(authenExpira < today.getDate()){
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({userId:user});
                 return response.status(400).send(errorUserNameResponse);
             }
         }
-        else if(isMode !== undefined && isMode === 'TW'){
-            if(todayGG.getTime() < today.getDate()){
-                const errorUserNameResponse: any = {status: 0, message: 'User token expired.'};
-                await this.deviceToken.delete({userId:user});
-                return response.status(400).send(errorUserNameResponse);
-            }
-        } 
         else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id } });
@@ -1318,6 +1312,7 @@ export class GuestController {
 
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                await this.deviceToken.delete({userId:user.id});
                 return response.status(400).send(errorUserNameResponse);
             }
         }
