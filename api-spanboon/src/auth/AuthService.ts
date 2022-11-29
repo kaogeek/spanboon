@@ -82,7 +82,6 @@ export class AuthService {
                     if(ggToken.token !== undefined){
                         const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
                         if(ggUserObj !== undefined && ggUserObj.authId.user !== undefined){
-                            console.log('pass ????');
                             UserId = ggUserObj.authId.user;
                         }
                     }
@@ -93,7 +92,9 @@ export class AuthService {
                 else if (mode === 'AP'){
                     const appleToken:any = await jwt.verify(token,env.SECRET_KEY);
                     if(appleToken.token !== undefined){
-                        UserId = await this.decryptToken(token);
+                        UserId = await this.decryptToken(appleToken.token);
+                    }
+                    if(UserId !== undefined){
                         UserId += ';AP';
                     }
                 }

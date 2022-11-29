@@ -919,7 +919,7 @@ export class GuestController {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
                     await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                    loginToken = jwt.sign({ token: appleId.idToken, userId: appleId.userId }, env.SECRET_KEY);
+                    loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                 }
             }
         }
