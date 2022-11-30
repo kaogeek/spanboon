@@ -33,7 +33,6 @@ export class RecommendCard {
 
   public apiBaseURL = environment.apiBaseURL;
   public dialog: MatDialog;
-
   @Output()
   public submitFollow: EventEmitter<any> = new EventEmitter();
 
