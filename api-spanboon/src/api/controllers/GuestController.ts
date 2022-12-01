@@ -21,6 +21,7 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
 import { ForgotPasswordRequest } from './requests/ForgotPasswordRequest';
+import { OtpRequest } from './requests/OTP';
 import { FacebookService } from '../services/FacebookService';
 import { AssetService } from '../services/AssetService';
 import { Asset } from '../models/Asset';
@@ -1091,6 +1092,83 @@ export class GuestController {
      * @apiErrorExample {json} Error
      * HTTP/1.1 500 Internal Server Error
      */
+    // check email
+    @Post('/checkEmailUser')
+    public async checkEmail(@Body({ validate: true }) users: CreateUserRequest, @Res() res: any, @Req() req: any): Promise<any>{
+        const mode = req.headers.mode;
+        const registerEmail = users.email.toLowerCase();
+        if (mode === PROVIDER.EMAIL) {
+            const data: User = await this.userService.findOne({ where: { username: registerEmail } });
+            if (data) {
+                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', data);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.FACEBOOK) {
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            if (resultUser) {
+                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.APPLE) {
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            if (resultUser) {
+                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.GOOGLE) {
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            if (resultUser) {
+                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.TWITTER) {
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            if (resultUser) {
+                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+    }
+    // send otp
+    @Post('/sendOTP')
+    public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
+        const username = otpRequest.username;  
+        const emailRes: string = username.toLowerCase();
+        const otp = GenerateUUIDUtil.getUUID();
+        const user: User = await this.userService.findOne({ username: emailRes });
+        try{
+            const today = moment().toDate();
+            const expirationDate = moment().add(60, 'minutes').toDate();
+            const sendMailRes = await this.sendActivateCode(user, emailRes, otp, 'Send OTP');
+            if (expirationDate < today) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
+            }else{
+                if (sendMailRes.status === 1) {
+                    return res.status(200).send(sendMailRes);
+                } else {
+                    return res.status(400).send(sendMailRes);
+                }
+            }
+        }catch(error){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot send OTP', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Post('/forgot')
     public async forgotPassword(@Body({ validate: true }) forgotPassword: ForgotPasswordRequest, @Res() res: any): Promise<any> {
         const username = forgotPassword.username;
