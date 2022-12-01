@@ -1163,7 +1163,7 @@ export class GuestController {
             return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
         }else{
             if (sendMailRes.status === 1) {
-                cache.set(user.id,otp);
+                cache.set(user.id.toString(),otp);
                 return res.status(200).send(sendMailRes);
             } else {
                 return res.status(400).send(sendMailRes);
