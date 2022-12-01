@@ -21,6 +21,7 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
 import { ForgotPasswordRequest } from './requests/ForgotPasswordRequest';
+import NodeCache from 'node-cache';
 import { OtpRequest } from './requests/OTP';
 import { FacebookService } from '../services/FacebookService';
 import { AssetService } from '../services/AssetService';
@@ -40,7 +41,8 @@ import { ConfigService } from '../services/ConfigService';
 import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
-
+import { CheckUser } from './requests/CheckUser';
+const cache = new NodeCache({ stdTTL: 5 });
 @JsonController()
 export class GuestController {
     constructor(
@@ -56,7 +58,7 @@ export class GuestController {
         private configService: ConfigService,
         private deviceToken: DeviceTokenService,
     ) { }
-
+        
     /**
      * @api {post} /api/register Create User
      * @apiGroup Guest API
@@ -1093,17 +1095,17 @@ export class GuestController {
      * HTTP/1.1 500 Internal Server Error
      */
     // check email
-    @Post('/checkEmailUser')
-    public async checkEmail(@Body({ validate: true }) users: CreateUserRequest, @Res() res: any, @Req() req: any): Promise<any>{
+    @Post('/check_email_user')
+    public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any>{
         const mode = req.headers.mode;
-        const registerEmail = users.email.toLowerCase();
+        const checkEmail = users.email.toLowerCase();
         if (mode === PROVIDER.EMAIL) {
-            const data: User = await this.userService.findOne({ where: { username: registerEmail } });
+            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
             if (data) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', data);
                 return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
@@ -1112,7 +1114,7 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.APPLE) {
@@ -1121,7 +1123,7 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.GOOGLE) {
@@ -1130,7 +1132,7 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.TWITTER) {
@@ -1139,36 +1141,67 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
     }
     // send otp
-    @Post('/sendOTP')
+    @Post('/send_otp')
     public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
-        const username = otpRequest.username;  
-        const emailRes: string = username.toLowerCase();
+        const username = otpRequest.email;  
+        console.log('otpRequest',otpRequest);
+        const emailRes: string = username;
         const otp = GenerateUUIDUtil.getUUID();
         const user: User = await this.userService.findOne({ username: emailRes });
+        console.log('user',user);
         try{
+            console.log('pass1');
             const today = moment().toDate();
-            const expirationDate = moment().add(60, 'minutes').toDate();
+            const expirationDate = moment().add(5, 'minutes').toDate();
             const sendMailRes = await this.sendActivateCode(user, emailRes, otp, 'Send OTP');
             if (expirationDate < today) {
+                cache.del(user.id.toString());
                 return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
             }else{
                 if (sendMailRes.status === 1) {
+                    cache.set(user.id,otp);
                     return res.status(200).send(sendMailRes);
                 } else {
                     return res.status(400).send(sendMailRes);
                 }
             }
         }catch(error){
+            console.log('pass2');
             const errorResponse = ResponseUtil.getErrorResponse('Cannot send OTP', undefined);
             return res.status(400).send(errorResponse);
         }
     }
+
+    // checkOpt
+    @Post('/check_otp')
+    public async checkOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
+        const username = otpRequest.email; 
+        const otp = otpRequest.otp;
+        const emailRes: string = username.toLowerCase();
+        const user: User = await this.userService.findOne({ username: emailRes });
+
+        if(user){
+            const getOtp = await cache.get(user.id.toString());
+            console.log('getOtp',getOtp);
+            if(otp === getOtp){
+                cache.del(user.id.toString());
+                return res.status(200).send('The OTP is correct.');
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.',undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Not Found User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Post('/forgot')
     public async forgotPassword(@Body({ validate: true }) forgotPassword: ForgotPasswordRequest, @Res() res: any): Promise<any> {
         const username = forgotPassword.username;
