@@ -1155,26 +1155,19 @@ export class GuestController {
         const otp = GenerateUUIDUtil.getUUID();
         const user: User = await this.userService.findOne({ username: emailRes });
         console.log('user',user);
-        try{
-            console.log('pass1');
-            const today = moment().toDate();
-            const expirationDate = moment().add(5, 'minutes').toDate();
-            const sendMailRes = await this.sendActivateCode(user, emailRes, otp, 'Send OTP');
-            if (expirationDate < today) {
-                cache.del(user.id.toString());
-                return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
-            }else{
-                if (sendMailRes.status === 1) {
-                    cache.set(user.id,otp);
-                    return res.status(200).send(sendMailRes);
-                } else {
-                    return res.status(400).send(sendMailRes);
-                }
+        const today = moment().toDate();
+        const expirationDate = moment().add(5, 'minutes').toDate();
+        const sendMailRes = await this.sendActivateCode(user, emailRes, otp, 'Send OTP');
+        if (expirationDate < today) {
+            cache.del(user.id.toString());
+            return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
+        }else{
+            if (sendMailRes.status === 1) {
+                cache.set(user.id,otp);
+                return res.status(200).send(sendMailRes);
+            } else {
+                return res.status(400).send(sendMailRes);
             }
-        }catch(error){
-            console.log('pass2');
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot send OTP', undefined);
-            return res.status(400).send(errorResponse);
         }
     }
 
