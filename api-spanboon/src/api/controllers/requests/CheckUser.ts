@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
-export class OtpRequest {
+export class CheckUser {
 
     public email: string;
-    public otp:number;
+
 }
