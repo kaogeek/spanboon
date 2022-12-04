@@ -33,6 +33,8 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
+
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -40,6 +42,10 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
 
                     if (typeof this.config.offset === 'number') {
                         offset = this.config.offset;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -102,9 +108,6 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                 const postStmt = [
                     { $match: matchStmt },
                     { $sort: { createdDate: -1 } },
-                    { $sample: { size: limit } }, // for random
-                    { $skip: offset },
-                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'Page',
@@ -119,6 +122,9 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                             preserveNullAndEmptyArrays: true
                         }
                     },
+                    { $sample: { size: limit } }, // for random
+                    { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'User',
@@ -142,6 +148,11 @@ export class StorySectionProcessor extends AbstractSectionModelProcessor {
                         }
                     }
                 ];
+
+                if (searchOfficialOnly) {
+                    postStmt.splice(4, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                }
+
                 const searchResult = await this.postsService.aggregate(postStmt, { allowDiskUse: true });
 
                 let lastestDate = null;

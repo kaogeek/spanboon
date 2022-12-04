@@ -956,11 +956,11 @@ export class PostsController {
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
                 const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
-                if (likeCreate.likeAsPage !== null ) {
+                if (likeCreate.likeAsPage !== null) {
                     // page to page
-                    if (post_who.pageId !== null && post_who.pageId !== undefined ) {
+                    if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของเพจ'+ space + page.name;
+                        const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
@@ -993,7 +993,7 @@ export class PostsController {
                     // page to user
                     else {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของคุณ';
+                        const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userOwnerPage.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
@@ -1025,10 +1025,10 @@ export class PostsController {
                 }
                 else {
                     // user to page
-                    if (post_who.pageId !== null && post_who.pageId !== undefined ) {
+                    if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ'+ space + page.name;
+                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
@@ -1060,7 +1060,7 @@ export class PostsController {
                         }
                     }
                     // user to user 
-                    else{
+                    else {
                         // owner post 
                         // FCM device token owner post
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
@@ -1478,13 +1478,17 @@ export class PostsController {
             return res.status(200).send(ResponseUtil.getErrorResponse('Post Not Found', []));
         }
 
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+
         let result: any = undefined;
         const data: any = {
             postId
         };
         const config: any = {
             offset,
-            limit
+            limit,
+            searchOfficialOnly
         };
         const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);
         processor.setData(data);

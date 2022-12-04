@@ -20,7 +20,6 @@ import { SearchContentResponse } from './responses/SearchContentResponse';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { ConfigService } from '../services/ConfigService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -49,7 +48,6 @@ import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
-import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
 import { FollowingRecommendProcessor } from '../processors/FollowingRecommendProcessor';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { UserLikeService } from '../services/UserLikeService';
@@ -71,7 +69,6 @@ export class MainPageController {
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
-        private configService: ConfigService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
@@ -96,7 +93,7 @@ export class MainPageController {
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
-        const mainPageSearchConfig = await this.getMainPageSearchConfig();
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
@@ -333,7 +330,8 @@ export class MainPageController {
         });
         lastestObjProcessor.setConfig({
             limit: 5,
-            showUserAction: true
+            showUserAction: true,
+            searchOfficialOnly
         });
         processorList.push(lastestObjProcessor);
 
@@ -997,7 +995,7 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-            postStmt.push({$match:{'pageId':{$ne:null}}});
+            postStmt.push({ $match: { 'pageId': { $ne: null } } });
             if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
                 if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
                     postStmt.push({ $sort: { startDateTime: -1 } });
@@ -1013,19 +1011,19 @@ export class MainPageController {
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
                 {
-                    $lookup:{
-                        from:'Page',
-                        as:'page',
-                        let:{
-                            pageId:'$pageId'
+                    $lookup: {
+                        from: 'Page',
+                        as: 'page',
+                        let: {
+                            pageId: '$pageId'
                         },
-                        pipeline:[{
-                            $match:{$expr:{$and:[{$eq:['$$pageId','$_id']}]}}
+                        pipeline: [{
+                            $match: { $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] } }
                         }],
                     },
                 },
                 {
-                    $match:{
+                    $match: {
                         'page.isOfficial': filter.isOfficial
                     }
                 },
@@ -1237,21 +1235,21 @@ export class MainPageController {
                         }
                     }
                 },
-                { 
-                    $project: 
-                        { 
-                            postsHashTags: 0,
-                        },
+                {
+                    $project:
+                    {
+                        postsHashTags: 0,
+                    },
                 },
                 {
-                    $facet:{
-                        data:[{$skip:filter.offset},{$limit:filter.limit}]
+                    $facet: {
+                        data: [{ $skip: filter.offset }, { $limit: filter.limit }]
                     }
                 }
             ];
             searchPostStmt = postStmt.concat(postsLookupStmt);
             const userMap = {};
-            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
+            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};
@@ -1362,22 +1360,5 @@ export class MainPageController {
         }
 
         return userResult;
-    }
-
-    private async getMainPageSearchConfig(): Promise<any> {
-        const result: any = {
-            searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
-        };
-
-        const config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
-        if (config !== undefined) {
-            if (typeof config.value === 'boolean') {
-                result.searchOfficialOnly = config.value;
-            } else if (typeof config.value === 'string') {
-                result.searchOfficialOnly = (config.value.toUpperCase() === 'TRUE');
-            }
-        }
-
-        return result;
     }
 }

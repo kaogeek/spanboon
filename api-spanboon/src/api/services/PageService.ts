@@ -12,11 +12,18 @@ import { PageRepository } from '../repositories/PageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+import { ConfigService } from './ConfigService';
+import { DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
+import { Config } from '../models/Config';
 
 @Service()
 export class PageService {
 
-    constructor(@OrmRepository() private pageRepository: PageRepository, private s3Service: S3Service) { }
+    constructor(
+        @OrmRepository() private pageRepository: PageRepository,
+        private s3Service: S3Service,
+        private configService: ConfigService
+    ) { }
 
     // find page
     public find(findCondition: any, options?: any): Promise<Page[]> {
@@ -117,4 +124,20 @@ export class PageService {
         }
     }
 
+    public async searchPageOfficialConfig(): Promise<any> {
+        const result: any = {
+            searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
+        };
+
+        const config: Config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
+        if (config !== undefined) {
+            if (typeof config.value === 'boolean') {
+                result.searchOfficialOnly = config.value;
+            } else if (typeof config.value === 'string') {
+                result.searchOfficialOnly = (config.value.toUpperCase() === 'TRUE');
+            }
+        }
+
+        return result;
+    }
 }

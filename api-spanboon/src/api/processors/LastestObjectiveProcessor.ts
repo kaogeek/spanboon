@@ -40,6 +40,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
+                let searchOfficialOnly: number = undefined;
                 let showUserAction = false;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
@@ -52,6 +53,10 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
                     if (typeof this.config.showUserAction === 'boolean') {
                         showUserAction = this.config.showUserAction;
+                    }
+
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
 
@@ -67,7 +72,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
                 const pageFollowIds: any[] = [];
                 if (userId !== undefined && userId !== '') {
-                    const followStmt = [
+                    const followStmt: any[] = [
                         { $match: { userId: new ObjectID(userId + '') } },
                         { $sample: { size: 5 } },
                         {
@@ -79,6 +84,11 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                             }
                         }
                     ];
+
+                    if (searchOfficialOnly) {
+                        followStmt.push({ $match: { 'page.isOfficial': true, 'page.banned': false } });
+                    }
+
                     const followSearchResult = await this.userFollowService.aggregate(followStmt);
                     for (const ff of followSearchResult) {
                         if (ff.page[0] === undefined) {
@@ -137,6 +147,11 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                         }
                     }
                 ];
+
+                if (searchOfficialOnly) {
+                    pageObjStmt.splice(7, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                }
+
                 const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
 
                 let lastestDate = null;

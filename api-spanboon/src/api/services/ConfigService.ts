@@ -8,6 +8,7 @@
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
+import { Config } from '../models/Config';
 import { ConfigRepository } from '../repositories/ConfigRepository';
 
 @Service()
@@ -15,17 +16,17 @@ export class ConfigService {
     constructor(@OrmRepository() private configRepository: ConfigRepository) { }
 
     // create config
-    public async create(config: any): Promise<any> {
+    public async create(config: any): Promise<Config> {
         return await this.configRepository.save(config);
     }
 
     // find one config
-    public async findOne(config: any): Promise<any> {
+    public async findOne(config: any): Promise<Config> {
         return await this.configRepository.findOne(config);
     }
 
     // find all config
-    public async findAll(): Promise<any> {
+    public async findAll(): Promise<Config[]> {
         return await this.configRepository.find();
     }
 
@@ -34,7 +35,7 @@ export class ConfigService {
         return await this.configRepository.updateOne(query, newValue);
     }
 
-    public async getConfig(name: string): Promise<any> {
+    public async getConfig(name: string): Promise<Config> {
         const condition = { name };
         return await this.configRepository.findOne(condition);
     }
