@@ -16,12 +16,12 @@ export class ConfigService {
     constructor(@OrmRepository() private configRepository: ConfigRepository) { }
 
     // create config
-    public async create(config: any): Promise<Config> {
+    public async create(config: any): Promise<any> {
         return await this.configRepository.save(config);
     }
 
     // find one config
-    public async findOne(config: any): Promise<Config> {
+    public async findOne(config: any): Promise<any> {
         return await this.configRepository.findOne(config);
     }
 
@@ -35,7 +35,7 @@ export class ConfigService {
         return await this.configRepository.updateOne(query, newValue);
     }
 
-    public async getConfig(name: string): Promise<Config> {
+    public async getConfig(name: string): Promise<any> {
         const condition = { name };
         return await this.configRepository.findOne(condition);
     }
