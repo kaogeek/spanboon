@@ -97,7 +97,7 @@ export class FacebookService {
             facebook.setAccessToken(accessToken);
             facebook.api('me',{fields:['id'], accessToken:'accessToken'}, (response: any) => {
                 if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
+                    // console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }
@@ -111,7 +111,7 @@ export class FacebookService {
                 url: 'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken});
             return data;
         }catch(err){
-            console.log('Error :', err);
+            // console.log('Error :', err);
         }
     }
     // check subscribe 
@@ -120,7 +120,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
             return data;
         }catch(err){
-            console.log('fail to subscribe webhook',err);
+            // console.log('fail to subscribe webhook',err);
         }
     }
     public async getPageId(userId:string,access_token:string):Promise<any>{
@@ -128,7 +128,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+userId+'/accounts?access_token='+access_token);
             return data;
         }catch(err){
-            console.log('cannot get pageId from graph api',err);
+            // console.log('cannot get pageId from graph api',err);
         }
     }
     // Get post from page on facebook
@@ -137,7 +137,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/feed?access_token='+access_token);
             return data;
         }catch(err){
-            console.log('cannot get feed from facebook',err);
+            // console.log('cannot get feed from facebook',err);
         }
     }
 
@@ -147,7 +147,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/photos?url=link&access_token='+access_token);
             return data;
         }catch(err){
-            console.log('cannot get photo from facebook',err);
+            // console.log('cannot get photo from facebook',err);
         }
     }
     public getFacebookUserFromToken(accessToken: string): Promise<any> {
@@ -155,7 +155,6 @@ export class FacebookService {
             this.fetchFacebook(accessToken).then((result: any) => {
                 if (result.error) { reject(result.error); return; }
                 this.authenIdService.findOne({ where: { providerUserId: result.id,providerName:'FACEBOOK' } }).then((auth) => {
-                    console.log('auth >>>',auth);
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
@@ -198,7 +197,7 @@ export class FacebookService {
 
                 facebook.api('debug_token?input_token=' + inputToken, 'get', (response: any) => {
                     if (!response || response.error) {
-                        console.log(!response ? 'error occurred' : response.error);
+                        // console.log(!response ? 'error occurred' : response.error);
                         reject(response.error);
                         return;
                     }
@@ -286,7 +285,7 @@ export class FacebookService {
             try {
                 photoBuffer = Buffer.from(imageBase64, 'base64');
             } catch (error) {
-                console.log(error);
+                // console.log(error);
             }
 
             if (photoBuffer === undefined) {
@@ -298,7 +297,7 @@ export class FacebookService {
 
             facebook.api(fbUserId + '/photos?published=false', 'post', formData, (response: any) => {
                 if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
+                    // console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }
@@ -349,10 +348,9 @@ export class FacebookService {
     public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
         try{
             const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
-            console.log('data',data);
             return data;
         }catch(err){
-            console.log('Error publishPageId :'+ err);
+            // console.log('Error publishPageId :'+ err);
         }
     }
     public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {
@@ -390,7 +388,7 @@ export class FacebookService {
                                 imagesIds.push(idObject.id);
                             }
                         } catch (err) {
-                            console.log(err);
+                            // console.log(err);
                         }
                     }
 
@@ -419,7 +417,7 @@ export class FacebookService {
 
             facebook.api('/me/accounts', 'get', (response: any) => {
                 if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
+                    // console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
                     return;
                 }

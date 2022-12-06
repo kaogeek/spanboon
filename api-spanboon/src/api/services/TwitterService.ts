@@ -128,7 +128,6 @@ export class TwitterService {
                 const { statusCode, statusMessage } = res;
 
                 if (statusCode !== 200) {
-                    console.log('statusMessage: ' + statusMessage);
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;
                 }
@@ -163,15 +162,12 @@ export class TwitterService {
                 }
                 let url: string = 'https://api.twitter.com/2/users/' + twitterUserId + '/tweets?tweet.fields=created_at&max_results=5';
                 if (paramsOption !== undefined && paramsOption !== null && paramsOption !== '') {
-                    console.log('paramsOption_1');
                     let appendString = '';
                     for (const key of Object.keys(paramsOption)) {
-                        console.log('paramsOption_2');
                         appendString += '&' + key + '=' + paramsOption[key];
                     }
 
                     if (appendString !== '') {
-                        console.log('paramsOption_3');
                         url = url + '&' + appendString;
                     }
                 }
@@ -194,7 +190,6 @@ export class TwitterService {
                             const parsedData = JSON.parse(rawData);
                             resolve(parsedData);
                         } catch (e: any) {
-                            console.log('error_e = e',e);
                             reject(e.message);
                         }
                     });
@@ -211,7 +206,6 @@ export class TwitterService {
                 });
                 req.end();
             }).catch((error) => {
-                console.log('error',error);
                 reject(error);
             });
         });
@@ -603,7 +597,7 @@ export class TwitterService {
 
                             mediaIds.push(mediaId);
                         } catch (err) {
-                            console.log(err);
+                            // console.log(err);
                         }
                     }
                 }
@@ -720,7 +714,7 @@ export class TwitterService {
             );
             return data;
         }catch(err){
-            console.log('error_getOauth2',err);
+            // console.log('error_getOauth2',err);
         }
     }
     
@@ -736,7 +730,7 @@ export class TwitterService {
             );
             return data;
         }catch(err){
-            console.log('error_getTimeLineUser',err);
+            // console.log('error_getTimeLineUser',err);
         }
     }
 
