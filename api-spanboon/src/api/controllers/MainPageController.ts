@@ -43,7 +43,6 @@ import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProce
 // import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
-import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
@@ -737,7 +736,7 @@ export class MainPageController {
             }
 
             postStmt.push({ $match: { deleted: false } });
-
+            postStmt.push({ $match: { pageId: { $ne: null } } });
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};
                 let matchKeywordTitleStmtResult: any = {};
@@ -974,7 +973,17 @@ export class MainPageController {
             }
 
             // if (locations !== null && locations !== undefined && locations.length > 0) { }
-
+            if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
+                if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
+                    postStmt.push({ $sort: { startDateTime: -1 } });
+                } else if (sortBy === SORT_SEARCH_TYPE.POPULAR) {
+                    postStmt.push({ $sort: { viewCount: -1 } });
+                } else if (sortBy === SORT_SEARCH_TYPE.RELATED) {
+                    postStmt.push({ $sort: { startDateTime: -1 } });
+                }
+            } else {
+                postStmt.push({ $sort: { startDateTime: -1 } });
+            }
             if (pageCategories !== null && pageCategories !== undefined && pageCategories.length > 0) {
                 const categoryIdList = [];
 
@@ -995,19 +1004,7 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-            postStmt.push({ $match: { 'pageId': { $ne: null } } });
-            if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
-                if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
-                    postStmt.push({ $sort: { startDateTime: -1 } });
-                } else if (sortBy === SORT_SEARCH_TYPE.POPULAR) {
-                    postStmt.push({ $sort: { viewCount: -1 } });
-                } else if (sortBy === SORT_SEARCH_TYPE.RELATED) {
-                    postStmt.push({ $sort: { startDateTime: -1 } });
-                }
-            } else {
-                postStmt.push({ $sort: { startDateTime: -1 } });
-            }
-            postStmt.push({ $limit: MAX_SEARCH_ROWS });
+
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
                 {
@@ -1018,14 +1015,19 @@ export class MainPageController {
                             pageId: '$pageId'
                         },
                         pipeline: [{
-                            $match: { $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] } }
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ['$$pageId', '$_id'] },
+                                            { 'isOfficial': filter.isOfficial }
+                                        ]
+                                }
+                            }
                         }],
                     },
-                },
-                {
-                    $match: {
-                        'page.isOfficial': filter.isOfficial
-                    }
                 },
                 {
                     $lookup: {
@@ -1242,9 +1244,15 @@ export class MainPageController {
                     },
                 },
                 {
-                    $facet: {
-                        data: [{ $skip: filter.offset }, { $limit: filter.limit }]
+                    $match: {
+                        'page.isOfficial': filter.isOfficial
                     }
+                },
+                {
+                    $limit: filter.limit + filter.offset
+                },
+                {
+                    $skip: filter.offset
                 }
             ];
             searchPostStmt = postStmt.concat(postsLookupStmt);
