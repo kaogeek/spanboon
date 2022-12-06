@@ -441,7 +441,6 @@ export class PageController {
                 expires: pageAccessToken.expires,
                 pageId: socialBinding.facebookPageId
             };
-            console.log('properties',properties);
             const pageSocialAccount = new PageSocialAccount();
             pageSocialAccount.page = pageObjId;
             pageSocialAccount.properties = properties;
