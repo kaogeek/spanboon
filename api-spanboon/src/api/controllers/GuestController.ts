@@ -1150,14 +1150,14 @@ export class GuestController {
     @Post('/send_otp')
     public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
         const username = otpRequest.email;  
-        console.log('otpRequest',otpRequest);
         const emailRes: string = username;
-        const otp = GenerateUUIDUtil.getUUID();
+        const minm = 100000;
+        const maxm = 999999;
+        const otp = Math.floor(Math.random() * (maxm - minm +1)) + minm;
         const user: User = await this.userService.findOne({ username: emailRes });
-        console.log('user',user);
         const today = moment().toDate();
         const expirationDate = moment().add(5, 'minutes').toDate();
-        const sendMailRes = await this.sendActivateCode(user, emailRes, otp, 'Send OTP');
+        const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
         if (expirationDate < today) {
             cache.del(user.id.toString());
             return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
@@ -1470,6 +1470,20 @@ export class GuestController {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
         message += '<a href="https://spanboon.com/forgotpassword?code=' + code + '&email=' + email + '"> Reset Password </a>';
+
+        const sendMail = MAILService.passwordForgotMail(message, email, subject);
+
+        if (sendMail) {
+            return ResponseUtil.getSuccessResponse('Your Activation Code has been sent to your email inbox.', '');
+        } else {
+            return ResponseUtil.getErrorResponse('error in sending email', '');
+        }
+    }
+
+    private async sendActivateOTP(user: User, email: string, code: any, subject: string): Promise<any> {
+        let message = '<p> Hello ' + user.firstName + '</p>';
+        message += '<p> Your Activation Code is: ' + code + '</p>';
+        message += code + '&email=' + email + '"> OTP </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 
