@@ -42,6 +42,7 @@ import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH }
 import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
+import { AutoSynz } from './requests/AutoSynz';
 const cache = new NodeCache({ stdTTL: 5 });
 @JsonController()
 export class GuestController {
@@ -1158,12 +1159,15 @@ export class GuestController {
         const today = moment().toDate();
         const expirationDate = moment().add(5, 'minutes').toDate();
         const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
+        console.log('cache',cache);
+        const saveOtp = cache.set(user.id.toString(),otp);
+        console.log('saveOtp',saveOtp);
         if (expirationDate < today) {
             cache.del(user.id.toString());
             return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
         }else{
+            
             if (sendMailRes.status === 1) {
-                cache.set(user.id.toString(),otp);
                 return res.status(200).send(sendMailRes);
             } else {
                 return res.status(400).send(sendMailRes);
@@ -1178,7 +1182,6 @@ export class GuestController {
         const otp = otpRequest.otp;
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
-
         if(user){
             const getOtp = await cache.get(user.id.toString());
             console.log('getOtp',getOtp);
@@ -1188,6 +1191,36 @@ export class GuestController {
             }else{
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.',undefined);
                 return res.status(400).send(errorResponse);
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Not Found User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    // autoSyncPage
+    // undone
+    @Post('/auto_sync')
+    public async autoSyncPage(@Body({ validate: true }) autoSync:AutoSynz, @Res() res: any, @Req() req: any): Promise<any>{
+        if(autoSync.autoSync === true){
+            // check mode
+            if(req.headers.mode === PROVIDER.FACEBOOK){
+                try{
+                    const getPage = await this.facebookService.getFBPageAccounts(autoSync.accessToken);
+                    const successResponse = ResponseUtil.getSuccessResponse('Get Page Account Success.', getPage);
+                    return res.status(200).send(successResponse);
+                }catch(err){
+                    const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Account.',undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }else{
+                try{
+                    const getPage = await this.facebookService.getFBPageAccounts(autoSync.accessToken);
+                    const successResponse = ResponseUtil.getSuccessResponse('Get Page Account Success.', getPage);
+                    return res.status(200).send(successResponse);
+                }catch(err){
+                    const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Account.',undefined);
+                    return res.status(400).send(errorResponse);
+                }
             }
         }else{
             const errorResponse = ResponseUtil.getErrorResponse('Not Found User.', undefined);
