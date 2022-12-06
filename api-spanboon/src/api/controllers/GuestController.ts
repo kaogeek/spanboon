@@ -1102,7 +1102,8 @@ export class GuestController {
         const checkEmail = users.email.toLowerCase();
         if (mode === PROVIDER.EMAIL) {
             const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            if (data) {
+            const authen = await this.authenticationIdService.findOne({user:data.id,providerName:PROVIDER.EMAIL});
+            if (data && authen === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', data);
                 return res.status(200).send(successResponse);
             } else {
@@ -1111,7 +1112,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.FACEBOOK) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if (resultUser) {
+            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.FACEBOOK});
+            if (resultUser && authen === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
@@ -1120,7 +1122,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.APPLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if (resultUser) {
+            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.APPLE});
+            if (resultUser && authen === undefined ) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
@@ -1129,7 +1132,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if (resultUser) {
+            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.GOOGLE});
+            if (resultUser && authen === undefined ) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
@@ -1138,7 +1142,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.TWITTER) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if (resultUser) {
+            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.TWITTER});
+            if (resultUser && authen === undefined ) {
                 const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
                 return res.status(200).send(successResponse);
             } else {
@@ -1159,9 +1164,7 @@ export class GuestController {
         const today = moment().toDate();
         const expirationDate = moment().add(5, 'minutes').toDate();
         const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
-        const saveOtp = cache.set(String(user.id),otp);
-        console.log('cache_otp',cache.data);
-        console.log('saveOtp',saveOtp);
+        cache.set(String(user.id),otp);
         if (expirationDate < today) {
             cache.del(String(user.id));
             return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
@@ -1174,7 +1177,7 @@ export class GuestController {
             }
         }
     }
-    //test route
+    // test route
     @Post('/test_send_otp')
     public async sendTestOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
         const username = otpRequest.email;  
@@ -1201,9 +1204,7 @@ export class GuestController {
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
         if(user){
-            console.log('cache_check_otp',cache.data);
             const getOtp = await cache.get(user.id.toString());
-            console.log('getOtp',getOtp);
             if(otp === getOtp){
                 cache.del(user.id.toString());
                 return res.status(200).send('The OTP is correct.');
