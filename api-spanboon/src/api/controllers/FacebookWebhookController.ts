@@ -148,22 +148,15 @@ export class FacebookWebhookController {
                 return res.sendStatus(403);
             }
         }
-        console.log('body',body.entry[0].changes);
-        console.log('body_dot',body.entry[0].changes[0].value.from);
-        console.log('name',body.entry[0].changes[0].value.from.name);
-        console.log('pageId',body.entry[0].changes[0].value.from.id);
+
         const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from.name,pageId:body.entry[0].changes[0].value.from.id}};
         const subScribePage = await this.authenticationIdService.findOne(query);
         const pageIdFB = await this.pageService.findOne({ownerUser:subScribePage.user});
-        console.log('pageIdFB',pageIdFB);
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null) {
             // verb type -> 3 types -> add,edit,remove
-            console.log('pass1?');
             if(body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined){
                 const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
-                console.log('pass2',checkPost);
                 if(checkPost === undefined){
-                    console.log('pass_with_no_photos');
                     const postPage: Posts = new Posts();
                     postPage.title = 'Webhooks Feed';
                     postPage.detail = body.entry[0].changes[0].value.message;
@@ -200,7 +193,6 @@ export class FacebookWebhookController {
                     return res.status(200).send('SuccessFul Webhooks');
                 }
             }else if(body.entry[0].changes[0].value.verb === 'add'&& body.entry[0].changes[0].value.link !== undefined || body.entry[0].changes[0].value.photos !== undefined){
-                console.log('pass_with_photos');
                 const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
                 if(checkPost === undefined){
                     const postPage: Posts = new Posts();
@@ -240,7 +232,6 @@ export class FacebookWebhookController {
                         // Asset 
                         const photoGallery = [];
                         if(body.entry[0].changes[0].value.photos === undefined){
-                            console.log('pass1?');
                             try {
                                 const asset = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
                                 if (asset !== undefined) {

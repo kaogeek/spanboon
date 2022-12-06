@@ -1159,8 +1159,8 @@ export class GuestController {
         const today = moment().toDate();
         const expirationDate = moment().add(5, 'minutes').toDate();
         const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
-        console.log('cache',cache);
         const saveOtp = cache.set(user.id.toString(),otp);
+        console.log('cache_otp',cache.data);
         console.log('saveOtp',saveOtp);
         if (expirationDate < today) {
             cache.del(user.id.toString());
@@ -1183,6 +1183,7 @@ export class GuestController {
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
         if(user){
+            console.log('cache_check_otp',cache.data);
             const getOtp = await cache.get(user.id.toString());
             console.log('getOtp',getOtp);
             if(otp === getOtp){
