@@ -43,7 +43,7 @@ import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
-const cache = new NodeCache({ stdTTL: 5 });
+const cache = new NodeCache({ stdTTL: 300 });
 @JsonController()
 export class GuestController {
     constructor(
@@ -1159,11 +1159,11 @@ export class GuestController {
         const today = moment().toDate();
         const expirationDate = moment().add(5, 'minutes').toDate();
         const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
-        const saveOtp = cache.set(user.id.toString(),otp);
+        const saveOtp = cache.set(String(user.id),otp);
         console.log('cache_otp',cache.data);
         console.log('saveOtp',saveOtp);
         if (expirationDate < today) {
-            cache.del(user.id.toString());
+            cache.del(String(user.id));
             return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
         }else{
             
@@ -1174,11 +1174,29 @@ export class GuestController {
             }
         }
     }
+    //test route
+    @Post('/test_send_otp')
+    public async sendTestOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
+        const username = otpRequest.email;  
+        const emailRes: string = username;
+        const minm = 100000;
+        const maxm = 999999;
+        const otp = Math.floor(Math.random() * (maxm - minm +1)) + minm;
+        const user: User = await this.userService.findOne({ username: emailRes });
+        const saveOtp = cache.set(String(user.id),otp);
+        console.log('cache_otp',cache.data);
+        console.log('saveOtp',saveOtp);
+        if (saveOtp) {
+            return res.status(200).send(saveOtp);
+        }else{
+            return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
+        }
+    }
 
     // checkOpt
     @Post('/check_otp')
     public async checkOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any): Promise<any>{
-        const username = otpRequest.email; 
+        const username = otpRequest.email;
         const otp = otpRequest.otp;
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
