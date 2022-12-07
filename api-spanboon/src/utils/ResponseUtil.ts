@@ -40,13 +40,14 @@ export class ResponseUtil {
         }
     }
 
-    public static getSuccessResponseAuth(msg:string,value:any,auth:any):any {
+    public static getSuccessResponseAuth(msg:string,value:any,auth:any,mode:any):any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
                 message: msg,
                 data: value,
                 authUser: auth,
+                _mode:mode,
             };
             return sucessRes;
         } else {

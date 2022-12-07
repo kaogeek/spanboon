@@ -1099,52 +1099,44 @@ export class GuestController {
     @Post('/check_email_user')
     public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any>{
         const mode = req.headers.mode;
-        const checkEmail = users.email.toLowerCase();
+        const checkEmail = users.email.toLowerCase().toString();
+        const data: User = await this.userService.findOne({ where: { username: checkEmail } });
+        const authen = await this.authenticationIdService.findOne({user:ObjectID(String(data.id))});
         if (mode === PROVIDER.EMAIL) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(data.id)),providerName:PROVIDER.EMAIL});
             if (data && authen !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen);
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen,PROVIDER.EMAIL);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
-            if (resultUser && authen !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
+            if (data && authen !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen,PROVIDER.FACEBOOK);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.APPLE) {
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
-            if (resultUser && authen !== undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
+            if (data && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen,PROVIDER.APPLE);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.GOOGLE) {
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
-            if (resultUser && authen !== undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
+            if (data && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen,PROVIDER.GOOGLE);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.TWITTER) {
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.TWITTER});
-            if (resultUser && authen !== undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
+            if (data && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen,PROVIDER.TWITTER);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
