@@ -1007,7 +1007,7 @@ export class MainPageController {
                 }
             }
 
-            let lookupPipelineStmt: any = { $and: [{ $eq: ['$$pageId', '$_id'] }] };
+            const lookupPipelineStmt: any = { $and: [{ $eq: ['$$pageId', '$_id'] }] };
 
             if (isOfficial !== null && isOfficial !== undefined) {
                 lookupPipelineStmt['$and'].push({ isOfficial });
