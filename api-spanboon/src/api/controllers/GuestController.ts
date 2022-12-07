@@ -1102,9 +1102,9 @@ export class GuestController {
         const checkEmail = users.email.toLowerCase();
         if (mode === PROVIDER.EMAIL) {
             const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({user:data.id,providerName:PROVIDER.EMAIL});
-            if (data && authen === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', data);
+            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(data.id)),providerName:PROVIDER.EMAIL});
+            if (data && authen !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data,authen);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1112,9 +1112,9 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.FACEBOOK) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.FACEBOOK});
-            if (resultUser && authen === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
+            if (resultUser && authen !== undefined) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1122,9 +1122,9 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.APPLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.APPLE});
-            if (resultUser && authen === undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
+            if (resultUser && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1132,9 +1132,9 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.GOOGLE});
-            if (resultUser && authen === undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.EMAIL});
+            if (resultUser && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1142,9 +1142,9 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.TWITTER) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const authen = await this.authenticationIdService.findOne({user:resultUser.id,providerName:PROVIDER.TWITTER});
-            if (resultUser && authen === undefined ) {
-                const successResponse = ResponseUtil.getSuccessResponse('This Email already exists', resultUser);
+            const authen = await this.authenticationIdService.findOne({user:ObjectID(String(resultUser.id)),providerName:PROVIDER.TWITTER});
+            if (resultUser && authen !== undefined ) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', resultUser,authen);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1375,6 +1375,7 @@ export class GuestController {
      * @apiSampleRequest /api/check_status
      * @apiErrorExample {json} User Token error
      * HTTP/1.1 500 Internal Server Error
+     * 
      */
     // Check Account Status Function
     @Get('/check_status')
