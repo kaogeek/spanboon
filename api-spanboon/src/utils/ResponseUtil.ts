@@ -39,4 +39,23 @@ export class ResponseUtil {
             return errorResponse;
         }
     }
+
+    public static getSuccessResponseAuth(msg:string,value:any,auth:any):any {
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+                data: value,
+                authUser: auth,
+            };
+            return sucessRes;
+        } else {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
 }
