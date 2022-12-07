@@ -363,9 +363,9 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.APPLE) {
             // register apple
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email.toString() } });
             const appleUserId = users;
-            if (appleUserId === null || appleUserId === undefined) {
+            if (appleUserId.userId === null || appleUserId.userId === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('Apple UserId is required', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -392,7 +392,7 @@ export class GuestController {
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
-                    const result: any = { token: appleUserId.authToken, user: userData };
+                    const result: any = { token: appleUserId.authToken, user: authIdCreate };
                     const successResponse = ResponseUtil.getSuccessResponse('Register With Apple Success', result);
                     return res.status(200).send(successResponse);
                 }
@@ -408,7 +408,7 @@ export class GuestController {
                 const user: User = new User();
                 user.username = appleUserId.username;
                 user.password = registerPassword;
-                user.email = appleUserId.emailHide;
+                user.email = appleUserId.email;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = appleUserId.firstName;
                 user.lastName = appleUserId.lastName;
@@ -448,24 +448,27 @@ export class GuestController {
                     const userId = resultData.id;
 
                     userData = this.userService.cleanUserField(resultData);
+                    try{
+                        if (Object.keys(assets).length > 0 && assets !== null && assets !== undefined) {
+                            const asset = new Asset();
+                            const fileName = userId + FileUtil.renameFile();
+                            asset.userId = userId;
+                            asset.scope = ASSET_SCOPE.PUBLIC;
+                            asset.data = assets.data;
+                            asset.mimeType = assets.mimeType;
+                            asset.size = assets.size;
+                            asset.fileName = fileName;
 
-                    if (Object.keys(assets).length > 0 && assets !== null && assets !== undefined) {
-                        const asset = new Asset();
-                        const fileName = userId + FileUtil.renameFile();
-                        asset.userId = userId;
-                        asset.scope = ASSET_SCOPE.PUBLIC;
-                        asset.data = assets.data;
-                        asset.mimeType = assets.mimeType;
-                        asset.size = assets.size;
-                        asset.fileName = fileName;
-
-                        const assetCreate: Asset = await this.assetService.create(asset);
-                        const imagePath = assetCreate ? ASSET_PATH + assetCreate.id : '';
-                        if (assetCreate) {
-                            await this.userService.update({ _id: userId }, { $set: { imageURL: imagePath } });
+                            const assetCreate: Asset = await this.assetService.create(asset);
+                            const imagePath = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                            if (assetCreate) {
+                                await this.userService.update({ _id: userId }, { $set: { imageURL: imagePath } });
+                            }
                         }
                     }
-
+                    catch(err){
+                        console.log('Error na',err);
+                    }
                     const authenIdCreated: AuthenticationId[] = [];
 
                     for (const provider of providerList) {
@@ -491,7 +494,7 @@ export class GuestController {
                     }
 
                     if (authenIdCreated.length > 0) {
-                        const result: any = { token: appleUserId.idToken, user: userData };
+                        const result: any = { token: appleUserId.idToken, user: resultData };
                         const successResponse = ResponseUtil.getSuccessResponse('Register With APPLE Success', result);
                         return res.status(200).send(successResponse);
                     } else {
@@ -500,8 +503,7 @@ export class GuestController {
                     }
                 }
             }
-        }
-        else if (mode === PROVIDER.GOOGLE) {
+        }else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const idToken = req.body.idToken;
             const checkIdToken = await this.googleService.verifyIdToken(idToken, req.headers.mod_modMobile);
