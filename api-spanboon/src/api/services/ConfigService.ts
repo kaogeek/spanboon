@@ -10,7 +10,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { Config } from '../models/Config';
 import { ConfigRepository } from '../repositories/ConfigRepository';
-import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, JOB_BEFORE_TOKEN_EXPIRE_MINUTE, DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE, ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
+import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, JOB_BEFORE_TOKEN_EXPIRE_MINUTE, DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE, ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE, SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE } from '../../constants/SystemConfig';
 
 @Service()
 export class ConfigService {
@@ -117,6 +117,17 @@ export class ConfigService {
             const config: Config = new Config();
             config.name = ASSET_CONFIG_NAME.S3_SIGN_EXPIRING_SEC;
             config.value = DEFAULT_ASSET_CONFIG_VALUE.S3_SIGN_EXPIRING_SEC + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
+
+        const searchEngagementAcccDateCfg = await this.getConfig(SEARCH_ENGAGEMENT_ACCESSIBLE_DATE);
+
+        if (searchEngagementAcccDateCfg === null || searchEngagementAcccDateCfg === undefined) {
+            const config: Config = new Config();
+            config.name = SEARCH_ENGAGEMENT_ACCESSIBLE_DATE;
+            config.value = DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE + '';
             config.type = 'number';
 
             this.create(config);
