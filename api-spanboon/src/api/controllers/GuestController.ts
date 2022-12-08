@@ -1519,8 +1519,8 @@ export class GuestController {
             const getOtp = await cache.get(user.id.toString());
             if (mode === PROVIDER.EMAIL) {
                 const data: User = await this.userService.findOne({ where: { username: emailRes } });
-                const userObjId = new ObjectID(data.id);
-                if (otp === getOtp) {
+                const userObjId = await new ObjectID(data.id);
+                if (otp === getOtp[0].otpGet) {
                     // create a token
                     const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
                     if (data.banned === true) {
@@ -1574,7 +1574,7 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (mode === PROVIDER.APPLE) {
-                if (otp === getOtp) {
+                if (otp === getOtp[0].otpGet) {
                     const appleId: any = req.body.apple.result.user;
                     const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
                     const deviceAP = req.body.tokenFCM_AP.deviceName;
@@ -1619,7 +1619,7 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (mode === PROVIDER.FACEBOOK) {
-                if (otp === getOtp) {
+                if (otp === getOtp[0].otpGet) {
                     const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
                     const deviceFB = req.body.tokenFCM_FB.deviceName;
                     // find email then -> authentication -> mode FB
@@ -1679,7 +1679,7 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (mode === PROVIDER.GOOGLE) {
-                if (otp === getOtp) {
+                if (otp === getOtp[0].otpGet) {
                     const idToken = otpRequest.idToken;
                     const authToken = otpRequest.authToken;
                     const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
@@ -1741,7 +1741,7 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (mode === PROVIDER.TWITTER) {
-                if (otp === getOtp) {
+                if (otp === getOtp[0].otpGet) {
                     const twitterOauthToken = otpRequest.twitterOauthToken;
                     const twitterOauthTokenSecret = otpRequest.twitterOauthTokenSecret;
                     if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
