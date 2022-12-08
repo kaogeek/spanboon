@@ -40,14 +40,62 @@ export class ResponseUtil {
         }
     }
 
-    public static getSuccessResponseAuth(msg:string,value:any,auth:any,mode:any):any {
-        if (value !== null || value !== undefined || value !== '') {
+    public static getSuccessResponseAuth(msg:string,value:any,auth?:any,mode?:any):any {
+        if (value !== null || value !== undefined || value !== '' && auth === undefined) {
             const sucessRes: any = {
                 status: 1,
                 message: msg,
                 data: value,
                 authUser: auth,
                 _mode:mode,
+            };
+            return sucessRes;
+        } else if(value !== null || value !== undefined || value !== '' && auth !== undefined){
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+                data: value,
+                authUser: auth,
+                _mode:mode,
+            };
+            return sucessRes;
+        }
+        else {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
+    public static getSuccessAuth(msg:string,value:any,data?:any):any {
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+                data: value,
+                result:data,
+
+            };
+            return sucessRes;
+        } else {
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
+    public static getSuccessOTP(msg:string,value:any,data?:any):any {
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+                data: value,
+                result:data,
+
             };
             return sucessRes;
         } else {
