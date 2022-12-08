@@ -295,7 +295,25 @@ export class SecurityInfo extends AbstractPage implements OnInit {
             console.log('err ', err)
         })
     }
+    public fbLibrary() {
+        (window as any).fbAsyncInit = function () {
+            window['FB'].init({
+                appId: environment.facebookAppId,
+                cookie: true, 
+                xfbml: true,
+                version: 'v10.0'
+            });
+            window['FB'].AppEvents.logPageView();
+        };
 
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    }
     // twitter Today to Twitter
     public onChangeSlideTW_POST(event:any, social:string){
         var isAutoPost = false;
@@ -522,26 +540,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
         }
     }
 
-    public fbLibrary() {
-        (window as any).fbAsyncInit = function () {
-            window['FB'].init({
-                appId: environment.facebookAppId,
-                cookie: true, 
-                xfbml: true,
-                version: 'v10.0'
-            });
-            window['FB'].AppEvents.logPageView();
-        };
 
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-    }
 
     public clickLoginFB() {
         window['FB'].login((response) => {
