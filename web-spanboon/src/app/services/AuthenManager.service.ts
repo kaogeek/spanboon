@@ -290,7 +290,6 @@ export class AuthenManager {
       let url: string = this.baseURL + '/register';
 
       this.http.post(url, registSocial, httpOptions).toPromise().then((response: any) => {
-
         if (response.data !== null && response.data !== undefined) {
           let result: any = {
             token: response.data.token,
