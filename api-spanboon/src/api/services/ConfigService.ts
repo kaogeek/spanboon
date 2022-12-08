@@ -10,6 +10,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { Config } from '../models/Config';
 import { ConfigRepository } from '../repositories/ConfigRepository';
+import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, JOB_BEFORE_TOKEN_EXPIRE_MINUTE, DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE, ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
 
 @Service()
 export class ConfigService {
@@ -53,5 +54,72 @@ export class ConfigService {
     // delete config
     public async delete(query: any, options?: any): Promise<any> {
         return await this.configRepository.deleteOne(query, options);
+    }
+
+    public async initialConfig(): Promise<void> {
+        const searchOfficialCfg = await this.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
+
+        if (searchOfficialCfg === null || searchOfficialCfg === undefined) {
+            const config: Config = new Config();
+            config.name = MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY;
+            config.value = DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
+
+        const userExpireTimeCfg = await this.getConfig(USER_EXPIRED_TIME_CONFIG);
+
+        if (userExpireTimeCfg === null || userExpireTimeCfg === undefined) {
+            const config: Config = new Config();
+            config.name = USER_EXPIRED_TIME_CONFIG;
+            config.value = DEFAULT_USER_EXPIRED_TIME + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
+
+        const jobBeforeTokenExpCfg = await this.getConfig(JOB_BEFORE_TOKEN_EXPIRE_MINUTE);
+
+        if (jobBeforeTokenExpCfg === null || jobBeforeTokenExpCfg === undefined) {
+            const config: Config = new Config();
+            config.name = JOB_BEFORE_TOKEN_EXPIRE_MINUTE;
+            config.value = DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
+
+        const assetExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+
+        if (assetExpireCfg === null || assetExpireCfg === undefined) {
+            const config: Config = new Config();
+            config.name = ASSET_CONFIG_NAME.EXPIRE_MINUTE;
+            config.value = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
+
+        const assetUploadToS3Cfg = await this.getConfig(ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD);
+        if (assetUploadToS3Cfg === null || assetUploadToS3Cfg === undefined) {
+            const config: Config = new Config();
+            config.name = ASSET_CONFIG_NAME.S3_STORAGE_UPLOAD;
+            config.value = DEFAULT_ASSET_CONFIG_VALUE.S3_STORAGE_UPLOAD ? 'TRUE' : 'FALSE';
+            config.type = 'boolean';
+
+            this.create(config);
+        }
+
+        const assetS3ExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+
+        if (assetS3ExpireCfg === null || assetS3ExpireCfg === undefined) {
+            const config: Config = new Config();
+            config.name = ASSET_CONFIG_NAME.S3_SIGN_EXPIRING_SEC;
+            config.value = DEFAULT_ASSET_CONFIG_VALUE.S3_SIGN_EXPIRING_SEC + '';
+            config.type = 'number';
+
+            this.create(config);
+        }
     }
 }
