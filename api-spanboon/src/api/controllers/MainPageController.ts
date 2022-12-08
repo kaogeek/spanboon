@@ -1032,6 +1032,12 @@ export class MainPageController {
                     },
                 },
                 {
+                    $unwind: {
+                        path: '$page',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
                     $lookup: {
                         from: 'PostsGallery',
                         localField: '_id',
