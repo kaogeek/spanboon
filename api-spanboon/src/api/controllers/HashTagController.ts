@@ -19,13 +19,17 @@ import { SearchHashTagRequest } from './requests/SearchHashTagRequest';
 import { HashTag } from '../models/HashTag';
 import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import moment from 'moment';
+import { ConfigService } from '../services/ConfigService';
+import { SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE } from '../../constants/SystemConfig';
+import { Config } from '../models/Config';
 
 @JsonController('/hashtag')
 export class HashTagController {
     constructor(
         private hashTagService: HashTagService,
         private postsService: PostsService,
-        private engagementService: UserEngagementService
+        private engagementService: UserEngagementService,
+        private configService: ConfigService
     ) { }
 
     // Find HashTag API
@@ -191,8 +195,8 @@ export class HashTagController {
         let name;
         let limit;
         let offset;
-        const action = ENGAGEMENT_ACTION.TAG;  
-        
+        const action = ENGAGEMENT_ACTION.TAG;
+
         if (search !== null && search !== undefined) {
             limit = search.filter.limit;
             offset = search.filter.offset;
@@ -205,10 +209,10 @@ export class HashTagController {
         const uId = req.header.userid;
         const contentIdList = [];
         const hashTagList = [];
-        const hashTagNameList = []; 
-        
+        const hashTagNameList = [];
+
         const hashTagTrends = await this.searchEngagementHashTag(uId, name, limit, offset, action);
-         
+
         if (hashTagTrends !== null && hashTagTrends !== undefined && hashTagTrends.length > 0) {
             for (const hashTag of hashTagTrends) {
                 const contentId = hashTag.contentId;
@@ -261,7 +265,8 @@ export class HashTagController {
 
     private async searchEngagementHashTag(uId: string, name: string, limit: number, offset: number, action: string): Promise<any> {
         const engStmt: any[] = [];
-        const date: Date = moment().subtract(7, 'd').toDate();
+        const accDate = await this.getAccessibleDateConfig();
+        const date: Date = moment().subtract(accDate, 'd').toDate();
 
         if (uId !== null && uId !== undefined && uId !== '') {
             const userObjId = new ObjectID(uId);
@@ -321,4 +326,15 @@ export class HashTagController {
 
     //     return await this.hashTagService.aggregate(htStmt);
     // }
+
+    private async getAccessibleDateConfig(): Promise<any> {
+        let accessibleDate: any = DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE;
+
+        const config: Config = await this.configService.getConfig(SEARCH_ENGAGEMENT_ACCESSIBLE_DATE);
+        if (config !== undefined) {
+            accessibleDate = config.value;
+        }
+
+        return accessibleDate;
+    }
 }
