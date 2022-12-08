@@ -558,7 +558,7 @@ export class SecurityInfo extends AbstractPage implements OnInit {
                 this.isLoading = false;
                 this.connect = false;
             }
-        }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement' });
+        }, { scope: 'public_profile, email, pages_manage_metadata ,pages_manage_posts, pages_show_list, pages_read_engagement' });
     }
 
     public listPageFacebook() {
