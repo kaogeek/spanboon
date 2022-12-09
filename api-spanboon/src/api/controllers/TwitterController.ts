@@ -189,7 +189,7 @@ export class TwitterController {
                     }
                 }
             } else {
-                const errorResponse = ResponseUtil.getSuccessResponse('This user does not had any twitter',undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('This user does not had any twitter',undefined);
                 return response.status(400).send(errorResponse);           
             }
         }
