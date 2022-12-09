@@ -1105,34 +1105,27 @@ export class GuestController {
         let loginUser: any;
         const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
-        const checkEmail = users.email.toLowerCase().toString();
         let authen = undefined;
-        const data: User = await this.userService.findOne({ where: { username: checkEmail } });
+        const data: User = await this.userService.findOne({ where: { username: users.email } });
         const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
         const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
         // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
         if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined && AllAuthen[4] !== undefined) {
-            console.log('pass1');
             const MathRandom = Math.floor(Math.random() * (4 - 0 + 1) + 1);
             authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
         } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined) {
-            console.log('pass2');
             const MathRandom = Math.floor(Math.random() * (3 - 0 + 1) + 1);
             authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
         } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined) {
-            console.log('pass3');
             const MathRandom = Math.floor(Math.random() * (2 - 0 + 1) + 1);
             authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
         } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined) {
-            console.log('pass4');
             const MathRandom = Math.floor(Math.random() * (1 - 0 + 1) + 1);
             authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
         } else if (AllAuthen[0] !== undefined) {
-            console.log('pass5');
             authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[0].providerName } });
         }
 
-        console.log('authen', authen);
         if (mode === PROVIDER.EMAIL) {
             if (data && checkAuth === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.EMAIL);
@@ -1207,25 +1200,25 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
-            if (data && authen === undefined) {
+            let fbUser = undefined;
+            let userFb = undefined;
+            let authenticaTionFB = undefined;
+            try {
+                fbUser = await this.facebookService.fetchFacebook(users.token);
+                userFb = await this.userService.find({ email: fbUser.email });
+                for (const userFind of userFb) {
+                    authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
+                }
+            } catch (err) {
+                console.log(err);
+            } if (fbUser && authenticaTionFB === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.FACEBOOK);
                 return res.status(200).send(successResponse);
-            } else if (data && authen !== undefined) {
+            } else if (fbUser && authenticaTionFB !== undefined) {
                 const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
                 const deviceFB = req.body.tokenFCM_FB.deviceName;
                 // find email then -> authentication -> mode FB
-                let fbUser = undefined;
-                let userFb = undefined;
-                let authenticaTionFB = undefined;
-                try {
-                    fbUser = await this.facebookService.fetchFacebook(users.token);
-                    userFb = await this.userService.find({ email: fbUser.email });
-                    for (const userFind of userFb) {
-                        authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
-                    }
-                } catch (err) {
-                    console.log(err);
-                } if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
+                 if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
