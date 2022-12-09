@@ -23,7 +23,7 @@
                     </div>
                 </ng-template>
                 <ng-container *ngIf="recommed.type === 'PAGE'; else elseTemplate">
-                    <a href="page/{{recommed._id}}">
+                    <a href="page/{{recommed._id}}" target="_blank">
                         <div class="list-follow-name">
                             <div class="follow-name">
                                 <svg *ngIf="recommed.isOffical" class="img-icon" id="shield"
@@ -48,7 +48,7 @@
                     </a>
                 </ng-container>
                 <ng-template #elseTemplate>
-                    <a href="profile/{{recommed._id}}">
+                    <a href="profile/{{recommed._id}}" target="_blank">
                         <div class="list-follow-name">
                             <div class="follow-name">
                                 {{recommed.displayName}}

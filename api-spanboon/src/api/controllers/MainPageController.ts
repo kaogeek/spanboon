@@ -679,6 +679,7 @@ export class MainPageController {
             let hashTag: string[];
             let type: string;
             let onlyFollowed: boolean;
+            let isOfficial: boolean;
             let createBy: any; // {id,type}
             let objective: string;
             let emergencyEvent: string;
@@ -712,6 +713,7 @@ export class MainPageController {
                 keyword = data.keyword;
                 hashTag = data.hashtag;
                 onlyFollowed = data.onlyFollowed;
+                isOfficial = data.isOfficial;
                 type = data.type;
                 createBy = data.createBy;
                 objective = data.objective;
@@ -1005,6 +1007,12 @@ export class MainPageController {
                 }
             }
 
+            const lookupPipelineStmt: any = { $and: [{ $eq: ['$$pageId', '$_id'] }] };
+
+            if (isOfficial !== null && isOfficial !== undefined) {
+                lookupPipelineStmt['$and'].push({ isOfficial });
+            }
+
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt = [
                 {
@@ -1014,20 +1022,20 @@ export class MainPageController {
                         let: {
                             pageId: '$pageId'
                         },
-                        pipeline: [{
-                            $match:
+                        pipeline: [
                             {
-                                $expr:
-                                {
-                                    $and:
-                                        [
-                                            { $eq: ['$$pageId', '$_id'] },
-                                            { 'isOfficial': filter.isOfficial }
-                                        ]
+                                $match: {
+                                    $expr: lookupPipelineStmt
                                 }
                             }
-                        }],
+                        ],
                     },
+                },
+                {
+                    $unwind: {
+                        path: '$page',
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
                 {
                     $lookup: {
@@ -1244,17 +1252,13 @@ export class MainPageController {
                     },
                 },
                 {
-                    $match: {
-                        'page.isOfficial': filter.isOfficial
-                    }
-                },
-                {
                     $limit: filter.limit + filter.offset
                 },
                 {
                     $skip: filter.offset
                 }
             ];
+
             searchPostStmt = postStmt.concat(postsLookupStmt);
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.

@@ -12,16 +12,17 @@ import { UserRepository } from '../repositories/UserRepository';
 import { PageRepository } from '../repositories/PageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { S3Service } from '../services/S3Service';
+import { CreateUserRequest } from '../controllers/requests/CreateUserRequest';
 @Service()
 export class UserService {
 
     constructor(
-        @OrmRepository() private userLoginRepository: UserRepository, 
-        @OrmRepository() private pageRepository: PageRepository, 
+        @OrmRepository() private userLoginRepository: UserRepository,
+        @OrmRepository() private pageRepository: PageRepository,
         private s3Service: S3Service) { }
 
     // find user
-    public find(findCondition?: any): Promise<any>  {
+    public find(findCondition?: any): Promise<any> {
         return this.userLoginRepository.find(findCondition);
     }
 
@@ -262,5 +263,34 @@ export class UserService {
         }
 
         return userTagList;
+    }
+
+    public async createUser(users: CreateUserRequest): Promise<void> {
+        const userPassword = await User.hashPassword(users.password);
+
+        const user: User = new User();
+        user.username = users.email;
+        user.password = userPassword;
+        user.email = users.email;
+        user.displayName = users.displayName;
+        user.firstName = users.firstName;
+        user.lastName = users.lastName;
+        user.citizenId = users.citizenId;
+        user.gender = users.gender;
+        user.imageURL = '';
+        user.coverURL = '';
+        user.coverPosition = 0;
+        user.banned = false;
+        user.isAdmin = users.isAdmin;
+
+        const data = await this.findOne({ where: { username: users.email } });
+
+        if (data) {
+            return;
+        }
+
+        this.create(user);
+
+        return;
     }
 }

@@ -75,6 +75,7 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
+import axios from 'axios';
 
 @JsonController('/page')
 export class PageController {
@@ -2523,17 +2524,15 @@ export class PageController {
         if (!isUserCanAccess) {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
-        console.log('configValue',configValue);
         if (page) {
+            const {data} = await axios.post('https://graph.facebook.com/' + page.providerPageId+ '/subscribed_apps?subscribed_fields=feed&access_token='+page.storedCredentials);
+            console.log('webhook',data);
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
-                console.log('binding1');
                 const query = { pageId: pageObjId };
                 const newValue = { $set: { enable: configValue.value,properties:page.properties } };
-                console.log('newValue',newValue);
                 await this.socialPostLogsService.update(query, newValue);
             } else {
-                console.log('binding2');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;

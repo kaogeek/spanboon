@@ -20,6 +20,9 @@ export const DEFAULT_ASSET_CONFIG_VALUE = {
     S3_SIGN_EXPIRING_SEC: 3600 // 1 hour
 };
 
+export const SEARCH_ENGAGEMENT_ACCESSIBLE_DATE = 'search.engagement.accessible.date';
+export const DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE = 90;
+
 export const USER_EXPIRED_TIME_CONFIG = 'user.expiration.time';
 export const DEFAULT_USER_EXPIRED_TIME = 30; // as day
 export const JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 'job.beforeTokenExpire.minute';

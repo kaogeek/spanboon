@@ -112,6 +112,18 @@ export class User extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
+    @Column({ name: 'mergeFB'})
+    public mergeFB:boolean;
+
+    @Column({ name: 'mergeTW'})
+    public mergeTW:boolean;
+
+    @Column({ name: 'mergeGG'})
+    public mergeGG:boolean;
+
+    @Column({ name: 'mergeAP'})
+    public mergeAP:boolean;
+    
     @Column(type => AuthenticationId)
     public authenticationId: AuthenticationId;
 

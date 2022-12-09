@@ -18,6 +18,7 @@ import { publicLoader } from './loaders/publicLoader';
 import { typeormLoader } from './loaders/typeormLoader';
 import { winstonLoader } from './loaders/winstonLoader';
 import { jobSchedulerLoader } from './loaders/jobSchedulerLoader';
+import { configDefaultLoader } from './loaders/configDefaultLoader';
 
 /**
  * EXPRESS TYPESCRIPT BOILERPLATE
@@ -42,6 +43,7 @@ bootstrapMicroframework({
         expressLoader,
         homeLoader,
         publicLoader,
+        configDefaultLoader,
         jobSchedulerLoader
     ]
 }).then(() => banner(log)).catch(error => log.error('Application is crashed: ' + error));

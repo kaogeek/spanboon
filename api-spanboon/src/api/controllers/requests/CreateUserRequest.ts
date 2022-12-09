@@ -32,4 +32,5 @@ export class CreateUserRequest extends BasePageUserRegisterRequest {
     public userId: any;
     public emailHide: any;
     public username: any;
+    public isAdmin: boolean;
 }
