@@ -1106,13 +1106,38 @@ export class GuestController {
         const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
         const checkEmail = users.email.toLowerCase().toString();
+        let authen = undefined;
+        const data: User = await this.userService.findOne({ where: { username: checkEmail } });
+        const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
+        const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+        // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
+        if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined && AllAuthen[4] !== undefined) {
+            console.log('pass1');
+            const MathRandom = Math.floor(Math.random() * (4 - 0 + 1) + 1);
+            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
+        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined) {
+            console.log('pass2');
+            const MathRandom = Math.floor(Math.random() * (3 - 0 + 1) + 1);
+            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
+        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined) {
+            console.log('pass3');
+            const MathRandom = Math.floor(Math.random() * (2 - 0 + 1) + 1);
+            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
+        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined) {
+            console.log('pass4');
+            const MathRandom = Math.floor(Math.random() * (1 - 0 + 1) + 1);
+            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
+        } else if (AllAuthen[0] !== undefined) {
+            console.log('pass5');
+            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[0].providerName } });
+        }
+
+        console.log('authen', authen);
         if (mode === PROVIDER.EMAIL) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({ user: ObjectID(String(data.id)), providerName: mode });
-            if (data && authen === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, PROVIDER.EMAIL);
+            if (data && checkAuth === undefined) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.EMAIL);
                 return res.status(200).send(successResponse);
-            } else if (data && authen !== undefined) {
+            } else if (data && authen !== undefined && checkAuth !== undefined) {
                 if (data) {
                     const userObjId = new ObjectID(data.id);
                     if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
@@ -1182,8 +1207,6 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({ user: ObjectID(String(data.id)) });
             if (data && authen === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.FACEBOOK);
                 return res.status(200).send(successResponse);
@@ -1247,8 +1270,6 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.APPLE) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({ user: ObjectID(String(data.id)) });
             if (data && authen !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.APPLE);
                 return res.status(200).send(successResponse);
@@ -1296,8 +1317,6 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.GOOGLE) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({ user: ObjectID(String(data.id)) });
             if (data && authen !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.GOOGLE);
                 return res.status(200).send(successResponse);
@@ -1362,8 +1381,6 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.TWITTER) {
-            const data: User = await this.userService.findOne({ where: { username: checkEmail } });
-            const authen = await this.authenticationIdService.findOne({ user: ObjectID(String(data.id)) });
             if (data && authen !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.TWITTER);
                 return res.status(200).send(successResponse);
@@ -1598,15 +1615,15 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
                     const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
+
                     loginUser = await this.userService.cleanUserField(loginUser);
                     loginUser.followings = userFollowings.length;
                     loginUser.followers = userFollowers.length;
@@ -1658,15 +1675,15 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
                     const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
+
                     loginUser = await this.userService.cleanUserField(loginUser);
                     loginUser.followings = userFollowings.length;
                     loginUser.followers = userFollowers.length;
@@ -1720,15 +1737,15 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
                     const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
+
                     loginUser = await this.userService.cleanUserField(loginUser);
                     loginUser.followings = userFollowings.length;
                     loginUser.followers = userFollowers.length;
@@ -1748,12 +1765,12 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (twitterOauthTokenSecret === undefined || twitterOauthTokenSecret === '' || twitterOauthTokenSecret === null) {
                         const errorResponse: any = { status: 0, message: 'twitterOauthTokenSecret was required.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     let twitterUserId = undefined;
                     try {
                         const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
@@ -1762,12 +1779,12 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: ex };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (twitterUserId === undefined) {
                         const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
                     if (twAuthenId === null || twAuthenId === undefined) {
                         const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
@@ -1780,7 +1797,7 @@ export class GuestController {
                         const query = { _id: twAuthenId.id };
                         const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                         const updateAuth = await this.authenticationIdService.update(query, newValue);
-    
+
                         if (updateAuth) {
                             const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
                             // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
@@ -1794,15 +1811,15 @@ export class GuestController {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     if (loginUser.banned === true) {
                         const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                         return res.status(400).send(errorResponse);
                     }
-    
+
                     const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
                     const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
+
                     loginUser = await this.userService.cleanUserField(loginUser);
                     loginUser.followings = userFollowings.length;
                     loginUser.followers = userFollowers.length;
