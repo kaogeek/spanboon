@@ -134,18 +134,18 @@ export class TwitterController {
         const newPostResult = [];
         for (const socialPost of socialPostLogList) {
             // search page
-            const getUserTimeline = await this.twitterService.getTimeLineUser(socialPost.providerUserId,oAuth2Twitter);
+            const getUserTimeline = await this.twitterService.getTimeLineUser(socialPost.providerUserId, oAuth2Twitter);
 
-            const page = await this.pageService.find({ where: { _id: socialPost.pageId} });
+            const page = await this.pageService.find({ where: { _id: socialPost.pageId } });
             // checked enable post social log enable === true
             if (page === undefined) {
                 continue;
             }
-            if(getUserTimeline.data !== undefined){
-                for(const dataFeedTwi of getUserTimeline.data){
-                    const checkPostSocial = await this.socialPostService.find({pageId:socialPost.pageId ,socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
+            if (getUserTimeline.data !== undefined) {
+                for (const dataFeedTwi of getUserTimeline.data) {
+                    const checkPostSocial = await this.socialPostService.find({ pageId: socialPost.pageId, socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
                     const checkFeed = checkPostSocial.shift();
-                    if (checkFeed === undefined ) {
+                    if (checkFeed === undefined) {
                         const twPostId = dataFeedTwi.id;
                         const text = dataFeedTwi.text;
                         const today = moment().toDate();
@@ -182,17 +182,17 @@ export class TwitterController {
                         newSocialPost.postByType = 'PAGE';
                         newSocialPost.socialId = twPostId;
                         newSocialPost.socialType = PROVIDER.TWITTER;
-                        await this.socialPostService.create(newSocialPost); 
+                        await this.socialPostService.create(newSocialPost);
                     }
                     else {
                         continue;
-                    } 
+                    }
                 }
             }
-            else{
+            else {
                 console.log('This user does not had any twitter');
             }
-        } 
+        }
         return response.status(200).send(newPostResult);
     }
 }

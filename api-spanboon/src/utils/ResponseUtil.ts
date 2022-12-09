@@ -43,7 +43,7 @@ export class ResponseUtil {
     public static getSuccessResponseAuth(msg:string,value:any,auth?:any,mode?:any):any {
         if (value !== null || value !== undefined || value !== '' && auth === undefined) {
             const sucessRes: any = {
-                status: 1,
+                status: 2,
                 message: msg,
                 data: value,
                 authUser: auth,

@@ -7,7 +7,7 @@
 
 import 'reflect-metadata';
 import moment from 'moment';
-import { JsonController, Res, QueryParams, Body, Get,Post } from 'routing-controllers';
+import { JsonController, Res, QueryParams, Body, Get, Post } from 'routing-controllers';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { PageService } from '../services/PageService';
 import { PostsService } from '../services/PostsService';
@@ -28,7 +28,7 @@ export class FacebookWebhookController {
         private assetService: AssetService, private postsGalleryService: PostsGalleryService,
         private authenticationIdService: AuthenticationIdService,
 
-        ) { }
+    ) { }
 
     /**
      * @api {get} /api/fb_webhook/page_feeds WebHook for page feed
@@ -80,15 +80,15 @@ export class FacebookWebhookController {
                 return res.sendStatus(403);
             }
         }
-
-        const query = {providerName:PROVIDER.FACEBOOK,properties:{name:body.entry[0].changes[0].value.from.name,pageId:body.entry[0].changes[0].value.from.id}};
+        console.log('req.body',body.entry[0].changes[0]);
+        const query = { providerName: PROVIDER.FACEBOOK, properties: { name: body.entry[0].changes[0].value.from.name, pageId: body.entry[0].changes[0].value.from.id } };
         const subScribePage = await this.authenticationIdService.findOne(query);
-        const pageIdFB = await this.pageService.findOne({ownerUser:subScribePage.user});
+        const pageIdFB = await this.pageService.findOne({ ownerUser: subScribePage.user });
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null) {
             // verb type -> 3 types -> add,edit,remove
-            if(body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined){
-                const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
-                if(checkPost === undefined){
+            if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined) {
+                const checkPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id, postByType: 'add' });
+                if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = 'Webhooks Feed';
                     postPage.detail = body.entry[0].changes[0].value.message;
@@ -121,12 +121,12 @@ export class FacebookWebhookController {
                     newSocialPost.postByType = body.entry[0].changes[0].value.verb;
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
-                    await this.socialPostService.create(newSocialPost); 
+                    await this.socialPostService.create(newSocialPost);
                     return res.status(200).send('SuccessFul Webhooks');
                 }
-            }else if(body.entry[0].changes[0].value.verb === 'add'&& body.entry[0].changes[0].value.link !== undefined || body.entry[0].changes[0].value.photos !== undefined){
-                const checkPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id,postByType:'add'});
-                if(checkPost === undefined){
+            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined || body.entry[0].changes[0].value.photos !== undefined) {
+                const checkPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id, postByType: 'add' });
+                if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = 'Webhooks Feed';
                     postPage.detail = body.entry[0].changes[0].value.message;
@@ -159,11 +159,11 @@ export class FacebookWebhookController {
                     newSocialPost.postByType = body.entry[0].changes[0].value.verb;
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
-                    await this.socialPostService.create(newSocialPost); 
-                    if(createPostPageData){
+                    await this.socialPostService.create(newSocialPost);
+                    if (createPostPageData) {
                         // Asset 
                         const photoGallery = [];
-                        if(body.entry[0].changes[0].value.photos === undefined){
+                        if (body.entry[0].changes[0].value.photos === undefined) {
                             try {
                                 const asset = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
                                 if (asset !== undefined) {
@@ -182,16 +182,16 @@ export class FacebookWebhookController {
                                 await this.postsGalleryService.create(gallery);
                                 return res.status(200).send('SuccessFul Webhooks');
                             }
-                        }else{
-                            for(const photosFB of body.entry[0].changes[0].value.photos){
+                        } else {
+                            for (const photosFB of body.entry[0].changes[0].value.photos) {
                                 const stackPhotos = [];
-                                try{
+                                try {
                                     const asset = await this.assetService.createAssetFromURL(photosFB, pageIdFB.ownerUser);
                                     if (asset !== undefined) {
                                         stackPhotos.push(asset);
                                     }
-                                }catch(error){
-                                    console.log('error crteate asset from url',error);
+                                } catch (error) {
+                                    console.log('error crteate asset from url', error);
                                 }
                                 for (const asset of stackPhotos) {
                                     const gallery = new PostsGallery();
@@ -204,20 +204,20 @@ export class FacebookWebhookController {
                                     return res.status(200).send('SuccessFul Webhooks');
                                 }
                             }
-                        }  
+                        }
                     }
                 }
-            }else if(body.entry[0].changes[0].value.verb === 'edit'){
-                const socialPost = await this.socialPostService.findOne({postBy:body.entry[0].changes[0].value.post_id});
-                if(socialPost){
-                    const queryFB = {_id:socialPost.postId};
-                    const setValue = {detail:body.entry[0].changes[0].value.message};
-                    await this.postsService.update(queryFB,setValue);
+            } else if (body.entry[0].changes[0].value.verb === 'edit') {
+                const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
+                if (socialPost) {
+                    const queryFB = { _id: socialPost.postId };
+                    const setValue = { detail: body.entry[0].changes[0].value.message };
+                    await this.postsService.update(queryFB, setValue);
                     return res.status(200).send('Success updated Webhooks');
-                }else{
+                } else {
                     console.log('cannot update values');
                 }
-            }else{
+            } else {
                 return res.status(400).send('this values is removes from webhooks');
             }
         }

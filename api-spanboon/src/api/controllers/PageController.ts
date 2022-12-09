@@ -1067,13 +1067,13 @@ export class PageController {
             pgLV.user = user.id;
             pgLV.level = access.level;
 
-            const query = {page:pgLV.page,user:pgLV.user,level:pgLV.level};
+            const query = { page: pgLV.page, user: pgLV.user, level: pgLV.level };
             const findPageAccessLv = await this.pageAccessLevelService.findOne(query);
-            if(findPageAccessLv !== undefined && findPageAccessLv !== null){
+            if (findPageAccessLv !== undefined && findPageAccessLv !== null) {
                 const successResponse = ResponseUtil.getSuccessResponse('User Already had roles', result);
                 return res.status(200).send(successResponse);
             }
-            else{
+            else {
                 const pageAccessLV = await this.pageAccessLevelService.create(pgLV);
                 const userAccLV: PageAccessLevelResponse = new PageAccessLevelResponse();
                 result = userAccLV;
@@ -1089,9 +1089,9 @@ export class PageController {
                 };
                 result.level = pageAccessLV.level;
                 result.id = pageAccessLV.id;
-    
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully adding User Page Access', result);
-                return res.status(200).send(successResponse); 
+                return res.status(200).send(successResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to get Page', undefined);
@@ -1927,10 +1927,10 @@ export class PageController {
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.pageUsername;
                 const link = `/profile/${whoFollowYou.id}`;
                 for (const tokenFCM of tokenFCMId) {
-                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                         await this.pageNotificationService.notifyToPageUserFcm(
                             followCreate.subjectId,
                             undefined,
@@ -1943,7 +1943,7 @@ export class PageController {
                             whoFollowYou.displayName,
                             whoFollowYou.imageURL
                         );
-                    }else{
+                    } else {
                         await this.pageNotificationService.notifyToPageUser(
                             followCreate.subjectId,
                             undefined,
@@ -2472,7 +2472,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'TWITTER' });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId, providerName: 'TWITTER' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2485,7 +2485,7 @@ export class PageController {
     // get 
     @Get('/:id/facebook_fetch_enable')
     @Authorized('user')
-    public async getFacebookFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any>{
+    public async getFacebookFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(id);
         const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -2500,7 +2500,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'FACEBOOK' });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId, providerName: 'FACEBOOK' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2525,12 +2525,12 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
         if (page) {
-            const {data} = await axios.post('https://graph.facebook.com/' + page.providerPageId+ '/subscribed_apps?subscribed_fields=feed&access_token='+page.storedCredentials);
-            console.log('webhook',data);
+            const { data } = await axios.post('https://graph.facebook.com/' + page.providerPageId + '/subscribed_apps?subscribed_fields=feed&access_token=' + page.storedCredentials);
+            console.log('webhook', data);
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
                 const query = { pageId: pageObjId };
-                const newValue = { $set: { enable: configValue.value,properties:page.properties } };
+                const newValue = { $set: { enable: configValue.value, properties: page.properties } };
                 await this.socialPostLogsService.update(query, newValue);
             } else {
                 const socialPostLogs = new SocialPostLogs();
