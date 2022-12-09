@@ -188,9 +188,9 @@ export class TwitterController {
                         continue;
                     }
                 }
-            }
-            else {
-                console.log('This user does not had any twitter');
+            } else {
+                const errorResponse = ResponseUtil.getSuccessResponse('This user does not had any twitter',undefined);
+                return response.status(400).send(errorResponse);           
             }
         }
         return response.status(200).send(newPostResult);
