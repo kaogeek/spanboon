@@ -14,6 +14,7 @@ import { SearchFilter, User, Asset } from '../models/models';
 import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
 import { PageSoialFB } from '../models/models';
+import { PageSocialTW } from '../models/models';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -176,7 +177,23 @@ export class AuthenManager {
       });
     });
   }
-
+  public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/page/SyncTW';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "twitterOauthToken":twitter.twitterOauthToken,
+        "twitterTokenSecret":twitter.twitterTokenSecret,
+        "twitterUserId":twitter.twitterUserId,
+        "twitterPageName":twitter.twitterPageName
+      }
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    })
+  }
   public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/SyncFB';

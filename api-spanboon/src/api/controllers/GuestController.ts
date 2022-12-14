@@ -1459,92 +1459,76 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        }/* else if (mode === PROVIDER.TWITTER) {
-            const TWUserId = users.twitterUserId;
-
+        }else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = users.twitterOauthToken;
             const twitterOauthTokenSecret = users.twitterOauthTokenSecret;
-            const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
-            const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
-            const getTwUser = await this.twitterService.getTWUser(verifyObject.id_str,oAuth2Twitter.access_token);
-            const authenTW = await this.authenticationIdService.findOne({where:{providerUserId:TWUserId}});
-            const userTw = await this.userService.findOne({_id:ObjectID(authenTW.user)});
-            if (userTw && authenTW === undefined) {
+            if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
+                const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
+                return res.status(400).send(errorResponse);
+            }
 
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', userTw, authen);
-                return res.status(200).send(successResponse);
-            } else if (userTw && authenTW !== undefined) {
+            if (twitterOauthTokenSecret === undefined || twitterOauthTokenSecret === '' || twitterOauthTokenSecret === null) {
+                const errorResponse: any = { status: 0, message: 'twitterOauthTokenSecret was required.' };
+                return res.status(400).send(errorResponse);
+            }
 
-                if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
-                    const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
-                    return res.status(400).send(errorResponse);
-                }
+            let twitterUserId = undefined;
+            try {
+                const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                twitterUserId = verifyObject.id_str;
+            } catch (ex) {
+                const errorResponse: any = { status: 0, message: ex };
+                return res.status(400).send(errorResponse);
+            }
 
-                if (twitterOauthTokenSecret === undefined || twitterOauthTokenSecret === '' || twitterOauthTokenSecret === null) {
-                    const errorResponse: any = { status: 0, message: 'twitterOauthTokenSecret was required.' };
-                    return res.status(400).send(errorResponse);
-                }
+            if (twitterUserId === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
 
-                let twitterUserId = undefined;
-                try {
-                    const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
-                    twitterUserId = verifyObject.id_str;
-                } catch (ex) {
-                    const errorResponse: any = { status: 0, message: ex };
-                    return res.status(400).send(errorResponse);
-                }
+            const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
+            if (twAuthenId === null || twAuthenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
+                return res.status(400).send(errorUserNameResponse);
+            } else {
+                const userExrTime = await this.getUserLoginExpireTime();
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
+                const query = { _id: twAuthenId.id };
+                const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
+                const updateAuth = await this.authenticationIdService.update(query, newValue);
 
-                if (twitterUserId === undefined) {
-                    const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                    return res.status(400).send(errorResponse);
-                }
-
-                const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-                if (twAuthenId === null || twAuthenId === undefined) {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
-                    return res.status(400).send(errorUserNameResponse);
-                } else {
-                    const userExrTime = await this.getUserLoginExpireTime();
-                    const currentDateTime = moment().toDate();
-                    const authTime = currentDateTime;
-                    const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { _id: twAuthenId.id };
-                    const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
-                    const updateAuth = await this.authenticationIdService.update(query, newValue);
-
-                    if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
-                        // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
-                        await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: updatedAuth.user });
-                        loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
-                        loginToken = updatedAuth.storedCredentials;
-                        loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                    }
+                if (updateAuth) {
+                    const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
+                    // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
+                    await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: updatedAuth.user });
+                    loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
+                    loginToken = updatedAuth.storedCredentials;
+                    loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
                 if (loginUser === undefined) {
                     const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                     return res.status(400).send(errorResponse);
                 }
-
+        
                 if (loginUser.banned === true) {
                     const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                     return res.status(400).send(errorResponse);
                 }
-
+        
                 const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
                 const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
+        
                 loginUser = await this.userService.cleanUserField(loginUser);
                 loginUser.followings = userFollowings.length;
                 loginUser.followers = userFollowers.length;
                 const result = { token: loginToken, user: loginUser };
+        
                 const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
                 return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                return res.status(400).send(errorResponse);
-            } 
-        } */
+            }
+        } 
     }
     // send otp
     @Post('/send_otp')
