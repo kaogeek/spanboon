@@ -36,3 +36,6 @@ export * from './AboutPageFacade.service';
 export * from './TwitterService.service';
 export * from './RecommendFacade.service';
 export * from './UserEngagementFacade.service';
+export * from './CheckMergeUserFacade.service';
+export * from './ConfirmMerge.service';
+export * from './CheckOtpFacade.service';

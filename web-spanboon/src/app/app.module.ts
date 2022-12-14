@@ -28,6 +28,9 @@ import { NgxTributeModule } from 'ngx-tribute';
 import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
 
+import { NgOtpInputModule } from  'ng-otp-input';
+import { CountdownModule } from 'ngx-countdown';
+
 import { 
   SocialLoginModule, 
   GoogleLoginProvider, 
@@ -81,7 +84,7 @@ import {
   HomePage,
   HomePageV2,
   LoginPage,
-  LoginPageTest,
+  // LoginPageTest,
   ProfilePage,
   NotificationAllPage,
   forgotPasswordPage,
@@ -204,6 +207,8 @@ import {
   CardFulfillItem,
 } from './components/components';
 
+import { LoginPageTest } from './components/pages/main.internal/LoginPageTest.component';
+
 // remove when finished test
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
@@ -248,6 +253,9 @@ import {
   TwitterService,
   RecommendFacade,
   UserEngagementFacade,
+  CheckMergeUserFacade,
+  ConfirmMerge,
+  CheckOtpFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -481,6 +489,9 @@ const SERVICE_CLASSES: any[] = [
   TwitterService,
   RecommendFacade,
   UserEngagementFacade,
+  CheckMergeUserFacade,
+  ConfirmMerge,
+  CheckOtpFacade,
   {
     provide: SocialAuthService,
     useFactory: provideSocialConfig
@@ -518,6 +529,8 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
 @NgModule({
 
   imports: [
+    CountdownModule,
+    NgOtpInputModule,
     BrowserModule,
     FontAwesomeModule,
     GalleryModule,
