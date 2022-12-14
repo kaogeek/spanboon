@@ -34,20 +34,11 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     });
     
     // fetch feed twitter
-    schedule.scheduleJob('*/1 * * * *', () =>{
+    schedule.scheduleJob('0 */1 * * *', () =>{
         axios.get(process.env.APP_TWITTER).then((res)=>{
             console.log(`Fetch Twitter : ${res.status}`);
         }).catch((err)=>{
             console.log('err: ' + err);
-        });
-    });
-    
-    // fetch feed facebook
-    schedule.scheduleJob('*/1 * * * *', () =>{
-        axios.get(process.env.APP_FACEBOOK).then((res) =>{
-            console.log(`Fetch Facebook : ${res.status}`);
-        }).catch((err) =>{
-            console.log('err: '+err);
         });
     });
 };

@@ -39,4 +39,63 @@ export class ResponseUtil {
             return errorResponse;
         }
     }
+
+    public static getSuccessResponseAuth(msg: string, value: any, getUserFB: any, auth?: any): any {
+        if (value !== null || value !== undefined || value !== '' && auth === undefined && getUserFB !== null || getUserFB !== undefined) {
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+                data: value,
+                userFB: getUserFB,
+                authUser: auth,
+            };
+            return sucessRes;
+        }
+        else {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
+    public static getSuccessAuth(msg: string, value: any, data?: any): any {
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+                data: value,
+                result: data,
+
+            };
+            return sucessRes;
+        } else {
+            const sucessRes: any = {
+                status: 2,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
+    public static getSuccessOTP(msg: string, value: any, data?: any): any {
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+                data: value,
+                limit: data,
+
+            };
+            return sucessRes;
+        } else {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+            };
+            return sucessRes;
+        }
+
+    }
 }

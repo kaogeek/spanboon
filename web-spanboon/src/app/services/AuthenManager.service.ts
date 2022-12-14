@@ -13,7 +13,8 @@ import { ObservableManager } from './ObservableManager.service';
 import { SearchFilter, User, Asset } from '../models/models';
 import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
-
+import { PageSoialFB } from '../models/models';
+import { PageSocialTW } from '../models/models';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -176,7 +177,40 @@ export class AuthenManager {
       });
     });
   }
+  public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/page/SyncTW';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "twitterOauthToken":twitter.twitterOauthToken,
+        "twitterTokenSecret":twitter.twitterTokenSecret,
+        "twitterUserId":twitter.twitterUserId,
+        "twitterPageName":twitter.twitterPageName
+      }
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    })
+  }
+  public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/SyncFB';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "facebookPageId":facebook.facebookPageId,
+        "facebookPageName":facebook.facebookPageName,
+        "pageAccessToken":facebook.pageAccessToken
+      }
 
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
   public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -290,7 +324,6 @@ export class AuthenManager {
       let url: string = this.baseURL + '/register';
 
       this.http.post(url, registSocial, httpOptions).toPromise().then((response: any) => {
-
         if (response.data !== null && response.data !== undefined) {
           let result: any = {
             token: response.data.token,
@@ -427,7 +460,6 @@ export class AuthenManager {
     if (token === undefined || token === null || token === '') {
       throw 'Token is required.';
     }
-
     return new Promise((resolve, reject) => {
       let isUpdateUser = false;
       if (options !== undefined && options !== null) {
@@ -463,7 +495,6 @@ export class AuthenManager {
         if (mode === "TW") {
           token = token.replace(/;/gi, '&');
         }
-
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -473,7 +504,10 @@ export class AuthenManager {
           fbMode = true;
           this.facebookMode = true;
         }
-
+        if(response.data.mode === 'GG'){
+          ggMode = true;
+          this.googleMode = true;
+        }
 
         if (isUpdateUser) {
           this.token = result.token;

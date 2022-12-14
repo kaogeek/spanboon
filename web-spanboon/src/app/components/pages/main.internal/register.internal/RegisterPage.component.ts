@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter,NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
@@ -20,6 +20,7 @@ import { DialogPassword } from '../../../../components/shares/shares';
 import { Asset } from '../../../../models/Asset';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
 import * as $ from 'jquery';
+import { environment } from 'src/environments/environment';
 
 const PAGE_NAME: string = 'register';
 
@@ -44,7 +45,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   private observManager: ObservableManager;
   private userFacade: UserFacade;
   private dateAdapter: DateAdapter<Date>;
-
+  private _ngZone: NgZone;
   public authenManager: AuthenManager;
   private twitterService: TwitterService;
   public dialog: MatDialog;
@@ -172,6 +173,26 @@ export class RegisterPage extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+  public fbLibrary() {
+    (window as any).fbAsyncInit = function () {
+      window['FB'].init({
+        appId: environment.facebookAppId,
+        cookie: true, 
+        xfbml: true,
+        version: 'v14.0'
+      });
+      window['FB'].AppEvents.logPageView();
+    };
+
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
   }
 
   private checkLoginAndRedirection(): void {
@@ -372,7 +393,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
       }
       this.authenManager.registerSocial(register, this.mode).then((value: any) => {
-        if (value.status === 1) {
+        if (value.status === 1 ) {
           let alertMessage: string = 'ลงทะเบียนสำเร็จ';
           let isValid = false;
           if (value.user) {
@@ -392,7 +413,22 @@ export class RegisterPage extends AbstractPage implements OnInit {
             }
           });
         }
-
+        else if(value.status === 2 ){
+          console.log('correct FACEBOOK register');
+          this.fbLibrary();
+          window['FB'].login((response) => {
+            if (response.authResponse) {
+              let accessToken = {
+                fbid: response.authResponse.userID,
+                fbtoken: response.authResponse.accessToken,
+                fbexptime: response.authResponse.data_access_expiration_time,
+                fbsignedRequest: response.authResponse.signedRequest
+              }
+              this.accessToken = accessToken;
+              this._ngZone.run(() => this.syncPageFB());
+            }
+          }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement, pages_manage_metadata' });
+        }
       }).catch((err: any) => {
         if (err.error.status === 0) {
           let alertMessages: string;
@@ -420,7 +456,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       });
     }
   }
-
+  
+  private syncPageFB(){
+    console.log('this.accessToken',this.accessToken);
+  }
   public generatorUnqueId(text: string): Promise<any> {
     let body = {
       uniqueId: text

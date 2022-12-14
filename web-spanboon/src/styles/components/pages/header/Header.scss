@@ -101,7 +101,25 @@
     justify-content: flex-end;
     margin: 10pt 0 10pt 15pt;
     border-left: $width-border solid $bg-fog-gray2;
-
+    > .icon-social{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5pt;
+      width: 16pt;
+      height: 16pt;
+      margin-right: 10pt;
+      &.twitter {
+        background-color: #1da1f3;
+      }
+      &.facebook {
+        background-color: #2851a3;
+      }
+      > .icon {
+        height: 15px;
+        width: 15px;
+      }
+    }
     > .menu-search {
       margin-left: 15pt;
     }

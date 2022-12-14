@@ -58,31 +58,34 @@
           @include font-size-9($font-head-500);
         }
 
-        > .list-follow-name {
-          margin-left: 5pt;
+        > a{
+          color: black;
+          > .list-follow-name {
+            margin-left: 5pt;
 
-          > .follow-name {
-            @include font-size-10($font-head-500);
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-all;
+            > .follow-name {
+              @include font-size-10($font-head-500);
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-all;
 
-            > .img-icon {
-              width: 12pt;
-              height: 12pt;
+              > .img-icon {
+                width: 12pt;
+                height: 12pt;
+              }
             }
-          }
 
-          > .follow-name-eng {
-            @include font-size-10($font-head-100);
-            color: $color-gray;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-all;
+            > .follow-name-eng {
+              @include font-size-10($font-head-100);
+              color: $color-gray;
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-all;
+            }
           }
         }
       }

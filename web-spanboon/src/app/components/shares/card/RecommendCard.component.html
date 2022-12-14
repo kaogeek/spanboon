@@ -23,40 +23,45 @@
                     </div>
                 </ng-template>
                 <ng-container *ngIf="recommed.type === 'PAGE'; else elseTemplate">
-                    <div class="list-follow-name">
-                        <div class="follow-name">
-                            <svg *ngIf="recommed.isOffical" class="img-icon" id="shield"
-                                xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
-                                viewBox="0 0 43.383 47.208">
-                                <g id="Group_88" data-name="Group 88" transform="translate(0)">
-                                    <path id="Path_141" data-name="Path 141"
-                                        d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
-                                        transform="translate(-36.867)" class="svg-icon-home-color" />
-                                    <path id="Path_142" data-name="Path 142"
-                                        d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
-                                        transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
-                                </g>
-                            </svg>
-                            {{recommed.name}}
+                    <a href="page/{{recommed._id}}" target="_blank">
+                        <div class="list-follow-name">
+                            <div class="follow-name">
+                                <svg *ngIf="recommed.isOffical" class="img-icon" id="shield"
+                                    xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
+                                    viewBox="0 0 43.383 47.208">
+                                    <g id="Group_88" data-name="Group 88" transform="translate(0)">
+                                        <path id="Path_141" data-name="Path 141"
+                                            d="M80.238,10.479,80.176,9,78.7,8.849a37.223,37.223,0,0,1-13.6-4.359A35.538,35.538,0,0,1,59.664.934L58.559,0,57.453.933A35.531,35.531,0,0,1,52.011,4.49a37.223,37.223,0,0,1-13.6,4.359L36.941,9l-.063,1.479a45.081,45.081,0,0,0,2.181,14.207,39.126,39.126,0,0,0,6.152,12,34.37,34.37,0,0,0,12.61,10.17l.737.352.737-.352a34.369,34.369,0,0,0,12.61-10.17,39.124,39.124,0,0,0,6.152-12A45.083,45.083,0,0,0,80.238,10.479ZM58.558,43.4a30.892,30.892,0,0,1-10.589-8.746,35.649,35.649,0,0,1-5.614-10.9,44.17,44.17,0,0,1-2.047-11.7,38.062,38.062,0,0,0,6.837-1.69,43.758,43.758,0,0,0,6.581-2.916A42.634,42.634,0,0,0,58.558,4.4a42.641,42.641,0,0,0,4.832,3.05,43.752,43.752,0,0,0,6.581,2.916A38.061,38.061,0,0,0,76.81,12.06,43.991,43.991,0,0,1,74.8,23.648,35.716,35.716,0,0,1,69.188,34.6,30.891,30.891,0,0,1,58.558,43.4Z"
+                                            transform="translate(-36.867)" class="svg-icon-home-color" />
+                                        <path id="Path_142" data-name="Path 142"
+                                            d="M290.734,305.016l-2.388,2.388-8.9,8.9-4.51-4.51-.613-.613-1.21,1.21h0l-1.21,1.21,7.544,7.544,13.707-13.707Z"
+                                            transform="translate(-259.715 -289.198)" class="svg-icon-home-color" />
+                                    </g>
+                                </svg>
+                                {{recommed.name}}
+                            </div>
+                            <div class="follow-name-eng"
+                                *ngIf="recommed && recommed.pageUsername !== null && recommed.pageUsername !== undefined && recommed.pageUsername !== '' ">
+                                {{ '@'+recommed.pageUsername}}
+                            </div>
                         </div>
-                        <div class="follow-name-eng"
-                            *ngIf="recommed && recommed.pageUsername !== null && recommed.pageUsername !== undefined && recommed.pageUsername !== '' ">
-                            {{ '@'+recommed.pageUsername}}
-                        </div>
-                    </div>
+                    </a>
                 </ng-container>
                 <ng-template #elseTemplate>
-                    <div class="list-follow-name">
-                        <div class="follow-name">
-                            {{recommed.displayName}}
+                    <a href="profile/{{recommed._id}}" target="_blank">
+                        <div class="list-follow-name">
+                            <div class="follow-name">
+                                {{recommed.displayName}}
+                            </div>
+                            <div class="follow-name-eng"
+                                *ngIf="recommed && recommed.uniqueId !== null && recommed.uniqueId !== undefined && recommed.uniqueId !== '' ">
+                                {{'@'+recommed.uniqueId}}
+                            </div>
                         </div>
-                        <div class="follow-name-eng"
-                            *ngIf="recommed && recommed.uniqueId !== null && recommed.uniqueId !== undefined && recommed.uniqueId !== '' ">
-                            {{'@'+recommed.uniqueId}}
-                        </div>
-                    </div>
+                    </a>
                 </ng-template>
             </div>
+            <!-- edit -->
             <div class="wrapper-btn-follow">
                 <button-follow [class.active]="recommed && recommed.isFollowed" [bgColor]="'#FFFFFF'"
                     [text]="recommed && recommed.isFollowed ? 'กำลังติดตาม' :'ติดตาม'"

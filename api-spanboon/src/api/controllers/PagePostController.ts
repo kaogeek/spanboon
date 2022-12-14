@@ -367,7 +367,6 @@ export class PagePostController {
         }
 
         let assetResult: Asset;
-
         if (postStory !== null && postStory !== undefined && postStory !== '') {
             if (coverImage !== null && coverImage !== undefined) {
                 const newFileName = userObjId + FileUtil.renameFile();
@@ -622,12 +621,12 @@ export class PagePostController {
                 else {
                     // user to user
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
-                    const notificationTextPOST = 'มีโพสต์ใหม่จาก'+ space + userPost.displayName;
+                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            const link = `/profile/${userPost.uniqueId}/post/` + createPostPageData.id;
+                            const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
                                 await this.notificationService.createNotificationFCM(
                                     tokenFCM.userId,
@@ -1301,7 +1300,6 @@ export class PagePostController {
                     const postsMap: any = {};
                     const postList = [];
                     const referencePostList = [];
-
                     for (const posts of pagePostLists) {
                         const postId = posts._id;
                         postList.push(new ObjectID(postId));

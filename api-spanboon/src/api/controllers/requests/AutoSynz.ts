@@ -7,20 +7,9 @@
 
 import 'reflect-metadata';
 
-export class SearchFilter {
+export class AutoSynz {
 
-    public limit: number;
-
-    public offset: number;
-
-    public select: any[];
-
-    public relation: any;
-
-    public whereConditions: any;
-
-    public orderBy: any;
-    
-    public count: boolean;
-
+    public autoSync: boolean;
+    public accessToken: string;
+    public secretToken:string;
 }

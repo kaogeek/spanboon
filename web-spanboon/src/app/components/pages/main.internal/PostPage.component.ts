@@ -505,6 +505,7 @@ export class PostPage extends AbstractPage implements OnInit {
     });
   }
 
+  // get picture
   public searchTypePost(data: string) {
     this.pageFacade.searchPostType(data, this.url).then((posts: any) => {
       let postArr: any[] = []

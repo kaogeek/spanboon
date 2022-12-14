@@ -110,6 +110,11 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         }
                     }
                 ];
+
+                if (searchOfficialOnly) {
+                    pageObjStmt.splice(7, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                }
+
                 const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
                 for (const iterator of searchResult) {
                     if (iterator.hashTagObj.length > 0) {

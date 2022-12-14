@@ -48,6 +48,7 @@
             </div>
         </div>
     </div>
+    
     <div class="col-contianer" *ngIf="STORY">
         <div class="col-stoey-contianer" [class.max]="!recommendedHashtag && STORY[0].hashTags.length === 0">
             <div class="col-user">
@@ -64,12 +65,25 @@
                         <span class="user-type"> เผยแพร่โดย : </span>
                         <span class="user-name" (click)="clickToUser(STORY[0].page[0])">{{STORY[0].page[0].name}}</span>
                     </div>
-
                 </div>
             </div>
-            <div class="col-stoey-body" [innerHTML]='STORY[0].story.story | highlight'>
+            <!-- [innerHTML]='STORY[0].story.story | highlight' -->
+            <div class="col-stoey-body"  *ngIf="STORY">
+                <span class = "title-post">{{STORY[0].title}}</span>
+                <br>
+                <br>
+                <span class="title-story">Story</span>
+                <div class="text">
+                    <span>{{STORY[0].story.storyAry[0].text}}</span>
+                </div>
+                <div class="images">
+                    <span>{{STORY[0].story.storyAry[0].imageUrl}}</span>
+                </div>
+                <div class="link">
+                    <iframe  [src]="safeSrc" width="560" height="315" frameborder="0" webkitallowfullscreen mozallowfullscreen
+                    allowfullscreen></iframe>
+                </div>
             </div>
-
             <div class="col-body">
                 <div class="head">
                     <control-action [isAction]="'true'" [comment]="STORY[0].commentCount ? STORY[0].commentCount : 0 "

@@ -84,7 +84,6 @@ export class AssetController {
             if (assetExpTimeCfg && assetExpTimeCfg.value) {
                 assetExpTime = assetExpTimeCfg.value;
             }
-
             const userId = req.user.id;
             const userObjId = new ObjectID(userId);
             const assets = tempFile.asset;
@@ -181,7 +180,6 @@ export class AssetController {
     public async decodeImage(@Param('id') id: string, @Res() response: any): Promise<any> {
         const imgId = new ObjectID(id);
         const asset: Asset = await this.assetService.findOne({ where: { _id: imgId } });
-
         if (asset) {
             if (this.IMAGE_ASSET_TYPE.indexOf(asset.mimeType) < 0 && this.VIDEO_ASSET_TYPE.indexOf(asset.mimeType) < 0) {
                 const errorResponse = ResponseUtil.getErrorResponse('Only allow jpg/jpeg/png/gif format image!', undefined);
