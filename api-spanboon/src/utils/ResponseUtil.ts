@@ -40,23 +40,14 @@ export class ResponseUtil {
         }
     }
 
-    public static getSuccessResponseAuth(msg:string,value:any,auth?:any,mode?:any):any {
-        if (value !== null || value !== undefined || value !== '' && auth === undefined) {
+    public static getSuccessResponseAuth(msg: string, value: any, getUserFB: any, auth?: any): any {
+        if (value !== null || value !== undefined || value !== '' && auth === undefined && getUserFB !== null || getUserFB !== undefined) {
             const sucessRes: any = {
                 status: 2,
                 message: msg,
                 data: value,
+                userFB: getUserFB,
                 authUser: auth,
-                _mode:mode,
-            };
-            return sucessRes;
-        } else if(value !== null || value !== undefined || value !== '' && auth !== undefined){
-            const sucessRes: any = {
-                status: 2,
-                message: msg,
-                data: value,
-                authUser: auth,
-                _mode:mode,
             };
             return sucessRes;
         }
@@ -69,13 +60,13 @@ export class ResponseUtil {
         }
 
     }
-    public static getSuccessAuth(msg:string,value:any,data?:any):any {
+    public static getSuccessAuth(msg: string, value: any, data?: any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 2,
                 message: msg,
                 data: value,
-                result:data,
+                result: data,
 
             };
             return sucessRes;
@@ -88,13 +79,13 @@ export class ResponseUtil {
         }
 
     }
-    public static getSuccessOTP(msg:string,value:any,data?:any):any {
+    public static getSuccessOTP(msg: string, value: any, data?: any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
                 message: msg,
                 data: value,
-                result:data,
+                limit: data,
 
             };
             return sucessRes;

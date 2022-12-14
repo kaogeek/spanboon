@@ -13,7 +13,7 @@ import { ObservableManager } from './ObservableManager.service';
 import { SearchFilter, User, Asset } from '../models/models';
 import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
-
+import { PageSoialFB } from '../models/models';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -177,6 +177,23 @@ export class AuthenManager {
     });
   }
 
+  public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/SyncFB';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "facebookPageId":facebook.facebookPageId,
+        "facebookPageName":facebook.facebookPageName,
+        "pageAccessToken":facebook.pageAccessToken
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
   public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {

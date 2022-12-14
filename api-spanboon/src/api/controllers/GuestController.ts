@@ -1106,30 +1106,39 @@ export class GuestController {
         const tokenFCM = req.body.tokenFCM;
         const deviceName = req.body.deviceName;
         let authen = undefined;
-        const data: User = await this.userService.findOne({ where: { username: users.email } });
-        const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
-        const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
-        // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
-        if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined && AllAuthen[4] !== undefined) {
-            const MathRandom = Math.floor(Math.random() * (4 - 0 + 1) + 1);
-            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
-        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined && AllAuthen[3] !== undefined) {
-            const MathRandom = Math.floor(Math.random() * (3 - 0 + 1) + 1);
-            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
-        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined && AllAuthen[2] !== undefined) {
-            const MathRandom = Math.floor(Math.random() * (2 - 0 + 1) + 1);
-            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
-        } else if (AllAuthen[0] !== undefined && AllAuthen[1] !== undefined) {
-            const MathRandom = Math.floor(Math.random() * (1 - 0 + 1) + 1);
-            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[MathRandom - 1].providerName } });
-        } else if (AllAuthen[0] !== undefined) {
-            authen = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: AllAuthen[0].providerName } });
-        }
-
         if (mode === PROVIDER.EMAIL) {
+            const modeAuthen = [];
+            const data: User = await this.userService.findOne({ where: { username: users.email } });
+            const AllAuthen = await this.authenticationIdService.find({ user: data.id });
+            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+            // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
+            for (authen of AllAuthen) {
+                modeAuthen.push(authen.providerName);
+            }
             if (data && checkAuth === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.EMAIL);
-                return res.status(200).send(successResponse);
+                const user: User = new User();
+                user.username = data.username;
+                user.email = data.email;
+                user.uniqueId = data.uniqueId;
+                user.firstName = data.firstName;
+                user.lastName = data.lastName;
+                user.imageURL = data.imageURL;
+                user.coverURL = data.coverURL;
+                user.coverPosition = 0;
+                user.displayName = data.displayName;
+                user.birthdate = new Date(data.birthdate);
+                user.isAdmin = data.isAdmin;
+                user.isSubAdmin = data.isSubAdmin;
+                user.banned = data.banned;
+                if (user) {
+                    if (await User.comparePassword(data, loginPassword)) {
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
             } else if (data && authen !== undefined && checkAuth !== undefined) {
                 if (data) {
                     const userObjId = new ObjectID(data.id);
@@ -1155,6 +1164,7 @@ export class GuestController {
                             newToken.providerName = PROVIDER.EMAIL;
                             newToken.storedCredentials = token;
                             newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
+                            const checkExistTokenFcm = await this.deviceToken.findOne({ userId: userObjId, token: req.body.token });
                             if (checkAuthen !== null && checkAuthen !== undefined) {
                                 const updateQuery = { user: data.id, providerName: PROVIDER.EMAIL };
                                 const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
@@ -1162,7 +1172,9 @@ export class GuestController {
                             } else {
                                 await this.authenticationIdService.create(newToken);
                             }
-
+                            if (checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null) {
+                                await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: userObjId });
+                            }
                             loginToken = token;
                         }
                         loginUser = data;
@@ -1203,22 +1215,50 @@ export class GuestController {
             let fbUser = undefined;
             let userFb = undefined;
             let authenticaTionFB = undefined;
+            let authenFB = undefined;
+            let userFind = undefined;
+            const stackAuth = [];
             try {
                 fbUser = await this.facebookService.fetchFacebook(users.token);
                 userFb = await this.userService.find({ email: fbUser.email });
-                for (const userFind of userFb) {
-                    authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
+                for (userFind of userFb) {
+                    if (userFind) {
+                        authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: mode } });
+                    } else {
+                        const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                        return res.status(400).send(errorUserNameResponse);
+                    }
                 }
             } catch (err) {
                 console.log(err);
-            } if (fbUser && authenticaTionFB === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.FACEBOOK);
+
+            } if (userFind !== undefined && authenticaTionFB === undefined) {
+                const authenAll = await this.authenticationIdService.find({ where: { user: userFb[0].id } });
+                for (authenFB of authenAll) {
+                    stackAuth.push(authenFB.providerName);
+                }
+                const user: User = new User();
+                user.username = userFb[0].username;
+                user.email = userFb[0].email;
+                user.uniqueId = userFb[0].uniqueId;
+                user.firstName = userFb[0].firstName;
+                user.lastName = userFb[0].lastName;
+                user.imageURL = userFb[0].imageURL;
+                user.coverURL = userFb[0].coverURL;
+                user.coverPosition = 0;
+                user.displayName = userFb[0].displayName;
+                user.birthdate = new Date(userFb[0].birthdate);
+                user.isAdmin = userFb[0].isAdmin;
+                user.isSubAdmin = userFb[0].isSubAdmin;
+                user.banned = userFb[0].banned;
+
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, fbUser, stackAuth);
                 return res.status(200).send(successResponse);
-            } else if (fbUser && authenticaTionFB !== undefined) {
+            } else if (userFb && authenticaTionFB !== undefined) {
                 const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
                 const deviceFB = req.body.tokenFCM_FB.deviceName;
                 // find email then -> authentication -> mode FB
-                 if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
+                if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
@@ -1232,8 +1272,10 @@ export class GuestController {
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
                     if (updateAuth) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: query });
+                        console.log('updateAuth', updatedAuth);
                         await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                         loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
+                        console.log('loginUser', loginUser);
                         loginToken = updatedAuth.storedCredentials;
                         loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                     }
@@ -1263,10 +1305,32 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.APPLE) {
-            if (data && authen !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.APPLE);
+            const data: User = await this.userService.findOne({ where: { username: users.email } });
+            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
+            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+            const stackAuth = [];
+            const user: User = new User();
+            user.username = data.username;
+            user.email = data.email;
+            user.uniqueId = data.uniqueId;
+            user.firstName = data.firstName;
+            user.lastName = data.lastName;
+            user.imageURL = data.imageURL;
+            user.coverURL = data.coverURL;
+            user.coverPosition = 0;
+            user.displayName = data.displayName;
+            user.birthdate = new Date(data.birthdate);
+            user.isAdmin = data.isAdmin;
+            user.isSubAdmin = data.isSubAdmin;
+            user.banned = data.banned;
+            for (const authens of AllAuthen) {
+                stackAuth.push(authens.providerName);
+            }
+            // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
+            if (data && checkAuth === undefined) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
-            } else if (data && authen !== undefined) {
+            } else if (data && checkAuth !== undefined) {
                 const appleId: any = req.body.apple.result.user;
                 const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
                 const deviceAP = req.body.tokenFCM_AP.deviceName;
@@ -1310,27 +1374,49 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.GOOGLE) {
-            if (data && authen !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.GOOGLE);
+            const idToken = users.idToken;
+            const authToken = users.authToken;
+            const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
+            const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
+            const deviceGG = req.body.tokenFCM_GG.deviceName;
+            const modeAuthen = [];
+            let allAuthen = undefined;
+            if (checkIdToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
+            // const expiresAt = checkIdToken.expire;
+            // const today = moment().toDate();
+            let googleUser = undefined;
+            try {
+                googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
+            } catch (err) {
+                console.log(err);
+            }
+            const userGG = await this.userService.findOne({ email: checkIdToken.email });
+            const user: User = new User();
+            user.username = userGG.username;
+            user.email = userGG.email;
+            user.uniqueId = userGG.uniqueId;
+            user.firstName = userGG.firstName;
+            user.lastName = userGG.lastName;
+            user.imageURL = userGG.imageURL;
+            user.coverURL = userGG.coverURL;
+            user.coverPosition = 0;
+            user.displayName = userGG.displayName;
+            user.birthdate = new Date(userGG.birthdate);
+            user.isAdmin = userGG.isAdmin;
+            user.isSubAdmin = userGG.isSubAdmin;
+            user.banned = userGG.banned;
+            const authenGG = await this.authenticationIdService.find({ where: { user: userGG.id } });
+            for (allAuthen of authenGG) {
+                modeAuthen.push(allAuthen.providerName);
+            }
+            if (userGG && allAuthen.providerName === PROVIDER.GOOGLE === false) {
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
                 return res.status(200).send(successResponse);
-            } else if (data && authen !== undefined) {
-                const idToken = users.idToken;
-                const authToken = users.authToken;
-                const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
-                const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
-                const deviceGG = req.body.tokenFCM_GG.deviceName;
-                if (checkIdToken === undefined) {
-                    const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                    return res.status(400).send(errorResponse);
-                }
-                // const expiresAt = checkIdToken.expire;
-                // const today = moment().toDate();
-                let googleUser = undefined;
-                try {
-                    googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
-                } catch (err) {
-                    console.log(err);
-                }
+            } else if (userGG && allAuthen.providerName === PROVIDER.GOOGLE === true) {
+
                 if (googleUser === null || googleUser === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
@@ -1373,13 +1459,22 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.TWITTER) {
-            if (data && authen !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', data, authen, PROVIDER.TWITTER);
+        }/* else if (mode === PROVIDER.TWITTER) {
+            const TWUserId = users.twitterUserId;
+
+            const twitterOauthToken = users.twitterOauthToken;
+            const twitterOauthTokenSecret = users.twitterOauthTokenSecret;
+            const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+            const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
+            const getTwUser = await this.twitterService.getTWUser(verifyObject.id_str,oAuth2Twitter.access_token);
+            const authenTW = await this.authenticationIdService.findOne({where:{providerUserId:TWUserId}});
+            const userTw = await this.userService.findOne({_id:ObjectID(authenTW.user)});
+            if (userTw && authenTW === undefined) {
+
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', userTw, authen);
                 return res.status(200).send(successResponse);
-            } else if (data && authen !== undefined) {
-                const twitterOauthToken = users.twitterOauthToken;
-                const twitterOauthTokenSecret = users.twitterOauthTokenSecret;
+            } else if (userTw && authenTW !== undefined) {
+
                 if (twitterOauthToken === undefined || twitterOauthToken === '' || twitterOauthToken === null) {
                     const errorResponse: any = { status: 0, message: 'twitterOauthToken was required.' };
                     return res.status(400).send(errorResponse);
@@ -1448,8 +1543,8 @@ export class GuestController {
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
-            }
-        }
+            } 
+        } */
     }
     // send otp
     @Post('/send_otp')
@@ -1460,7 +1555,6 @@ export class GuestController {
         const minm = 100000;
         const maxm = 999999;
         const getCache = await cache.get(user.id.toString());
-        const getTTL = cache.getTtl(user.id.toString());
         let count = 1;
         if (getCache !== undefined) {
             count += getCache[0].limit;
@@ -1468,17 +1562,23 @@ export class GuestController {
         const otp = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
         const object = [{ otpGet: otp, limit: count }];
         const expirationDate = moment().add(5, 'minutes').toDate().getTime();
-        const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
-        const saveOtp = cache.set(String(user.id), object);
-        if (sendMailRes.status === 1 && saveOtp && getCache === undefined && getTTL === undefined) {
-            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
-            return res.status(200).send(successResponse);
-        } else if (sendMailRes.status === 1 && saveOtp && getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
-            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
-            return res.status(200).send(successResponse);
+        const getTTL = cache.getTtl(user.id.toString());
+        if (getCache === undefined && getTTL === undefined) {
+            const saveOtp = cache.set(String(user.id), object);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
+            if (saveOtp && sendMailRes.status === 1) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                return res.status(200).send(successResponse);
+            }
+        } else if (getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
+            const saveOtp = cache.set(String(user.id), object);
+            if (saveOtp && sendMailRes.status === 1) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                return res.status(200).send(successResponse);
+            }
         } else {
-            cache.del(user.id.toString());
-            return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
     }
     // test route
@@ -1498,17 +1598,21 @@ export class GuestController {
         const maxm = 999999;
         const otp = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
         const object = [{ otpGet: otp, limit: count }];
-        const saveOtp = cache.set(String(user.id), object);
-        if (saveOtp && getCache === undefined && getTTL === undefined) {
-            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
-            return res.status(200).send(successResponse);
-        } else if (saveOtp && getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
-            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
-            return res.status(200).send(successResponse);
+        if (getCache === undefined && getTTL === undefined) {
+            const saveOtp = cache.set(String(user.id), object);
+            if (saveOtp) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                return res.status(200).send(successResponse);
+            }
+        } else if (getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
+            const saveOtp = cache.set(String(user.id), object);
+            if (saveOtp) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                return res.status(200).send(successResponse);
+            }
         }
         else {
-            cache.del(user.id.toString());
-            return res.status(400).send(ResponseUtil.getErrorResponse('Your Activation Code Was Expired', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', object[0].limit));
         }
     }
 

@@ -24,11 +24,10 @@ export class PageConfig extends BaseModel {
     public name: string;
 
     @Column({ name: 'value' })
-    public value: string;
+    public value: boolean;
 
     @Column({ name: 'type' })
     public type: string;
-
     @IsNotEmpty()
     @Column({ name: 'page' })
     public page: ObjectID;
