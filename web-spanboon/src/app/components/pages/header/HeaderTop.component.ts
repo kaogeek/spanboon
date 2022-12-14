@@ -17,12 +17,13 @@ import { environment } from 'src/environments/environment';
 import { DialogAlert } from '../../components';
 import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB'; 
-
+import { TwitterService } from '../../../services/services';
+import { PageSocialTW } from 'src/app/models/PageSocialTW';
 
 const DEFAULT_USER_ICON: string = '../../../assets/components/pages/icons8-female-profile-128.png';
 const REDIRECT_PATH: string = '/main';
 const PAGE_NAME: string = 'header';
-
+declare const window: any;
 @Component({
   selector: 'header-top',
   templateUrl: './HeaderTop.component.html',
@@ -44,22 +45,28 @@ export class HeaderTop extends AbstractPage implements OnInit {
   private editProfileFacade: EditProfileUserPageFacade;
   private userImage: any;
   public noti: any = [];
-
+  public isPreLoadIng: boolean;
+  public isLoadingTwitter: boolean;
+  public isLoading: boolean;
   public user: any;
   private accessToken: any;
   private _ngZone: NgZone;
   public responseFacabook: any;
+  public connectTwitter: boolean = false;
+  private twitterService: TwitterService;
 
   public partners: any[] = [];
   public countPageuser: any;
   public isclickmenu: boolean;
-  public isLoading: boolean;
   public isFrist: boolean;
   public isCheck: boolean = undefined;
   private activatedRoute: ActivatedRoute;
   public redirection: string;
   public accessTokenLink = '';
-
+    //twitter
+  public authorizeLink = 'https://api.twitter.com/oauth/authorize';
+  public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
+  public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
   // @ViewChild('menuRight', { static: false }) set positionCenter(element) {
   //    // initially setter gets called with undefined
   //   this.resSize(); 
@@ -67,7 +74,8 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
     editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2,_ngZone: NgZone,
-    activatedRoute: ActivatedRoute) {
+    activatedRoute: ActivatedRoute,
+    twitterService: TwitterService,) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.router = router;
     this._ngZone = _ngZone;
@@ -78,6 +86,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     this.isLoading = true;
     this.isFrist = true;
     this.activatedRoute = activatedRoute;
+    this.twitterService = twitterService;
 
     this.activatedRoute.params.subscribe((param) => {
       this.redirection = param['redirection'];
@@ -164,6 +173,48 @@ export class HeaderTop extends AbstractPage implements OnInit {
       }
     }
   }
+  public clickSyncTw(text: string, bind?: boolean){
+    this.isPreLoadIng = true;
+    this.isLoadingTwitter = true;
+    let callback = environment.webBaseURL + "/callback";
+    this.twitterService.requestToken(callback).then((result: any) => {
+        this.authorizeLink += '?' + result;
+        window.open(this.authorizeLink, '_blank');
+        // this.popup(this.authorizeLink, '', 600, 200, 'yes');
+        this.isPreLoadIng = false;
+
+        window.bindTwitter = (resultTwitter) => {
+            if (resultTwitter !== undefined && resultTwitter !== null) {
+                const twitter = new PageSocialTW();
+                twitter.twitterOauthToken = resultTwitter.token;
+                twitter.twitterTokenSecret = resultTwitter.token_secret;
+                twitter.twitterUserId = resultTwitter.userId;
+                twitter.twitterPageName = resultTwitter.name;
+
+                this.authenManager.syncWithTwitter(twitter).then((res: any) => {
+                  if (res.data) {
+                    this.connectTwitter = res.data;
+                    this.isLoadingTwitter = false;
+                    let check = {
+                        checked: true
+                    }
+                  }
+                }).catch((err: any) => {
+                    if (err.error.message === 'This page was binding with Twitter Account.') {
+                        this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+                    } else {
+                        this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+                    }
+                    this.connectTwitter = false;
+                });
+            }
+        }
+    }).catch((error: any) => {
+        this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+        this.isPreLoadIng = false;
+        this.isLoadingTwitter = false;
+    });
+  }
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
@@ -229,11 +280,14 @@ export class HeaderTop extends AbstractPage implements OnInit {
     
     this.authenManager.syncWithFacebook(facebook,mode).then((data: any) => {
       // login success redirect to main page
-      this.observManager.publish('authen.check', null);
-      if (this.redirection) {
-        this.router.navigateByUrl(this.redirection);
-      } else {
-        this.router.navigate(['home']);
+      if(data){
+        this.observManager.publish('authen.check', null);
+        this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ');
+        if (this.redirection) {
+          this.router.navigateByUrl(this.redirection);
+        } else {
+          this.router.navigate(['home']);
+        }
       }
     }).catch((err) => {
       const statusMsg = err.error.message;

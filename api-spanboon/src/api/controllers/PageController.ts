@@ -326,7 +326,102 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
-    // autoSyncPage 
+    // autoSyncPageTW
+    @Post('/SyncTW')
+    @Authorized('user')
+    public async autoSyncPageTW( @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any):Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const getUser = await this.userService.findOne({ _id: userId });
+        const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
+        const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const clientId = req.headers['client-id'];
+        const assetPic = await this.assetService.createAssetFromURL(verifyObject.profile_image_url_https, userId);
+        if(verifyObject && assetPic){
+            const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ'});
+            const pageCreate: Page = new Page();
+            pageCreate.name = verifyObject.name;
+            pageCreate.pageUsername = null;
+            pageCreate.subTitle = null;
+            pageCreate.backgroundStory = null;
+            pageCreate.detail = null;
+            pageCreate.ownerUser = userId;
+            pageCreate.imageURL = ASSET_PATH + assetPic.id;
+            pageCreate.s3ImageURL = assetPic ? assetPic.s3FilePath : '';
+            pageCreate.coverURL = '';
+            pageCreate.coverPosition = null;
+            pageCreate.color = null;
+            pageCreate.backgroundStory = pageCreate.backgroundStory;
+            pageCreate.email = getUser.email;
+            pageCreate.category = checkPageCate ? checkPageCate.id : '';
+            pageCreate.isOfficial = false;
+            pageCreate.banned = false;
+            const result: Page = await this.pageService.create(pageCreate);
+            if (result) {
+                const properties = {
+                    pageId: socialBinding.twitterUserId
+                };
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const pageSocialAccount = new PageSocialAccount();
+                pageSocialAccount.page = result.id;
+                pageSocialAccount.properties = properties;
+                pageSocialAccount.providerName = PROVIDER.TWITTER;
+                pageSocialAccount.providerPageId = socialBinding.twitterUserId;
+                pageSocialAccount.storedCredentials = socialBinding.twitterOauthToken;
+                pageSocialAccount.providerPageName = socialBinding.twitterPageName;
+                const page = await this.pageSocialAccountService.create(pageSocialAccount);
+                if (page) {
+                    const config = new PageConfig();
+                    config.page = result.id;
+                    config.name = 'page.social.twitter.autopost';
+                    config.type = 'boolean';
+                    config.value = true;
+                    await this.pageConfigService.create(config);
+
+                    const socialPostLogs = new SocialPostLogs();
+                    socialPostLogs.user = userId;
+                    socialPostLogs.pageId = result.id;
+                    socialPostLogs.providerName = PROVIDER.TWITTER;
+                    socialPostLogs.providerUserId = page.providerPageId;
+                    socialPostLogs.lastSocialPostId = null;
+                    socialPostLogs.properties = page.properties;
+                    socialPostLogs.enable = true;
+                    socialPostLogs.lastUpdated = authTime;
+                    await this.socialPostLogsService.create(socialPostLogs);
+                    const pageObjId = new ObjectID(result.id);
+                    const pageAcceessLevel = new PageAccessLevel();
+                    pageAcceessLevel.page = result.id;
+                    pageAcceessLevel.user = userId;
+                    pageAcceessLevel.level = PAGE_ACCESS_LEVEL.OWNER;
+                    const pageAccessLevelCreated: PageAccessLevel = await this.pageAccessLevelService.create(pageAcceessLevel);
+                    if (pageAccessLevelCreated) {
+                        const engagement = new UserEngagement();
+                        engagement.clientId = clientId;
+                        engagement.contentId = pageObjId;
+                        engagement.contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
+                        engagement.ip = ipAddress;
+                        engagement.userId = userId;
+                        engagement.action = ENGAGEMENT_ACTION.CREATE;
+
+                        const engagements: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: pageObjId, userId: ObjectID(userId), contentType: ENGAGEMENT_CONTENT_TYPE.PAGE, action: ENGAGEMENT_ACTION.CREATE } });
+                        if (engagements) {
+                            engagement.isFirst = false;
+                        } else {
+                            engagement.isFirst = true;
+                        }
+
+                        await this.userEngagementService.create(engagement);
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+        }
+    }
+    // autoSyncPageFB
     @Post('/SyncFB')
     @Authorized('user')
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -435,7 +530,6 @@ export class PageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
                     return res.status(400).send(errorResponse);
                 }
-
             }
         }
     }
