@@ -83,7 +83,6 @@ export class PageFacade extends AbstractFacade {
         body = Object.assign(data)
       }
       let options = this.getDefaultOptions();
-
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
