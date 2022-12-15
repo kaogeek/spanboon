@@ -195,34 +195,26 @@
                     }
                 }
             }
-            > .social-list-page{
-                position: relative;
-                border-bottom: $width-border solid $border-separator;
-                background-color: $white;
-                z-index: 1;
-                > .button-social{
-                    display: flex;
-                    align-items: center;
-                    width: 100%;
-                    border: none;
-                    padding-right: 20px;
-                    &.twitter {
-                        background-color: #1da1f3;
-                    }
-                    &.facebook {
-                        background-color: #2851a3;
-                    }
-                    > .icon{
-                        border-radius: 50%;
-                        margin-left: 15pt;
-                    }
-                    span {
-                        display: flex;
-                        align-items: center;
-                        margin-left: 15px;
-                        color: rgb(248, 247, 242);
-                        font-size: 15px;
-                        font-family: "Anakotmai-Medium"
+
+            >.wrapper-page-create {
+                bottom: 0px;
+                width: 100%;
+                position: absolute;
+                gap: 5px;
+                display: flex;
+                flex-direction: column;
+                background: white;
+
+                >.title-page-create {
+                    margin-left: 22px;
+                    @include font-size-10($font-head-500);
+                }
+
+                >.social-list-page {
+                    >.button-social {
+                        >.butt-social {
+                            border-radius: unset;
+                        }
                     }
                 }
             }
