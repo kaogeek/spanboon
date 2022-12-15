@@ -85,6 +85,9 @@
             width: 280pt;
             height: 100%;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+
             button.mat-menu-item {
                 width: unset;
             }
@@ -96,6 +99,7 @@
                 padding: unset;
             }
             .wrapper-header-list {
+                flex: 0 0 auto;
                 display: flex;
                 position: sticky;
                 height: 30pt;
@@ -132,6 +136,10 @@
                     }
                 }
             }
+
+            .box-list-page {
+                flex: 1 1 0%;
+
             .wrapper-list-page {
                 position: relative;
                 display: flex;
@@ -150,6 +158,8 @@
                     display: flex;
                     align-items: center;
                     width: calc(100% - 30pt);
+                    flex-direction: row;
+
                     > .image-page {
                         padding: 5pt;
                         > .img {
@@ -195,25 +205,29 @@
                     }
                 }
             }
+            }
 
             >.wrapper-page-create {
-                bottom: 0px;
-                width: 100%;
-                position: absolute;
-                gap: 5px;
-                display: flex;
-                flex-direction: column;
-                background: white;
+                padding: 20pt 15pt 10pt 15pt;
+                flex: 0 0 auto;
+                position: sticky;
+                bottom: 0;
+                z-index: 99;
+                background: #fff;
 
                 >.title-page-create {
-                    margin-left: 22px;
                     @include font-size-10($font-head-500);
                 }
 
                 >.social-list-page {
+                    gap: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 10px;
+
                     >.button-social {
                         >.butt-social {
-                            border-radius: unset;
+
                         }
                     }
                 }
@@ -236,6 +250,19 @@
         > .listPage {
             width: 36px;
             height: 36px;
+        }
+    }
+}
+
+@media (max-width: $lmedium) {
+    .manage-page {
+        .mat-drawer-container {
+            .list-page {
+
+                > .wrapper-page-create {
+                    position: static;
+                }
+            }
         }
     }
 }
