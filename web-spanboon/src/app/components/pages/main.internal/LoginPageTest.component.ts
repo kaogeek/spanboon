@@ -24,7 +24,7 @@ const PAGE_NAME: string = 'login/test';
 
 
 @Component({
-  selector: 'login-pagetest',
+  selector: 'login-page',
   templateUrl: './LoginPageTest.component.html',
 })
 export class LoginPageTest extends AbstractPage implements OnInit {
