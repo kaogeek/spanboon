@@ -4,56 +4,143 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
+<ng-container>
+    <div class="wrapper-page">
+        <img class="background" src="../../../../assets/img/bg-login.png" alt="">
+        <ng-container *ngIf="modeSwitch === 'login'">
+            <div class="wrapper-login-page">
+                <div class="wrapper-box-detail">
+                    <div class="label">
+                        เข้าสู่ระบบ
+                    </div>
+                    <div class="form-group">
+                        <input type="text" #email class="input-text" id="firstName" name="firstName" placeholder="อีเมล" required
+                            matInput>
+                        <input type="password" #password class="input-text" id="password" name="password" placeholder="รหัสผ่าน"
+                            (keyup.enter)="onClickLogin()" required matInput>
+                    </div>
+                    <div class="wrapper-forget-password">
+                        <div class="forget" [routerLink]="'/forgotpassword'">
+                            ลืมรหัสผ่านใช่ไหม ?
+                        </div>
+                    </div>
+                    <div class="login-div">
+                        <spanboon-button class="login" [height]="'34pt'" [text]="'เข้าสู่ระบบ'" [fontSize]="'18px'"
+                            [color]="'#F8F7F2'" (click)="onClickLogin()"></spanboon-button>
 
-<div class="wrapper-login-page">
-    <img class="background" src="../../../../assets/img/bg-login.png" alt="">
-    <div class="wrapper-box-detail">
-        <div class="label">
-            เข้าสู่ระบบ
-        </div>
-        <div class="form-group">
-            <input type="text" #email class="input-text" id="firstName" name="firstName" placeholder="อีเมล" required
-                matInput>
-            <input type="password" #password class="input-text" id="password" name="password" placeholder="รหัสผ่าน"
-                (keyup.enter)="onClickLogin()" required matInput>
-        </div>
-        <div class="wrapper-forget-password">
-            <div class="forget" [routerLink]="'/forgotpassword'">
-                ลืมรหัสผ่านใช่ไหม ?
+                        <div class="center-line">
+                            <span class="border-span"></span>
+                            <span class="span-for">หรือเข้าผ่าน</span>
+                            <span class="border-span"></span>
+                        </div>
+
+                        <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'" [fontSize]="'18px'"
+                            [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
+                            [color]="'#F8F7F2'" (click)="clickLoginFB()" [param]="{mode: 'facebook'}"></button-social>
+
+                        <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
+                            [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
+                            [color]="'#F8F7F2'" (click)="clickLoginTwitter()" [param]="{mode: 'twitter'}">
+                        </button-social>
+                        <ng-container *ngIf="isPreloadTwitter">
+                            <loading></loading>
+                        </ng-container>
+
+                        <button-social class="button-social " [btnName]="'Google'" [height]="'34pt'" [fontSize]="'18px'"
+                            [iconSocial]="'../../../../assets/img/google.svg'" [bgColor]="'#F8F7F2'" [imgsize]="'20pt'"
+                            [color]="'#000000'" (click)="clickLoginGoogle()" [param]="{mode: 'google'}">
+                        </button-social>
+                    </div>
+
+                    <div class="wrapper-footer-login">
+                        มาร่วม{{PLATFORM_FULFILL_TEXT}}กับเรา <span class="wrapper-register" [routerLinkActive]="['active-link']"
+                            [routerLink]="'/register/menu'"> สมัครสมาชิก </span> 
+                    </div>
+                    <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
+                </div>
             </div>
-        </div>
-        <div class="login-div">
-            <spanboon-button class="login" [height]="'34pt'" [text]="'เข้าสู่ระบบ'" [fontSize]="'18px'"
-                [color]="'#F8F7F2'" (click)="onClickLogin()"></spanboon-button>
-
-            <div class="center-line">
-                <span class="border-span"></span>
-                <span class="span-for">หรือเข้าผ่าน</span>
-                <span class="border-span"></span>
+        </ng-container>
+        <ng-container *ngIf="modeSwitch === 'mergeuser'">
+            <div class="wrapper-mergeuser-page">
+                <div class="box-detail">
+                    <div class="merge-user">เราพบบัญชีของคุณในระบบ MFPToday</div>
+                    <div class="wrapper-user-to-user">
+                        <div class="profile-card">
+                            <div class="profile-box">
+                                <div class="wrapper-img">
+                                    <div class="icon-social"
+                                    [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
+                                    <img class="icon-social-pic"
+                                        [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
+                                    </div>
+                                    <img class="social-pic" src="http://placekitten.com/600/900" />
+                                </div>
+                            </div>
+                            <div class="label">
+                                {{dataUser.data.email}}
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <mat-icon>
+                                navigate_next
+                            </mat-icon>
+                        </div>
+                        <div class="profile-card">
+                            <div class="profile-box">
+                                <div class="wrapper-img">
+                                    <div class="icon-social"
+                                    [ngClass]="{'facebook': social.socialLogin === 'FACEBOOK' , 'twitter': social.socialLogin === 'TWITTER', 'google': social.socialLogin === 'GOOGLE', 'email': social.socialLogin === 'EMAIL'}">
+                                    <img class="icon-social-pic"
+                                        [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
+                                    </div>
+                                    <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'"/>
+                                </div>
+                            </div>
+                            <div class="label">
+                                {{dataUser.data.firstName}} {{dataUser.data.lastName}}
+                                <div class="label-tag">
+                                @{{dataUser.data.uniqueId}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="description"> กรุณากดปุ่มด้านล่าง กรุณาตรวจสอบ OTP ในกล่องอีเมลของคุณ</div>
+                    <spanboon-button class="next-merge" [height]="'34pt'" [text]="'ถัดไป'" [fontSize]="'18px'"
+                        [bgColor]="''" (click)="dialogConfirmMerge()">
+                    </spanboon-button>
+                    <spanboon-button class="back-merge" [height]="'34pt'" [text]="'ย้อนกลับ'" [fontSize]="'18px'"
+                        [bgColor]="''" (click)="modeSwitch === 'mergeuser' ? modeSwitch = 'login' : null"></spanboon-button>
+                </div>
+            </div>        
+        </ng-container>
+        <ng-container *ngIf="modeSwitch === 'otp'">
+            <div class="wrapper-otp-page">
+                <div class="otp-box-border">
+                    <div class="otp-box-details">
+                        <div class="title">
+                            กรุณากรอกรหัส OTP ของคุณ
+                        </div>
+                        <div class="otp-box">
+                            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)" [config]="configOtp">
+                            </ng-otp-input>
+                        </div>
+                        <ng-container *ngIf="otpResendIcon === 'show'; else otpCountDown">
+                            <div class="refresh">
+                                <mat-icon class="refresh-icon" (click)="sendNewOtp()">
+                                    refresh
+                                </mat-icon>
+                                <div class="box-refresh-otp" (click)="sendNewOtp()">กดเพื่อรับรหัส OTP ใหม่</div>
+                            </div>
+                        </ng-container>
+                        <ng-template class="otp-count" #otpCountDown>
+                            <countdown [config]="configCountdown" (event)="otpCountdownHandleEvent($event)"></countdown>
+                        </ng-template>
+                        <spanboon-button class="verify-otp" [height]="'34pt'" [text]="'ยืนยัน'" [fontSize]="'18px'"
+                            [bgColor]="''" (click)="clickCheckOtp()">
+                        </spanboon-button>
+                    </div>
+                </div>
             </div>
-
-            <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'" [fontSize]="'18px'"
-                [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
-                [color]="'#F8F7F2'" (click)="clickLoginFB()" [param]="{mode: 'facebook'}"></button-social>
-
-            <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
-                [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
-                [color]="'#F8F7F2'" (click)="clickLoginTwitter()" [param]="{mode: 'twitter'}">
-            </button-social>
-            <ng-container *ngIf="isPreloadTwitter">
-                <loading></loading>
-            </ng-container>
-
-            <button-social class="button-social " [btnName]="'Google'" [height]="'34pt'" [fontSize]="'18px'"
-                [iconSocial]="'../../../../assets/img/google.svg'" [bgColor]="'#F8F7F2'" [imgsize]="'20pt'"
-                [color]="'#000000'" (click)="clickLoginGoogle()" [param]="{mode: 'google'}">
-            </button-social>
-        </div>
-
-        <div class="wrapper-footer-login">
-            มาร่วม{{PLATFORM_FULFILL_TEXT}}กับเรา <span class="wrapper-register" [routerLinkActive]="['active-link']"
-                [routerLink]="'/register/menu'"> สมัครสมาชิก </span> 
-        </div>
-        <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
+        </ng-container>
     </div>
-</div>
+</ng-container>
