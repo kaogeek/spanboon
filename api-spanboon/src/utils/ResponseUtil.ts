@@ -40,14 +40,13 @@ export class ResponseUtil {
         }
     }
 
-    public static getSuccessResponseAuth(msg: string, value: any, getUserFB: any, auth?: any): any {
-        if (value !== null || value !== undefined || value !== '' && auth === undefined && getUserFB !== null || getUserFB !== undefined) {
+    public static getSuccessResponseAuth(msg: string, value: any, authen: any, auth?: any): any {
+        if (value !== null || value !== undefined || value !== '' && auth === undefined && authen !== null || authen !== undefined) {
             const sucessRes: any = {
                 status: 2,
                 message: msg,
                 data: value,
-                userFB: getUserFB,
-                authUser: auth,
+                authUser: authen,
             };
             return sucessRes;
         }

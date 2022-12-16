@@ -28,6 +28,10 @@ import { NgxTributeModule } from 'ngx-tribute';
 import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
 
+import { NgOtpInputModule } from  'ng-otp-input';
+import { CountdownModule } from 'ngx-countdown';
+
+
 import { 
   SocialLoginModule, 
   GoogleLoginProvider, 
@@ -248,6 +252,7 @@ import {
   TwitterService,
   RecommendFacade,
   UserEngagementFacade,
+  CheckMergeUserFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -445,6 +450,7 @@ const SERVICE_CLASSES: any[] = [
   // manager
   AuthenManager,
   PageUserInfo,
+  CheckMergeUserFacade,
   ObservableManager,
   CacheConfigInfo,
   NotificationManager,
@@ -518,8 +524,10 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
 @NgModule({
 
   imports: [
+    CountdownModule,
     BrowserModule,
     FontAwesomeModule,
+    NgOtpInputModule,
     GalleryModule,
     LightboxModule,
     GallerizeModule,

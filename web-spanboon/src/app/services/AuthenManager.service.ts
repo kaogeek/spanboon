@@ -145,7 +145,6 @@ export class AuthenManager {
         "tokenFCM": tokenFCM,
         "deviceName": "Chrome",
       };
-      console.log('body',body);
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -179,7 +178,7 @@ export class AuthenManager {
   }
   public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
     return new Promise((resolve,reject) =>{
-      let url: string = this.baseURL + '/page/SyncTW';
+      let url: string = this.baseURL + '/sync/fb';
       let options = this.getDefaultOptions();
       let body: any = {
         "twitterOauthToken":twitter.twitterOauthToken,
@@ -196,7 +195,7 @@ export class AuthenManager {
   }
   public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/page/SyncFB';
+      let url: string = this.baseURL + '/page/sync/fb';
       let options = this.getDefaultOptions();
       let body: any = {
         "facebookPageId":facebook.facebookPageId,
@@ -212,7 +211,7 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM_FB:any,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {
@@ -227,7 +226,7 @@ export class AuthenManager {
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
-          user: response.data.user
+          user: response.data.user,
         };
 
         this.token = result.token;
@@ -289,7 +288,6 @@ export class AuthenManager {
   }
 
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
-    console.log('registSocial',registSocial);
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
     }

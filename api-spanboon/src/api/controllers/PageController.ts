@@ -327,7 +327,7 @@ export class PageController {
         }
     }
     // autoSyncPageTW
-    @Post('/SyncTW')
+    @Post('/sync/tw')
     @Authorized('user')
     public async autoSyncPageTW( @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any):Promise<any>{
         const userId = new ObjectID(req.user.id);
@@ -335,6 +335,13 @@ export class PageController {
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
+
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.twitterUserId}});
+        if(pageSocialFb !== undefined && pageSocialFb !==null){
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const assetPic = await this.assetService.createAssetFromURL(verifyObject.profile_image_url_https, userId);
         if(verifyObject && assetPic){
             const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ'});
@@ -422,7 +429,7 @@ export class PageController {
         }
     }
     // autoSyncPageFB
-    @Post('/SyncFB')
+    @Post('/sync/fb')
     @Authorized('user')
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
@@ -430,10 +437,16 @@ export class PageController {
         const authenFB = await this.authenService.findOne({ where: { user: userId, providerName: 'FACEBOOK' } });
         const pageFB = await this.facebookService.getFBPageAccounts(authenFB.storedCredentials);
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + pageFB.data[0].id + '/picture?type=large');
-        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
+
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
+        if(pageSocialFb !== undefined && pageSocialFb !==null){
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
         // create category 
         const checkPageCate = await this.pageCategoryService.findOne({ name: pageFB.data[0].category });
         if (checkPageCate === undefined) {
