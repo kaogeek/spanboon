@@ -171,6 +171,18 @@ export class ManagePage extends AbstractPage implements OnInit {
                 }
               })
               .catch((err: any) => {
+                const statusMsg = err.error.message;
+                if (statusMsg === "Unable create Page" && statusMsg === 400) {
+                    let dialog = this.dialog.open(DialogAlert, {
+                        disableClose: true,
+                        data: {
+                          text: "คุณมีเพจอยู่แล้ว",
+                          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                          bottomColorText2: "black",
+                          btDisplay1: "none",
+                        },
+                    });
+                }
                 if (
                   err.error.message ===
                   "This page was binding with Twitter Account."
@@ -283,6 +295,17 @@ export class ManagePage extends AbstractPage implements OnInit {
       })
       .catch((err) => {
         const statusMsg = err.error.message;
+        if (statusMsg === "Unable create Page" && statusMsg === 400) {
+            let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: "คุณมีเพจอยู่แล้ว",
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+            });
+        }
         if (statusMsg === "User was not found.") {
           let navigationExtras: NavigationExtras = {
             state: {
@@ -292,7 +315,7 @@ export class ManagePage extends AbstractPage implements OnInit {
             queryParams: { mode: "facebook" },
           };
           this.router.navigate(["/register"], navigationExtras);
-        } else if (err.error.message === "Baned PageUser.") {
+        } else if (statusMsg === "Baned PageUser.") {
           this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {

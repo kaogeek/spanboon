@@ -237,8 +237,36 @@
                 justify-content: center;
                 height: calc(100% - 60pt);
                 @include font-size-9($font-head-500);
+                display: flex;
+                align-items: center;
+
                 > .logo-img {
                     margin: 10pt;
+                }
+            }
+            >.wrapper-page-create {
+                padding: 20pt 15pt 10pt 15pt;
+                flex: 0 0 auto;
+                position: sticky;
+                bottom: 0;
+                z-index: 99;
+                background: #fff;
+
+                >.title-page-create {
+                    @include font-size-10($font-head-500);
+                }
+
+                >.social-list-page {
+                    gap: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 10px;
+
+                    >.button-social {
+                        >.butt-social {
+
+                        }
+                    }
                 }
             }
         }
