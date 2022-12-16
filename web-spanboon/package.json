@@ -60,7 +60,7 @@
         "ngx-tribute": "^1.5.1",
         "oauth-signature": "^1.5.0",
         "rfs": "^9.0.0",
-        "rxjs": "~6.4.0",
+        "rxjs": "~6.0.0",
         "saturn-datepicker": "^8.0.5",
         "socket.io-client": "^4.5.3",
         "tributejs": "^5.1.3",

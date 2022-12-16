@@ -17,7 +17,7 @@ import { DialogData } from '../../../models/models';
 
 export class DialogAlert {
 
-  private isbottom: boolean 
+  private isbottom: boolean
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {
