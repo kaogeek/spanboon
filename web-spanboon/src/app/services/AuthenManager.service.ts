@@ -200,7 +200,8 @@ export class AuthenManager {
       let body: any = {
         "facebookPageId":facebook.facebookPageId,
         "facebookPageName":facebook.facebookPageName,
-        "pageAccessToken":facebook.pageAccessToken
+        "pageAccessToken":facebook.pageAccessToken,
+        "facebookCategory":facebook.facebookCategory
       }
 
       this.http.post(url, body, options).toPromise().then((response: any) => {

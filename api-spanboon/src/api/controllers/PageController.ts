@@ -436,29 +436,29 @@ export class PageController {
         const getUser = await this.userService.findOne({ _id: userId });
         const authenFB = await this.authenService.findOne({ where: { user: userId, providerName: 'FACEBOOK' } });
         const pageFB = await this.facebookService.getFBPageAccounts(authenFB.storedCredentials);
-        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + pageFB.data[0].id + '/picture?type=large');
+        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
-
         const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            console.log('errorResponse',errorResponse);
             return res.status(400).send(errorResponse);
         }
         const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
         // create category 
-        const checkPageCate = await this.pageCategoryService.findOne({ name: pageFB.data[0].category });
+        const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
         if (checkPageCate === undefined) {
             const cate: PageCategory = new PageCategory();
-            cate.name = pageFB.data[0].category;
+            cate.name = socialBinding.facebookCategory;
             cate.description = null;
             cate.iconURL = null;
             createCate = await this.pageCategoryService.create(cate);
         }
         if (assetPic) {
             const pageCreate: Page = new Page();
-            pageCreate.name = pageFB.data[0].name;
+            pageCreate.name = socialBinding.facebookPageName;
             pageCreate.pageUsername = null;
             pageCreate.subTitle = null;
             pageCreate.backgroundStory = null;
