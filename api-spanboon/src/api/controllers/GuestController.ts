@@ -1100,7 +1100,6 @@ export class GuestController {
     public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;
         const modHeaders = req.headers.mod_headers;
-        const loginPassword = users.password;
         let loginToken: any;
         let loginUser: any;
         const tokenFCM = req.body.tokenFCM;
@@ -1108,7 +1107,8 @@ export class GuestController {
         let authen = undefined;
         if (mode === PROVIDER.EMAIL) {
             const modeAuthen = [];
-            const data: User = await this.userService.findOne({ where: { username: users.email } });
+            const data: User = await this.userService.findOne({ where: { username: users.email.toLocaleLowerCase()} });
+            console.log('data',data);
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
@@ -1131,72 +1131,14 @@ export class GuestController {
                 user.isSubAdmin = data.isSubAdmin;
                 user.banned = data.banned;
                 if (user) {
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
-                    return res.status(200).send(successResponse);
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
+                        return res.status(200).send(successResponse);
                 }
             } else if (data && checkAuth !== undefined) {
                 if (data) {
                     const userObjId = new ObjectID(data.id);
-                    if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
-                        const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-                    if (await User.comparePassword(data, loginPassword)) {
-                        // create a token
-                        const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
-                        if (data.banned === true) {
-                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                            return res.status(400).send(errorResponse);
-                        } else if (token) {
-                            const currentDateTime = moment().toDate();
-                            // find user
-                            const userExrTime = await this.getUserLoginExpireTime();
-                            const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: data.id, providerName: PROVIDER.EMAIL } });
-                            const newToken = new AuthenticationId();
-                            newToken.user = data.id;
-                            newToken.lastAuthenTime = currentDateTime;
-                            newToken.providerUserId = userObjId;
-                            newToken.providerName = PROVIDER.EMAIL;
-                            newToken.storedCredentials = token;
-                            newToken.expirationDate = moment().add(userExrTime, 'days').toDate();
-                            const checkExistTokenFcm = await this.deviceToken.findOne({ userId: userObjId, token: req.body.token });
-                            if (checkAuthen !== null && checkAuthen !== undefined) {
-                                const updateQuery = { user: data.id, providerName: PROVIDER.EMAIL };
-                                const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
-                                await this.authenticationIdService.update(updateQuery, newValue);
-                            } else {
-                                await this.authenticationIdService.create(newToken);
-                            }
-                            if (checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null) {
-                                await this.deviceToken.createDeviceToken({ deviceName, token: tokenFCM, userId: userObjId });
-                            }
-                            loginToken = token;
-                        }
-                        loginUser = data;
-                        if (loginUser === undefined) {
-                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                            return res.status(400).send(errorResponse);
-                        }
-
-                        if (loginUser.banned === true) {
-                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                            return res.status(400).send(errorResponse);
-                        }
-
-                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                        loginUser = await this.userService.cleanUserField(loginUser);
-                        loginUser.followings = userFollowings.length;
-                        loginUser.followers = userFollowers.length;
-                        const result = { token: loginToken, user: loginUser };
-
-                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                        return res.status(200).send(successResponse);
-                    } else {
-                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
+                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', userObjId);
+                    return res.status(200).send(successResponse);
                 } else {
                     const errorResponse: any = { status: 0, message: 'Invalid username' };
                     return res.status(400).send(errorResponse);
@@ -1250,49 +1192,8 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             } else if (userFb && authenticaTionFB !== undefined) {
-                const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
-                const deviceFB = req.body.tokenFCM_FB.deviceName;
-                // find email then -> authentication -> mode FB
-                if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                    return res.status(400).send(errorUserNameResponse);
-                } else {
-                    const userExrTime = await this.getUserLoginExpireTime();
-                    const currentDateTime = moment().toDate();
-                    const authTime = currentDateTime;
-                    const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const facebookUserId = authenticaTionFB.providerUserId;
-                    const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                    const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
-                    const updateAuth = await this.authenticationIdService.update(query, newValue);
-                    if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
-                        loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                        loginToken = updatedAuth.storedCredentials;
-                        loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                    }
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-    
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-    
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
-    
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                    return res.status(200).send(successResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', users.token);
+                return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
@@ -1324,51 +1225,14 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             } else if (data && checkAuth !== undefined) {
-                const appleId: any = req.body.apple.result.user;
-                const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
-                const deviceAP = req.body.tokenFCM_AP.deviceName;
-                const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
-                if (appleClient === null || appleClient === undefined) {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                    return res.status(400).send(errorUserNameResponse);
-                } else {
-                    const currentDateTime = moment().toDate();
-                    const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                    const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleId.idToken, expirationDate: appleId.metadata.creationTime, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
-                    const update_Apple = await this.authenticationIdService.update(query, newValue);
-                    if (update_Apple) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
-                        loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                        loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
-                    }
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-    
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-    
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                    return res.status(200).send(successResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', user);
+                return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.GOOGLE) {
             const idToken = users.idToken;
-            const authToken = users.authToken;
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
             const userGG = await this.userService.findOne({email:checkIdToken.email});
             const authenGG = await this.authenticationIdService.findOne({user:userGG.id});
@@ -1395,58 +1259,8 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             }else if(userGG !== undefined && authenGG !== undefined){
-                const tokenFcmGG = req.body.tokenFCM_GG.tokenFCM;
-                const deviceGG = req.body.tokenFCM_GG.deviceName;
-                if (checkIdToken === undefined) {
-                    const errorResponse: any = { status: 0, message: 'Invalid Token.' };
-                    return res.status(400).send(errorResponse);
-                }
-                // const expiresAt = checkIdToken.expire;
-                // const today = moment().toDate();
-                let googleUser = undefined;
-                try {
-                    googleUser = await this.googleService.getGoogleUser(checkIdToken.userId, authToken);
-                } catch (err) {
-                    console.log(err);
-                }
-                if (googleUser === null || googleUser === undefined) {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                    return res.status(400).send(errorUserNameResponse);
-                } else {
-                    const userExrTime = await this.getUserLoginExpireTime();
-                    const currentDateTime = moment().toDate();
-                    const authTime = currentDateTime;
-                    const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE };
-                    const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: authToken, properties: { userId: googleUser.authId.providerUserId, token: googleUser.authId.storedCredentials, expiraToken: checkIdToken.expire }, expirationDate } };
-                    const updateAuth = await this.authenticationIdService.update(query, newValue);
-                    if (updateAuth) {
-                        const updatedAuthGG = await this.authenticationIdService.findOne({ providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG, userId: updatedAuthGG.user });
-                        loginUser = await this.userService.findOne({ where: { _id: updatedAuthGG.user } });
-                        loginToken = updatedAuthGG.storedCredentials;
-                        loginToken = jwt.sign({ token: loginToken, userId: checkIdToken.userId }, env.SECRET_KEY);
-                    }
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                    return res.status(200).send(successResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', user);
+                return res.status(200).send(successResponse);
             }else{
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);

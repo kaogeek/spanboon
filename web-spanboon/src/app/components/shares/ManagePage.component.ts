@@ -172,7 +172,7 @@ export class ManagePage extends AbstractPage implements OnInit {
               })
               .catch((err: any) => {
                 const statusMsg = err.error.message;
-                if (statusMsg === "Unable create Page" && statusMsg === 400) {
+                if (statusMsg === "Unable create Page") {
                     let dialog = this.dialog.open(DialogAlert, {
                         disableClose: true,
                         data: {
@@ -273,10 +273,12 @@ export class ManagePage extends AbstractPage implements OnInit {
     });
   }
   private checkBoxBindingPageFacebook(access: any) {
+    console.log('access_token_facebook',access);
     const facebook = new PageSoialFB();
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
+    facebook.facebookCategory = access.category;
     let mode = "FACEBOOK";
 
     this.authenManager
@@ -295,7 +297,7 @@ export class ManagePage extends AbstractPage implements OnInit {
       })
       .catch((err) => {
         const statusMsg = err.error.message;
-        if (statusMsg === "Unable create Page" && statusMsg === 400) {
+        if (statusMsg === "Unable create Page") {
             let dialog = this.dialog.open(DialogAlert, {
                 disableClose: true,
                 data: {

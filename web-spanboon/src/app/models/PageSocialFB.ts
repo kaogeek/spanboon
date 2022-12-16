@@ -12,4 +12,5 @@ export class PageSoialFB extends BaseModel{
     public facebookPageId: string; 
     public pageAccessToken: string; 
     public facebookPageName: string; 
+    public facebookCategory: string;
 }

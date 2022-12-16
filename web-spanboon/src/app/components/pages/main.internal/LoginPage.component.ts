@@ -396,7 +396,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       "tokenFCM": tokenFCM,
       "deviceName": "FACEBOOK",
     }
-    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, tokenFCM_FB,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,mode).then((data: any) => {
       // login success redirect to main page
       if ( data.data.status === 2) {
         this.modeSwitch = "mergeuser";
@@ -429,39 +429,40 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.socialMode = 'FACEBOOK';
           }
         }
-      } else if(this.redirection && data.data.status ===1) {
-        this.observManager.publish('authen.check', null);
-        if (this.redirection) {
-          this.router.navigateByUrl(this.redirection);
-        } else {
-          this.router.navigate(['home']);
-        }
-      }else{
-        this.router.navigate(['home']);
-      }
-    }).catch((err) => {
-      const statusMsg = err.error.message;
-      if (statusMsg === "User was not found.") {
-        let navigationExtras: NavigationExtras = {
-          state: {
-            accessToken: this.accessToken,
-            redirection: this.redirection
-          },
-          queryParams: { mode: 'facebook' }
-        }
-        this.router.navigate(['/register'], navigationExtras);
-      } else if (err.error.message === 'Baned PageUser.') {
-        this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: MESSAGE.TEXT_LOGIN_BANED,
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none"
+      }else if(data.data.status === 1){
+        this.authenManager.loginWithFacebook(data.data.data,tokenFCM, mode).then((data: any) => {
+          // login success redirect to main page
+          this.observManager.publish('authen.check', null);
+          if (this.redirection) {
+            this.router.navigateByUrl(this.redirection);
+          } else {
+            this.router.navigate(['home']);
+          }
+        }).catch((err) => {
+          const statusMsg = err.error.message;
+          if (statusMsg === "User was not found.") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'facebook' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (err.error.message === 'Baned PageUser.') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: MESSAGE.TEXT_LOGIN_BANED,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
           }
         });
       }
-    });
+    })
   }
 
   public onClickLogin() {

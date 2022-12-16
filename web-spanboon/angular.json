@@ -73,7 +73,7 @@
                     "options": {
                         "browserTarget": "spanboon-web:build",
                         "aot": true,
-                        "ssl": false,
+                        "ssl": true,
                         "sslKey": "local.key",
                         "sslCert": "local.crt",
                         "disableHostCheck": true
