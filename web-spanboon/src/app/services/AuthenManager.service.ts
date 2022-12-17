@@ -13,7 +13,8 @@ import { ObservableManager } from './ObservableManager.service';
 import { SearchFilter, User, Asset } from '../models/models';
 import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
-
+import { PageSoialFB } from '../models/models';
+import { PageSocialTW } from '../models/models';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -144,7 +145,6 @@ export class AuthenManager {
         "tokenFCM": tokenFCM,
         "deviceName": "Chrome",
       };
-      console.log('body',body);
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -176,9 +176,43 @@ export class AuthenManager {
       });
     });
   }
+  public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/sync/fb';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "twitterOauthToken":twitter.twitterOauthToken,
+        "twitterTokenSecret":twitter.twitterTokenSecret,
+        "twitterUserId":twitter.twitterUserId,
+        "twitterPageName":twitter.twitterPageName
+      }
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    })
+  }
+  public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/sync/fb';
+      let options = this.getDefaultOptions();
+      let body: any = {
+        "facebookPageId":facebook.facebookPageId,
+        "facebookPageName":facebook.facebookPageName,
+        "pageAccessToken":facebook.pageAccessToken,
+        "facebookCategory":facebook.facebookCategory
+      }
 
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
-  public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM_FB:any,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {
@@ -193,7 +227,7 @@ export class AuthenManager {
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
-          user: response.data.user
+          user: response.data.user,
         };
 
         this.token = result.token;
@@ -255,7 +289,6 @@ export class AuthenManager {
   }
 
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
-    console.log('registSocial',registSocial);
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
     }

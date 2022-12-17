@@ -30,7 +30,7 @@ export class GoogleService {
     return new google.auth.OAuth2(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URL);
   }
 
-  public async verifyIdToken(idToken: string,modHeaders:string): Promise<any> {
+  public async verifyIdToken(idToken: string, modHeaders: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       let ticket;
       if (modHeaders !== undefined && modHeaders !== null) {
@@ -38,29 +38,28 @@ export class GoogleService {
       } else {
         ticket = await this.CLIENT.verifyIdToken({ idToken });
       }
-        const payload = ticket.getPayload();
+      const payload = ticket.getPayload();
 
-        if (payload !== null && payload !== undefined) {
-          const userId = payload.sub;
-          const email = payload.email;
-          const firstName = payload.given_name;
-          const lastName = payload.family_name;
-          const imageURL = payload.picture;
-          const expire = payload.exp;
-          const result = { userId, email, firstName, lastName, imageURL, expire };
+      if (payload !== null && payload !== undefined) {
+        const userId = payload.sub;
+        const email = payload.email;
+        const firstName = payload.given_name;
+        const lastName = payload.family_name;
+        const imageURL = payload.picture;
+        const expire = payload.exp;
+        const result = { userId, email, firstName, lastName, imageURL, expire };
 
-          resolve(result);
-        } else {
-          reject(undefined);
-        }
+        resolve(result);
+      } else {
+        reject(undefined);
+      }
     });
   }
 
   public async getGoogleUser(userId: string, accessToken: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      this.authenIdService.findOne({ where: { providerUserId: userId,providerName:'GOOGLE' } }).then((auth) => {
-        console.log('auth >>> ', auth);
+      this.authenIdService.findOne({ where: { providerUserId: userId, providerName: 'GOOGLE' } }).then((auth) => {
         if (auth === null || auth === undefined) {
           resolve(undefined);
           return;

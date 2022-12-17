@@ -18,7 +18,9 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { MESSAGE } from '../../../../custom/variable';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
-
+import { CheckMergeUserFacade } from 'src/app/services/services';
+import { CountdownConfig, CountdownEvent } from "ngx-countdown";
+import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng-otp-input.component";
 
 const PAGE_NAME: string = 'login';
 
@@ -33,9 +35,26 @@ export class LoginPage extends AbstractPage implements OnInit {
   protected TWITER_API_SECRET_KEY = environment.consumerSecretTwitter
   protected TWITTER_ACCESS_TOKEN = environment.accessTokenTwitter
   protected TWITTER_TOKEN_SECRET = environment.accessTokenSecretTwitter
-
+  @ViewChild("ngOtpInput", { static: false }) ngOtpInput: NgOtpInputComponent;
+  configOtp = {
+    allowNumbersOnly: true,
+    length: 6,
+    isPasswordInput: false,
+    disableAutoFocus: false,
+    inputStyles: {  
+      'border-radius': '15px',
+      'text-align': 'center',
+      'margin-right': '10px',
+      'color': 'rgb(35, 35, 35)',
+      'border-color':'rgb(12, 52, 85)',
+      'box-shadow': '5px 5px 10px #cacaca',
+    },
+  };
   @ViewChild('email', { static: false }) email: ElementRef;
   @ViewChild('password', { static: false }) password: ElementRef;
+  public apiBaseURL = environment.apiBaseURL;
+  public otpResendIcon: "hide" | "show" = "hide";
+  public modeSwitch: "login" | "mergeuser" | "otp" = "login";
   private accessToken: any;
   private googleToken: any;
   private observManager: ObservableManager;
@@ -43,11 +62,12 @@ export class LoginPage extends AbstractPage implements OnInit {
   private cacheConfigInfo: CacheConfigInfo;
   private activatedRoute: ActivatedRoute;
   private twitterService: TwitterService;
-
+  private checkMergeUserFacade: CheckMergeUserFacade;
+  public imageProfile:string;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public authenManager: AuthenManager;
   public router: Router;
-
+  public login = true;
   public hide = true;
   public redirection: string;
   public isEmailLogin: boolean;
@@ -55,15 +75,34 @@ export class LoginPage extends AbstractPage implements OnInit {
   public isPreloadTwitter: boolean;
   public googleUser = {};
   public auth2: any;
+  public emailOtp: string;
+  public limitOtpCount: number;
+  public socialMode:any;
+  public social: any = {
+    socialLogin: undefined,
+
+  };
+  public mockDataMergeSocial: any = {
+    social: "EMAIL",
+    socialFB: "FACEBOOK",
+    socialTW: "TWITTER",
+    socialGG: "GOOGLE",
+    socialAP: "APPLE"
+  };
+  public dataUser: any;
+  public passwordOtp: string;
+  public countOtp: number;
+  public configCountdown: CountdownConfig = { leftTime: 5 , format: 'mm:ss'};
 
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
   public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
   public accessTokenLink = '';
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
-
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
-    observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService) {
+    observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
+    checkMergeUserFacade: CheckMergeUserFacade,
+    ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.activatedRoute = activatedRoute;
@@ -74,6 +113,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.isPreloadTwitter = false;
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
+    this.checkMergeUserFacade = checkMergeUserFacade;
+
 
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
@@ -148,6 +189,42 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
   }
 
+  public otpCountdownHandleEvent(event: CountdownEvent) {
+    if (event.action === 'done') {
+      this.otpResendIcon = "show";
+    }
+  }
+  public dialogConfirmMerge() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'ยืนยันการ merge user',
+      },
+    });
+
+    dialog.afterClosed().subscribe((res) => {
+      console.log('data',res);
+      if (res){
+        this.modeSwitch = "otp";
+        let mode = "EMAIL";
+        this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res)=>{
+        this.limitOtpCount = res.limit;
+        }).catch((err) => {
+          if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
+            let dialog = this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomColorText2: "black",
+                btDisplay1: "none",
+              },
+            });
+          }
+        });
+      }
+    });
+  }
   public loginTwitter(token: string, token_secret: string, userId: string) {
     let mode = 'TWITTER';
     const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
@@ -158,7 +235,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       "tokenFCM": tokenFCM,
       "deviceName": "TWITTER",
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -234,13 +311,17 @@ export class LoginPage extends AbstractPage implements OnInit {
       "tokenFCM": tokenFCM,
       "deviceName": "GOOGLE",
     }
-    this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM_GG,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM_GG,mode).then((data: any) => {
       // login success redirect to main page
-      this.observManager.publish('authen.check', null);
-      if (this.redirection) {
-        this.router.navigateByUrl(this.redirection);
-      } else {
-        this.router.navigate(['home']);
+      if(data.data.status === 2){
+
+      }else if(data.data.status ===1){
+        this.observManager.publish('authen.check', null);
+        if (this.redirection) {
+          this.router.navigateByUrl(this.redirection);
+        } else {
+          this.router.navigate(['home']);
+        }
       }
     }).catch((err) => {
       const statusMsg = err.error.message;
@@ -315,37 +396,73 @@ export class LoginPage extends AbstractPage implements OnInit {
       "tokenFCM": tokenFCM,
       "deviceName": "FACEBOOK",
     }
-    this.authenManager.loginWithFacebook(this.accessToken.fbtoken, tokenFCM_FB,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,mode).then((data: any) => {
       // login success redirect to main page
-      this.observManager.publish('authen.check', null);
-      if (this.redirection) {
-        this.router.navigateByUrl(this.redirection);
-      } else {
-        this.router.navigate(['home']);
-      }
-    }).catch((err) => {
-      const statusMsg = err.error.message;
-      if (statusMsg === "User was not found.") {
-        let navigationExtras: NavigationExtras = {
-          state: {
-            accessToken: this.accessToken,
-            redirection: this.redirection
-          },
-          queryParams: { mode: 'facebook' }
+      if ( data.data.status === 2) {
+        this.modeSwitch = "mergeuser";
+        const queue = data.data.authUser;
+        for(let i = 0; i<queue.length; i++){
+          const current = queue.shift()
+          if(current === 'EMAIL'){
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'FACEBOOK';
+          }else if( current === 'GOOGLE'){
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'FACEBOOK';
+          }else if( current === 'FACEBOOK'){
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data;
+            this.socialMode = 'FACEBOOK';
+          }else if( current === 'TWITTER'){
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data;
+            this.socialMode = 'FACEBOOK';
+          }
         }
-        this.router.navigate(['/register'], navigationExtras);
-      } else if (err.error.message === 'Baned PageUser.') {
-        this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: MESSAGE.TEXT_LOGIN_BANED,
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none"
+      }else if(data.data.status === 1){
+        this.authenManager.loginWithFacebook(data.data.data,tokenFCM, mode).then((data: any) => {
+          // login success redirect to main page
+          this.observManager.publish('authen.check', null);
+          if (this.redirection) {
+            this.router.navigateByUrl(this.redirection);
+          } else {
+            this.router.navigate(['home']);
+          }
+        }).catch((err) => {
+          const statusMsg = err.error.message;
+          if (statusMsg === "User was not found.") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'facebook' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (err.error.message === 'Baned PageUser.') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: MESSAGE.TEXT_LOGIN_BANED,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
           }
         });
       }
-    });
+    })
   }
 
   public onClickLogin() {
@@ -360,49 +477,105 @@ export class LoginPage extends AbstractPage implements OnInit {
     if (body.password.trim() === "") {
       return this.showAlertDialog("กรุณากรอกรหัสผ่าน");
     }
-    this.authenManager.login(body.email, body.password, mode).then((data) => {
-      if (data) {
+    this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
+      if (data.data.status === 2) {
+        this.login = false;
+        this.modeSwitch = "mergeuser";
+        this.emailOtp = body.email;
+        this.passwordOtp = body.password;
+        this.dataUser = data.data;
+        this.socialMode = "EMAIL";
+      } else {
+        this.authenManager
+          .login(body.email, body.password, mode)
+          .then((data) => {
+            if (data) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  this.observManager.publish("authen.check", null);
+                  this.observManager.publish("authen.profileUser", data.user);
+                  if (this.redirection) {
+                    this.router.navigateByUrl(this.redirection);
+                  } else {
+                    this.router.navigate(["home"]);
+                  }
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            if (err.error.status === 0) {
+              let alertMessages: string;
+              if (err.error.message === "Invalid username") {
+                alertMessages = "กรุณาใส่อีเมลให้ถูกต้อง";
+              } else if (err.error.message === "Baned PageUser.") {
+                alertMessages = "บัญชีผู้ใช้ถูกแบน";
+              } else if (err.error.message === "Invalid Password") {
+                alertMessages = "รหัสผ่านไม่ถูกต้อง";
+              }
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: alertMessages,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+
+                }
+              });
+            }
+          });
+      }
+    })
+    .catch((err) => {
+      if (err.error.message === "Invalid Password" && err.status === 400) {
         let dialog = this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
-            text: MESSAGE.TEXT_LOGIN_SUCCESS,
+            text: "รหัสผ่านไม่ถูกต้อง",
             bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
             bottomColorText2: "black",
-            btDisplay1: "none"
-          }
+            btDisplay1: "none",
+          },
+        });
+        dialog.afterClosed().subscribe((res) => {
+        });
+      } else {
+        console.log(err);
+      }
+      if (
+        err.error.message === "Cannot read properties of undefined (reading 'id')" &&
+        err.status === 500
+      ) {
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "ไม่พบบัญชีผู้ใช้ในระบบ",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
         });
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.observManager.publish('authen.check', null);
-            this.observManager.publish('authen.profileUser', data.user);
-            if (this.redirection) {
-              this.router.navigateByUrl(this.redirection);
-            } else {
-              this.router.navigate(['home']);
-            }
-          }
-
-        });
-      }
-    }).catch((err) => {
-      if (err.error.status === 0) {
-        let alertMessages: string;
-        if (err.error.message === 'Invalid username') {
-          alertMessages = 'กรุณาใส่อีเมลให้ถูกต้อง';
-        } else if (err.error.message === 'Baned PageUser.') {
-          alertMessages = 'บัญชีผู้ใช้ถูกแบน';
-        } else if (err.error.message === "Invalid Password") {
-          alertMessages = 'รหัสผ่านไม่ถูกต้อง';
-        }
-        this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: alertMessages,
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none"
+            this.router.navigate(["/register"]);
           }
         });
+      } else {
+        console.log(err);
       }
     });
   }
@@ -418,6 +591,89 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     });
     dialog.afterClosed().subscribe((res) => {
+    });
+  }
+  public onOtpChange(event: any) {
+    if (event && event.length === 6) {
+      this.countOtp = event;
+    }
+  }
+  public sendNewOtp() {
+    this.otpResendIcon = "hide";
+    this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res)=>{
+    this.limitOtpCount = res.limit;
+    }).catch((err) => {
+      if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        });
+      }
+    });
+  }
+  public clickCheckOtp(){
+    let mode = this.socialMode;
+    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+    let tokenFCM_FB = {
+      "tokenFCM": tokenFCM,
+      "deviceName": "FACEBOOK",
+    }
+      this.checkMergeUserFacade.checkOtp(this.emailOtp,this.accessToken ,this.countOtp,mode).then((res)=>{
+        if (res.message === "Loggedin successful" && res.authUser === 'EMAIL') {
+          this.authenManager.login(this.emailOtp, this.passwordOtp, mode).then((data) => {
+            if (data) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  this.observManager.publish("authen.check", null);
+                  this.observManager.publish("authen.profileUser", data.user);
+                  if (this.redirection) {
+                    this.router.navigateByUrl(this.redirection);
+                  } else {
+                    this.router.navigate(["home"]);
+                  }
+                }
+              });
+            }
+          })
+        }else if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK'){
+          this.authenManager.loginWithFacebook(this.accessToken.fbtoken,tokenFCM_FB,mode).then((data)=>{
+            this.observManager.publish('authen.check', null);
+            if (this.redirection) {
+              this.router.navigateByUrl(this.redirection);
+            } else {
+              this.router.navigate(['home']);
+            }
+          })
+        }
+        // let otpCountFail: number = 0;
+    }).catch((err) => {
+      if (err.error.message === "The OTP is not correct.") {
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "รหัส OTP ของท่านไม่ถูกต้อง",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        });
+        dialog.afterClosed().subscribe((res) => {
+        });
+      }
     });
   }
 }
