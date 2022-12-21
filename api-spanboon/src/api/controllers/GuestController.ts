@@ -1457,7 +1457,7 @@ export class GuestController {
                 if(authIdCreate){
                     
                     cache.del(user.id.toString());
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', user,mode);
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', user.id,mode);
                     return res.status(200).send(successResponse);
                 }
             } else {

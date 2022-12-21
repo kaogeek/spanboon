@@ -33,7 +33,7 @@ export const environment = {
    apiBaseURL: "${process.env["API_BASE_URL"]}",
    webBaseURL: "${process.env["WEB_BASE_URL"]}",
    firebase: {
-    apiKey: "${process.env["FIREBASE_API__KEY"]}",
+    apiKey: "${process.env["FIREBASE_API_KEY"]}",
     authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
     databaseURL: "${process.env["FIREBASE_DATABASE_URL"]}",
     projectId: "${process.env["FIREBASE_PROJECT_ID"]}",
@@ -50,7 +50,7 @@ const firebaseFileContent = `importScripts("https://www.gstatic.com/firebasejs/9
 importScripts("https://www.gstatic.com/firebasejs/9.1.3/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-    apiKey: "${process.env["FIREBASE_API__KEY"]}",
+    apiKey: "${process.env["FIREBASE_API_KEY"]}",
     authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
     databaseURL: "${process.env["FIREBASE_DATABASE_URL"]}",
     projectId: "${process.env["FIREBASE_PROJECT_ID"]}",
