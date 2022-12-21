@@ -337,10 +337,13 @@ export class FacebookService {
                 }
             }
             // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
-            this.publishPageId(fbUserId,accessToken).then((res)=>{
-                axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
-                    resolve(resFacebook.data);
-                });
+            facebook.api(fbUserId + '/feed', 'post', formData, (response: any) => {
+                if (!response || response.error) {
+                    console.log(!response ? 'error occurred' : response.error);
+                    reject(response.error);
+                    return;
+                }
+                resolve(response);
             });
         });
     }

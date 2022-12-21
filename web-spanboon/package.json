@@ -5,8 +5,8 @@
         "ng": "ng",
         "config": "ts-node ./scripts/setenv.ts",
         "start": "npm run config -- --environment=development && ng serve --host 0.0.0.0 --port 4200",
-        "build": "npm run config -- --environment=development && ng build",
-        "prod": "npm run config -- --environment=production && ng build",
+        "build": "npm run config -- --environment=development && ng build --configuration development",
+        "prod": "npm run config -- --environment=production && ng build --configuration production",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"
