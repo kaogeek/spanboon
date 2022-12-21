@@ -73,7 +73,7 @@
                                     <img class="icon-social-pic"
                                         [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
                                     </div>
-                                    <img class="social-pic" src="http://placekitten.com/600/900" />
+                                    <img class="social-pic" src= {{pictureSocial}} />
                                 </div>
                             </div>
                             <div class="label">
@@ -93,7 +93,14 @@
                                     <img class="icon-social-pic"
                                         [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
                                     </div>
-                                    <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'"/>
+                                    <ng-container *ngIf="dataUser.data.imageURL !== '' && dataUser.data.imageURL !== undefined && dataUser.data.imageURL !== null ; else elsePhoto">
+                                        <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'"/>
+                                    </ng-container>
+                                    <ng-template #elsePhoto>
+                                        <div class="not-image">
+                                            {{dataUser.data.displayName || dataUser.data.name | slice: 0:1 }}
+                                        </div>
+                                    </ng-template>
                                 </div>
                             </div>
                             <div class="label">

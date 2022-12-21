@@ -42,7 +42,6 @@ import { USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, PLATFORM_NAME_TH }
 import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
-import { AutoSynz } from './requests/AutoSynz';
 const cache = new NodeCache({ stdTTL: 300 });
 @JsonController()
 export class GuestController {
@@ -189,7 +188,6 @@ export class GuestController {
                     authId.providerName = PROVIDER.EMAIL;
 
                     const authenIdCreated: AuthenticationId = await this.authenticationIdService.create(authId);
-
                     if (authenIdCreated) {
                         const successResponse = ResponseUtil.getSuccessResponse('Register Success', result);
                         return res.status(200).send(successResponse);
@@ -201,6 +199,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.FACEBOOK) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            const activationCode = GenerateUUIDUtil.getUUID();
+            const registerFbPassword = await User.hashPassword(activationCode);
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
@@ -265,7 +265,7 @@ export class GuestController {
                 }
                 const user: User = new User();
                 user.username = registerEmail;
-                user.password = registerPassword;
+                user.password = registerFbPassword;
                 user.email = registerEmail;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = newUser.firstName;
@@ -364,6 +364,8 @@ export class GuestController {
         } else if (mode === PROVIDER.APPLE) {
             // register apple
             const resultUser: User = await this.userService.findOne({ where: { email: users.email.toString() } });
+            const activationCode = GenerateUUIDUtil.getUUID();
+            const registerFbPassword = await User.hashPassword(activationCode);
             const appleUserId = users;
             if (appleUserId.userId === null || appleUserId.userId === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('Apple UserId is required', undefined);
@@ -378,7 +380,6 @@ export class GuestController {
                 const currentAuthenId = await this.authenticationIdService.find({ user: resultUser.id, providerName: PROVIDER.APPLE });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Apple was registered.', undefined);
-                    console.log('pass3');
                     return res.status(400).send(errorResponse);
                 }
                 userData = this.userService.cleanUserField(resultUser);
@@ -407,7 +408,7 @@ export class GuestController {
                 }
                 const user: User = new User();
                 user.username = appleUserId.username;
-                user.password = registerPassword;
+                user.password = registerFbPassword;
                 user.email = appleUserId.email;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = appleUserId.firstName;
@@ -506,10 +507,11 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const idToken = req.body.idToken;
+            const activationCode = GenerateUUIDUtil.getUUID();
+            const registerFbPassword = await User.hashPassword(activationCode);
             const checkIdToken = await this.googleService.verifyIdToken(idToken, req.headers.mod_modMobile);
             const googleUserId = users.googleUserId;
             const authToken = users.authToken;
-
             if (googleUserId === null || googleUserId === undefined || googleUserId === '') {
                 const errorResponse = ResponseUtil.getErrorResponse('Google UserId is required', undefined);
                 return res.status(400).send(errorResponse);
@@ -538,7 +540,7 @@ export class GuestController {
                     authenId.providerName = PROVIDER.GOOGLE;
                     authenId.storedCredentials = authToken;
                     authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                    authIdCreate = await this.authenticationIdService.create(authenId);
+                    await this.authenticationIdService.create(authenId);
                 } else {
                     userData = this.userService.cleanUserField(resultUser);
                     const authenId = new AuthenticationId();
@@ -548,7 +550,6 @@ export class GuestController {
                     authenId.providerName = PROVIDER.GOOGLE;
                     authenId.storedCredentials = authToken;
                     authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-
                     authIdCreate = await this.authenticationIdService.create(authenId);
                 }
                 if (authIdCreate) {
@@ -570,7 +571,7 @@ export class GuestController {
 
                 const user: User = new User();
                 user.username = registerEmail;
-                user.password = registerPassword;
+                user.password = registerFbPassword;
                 user.email = registerEmail;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = newUser.firstName;
@@ -583,7 +584,6 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-                const resultData: User = await this.userService.create(user);
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -606,6 +606,7 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
                 }
+                const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
 
@@ -664,6 +665,8 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.TWITTER) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
+            const activationCode = GenerateUUIDUtil.getUUID();
+            const registerFbPassword = await User.hashPassword(activationCode);
             const twitterUserId = users.twitterUserId;
             const twitterOauthToken = users.twitterOauthToken;
             const twitterTokenSecret = users.twitterTokenSecret;
@@ -729,7 +732,7 @@ export class GuestController {
 
                 const user: User = new User();
                 user.username = registerEmail;
-                user.password = registerPassword;
+                user.password = registerFbPassword;
                 user.email = registerEmail;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = newUser.firstName;
@@ -742,7 +745,6 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-                console.log('user', user);
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -1103,12 +1105,16 @@ export class GuestController {
         let loginToken: any;
         let loginUser: any;
         const tokenFCM = req.body.tokenFCM;
+        const userEmail:string = users.email ? users.email.toLowerCase() : '';
         const deviceName = req.body.deviceName;
         let authen = undefined;
         if (mode === PROVIDER.EMAIL) {
             const modeAuthen = [];
-            const data: User = await this.userService.findOne({ where: { username: users.email.toLocaleLowerCase()} });
-            console.log('data',data);
+            const data: User = await this.userService.findOne({ where: { username: userEmail}});
+            if(data === undefined || data === null){
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
@@ -1131,13 +1137,19 @@ export class GuestController {
                 user.isSubAdmin = data.isSubAdmin;
                 user.banned = data.banned;
                 if (user) {
+                    // 
+                    if (await User.comparePassword(data, users.password)) {
                         const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
                         return res.status(200).send(successResponse);
+                    }else{
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                 }
             } else if (data && checkAuth !== undefined) {
                 if (data) {
-                    const userObjId = new ObjectID(data.id);
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', userObjId);
+                    const userEM = {id: data.id};
+                    const successResponse = ResponseUtil.getSuccessResponse('Your User had beed merged.', userEM);
                     return res.status(200).send(successResponse);
                 } else {
                     const errorResponse: any = { status: 0, message: 'Invalid username' };
@@ -1155,22 +1167,28 @@ export class GuestController {
             let authenFB = undefined;
             let userFind = undefined;
             const stackAuth = [];
-            
+            const pic = [];
             try {
                 fbUser = await this.facebookService.fetchFacebook(users.token);
+                pic.push({picture:fbUser.picture.data.url});
                 userFb = await this.userService.find({ email: fbUser.email });
-                for (userFind of userFb) {
-                    if (userFind) {
-                        authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: mode } });
-                    } else {
-                        const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                        return res.status(400).send(errorUserNameResponse);
+                if(userFb[0] !== undefined){
+                    for (userFind of userFb) {
+                        if (userFind) {
+                            authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
+                        } else {
+                            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                            return res.status(400).send(errorUserNameResponse);
+                        }
                     }
+                }else{
+                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                    return res.status(400).send(errorUserNameResponse);
                 }
             } catch (err) {
                 console.log(err);
 
-            } if (userFind && authenticaTionFB === undefined) {
+            } if (userFind !== undefined && authenticaTionFB === undefined) {
                 const authenAll = await this.authenticationIdService.find({ where: { user: userFb[0].id } });
                 for (authenFB of authenAll) {
                     stackAuth.push(authenFB.providerName);
@@ -1189,14 +1207,12 @@ export class GuestController {
                 user.isAdmin = userFb[0].isAdmin;
                 user.isSubAdmin = userFb[0].isSubAdmin;
                 user.banned = userFb[0].banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth,pic);
                 return res.status(200).send(successResponse);
-            } else if (userFb && authenticaTionFB !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', users.token);
+            } else if (userFb !== undefined && authenticaTionFB !== undefined) {
+                const data = {id: fbUser.id};
+                const successResponse = ResponseUtil.getSuccessResponse('Your User had beed merged.', data);
                 return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.APPLE) {
             const data: User = await this.userService.findOne({ where: { username: users.email } });
@@ -1225,7 +1241,7 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             } else if (data && checkAuth !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', user);
+                const successResponse = ResponseUtil.getSuccessResponse('Your User had beed merged.', user);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1234,13 +1250,28 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const idToken = users.idToken;
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
+            const pic = [];
             const userGG = await this.userService.findOne({email:checkIdToken.email});
-            const authenGG = await this.authenticationIdService.findOne({user:userGG.id});
-            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id))});
+            if (checkIdToken === undefined) {
+                const errorResponse: any = { status: 0, message: 'Invalid Token.' };
+                return res.status(400).send(errorResponse);
+            }
+
+            if (userGG === undefined ) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            } 
+            const authenGG = await this.authenticationIdService.findOne({user:userGG.id,providerName:PROVIDER.GOOGLE});
+
             const stackAuth = [];
+            pic.push(checkIdToken.imageURL);
+            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id))});
+            for (const authens of AllAuthen) {
+                stackAuth.push(authens.providerName);
+            }
             const user: User = new User();
             user.username = userGG.username;
-            user.email = userGG.email;
+            user.email = userGG.email;          
             user.uniqueId = userGG.uniqueId;
             user.firstName = userGG.firstName;
             user.lastName = userGG.lastName;
@@ -1252,18 +1283,12 @@ export class GuestController {
             user.isAdmin = userGG.isAdmin;
             user.isSubAdmin = userGG.isSubAdmin;
             user.banned = userGG.banned;
-            for (const authens of AllAuthen) {
-                stackAuth.push(authens.providerName);
-            }
             if(userGG  && authenGG === undefined){
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth,pic);
                 return res.status(200).send(successResponse);
-            }else if(userGG !== undefined && authenGG !== undefined){
+            }else if(userGG && authenGG !== undefined){
                 const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', user);
                 return res.status(200).send(successResponse);
-            }else{
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                return res.status(400).send(errorResponse);
             }
         }else if (mode === PROVIDER.TWITTER) {
             const twitterOauthToken = users.twitterOauthToken;
@@ -1387,18 +1412,17 @@ export class GuestController {
         const minm = 100000;
         const maxm = 999999;
         const otp = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
-        console.log('otp',otp);
         const object = [{ otpGet: otp, limit: count }];
         if (getCache === undefined && getTTL === undefined) {
             const saveOtp = cache.set(String(user.id), object);
             if (saveOtp) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
                 return res.status(200).send(successResponse);
             }
         } else if (getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
             const saveOtp = cache.set(String(user.id), object);
             if (saveOtp) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object);
                 return res.status(200).send(successResponse);
             }
         }
@@ -1426,7 +1450,7 @@ export class GuestController {
                 authenId.user = user.id;
                 authenId.lastAuthenTime = moment().toDate();
                 authenId.providerUserId = user.id;
-                authenId.providerName = PROVIDER.GOOGLE;
+                authenId.providerName = PROVIDER.EMAIL;
                 authenId.storedCredentials = token;
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 const authIdCreate = await this.authenticationIdService.create(authenId);
@@ -1443,20 +1467,45 @@ export class GuestController {
         
         }else if(user && mode === PROVIDER.FACEBOOK){
             if (otp === getCache[0].otpGet) {
-                const properties = { fbAccessExpTime: otpRequest.facebookObject.fbexptime, fbSigned: otpRequest.facebookObject.fbsignedRequest };
+                const properties = { fbAccessExpTime: otpRequest.facebook.fbexptime, fbSigned: otpRequest.facebook.fbsignedRequest };
                 const userFB = await this.userService.findOne({email:otpRequest.email});
                 const authenId = new AuthenticationId();
                 authenId.user = userFB.id;
                 authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = otpRequest.facebookObject.fbid;
+                authenId.providerUserId = otpRequest.facebook.fbid;
                 authenId.providerName = PROVIDER.FACEBOOK;
-                authenId.storedCredentials = otpRequest.facebookObject.fbtoken;
+                authenId.storedCredentials = otpRequest.facebook.fbtoken;
                 authenId.properties = properties;
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
                     loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    loginToken = await jwt.sign({ token: otpRequest.facebookObject.fbtoken }, env.SECRET_KEY);
+                    loginToken = await jwt.sign({ token: otpRequest.facebook.fbtoken }, env.SECRET_KEY);
+                    cache.del(user.id.toString());            
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.facebook.fbtoken,PROVIDER.FACEBOOK);
+                    return res.status(200).send(successResponse);
+
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }else if(user && mode === PROVIDER.GOOGLE){
+            if (otp === getCache[0].otpGet) {
+                const modHeaders = req.headers.mod_headers;
+                const checkIdToken = await this.googleService.verifyIdToken(otpRequest.idToken, modHeaders);
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = checkIdToken.userId;
+                authenId.providerName = PROVIDER.GOOGLE;
+                authenId.storedCredentials = otpRequest.authToken;
+                authenId.properties =  { userId: checkIdToken.userId, token: otpRequest.idToken, expiraToken: checkIdToken.expire};
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                const authIdCreate = await this.authenticationIdService.create(authenId);
+                if (authIdCreate) {
+                    loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                    loginToken = await jwt.sign({ token: otpRequest.idToken }, env.SECRET_KEY);
                     cache.del(user.id.toString());
                     if (loginUser === undefined) {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
@@ -1476,44 +1525,11 @@ export class GuestController {
                     loginUser.followers = userFollowers.length;
                     const result = { token: loginToken, user: loginUser };
             
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', result,PROVIDER.FACEBOOK);
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', result,PROVIDER.GOOGLE);
                     return res.status(200).send(successResponse);
 
                 }
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
-                return res.status(400).send(errorResponse);
             }
-        }
-    }
-    // autoSyncPage
-    // undone
-    @Post('/auto_sync')
-    public async autoSyncPage(@Body({ validate: true }) autoSync: AutoSynz, @Res() res: any, @Req() req: any): Promise<any> {
-        if (autoSync.autoSync === true) {
-            // check mode
-            if (req.headers.mode === PROVIDER.FACEBOOK) {
-                try {
-                    const getPage = await this.facebookService.getFBPageAccounts(autoSync.accessToken);
-                    const successResponse = ResponseUtil.getSuccessResponse('Get Page Account Success.', getPage);
-                    return res.status(200).send(successResponse);
-                } catch (err) {
-                    const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Account.', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-            } else {
-                try {
-                    const getPage = await this.facebookService.getFBPageAccounts(autoSync.accessToken);
-                    const successResponse = ResponseUtil.getSuccessResponse('Get Page Account Success.', getPage);
-                    return res.status(200).send(successResponse);
-                } catch (err) {
-                    const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Account.', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-            }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Not Found User.', undefined);
-            return res.status(400).send(errorResponse);
         }
     }
 
