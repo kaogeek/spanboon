@@ -60,7 +60,7 @@ export class FacebookWebhookController {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Token Valid', challenge));
+                return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
                 return res.status(403).send(ResponseUtil.getErrorResponse('Token Invalid', undefined));
@@ -80,7 +80,7 @@ export class FacebookWebhookController {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Token Valid', challenge));
+                return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
                 return res.status(403).send(ResponseUtil.getErrorResponse('Token Invalid', undefined));
