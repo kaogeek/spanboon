@@ -123,11 +123,12 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   };
-  public loginWithFacebook(token: string,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM:string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = {
         "token":token,
+        tokenFCM
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -138,7 +139,8 @@ export class CheckMergeUserFacade extends AbstractFacade {
         let result: any = {
           token: response.data.token,
           user: response.data.user,
-          data: response
+          data: response,
+          pic:response.pic ?  response.pic[0] : ''
         };
 
         this.token = result.token;
@@ -177,7 +179,9 @@ export class CheckMergeUserFacade extends AbstractFacade {
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
-          user: response.data.user
+          user: response.data.user,
+          data: response,
+          pic:response.pic ? response.pic[0] : ''
         };
 
         this.token = result.token;
@@ -198,7 +202,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
   }  
   public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/check_email_user';
+      let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "tokenFCM": tokenFCM,
@@ -236,27 +240,23 @@ export class CheckMergeUserFacade extends AbstractFacade {
     });
   }
      // check merge user
-     public checkOtp(email: any,facebookObject:any ,otp: number,mode:string): Promise<any> {
+     public checkOtp(email: any,otp:number,mode?:string): Promise<any> {
       return new Promise((resolve, reject) => {
           const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
           let url: string = this.baseURL + '/check_otp';
           let body: any = {
               "email": email,
               "otp": Number(otp),
-              "facebookObject":facebookObject,
-              "tokenFCM": tokenFCM
+              "authToken":mode
           };
-          let headers = new HttpHeaders({
-              "Access-Control-Allow-Origin": "http://localhost:4300",
-              "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-              // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
-              "mode": mode
+          let headers = new HttpHeaders({ 
+            'Content-Type': 'application/json' 
           });
+          if (mode !== undefined || mode !== "") {
+            headers = headers.set('mode', mode);
+          }
 
-          let httpOptions = {
-              headers: headers
-          };
-
+          let httpOptions = { headers };
           this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
               resolve(response);
           }).catch((error: any) => {
@@ -264,6 +264,56 @@ export class CheckMergeUserFacade extends AbstractFacade {
           });
       });
   };
+  public checkOtpGG(email: any,idToken?: string, authToken?: string ,otp?: number,mode?:string): Promise<any> {
+    return new Promise((resolve, reject) => {
+        const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+        let url: string = this.baseURL + '/check_otp';
+        let body: any = {
+            "email": email,
+            "otp": Number(otp),
+            "tokenFCM": tokenFCM,
+            "idToken":idToken,
+            "authToken":authToken
+        };
+        let headers = new HttpHeaders({ 
+          'Content-Type': 'application/json' 
+        });
+        if (mode !== undefined || mode !== "") {
+          headers = headers.set('mode', mode);
+        }
+
+        let httpOptions = { headers };
+        this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+            resolve(response);
+        }).catch((error: any) => {
+            reject(error);
+        });
+    });
+};
+public checkOtpFB(email: any,facebookObject:any,otp:number,mode?:string): Promise<any> {
+  return new Promise((resolve, reject) => {
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let url: string = this.baseURL + '/check_otp';
+      let body: any = {
+          "email": email,
+          "facebook": facebookObject,
+          "otp":Number(otp),
+          "tokenFCM": tokenFCM,
+      };
+      let headers = new HttpHeaders({ 
+        'Content-Type': 'application/json' 
+      });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+      let httpOptions = { headers };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+          resolve(response);
+      }).catch((error: any) => {
+          reject(error);
+      });
+  });
+};
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {
     if (token === undefined || token === null || token === '') {
       throw 'Token is required.';

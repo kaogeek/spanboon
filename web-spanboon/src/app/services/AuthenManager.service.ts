@@ -97,7 +97,7 @@ export class AuthenManager {
   }
 
 
-  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG:string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = { 
@@ -113,7 +113,6 @@ export class AuthenManager {
       }
 
       let httpOptions = { headers };
-
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
@@ -212,11 +211,13 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebook(token: string,tokenFCM_FB:any,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,tokenFCM?:string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "token":token,
+        tokenFCM,
         tokenFCM_FB
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -229,7 +230,6 @@ export class AuthenManager {
           token: response.data.token,
           user: response.data.user,
         };
-
         this.token = result.token;
         this.user = result.user;
         this.facebookMode = true;
@@ -321,7 +321,6 @@ export class AuthenManager {
 
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/register';
-
       this.http.post(url, registSocial, httpOptions).toPromise().then((response: any) => {
         if (response.data !== null && response.data !== undefined) {
           let result: any = {

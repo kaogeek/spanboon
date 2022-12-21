@@ -414,7 +414,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
           });
         }
         else if(value.status === 2 ){
-          console.log('correct FACEBOOK register');
           this.fbLibrary();
           window['FB'].login((response) => {
             if (response.authResponse) {
