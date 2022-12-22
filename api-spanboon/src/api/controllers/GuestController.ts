@@ -1170,7 +1170,7 @@ export class GuestController {
             const pic = [];
             try {
                 fbUser = await this.facebookService.fetchFacebook(users.token);
-                pic.push({picture:fbUser.picture.data.url});
+                pic.push(fbUser.picture.data.url);
                 userFb = await this.userService.find({ email: fbUser.email });
                 if(userFb[0] !== undefined){
                     for (userFind of userFb) {
@@ -1441,7 +1441,6 @@ export class GuestController {
         const user: User = await this.userService.findOne({ username: emailRes });
         const getCache = await cache.get(user.id.toString());
         const userExrTime = await this.getUserLoginExpireTime();
-        let loginToken: any;
         let loginUser: any;
         if (user && mode === PROVIDER.EMAIL) {
             if (otp === getCache[0].otpGet) {
@@ -1480,7 +1479,6 @@ export class GuestController {
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
                     loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    loginToken = await jwt.sign({ token: otpRequest.facebook.fbtoken }, env.SECRET_KEY);
                     cache.del(user.id.toString());            
                     const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.facebook.fbtoken,PROVIDER.FACEBOOK);
                     return res.status(200).send(successResponse);
@@ -1505,7 +1503,6 @@ export class GuestController {
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
                     loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    loginToken = await jwt.sign({ token: otpRequest.idToken }, env.SECRET_KEY);
                     cache.del(user.id.toString());
                     if (loginUser === undefined) {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
@@ -1523,9 +1520,8 @@ export class GuestController {
                     loginUser = await this.userService.cleanUserField(loginUser);
                     loginUser.followings = userFollowings.length;
                     loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
             
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', result,PROVIDER.GOOGLE);
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken,PROVIDER.GOOGLE);
                     return res.status(200).send(successResponse);
 
                 }

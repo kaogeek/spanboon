@@ -324,7 +324,7 @@ export class FacebookService {
 
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-
+            
             const formData: any = { message };
             if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
                 for (let i = 0; i < imageIds.length; i++) {
@@ -336,15 +336,37 @@ export class FacebookService {
                     };
                 }
             }
-            // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
-            facebook.api(fbUserId + '/feed', 'post', formData, (response: any) => {
-                if (!response || response.error) {
-                    console.log(!response ? 'error occurred' : response.error);
-                    reject(response.error);
-                    return;
+
+            await this.publishPageId(fbUserId,accessToken).then((res)=>{
+                if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
+                    try{
+                        if(imageIds.length === 1){
+                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                                console.log('resFacebook.data',resFacebook.data);
+                                resolve(resFacebook.data);
+                            });
+                        }else if(imageIds.length === 2){
+                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                                console.log('resFacebook.data',resFacebook.data);
+                                resolve(resFacebook.data);
+                            });
+                        }else if(imageIds.length === 3){
+                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                                console.log('resFacebook.data',resFacebook.data);
+                                resolve(resFacebook.data);
+                            });
+                        }else if(imageIds.length === 4){
+                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                                console.log('resFacebook.data',resFacebook.data);
+                                resolve(resFacebook.data);
+                            });
+                        }
+                    }catch(err){
+                        console.log('err',err);
+                    }
                 }
-                resolve(response);
             });
+            // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
         });
     }
 
