@@ -101,7 +101,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
   public confirmMergeOtp(email: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/test_send_otp';
+      let url: string = this.baseURL + '/send_otp';
       let body: any = {
         "email": email
       };

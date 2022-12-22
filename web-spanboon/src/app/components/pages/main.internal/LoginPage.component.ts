@@ -454,7 +454,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,tokenFCM,mode).then((data: any) => {
       // login success redirect to main page
       if ( data.data.status === 2) {
-        this.pictureSocial = data.pic.picture;
+        this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
         const queue = data.data.authUser;
         for(let i = 0; i<queue.length; i++){
@@ -680,7 +680,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.otpResendIcon = "hide";
     this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res)=>{
     this.limitOtpCount = res.limit;
-    }).catch((err) => {
+    }).catch((err) => {     
       if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
         let dialog = this.dialog.open(DialogAlert, {
           disableClose: true,
