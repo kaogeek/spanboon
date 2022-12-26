@@ -70,7 +70,7 @@ export class StandardItemService {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
-            return this.standardItemRepository.count(condition);
+            return this.standardItemRepository.count(filter.whereConditions);
         } else {
             return this.standardItemRepository.find(condition);
         }
