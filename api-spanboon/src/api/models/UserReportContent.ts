@@ -4,8 +4,8 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('UserReport')
-export class UserReport extends BaseModel {
+@Entity('UserReportContent')
+export class UserReportContent extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()

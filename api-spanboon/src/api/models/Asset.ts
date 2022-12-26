@@ -48,12 +48,13 @@ export class Asset extends BaseModel {
     public s3FilePath: string;
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

@@ -1,10 +1,11 @@
 import { IsNotEmpty, IsMongoId } from 'class-validator';
 import moment from 'moment';
-import { ObjectIdColumn, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { ObjectIdColumn, Column, BeforeInsert, BeforeUpdate, Entity } from 'typeorm';
 import { BaseModel } from './BaseModel';
 import { ObjectID } from 'mongodb';
 
-export class ContentHidden extends BaseModel {
+@Entity('UserHiddencontent')
+export class UserHiddenContent extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
