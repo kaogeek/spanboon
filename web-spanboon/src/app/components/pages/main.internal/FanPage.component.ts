@@ -759,14 +759,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
             }
           }
         }
@@ -781,14 +781,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
             }
           }
         }
