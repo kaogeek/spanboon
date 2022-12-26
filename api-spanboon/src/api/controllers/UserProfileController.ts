@@ -222,7 +222,35 @@ export class UserProfileController {
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        }
+                        },
+                        {
+                            $lookup: {
+                                from: 'HashTag',
+                                let: { hashTagId: { $ifNull: ['$postsHashTags', []] } },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $in: ['$_id', '$$hashTagId']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: 'postsHashTags'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                hashTags: {
+                                    $map: {
+                                        input: '$postsHashTags',
+                                        as: 'hashTags',
+                                        in: { name: '$$hashTags.name' }
+                                    }
+                                }
+                            }
+                        },
+                        { $project: { postsHashTags: 0 } }
                     ];
                 } else {
                     userPostStmt = [
@@ -237,7 +265,35 @@ export class UserProfileController {
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        }
+                        },
+                        {
+                            $lookup: {
+                                from: 'HashTag',
+                                let: { hashTagId: { $ifNull: ['$postsHashTags', []] } },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $in: ['$_id', '$$hashTagId']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: 'postsHashTags'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                hashTags: {
+                                    $map: {
+                                        input: '$postsHashTags',
+                                        as: 'hashTags',
+                                        in: { name: '$$hashTags.name' }
+                                    }
+                                }
+                            }
+                        },
+                        { $project: { postsHashTags: 0 } }
                     ];
                 }
 
