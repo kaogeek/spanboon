@@ -336,7 +336,7 @@ export class PageController {
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.twitterUserId}});
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.TWITTER,providerPageId:socialBinding.twitterUserId}});
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
@@ -435,15 +435,12 @@ export class PageController {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
-        console.log('socialBinding',socialBinding.facebookPageId);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
         const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
-        console.log('pageSoialFb',pageSocialFb);
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
-            console.log('errorResponse',errorResponse);
             return res.status(400).send(errorResponse);
         }
         const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);

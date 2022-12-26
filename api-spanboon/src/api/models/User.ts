@@ -124,6 +124,9 @@ export class User extends BaseModel {
     @Column({ name: 'mergeAP'})
     public mergeAP:boolean;
     
+    @Column({ name: 'flag'})
+    public flag:boolean;
+
     @Column(type => AuthenticationId)
     public authenticationId: AuthenticationId;
 

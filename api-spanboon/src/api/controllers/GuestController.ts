@@ -126,6 +126,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
+                user.flag = false;
                 user.customGender = users.customGender;
 
                 if (gender !== null || gender !== undefined) {
@@ -278,6 +279,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
+                user.flag = false;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -421,6 +423,7 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
+                user.flag = false;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -536,7 +539,7 @@ export class GuestController {
                     const authenId = new AuthenticationId();
                     authenId.user = resultUser.id;
                     authenId.lastAuthenTime = moment().toDate();
-                    authenId.providerUserId = googleUserId;
+                    authenId.providerUserId = checkIdToken.userId;
                     authenId.providerName = PROVIDER.GOOGLE;
                     authenId.storedCredentials = authToken;
                     authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
@@ -584,6 +587,8 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
+                user.flag = false;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -644,7 +649,7 @@ export class GuestController {
 
                             MAILService.customerLoginMail(message, registerEmail, 'Thank you for Register');
                         } else if (provider === PROVIDER.GOOGLE) {
-                            authenId.providerUserId = googleUserId;
+                            authenId.providerUserId = checkIdToken.userId;
                             authenId.storedCredentials = users.authToken;
                             authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                         }
@@ -745,6 +750,8 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
+                user.flag = false;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {

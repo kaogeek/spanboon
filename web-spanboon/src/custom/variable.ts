@@ -28,6 +28,7 @@ export enum MESSAGE {
     TEXT_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
 
     TEXT_BUTTON_CONFIRM = 'ตกลง',
+    TEXT_BUTTON_SKIP = 'ข้าม',
     TEXT_BUTTON_VERIFY = 'ยืนยัน',
     TEXT_BUTTON_CANCEL = 'ยกเลิก',
     TEXT_BUTTON_CLOSE = 'ปิด',

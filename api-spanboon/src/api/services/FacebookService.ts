@@ -339,28 +339,29 @@ export class FacebookService {
 
             await this.publishPageId(fbUserId,accessToken).then((res)=>{
                 if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
-                    try{
-                        if(imageIds.length === 1){
-                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
-                                resolve(resFacebook.data);
-                            });
-                        }else if(imageIds.length === 2){
-                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook)=>{
-                                resolve(resFacebook.data);
-                            });
-                        }else if(imageIds.length === 3){
-                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook)=>{
-                                resolve(resFacebook.data);
-                            });
-                        }else if(imageIds.length === 4){
-                            axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook)=>{
-                                resolve(resFacebook.data);
-                            });
-                        }
-                    }catch(err){
-                        console.log('err',err);
+                    if(imageIds.length === 1){
+                        console.log('Unknown path components: feed pass1????');
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds.length === 2){
+                        console.log('Unknown path components: feed pass2????');
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds.length === 3){
+                        console.log('Unknown path components: feed pass3????');
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds.length === 4){
+                        console.log('Unknown path components: feed pass4????');
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
                     }
                 }else{
+                    console.log('Unknown path components: feed pass5????');
                     axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&access_token=${res.access_token}`).then((resFacebook)=>{
                         resolve(resFacebook.data);
                     });
