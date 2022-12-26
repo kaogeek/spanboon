@@ -177,7 +177,7 @@ export class AuthenManager {
   }
   public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
     return new Promise((resolve,reject) =>{
-      let url: string = this.baseURL + '/sync/fb';
+      let url: string = this.baseURL + '/page/sync/tw';
       let options = this.getDefaultOptions();
       let body: any = {
         "twitterOauthToken":twitter.twitterOauthToken,
@@ -377,7 +377,6 @@ export class AuthenManager {
       let httpOptions = {
         headers: headers
       };
-
       this.http.post(url, registEmail, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
